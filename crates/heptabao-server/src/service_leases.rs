@@ -166,7 +166,7 @@ impl Service {
             let mut engines = state.engines.clone();
             let mut response = if path.starts_with("sys/leases/") {
                 engines.handle_lease_admin_observed(namespace, method, path, body, time)
-            } else if engines.is_pki_acme_operator_revoke_route(namespace, path) {
+            } else if engines.is_pki_operator_revoke_route(namespace, path) {
                 let owner = owner
                     .as_ref()
                     .ok_or_else(|| Response::error(403, "administrative PKI caller required"))?;

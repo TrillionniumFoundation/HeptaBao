@@ -134,10 +134,24 @@ impl EngineState {
                 .is_some_and(|mount| matches!(&mount.backend, Backend::Pki(pki) if pki.acme_protocol.is_some()))
         })
     }
+    pub(crate) fn is_pki_operator_revoke_route(&self, namespace: &str, path: &str) -> bool {
+        self.is_pki_acme_operator_revoke_route(namespace, path)
+            || self.pki_mount(namespace, path).is_some_and(|mount| {
+                &path[mount.len()..] == "revoke"
+                    && self
+                        .namespaces
+                        .get(namespace)
+                        .and_then(|state| state.mounts.get(mount))
+                        .is_some_and(|mount| {
+                            matches!(&mount.backend, Backend::Pki(pki)
+                            if pki.has_external_state() || pki.has_external_signer_history())
+                        })
+            })
+    }
     pub(crate) fn is_lease_service_route(&self, namespace: &str, path: &str) -> bool {
         self.is_ssh_service_route(namespace, path)
             || self.is_pki_issue_route(namespace, path)
-            || self.is_pki_acme_operator_revoke_route(namespace, path)
+            || self.is_pki_operator_revoke_route(namespace, path)
     }
     pub(crate) fn is_ssh_verification(&self, namespace: &str, method: &str, path: &str) -> bool {
         write_method(method)
@@ -418,6 +432,7 @@ impl EngineState {
         context: PkiRequestContext<'_>,
         mut before_effect: impl FnMut() -> Result<()>,
     ) -> Result<EngineResponse> {
+        let context = self.with_pki_revocation_floor(context)?;
         if !write_method(method) {
             return Err(unsupported());
         }
@@ -457,7 +472,10 @@ impl EngineState {
             Some(response) => response,
             None => {
                 before_effect()?;
-                engine.handle_admin(method, "revoke", body, time.seconds())?
+                match engine.revoke_retired_ordinary_without_signer(body, &context)? {
+                    Some(response) => response,
+                    None => engine.handle_admin(method, "revoke", body, time.seconds())?,
+                }
             }
         };
         let delivered = context.observed_time(
@@ -479,6 +497,10 @@ impl EngineState {
             return Err(error(403, "administrative PKI caller no longer live"));
         }
         if response.mutated {
+            if let Some(at) = engine.ordinary_revocation_floor() {
+                self.pki_revocation_clock =
+                    Some(self.pki_revocation_clock.map_or(at, |old| old.max(at)));
+            }
             self.namespaces.insert(namespace.into(), candidate);
             self.lease_clock = self.lease_clock.max(delivered.seconds());
         }

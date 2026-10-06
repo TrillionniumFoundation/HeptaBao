@@ -1383,3 +1383,37 @@ fn token_lookup_accessor_spent_target_matches_native_error_without_refund() -> T
     assert_eq!(serde_json::to_vec(&state)?, before);
     Ok(())
 }
+
+#[test]
+fn sdk_batch_present_empty_display_name_uses_native_default_and_real_claim_admission() -> TestResult
+{
+    for kind in ["service", "batch"] {
+        let (mut state, mut root) = setup()?;
+        let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+        root.bind_request_clock(Some(clock))?;
+        let time = AuthorityTime::Precise(clock.observed_at()?);
+        let mut response = state.token_route_with_clock(
+            Some(&root),
+            "",
+            "POST",
+            "auth/token/create",
+            &json!({"type":kind,"ttl":"8s","display_name":"","policies":["default"]}),
+            time,
+            Some(clock),
+            None,
+        )?;
+        state.finish_pending_batch_observed(&mut response, "", 100, time)?;
+        let raw = response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("issued token")?;
+        let actor = state.authenticate_from_observed(raw, time, None)?;
+        assert_eq!(actor.display_name(), "token");
+        assert_eq!(actor.service_token().is_some(), kind == "service");
+        assert!(
+            state
+                .authenticate_from_observed(raw, AuthorityTime::Precise(timestamp(109, 0)?), None)
+                .is_err()
+        );
+    }
+    Ok(())
+}

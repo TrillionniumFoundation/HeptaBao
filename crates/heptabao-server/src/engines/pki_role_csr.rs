@@ -25,17 +25,17 @@ impl CsrInput {
             .ok_or_else(|| bad("historical role has no CSR signing policy"))?;
         let role_kind = role.local_key_kind.unwrap_or(LocalKeyKind::Ed25519);
         let der = local_intermediate::csr_bytes_from_body(body)?;
-        reject_small_rsa(&der, role_kind)?;
+        reject_small_rsa(&der, role_kind, role.role_key_policy.is_some())?;
         let csr = local_intermediate::parse_csr(&der)?;
         let public = LocalPublicKey::from_spki(csr.certification_request_info.subject_pki.raw)?;
         // Subject key limits are role-owned even when the caller holds its key.
-        if public.kind().key_type() != role_kind.key_type() {
+        if role.role_key_policy.is_none() && public.kind().key_type() != role_kind.key_type() {
             return Err(bad(&format!(
                 "role requires keys of type {}",
                 role_kind.key_type()
             )));
         }
-        if public.kind().bits() < role_kind.bits() {
+        if role.role_key_policy.is_none() && public.kind().bits() < role_kind.bits() {
             return Err(bad(&format!(
                 "role requires a minimum of a {}-bit key, but CSR's key is {} bits",
                 role_kind.bits(),
@@ -193,7 +193,7 @@ fn other_name_utf8(bytes: &[u8]) -> Result<&str> {
 // A valid but undersized RSA CSR is bad request input. Reject it before the
 // maintained private/public key owner decoder, which correctly has no such
 // managed key kind. The ordinary intermediate parser keeps its original guard.
-fn reject_small_rsa(bytes: &[u8], role_kind: LocalKeyKind) -> Result<()> {
+fn reject_small_rsa(bytes: &[u8], role_kind: LocalKeyKind, any: bool) -> Result<()> {
     let Ok(request) = X509Req::from_der(bytes) else {
         return Ok(());
     };
@@ -209,6 +209,9 @@ fn reject_small_rsa(bytes: &[u8], role_kind: LocalKeyKind) -> Result<()> {
             .map_err(|_| bad("request signature invalid"))?
     {
         return Err(bad("request signature invalid"));
+    }
+    if any {
+        return Err(bad("RSA keys < 2048 bits are unsafe and not supported"));
     }
     if role_kind.key_type() != "rsa" {
         return Err(bad(&format!(

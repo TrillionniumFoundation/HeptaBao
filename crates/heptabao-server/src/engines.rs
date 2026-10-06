@@ -33,6 +33,8 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
+#[path = "engine_pki_revocation.rs"]
+mod pki_revocation;
 pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
@@ -76,6 +78,8 @@ pub struct EngineState {
     kubernetes_artifact_clock: Option<crate::auth::Timestamp>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_lease_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pki_revocation_clock: Option<crate::auth::Timestamp>,
     namespaces: BTreeMap<String, CowNamespace>,
 }
 
@@ -886,6 +890,10 @@ impl EngineState {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
     }
 
+    pub(crate) fn has_pki_key_policy_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_key_policy_state())))
+    }
+
     pub(crate) fn has_pki_role_names_state(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_names_state())))
     }
@@ -1056,6 +1064,7 @@ impl EngineState {
         body: &Value,
         context: PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiRequest>> {
+        let context = self.with_pki_revocation_floor(context)?;
         let time = context.observed_time(self.lease_clock)?;
         let now = time.seconds();
         let owner = context.owner;
@@ -1162,6 +1171,11 @@ impl EngineState {
         // A remote administrative revocation advances the exact protocol time.
         // Publish that actual frontier with its CRL and retained actor owner.
         let acme_at = engine.acme_protocol.as_ref().map(|protocol| protocol.clock);
+        if let Some(at) = engine.ordinary_revocation_floor() {
+            self.pki_revocation_clock =
+                Some(self.pki_revocation_clock.map_or(at, |old| old.max(at)));
+            self.lease_clock = self.lease_clock.max(at.seconds());
+        }
         self.lease_clock = self.lease_clock.max(now);
         if response.mutated
             && let Some(at) = acme_at

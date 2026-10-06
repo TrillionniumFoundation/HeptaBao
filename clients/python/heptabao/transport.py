@@ -24,9 +24,82 @@ MAX_BODY = 16 * 1024 * 1024
 class BaoError(Exception):
     """Only a fixed diagnostic code may cross the reporting boundary."""
 
-    def __init__(self, code: str):
+    def __init__(self, code: str, *, _diagnostic=None):
         self.code = code
+        self._diagnostic = _diagnostic
         super().__init__(code)
+
+
+@dataclass(frozen=True, repr=False)
+class _TransportDiagnostic:
+    phase: str
+    exception_class: str
+    errno: int | None = None
+    reason_exception_class: str | None = None
+    reason_errno: int | None = None
+
+
+# Exact stdlib types only: subclass names and peer exception messages are not data.
+_TRANSPORT_CLASSES = {
+    OSError: "OSError", TimeoutError: "TimeoutError", ConnectionError: "ConnectionError",
+    BrokenPipeError: "BrokenPipeError", ConnectionResetError: "ConnectionResetError",
+    ConnectionAbortedError: "ConnectionAbortedError", ConnectionRefusedError: "ConnectionRefusedError",
+    BlockingIOError: "BlockingIOError", InterruptedError: "InterruptedError",
+    FileNotFoundError: "FileNotFoundError", PermissionError: "PermissionError", ValueError: "ValueError",
+    ssl.SSLError: "ssl.SSLError", ssl.SSLCertVerificationError: "ssl.SSLCertVerificationError",
+    ssl.SSLEOFError: "ssl.SSLEOFError", ssl.SSLZeroReturnError: "ssl.SSLZeroReturnError",
+    ssl.SSLWantReadError: "ssl.SSLWantReadError", ssl.SSLWantWriteError: "ssl.SSLWantWriteError",
+    urllib.error.URLError: "urllib.error.URLError",
+    http.client.HTTPException: "http.client.HTTPException",
+    http.client.BadStatusLine: "http.client.BadStatusLine",
+    http.client.RemoteDisconnected: "http.client.RemoteDisconnected",
+    http.client.IncompleteRead: "http.client.IncompleteRead",
+    http.client.CannotSendRequest: "http.client.CannotSendRequest",
+    http.client.ResponseNotReady: "http.client.ResponseNotReady",
+    http.client.UnknownProtocol: "http.client.UnknownProtocol",
+    http.client.LineTooLong: "http.client.LineTooLong", http.client.InvalidURL: "http.client.InvalidURL",
+}
+_TRANSPORT_PHASES = frozenset(("open_response", "response_context", "response_metadata",
+                               "read_response", "close_response", "process_response", "fixture_call"))
+
+
+def _bounded_errno(value):
+    return value if type(value) is int and 0 <= value <= 65535 else None
+
+
+def _transport_diagnostic(error, phase):
+    if not isinstance(error, (OSError, urllib.error.URLError, ValueError, http.client.HTTPException)):
+        return None
+    name = _TRANSPORT_CLASSES.get(type(error), "other")
+    number = _bounded_errno(getattr(error, "errno", None)) if type(error) in _TRANSPORT_CLASSES else None
+    reason_name = reason_number = None
+    if type(error) is urllib.error.URLError:
+        reason = error.reason
+        if isinstance(reason, BaseException):
+            reason_name = _TRANSPORT_CLASSES.get(type(reason), "other")
+            if type(reason) in _TRANSPORT_CLASSES:
+                reason_number = _bounded_errno(getattr(reason, "errno", None))
+    return _TransportDiagnostic(phase, name, number, reason_name, reason_number)
+
+
+def transport_diagnostic(error):
+    """Project closed diagnostics; never read exception args, messages or URLs."""
+    diagnostic = error._diagnostic if type(error) is BaoError else _transport_diagnostic(error, "fixture_call")
+    names = set(_TRANSPORT_CLASSES.values()) | {"other"}
+    if (type(diagnostic) is not _TransportDiagnostic
+            or type(diagnostic.phase) is not str or diagnostic.phase not in _TRANSPORT_PHASES
+            or type(diagnostic.exception_class) is not str or diagnostic.exception_class not in names):
+        return None
+    result = {"phase": diagnostic.phase, "exception_class": diagnostic.exception_class}
+    number = _bounded_errno(diagnostic.errno)
+    if number is not None:
+        result["errno"] = number
+    if type(diagnostic.reason_exception_class) is str and diagnostic.reason_exception_class in names:
+        result["reason_exception_class"] = diagnostic.reason_exception_class
+        number = _bounded_errno(diagnostic.reason_errno)
+        if number is not None:
+            result["reason_errno"] = number
+    return result
 
 
 class SafeArgumentParser(argparse.ArgumentParser):
@@ -292,30 +365,37 @@ class Client:
         request = urllib.request.Request(self.address + path, data=raw, headers=headers, method=method)
         if metadata.headers():
             request.heptabao_consistency = metadata
+        phase = "open_response"
         try:
             try:
                 response = self._opener.open(request, timeout=self.timeout)
             except urllib.error.HTTPError as error:
                 response = error
+            phase = "response_context"
             with response:
+                phase = "response_metadata"
                 status = response.code
                 if 300 <= status < 400:
                     raise BaoError("redirect_rejected")
                 index, index_valid = response_index(response.headers)
                 retry_seconds = retry_after(response.headers)
+                phase = "read_response"
                 body = response.read(MAX_BODY + 1)
                 if len(body) > MAX_BODY:
                     raise BaoError("response_size_limit")
+                phase = "close_response"
+            phase = "process_response"
             decoded = decode_json(body) if body else {}
             if not isinstance(decoded, dict):
                 raise BaoError("response_object_required")
             return Response(status, decoded, index, index_valid, retry_seconds)
         except BaoError:
             raise
-        except (OSError, urllib.error.URLError, ValueError, http.client.HTTPException):
+        except (OSError, urllib.error.URLError, ValueError, http.client.HTTPException) as error:
             # Never retry a write automatically. Even a timeout can follow a commit.
             raise BaoError("transport_outcome_unknown" if method not in ("GET", "LIST", "HEAD")
-                           else "transport_read_failed") from None
+                           else "transport_read_failed",
+                           _diagnostic=_transport_diagnostic(error, phase)) from None
 
     def health(self) -> dict:
         response = self.request("GET", "/v1/sys/health")

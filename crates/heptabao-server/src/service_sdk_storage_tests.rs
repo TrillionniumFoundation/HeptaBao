@@ -1924,3 +1924,281 @@ fn sdk101_registration_ended_parent_retains_own_lifetime_and_last_use_is_pending
     );
     Ok(())
 }
+
+fn sdk101_batch_entry(
+    candidate: &mut State,
+    root_raw: &str,
+    seconds: u64,
+    orphan: bool,
+) -> Result<crate::auth::AcceptedSdkLeaseIssuer, Box<dyn std::error::Error>> {
+    let accepted = crate::auth::Timestamp::checked(100, 200_000_000)?;
+    let clock = crate::auth::RequestClock::anchored(
+        std::time::Duration::new(100, 100_000_000),
+        std::time::Instant::now(),
+    )?;
+    let mut root = candidate.auth.authenticate_from_observed(
+        root_raw,
+        AuthorityTime::Precise(accepted),
+        None,
+    )?;
+    root.bind_request_clock(Some(clock))?;
+    let time = AuthorityTime::Precise(accepted);
+    let mut response = candidate.auth.handle_with_connection_clock(
+        Some(&root), "", "POST", "auth/token/create",
+        &json!({"type":"batch","ttl":format!("{seconds}s"),"display_name":"","no_parent":orphan,"policies":["default"]}),
+        time, Some(clock), None, None,
+    )?.ok_or("batch route")?;
+    candidate
+        .auth
+        .finish_pending_batch_observed(&mut response, "", 100, time)?;
+    let raw = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("batch")?;
+    sdk101_entry(&mut candidate.auth, raw, accepted)
+}
+#[test]
+fn sdk101_batch_registration_caps_real_claims_and_preserves_expired_entry_for_cleanup() -> TestResult
+{
+    for (seconds, orphan, ttl) in [(8, false, 6_i64), (8, true, 6), (1, false, -1)] {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (key, root) = bootstrap(&mut service)?;
+        let mut candidate = service.state.clone().ok_or("state")?;
+        let (mut lease, _) = sdk96_fixture(&mut candidate, &root)?;
+        let accepted = sdk101_batch_entry(&mut candidate, &root, seconds, orphan)?;
+        lease.issuer = accepted.issuer.owner.clone();
+        lease.issued = crate::auth::Timestamp::checked(102, 200_000_000)?;
+        lease.expires = crate::auth::Timestamp::checked(122, 200_000_000)?;
+        candidate.engines.observe_sdk_lease_clock(lease.issued);
+        sdk101_register(
+            &mut candidate,
+            &mut lease,
+            &accepted,
+            crate::auth::Timestamp::checked(100, 200_000_000)?,
+            false,
+        )?;
+        assert_eq!(lease.public_duration(lease.issued)?, ttl);
+        assert_eq!(
+            lease.expires,
+            crate::auth::Timestamp::checked(100 + seconds, 0)?
+        );
+        assert!(lease.renewable);
+        assert!(matches!(
+            lease.phase,
+            crate::engines::sdk_lease::Phase::Active
+        ));
+        assert!(!lease.parent_cleanup_required(&candidate.auth, lease.issued)?);
+        candidate.schema = candidate.writer_schema();
+        candidate
+            .validate_format()
+            .map_err(|r| format!("batch format: {}", r.body))?;
+        assert_eq!(candidate.schema, 102);
+        let saved = serde_json::to_vec(&lease)?;
+        let restored: crate::engines::sdk_lease::Lease = serde_json::from_slice(&saved)?;
+        restored.validate("")?;
+        for floor in [96, 100, 101] {
+            let mut downgraded = candidate.clone();
+            downgraded.schema = floor;
+            assert!(downgraded.validate_format().is_err());
+            assert!(
+                downgraded
+                    .validate_publication_schema(Some(&candidate))
+                    .is_err()
+            );
+        }
+        if seconds == 1 {
+            assert!(lease.lookup(lease.issued).is_err());
+            assert!(
+                candidate
+                    .engines
+                    .sdk_cleanup_candidate(&candidate.auth, lease.issued, None)?
+                    .is_some()
+            );
+        }
+        let previous = candidate.clone();
+        let mut changed = candidate.clone();
+        let mut bad = lease.clone();
+        bad.registration = None;
+        if seconds == 1 {
+            let error = match changed.engines.store_sdk_lease(bad) {
+                Err(error) => error,
+                Ok(_) => return Err("expired batch without registration accepted".into()),
+            };
+            assert_eq!(error.status, 503);
+            assert_eq!(error.message, "SDK lease metadata rejected");
+        } else {
+            changed.engines.store_sdk_lease(bad)?;
+            assert!(
+                changed
+                    .validate_publication_schema(Some(&previous))
+                    .is_err()
+            );
+        }
+        let mut wire = serde_json::to_value(&lease)?;
+        wire["registration"]["parent"]["expiry"]["seconds"] = json!(9999);
+        let bad: crate::engines::sdk_lease::Lease = serde_json::from_value(wire)?;
+        assert!(bad.validate("").is_err());
+        publish(&mut service, candidate)?;
+        drop(service);
+        let mut service = directory.service()?;
+        let clock = crate::auth::RequestClock::anchored(
+            std::time::Duration::new(103, 0),
+            std::time::Instant::now(),
+        )?;
+        let execution = service.begin_at_mode_precise(
+            RequestDispatch {
+                method: "PUT",
+                path: "sys/unseal",
+                namespace: "",
+                token: "",
+                body: json!({"key":key}),
+                now: 103,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+            clock,
+        );
+        let response = service.finish_synchronous_request(execution);
+        assert_eq!(response.status, 200, "{}", response.body);
+        let hydrated = service.state.as_ref().ok_or("hydrated batch state")?;
+        assert_eq!(hydrated.schema, 102);
+        hydrated
+            .validate_format()
+            .map_err(|r| format!("hydrated batch format: {}", r.body))?;
+        let restored = hydrated
+            .engines
+            .sdk_lease("", &lease.id)
+            .ok_or("hydrated batch lease")?;
+        assert_eq!(
+            serde_json::to_value(restored)?,
+            serde_json::to_value(&lease)?
+        );
+    }
+    Ok(())
+}
+#[test]
+fn sdk101_batch_registration_encrypted_reopen_backup_and_foreign_key_rejection() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, root) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut lease, _) = sdk96_fixture(&mut candidate, &root)?;
+    let plain_at = crate::auth::Timestamp::checked(100, 100_000_000)?;
+    let plain = sdk101_entry(&mut candidate.auth, &root, plain_at)?;
+    sdk101_register(&mut candidate, &mut lease, &plain, plain_at, false)?;
+    publish(&mut service, candidate)?;
+    assert_eq!(service.state.as_ref().ok_or("plain101")?.schema, 101);
+    let old = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    lease.id = "sdk_probe/leased/batch-new".into();
+    lease.registration = None;
+    let accepted = sdk101_batch_entry(&mut candidate, &root, 8, true)?;
+    lease.issuer = accepted.issuer.owner.clone();
+    lease.issued = crate::auth::Timestamp::checked(102, 200_000_000)?;
+    lease.expires = crate::auth::Timestamp::checked(122, 200_000_000)?;
+    candidate.engines.observe_sdk_lease_clock(lease.issued);
+    sdk101_register(
+        &mut candidate,
+        &mut lease,
+        &accepted,
+        crate::auth::Timestamp::checked(100, 200_000_000)?,
+        false,
+    )?;
+    publish(&mut service, candidate)?;
+    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 102);
+    let old_restore = match service.prepare_snapshot_restore(&old) {
+        Err(error) => error,
+        Ok(_) => return Err("old101 snapshot unexpectedly accepted".into()),
+    };
+    assert_eq!(old_restore.status, 400);
+    assert_eq!(
+        old_restore.body["errors"][0],
+        "snapshot would downgrade batch or credential SDK Secret ownership"
+    );
+    let backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    service
+        .prepare_snapshot_restore(&backup)
+        .map_err(|r| format!("new backup: {}", r.body))?;
+    let saved = serde_json::to_value(&lease)?;
+    let mut foreign = service.state.clone().ok_or("state")?;
+    let (replacement, _) = crate::auth::AuthState::bootstrap(100)?;
+    foreign.auth = replacement.into();
+    assert!(foreign.validate_format().is_err());
+    drop(service);
+    let mut service = directory.service()?;
+    let clock = crate::auth::RequestClock::anchored(
+        std::time::Duration::new(103, 0),
+        std::time::Instant::now(),
+    )?;
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method: "PUT",
+            path: "sys/unseal",
+            namespace: "",
+            token: "",
+            body: json!({"key":key}),
+            now: 103,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
+    let response = service.finish_synchronous_request(execution);
+    assert_eq!(response.status, 200, "{}", response.body);
+    assert_eq!(
+        serde_json::to_value(
+            service
+                .state
+                .as_ref()
+                .ok_or("reopened")?
+                .engines
+                .sdk_lease("", &lease.id)
+                .ok_or("lease")?
+        )?,
+        saved
+    );
+    Ok(())
+}
+
+#[test]
+fn sdk102_record_reader_rejects_unknown_floor_before_decoding_owner() -> TestResult {
+    struct MissingRecords(std::cell::Cell<usize>);
+    impl crate::state_records::RecordReader for MissingRecords {
+        fn read_object(
+            &self,
+            _reference: &crate::state_records::ObjectRef,
+        ) -> Result<Zeroizing<Vec<u8>>, crate::state_records::RecordError> {
+            self.0.set(self.0.get() + 1);
+            Err(crate::state_records::RecordError::Missing)
+        }
+    }
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    mount(&mut candidate, "sdk_reader")?;
+    publish(&mut service, candidate)?;
+    let root = service.record_root.as_ref().ok_or("record root")?;
+    let reader = MissingRecords(std::cell::Cell::new(0));
+    let mut unknown = root.clone();
+    unknown.state_schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
+    let response = match Service::materialize_record_state(&unknown, &reader) {
+        Err(response) => response,
+        Ok(_) => return Err("unknown record floor unexpectedly decoded".into()),
+    };
+    assert_eq!(response.status, 503);
+    assert_eq!(
+        response.body["errors"][0],
+        "unsupported or downgraded identity state schema"
+    );
+    assert_eq!(reader.0.get(), 0);
+    assert!(Service::materialize_record_state(root, &reader).is_err());
+    assert_eq!(reader.0.get(), 1);
+    Ok(())
+}

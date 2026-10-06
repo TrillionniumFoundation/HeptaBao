@@ -656,6 +656,10 @@ impl Pki {
         }))
     }
 
+    pub(in crate::engines::pki) fn has_external_public_archive(&self, issuer: &str) -> bool {
+        self.external.archived_issuers.contains_key(issuer)
+    }
+
     pub(in crate::engines) fn publish_external(
         &mut self,
         mut material: ExternalPkiMaterial,

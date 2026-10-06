@@ -29,6 +29,12 @@ mod role_time;
 use role_names::RoleNamePolicy;
 #[path = "pki_role_csr.rs"]
 mod role_csr;
+#[path = "pki_role_key_policy.rs"]
+mod role_key_policy;
+use role_key_policy::RoleKeyPolicy;
+#[path = "pki_ordinary_revocation.rs"]
+mod ordinary_revocation;
+use ordinary_revocation::{OrdinaryRevocation, OrdinaryRevocationPlan};
 #[path = "pki_role_signatures.rs"]
 mod role_signatures;
 #[path = "pki_role_subjects.rs"]
@@ -176,6 +182,8 @@ impl AcmeConfig {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct Pki {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    ordinary_revocations: BTreeMap<String, OrdinaryRevocation>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(in crate::engines) acme_protocol: Option<Box<acme_state::Protocol>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -256,6 +264,8 @@ impl RootCa {
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct Role {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_key_policy: Option<RoleKeyPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_name_policy: Option<RoleNamePolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -338,6 +348,7 @@ fn max_pki_ttl() -> u64 {
 impl Default for Pki {
     fn default() -> Self {
         Self {
+            ordinary_revocations: BTreeMap::new(),
             default_ttl: DEFAULT_ROOT_TTL,
             max_ttl: DEFAULT_ROOT_TTL,
             cluster_path: String::new(),
@@ -445,6 +456,7 @@ impl Pki {
     }
 
     pub(super) fn validate(&self, namespace: &str, mount: &str, clock: u64) -> Result<()> {
+        self.validate_ordinary_revocations(clock)?;
         if self.default_ttl == 0
             || self.default_ttl > self.max_ttl
             || self.max_ttl > MAX_TTL
@@ -1140,6 +1152,8 @@ impl Pki {
             let before = self.issued.len();
             self.issued
                 .retain(|_, cert| cert.expires.saturating_add(buffer) > now);
+            self.ordinary_revocations
+                .retain(|serial, _| self.issued.contains_key(serial));
             self.reconcile_external_leaf_projections();
             if before != self.issued.len() && self.local_crl.is_some() {
                 self.rebuild_local_crls(now, false)?;
@@ -1194,7 +1208,8 @@ impl Pki {
         }
         let role: Role = serde_json::from_value(value.clone())
             .map_err(|_| bad("original pre-name profile role wire contract"))?;
-        if role.role_name_policy.is_some()
+        if role.role_key_policy.is_some()
+            || role.role_name_policy.is_some()
             || role.role_time_policy.is_some()
             || role.role_leaf_profile.as_ref() != Some(&RoleLeafProfile::default())
             || role.allow_bare_domains != Some(false)
@@ -1531,6 +1546,8 @@ impl Pki {
             body,
             &[
                 "csr",
+                "key_type",
+                "key_bits",
                 "exclude_cn_from_sans",
                 "common_name",
                 "alt_names",
@@ -1554,6 +1571,11 @@ impl Pki {
             .as_ref()
             .is_some_and(|policy| !policy.allowed_uri_sans.is_empty());
         role.resolve_identity_templates(identity_templates);
+        let (issue_key_kind, ignored_key_request) = if route.sign {
+            (role.local_key_kind.unwrap_or(LocalKeyKind::Ed25519), false)
+        } else {
+            role.issue_key_kind(body)?
+        };
         let csr = if route.sign {
             Some(role_csr::CsrInput::from_request(&role, body)?)
         } else {
@@ -1739,6 +1761,12 @@ impl Pki {
                 let mut warnings = csr
                     .as_ref()
                     .map_or_else(Vec::new, |csr| csr.warnings.clone());
+                if ignored_key_request {
+                    warnings.push(
+                        "parameters key_type and key_bits ignored as role had specific values"
+                            .into(),
+                    );
+                }
                 warnings.extend(resolved.warnings);
                 warnings
             },
@@ -1765,10 +1793,7 @@ impl Pki {
             owner_expires,
             leased: role.generate_lease,
             common_name: common_name.into(),
-            local_key_kind: csr.as_ref().map_or(
-                role.local_key_kind.unwrap_or(LocalKeyKind::Ed25519),
-                |csr| csr.public.kind(),
-            ),
+            local_key_kind: csr.as_ref().map_or(issue_key_kind, |csr| csr.public.kind()),
             csr_public_key: csr.map(|csr| csr.public),
             alt_names,
             ip_sans,
@@ -2104,7 +2129,9 @@ impl Role {
         }
         let max_ttl = role_time::role_duration(body, "max_ttl", 0)?;
         let time_policy = RoleTimePolicy::from_body(body, max_ttl)?;
+        let key_policy = RoleKeyPolicy::from_body(body)?;
         let role = Self {
+            role_key_policy: key_policy.clone(),
             role_name_policy: Some(names.clone()),
             role_time_policy: role_time::ROLE_TIME_FIELDS
                 .iter()
@@ -2137,15 +2164,22 @@ impl Role {
             max_ttl,
             generate_lease: !names.no_store
                 && role_optional_bool(body, "generate_lease")?.unwrap_or(false),
-            local_key_kind: match LocalKeyKind::from_body(body)? {
-                LocalKeyKind::Ed25519 => None,
-                kind => Some(kind),
+            local_key_kind: if key_policy.is_some() {
+                None
+            } else {
+                match LocalKeyKind::from_body(body)? {
+                    LocalKeyKind::Ed25519 => None,
+                    kind => Some(kind),
+                }
             },
         };
         role.validate()?;
         Ok(role)
     }
     fn validate(&self) -> Result<()> {
+        if let Some(policy) = &self.role_key_policy {
+            policy.validate(self)?;
+        }
         if let Some(names) = &self.role_name_policy {
             names.validate()?;
         }
@@ -2210,6 +2244,9 @@ impl Role {
             "key_type": "ed25519",
             "key_bits": 0,
         });
+        if let Some(policy) = &self.role_key_policy {
+            policy.descriptor(&mut descriptor);
+        }
         if let Some(kind) = self.local_key_kind {
             descriptor["key_type"] = json!(kind.key_type());
             descriptor["key_bits"] = json!(kind.bits());

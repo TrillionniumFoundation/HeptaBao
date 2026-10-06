@@ -7,7 +7,7 @@ import sys
 import re
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "clients/python"))
 from heptabao.transport import (BaoError, Client, Response, SafeArgumentParser,
-    MAX_BODY, canonical, digest, decode_json, private_read, private_json,
+    MAX_BODY, canonical, digest, decode_json, private_read, private_json, transport_diagnostic,
     private_write, private_write_text, endpoint, key_path, NoRedirect)
 
 

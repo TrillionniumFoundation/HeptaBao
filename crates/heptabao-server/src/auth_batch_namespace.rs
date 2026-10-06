@@ -20,6 +20,10 @@ impl Drop for Binding {
 }
 
 impl Binding {
+    pub(super) fn incarnation(&self) -> u64 {
+        self.incarnation
+    }
+
     pub(crate) fn validate(&self, namespace: &str) -> Result<(), AuthError> {
         validate_namespace(&self.namespace)?;
         if self.namespace != namespace

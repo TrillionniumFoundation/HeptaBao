@@ -97,12 +97,15 @@ mod pki_acme;
 mod pki_acme_external;
 const SDK_AUTH_STATE_SCHEMA: u32 = 100;
 const SDK_ACCEPTED_SECRET_STATE_SCHEMA: u32 = 101;
+const SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA: u32 = 102;
 // Persisted native auth mount options must survive older readers and writers.
 const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
+const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
+const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = AUTH_MOUNT_OPTIONS_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ORDINARY_REVOCATION_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -129,7 +132,10 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ACME_ACCOUNT_STATE_SCHEMA
                 | SDK_AUTH_STATE_SCHEMA
                 | SDK_ACCEPTED_SECRET_STATE_SCHEMA
+                | SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
                 | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+                | PKI_KEY_POLICY_STATE_SCHEMA
+                | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -1230,6 +1236,10 @@ pub struct Service {
     sdk_migrations: BTreeMap<String, sdk_backend::MigrationStatus>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_cleanup_cursor: Option<(String, String)>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_credential_cleanup_cursor: Option<String>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_credential_preferred: bool,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
@@ -1614,6 +1624,10 @@ impl Service {
             sdk_migrations: BTreeMap::new(),
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_credential_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_credential_preferred: false,
             pending_plugin_kms: None,
             pending_external_key: None,
             pending_external_transit: None,
@@ -3493,6 +3507,10 @@ impl Service {
             return self.pki_eab_route(admitted, principal, &request);
         }
         #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_credential_handles(&admitted, &request) {
+            return self.sdk_credential_route(admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
         if self.sdk_auth_handles(&admitted, &request) {
             return self.sdk_auth_route(admitted, principal, &request);
         }
@@ -4031,6 +4049,8 @@ impl Service {
             || admitted.auth.has_jwt_user_claim_state()
             || admitted.auth.has_jwt_pem_keyset_state()
             || admitted.auth.has_auth_mount_options_state()
+            || admitted.engines.has_pki_key_policy_state()
+            || admitted.engines.has_ordinary_pki_revocation_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -7553,6 +7573,15 @@ impl Service {
     ) -> Result<ha_received::HaSyncProgress, Response> {
         let before = self.local_activation_key();
         let result = self.sync_from_ha_with_anchor_inner(allow_initial_anchor);
+        if let Err(error) = &result {
+            eprintln!(
+                "heptabao-r72-sync: stage=sync_inner_error status={} loaded={} recovery={} record_root={}",
+                error.status,
+                self.state.is_some(),
+                self.recovery_required,
+                self.record_root.is_some()
+            );
+        }
         if matches!(&result, Ok(ha_received::HaSyncProgress::Current)) {
             // This is the serialized application activation publication point,
             // after ReadIndex, authenticated materialization and local admission.
@@ -7784,6 +7813,10 @@ impl Service {
                 )));
             }
             Err(error) => {
+                eprintln!(
+                    "heptabao-r72-sync: stage=materialized_completed_error status={}",
+                    error.status
+                );
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;

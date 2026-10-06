@@ -290,7 +290,7 @@ impl Pki {
                         mutated: false,
                     });
                 };
-                let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_else(||certificate.revoked_at.map(timestamp).unwrap_or_default())});
+                let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":self.ordinary_revocation(&serial).map(|r|r.at.rfc3339()).or_else(||self.acme_revocation(&serial).map(|r|r.at.rfc3339())).unwrap_or_else(||certificate.revoked_at.map(timestamp).unwrap_or_default())});
                 if let Some(revoked) = self.acme_revocation(&serial) {
                     projection["issuer_id"] = json!(revoked.issuer);
                 }

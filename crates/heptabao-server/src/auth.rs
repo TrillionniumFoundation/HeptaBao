@@ -28,6 +28,8 @@ use zeroize::{Zeroize, Zeroizing};
 
 #[path = "auth_sdk.rs"]
 pub(crate) mod sdk;
+#[path = "auth_sdk_credential.rs"]
+pub(crate) mod sdk_credential;
 
 #[path = "auth_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
@@ -214,6 +216,8 @@ pub struct AuthState {
     sdk_auth_catalog: Option<crate::engines::sdk::Catalog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_auth_clock: Option<Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_credential_leases: Option<sdk_credential::Registry>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2304,10 +2308,11 @@ impl AuthState {
     }
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
-        !self
-            .tokens
-            .values()
-            .any(|token| token.namespace == namespace)
+        !self.sdk_credential_namespace_pending(namespace)
+            && !self
+                .tokens
+                .values()
+                .any(|token| token.namespace == namespace)
             && self
                 .policies
                 .get(namespace)
@@ -2398,6 +2403,7 @@ impl AuthState {
             public_origin_floor: None,
             sdk_auth_catalog: None,
             sdk_auth_clock: None,
+            sdk_credential_leases: None,
             namespace_batch_registry: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
@@ -3800,6 +3806,12 @@ impl AuthState {
                     .cloned()
                     .ok_or_else(|| err(404, "auth mount not found"))?;
                 require_auth_revision(optional_auth_revision(body)?, current.revision)?;
+                if self.sdk_credential_mount_name_pending(namespace, mount) {
+                    return Err(err(
+                        409,
+                        "SDK credential cleanup is required before auth mount retirement",
+                    ));
+                }
                 entries.remove(mount);
                 self.auth_mounts.insert(namespace.into(), entries);
                 self.disable_auth_mount(AuthScope { namespace, mount });

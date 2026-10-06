@@ -45,9 +45,17 @@ impl Expiry {
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", deny_unknown_fields)]
 enum Parent {
-    Linked { expiry: Expiry },
-    Ended { reason: EndReason },
+    Linked {
+        expiry: Expiry,
+    },
+    Ended {
+        reason: EndReason,
+    },
     FinalUse,
+    Batch {
+        expiry: Expiry,
+        parent_instance: Option<String>,
+    },
 }
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 enum EndReason {
@@ -76,11 +84,24 @@ impl Registration {
         namespace_incarnation: Option<u64>,
     ) -> Result<Self> {
         let owner = &entry.issuer;
-        if owner.owner.service_digest().is_none() {
-            return Err(error(
-                501,
-                "standard SDK batch Secret registration is not implemented",
-            ));
+        if let Some(claims) = owner.owner.batch_claims() {
+            auth.validate_batch_lease_owner(claims, namespace)
+                .map_err(|_| error(503, "SDK accepted batch owner structure rejected"))?;
+            if final_use || claims.parent().is_some() != entry.parent_instance.is_some() {
+                return Err(error(503, "SDK batch entrance parent anchor rejected"));
+            }
+            return Ok(Self {
+                version: 1,
+                accepted,
+                registered,
+                namespace_incarnation,
+                instance: instance_hex(&entry.instance),
+                original_expiry: Expiry::from_owner(owner),
+                parent: Parent::Batch {
+                    expiry: Expiry::from_owner(owner),
+                    parent_instance: entry.parent_instance.as_ref().map(instance_hex),
+                },
+            });
         }
         if auth
             .sdk_service_parent_instance(&owner.owner, namespace)
@@ -122,6 +143,28 @@ impl Registration {
             parent,
         })
     }
+    pub(crate) fn validate_namespace(&self, incarnation: Option<u64>, phase: Phase) -> Result<()> {
+        if phase != Phase::Revoked && self.namespace_incarnation != incarnation {
+            return Err(error(
+                503,
+                "SDK registration namespace incarnation rejected",
+            ));
+        }
+        Ok(())
+    }
+    pub(crate) fn batch_expiry(&self) -> Result<Option<Timestamp>> {
+        let Parent::Batch { expiry, .. } = &self.parent else {
+            return Ok(None);
+        };
+        match expiry.precise {
+            Some(end) => Ok(Some(end)),
+            None => expiry
+                .seconds
+                .map(Timestamp::whole)
+                .transpose()
+                .map_err(|_| error(503, "SDK batch expiry rejected")),
+        }
+    }
     pub(crate) fn final_use(&self) -> bool {
         matches!(self.parent, Parent::FinalUse)
     }
@@ -132,9 +175,35 @@ impl Registration {
         auth: &AuthState,
         at: Timestamp,
     ) -> Result<bool> {
-        Ok(match self.parent {
+        Ok(match &self.parent {
             Parent::Ended { .. } => false,
             Parent::FinalUse => true,
+            Parent::Batch {
+                parent_instance, ..
+            } => {
+                let claims = issuer
+                    .batch_claims()
+                    .ok_or_else(|| error(503, "SDK batch parent owner rejected"))?;
+                match (claims.parent(), parent_instance) {
+                    (None, None) => false,
+                    (Some(parent), Some(expected)) => {
+                        let owner = LeaseOwner::service(parent)
+                            .map_err(|_| error(503, "SDK batch parent digest rejected"))?;
+                        auth.sdk_service_parent_instance(&owner, namespace)
+                            .map_err(|_| error(503, "SDK batch parent instance rejected"))?
+                            .is_none_or(|current| instance_hex(&current) != *expected)
+                            || auth
+                                .standard_sdk_service_parent_observed(
+                                    &owner,
+                                    namespace,
+                                    AuthorityTime::Precise(at),
+                                )
+                                .map_err(|_| error(503, "SDK batch parent index rejected"))?
+                                .is_none()
+                    }
+                    _ => return Err(error(503, "SDK batch parent anchor rejected")),
+                }
+            }
             Parent::Linked { .. } => {
                 auth.sdk_service_parent_instance(issuer, namespace)
                     .map_err(|_| error(503, "SDK parent instance observation rejected"))?
@@ -150,7 +219,10 @@ impl Registration {
             }
         })
     }
-    pub(crate) fn validate(&self, lease: &Lease) -> Result<()> {
+    pub(crate) fn validate<B: crate::engines::sdk_lease::Backend>(
+        &self,
+        lease: &Lease<B>,
+    ) -> Result<()> {
         self.original_expiry.validate()?;
         if self.version != 1
             || self.instance.len() != 64
@@ -160,7 +232,8 @@ impl Registration {
                 .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
             || self.accepted > self.registered
             || self.registered != lease.issued
-            || lease.issuer.service_digest().is_none()
+            || (lease.issuer.service_digest().is_none()
+                != matches!(self.parent, Parent::Batch { .. }))
             || (!lease.namespace.is_empty() && self.namespace_incarnation.is_none())
             || self.original_expiry.ended(self.accepted)
         {
@@ -196,6 +269,50 @@ impl Registration {
                     ));
                 }
             }
+            Parent::Batch {
+                expiry,
+                parent_instance,
+            } => {
+                expiry.validate()?;
+                let claims = lease
+                    .issuer
+                    .batch_claims()
+                    .ok_or_else(|| error(503, "SDK batch registration issuer rejected"))?;
+                let saved = Expiry {
+                    seconds: Some(claims.expires_at()),
+                    precise: claims.precision().map(|lease| lease.expires_at),
+                };
+                if *expiry != saved
+                    || self.original_expiry != saved
+                    || claims.parent().is_some() != parent_instance.is_some()
+                    || parent_instance.as_ref().is_some_and(|value| {
+                        value.len() != 64
+                            || !value
+                                .bytes()
+                                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+                    })
+                    || instance_hex(
+                        &AuthState::sdk_batch_owner_instance(&lease.issuer)
+                            .map_err(|_| error(503, "SDK batch registration instance rejected"))?,
+                    ) != self.instance
+                {
+                    return Err(error(503, "SDK batch registration provenance rejected"));
+                }
+                let end = self
+                    .batch_expiry()?
+                    .ok_or_else(|| error(503, "SDK batch registration expiry absent"))?;
+                let anchor = lease.renewed.unwrap_or(lease.issued);
+                let grant_end = Timestamp::from_wall(
+                    anchor
+                        .duration_since_epoch()
+                        .checked_add(std::time::Duration::from_nanos(lease.ttl_ns))
+                        .ok_or_else(|| error(503, "SDK batch grant overflow"))?,
+                )
+                .map_err(|_| error(503, "SDK batch grant expiry rejected"))?;
+                if lease.expires != end.min(grant_end) {
+                    return Err(error(503, "SDK batch effective expiry changed"));
+                }
+            }
             Parent::FinalUse => {
                 if lease.phase == Phase::Active || lease.renewable {
                     return Err(error(
@@ -209,6 +326,15 @@ impl Registration {
     }
 }
 impl EngineState {
+    pub(crate) fn has_sdk_batch_registration_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.sdk_leases.values().any(|lease| {
+                lease.registration.as_ref().is_some_and(|registration| {
+                    matches!(&registration.parent, Parent::Batch { .. })
+                })
+            })
+        })
+    }
     pub(crate) fn has_sdk_registration_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace

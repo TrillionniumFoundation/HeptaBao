@@ -4,6 +4,8 @@ use super::*;
 use crate::auth::Timestamp;
 use crate::auth::sdk::{Binding, Entry, Paths, RenewalTarget, StorageWitness};
 use heptabao_plugin_host::sdk_backend::SdkBackendType;
+#[path = "service_sdk_credential.rs"]
+mod credential;
 
 struct Context {
     namespace: String,
@@ -31,6 +33,9 @@ struct Admission {
     authority: Mutex<plugin::PluginResponseAuthority>,
     backend: Arc<Control>,
     storage: Mutex<StorageWitness>,
+    entry: Option<crate::auth::AcceptedSdkLeaseIssuer>,
+    accepted: Timestamp,
+    final_use: bool,
 }
 impl Admission {
     fn clock_and_deadline(&self, auth: &AuthState) -> Result<(), Response> {
@@ -87,8 +92,10 @@ pub(in crate::service) struct Plan {
     operation: String,
     path: String,
     data: Value,
-    deadline: Instant,
+    pub(in crate::service) deadline: Instant,
     renewal: Mutex<Option<Box<RenewalTarget>>>,
+    lease: Mutex<Option<credential::Call>>,
+    cleanup: Mutex<Option<credential::Cleanup>>,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -141,7 +148,13 @@ impl Plan {
             operation: self.operation.clone(),
             path: self.path.clone(),
             data: self.data.clone(),
-            lease: None,
+            lease: self
+                .lease
+                .lock()
+                .map_err(|_| Response::error(503, "SDK credential callback unavailable"))?
+                .as_ref()
+                .map(credential::Call::callback)
+                .transpose()?,
             auth,
             expected_auth_paths: if self.operation == "_mount" {
                 None
@@ -230,7 +243,26 @@ impl Plan {
             caller.validate_live_auth(auth)?;
         }
         self.time(auth)?;
+        self.credential_owner_gate(auth)?;
         self.live_target(auth)?;
+        Ok(())
+    }
+    fn credential_owner_gate(&self, auth: &AuthState) -> Result<(), Response> {
+        let lease = self
+            .lease
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential callback unavailable"))?;
+        if let Some(call) = lease.as_ref() {
+            call.check(auth, self.time(auth)?)?;
+            if let Some(cleanup) = self
+                .cleanup
+                .lock()
+                .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?
+                .as_ref()
+            {
+                cleanup.check(call)?;
+            }
+        }
         Ok(())
     }
     fn live_target(&self, auth: &AuthState) -> Result<(), Response> {
@@ -605,6 +637,12 @@ impl Service {
                     Ok(None) => return Response::error(404, "SDK Auth mount not found"),
                     Err(e) => return auth_error(e),
                 };
+                if state.auth.sdk_credential_mount_pending(&binding) {
+                    return Response::error(
+                        409,
+                        "SDK credential leases require cleanup before mount retirement",
+                    );
+                }
                 let key = match sdk_auth_key(&state.cluster_id, &binding) {
                     Ok(k) => k,
                     Err(e) => return e,
@@ -926,7 +964,26 @@ impl Service {
                     Ok(storage) => storage,
                     Err(error) => return auth_error(error),
                 };
+                let entry_time = match authority.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                };
+                let Some(accepted) = entry_time.exact() else {
+                    return Response::error(503, "SDK credential entrance precise clock absent");
+                };
+                let entry = match state.auth.admitted_standard_sdk_lease_issuer_observed(
+                    authority.principal(),
+                    &binding.namespace,
+                    entry_time,
+                ) {
+                    Ok(entry) => entry,
+                    Err(error) => return auth_error(error),
+                };
+                let final_use = authority.principal().consumed_last_use();
                 Some(Admission {
+                    entry,
+                    accepted,
+                    final_use,
                     authority: Mutex::new(authority),
                     backend: Arc::clone(&control),
                     storage: Mutex::new(storage),
@@ -950,6 +1007,8 @@ impl Service {
             data: request.body.clone(),
             deadline,
             renewal: Mutex::new(renewal.map(Box::new)),
+            lease: Mutex::new(None),
+            cleanup: Mutex::new(None),
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
@@ -1048,6 +1107,7 @@ impl Service {
             .sdk_auth_owner_gate(&plan.binding)
             .map_err(auth_error)?;
         plan.time(&state.auth)?;
+        plan.credential_owner_gate(&state.auth)?;
         plan.live_target(&state.auth)?;
         if Instant::now() >= plan.deadline {
             return Err(Response::error(503, "SDK Auth original deadline expired"));
@@ -1190,12 +1250,6 @@ impl Service {
                 .auth
                 .merge_sdk_auth_storage(&plan.binding, &original, &transaction.auth)
                 .map_err(auth_error)?;
-            if value.is_some_and(|value| value.get("secret").is_some_and(|v| !v.is_null())) {
-                return Err(Response::error(
-                    501,
-                    "SDK admitted Secret response not implemented",
-                ));
-            }
             if value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null())) {
                 admitted_terminal = AdmittedTerminal::UnexpectedAuth;
             }
@@ -1204,7 +1258,34 @@ impl Service {
         }
         let at = plan.time(&candidate.auth)?;
         candidate.auth.observe_sdk_auth_clock(at);
-        let mut response = if plan.operation == "renew" {
+        let has_secret =
+            value.is_some_and(|value| value.get("secret").is_some_and(|v| !v.is_null()));
+        if has_secret && value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null()))
+        {
+            return Err(Response::error(
+                501,
+                "SDK combined Auth and Secret response unsupported",
+            ));
+        }
+        let mut response = if plan
+            .lease
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential callback unavailable"))?
+            .is_some()
+        {
+            credential::finish_callback(plan, &mut candidate, value, at)?
+        } else if has_secret && plan.admission.is_some() {
+            credential::issue(
+                plan,
+                &mut candidate,
+                value.ok_or_else(|| Response::error(502, "SDK Secret missing"))?,
+                at,
+            )?
+        } else if has_secret {
+            // Actual public-path callback Storage is published, but its Secret
+            // has no accepted client issuer and cannot register a credential.
+            Response::error(500, "1 error occurred:\n\t* internal error\n\n")
+        } else if plan.operation == "renew" {
             let renewal = plan
                 .renewal
                 .lock()
@@ -1338,6 +1419,14 @@ impl Service {
                     .map_err(auth_error)?;
             }
             transaction.identity = self.current_state_identity()?;
+            credential::after_publication(
+                plan,
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK credential publication absent"))?
+                    .auth,
+            )?;
             if let Some(admission) = &plan.admission {
                 let auth = &self
                     .state
@@ -1462,7 +1551,10 @@ mod durable_tests {
     use super::*;
     use crate::service::tests::{Root, bootstrap, call};
     type TestResult = Result<(), Box<dyn std::error::Error>>;
-    fn mount(state: &mut State, root: &str) -> Result<Binding, Box<dyn std::error::Error>> {
+    pub(super) fn mount(
+        state: &mut State,
+        root: &str,
+    ) -> Result<Binding, Box<dyn std::error::Error>> {
         let principal = state.auth.authenticate(root, 100)?;
         let mounted = state
             .auth
@@ -1494,7 +1586,7 @@ mod durable_tests {
             .observe_sdk_auth_clock(Timestamp::checked(100, 1)?);
         Ok(binding)
     }
-    fn publish(
+    pub(super) fn publish(
         service: &mut Service,
         mut candidate: State,
     ) -> Result<(), Box<dyn std::error::Error>> {
@@ -1815,6 +1907,13 @@ mod durable_tests {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(
             Instant::now() + Duration::from_millis(20),
         );
+        let accepted = clock.observed_at().map_err(|_| "clock")?;
+        let entry = state.auth.admitted_standard_sdk_lease_issuer_observed(
+            &principal,
+            "",
+            AuthorityTime::Precise(accepted),
+        )?;
+        let final_use = principal.consumed_last_use();
         let authority = plugin::PluginResponseAuthority::new(
             principal,
             &state,
@@ -1826,6 +1925,9 @@ mod durable_tests {
         .with_sdk_clock();
         let (sender, _receiver) = mpsc::sync_channel(1);
         let admission = Admission {
+            entry,
+            accepted,
+            final_use,
             authority: Mutex::new(authority),
             backend: Arc::new(Control {
                 sender,

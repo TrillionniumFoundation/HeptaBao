@@ -83,7 +83,9 @@ impl Pki {
         self.external.signer_history.is_some()
     }
 
-    pub(super) fn external_signers(&self) -> impl Iterator<Item = (&ExternalKey, &RootCa)> {
+    pub(in crate::engines::pki) fn external_signers(
+        &self,
+    ) -> impl Iterator<Item = (&ExternalKey, &RootCa)> {
         self.external.root.iter().zip(self.root.iter()).chain(
             self.external.signer_history.iter().flat_map(|history| {
                 history
@@ -113,7 +115,14 @@ impl Pki {
             .map(|(key, _)| {
                 let mut selected = self.clone();
                 selected.select_external_default(&key.issuer_id)?;
-                selected
+                if let Some(ConsumptionTemplate::Crl {
+                    ordinary_revocation: Some(plan),
+                    ..
+                }) = &main.consumption
+                {
+                    selected.stage_ordinary_revocation(plan)?;
+                }
+                let mut related = selected
                     .prepare_external_consumption(
                         "GET",
                         "crl/rotate",
@@ -126,7 +135,19 @@ impl Pki {
                             identity_templates: context.identity_templates,
                         },
                     )?
-                    .ok_or_else(|| bad("related external CRL plan missing"))
+                    .ok_or_else(|| bad("related external CRL plan missing"))?;
+                if let Some(ConsumptionTemplate::Crl {
+                    ordinary_revocation: Some(plan),
+                    ..
+                }) = &main.consumption
+                    && let Some(ConsumptionTemplate::Crl {
+                        ordinary_revocation,
+                        ..
+                    }) = &mut related.consumption
+                {
+                    *ordinary_revocation = Some(plan.clone());
+                }
+                Ok(related)
             })
             .collect()
     }
@@ -250,12 +271,17 @@ impl Pki {
         reject_unknown(body, &[])?;
         self.validate_external_consumption(now)?;
         let id = self.external_issuer_key(reference)?.issuer_id.clone();
-        if self
+        let was_default = self
             .external
             .root
             .as_ref()
-            .is_some_and(|key| key.issuer_id == id)
-        {
+            .is_some_and(|key| key.issuer_id == id);
+        let default_roles = self
+            .roles
+            .values()
+            .filter(|role| role.issuer_ref.is_empty())
+            .count();
+        if was_default {
             self.retire_external_leaf_issuer(now)?;
             self.root = None;
             self.external.root = None;
@@ -272,7 +298,17 @@ impl Pki {
         }
         // Actual public SignedCa/leaf records retain their verified original CA.
         // No public archive or remaining sibling can restore this private key.
-        Ok(empty(true))
+        let mut response = ok(Value::Null, true);
+        if was_default {
+            let mut warnings = vec![format!(
+                "Deleted issuer {id} (via issuer_ref {reference}); this was configured as the default issuer. Operations without an explicit issuer will not work until a new default is configured."
+            )];
+            if default_roles > 0 {
+                warnings.push(format!("{default_roles} roles reference default"));
+            }
+            response.body["warnings"] = json!(warnings);
+        }
+        Ok(response)
     }
 
     pub(super) fn admit_external_root_generation(&self, body: &Value) -> Result<()> {
@@ -446,6 +482,14 @@ impl Pki {
                 .external_signers()
                 .any(|(key, _)| key.issuer_id == reference)
         {
+            let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+            if self.acme_certificate_for_serial(&serial)?.is_none()
+                && self.signed_ca_owner(&serial).is_none()
+            {
+                // The original public issuer is retained; only the current default
+                // private signer can authorize this orphan entry. No retired grant.
+                return Ok(self.external.root.as_ref().map(|key| key.issuer_id.clone()));
+            }
             // A fully retired mount retains public leaf revocation records;
             // its normal admin route updates those without a signing effect.
             // Signed CAs still require their actual parent signing authority.
@@ -563,6 +607,7 @@ impl Pki {
                     !self
                         .external_leaf_issuer_reference(serial)
                         .is_ok_and(|owner| owner == id)
+                        && !self.ordinary_orphan_for_crl(serial, id)
                         || issued.revoked_at != Some(*at)
                 })
             }) {

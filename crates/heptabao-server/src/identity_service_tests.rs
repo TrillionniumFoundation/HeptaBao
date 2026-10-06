@@ -1046,6 +1046,18 @@ fn create_batch_user(s: &mut Service, admin: &str) {
             "",
             admin,
             "POST",
+            "sys/auth/userpass",
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            s,
+            "",
+            admin,
+            "POST",
             "auth/userpass/users/alice",
             json!({"password":"batch fixture password","token_type":"batch","token_ttl":300})
         )

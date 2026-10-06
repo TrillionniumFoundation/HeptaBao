@@ -668,7 +668,7 @@ impl Service {
             .is_pki_issue_route(request.namespace, request.path)
             || state
                 .engines
-                .is_pki_acme_operator_revoke_route(request.namespace, request.path)
+                .is_pki_operator_revoke_route(request.namespace, request.path)
         {
             match state
                 .auth
@@ -727,7 +727,7 @@ impl Service {
             Ok(None)
                 if state
                     .engines
-                    .is_pki_acme_operator_revoke_route(request.namespace, request.path) =>
+                    .is_pki_operator_revoke_route(request.namespace, request.path) =>
             {
                 // A previously revoked or already expired ACME certificate has
                 // a native no-effect result. Keep the same admitted actor; this

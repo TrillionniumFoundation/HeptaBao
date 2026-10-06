@@ -553,9 +553,11 @@ impl SdkBackendHost {
             let auth_valid = response.get("auth").is_some_and(|value| {
                 value.is_null() || self.backend_type == SdkBackendType::Auth && value.is_object()
             });
-            let secret_valid = response.get("secret").is_some_and(|value| {
-                value.is_null() || self.backend_type == SdkBackendType::Secret && value.is_object()
-            });
+            // Both SDK families may return Secret; the Service keeps issuance
+            // and guest rejection bound to the original accepted client.
+            let secret_valid = response
+                .get("secret")
+                .is_some_and(|value| value.is_null() || value.is_object());
             if !response.is_object() || !auth_valid || !secret_valid {
                 self.fenced = true;
                 return Err(SdkBridgeError::OutcomeUnknown);

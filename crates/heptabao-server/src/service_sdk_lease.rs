@@ -57,7 +57,46 @@ pub(super) fn precise(
         .sdk_lease_clock_floor()
         .map_or(at, |floor| at.max(floor)))
 }
-fn body_action<'a>(request: &'a RequestView<'_>) -> Option<(&'static str, &'a str)> {
+// OpenBao v2.7.0 RegisterSecret uses base62.Random(TokenLength=24).
+// This only selects a new identifier representation after actual admission;
+// retained opaque identifiers and all lease owner validation remain unchanged.
+fn lease_suffix_with(
+    mut entropy: impl FnMut() -> Result<[u8; 30], Response>,
+) -> Result<String, Response> {
+    const ALPHABET: &[u8; 62] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let mut output = String::with_capacity(24);
+    loop {
+        let bytes = zeroize::Zeroizing::new(entropy()?);
+        for byte in bytes.iter().copied() {
+            // The v0.1.2 dependency rejects 248..255 to avoid modulo bias.
+            if byte < 248 {
+                output.push(char::from(ALPHABET[usize::from(byte % 62)]));
+                if output.len() == 24 {
+                    return Ok(output);
+                }
+            }
+        }
+    }
+}
+
+pub(super) fn new_lease_id(state: &State, namespace: &str, path: &str) -> Result<String, Response> {
+    let suffix = lease_suffix_with(|| {
+        crypto::random::<30>()
+            .map_err(|_| Response::error(503, "SDK lease identity entropy unavailable"))
+    })?;
+    let mut id = format!("{}/{suffix}", path.trim_end_matches('/'));
+    // The existing catalog owns this public ID. A historical implicit native
+    // namespace does not gain a fabricated catalog entry or new authority.
+    if !namespace.is_empty()
+        && let Some(namespace_id) = state.namespaces.identity_namespace(namespace)?.id
+    {
+        id.push('.');
+        id.push_str(namespace_id);
+    }
+    Ok(id)
+}
+
+pub(super) fn body_action<'a>(request: &'a RequestView<'_>) -> Option<(&'static str, &'a str)> {
     let (action, path_id) = if request.path == "sys/leases/lookup" {
         ("lookup", None)
     } else if request.path == "sys/leases/renew" {
@@ -77,7 +116,7 @@ fn body_action<'a>(request: &'a RequestView<'_>) -> Option<(&'static str, &'a st
         .or(path_id)
         .map(|id| (action, id))
 }
-fn grant(mut secret: Value, data: Value, at: Timestamp) -> Result<Grant, Response> {
+pub(super) fn grant(mut secret: Value, data: Value, at: Timestamp) -> Result<Grant, Response> {
     let parsed = (|| {
         let object = secret
             .as_object_mut()
@@ -128,6 +167,21 @@ fn grant(mut secret: Value, data: Value, at: Timestamp) -> Result<Grant, Respons
         }
     }
 }
+// OpenBao v2.7.0 expiration.Renew / framework.CalculateTTL gives a positive
+// request increment precedence over the backend's suggested TTL. The original
+// grant clock and the retained lease's maximum lifetime and Batch cap remain.
+pub(super) fn renewal_grant(
+    secret: Value,
+    data: Value,
+    at: Timestamp,
+    increment_ns: u64,
+) -> Result<Grant, Response> {
+    let mut grant = grant(secret, data, at)?;
+    if increment_ns > 0 {
+        grant.ttl_ns = increment_ns.min(grant.max_ttl_ns);
+    }
+    Ok(grant)
+}
 impl Service {
     pub(in crate::service) fn sdk_lease_handles(
         &self,
@@ -144,7 +198,7 @@ impl Service {
         request: &RequestView<'_>,
     ) -> Response {
         let Some(principal) = principal else {
-            return Response::error(403, "missing client token");
+            return Response::error(403, "permission denied");
         };
         let Some((action, id)) = body_action(request) else {
             return Response::error(400, "lease_id is required");
@@ -464,13 +518,14 @@ impl Service {
                             "SDK lease owner expired during callback",
                         ));
                     }
-                    let grant = grant(
+                    let grant = renewal_grant(
                         std::mem::take(&mut secret.0),
                         std::mem::take(&mut data.0),
                         at,
+                        call.increment_ns,
                     )?;
                     lease.renew(grant).map_err(Response::from_engine_error)?;
-                    body.0 = json!({"lease_id":lease.id,"lease_duration":lease.ttl_ns/1_000_000_000,"renewable":lease.renewable,"data":lease.response_data()});
+                    body.0 = json!({"lease_id":lease.id,"lease_duration":lease.public_duration(at).map_err(Response::from_engine_error)?,"renewable":lease.renewable,"data":lease.response_data()});
                     status = 200;
                 } else {
                     if !secret.is_null() {
@@ -494,13 +549,7 @@ impl Service {
                 let (issuer, registration) =
                     authority.registered_issuer(&state, &plan.namespace, at)?;
                 let path = format!("{}{}", plan.mount, plan.path);
-                let id = format!(
-                    "{path}/{}",
-                    hex(&crypto::random::<24>().map_err(|_| Response::error(
-                        503,
-                        "SDK lease identity entropy unavailable"
-                    ))?)
-                );
+                let id = new_lease_id(&state, &plan.namespace, &path)?;
                 let mut lease = Lease::new(
                     Binding {
                         id,
@@ -533,7 +582,7 @@ impl Service {
                     headers.clear();
                     erase_json(&mut warnings);
                 } else {
-                    body.0 = json!({"lease_id":lease.id,"lease_duration":lease.ttl_ns/1_000_000_000,"renewable":lease.renewable,"data":lease.response_data()});
+                    body.0 = json!({"lease_id":lease.id,"lease_duration":lease.public_duration(at).map_err(Response::from_engine_error)?,"renewable":lease.renewable,"data":lease.response_data()});
                 }
                 state
                     .engines
@@ -600,5 +649,29 @@ impl Service {
             plan.control.retire();
             error
         })
+    }
+}
+
+#[cfg(test)]
+mod lease_id_tests {
+    use super::*;
+
+    #[test]
+    fn sdk_lease_id_rejects_biased_bytes_and_entropy_failure() -> Result<(), &'static str> {
+        let mut calls = 0;
+        let suffix = lease_suffix_with(|| {
+            calls += 1;
+            Ok(if calls == 1 {
+                [255; 30]
+            } else {
+                std::array::from_fn(|index| index as u8)
+            })
+        })
+        .map_err(|_| "base62")?;
+        assert_eq!(calls, 2);
+        assert_eq!(suffix, "ABCDEFGHIJKLMNOPQRSTUVWX");
+        let error = lease_suffix_with(|| Err(Response::error(503, "entropy unavailable")));
+        assert_eq!(error.err().ok_or("missing failure")?.status, 503);
+        Ok(())
     }
 }

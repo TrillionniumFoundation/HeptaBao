@@ -63,7 +63,7 @@ impl AuthState {
     /// loaded namespace owner. Provider authentication, wrapped deliveries and
     /// cross-namespace descendants require their existing cleanup transactions.
     pub(crate) fn namespace_has_only_local_token_owners(&self, actual: &str) -> bool {
-        if actual.is_empty() {
+        if actual.is_empty() || self.sdk_credential_namespace_pending(actual) {
             return false;
         }
         let owned = self

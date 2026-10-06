@@ -9,15 +9,26 @@ pub(crate) enum Phase {
     PendingRevoke,
     Revoked,
 }
+pub(crate) trait Backend: Clone {
+    fn validate_lease_binding(&self, namespace: &str, mount: &str) -> Result<()>;
+}
+impl Backend for sdk::MountOwner {
+    fn validate_lease_binding(&self, _namespace: &str, _mount: &str) -> Result<()> {
+        if self.mount_incarnation == 0 || self.catalog_generation == 0 {
+            return Err(error(503, "SDK lease backend incarnation rejected"));
+        }
+        Ok(())
+    }
+}
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct Lease {
+pub(crate) struct Lease<B: Backend = sdk::MountOwner> {
     pub(crate) id: String,
     pub(crate) namespace: String,
     pub(crate) cluster: String,
     pub(crate) mount: String,
     pub(crate) path: String,
-    pub(crate) backend: sdk::MountOwner,
+    pub(crate) backend: B,
     pub(crate) issuer: LeaseOwner,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) registration: Option<sdk_registration::Registration>,
@@ -31,13 +42,13 @@ pub(crate) struct Lease {
     secret: SecretJson,
     data: SecretJson,
 }
-impl std::fmt::Debug for Lease {
+impl<B: Backend> std::fmt::Debug for Lease<B> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str("SDKLease([REDACTED])")
     }
 }
-impl Lease {
-    pub(crate) fn new(binding: Binding, mut grant: Grant) -> Result<Self> {
+impl<B: Backend> Lease<B> {
+    pub(crate) fn new(binding: Binding<B>, mut grant: Grant) -> Result<Self> {
         let Binding {
             id,
             namespace,
@@ -83,6 +94,9 @@ impl Lease {
         if registration.final_use() {
             self.phase = Phase::PendingRevoke;
             self.renewable = false;
+        }
+        if let Some(end) = registration.batch_expiry()? {
+            self.expires = self.expires.min(end);
         }
         self.registration = Some(registration);
         self.validate(&self.namespace)
@@ -135,8 +149,16 @@ impl Lease {
         self.expires = add_ns(grant.issued, self.ttl_ns)?;
         self.renewed = Some(grant.issued);
         self.renewable = grant.renewable;
+        if let Some(secret) = grant.secret.as_object_mut() {
+            secret.insert("lease".into(), Value::from(self.ttl_ns));
+        }
         self.secret = SecretJson(std::mem::take(&mut grant.secret));
         self.data = SecretJson(std::mem::take(&mut grant.data));
+        if let Some(registration) = &self.registration
+            && let Some(end) = registration.batch_expiry()?
+        {
+            self.expires = self.expires.min(end);
+        }
         self.validate(&self.namespace)
     }
     pub(crate) fn revoke(&mut self) {
@@ -149,6 +171,8 @@ impl Lease {
         if let Some(registration) = &self.registration {
             registration.validate(self)?;
         }
+        self.backend
+            .validate_lease_binding(namespace, &self.mount)?;
         valid_path(&self.id)?;
         valid_path(self.mount.trim_end_matches('/'))?;
         valid_path(&self.path)?;
@@ -162,12 +186,17 @@ impl Lease {
                 .id
                 .starts_with(&format!("{}/", self.path.trim_end_matches('/')))
             || !self.path.starts_with(&self.mount)
-            || self.backend.mount_incarnation == 0
-            || self.backend.catalog_generation == 0
             || self.ttl_ns == 0
             || self.ttl_ns > self.max_ttl_ns
             || self.max_ttl_ns > i64::MAX as u64
-            || self.expires < self.issued
+            || (self.expires < self.issued
+                && self
+                    .registration
+                    .as_ref()
+                    .map(|r| r.batch_expiry())
+                    .transpose()?
+                    .flatten()
+                    .is_none())
             || self.expires > add_ns(self.issued, self.max_ttl_ns)?
             || self
                 .renewed
@@ -212,11 +241,23 @@ impl Lease {
         }
         Ok(())
     }
-    pub(crate) fn same_backend(&self, owner: &sdk::MountOwner) -> bool {
-        self.backend.plugin == owner.plugin
-            && self.backend.version == owner.version
-            && self.backend.catalog_generation == owner.catalog_generation
-            && self.backend.mount_incarnation == owner.mount_incarnation
+    pub(crate) fn public_duration(&self, at: Timestamp) -> Result<i64> {
+        if self
+            .registration
+            .as_ref()
+            .map(|r| r.batch_expiry())
+            .transpose()?
+            .flatten()
+            .is_some()
+        {
+            let difference = self.expires.duration_since_epoch().as_nanos() as i128
+                - at.duration_since_epoch().as_nanos() as i128;
+            let rounded = (difference.abs() + 500_000_000) / 1_000_000_000;
+            return i64::try_from(if difference < 0 { -rounded } else { rounded })
+                .map_err(|_| error(503, "SDK batch public duration rejected"));
+        }
+        i64::try_from(self.ttl_ns / 1_000_000_000)
+            .map_err(|_| error(503, "SDK public duration rejected"))
     }
     pub(crate) fn lookup(&self, at: Timestamp) -> Result<Value> {
         if self.phase != Phase::Active || at >= self.expires {
@@ -227,13 +268,21 @@ impl Lease {
         )
     }
 }
-pub(crate) struct Binding {
+impl Lease {
+    pub(crate) fn same_backend(&self, owner: &sdk::MountOwner) -> bool {
+        self.backend.plugin == owner.plugin
+            && self.backend.version == owner.version
+            && self.backend.catalog_generation == owner.catalog_generation
+            && self.backend.mount_incarnation == owner.mount_incarnation
+    }
+}
+pub(crate) struct Binding<B = sdk::MountOwner> {
     pub(crate) id: String,
     pub(crate) namespace: String,
     pub(crate) cluster: String,
     pub(crate) mount: String,
     pub(crate) path: String,
-    pub(crate) backend: sdk::MountOwner,
+    pub(crate) backend: B,
     pub(crate) issuer: LeaseOwner,
 }
 pub(crate) struct Grant {

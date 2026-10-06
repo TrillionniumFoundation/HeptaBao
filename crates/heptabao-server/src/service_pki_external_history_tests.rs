@@ -2,6 +2,8 @@
 //! Distinct real Transit keys preserve their original KMS/signature owner.
 use super::*;
 use openssl::x509::{X509, X509Crl};
+#[path = "service_pki_ordinary_revocation_tests.rs"]
+mod ordinary_revocation;
 
 fn second_signer(remote: &RemoteTransit, service: &mut Service, admin: &str) -> TestResult {
     assert_eq!(
@@ -192,7 +194,7 @@ fn pki_history94_distinct_real_signers_default_alias_retired_crls_and_encrypted_
     assert!(service.prepare_snapshot_restore(&backup).is_err());
     let mut lower = service.state.as_ref().ok_or("current")?.clone();
     lower.schema = 93;
-    assert_eq!(lower.writer_schema(), 94);
+    assert_eq!(lower.writer_schema(), 105);
     assert!(lower.validate_format().is_err());
     assert!(lower.validate_publication_schema(Some(&original)).is_err());
     drop(service);
@@ -209,7 +211,7 @@ fn pki_history94_distinct_real_signers_default_alias_retired_crls_and_encrypted_
         .status,
         200
     );
-    assert_eq!(reopened.state.as_ref().ok_or("restart")?.schema, 94);
+    assert_eq!(reopened.state.as_ref().ok_or("restart")?.schema, 105);
     let old_again = leaf(&mut reopened, &admin, "external-ca/issuer/first/issue/leaf");
     assert_eq!(old_again.status, 200);
     assert!(cert(&old_again)?.verify(&first_public)?);
@@ -240,7 +242,7 @@ fn pki_history94_distinct_real_signers_default_alias_retired_crls_and_encrypted_
         "no signing credential can be recovered from public archive"
     );
     assert!(reopened.prepare_snapshot_restore(&backup).is_err());
-    assert_eq!(reopened.state.as_ref().ok_or("retired floor")?.schema, 94);
+    assert_eq!(reopened.state.as_ref().ok_or("retired floor")?.schema, 105);
     Ok(())
 }
 

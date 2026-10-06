@@ -171,6 +171,7 @@ impl Principal {
 pub(crate) struct AcceptedSdkLeaseIssuer {
     pub(crate) issuer: ResolvedLeaseOwner,
     pub(crate) instance: [u8; 32],
+    pub(crate) parent_instance: Option<[u8; 32]>,
 }
 
 pub(crate) struct ResolvedLeaseOwner {
@@ -353,6 +354,12 @@ impl AuthState {
         .map_err(|_| err(503, "SDK parent instance serialization rejected"))?;
         Ok(crate::crypto::digest(&material))
     }
+    pub(crate) fn sdk_batch_owner_instance(owner: &LeaseOwner) -> Result<[u8; 32], AuthError> {
+        let claims = owner.batch_claims().ok_or_else(denied)?;
+        let material = crate::secret_serde::to_vec(claims, batch::MAX_BATCH_CLAIMS_BYTES)
+            .map_err(|_| err(503, "SDK batch instance serialization rejected"))?;
+        Ok(crate::crypto::digest(&material))
+    }
     pub(crate) fn sdk_service_parent_instance(
         &self,
         owner: &LeaseOwner,
@@ -447,8 +454,31 @@ impl AuthState {
                     entity_id: token.entity_id.clone(),
                 },
                 instance: Self::sdk_token_instance(token)?,
+                parent_instance: None,
             })),
-            CheckedCredential::Batch(_) => Ok(None),
+            CheckedCredential::Batch(claims) => {
+                let owner = LeaseOwner::from_batch(claims);
+                let parent_instance = claims
+                    .parent()
+                    .map(|parent| {
+                        self.sdk_service_parent_instance(
+                            &LeaseOwner::service(parent).map_err(|_| denied())?,
+                            namespace,
+                        )?
+                        .ok_or_else(denied)
+                    })
+                    .transpose()?;
+                Ok(Some(AcceptedSdkLeaseIssuer {
+                    instance: Self::sdk_batch_owner_instance(&owner)?,
+                    parent_instance,
+                    issuer: ResolvedLeaseOwner {
+                        owner,
+                        expires_at: Some(claims.expires_at()),
+                        precise_expires_at: claims.precision().map(|lease| lease.expires_at),
+                        entity_id: claims.entity_id().map(str::to_owned),
+                    },
+                }))
+            }
         }
     }
     /// The admitted final use may execute Kubernetes TokenRequest, but cannot

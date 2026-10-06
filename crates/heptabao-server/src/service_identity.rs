@@ -14,6 +14,7 @@ impl State {
                 .all_lease_owners()
                 .into_iter()
                 .chain(self.database.all_lease_owners())
+                .chain(self.auth.sdk_credential_owners())
                 .any(|(_, owner)| {
                     owner
                         .batch_claims()
@@ -28,7 +29,11 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_pki_acme_state() {
+        let required = if self.engines.has_ordinary_pki_revocation_state() {
+            PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        } else if self.engines.has_pki_key_policy_state() {
+            PKI_KEY_POLICY_STATE_SCHEMA
+        } else if self.engines.has_pki_acme_state() {
             PKI_ACME_ACCOUNT_STATE_SCHEMA
         } else if self.engines.has_full_dn_crl_state() {
             EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
@@ -119,6 +124,13 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_sdk_batch_registration_state()
+            || self.auth.has_sdk_credential_state()
+        {
+            required.max(SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA)
+        } else {
+            required
+        };
         let required = if self.auth.has_auth_mount_options_state() {
             required.max(AUTH_MOUNT_OPTIONS_STATE_SCHEMA)
         } else {
@@ -132,6 +144,25 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        if self.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            && (self.engines.has_ordinary_pki_revocation_state()
+                || previous
+                    .is_some_and(|state| state.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI ordinary revocation ownership requires schema 105",
+            ));
+        }
+        if self.schema < PKI_KEY_POLICY_STATE_SCHEMA
+            && (self.engines.has_pki_key_policy_state()
+                || previous.is_some_and(|state| state.schema >= PKI_KEY_POLICY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI subject key policy requires schema 104",
+            ));
+        }
         self.auth
             .validate_auth_mount_options_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
@@ -155,10 +186,22 @@ impl State {
             ));
         }
         self.auth
+            .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
+                self.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
         self.auth
             .validate_sdk_auth_clock(previous.map(|state| &*state.auth))
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
+            .validate_sdk_credential_state(
+                previous.map(|state| &*state.auth),
+                &self.cluster_id,
+                |ns| self.namespaces.incarnation(ns),
+            )
             .map_err(|e| Response::error(e.status, &e.message))?;
         let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
         self.auth
@@ -220,6 +263,9 @@ impl State {
             .map_err(|error| Response::error(503, &error.message))?;
         self.engines
             .validate_sdk_lease_clock(previous.map(|state| &*state.engines))
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.engines
+            .validate_pki_revocation_clock(previous.map(|state| &*state.engines))
             .map_err(|error| Response::error(503, &error.message))?;
         self.engines
             .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
@@ -291,6 +337,17 @@ impl State {
             return Err(Response::error(
                 503,
                 "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            && (self.engines.has_sdk_batch_registration_state()
+                || self.auth.has_sdk_credential_state()
+                || previous
+                    .is_some_and(|state| state.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "batch or credential SDK Secret ownership requires schema 102",
             ));
         }
         if self.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
@@ -568,6 +625,11 @@ impl State {
         }
         self.validate_namespace_batch_state()?;
         self.auth
+            .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
+                self.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
         if self.schema < SDK_AUTH_STATE_SCHEMA && self.auth.has_sdk_auth_state() {
@@ -602,6 +664,15 @@ impl State {
         self.engines
             .validate_sdk_leases()
             .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            && (self.engines.has_sdk_batch_registration_state()
+                || self.auth.has_sdk_credential_state())
+        {
+            return Err(Response::error(
+                503,
+                "batch or credential SDK Secret ownership requires schema 102",
+            ));
+        }
         if self.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
             && self.engines.has_sdk_registration_state()
         {
@@ -667,6 +738,23 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            && self.engines.has_ordinary_pki_revocation_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI ordinary revocation ownership requires schema 105",
+            ));
+        }
+        self.engines
+            .validate_pki_revocation_clock(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < PKI_KEY_POLICY_STATE_SCHEMA && self.engines.has_pki_key_policy_state() {
+            return Err(Response::error(
+                503,
+                "PKI subject key policy requires schema 104",
             ));
         }
         if self.schema < PKI_URLS_STATE_SCHEMA && self.engines.has_pki_url_state() {
@@ -1150,6 +1238,7 @@ impl State {
             .all_lease_owners()
             .into_iter()
             .chain(self.database.all_lease_owners())
+            .chain(self.auth.sdk_credential_owners())
         {
             if let Some(claims) = owner.batch_claims() {
                 if self.schema < 41 {
@@ -1564,7 +1653,10 @@ impl State {
             | SDK_SECRET_LEASE_STATE_SCHEMA
             | SDK_AUTH_STATE_SCHEMA
             | SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            | SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
             | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+            | PKI_KEY_POLICY_STATE_SCHEMA
+            | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA

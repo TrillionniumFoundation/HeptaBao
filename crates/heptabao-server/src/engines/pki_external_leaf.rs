@@ -9,6 +9,7 @@ pub(super) enum ConsumptionTemplate {
     Crl {
         revoked: Option<(String, u64)>,
         acme_revocation: Option<Box<OperatorRevocationPlan>>,
+        ordinary_revocation: Option<Box<OrdinaryRevocationPlan>>,
         prepared: Box<CrlSet>,
     },
 }
@@ -632,6 +633,13 @@ impl Pki {
             } else {
                 None
             };
+            let ordinary_revocation = if path == "revoke" && acme_revocation.is_none() {
+                let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+                self.prepare_ordinary_revocation(&serial, &context)?
+                    .map(Box::new)
+            } else {
+                None
+            };
             let crl_now = acme_revocation
                 .as_ref()
                 .map_or(now, |plan| now.max(plan.revoked.at.seconds()));
@@ -645,6 +653,8 @@ impl Pki {
                         ));
                     }
                     plan.revoked.at.seconds()
+                } else if let Some(plan) = &ordinary_revocation {
+                    plan.record.at.seconds()
                 } else if let Some(issued) = self.issued.get(&serial) {
                     if !self.external_leaf_belongs_to_active(&serial) {
                         return Err(error(
@@ -673,7 +683,9 @@ impl Pki {
                     issued
                         .revoked_at
                         .filter(|_| {
-                            issued.expires > now && self.external_leaf_belongs_to_active(serial)
+                            issued.expires > now
+                                && (self.external_leaf_belongs_to_active(serial)
+                                    || self.ordinary_orphan_candidate(serial))
                         })
                         .map(|at| (serial.clone(), at))
                 })
@@ -695,6 +707,7 @@ impl Pki {
             ConsumptionTemplate::Crl {
                 revoked,
                 acme_revocation,
+                ordinary_revocation,
                 prepared: Box::new(
                     CrlSet::prepare(number, crl_now, entries, self.capture_urls(&key.issuer_id)?)
                         .with_certificate_issuer(
@@ -849,9 +862,13 @@ impl Pki {
             ConsumptionTemplate::Crl {
                 revoked,
                 acme_revocation,
+                ordinary_revocation,
                 mut prepared,
             } => {
                 if let Some(plan) = &acme_revocation {
+                    plan.validate(self, now)?;
+                }
+                if let Some(plan) = &ordinary_revocation {
                     plan.validate(self, now)?;
                 }
                 prepared.sign(
@@ -870,6 +887,12 @@ impl Pki {
                         .revocations
                         .insert(plan.revoked.serial.clone(), plan.revoked);
                     response
+                } else if let Some(plan) = ordinary_revocation {
+                    self.admit_external_issuer_archive(&captured_issuer)?;
+                    self.external
+                        .archived_issuers
+                        .insert(captured_issuer.issuer_id.clone(), captured_issuer.clone());
+                    self.stage_ordinary_revocation(&plan)?
                 } else if let Some((serial, at)) = revoked {
                     if let Some(issued) = self.issued.get_mut(&serial) {
                         issued.revoked_at = Some(at);
@@ -885,6 +908,13 @@ impl Pki {
                 } else {
                     json!({"success":true})
                 };
+                self.ordinary_crl_signed(&captured_issuer.issuer_id, &prepared.full.revoked);
+                if self.ordinary_public_issuer_referenced(&captured_issuer.issuer_id) {
+                    self.admit_external_issuer_archive(&captured_issuer)?;
+                    self.external
+                        .archived_issuers
+                        .insert(captured_issuer.issuer_id.clone(), captured_issuer.clone());
+                }
                 self.external.crls = Some(*prepared);
                 self.validate_acme_revocations()?;
                 Ok(ok(response, true))
@@ -918,7 +948,10 @@ impl Pki {
             || crls.delta.expires <= now
             || self.issued.iter().any(|(serial, issued)| {
                 issued.expires > now
-                    && self.external_leaf_belongs_to_active(serial)
+                    && (self.external_leaf_belongs_to_active(serial)
+                        || self.external.root.as_ref().is_some_and(|key| {
+                            self.ordinary_orphan_for_crl(serial, &key.issuer_id)
+                        }))
                     && issued
                         .revoked_at
                         .is_some_and(|at| crls.full.revoked.get(serial).copied() != Some(at))
@@ -1023,9 +1056,13 @@ impl Pki {
         );
         // Tidy has already removed the actual issued records. Root retirement
         // does not call this function and cannot discard signer history.
-        self.external
-            .archived_issuers
-            .retain(|id, _| referenced.contains(id));
+        self.external.archived_issuers.retain(|id, _| {
+            referenced.contains(id)
+                || self
+                    .ordinary_revocations
+                    .values()
+                    .any(|r| r.references_issuer(id))
+        });
     }
 
     pub(in crate::engines::pki) fn retire_external_leaf_issuer(
@@ -1078,7 +1115,9 @@ impl Pki {
             crls.validate(issuer, clock)?;
             if crls.full.revoked.iter().any(|(serial, at)| {
                 self.issued.get(serial).is_some_and(|issued| {
-                    !self.external_leaf_belongs_to_active(serial) || issued.revoked_at != Some(*at)
+                    (!self.external_leaf_belongs_to_active(serial)
+                        && !self.ordinary_orphan_for_crl(serial, &issuer.issuer_id))
+                        || issued.revoked_at != Some(*at)
                 }) || self
                     .signed_ca_owner(serial)
                     .is_some_and(|(id, _, _, revoked)| {
@@ -1108,6 +1147,7 @@ impl Pki {
             issuer.validate()?;
             if self.has_external_signed_ca_issuer_reference(id, &issuer.certificate_der)?
                 || self.has_external_acme_issuer_reference(id, &issuer.certificate_der)?
+                || self.ordinary_public_issuer_referenced(id)
             {
                 referenced.insert(id.clone());
             }
@@ -1285,6 +1325,10 @@ impl ExternalPkiTemplate {
             Some(ConsumptionTemplate::Leaf(prepared)) => {
                 prepared.validate_publication_observed(time)
             }
+            Some(ConsumptionTemplate::Crl {
+                ordinary_revocation: Some(plan),
+                ..
+            }) => plan.validate_actor(time),
             _ => Ok(()),
         }
     }

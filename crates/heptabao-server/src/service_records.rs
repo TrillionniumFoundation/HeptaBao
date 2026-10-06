@@ -265,6 +265,12 @@ impl Service {
         reader: &impl RecordReader,
     ) -> Result<State, Response> {
         root.validate().map_err(root_error)?;
+        if !supported_reader_schema(root.state_schema) {
+            return Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            ));
+        }
         let owners = root
             .owners
             .iter()
@@ -892,7 +898,14 @@ impl Service {
             self.cache_verified_ha_records(&committed)?;
             return Ok(ha_received::HaSyncProgress::Current);
         }
-        let received = self.receive_ha_records(ha, &committed)?;
+        let received = self
+            .receive_ha_records(ha, &committed)
+            .inspect_err(|error| {
+                eprintln!(
+                    "heptabao-r72-sync: stage=records_receive status={}",
+                    error.status
+                );
+            })?;
         match self.install_committed_ha_records(received) {
             Ok(ha_received::HaRecordPublicationProgress::Current) => {}
             Ok(progress) => {
@@ -901,6 +914,16 @@ impl Service {
                 ));
             }
             Err(error) => {
+                eprintln!(
+                    "heptabao-r73-sync: stage=records_install_error status={} loaded={} record_root={} remote_expected_digest={:02x?} cached_digest={:02x?} loaded_schema={:?} durable_generation={:?}",
+                    error.status,
+                    self.state.is_some(),
+                    self.record_root.is_some(),
+                    committed.identity.digest(),
+                    self.state_digest,
+                    self.state.as_ref().map(|state| state.schema),
+                    self.durable.as_ref().map(|durable| durable.generation())
+                );
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;

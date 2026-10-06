@@ -163,6 +163,7 @@ impl AuthState {
                     .ok_or_else(|| bad("display name must be a string"))
             })
             .transpose()?
+            .filter(|name| !name.is_empty())
             .unwrap_or("token");
         if display_name.len() > 128 {
             return Err(bad("display name too long"));

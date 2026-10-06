@@ -6,13 +6,15 @@ import os
 from pathlib import Path
 import sys
 import subprocess
+import socket
+import urllib.error
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from heptabao import cli
-from heptabao.transport import BaoError, Client, Response, decode_json
+from heptabao.transport import BaoError, Client, Response, decode_json, transport_diagnostic
 
 
 class ClientBoundaryTests(unittest.TestCase):
@@ -176,6 +178,91 @@ sys.exit(1)
         for ttl in ("1s\r\nX-Secret: value", "", "x"*65):
             with self.subTest(ttl=ttl),self.assertRaises(BaoError):
                 client.request("POST","/v1/sys/wrapping/wrap",{},wrap_ttl=ttl)
+
+
+class TransportDiagnosticTests(unittest.TestCase):
+    def client(self, opener):
+        client = object.__new__(Client)
+        client.address, client.namespace = "https://localhost:8200", ""
+        client._token, client.timeout = "synthetic-private-bearer", 15
+        client._opener = opener
+        return client
+
+    def test_actual_stdlib_stream_failures_project_only_class_and_phase(self):
+        sentinel = b"synthetic-private-peer-response"
+        for stage in ("open", "read"):
+            with self.subTest(stage=stage), contextlib.ExitStack() as stack:
+                left, right = socket.socketpair()
+                stack.enter_context(left); stack.enter_context(right)
+                if stage == "open":
+                    right.sendall(sentinel + b"\r\n")
+                else:
+                    right.sendall(b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n80\r\n" + sentinel)
+                right.shutdown(socket.SHUT_WR)
+                response = http.client.HTTPResponse(left)
+                opener = MagicMock()
+                def opened(*args, **kwargs):
+                    response.begin()
+                    return response
+                opener.open.side_effect = opened
+                with self.assertRaises(BaoError) as caught:
+                    self.client(opener).request("POST", "/v1/synthetic-fixture", {})
+                diagnostic = transport_diagnostic(caught.exception)
+                self.assertEqual(caught.exception.code, "transport_outcome_unknown")
+                self.assertEqual(str(caught.exception), "transport_outcome_unknown")
+                self.assertEqual(diagnostic, {
+                    "phase": "open_response" if stage == "open" else "read_response",
+                    "exception_class": "http.client.BadStatusLine" if stage == "open" else "http.client.IncompleteRead",
+                })
+                self.assertNotIn(sentinel.decode(), json.dumps(diagnostic))
+                self.assertTrue(caught.exception.__suppress_context__)
+                self.assertEqual(opener.open.call_count, 1)
+                self.assertEqual(opener.open.call_args.kwargs["timeout"], 15)
+                response.close()
+
+    def test_urlerror_reason_and_bounded_errno_do_not_read_exception_text(self):
+        error = urllib.error.URLError(ConnectionResetError(104, "synthetic-private-reset"))
+        opener = MagicMock(); opener.open.side_effect = error
+        with self.assertRaises(BaoError) as caught:
+            self.client(opener).request("GET", "/v1/synthetic-fixture")
+        self.assertEqual(caught.exception.code, "transport_read_failed")
+        self.assertEqual(transport_diagnostic(caught.exception), {
+            "phase": "open_response", "exception_class": "urllib.error.URLError",
+            "reason_exception_class": "ConnectionResetError", "reason_errno": 104,
+        })
+        self.assertNotIn("synthetic-private", json.dumps(transport_diagnostic(caught.exception)))
+        self.assertEqual(opener.open.call_count, 1)
+        for number in (-1, 65536, True):
+            error = OSError(number, "synthetic-private-message")
+            error.errno = number
+            self.assertNotIn("errno", transport_diagnostic(error))
+
+    def test_untrusted_exception_subclass_name_message_and_errno_are_not_projected(self):
+        class PrivatePeerException(OSError):
+            def __str__(self):
+                raise AssertionError("exception text was inspected")
+        error = PrivatePeerException(13, "synthetic-private-args")
+        self.assertEqual(transport_diagnostic(error), {"phase": "fixture_call", "exception_class": "other"})
+        self.assertNotIn("PrivatePeerException", json.dumps(transport_diagnostic(error)))
+        self.assertIsNone(transport_diagnostic(RuntimeError("synthetic-private-error")))
+        self.assertIsNone(transport_diagnostic(BaoError("invalid_json")))
+        self.assertIsNone(transport_diagnostic(BaoError("transport_outcome_unknown", _diagnostic={"url": "private"})))
+
+    def test_real_remote_disconnect_keeps_read_code_and_suppresses_context(self):
+        with contextlib.ExitStack() as stack:
+            left, right = socket.socketpair()
+            stack.enter_context(left); stack.enter_context(right)
+            right.shutdown(socket.SHUT_WR)
+            response = http.client.HTTPResponse(left)
+            opener = MagicMock();opener.open.side_effect=lambda *a,**kw:response.begin()
+            with self.assertRaises(BaoError) as caught:
+                self.client(opener).request("HEAD", "/v1/synthetic-fixture")
+            self.assertEqual(caught.exception.code, "transport_read_failed")
+            self.assertEqual(transport_diagnostic(caught.exception), {
+                "phase": "open_response", "exception_class": "http.client.RemoteDisconnected",
+            })
+            self.assertEqual(opener.open.call_count, 1)
+            response.close()
 
 
 if __name__ == "__main__":

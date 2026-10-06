@@ -131,6 +131,10 @@ impl Service {
             }
             match progress {
                 ha_received::HaSyncProgress::Current => return Ok(()),
+                ha_received::HaSyncProgress::BeforePublicationNoWrite(error)
+                | ha_received::HaSyncProgress::CompletedBeforeIndexNoWrite(error) => {
+                    return Err(error);
+                }
                 ha_received::HaSyncProgress::Superseded(error) => {
                     if Instant::now() >= deadline {
                         return Err(error);

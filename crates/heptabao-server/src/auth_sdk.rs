@@ -146,6 +146,32 @@ impl Binding {
         &self.descriptor
     }
 }
+impl crate::engines::sdk_lease::Backend for Binding {
+    fn validate_lease_binding(
+        &self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<(), crate::engines::EngineError> {
+        self.descriptor.validate()?;
+        if self.namespace != namespace
+            || mount != format!("auth/{}/", self.mount)
+            || self.mount.is_empty()
+            || self.owner.kind != "plugin"
+            || self.owner.revision == 0
+            || self
+                .owner
+                .accessor
+                .as_ref()
+                .is_none_or(|accessor| accessor.is_empty())
+        {
+            return Err(crate::engines::EngineError {
+                status: 503,
+                message: "SDK credential actual Auth mount binding rejected".into(),
+            });
+        }
+        Ok(())
+    }
+}
 /// An in-memory owned Storage observation. It is neither cloneable nor a
 /// persisted grant; the exact mount includes every observed cell and metadata.
 pub(crate) struct StorageWitness {

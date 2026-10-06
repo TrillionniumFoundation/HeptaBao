@@ -416,6 +416,7 @@ impl Service {
         completed: &ha_received::CompletedLocalPublication<'_>,
     ) -> Result<ha_received::HaLocalPublicationProgress, Response> {
         use ha_received::HaLocalPublicationProgress;
+        completed.mark_index_called();
         let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {
             live(completed.deadline())?;
             // A completion token cannot mask later actual owner/object damage.
@@ -447,6 +448,29 @@ impl Service {
         match result {
             Ok(()) => Ok(HaLocalPublicationProgress::Current),
             Err(mut failure) => {
+                eprintln!(
+                    "HBHA-R73-LOCAL-B phase=index_failure completed_digest={:02x?} cached_digest={:02x?} loaded_schema={:?} durable_generation={:?} before_index={} index_write_attempted={} index_readback={}",
+                    completed.identity().digest(),
+                    self.state_digest,
+                    self.state.as_ref().map(|state| state.schema),
+                    self.durable.as_ref().map(|durable| durable.generation()),
+                    matches!(
+                        failure.phase,
+                        HaRecoveryIndexFailurePhase::BeforeIndexPublication
+                    ),
+                    failure.index_write_attempted,
+                    failure.index_readback.is_some()
+                );
+                eprintln!(
+                    "heptabao-r72-sync: stage=completed_index_error before_index={} index_write_attempted={} index_readback={} status={}",
+                    matches!(
+                        failure.phase,
+                        HaRecoveryIndexFailurePhase::BeforeIndexPublication
+                    ),
+                    failure.index_write_attempted,
+                    failure.index_readback.is_some(),
+                    failure.response.status
+                );
                 if let Some(readback) = failure.index_readback.take() {
                     return self
                         .retain_completed_index_readback(completed, *readback)
@@ -530,6 +554,10 @@ impl Service {
             match ha_received::UnchangedShamirLocalOwner::capture(self, deadline) {
                 Ok(owner) => owner,
                 Err(error) => {
+                    eprintln!(
+                        "heptabao-r72-sync: stage=unchanged_owner_capture status={}",
+                        error.status
+                    );
                     self.fence_recovery_delivery();
                     return Err(error);
                 }
@@ -558,13 +586,21 @@ impl Service {
             Ok(())
         })();
         result.map_err(|failure| {
+            eprintln!(
+                "heptabao-r72-sync: stage=unchanged_index_error before_index={} index_write_attempted={} status={}",
+                matches!(failure.phase, HaRecoveryIndexFailurePhase::BeforeIndexPublication),
+                failure.index_write_attempted,
+                failure.response.status
+            );
             // This private no-write observation grants nothing, including when
             // the original budget expired during ReadIndex. It cannot repair an
             // index or replace any completed publication/quorum authority.
             if !failure.index_write_attempted
                 && unchanged_shamir
                     .as_ref()
-                    .is_some_and(|owner| owner.verify_negative(self, deadline).is_ok())
+                    .is_some_and(|owner| owner.verify_negative(self, deadline).inspect_err(|error| {
+                        eprintln!("heptabao-r72-sync: stage=unchanged_negative_recheck status={}", error.status);
+                    }).is_ok())
             {
                 self.ha_activation = None;
                 self.ha_read_cache = None;

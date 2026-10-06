@@ -1,5 +1,9 @@
 """Harness failures preserve partial observations without copying secrets."""
 import hashlib
+import contextlib
+import io
+import types
+import urllib.error
 import json
 from pathlib import Path
 import sys
@@ -107,6 +111,51 @@ class CoreIsolationHarnessTests(unittest.TestCase):
             self.assertTrue(result["rows_truncated"])
             self.assertEqual(result["examined_bytes"], 128 * 1024)
             self.assertEqual(len(result["rows"]), 64)
+
+
+class TransportDiagnosticReportTests(unittest.TestCase):
+    def test_startup_exception_preserves_closed_diagnostic_in_report_and_stdout(self):
+        sentinel = "synthetic-private-peer-startup"
+        class FailedInstance:
+            def __init__(self, binary, root):
+                self.root = root
+                root.mkdir(mode=0o700)
+                (root / "server.log").write_text(sentinel)
+            def start(self):
+                raise urllib.error.URLError(ConnectionResetError(104, sentinel))
+            def stop(self):
+                pass
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory);root.chmod(0o700)
+            output = root / "report.json"
+            fake_spec = types.SimpleNamespace(loader=types.SimpleNamespace(exec_module=lambda _: None))
+            fake_module = types.SimpleNamespace(Instance=FailedInstance)
+            stdout = io.StringIO()
+            with patch.object(sys, 'argv', ['compare','--binary',sys.executable,'--output',str(output)]), \
+                    patch.object(core_isolation.importlib.util,'spec_from_file_location',return_value=fake_spec), \
+                    patch.object(core_isolation.importlib.util,'module_from_spec',return_value=fake_module), \
+                    contextlib.redirect_stdout(stdout):
+                code = core_isolation.main()
+            self.assertEqual(code, 1)
+            report = json.loads(output.read_text())
+            expected = {"top_level": {
+                "fixture_phase": "candidate_startup", "phase": "fixture_call",
+                "exception_class": "urllib.error.URLError",
+                "reason_exception_class": "ConnectionResetError", "reason_errno": 104,
+            }}
+            self.assertEqual(report["transport_failures"], expected)
+            self.assertEqual(json.loads(stdout.getvalue())["transport_failures"], expected)
+            self.assertEqual(report["safe_failure_code"], "unexpected_URLError")
+            self.assertNotIn(sentinel, output.read_text() + stdout.getvalue())
+            self.assertEqual(report["cases"], {})
+
+    def test_projection_rejects_dynamic_context_and_nontransport_exception(self):
+        result = {}
+        error = OSError(13, "synthetic-private-error")
+        core_isolation.retain_transport_failure(result, "private-url", "candidate_startup", error)
+        core_isolation.retain_transport_failure(result, "top_level", "private-phase", error)
+        core_isolation.retain_transport_failure(result, "top_level", "candidate_startup", RuntimeError("private"))
+        self.assertEqual(result, {})
 
 
 if __name__ == "__main__":

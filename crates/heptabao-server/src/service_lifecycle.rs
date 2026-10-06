@@ -110,6 +110,8 @@ pub(super) enum ProviderMaintenance {
     Acme(Box<pki_acme::ChallengeAttempt>),
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     Sdk(Box<sdk_backend::Plan>),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkCredential(Box<sdk_backend::auth100::Plan>),
     Database(Box<database::DatabaseMaintenance>),
     DatabaseRotation(Box<database::DatabaseRotationMaintenance>),
     OpenLdap(Box<openldap_secret::OpenLdapMaintenance>),
@@ -155,11 +157,20 @@ fn prepare_sdk_provider(writer: &mut Service, clock: RequestClock) -> Option<Pro
         return None;
     }
     let _sdk_scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    writer.sdk_credential_preferred = !writer.sdk_credential_preferred;
+    if writer.sdk_credential_preferred
+        && let Ok(Some(plan)) = writer.prepare_sdk_credential_expiry(clock)
+    {
+        return Some(ProviderMaintenance::SdkCredential(Box::new(plan)));
+    }
+    if let Ok(Some(plan)) = writer.prepare_sdk_expiry(clock) {
+        return Some(ProviderMaintenance::Sdk(Box::new(plan)));
+    }
     writer
-        .prepare_sdk_expiry(clock)
+        .prepare_sdk_credential_expiry(clock)
         .ok()
         .flatten()
-        .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
+        .map(|plan| ProviderMaintenance::SdkCredential(Box::new(plan)))
 }
 
 fn prepare_provider_maintenance(
@@ -334,6 +345,19 @@ pub(crate) fn start_lifecycle_worker(
                         };
                         if writer.finish_sdk_expiry(*plan, result).is_err() {
                             eprintln!("heptabao-lifecycle: SDK revoke remains pending");
+                        }
+                    }
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    ProviderMaintenance::SdkCredential(plan) => {
+                        let result = plan.execute(&service, plan.deadline);
+                        let _scope =
+                            crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+                        let Ok(mut writer) = sdk_backend::writer_before(&service, plan.deadline)
+                        else {
+                            continue;
+                        };
+                        if writer.finish_sdk_credential_expiry(*plan, result).is_err() {
+                            eprintln!("heptabao-lifecycle: SDK credential revoke remains pending");
                         }
                     }
                     ProviderMaintenance::Database(pending) => {

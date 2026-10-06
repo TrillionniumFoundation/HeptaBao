@@ -385,7 +385,9 @@ func run() (outcome error) {
 				m.Auth.Increment = time.Duration(m.IncrementNS)
 				m.Auth.ClientToken = ""
 			} else {
-				if actualType != "secret" || m.Secret == nil || m.Secret.InternalData == nil {
+				// Registered Secret callbacks belong to either verified backend family.
+				// The Service retains their original typed registration owner.
+				if m.Secret == nil || m.Secret.InternalData == nil {
 					return errors.New("missing registered secret lease metadata")
 				}
 				m.Secret.IssueTime = time.Unix(0, m.IssueTimeNS).UTC()

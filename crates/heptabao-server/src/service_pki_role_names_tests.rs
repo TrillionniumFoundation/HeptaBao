@@ -1,5 +1,7 @@
 //! Native name/SAN/no-store cases and genuine protected format publication.
 use super::*;
+#[path = "service_pki_role_key_policy_tests.rs"]
+mod key_policy;
 #[path = "service_pki_role_signature_tests.rs"]
 mod signature_policy;
 

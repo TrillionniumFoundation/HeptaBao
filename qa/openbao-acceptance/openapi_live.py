@@ -150,6 +150,12 @@ def run(binary, output):
                     "PUT", "/v1/sys/auth/openapi-userpass", {"type": "userpass"}
                 )
                 check(side + "_explicit_userpass_mount", enabled.status in (200, 204))
+                enabled_kv = client.request(
+                    "PUT",
+                    "/v1/sys/mounts/openapi-kv",
+                    {"type": "kv", "options": {"version": "2"}},
+                )
+                check(side + "_explicit_kv2_mount", enabled_kv.status in (200, 204))
 
             oracle_response = oracle_client.request(
                 "GET", "/v1/sys/internal/specs/openapi"

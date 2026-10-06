@@ -20,7 +20,7 @@ import sys
 import tempfile
 import time
 
-from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
+from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write, transport_diagnostic
 from official_openbao_launcher import (
     BINARY_SHA256, SUPPORTED_VERSIONS, VERSION, pinned_artifact,
     restart_oracle, start_oracle, stop_oracle,
@@ -156,6 +156,18 @@ def bounded_response_write_observations(path: Path) -> dict:
         ],
     }
 
+def retain_transport_failure(result, context, phase, error):
+    """Retain only static fixture context and the client's closed projection."""
+    if (context not in ("candidate", "oracle", "top_level")
+            or phase not in ("candidate_startup", "candidate_init", "candidate_unseal", "oracle_startup",
+                             "scenario", "candidate_restart_startup", "candidate_restart_unseal",
+                             "oracle_restart_startup", "restart_scenario")):
+        return
+    detail = transport_diagnostic(error)
+    if detail is not None:
+        result.setdefault("transport_failures", {})[context] = {"fixture_phase": phase, **detail}
+
+
 def successful_comparison(cases: dict, side_failures: dict) -> bool:
     """Never admit matching failed/empty prefixes or mismatched observations."""
     if side_failures or set(cases) != {"candidate", "oracle"}:
@@ -258,18 +270,22 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         result["audit_api_profile"] = "deployment_owned_file_v2"
         result["supersedes_candidate_only_idempotent_enable_profile"] = True
     try:
+        phase = "candidate_startup"
         instance.start()
+        phase = "candidate_init"
         status, init = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
         if status != 200:
             raise ScenarioFailure("candidate.init")
         instance.token = init["root_token"]
         candidate_unseal_key = init["keys_base64"][0]
+        phase = "candidate_unseal"
         if instance.call("POST", "sys/unseal", {"key": candidate_unseal_key})[0] != 200:
             raise ScenarioFailure("candidate.unseal")
         candidate = Client(instance.address, str(instance.root / "ca.crt"), instance.token)
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
+        phase = "oracle_startup"
         oracle = start_oracle(port, audit_file=profile == "audit-file-management",
                               version=args.oracle_version)
         result["oracle_storage_backend"] = oracle["storage_backend"]
@@ -281,39 +297,48 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         for name, client in (("candidate", candidate), ("oracle", reference)):
             result["cases"][name] = []
             try:
+                phase = "scenario"
                 side_runner = scenario_runner
                 if name == "oracle" and oracle_scenario_runner is not None:
                     side_runner = oracle_scenario_runner
                 side_runner(client, result["cases"][name])
             except (ScenarioFailure, BaoError) as error:
                 result["side_failures"][name] = str(error)
+                retain_transport_failure(result, name, phase, error)
             except Exception as error:
                 result["side_failures"][name] = "unexpected_" + type(error).__name__
+                retain_transport_failure(result, name, phase, error)
         if restart_runner is not None and not result["side_failures"]:
             for name in ("candidate", "oracle"):
                 try:
                     if name == "candidate":
                         instance.stop()
+                        phase = "candidate_restart_startup"
                         instance.start()
+                        phase = "candidate_restart_unseal"
                         if instance.call("POST", "sys/unseal", {"key": candidate_unseal_key})[0] != 200:
                             raise ScenarioFailure("candidate.restart_unseal")
                         restarted = Client(instance.address, str(instance.root / "ca.crt"), instance.token)
                     else:
                         stop_oracle(oracle)
+                        phase = "oracle_restart_startup"
                         restart_oracle(oracle)
                         restarted = Client(
                             oracle["address"],
                             oracle["ca_file"],
                             private_read(oracle["token_file"], 8192).decode().strip(),
                         )
+                    phase = "restart_scenario"
                     side_restart = restart_runner
                     if name == "oracle" and oracle_restart_runner is not None:
                         side_restart = oracle_restart_runner
                     side_restart(restarted, result["cases"][name])
                 except (ScenarioFailure, BaoError) as error:
                     result["side_failures"][name] = str(error)
+                    retain_transport_failure(result, name, phase, error)
                 except Exception as error:
                     result["side_failures"][name] = "unexpected_" + type(error).__name__
+                    retain_transport_failure(result, name, phase, error)
         result["cases_match"] = result["cases"]["candidate"] == result["cases"]["oracle"]
         result["case_count_per_side"] = len(result["cases"]["candidate"])
         complete = successful_comparison(result["cases"], result["side_failures"])
@@ -321,9 +346,11 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
     except (ScenarioFailure, BaoError) as error:
         result["status"] = "failed"
         result["safe_failure_code"] = str(error)
+        retain_transport_failure(result, "top_level", phase, error)
     except Exception as error:
         result["status"] = "failed"
         result["safe_failure_code"] = "unexpected_" + type(error).__name__
+        retain_transport_failure(result, "top_level", phase, error)
     finally:
         instance.stop()
         result["candidate_response_write_observations"] = bounded_response_write_observations(
@@ -347,6 +374,7 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
                       "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}),
                       "last_completed_case": last_cases,
                       "candidate_response_write_observations": result.get("candidate_response_write_observations"),
+                      "transport_failures": result.get("transport_failures", {}),
                       "full_openbao_compatibility": False}))
     return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
 

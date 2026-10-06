@@ -5,6 +5,7 @@ use super::*;
 use crate::ha::{CommittedApplicationState, CommittedRecordState, CommittedStateRead};
 use crate::state_record_root::StateIdentity;
 use heptabao_raft_runtime::ApplicationReadWitness;
+use std::cell::Cell;
 use std::time::Instant;
 
 // This private result can be constructed only after the same authenticated
@@ -13,11 +14,23 @@ use std::time::Instant;
 pub(super) enum HaSyncProgress {
     Current,
     Superseded(Response),
+    // A failed request with independently verified unchanged local A, not an
+    // authenticated newer-prefix proof and never an invitation to loop/retry.
+    BeforePublicationNoWrite(Response),
+    // Complete local B is preserved only after an actual failed progress check
+    // before any index call. This is still a denial, never a retry authority.
+    CompletedBeforeIndexNoWrite(Response),
 }
 impl HaSyncProgress {
     pub(super) fn from_record_publication(progress: HaRecordPublicationProgress) -> Self {
         match progress {
             HaRecordPublicationProgress::Current => Self::Current,
+            HaRecordPublicationProgress::BeforePublicationNoWrite => {
+                Self::BeforePublicationNoWrite(rejected())
+            }
+            HaRecordPublicationProgress::CompletedBeforeIndexNoWrite => {
+                Self::CompletedBeforeIndexNoWrite(rejected())
+            }
             HaRecordPublicationProgress::UnpublishedSuperseded => Self::Superseded(
                 Response::error(503, "HA received target advanced before local publication"),
             ),
@@ -30,7 +43,9 @@ impl HaSyncProgress {
     pub(super) fn into_result(self) -> Result<(), Response> {
         match self {
             Self::Current => Ok(()),
-            Self::Superseded(error) => Err(error),
+            Self::Superseded(error)
+            | Self::BeforePublicationNoWrite(error)
+            | Self::CompletedBeforeIndexNoWrite(error) => Err(error),
         }
     }
 }
@@ -65,6 +80,9 @@ struct ShamirLocalPublicationOwner {
     unseal_nonce: Zeroizing<String>,
     barrier_digest: [u8; 32],
     deadline: Instant,
+    // Actual A at admission, never the received B or a public input.
+    // Unknown original state cannot authorize negative retention of B.
+    replay_epoch: Option<u64>,
 }
 impl ShamirLocalPublicationOwner {
     fn capture(
@@ -92,6 +110,7 @@ impl ShamirLocalPublicationOwner {
             unseal_nonce: Zeroizing::new(service.unseal_nonce.clone()),
             barrier_digest: crypto::digest(key.as_slice()),
             deadline,
+            replay_epoch: service.state.as_ref().map(|state| state.replay_epoch),
         }))
     }
 
@@ -101,6 +120,17 @@ impl ShamirLocalPublicationOwner {
         service: &Service,
     ) -> Result<(), Response> {
         live(Some(self.deadline))?;
+        self.verify_negative_instance(receipt, service)?;
+        live(Some(self.deadline))
+    }
+
+    // Only integrity observation for a typed NoWrite denial. Expiry still
+    // rejects delivery; this method cannot establish current HA/actor authority.
+    fn verify_negative_instance(
+        &self,
+        receipt: &ReceivedHaState,
+        service: &Service,
+    ) -> Result<(), Response> {
         if receipt.deadline != Some(self.deadline)
             || receipt.state.auth.has_recovery_state()
             || service.recovery_required
@@ -121,8 +151,7 @@ impl ShamirLocalPublicationOwner {
             return Err(rejected());
         }
         self.seal.validate().map_err(|_| rejected())?;
-        receipt.verify_local_seal(service)?;
-        live(Some(self.deadline))
+        receipt.verify_local_seal(service)
     }
 
     fn verify(&self, receipt: &ReceivedHaState, service: &mut Service) -> Result<(), Response> {
@@ -322,6 +351,19 @@ impl UnchangedShamirLocalOwner {
             return Ok(None);
         };
         live(Some(original_deadline))?;
+        Self::capture_negative_observation(service, deadline)
+    }
+
+    // Private constructor for negative NoWrite integrity observations; its exact
+    // admitted original deadline/instance/previous identity were already bound.
+    // No clock sample or late request grant is created here.
+    fn capture_negative_observation(
+        service: &mut Service,
+        deadline: Option<Instant>,
+    ) -> Result<Option<Self>, Response> {
+        let Some(original_deadline) = deadline else {
+            return Ok(None);
+        };
         let state = service.state.as_ref().ok_or_else(rejected)?;
         let seal = service.seal.as_ref().ok_or_else(rejected)?;
         if seal.is_wrapper() || state.auth.has_recovery_state() {
@@ -489,6 +531,46 @@ impl UnchangedShamirLocalOwner {
     }
 }
 
+// Only the actual error arm before any record staging, epoch activation or
+// index write constructs this affine negative-only token. It cannot be made
+// from an arbitrary Response or a post-publication/index failure.
+struct BeforePublicationNoWrite<'a> {
+    receipt: &'a ReceivedHaState,
+}
+
+impl BeforePublicationNoWrite<'_> {
+    fn retain_original_a(self, service: &mut Service) -> Result<(), Response> {
+        let receipt = self.receipt;
+        let original = receipt.shamir_owner.as_ref().ok_or_else(rejected)?;
+        original.verify_negative_instance(receipt, service)?;
+        if receipt.source_witness.is_none()
+            || service.current_state_identity()? != receipt.previous
+            || service.durable.as_ref().ok_or_else(rejected)?.generation() != receipt.generation
+        {
+            return Err(rejected());
+        }
+        let physical =
+            UnchangedShamirLocalOwner::capture_negative_observation(service, receipt.deadline)?
+                .ok_or_else(rejected)?;
+        if physical.identity != receipt.previous || physical.generation != receipt.generation {
+            return Err(rejected());
+        }
+        // Each observation loads actual HBS/HBJ/HBL and rejects partial or
+        // repair-required material, then compares full authenticated logical/
+        // root/publication/replay frontier and writer-directory ownership.
+        physical.verify_negative(service, receipt.deadline)?;
+        original.verify_negative_instance(receipt, service)?;
+        if service.current_state_identity()? != receipt.previous
+            || service.durable.as_ref().ok_or_else(rejected)?.generation() != receipt.generation
+        {
+            return Err(rejected());
+        }
+        service.ha_activation = None;
+        service.ha_read_cache = None;
+        Ok(())
+    }
+}
+
 enum ReceivedPublication {
     Materialized {
         owner_manifest_digest: Option<[u8; 32]>,
@@ -513,6 +595,76 @@ impl ReceivedHaRecords {
 /// readback may construct this token. Unknown write outcomes never enter it.
 pub(super) struct CompletedLocalPublication<'a> {
     receipt: &'a ReceivedHaState,
+    // Captured only after actual complete B publication/readback under this
+    // live writer. A later generation cannot inherit the negative B proof.
+    publication_generation: u64,
+    // Mark the actual index entry, including early rejection or a Shamir no-op.
+    // Unchanged files alone cannot prove that an index call was never attempted.
+    index_called: Cell<bool>,
+}
+
+// Constructed only in the actual first-progress Err arm after complete Records
+// B readback, before the index entry or installing the prepared epoch activation.
+// It retains no quorum witness and cannot grant a response, retry or index write.
+struct CompletedBeforeIndexNoWrite<'a, 'receipt> {
+    completed: &'a CompletedLocalPublication<'receipt>,
+    scope_deadline: Instant,
+}
+impl CompletedBeforeIndexNoWrite<'_, '_> {
+    fn retain_complete_b(self, service: &mut Service) -> Result<(), Response> {
+        let completed = self.completed;
+        let receipt = completed.receipt;
+        let original = receipt.shamir_owner.as_ref().ok_or_else(rejected)?;
+        let ReceivedPublication::Records { root_bytes } = &receipt.publication else {
+            return Err(rejected());
+        };
+        original.verify_negative_instance(receipt, service)?;
+        if completed.index_called.get()
+            || original.replay_epoch != Some(receipt.state.replay_epoch)
+            || receipt.source_witness.is_none()
+            || self.scope_deadline > original.deadline
+            || crate::request_deadline::current() != Some(self.scope_deadline)
+            || service.current_state_identity()? != receipt.identity
+            || service.durable.as_ref().ok_or_else(rejected)?.generation()
+                != completed.publication_generation
+        {
+            return Err(rejected());
+        }
+        let physical =
+            UnchangedShamirLocalOwner::capture_negative_observation(service, receipt.deadline)?
+                .ok_or_else(rejected)?;
+        if physical.identity != receipt.identity
+            || physical.generation != completed.publication_generation
+            || physical.logical.as_slice() != receipt.logical.as_slice()
+            || physical.published.as_slice() != root_bytes.as_slice()
+        {
+            return Err(rejected());
+        }
+        // Both observations load real HBS/HBJ/HBL, authenticate the complete
+        // snapshot/journal/ledger and compare the exact B graph/root/frontier,
+        // replay and held writer directory; no repair or publication is allowed.
+        physical.verify_negative(service, receipt.deadline)?;
+        original.verify_negative_instance(receipt, service)?;
+        if completed.index_called.get()
+            || crate::request_deadline::current() != Some(self.scope_deadline)
+            || service.current_state_identity()? != receipt.identity
+            || service.durable.as_ref().ok_or_else(rejected)?.generation()
+                != completed.publication_generation
+        {
+            return Err(rejected());
+        }
+        // Same actual A/B replay plus original nonce proves no deferred epoch
+        // activation can be lost behind cached B. Cross-epoch B remains fenced.
+        // Expired scopes permit only this integrity denial, no grant.
+        service.ha_activation = None;
+        service.ha_read_cache = None;
+        eprintln!(
+            "HBHA-R76-NO-WRITE phase=completed_before_index complete_b_digest={:02x?} durable_generation={} index_called=false",
+            completed.identity().digest(),
+            completed.publication_generation
+        );
+        Ok(())
+    }
 }
 
 /// A readonly proof of this live Wrapper's already complete durable B. It
@@ -680,6 +832,7 @@ impl ExistingLocalPublication {
 /// both required. This private token never authorizes serving B or writing C.
 pub(super) struct KnownIndexPublicationCompleted<'a> {
     receipt: &'a ReceivedHaState,
+    publication_generation: u64,
     publication: super::recovery_keys::ReadbackRecoveryIndexPublication,
 }
 
@@ -696,6 +849,8 @@ pub(super) enum HaRecordPublicationProgress {
     Current,
     CompletedSuperseded,
     UnpublishedSuperseded,
+    BeforePublicationNoWrite,
+    CompletedBeforeIndexNoWrite,
 }
 
 // This proof never installs or writes the newer target. The next owned pass
@@ -848,6 +1003,10 @@ impl CompletedLocalPublication<'_> {
         self.receipt.deadline
     }
 
+    pub(super) fn mark_index_called(&self) {
+        self.index_called.set(true);
+    }
+
     pub(super) fn verify_local_publication(&self, service: &mut Service) -> Result<(), Response> {
         self.receipt.verify_local_publication(service)
     }
@@ -860,6 +1019,7 @@ impl CompletedLocalPublication<'_> {
         KnownIndexPublicationCompleted::verify_parts(self.receipt, &publication, service)?;
         Ok(KnownIndexPublicationCompleted {
             receipt: self.receipt,
+            publication_generation: self.publication_generation,
             publication,
         })
     }
@@ -1073,6 +1233,8 @@ impl KnownIndexPublicationCompleted<'_> {
         // complete current C/D target and its actual strict-newer applied log.
         CompletedLocalPublication {
             receipt: self.receipt,
+            publication_generation: self.publication_generation,
+            index_called: Cell::new(true),
         }
         .superseding_target(service)?;
         self.verify_completed(service)?;
@@ -1237,11 +1399,16 @@ impl ReceivedHaState {
     }
 
     fn before_record_publication(&self, service: &mut Service) -> Result<bool, Response> {
-        live(self.deadline)?;
-        self.verify_local_seal(service)?;
-        if service.current_state_identity()? != self.previous
+        live(self.deadline).inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=deadline"))?;
+        self.verify_local_seal(service)
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=local_seal"))?;
+        if service
+            .current_state_identity()
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=current_identity"))?
+            != self.previous
             || service.durable.as_ref().ok_or_else(rejected)?.generation() != self.generation
         {
+            eprintln!("HBHA-R74-BEFORE-RECORD guard=previous_identity_generation");
             return Err(rejected());
         }
         service
@@ -1249,33 +1416,47 @@ impl ReceivedHaState {
             .as_mut()
             .ok_or_else(rejected)?
             .verify_live_ownership()
-            .map_err(|_| rejected())?;
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=directory_lease"))?;
         // Wrapper/legacy owners retain their existing strict admission. Only a
         // captured actual Shamir instance can prove an unpublished local A.
         let Some(owner) = self.shamir_owner.as_ref() else {
-            service.verify_ha_state_identity(self.identity)?;
-            live(self.deadline)?;
+            service
+                .verify_ha_state_identity(self.identity)
+                .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=non_shamir_identity"))?;
+            live(self.deadline)
+                .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=deadline"))?;
             return Ok(true);
         };
-        owner.verify_instance(self, service)?;
+        owner
+            .verify_instance(self, service)
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=shamir_instance"))?;
         let (current, _) = owner
             .ha
             .lock_for_request()
-            .map_err(|_| rejected())?
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=ha_lock"))?
             .application_identity_witness()
-            .map_err(|_| rejected())?;
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=current_readindex"))?;
         if current == self.identity {
-            live(self.deadline)?;
+            live(self.deadline)
+                .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=deadline"))?;
             return Ok(true);
         }
-        let original = UnpublishedLocalAdmission::capture(self, service)?;
-        let selected = select_superseding_application(self, service)?;
-        let target = verify_superseding_application(self, service, selected)?;
+        let original = UnpublishedLocalAdmission::capture(self, service)
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=local_a_capture"))?;
+        let selected = select_superseding_application(self, service)
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=select_superseding"))?;
+        let target = verify_superseding_application(self, service, selected)
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=verify_superseding"))?;
         // Revalidate the complete original A after all quorum/decryption work.
         // No B staging, epoch activation, local index write or durable effect has
         // been attempted on this path.
-        original.verify(self, service)?;
-        live(self.deadline)?;
+        original
+            .verify(self, service)
+            .inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=local_a_final_verify"))?;
+        live(self.deadline).inspect_err(|_| eprintln!("HBHA-R74-BEFORE-RECORD guard=deadline"))?;
         service.ha_activation = None;
         service.ha_read_cache = None;
         eprintln!(
@@ -1415,7 +1596,11 @@ impl ReceivedHaState {
             .verify_live_ownership()
             .map_err(|_| rejected())?;
         live(self.deadline)?;
-        Ok(CompletedLocalPublication { receipt: self })
+        Ok(CompletedLocalPublication {
+            receipt: self,
+            publication_generation: service.durable.as_ref().ok_or_else(rejected)?.generation(),
+            index_called: Cell::new(false),
+        })
     }
 }
 
@@ -1536,8 +1721,19 @@ impl Service {
         &mut self,
         received: ReceivedHaRecords,
     ) -> Result<HaRecordPublicationProgress, Response> {
-        if !received.owner.before_record_publication(self)? {
-            return Ok(HaRecordPublicationProgress::UnpublishedSuperseded);
+        match received.owner.before_record_publication(self) {
+            Ok(true) => {}
+            Ok(false) => return Ok(HaRecordPublicationProgress::UnpublishedSuperseded),
+            Err(_original_denial) => {
+                // This actual arm precedes every record/index/epoch attempt.
+                // A negative proof may preserve only the exact original A;
+                // failure of that proof keeps the existing permanent fence.
+                BeforePublicationNoWrite {
+                    receipt: &received.owner,
+                }
+                .retain_original_a(self)?;
+                return Ok(HaRecordPublicationProgress::BeforePublicationNoWrite);
+            }
         }
         // Capacity is checked before immutable object staging; a failure is an
         // already committed HA owner that this node cannot yet materialize.
@@ -1548,25 +1744,81 @@ impl Service {
             .map_err(|_| rejected())?;
         self.persist_record_plan_local(&received.plan, &operation, true)
             .map_err(|_| rejected())?;
-        let completed = received.owner.after_publication(self)?;
+        let completed = received
+            .owner
+            .after_publication(self)
+            .inspect_err(|error| {
+                eprintln!(
+                    "heptabao-r72-sync: stage=records_after_publication status={}",
+                    error.status
+                );
+            })?;
         self.record_root = Some(received.plan.root);
         self.state_digest = Some(received.owner.identity.digest());
         self.state = Some(received.owner.state.clone());
-        if completed.publication_progress(self)? == HaLocalPublicationProgress::Superseded {
-            return Ok(HaRecordPublicationProgress::CompletedSuperseded);
+        eprintln!(
+            "HBHA-R73-LOCAL-B phase=records_installed completed_digest={:02x?} cached_digest={:02x?} loaded_schema={:?} durable_generation={:?}",
+            completed.identity().digest(),
+            self.state_digest,
+            self.state.as_ref().map(|state| state.schema),
+            self.durable.as_ref().map(|durable| durable.generation())
+        );
+        match self.observe_completed_before_index_progress(&completed)? {
+            HaRecordPublicationProgress::Current => {}
+            denied => return Ok(denied),
         }
-        if self.reconcile_completed_ha_recovery_index(&completed)?
+        if self
+            .reconcile_completed_ha_recovery_index(&completed)
+            .inspect_err(|error| {
+                eprintln!(
+                    "heptabao-r72-sync: stage=records_completed_index status={}",
+                    error.status
+                );
+            })?
             == HaLocalPublicationProgress::Superseded
         {
             return Ok(HaRecordPublicationProgress::CompletedSuperseded);
         }
         self.finish_completed_ha_publication(&completed, activation)
+            .inspect_err(|error| {
+                eprintln!(
+                    "heptabao-r72-sync: stage=records_finish_activation status={}",
+                    error.status
+                );
+            })
             .map(|progress| match progress {
                 HaLocalPublicationProgress::Current => HaRecordPublicationProgress::Current,
                 HaLocalPublicationProgress::Superseded => {
                     HaRecordPublicationProgress::CompletedSuperseded
                 }
             })
+    }
+
+    // This first observation is the sole negative-token minting boundary.
+    // No arbitrary Response, later index error or unverified B enters it.
+    fn observe_completed_before_index_progress(
+        &mut self,
+        completed: &CompletedLocalPublication<'_>,
+    ) -> Result<HaRecordPublicationProgress, Response> {
+        match completed.publication_progress(self).inspect_err(|error| {
+            eprintln!(
+                "heptabao-r72-sync: stage=records_completed_progress status={}",
+                error.status
+            );
+        }) {
+            Ok(HaLocalPublicationProgress::Current) => Ok(HaRecordPublicationProgress::Current),
+            Ok(HaLocalPublicationProgress::Superseded) => {
+                Ok(HaRecordPublicationProgress::CompletedSuperseded)
+            }
+            Err(_) => {
+                CompletedBeforeIndexNoWrite {
+                    completed,
+                    scope_deadline: crate::request_deadline::current().ok_or_else(rejected)?,
+                }
+                .retain_complete_b(self)?;
+                Ok(HaRecordPublicationProgress::CompletedBeforeIndexNoWrite)
+            }
+        }
     }
 
     // Keep the terminal observation under the same actual publication owner.
@@ -2453,6 +2705,70 @@ mod tests {
         let _narrow = crate::request_deadline::RequestDeadlineScope::enter(expired);
         assert!(live(Some(Instant::now() + Duration::from_secs(15))).is_err());
     }
+    #[test]
+    fn real_raft_before_publication_no_write_quorum_denial_preserves_only_original_a() -> TestResult
+    {
+        actual_unpublished_shamir_case("beforepub_quorum")
+    }
+    #[test]
+    fn real_raft_before_publication_no_write_expiry_remains_denial_without_retry() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_expired")
+    }
+    #[test]
+    fn real_raft_before_publication_no_write_rejects_actual_physical_mac_damage() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_damage")
+    }
+    #[test]
+    fn real_raft_before_publication_no_write_rejects_actual_generation_change() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_changed")
+    }
+    #[test]
+    fn real_raft_before_publication_no_write_rejects_changed_original_instance() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_instance")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_quorum_denial_preserves_only_complete_b()
+    -> TestResult {
+        actual_unpublished_shamir_case("completed_no_write_quorum")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_expired_budget_withholds_without_retry_or_epoch_activation()
+    -> TestResult {
+        actual_unpublished_shamir_case("completed_no_write_expired")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_actual_post_b_physical_mac_damage_cannot_retain()
+    -> TestResult {
+        actual_unpublished_shamir_case("completed_no_write_damage")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_actual_post_b_generation_change_cannot_retain()
+    -> TestResult {
+        actual_unpublished_shamir_case("completed_no_write_changed")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_actual_index_call_excludes_even_noop_retention()
+    -> TestResult {
+        actual_unpublished_shamir_case("completed_no_write_index_called")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_changed_original_nonce_cannot_retain() -> TestResult
+    {
+        actual_unpublished_shamir_case("completed_no_write_instance")
+    }
+
+    #[test]
+    fn real_raft_completed_before_index_no_write_cross_epoch_b_cannot_lose_original_nonce_invalidation()
+    -> TestResult {
+        actual_unpublished_shamir_case("completed_no_write_epoch")
+    }
+
     fn actual_unpublished_shamir_case(case: &str) -> TestResult {
         let root = Root::new();
         let mut service = root.service()?;
@@ -2470,6 +2786,11 @@ mod tests {
         let a = service.state.clone().ok_or("A")?;
         let a_identity = service.current_state_identity().map_err(|_| "A identity")?;
         let mut b = a.clone();
+        if case == "completed_no_write_epoch" {
+            // Keeping a changed-epoch B without installing its prepared nonce
+            // could make the next same-epoch C skip invalidating A admissions.
+            b.replay_epoch += 1;
+        }
         b.engines.handle(
             "",
             "POST",
@@ -2494,6 +2815,247 @@ mod tests {
             .receive_ha_records(&cluster.processes[1], &committed_b)
             .map_err(|_| "actual B receipt")?;
         assert!(received.owner.shamir_owner.is_some());
+        if case.starts_with("completed_no_write_") {
+            assert!(
+                received
+                    .owner
+                    .before_record_publication(&mut service)
+                    .map_err(|_| "actual B before publication")?
+            );
+            let nonce_a = service.unseal_nonce.clone();
+            let prepared_epoch = service
+                .prepare_epoch_activation(b.replay_epoch, true)
+                .map_err(|_| "prepare original epoch")?;
+            assert_eq!(prepared_epoch.is_some(), case == "completed_no_write_epoch");
+            service
+                .persist_record_plan_local(&received.plan, "completed-before-index-B", true)
+                .map_err(|_| "actual encrypted Records B publication")?;
+            let completed = received
+                .owner
+                .after_publication(&mut service)
+                .map_err(|_| "actual complete B readback")?;
+            service.record_root = Some(received.plan.root.clone());
+            service.state_digest = Some(received.owner.identity.digest());
+            service.state = Some(received.owner.state.clone());
+            let generation_b = service.durable.as_ref().ok_or("durable")?.generation();
+            assert_eq!(completed.publication_generation, generation_b);
+            assert!(!completed.index_called.get());
+            assert_eq!(service.unseal_nonce, nonce_a);
+            let stored_b = service
+                .durable
+                .as_ref()
+                .ok_or("durable")?
+                .get("system", "state")?;
+            let physical_before: Vec<_> = fs::read_dir(&service.data_dir)?
+                .map(|entry| {
+                    let entry = entry?;
+                    Ok::<_, std::io::Error>((
+                        entry.file_name(),
+                        entry
+                            .file_type()?
+                            .is_file()
+                            .then(|| fs::read(entry.path()))
+                            .transpose()?,
+                    ))
+                })
+                .collect::<Result<_, _>>()?;
+            match case {
+                "completed_no_write_quorum" | "completed_no_write_expired" => {
+                    if case == "completed_no_write_quorum" {
+                        cluster.isolate_all_peers(true);
+                    }
+                    let denied_bound = if case == "completed_no_write_expired" {
+                        Instant::now() - Duration::from_millis(1)
+                    } else {
+                        Instant::now() + Duration::from_millis(250)
+                    };
+                    let progress = {
+                        let _denied =
+                            crate::request_deadline::RequestDeadlineScope::enter(denied_bound);
+                        service
+                            .observe_completed_before_index_progress(&completed)
+                            .map_err(|_| "complete B negative-only integrity")?
+                    };
+                    assert_eq!(
+                        progress,
+                        HaRecordPublicationProgress::CompletedBeforeIndexNoWrite
+                    );
+                    assert!(!completed.index_called.get());
+                    assert!(!service.recovery_required);
+                    assert!(service.ha_activation.is_none());
+                    assert!(service.ha_read_cache.is_none());
+                    assert_eq!(service.unseal_nonce, nonce_a);
+                    assert_eq!(
+                        service.current_state_identity().map_err(|_| "local B")?,
+                        received.owner.identity
+                    );
+                    assert_eq!(
+                        service.durable.as_ref().ok_or("durable")?.generation(),
+                        generation_b
+                    );
+                    assert_eq!(
+                        service
+                            .durable
+                            .as_ref()
+                            .ok_or("durable")?
+                            .get("system", "state")?,
+                        stored_b
+                    );
+                    for (leaf, bytes) in physical_before {
+                        if let Some(bytes) = bytes {
+                            assert_eq!(fs::read(service.data_dir.join(leaf))?, bytes);
+                        }
+                    }
+                    let denial = HaSyncProgress::from_record_publication(progress)
+                        .into_result()
+                        .err()
+                        .ok_or("still denied")?;
+                    assert_eq!(denial.status, 503);
+                    assert!(denial.body.get("data").is_none());
+                    assert!(denial.body.get("auth").is_none());
+                    assert!(denial.response_headers.is_empty());
+                    cluster.isolate_all_peers(false);
+                    assert!(
+                        service
+                            .continue_forward_local_sync(
+                                HaSyncProgress::CompletedBeforeIndexNoWrite(denial),
+                                crate::request_deadline::current().ok_or("original bound")?,
+                            )
+                            .is_err()
+                    );
+                    assert_eq!(
+                        service.current_state_identity().map_err(|_| "B still")?,
+                        received.owner.identity
+                    );
+                    // No old completion is retried. A new request obtains
+                    // genuine ReadIndex and authenticates the complete C graph.
+                    let mut c = b.clone();
+                    c.engines.handle(
+                        "",
+                        "POST",
+                        "sys/mounts/completed-no-write-c",
+                        &json!({"type":"kv"}),
+                        100,
+                    )?;
+                    let c_plan = service.prepare_record_plan(&mut c).map_err(|_| "C plan")?;
+                    cluster.processes[0]
+                        .lock()
+                        .map_err(|_| "HA")?
+                        .commit_record_state(
+                            "completed-no-write-C",
+                            &received.owner.identity,
+                            &c_plan.bytes,
+                            &c_plan.objects,
+                        )?;
+                    service
+                        .sync_from_ha()
+                        .map_err(|_| "fresh independent C sync")?;
+                    assert_eq!(
+                        service.current_state_identity().map_err(|_| "actual C")?,
+                        c_plan.identity
+                    );
+                    assert!(!service.recovery_required);
+                }
+                "completed_no_write_damage"
+                | "completed_no_write_changed"
+                | "completed_no_write_index_called"
+                | "completed_no_write_instance"
+                | "completed_no_write_epoch" => {
+                    if case == "completed_no_write_damage" {
+                        use std::io::{Read, Seek, SeekFrom, Write};
+                        let mut file = fs::OpenOptions::new()
+                            .read(true)
+                            .write(true)
+                            .open(service.data_dir.join("state.hbs"))?;
+                        let len = file.metadata()?.len();
+                        assert!(len > 0);
+                        file.seek(SeekFrom::Start(len / 2))?;
+                        let mut byte = [0u8; 1];
+                        file.read_exact(&mut byte)?;
+                        byte[0] ^= 1;
+                        file.seek(SeekFrom::Start(len / 2))?;
+                        file.write_all(&byte)?;
+                        file.sync_all()?;
+                        assert_eq!(file.metadata()?.len(), len);
+                    } else if case == "completed_no_write_changed" {
+                        service
+                            .durable
+                            .as_mut()
+                            .ok_or("durable")?
+                            .put(PutRequest::new(
+                                "completed-B-actual-independent-write",
+                                "system",
+                                "independent-write",
+                                "negative",
+                                crypto::digest(b"independent-write"),
+                                Secret::new(b"independent-write".to_vec())?,
+                            )?)?;
+                        assert_ne!(
+                            service.durable.as_ref().ok_or("durable")?.generation(),
+                            generation_b
+                        );
+                    } else if case == "completed_no_write_index_called" {
+                        // Shamir's real index entry may be a no-op. Calling it
+                        // still permanently excludes the before-index proof.
+                        assert_eq!(
+                            service
+                                .reconcile_completed_ha_recovery_index(&completed)
+                                .map_err(|_| "actual index entry")?,
+                            HaLocalPublicationProgress::Current
+                        );
+                        assert!(completed.index_called.get());
+                        assert_eq!(
+                            service.durable.as_ref().ok_or("durable")?.generation(),
+                            generation_b
+                        );
+                    } else if case == "completed_no_write_instance" {
+                        service.unseal_nonce.push('x');
+                    } else {
+                        // Establish every other physical/instance/B binding
+                        // positively, then isolate the cross-epoch refusal.
+                        let original = received.owner.shamir_owner.as_ref().ok_or("owner")?;
+                        original
+                            .verify_negative_instance(&received.owner, &service)
+                            .map_err(|_| "same original Shamir instance")?;
+                        assert_eq!(original.replay_epoch, Some(a.replay_epoch));
+                        assert_ne!(original.replay_epoch, Some(b.replay_epoch));
+                        assert_eq!(service.unseal_nonce, nonce_a);
+                        assert!(!completed.index_called.get());
+                        let physical = UnchangedShamirLocalOwner::capture_negative_observation(
+                            &mut service,
+                            completed.deadline(),
+                        )
+                        .map_err(|_| "actual complete cross-epoch B physical proof")?
+                        .ok_or("Shamir physical owner")?;
+                        assert_eq!(physical.identity, completed.identity());
+                        assert_eq!(physical.generation, completed.publication_generation);
+                        assert_eq!(
+                            physical.logical.as_slice(),
+                            received.owner.logical.as_slice()
+                        );
+                        let ReceivedPublication::Records { root_bytes } =
+                            &received.owner.publication
+                        else {
+                            return Err("Records B required".into());
+                        };
+                        assert_eq!(physical.published.as_slice(), root_bytes.as_slice());
+                        physical
+                            .verify_negative(&mut service, completed.deadline())
+                            .map_err(|_| "physical B final proof")?;
+                    }
+                    let _expired = crate::request_deadline::RequestDeadlineScope::enter(
+                        Instant::now() - Duration::from_millis(1),
+                    );
+                    assert!(
+                        service
+                            .observe_completed_before_index_progress(&completed)
+                            .is_err()
+                    );
+                }
+                _ => return Err("unknown completed-before-index case".into()),
+            }
+            return Ok(());
+        }
         let generation_a = service.durable.as_ref().ok_or("durable")?.generation();
         let stored_a = service
             .durable
@@ -2519,6 +3081,125 @@ mod tests {
                 &c_plan.objects,
             )?;
         match case {
+            "beforepub_quorum" | "beforepub_expired" => {
+                let bytes_before = ["state.hbs", "journal.hbj", "ledger.hbl", "seal.json"]
+                    .map(|leaf| fs::read(service.data_dir.join(leaf)));
+                if case == "beforepub_quorum" {
+                    cluster.isolate_all_peers(true);
+                }
+                let original_bound = if case == "beforepub_expired" {
+                    Instant::now() - Duration::from_millis(1)
+                } else {
+                    Instant::now() + Duration::from_millis(250)
+                };
+                let publication = {
+                    let _denied =
+                        crate::request_deadline::RequestDeadlineScope::enter(original_bound);
+                    service
+                        .install_committed_ha_records(received)
+                        .map_err(|_| "actual before-publication NoWrite observation")?
+                };
+                assert_eq!(
+                    publication,
+                    HaRecordPublicationProgress::BeforePublicationNoWrite
+                );
+                assert!(!service.recovery_required);
+                assert!(service.ha_activation.is_none());
+                assert!(service.ha_read_cache.is_none());
+                assert_eq!(
+                    service.current_state_identity().map_err(|_| "A")?,
+                    a_identity
+                );
+                assert_eq!(
+                    service.durable.as_ref().ok_or("durable")?.generation(),
+                    generation_a
+                );
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .ok_or("durable")?
+                        .get("system", "state")?,
+                    stored_a
+                );
+                for (leaf, before) in ["state.hbs", "journal.hbj", "ledger.hbl", "seal.json"]
+                    .into_iter()
+                    .zip(bytes_before)
+                {
+                    assert_eq!(fs::read(service.data_dir.join(leaf)).ok(), before.ok());
+                }
+                let denial = HaSyncProgress::from_record_publication(publication)
+                    .into_result()
+                    .err()
+                    .ok_or("delivery must remain denied")?;
+                assert_eq!(denial.status, 503);
+                assert!(denial.body.get("data").is_none());
+                assert!(denial.body.get("auth").is_none());
+                assert!(denial.response_headers.is_empty());
+                // The opaque NoWrite denial cannot enter completed-forward's
+                // pure-local retry loop, even after quorum returns.
+                cluster.isolate_all_peers(false);
+                assert!(
+                    service
+                        .continue_forward_local_sync(
+                            HaSyncProgress::BeforePublicationNoWrite(denial),
+                            crate::request_deadline::current().ok_or("original deadline")?,
+                        )
+                        .is_err()
+                );
+                assert_eq!(
+                    service.current_state_identity().map_err(|_| "A still")?,
+                    a_identity
+                );
+                // Only a new independent ordinary sync can obtain its own
+                // genuine ReadIndex and install C.
+                service
+                    .sync_from_ha()
+                    .map_err(|_| "independent current C sync")?;
+                assert_eq!(
+                    service.current_state_identity().map_err(|_| "C")?,
+                    c_plan.identity
+                );
+            }
+            "beforepub_damage" | "beforepub_changed" | "beforepub_instance" => {
+                if case == "beforepub_damage" {
+                    use std::io::{Read, Seek, SeekFrom, Write};
+                    let mut file = fs::OpenOptions::new()
+                        .read(true)
+                        .write(true)
+                        .open(service.data_dir.join("state.hbs"))?;
+                    let original_len = file.metadata()?.len();
+                    assert!(original_len > 0);
+                    let offset = original_len / 2;
+                    file.seek(SeekFrom::Start(offset))?;
+                    let mut actual = [0u8; 1];
+                    file.read_exact(&mut actual)?;
+                    actual[0] ^= 1;
+                    file.seek(SeekFrom::Start(offset))?;
+                    file.write_all(&actual)?;
+                    file.sync_all()?;
+                    assert_eq!(file.metadata()?.len(), original_len);
+                } else if case == "beforepub_changed" {
+                    service
+                        .durable
+                        .as_mut()
+                        .ok_or("durable")?
+                        .put(PutRequest::new(
+                            "before-publication-negative",
+                            "system",
+                            "actual-independent-write",
+                            "negative-marker",
+                            crypto::digest(b"actual-independent-write"),
+                            Secret::new(b"actual-independent-write".to_vec())?,
+                        )?)?;
+                } else {
+                    service.unseal_nonce.push('x');
+                }
+                let _expired = crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() - Duration::from_millis(1),
+                );
+                assert!(service.install_committed_ha_records(received).is_err());
+            }
             "forward" | "forward_expired" | "forward_quorum" => {
                 let publication = service
                     .install_committed_ha_records(received)

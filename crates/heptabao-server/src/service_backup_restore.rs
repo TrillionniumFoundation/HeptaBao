@@ -329,6 +329,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            && incoming.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade batch or credential SDK Secret ownership",
+            ));
+        }
         incoming
             .validate_namespace_batch_state()
             .map_err(|_| Response::error(400, "invalid snapshot namespace batch lifecycle"))?;
@@ -387,6 +395,18 @@ impl Service {
             .map_err(|error| Response::error(400, &error.message))?;
         incoming
             .engines
+            .validate_pki_revocation_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            && incoming.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI ordinary revocation ownership",
+            ));
+        }
+        incoming
+            .engines
             .validate_kubernetes_artifact_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
         incoming
@@ -397,6 +417,14 @@ impl Service {
             return Err(Response::error(
                 400,
                 "snapshot would downgrade PKI URL ownership",
+            ));
+        }
+        if current.schema >= PKI_KEY_POLICY_STATE_SCHEMA
+            && incoming.schema < PKI_KEY_POLICY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI subject key policy",
             ));
         }
         if current.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA
