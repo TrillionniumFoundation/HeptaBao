@@ -1644,8 +1644,7 @@ fn identity_namespace_uuid_native_service_and_encrypted_reopen() -> TestResult {
         204
     );
     let mounts = call(&mut service, "native", &admin, "GET", "sys/auth", json!({}));
-    let accessor = text(&mounts.body, "/data/userpass~/accessor")
-        .or_else(|_| text(&mounts.body, "/data/userpass~1/accessor"))?;
+    let accessor = text(&mounts.body, "/data/userpass~1/accessor")?;
     let entity = call(
         &mut service,
         "native",

@@ -21,6 +21,7 @@ mod external_keys;
 mod identity;
 #[path = "engine_identity.rs"]
 mod identity_projection;
+pub(crate) use identity_projection::IdentityNamespace;
 use identity_projection::IdentityProjection;
 #[path = "engine_help.rs"]
 mod help;

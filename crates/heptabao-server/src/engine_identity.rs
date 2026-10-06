@@ -105,6 +105,7 @@ impl EngineState {
             .update_login_metadata(accessor, alias, metadata, now)
     }
 
+    #[cfg(test)]
     pub(crate) fn bind_login_identity(
         &mut self,
         namespace: &str,
