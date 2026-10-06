@@ -190,7 +190,12 @@ impl AuthState {
         sdk.special_paths = Some(paths);
         Ok(())
     }
-    pub(super) fn sdk_public_path(&self, namespace: &str, path: &str) -> Option<bool> {
+    pub(super) fn sdk_public_path(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> Option<bool> {
         let binding = self.sdk_auth_binding(namespace, path).ok().flatten()?;
         let relative = path.strip_prefix(&format!("auth/{}/", binding.mount))?;
         let paths = match self.sdk_auth_paths(&binding) {
@@ -198,7 +203,11 @@ impl AuthState {
             Ok(None) => Paths::legacy(),
             Err(_) => return Some(false),
         };
-        Some(paths.is_public(relative))
+        Some(
+            paths.is_public(&heptabao_plugin_contracts::sdk_paths::request_path(
+                relative, method,
+            )),
+        )
     }
     pub(crate) fn sdk_auth_clock_floor(&self) -> Option<Timestamp> {
         self.sdk_auth_clock

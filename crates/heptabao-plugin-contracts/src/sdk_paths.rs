@@ -67,6 +67,16 @@ pub fn matches(patterns: &[String], path: &str) -> bool {
         })
 }
 
+/// Native List dispatch adds a trailing slash before special-path matching and
+/// before the SDK backend sees Request.Path. This does not change admission.
+pub fn request_path<'a>(path: &'a str, method: &str) -> std::borrow::Cow<'a, str> {
+    if matches!(method, "LIST" | "SCAN") && !path.ends_with('/') {
+        std::borrow::Cow::Owned(format!("{path}/"))
+    } else {
+        std::borrow::Cow::Borrowed(path)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

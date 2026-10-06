@@ -3781,7 +3781,7 @@ impl AuthState {
         if matches!(
             method,
             "GET" | "HEAD" | "POST" | "PUT" | "PATCH" | "DELETE" | "LIST" | "SCAN"
-        ) && let Some(public) = self.sdk_public_path(namespace, path)
+        ) && let Some(public) = self.sdk_public_path(namespace, method, path)
         {
             return public;
         }

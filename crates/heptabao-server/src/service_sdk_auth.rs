@@ -264,6 +264,9 @@ impl Service {
                 .path
                 .strip_prefix(&format!("auth/{}/", binding.mount))
         });
+        let effective_path = relative_path
+            .map(|path| heptabao_plugin_contracts::sdk_paths::request_path(path, request.method));
+        let relative_path = effective_path.as_deref();
         let root_path = path_policy
             .as_ref()
             .zip(relative_path)
@@ -655,10 +658,7 @@ impl Service {
             "PATCH" => "patch",
             _ => return Response::error(405, "SDK Auth method unsupported"),
         };
-        let path = request
-            .path
-            .strip_prefix(&format!("auth/{}/", binding.mount))
-            .unwrap_or("");
+        let path = relative_path.unwrap_or("");
         self.stage_sdk_auth(
             &state,
             request,
@@ -1378,15 +1378,16 @@ mod durable_tests {
                 .validate_sdk_auth_clock(Some(&current.auth))
                 .is_err()
         );
-        assert_eq!(
-            current.auth.is_public_login("", "GET", "auth/sdk/login"),
-            false
-        );
-        assert_eq!(
+        assert!(!current.auth.is_public_login("", "GET", "auth/sdk/login"));
+        assert!(
             current
                 .auth
-                .is_public_login("", "GET", "auth/sdk/public/alice/read"),
-            true
+                .is_public_login("", "GET", "auth/sdk/public/alice/read")
+        );
+        assert!(
+            !current
+                .auth
+                .is_public_login("", "LIST", "auth/sdk/public/alice/read")
         );
         assert!(!paths.is_root("root/alice/write"));
         assert!(paths.is_root("root/+/write"));
