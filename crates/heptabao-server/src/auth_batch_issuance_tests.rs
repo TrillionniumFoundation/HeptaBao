@@ -15,6 +15,7 @@ fn call(
 fn setup() -> (AuthState, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let root = state.authenticate(&raw, 100).unwrap();
+    mount_auth(&mut state, &root, "", "userpass", "userpass");
     call(
         &mut state,
         &root,

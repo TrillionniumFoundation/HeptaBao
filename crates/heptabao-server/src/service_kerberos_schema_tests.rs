@@ -99,7 +99,7 @@ fn kerberos_schema50_preserves_legacy48_workflow49_oidc51_and_lockout52_and_reje
 fn userpass_lockout_state_requires_schema52() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = super::tests::bootstrap_userpass(&mut service)?;
     assert_eq!(
         call(
             &mut service,

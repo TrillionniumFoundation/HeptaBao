@@ -1,4 +1,4 @@
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap_legacy_auth_fixture, bootstrap_userpass, call};
 use super::*;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 #[allow(clippy::too_many_arguments)]
@@ -38,7 +38,7 @@ fn secret(response: &Response, key: &str) -> TestResult<String> {
 fn userpass_cidr_service_denial_preserves_state_and_finite_uses_after_reopen() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = bootstrap_userpass(&mut service)?;
     assert_eq!(call(&mut service,"POST","auth/userpass/users/cidr",&admin,json!({"password":"source credential","token_bound_cidrs":["127.0.0.1"],"token_num_uses":2})).status,204);
     let path = "auth/userpass/login/cidr";
     for peer in [None, Some("127.0.0.2")] {
@@ -142,7 +142,7 @@ fn userpass_cidr_schema39_covers_config_and_token_after_clear_without_rejecting_
 -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = bootstrap_legacy_auth_fixture(&mut service)?;
     assert_eq!(
         call(
             &mut service,

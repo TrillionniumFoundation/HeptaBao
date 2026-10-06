@@ -411,6 +411,10 @@ fn capabilities_live_identity_and_group_revocation_apply_to_foreign_and_self_que
     let mut s = f.service()?;
     let (root, key) = start(&mut s)?;
     assert_eq!(
+        call(&mut s, &root, "sys/auth/approle", json!({"type":"approle"})).status,
+        204
+    );
+    assert_eq!(
         call(
             &mut s,
             &root,

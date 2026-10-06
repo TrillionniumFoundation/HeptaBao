@@ -1,4 +1,4 @@
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap_approle as bootstrap, call};
 use super::*;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 

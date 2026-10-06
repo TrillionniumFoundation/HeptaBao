@@ -13,6 +13,7 @@ fn call(
 fn setup(kind: &str, uses: u64) -> (AuthState, Principal, Value) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let admin = state.authenticate(&raw, 100).unwrap();
+    mount_auth(&mut state, &admin, "", "approle", "approle");
     call(
         &mut state,
         &admin,

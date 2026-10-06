@@ -44,7 +44,7 @@ fn get(state: &AuthState) -> &User {
 
 #[test]
 fn userpass_cidr_alias_presence_partial_null_and_atomic_errors() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let replacement = runtime_secret("userpass-cidr-replacement");
     write(
         &mut state,
@@ -101,7 +101,7 @@ fn userpass_cidr_alias_presence_partial_null_and_atomic_errors() {
 
 #[test]
 fn userpass_password_precedes_source_check_and_denial_is_not_a_mutation() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let wrong = runtime_secret("userpass-cidr-wrong");
     write(
         &mut state,
@@ -136,7 +136,7 @@ fn userpass_password_precedes_source_check_and_denial_is_not_a_mutation() {
 
 #[test]
 fn userpass_issued_cidr_survives_config_clear_and_root_manages_target_without_source_rebinding() {
-    let (mut state, raw_root, root) = setup();
+    let (mut state, raw_root, root) = setup_with_auth_methods(&["userpass"]);
     write(&mut state,&root,json!({"password":fixture_password(),"token_bound_cidrs":["127.0.0.1"],"token_ttl":120,"token_max_ttl":600})).unwrap();
     let response = login(&mut state, fixture_password(), Some("127.0.0.1")).unwrap();
     let raw = response.body["auth"]["client_token"]
@@ -194,7 +194,7 @@ fn userpass_issued_cidr_survives_config_clear_and_root_manages_target_without_so
 
 #[test]
 fn userpass_cidr_format_rejects_ambiguous_alias_and_bounded_ldap_owner() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     write(
         &mut state,
         &root,

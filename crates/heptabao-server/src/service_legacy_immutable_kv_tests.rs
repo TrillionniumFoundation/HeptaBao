@@ -1,6 +1,6 @@
 //! Actual three-node Raft/state materialization, no mocked completion.
 use super::*;
-use crate::service::tests::{Root, bootstrap, call};
+use crate::service::tests::{Root, bootstrap_legacy_auth_fixture as bootstrap, call};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 fn native(service: &mut Service, method: &str, token: &str, body: Value) -> Response {

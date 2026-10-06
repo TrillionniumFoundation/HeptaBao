@@ -1,4 +1,4 @@
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap, bootstrap_userpass, call};
 use super::*;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
@@ -6,7 +6,7 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 fn fresh_userpass_case_variants_share_identity_and_survive_reopen() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = bootstrap_userpass(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -98,7 +98,8 @@ fn fresh_userpass_case_variants_share_identity_and_survive_reopen() -> TestResul
 }
 
 #[test]
-fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deletion() -> TestResult {
+fn new_namespace_has_only_token_default_and_explicit_userpass_requires_owned_cleanup() -> TestResult
+{
     let directory = Root::new();
     let mut service = directory.service()?;
     let (_, admin) = bootstrap(&mut service)?;
@@ -115,10 +116,16 @@ fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deleti
             200
         );
         let encoded = serde_json::to_value(&service.state.as_ref().ok_or("state")?.auth)?;
+        let defaults = encoded["auth_mounts"]["team"]
+            .as_object()
+            .ok_or("defaults")?;
         assert_eq!(
-            encoded["auth_mounts"]["team"]["userpass"]["userpass_name_mode"],
-            "ascii_lower_v1"
+            defaults.keys().map(String::as_str).collect::<Vec<_>>(),
+            ["token"]
         );
+        assert_eq!(defaults["token"]["kind"], "token");
+        assert!(defaults.get("userpass").is_none());
+        assert!(defaults.get("approle").is_none());
         assert_eq!(
             call(
                 &mut service,
@@ -144,6 +151,12 @@ fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deleti
         .status,
         200
     );
+    super::tests::enable_fixture_auth_mount(&mut service, "team", &admin, "userpass");
+    let encoded = serde_json::to_value(&service.state.as_ref().ok_or("state")?.auth)?;
+    assert_eq!(
+        encoded["auth_mounts"]["team"]["userpass"]["userpass_name_mode"],
+        "ascii_lower_v1"
+    );
     assert_eq!(
         service
             .handle_at(
@@ -167,6 +180,8 @@ fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deleti
     );
     assert_eq!(response.status, 200);
     assert_eq!(response.body["auth"]["metadata"]["username"], "mixed");
+    // Current local owner cleanup fence; this assertion is not a claim that
+    // OpenBao's asynchronous populated-namespace deletion is equivalent.
     assert_eq!(
         call(
             &mut service,
@@ -187,6 +202,7 @@ fn schema38_and39_accept_absent_name_modes_without_adopting_legacy_accounts() ->
     let mut service = directory.service()?;
     let (_, admin) = bootstrap(&mut service)?;
     let mut old = service.state.clone().ok_or("state")?;
+    old.auth.prior_native_auth_defaults_for_format_test();
     old.auth
         .remove_unused_batch_authority_for_legacy_format_test();
     old.schema = 39;
@@ -279,7 +295,7 @@ fn schema38_and39_accept_absent_name_modes_without_adopting_legacy_accounts() ->
 fn canonical_account_resolution_does_not_rewrite_the_acl_request_path() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = bootstrap_userpass(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -364,7 +380,7 @@ fn canonical_account_resolution_does_not_rewrite_the_acl_request_path() -> TestR
 fn userpass_path_acl_delegates_policies_but_cannot_issue_root_tokens() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = bootstrap_userpass(&mut service)?;
     assert_eq!(call(&mut service, "PUT", "sys/policies/acl/account-admin", &admin,
         json!({"policy":"path \"auth/userpass/users/delegated\" { capabilities=[\"update\"] } path \"auth/directory/users/delegated\" { capabilities=[\"update\"] }"})).status, 204);
     let issued = call(

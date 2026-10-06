@@ -727,21 +727,6 @@ pub(super) fn bootstrap(
 // Tests that exercise existing secret engines explicitly provision their
 // prerequisite mounts. Production initialization and Default remain distinct.
 pub(super) fn provision_fixture_mounts(service: &mut Service, namespace: &str, token: &str) {
-    for kind in ["userpass", "approle"] {
-        assert_eq!(
-            service
-                .handle_at(
-                    "POST",
-                    &format!("sys/auth/{kind}"),
-                    namespace,
-                    token,
-                    json!({"type":kind}),
-                    100,
-                )
-                .status,
-            204,
-        );
-    }
     for (path, body) in [
         (
             "secret",
@@ -766,6 +751,76 @@ pub(super) fn provision_fixture_mounts(service: &mut Service, namespace: &str, t
             204
         );
     }
+}
+
+pub(super) fn enable_fixture_auth_mount(
+    service: &mut Service,
+    namespace: &str,
+    token: &str,
+    kind: &str,
+) {
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                &format!("sys/auth/{kind}"),
+                namespace,
+                token,
+                json!({"type":kind}),
+                100,
+            )
+            .status,
+        204,
+    );
+}
+
+pub(super) fn bootstrap_userpass(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let result = bootstrap(service)?;
+    enable_fixture_auth_mount(service, "", &result.1, "userpass");
+    Ok(result)
+}
+
+pub(super) fn bootstrap_approle(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let result = bootstrap(service)?;
+    enable_fixture_auth_mount(service, "", &result.1, "approle");
+    Ok(result)
+}
+
+// Explicit historical-shape unit input: an absent auth registry retains the
+// legacy implicit factory mounts. This is never a current bootstrap default,
+// and no enabled mount/accessor, credential or issued provenance is discarded.
+pub(super) fn bootstrap_legacy_auth_fixture(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let result = bootstrap(service)?;
+    let mut fixture = service.state.clone().ok_or("legacy fixture state")?;
+    let mut wire = serde_json::to_value(&fixture.auth)?;
+    for key in ["users", "roles", "mounted_users", "mounted_roles"] {
+        assert!(wire[key].as_object().is_some_and(|value| value.is_empty()));
+    }
+    let namespaces = wire["auth_mounts"]
+        .as_object_mut()
+        .ok_or("fresh auth registry")?;
+    assert_eq!(namespaces.len(), 1);
+    let mounts = namespaces
+        .get("")
+        .and_then(Value::as_object)
+        .ok_or("root mounts")?;
+    assert_eq!(mounts.len(), 1);
+    let token = mounts.get("token").ok_or("root token mount")?;
+    assert_eq!(token["kind"], "token");
+    assert!(token.get("accessor").is_none_or(Value::is_null));
+    assert_eq!(token["revision"], 1);
+    namespaces.clear();
+    fixture.auth = serde_json::from_value::<AuthState>(wire)?.into();
+    commit_legacy_state_fixture(service, &fixture)
+        .map_err(|_| "legacy auth fixture publication")?;
+    service.state = Some(fixture);
+    Ok(result)
 }
 
 pub(super) fn bootstrap_unmounted(
@@ -1989,7 +2044,7 @@ fn failed_engine_and_auth_transactions_leave_only_the_durable_token_consumption(
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_key, token) = bootstrap(&mut service)?;
+    let (_key, token) = bootstrap_userpass(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -3199,7 +3254,7 @@ fn public_userpass_login_does_not_spend_a_separate_finite_bearer()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    let (_, token) = bootstrap_userpass(&mut service)?;
     assert_eq!(
         call(
             &mut service,

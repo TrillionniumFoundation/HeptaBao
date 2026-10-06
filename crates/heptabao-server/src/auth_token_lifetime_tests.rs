@@ -265,6 +265,7 @@ fn child_explicit_cap_is_independent_of_parent_renewal_and_survives_restart() {
 fn lookup_period_omits_zero_and_retains_issue_snapshot_after_live_role_changes() {
     for (initial, current) in [(0, 30), (30, 45), (30, 0)] {
         let (mut state, root) = issuer_state();
+        mount_auth(&mut state, &root, "", "approle", "approle");
         call(
             &mut state,
             &root,

@@ -199,6 +199,24 @@ fn role(
     admin: &str,
     mount: &str,
 ) -> Result<Value, Box<dyn std::error::Error>> {
+    let descriptor = call(s, ns, admin, "GET", &format!("sys/auth/{mount}"), json!({}));
+    if descriptor.status == 404 {
+        assert_eq!(
+            call(
+                s,
+                ns,
+                admin,
+                "POST",
+                &format!("sys/auth/{mount}"),
+                json!({"type":"approle"})
+            )
+            .status,
+            204
+        );
+    } else {
+        assert_eq!(descriptor.status, 200);
+        assert_eq!(descriptor.body["data"]["type"], "approle");
+    }
     let base = format!("auth/{mount}/role/synthetic");
     assert_eq!(
         call(

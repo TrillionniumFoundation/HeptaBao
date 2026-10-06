@@ -33,23 +33,35 @@ mod kerberos_tests;
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let principal = state.authenticate(&raw, 100).unwrap();
-    // Feature fixtures explicitly enable their prerequisites on a real fresh
-    // state; production bootstrap remains token-only.
-    for kind in ["userpass", "approle"] {
-        let enabled = state
-            .handle(
-                Some(&principal),
-                "",
-                "POST",
-                &format!("sys/auth/{kind}"),
-                &json!({"type":kind}),
-                100,
-            )
-            .unwrap()
-            .unwrap();
-        assert_eq!(enabled.status, 204);
+    (state, raw, principal)
+}
+
+// A feature prerequisite is admitted by the real authenticated mount route;
+// token-only bootstrap and historical absent-map fixtures keep their own shape.
+fn setup_with_auth_methods(kinds: &[&str]) -> (AuthState, String, Principal) {
+    let (mut state, raw, principal) = setup();
+    for kind in kinds {
+        mount_auth(&mut state, &principal, "", kind, kind);
     }
     (state, raw, principal)
+}
+
+impl AuthState {
+    // Exact untouched predecessor factory metadata for a format unit only.
+    // This helper does not erase any explicitly enabled mount or credential.
+    pub(crate) fn prior_native_auth_defaults_for_format_test(&mut self) {
+        assert_eq!(self.auth_mounts.len(), 1);
+        assert_eq!(
+            self.auth_mounts.get(""),
+            Some(&userpass_names::fresh_default_auth_mounts())
+        );
+        assert!(self.users.is_empty() && self.roles.is_empty());
+        assert!(self.mounted_users.is_empty() && self.mounted_roles.is_empty());
+        self.auth_mounts.insert(
+            "".into(),
+            userpass_names::prior_native_default_auth_mounts(),
+        );
+    }
 }
 
 #[test]
@@ -983,7 +995,7 @@ fn approle_custom_secret_id_is_bounded_hashed_and_consumable() {
 
 #[test]
 fn approle_periodic_role_issues_fixed_period_tokens() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["approle"]);
     call(
         &mut state,
         &root,
@@ -1070,7 +1082,7 @@ fn approle_periodic_role_issues_fixed_period_tokens() {
 
 #[test]
 fn approle_explicit_max_ttl_clamps_periodic_and_finite_tokens() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["approle"]);
     let configured = call(
         &mut state,
         &root,
@@ -1472,7 +1484,7 @@ fn approle_periodic_renewal_uses_current_mount_bound_and_children_are_ordinary()
 
 #[test]
 fn approle_destroy_and_policy_assignment_fail_closed() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["approle"]);
     call(
         &mut state,
         &root,
@@ -2252,7 +2264,7 @@ fn affine_request_principal_uses_live_subject_and_parent_time() {
 
 #[test]
 fn auth_mount_registry_is_persistent_sudo_gated_and_fail_closed() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass", "approle"]);
     let listed = call(&mut state, &root, "", "GET", "sys/auth", json!({}), 100);
     assert_eq!(listed.status, 200);
     assert_eq!(listed.body["data"]["token/"]["type"], "token");
@@ -2340,7 +2352,7 @@ fn auth_mount_registry_is_persistent_sudo_gated_and_fail_closed() {
 
 #[test]
 fn auth_mount_registry_requires_sudo_for_mutation() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let raw = token(&mut state, &root, "", json!({"policies":["default"]}), 100);
     let actor = state.authenticate(&raw, 101).unwrap();
     assert!(

@@ -4,7 +4,9 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 #[test]
 fn auth_defaults270_fresh_root_and_namespace_only_token_reads_do_not_mutate() -> TestResult {
     let (mut state, raw) = AuthState::bootstrap(100)?;
-    let root = state.authenticate_read_only(&raw, 100)?;
+    let root = state
+        .authenticate_read_only(&raw, 100)?
+        .ok_or("root principal")?;
     for namespace in ["", "fresh"] {
         if !namespace.is_empty() {
             state.initialize_fresh_namespace_auth(namespace)?;
@@ -60,10 +62,16 @@ fn auth_defaults270_implicit_and_saved_predecessor_catalogs_survive_reopen() -> 
         ["approle", "token", "userpass"]
     );
     assert_eq!(reopened.effective_auth_mounts("next").len(), 1);
-    assert!(reopened.has_native_userpass_names(AuthScope {
-        namespace: "saved",
-        mount: "userpass"
-    }));
+    assert_eq!(
+        reopened.userpass_account_key(
+            AuthScope {
+                namespace: "saved",
+                mount: "userpass"
+            },
+            "MIXED"
+        ),
+        "mixed"
+    );
     assert!(reopened.namespace_is_empty("saved"));
     reopened.remove_fresh_namespace_auth_defaults("saved");
     assert!(!reopened.auth_mounts.contains_key("saved"));
@@ -74,7 +82,9 @@ fn auth_defaults270_implicit_and_saved_predecessor_catalogs_survive_reopen() -> 
 #[test]
 fn auth_defaults270_changed_catalog_and_explicit_mount_are_not_erased() -> TestResult {
     let (mut state, raw) = AuthState::bootstrap(100)?;
-    let root = state.authenticate_read_only(&raw, 100)?;
+    let root = state
+        .authenticate_read_only(&raw, 100)?
+        .ok_or("root principal")?;
     state.initialize_fresh_namespace_auth("edited")?;
     state
         .auth_mounts
@@ -99,10 +109,16 @@ fn auth_defaults270_changed_catalog_and_explicit_mount_are_not_erased() -> TestR
         .ok_or("explicit auth enable")?;
     assert_eq!(enabled.status, 204);
     assert!(enabled.mutated);
-    assert!(state.has_native_userpass_names(AuthScope {
-        namespace: "",
-        mount: "userpass"
-    }));
+    assert_eq!(
+        state.userpass_account_key(
+            AuthScope {
+                namespace: "",
+                mount: "userpass"
+            },
+            "MIXED"
+        ),
+        "mixed"
+    );
     let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
     assert_eq!(reopened.effective_auth_mounts("").len(), 2);
     assert!(reopened.online_mount_enabled("", "userpass", "userpass"));

@@ -1,5 +1,5 @@
 use super::records::{DurableReader, existing_plan};
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap_legacy_auth_fixture as bootstrap, call};
 use super::*;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;

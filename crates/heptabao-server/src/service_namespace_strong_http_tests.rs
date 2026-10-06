@@ -1726,6 +1726,18 @@ fn closed_auth_public_login_and_lookup_ignore_bearer_without_consuming_its_one_u
     let root = Root::new();
     let mut service = root.service()?;
     let (_, token) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/auth/userpass",
+            "",
+            &token,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
     let actor = closed_auth_fixture(&mut service, &token, "plain", "", 1, "1h")?;
     assert!(
         wire(

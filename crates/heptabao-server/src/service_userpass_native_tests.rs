@@ -1,4 +1,4 @@
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap_legacy_auth_fixture as bootstrap, call};
 use super::*;
 
 // These auth format fixtures have no record-backed KV1 mounts. Decode their

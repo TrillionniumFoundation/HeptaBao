@@ -26,7 +26,7 @@ fn login(state: &mut AuthState, name: &str, password: &str) -> Result<AuthRespon
 
 #[test]
 fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let original = runtime_secret("userpass-name-original");
     let replacement = runtime_secret("userpass-name-replacement");
     assert!(state.has_userpass_name_modes());
@@ -140,7 +140,7 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
 
 #[test]
 fn fresh_userpass_mfa_replay_counter_is_shared_across_case_variants() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let password = runtime_secret("userpass-name-mfa");
     request(
         &mut state,
@@ -210,7 +210,7 @@ fn fresh_userpass_mfa_replay_counter_is_shared_across_case_variants() {
 
 #[test]
 fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_source() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let upper = runtime_secret("userpass-name-upper");
     let lower = runtime_secret("userpass-name-lower");
     // Format-unit legacy shape only; the actual upgrade QA uses an old binary.
@@ -277,7 +277,7 @@ fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_sour
 
 #[test]
 fn name_mode_is_preserved_by_mount_reconfiguration_and_remount_and_validated_on_load() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["userpass"]);
     let password = runtime_secret("userpass-name-remount");
     mount_auth(&mut state, &root, "", "staff", "userpass");
     for (path, body) in [

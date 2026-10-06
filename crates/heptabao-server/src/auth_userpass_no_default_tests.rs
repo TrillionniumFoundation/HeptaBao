@@ -35,7 +35,7 @@ fn renew(s: &mut AuthState, r: &Principal, t: &str) -> Result<AuthResponse, Auth
 
 #[test]
 fn userpass_nil_policy_requires_explicit_empty_for_empty_token_renewal() {
-    let (mut s, _, r) = setup();
+    let (mut s, _, r) = setup_with_auth_methods(&["userpass"]);
     write(
         &mut s,
         &r,
@@ -78,7 +78,7 @@ fn userpass_nil_policy_requires_explicit_empty_for_empty_token_renewal() {
 }
 #[test]
 fn userpass_no_default_toggles_future_issuance_but_preserves_issued_policy_and_explicit_default() {
-    let (mut s, _, r) = setup();
+    let (mut s, _, r) = setup_with_auth_methods(&["userpass"]);
     write(
         &mut s,
         &r,
@@ -124,7 +124,7 @@ fn userpass_no_default_toggles_future_issuance_but_preserves_issued_policy_and_e
 }
 #[test]
 fn userpass_legacy_normalized_empty_is_not_guessed_nil_and_invalid_update_is_atomic() {
-    let (mut s, _, r) = setup();
+    let (mut s, _, r) = setup_with_auth_methods(&["userpass"]);
     write(&mut s, &r, json!({"password":PASSWORD})).unwrap();
     // Unit format fixture only: actual previous-binary upgrade is separate QA.
     s.users

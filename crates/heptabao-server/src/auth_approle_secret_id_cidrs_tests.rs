@@ -2,8 +2,9 @@
 use super::*;
 
 fn setup() -> (AuthState, Principal) {
-    let (state, raw) = AuthState::bootstrap(100).unwrap();
+    let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let root = state.authenticate_read_only(&raw, 100).unwrap().unwrap();
+    mount_auth(&mut state, &root, "", "approle", "approle");
     (state, root)
 }
 fn call(

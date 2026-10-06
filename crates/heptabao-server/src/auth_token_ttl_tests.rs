@@ -148,7 +148,7 @@ fn token_mount_inherited_default_is_reported_but_issuance_is_capped_and_reset_is
 
 #[test]
 fn token_api_renewal_uses_previous_grant_and_current_token_mount_maximum() {
-    let (mut state, _, root) = setup();
+    let (mut state, _, root) = setup_with_auth_methods(&["approle"]);
     tune(
         &mut state,
         &root,
