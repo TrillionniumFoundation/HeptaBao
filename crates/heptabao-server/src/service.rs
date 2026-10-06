@@ -5290,7 +5290,7 @@ impl Service {
             }
         } else {
             match crypto::random::<16>() {
-                Ok(value) => crypto::uuid_from_bytes(value),
+                Ok(value) => crypto::uuid_from_bytes(&value),
                 Err(error) => return (Response::error(503, error), false),
             }
         };
