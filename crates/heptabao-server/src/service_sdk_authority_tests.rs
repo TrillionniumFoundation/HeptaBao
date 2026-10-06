@@ -175,6 +175,32 @@ fn sdk_authority_missing_control_capsule_fences_original_service() -> TestResult
     Ok(())
 }
 
+fn precise_call(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+) -> TestResult<Response> {
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock()?,
+    );
+    Ok(service.finish_synchronous_request(execution))
+}
+
 fn data_admission(
     service: &mut Service,
     actor: &str,
@@ -241,6 +267,30 @@ fn sdk_admitted_original_expiry_retains_data_but_secret_requires_same_live_clien
 }
 #[test]
 fn sdk_admitted_revoke_is_retained_and_original_deadline_seal_veto_data() -> TestResult {
+    {
+        let coarse_files = Root::new();
+        let mut coarse = coarse_files.service()?;
+        let (_, coarse_root) = bootstrap(&mut coarse)?;
+        let coarse_actor = issue(&mut coarse, &coarse_root)?;
+        let _held = data_admission(
+            &mut coarse,
+            &coarse_actor,
+            Instant::now() + Duration::from_secs(4),
+        )?;
+        let response = call(
+            &mut coarse,
+            "POST",
+            "auth/token/revoke",
+            &coarse_root,
+            json!({"token":coarse_actor}),
+        );
+        assert_eq!(response.status, 503, "{}", response.body);
+        eprintln!("sdk-admitted-original-coarse-revoke={}", response.body);
+        assert_eq!(
+            response.body,
+            json!({"errors":["Token API observation floor was not committed"]})
+        );
+    }
     let files = Root::new();
     let mut service = files.service()?;
     let (_, root) = bootstrap(&mut service)?;
@@ -251,13 +301,13 @@ fn sdk_admitted_revoke_is_retained_and_original_deadline_seal_veto_data() -> Tes
         Instant::now() + Duration::from_secs(4),
     )?;
     assert_eq!(
-        call(
+        precise_call(
             &mut service,
             "POST",
             "auth/token/revoke",
             &root,
             json!({"token":actor})
-        )
+        )?
         .status,
         204
     );
@@ -265,13 +315,13 @@ fn sdk_admitted_revoke_is_retained_and_original_deadline_seal_veto_data() -> Tes
         .validate_sdk_authority(&mut authority)
         .map_err(|_| "Data revoke snapshot")?;
     assert_eq!(
-        call(
+        precise_call(
             &mut service,
             "GET",
             "sys/plugins/catalog",
             &actor,
             json!({})
-        )
+        )?
         .status,
         403
     );
@@ -290,7 +340,7 @@ fn sdk_admitted_revoke_is_retained_and_original_deadline_seal_veto_data() -> Tes
         503
     );
     assert_eq!(
-        call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
+        precise_call(&mut service, "PUT", "sys/seal", &root, json!({}))?.status,
         204
     );
     assert_eq!(
