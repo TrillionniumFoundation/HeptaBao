@@ -7626,6 +7626,13 @@ impl Service {
     }
 
     fn ha_observation(&mut self) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
+        self.ha_observation_with(|_| {})
+    }
+
+    fn ha_observation_with(
+        &mut self,
+        after_role: impl FnOnce(&crate::ha::HaProcess),
+    ) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
         let Some(ha) = self.ha.as_ref().cloned() else {
             self.ha_activation = None;
             return (false, false, true, true, None, None);
@@ -7648,26 +7655,43 @@ impl Service {
                 return (true, false, false, false, None, local);
             }
         };
-        let before = ha
-            .leader_status()
-            .ok()
-            .and_then(ha_activation::ActivationKey::from_observation);
-        let standby = leader.is_some() && leader != local;
-        let active = ha.bootstrap_ready()
+        let before_observation = ha.leader_status().ok();
+        let before = before_observation.and_then(ha_activation::ActivationKey::from_observation);
+        after_role(&ha);
+        let sampled_active = ha.bootstrap_ready()
             && leader.is_some()
             && leader == local
             && ha.ensure_linearizable().is_ok();
         // A failed authority probe cannot be repaired by a second identity
         // probe. Do not spend another ReadIndex budget after quorum is absent.
-        let application_ready = active
+        let sampled_application_ready = sampled_active
             && self
                 .current_state_identity()
                 .ok()
                 .is_some_and(|identity| ha.ensure_application_identity(identity).is_ok());
-        let after = ha
-            .leader_status()
-            .ok()
-            .and_then(ha_activation::ActivationKey::from_observation);
+        let after_observation = ha.leader_status().ok();
+        let after = after_observation.and_then(ha_activation::ActivationKey::from_observation);
+        // A follower can complete ReadIndex through the current leader. Neither
+        // that success nor an unchanged application digest carries the earlier
+        // local role across a transfer or a new election term.
+        let same_leader_role = before.is_some() && before == after;
+        let active = sampled_active && same_leader_role;
+        let application_ready = sampled_application_ready && same_leader_role;
+        let leader = after_observation.and_then(|observation| observation.leader);
+        let standby = leader.is_some() && leader != local;
+        eprintln!(
+            "heptabao-health-role-diagnostic: before_term={:?} before_is_leader={:?} before_leader={:?} before_committed={:?} before_applied={:?} after_term={:?} after_is_leader={:?} after_leader={:?} after_committed={:?} after_applied={:?} sampled_active={sampled_active} sampled_application_ready={sampled_application_ready} active={active} application_ready={application_ready}",
+            before_observation.map(|observation| observation.term),
+            before_observation.map(|observation| observation.local_is_leader),
+            before_observation.and_then(|observation| observation.leader),
+            before_observation.and_then(|observation| observation.committed_index),
+            before_observation.and_then(|observation| observation.applied_index),
+            after_observation.map(|observation| observation.term),
+            after_observation.map(|observation| observation.local_is_leader),
+            after_observation.and_then(|observation| observation.leader),
+            after_observation.and_then(|observation| observation.committed_index),
+            after_observation.and_then(|observation| observation.applied_index),
+        );
         drop(ha);
         self.record_ha_activation(before, after, application_ready);
         (true, standby, active, application_ready, leader, local)

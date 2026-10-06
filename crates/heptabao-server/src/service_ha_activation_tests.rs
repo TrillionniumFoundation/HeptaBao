@@ -299,3 +299,101 @@ fn idle_activation_quorum_loss_keeps_existing_one_second_read_budget() -> TestRe
     );
     Ok(())
 }
+
+#[test]
+fn health_role_gate_rejects_real_handoff_between_role_and_readindex() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let _ = bootstrap(&mut service)?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|_| "initial sync")?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + Duration::from_secs(10),
+    );
+    let initial = service.ha_observation();
+    assert!(initial.2 && initial.3);
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    let transferred = std::cell::RefCell::new(None);
+    let observed = service.ha_observation_with(|process| {
+        // This is the same actual process whose original role was just sampled.
+        // A real RPC transfer happens before its original ReadIndex operation.
+        transferred.replace(Some(process.step_down()));
+    });
+    let next = transferred
+        .into_inner()
+        .ok_or("handoff hook was not entered")?
+        .map_err(|_| "actual handoff failed")?;
+    assert_ne!(next, 1);
+    assert!(observed.1, "the terminal role must project actual standby");
+    assert!(
+        !observed.2 && !observed.3,
+        "old local role cannot carry ReadIndex success"
+    );
+    assert_eq!(observed.4, Some(next));
+    assert_eq!(observed.5, Some(1));
+    assert!(service.ha_activation.is_none());
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "final identity")?,
+        identity
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(fs::read(root.path.join("audit.jsonl"))?, audit);
+    Ok(())
+}
+
+#[test]
+fn health_role_gate_rejects_real_return_to_same_node_in_a_new_term() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let _ = bootstrap(&mut service)?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|_| "initial sync")?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + Duration::from_secs(10),
+    );
+    assert!(service.ha_observation().3);
+    let original_term = service.local_activation_key().ok_or("initial role")?.term;
+    let transfers = std::cell::RefCell::new(None);
+    let observed = service.ha_observation_with(|process| {
+        let actual = (|| -> Result<u64, String> {
+            let next = process.step_down()?;
+            let successor = cluster.processes[(next - 1) as usize]
+                .lock()
+                .map_err(|_| "successor process lock")?;
+            successor.step_down()
+        })();
+        transfers.replace(Some(actual));
+    });
+    let returned = transfers
+        .into_inner()
+        .ok_or("two actual handoffs were not entered")?
+        .map_err(|_| "actual return handoff failed")?;
+    assert_eq!(returned, 1);
+    assert_eq!(observed.4, Some(1));
+    assert!(!observed.1);
+    assert!(
+        !observed.2 && !observed.3,
+        "same node in a new term needs a fresh gate"
+    );
+    assert!(service.ha_activation.is_none());
+    let current_term = service.local_activation_key().ok_or("returned role")?.term;
+    assert!(current_term > original_term);
+    // A new independent probe observes the current role and completes its own gates.
+    let fresh = service.ha_observation();
+    assert!(fresh.2 && fresh.3);
+    assert!(service.ha_activation.is_some());
+    Ok(())
+}
