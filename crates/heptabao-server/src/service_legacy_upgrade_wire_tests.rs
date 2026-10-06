@@ -370,3 +370,204 @@ fn legacy_upgrade_wire_real_commit_with_bad_receipt_is_uncertain_and_fenced() ->
     drop(cluster);
     Ok(())
 }
+
+fn old_wire_materialized_locally(
+    root: &Root,
+) -> TestResult<(Service, crate::ha::snapshot_test_support::Cluster, String)> {
+    let (mut service, _key, token) = historical(root)?;
+    let state = service.state.as_ref().ok_or("state")?;
+    let canonical = owner_store::serialize_owner(state).map_err(|_| "canonical")?;
+    // These are the actual missing neutral fields of the old55f typed format.
+    // Requiring a complete current typed roundtrip prevents an old-shape fixture
+    // from silently changing the owner graph.
+    let mut old = CheckedJson(serde_json::from_slice(&canonical)?);
+    for value in old.0["auth"]["tokens"]
+        .as_object_mut()
+        .ok_or("tokens")?
+        .values_mut()
+    {
+        discard(value, "cubbyhole").map_err(|_| "cubbyhole")?;
+    }
+    for namespace in old.0["engines"]["namespaces"]
+        .as_object_mut()
+        .ok_or("namespaces")?
+        .values_mut()
+    {
+        for mount in namespace["mounts"]
+            .as_object_mut()
+            .ok_or("mounts")?
+            .values_mut()
+        {
+            assert_eq!(mount["revision"], 1);
+            assert_eq!(mount["incarnation"], 1);
+            discard(mount, "revision").map_err(|_| "revision")?;
+            discard(mount, "incarnation").map_err(|_| "incarnation")?;
+        }
+    }
+    let wire = owner_store::serialize_owner(&old.0).map_err(|_| "old fixture")?;
+    let roundtrip: State = serde_json::from_slice(&wire)?;
+    roundtrip.validate_format().map_err(|_| "old roundtrip")?;
+    assert_eq!(
+        owner_store::serialize_owner(&roundtrip).map_err(|_| "current roundtrip")?,
+        canonical
+    );
+    assert_ne!(crypto::digest(&wire), crypto::digest(&canonical));
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &state.cluster_id)?;
+    cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .seed_legacy_upgrade_fixture(&wire)?;
+    cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .set_legacy_peer_v1_for_test(true);
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    // The authenticated remote identity is the original wire identity; this
+    // private fixture already published the exact canonical local owner.
+    service.state_digest = Some(crypto::digest(&wire));
+    service.sync_from_ha().map_err(|_| "actual initial sync")?;
+    service
+        .durable
+        .as_mut()
+        .ok_or("durable")?
+        .verify_negative_current_publication()?;
+    Ok((service, cluster, token))
+}
+
+#[test]
+fn legacy_upgrade_wire_old_local_digest_intact_own_graph_is_negative_only() -> TestResult {
+    let root = Root::new();
+    let (mut service, _cluster, _) = old_wire_materialized_locally(&root)?;
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let owner = crate::service::ha_received::UnchangedShamirLocalOwner::capture(
+        &mut service,
+        Some(deadline),
+    )
+    .map_err(|_| "old intact capture rejected")?
+    .ok_or("absent")?;
+    owner
+        .verify_negative(&mut service, Some(deadline))
+        .map_err(|_| "old intact verification rejected")?;
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        identity
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(service.state.is_some());
+    assert!(!service.recovery_required);
+    assert!(service.pending_forward_delivery.is_none());
+    Ok(())
+}
+
+#[test]
+fn legacy_upgrade_wire_old_local_digest_true_successor_rejects_retained_owner() -> TestResult {
+    let root = Root::new();
+    let (mut service, cluster, token) = old_wire_materialized_locally(&root)?;
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let owner = crate::service::ha_received::UnchangedShamirLocalOwner::capture(
+        &mut service,
+        Some(deadline),
+    )
+    .map_err(|_| "old capture rejected")?
+    .ok_or("absent")?;
+    let response = request(
+        &mut service,
+        "POST",
+        &token,
+        json!({"data":{"value":"real-successor"}}),
+        deadline,
+    );
+    assert_eq!(response.status, 200);
+    let committed = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .latest_committed_state()?
+        .ok_or("commit")?;
+    assert_ne!(
+        crate::state_record_root::StateIdentity::Legacy(committed.digest),
+        identity
+    );
+    assert!(owner.verify_negative(&mut service, Some(deadline)).is_err());
+    assert!(service.state.is_some());
+    assert!(!service.recovery_required);
+    Ok(())
+}
+
+#[test]
+fn legacy_upgrade_wire_old_local_digest_physical_mac_damage_still_fences() -> TestResult {
+    use sha2::{Digest, Sha256};
+    use std::io::{Read, Seek, SeekFrom, Write};
+    use std::os::unix::fs::MetadataExt;
+    let root = Root::new();
+    let (mut service, _cluster, _) = old_wire_materialized_locally(&root)?;
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let owner = crate::service::ha_received::UnchangedShamirLocalOwner::capture(
+        &mut service,
+        Some(deadline),
+    )
+    .map_err(|_| "old capture rejected")?
+    .ok_or("absent")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let mut held = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(service.data_dir.join("state.hbs"))?;
+    let original = held.metadata()?;
+    let mut bytes = Zeroizing::new(Vec::new());
+    held.read_to_end(&mut bytes)?;
+    assert!(bytes.len() > 48);
+    let end = bytes.len() - 32;
+    bytes[16] ^= 0x80;
+    let domain = b"heptabao.durable-service.snapshot-frame.v2";
+    let mut hash = Sha256::new();
+    hash.update((domain.len() as u64).to_le_bytes());
+    hash.update(domain);
+    hash.update((end as u64).to_le_bytes());
+    hash.update(&bytes[..end]);
+    bytes[end..].copy_from_slice(&hash.finalize());
+    held.seek(SeekFrom::Start(0))?;
+    held.write_all(&bytes)?;
+    held.sync_all()?;
+    let changed = held.metadata()?;
+    assert_eq!(
+        (original.dev(), original.ino()),
+        (changed.dev(), changed.ino())
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(matches!(
+        service
+            .durable
+            .as_mut()
+            .ok_or("durable")?
+            .verify_negative_current_publication(),
+        Err(heptabao_durable_service::ServiceError::BarrierFailure)
+    ));
+    assert!(owner.verify_negative(&mut service, Some(deadline)).is_err());
+    let response = service
+        .reconcile_unchanged_ha_recovery_index(Some(deadline))
+        .err()
+        .ok_or("damaged owner admitted")?;
+    assert_eq!(response.status, 503);
+    assert!(response.response_headers.is_empty());
+    assert!(response.consistency_index.is_none());
+    assert!(service.recovery_required);
+    assert!(service.state.is_none());
+    assert!(service.durable.is_none());
+    assert!(service.barrier_key.is_none());
+    assert!(service.ha_activation.is_none());
+    assert!(service.ha_read_cache.is_none());
+    Ok(())
+}

@@ -288,6 +288,19 @@ impl UnpublishedLocalAdmission {
 /// Negative integrity observation of the same complete local Shamir owner.
 /// This is never a received, completed, quorum, or response authority. Its only
 /// consumer may retain loaded buffers and withhold a failed no-write request.
+// A canonical local graph digest is not the digest of a historical HA wire
+// envelope. It is private, non-transferable and only supports a negative
+// integrity observation after the actual durable bundle has authenticated.
+struct LocalCanonicalDigest([u8; 32]);
+impl LocalCanonicalDigest {
+    fn of(bytes: &[u8]) -> Self {
+        Self(crypto::digest(bytes))
+    }
+    fn matches(&self, bytes: &[u8]) -> bool {
+        self.0 == crypto::digest(bytes)
+    }
+}
+
 pub(super) struct UnchangedShamirLocalOwner {
     ha: Arc<Mutex<crate::ha::HaProcess>>,
     seal: SealMetadata,
@@ -295,6 +308,7 @@ pub(super) struct UnchangedShamirLocalOwner {
     barrier_digest: [u8; 32],
     original_deadline: Instant,
     identity: StateIdentity,
+    local_digest: LocalCanonicalDigest,
     generation: u64,
     logical: Zeroizing<Vec<u8>>,
     published: Zeroizing<Vec<u8>>,
@@ -321,6 +335,8 @@ impl UnchangedShamirLocalOwner {
             .get("system", "state")
             .map_err(|_| rejected())?
             .ok_or_else(rejected)?;
+        let logical = owner_store::serialize_owner(state).map_err(state_serialization_error)?;
+        let local_digest = LocalCanonicalDigest::of(&logical);
         let owner = Self {
             ha: Arc::clone(service.ha.as_ref().ok_or_else(rejected)?),
             seal: seal.clone(),
@@ -334,8 +350,9 @@ impl UnchangedShamirLocalOwner {
             ),
             original_deadline,
             identity: service.current_state_identity()?,
+            local_digest,
             generation: durable.generation(),
-            logical: owner_store::serialize_owner(state).map_err(state_serialization_error)?,
+            logical,
             published: Zeroizing::new(publication.expose().to_vec()),
         };
         owner.verify_negative(service, deadline)?;
@@ -407,19 +424,20 @@ impl UnchangedShamirLocalOwner {
             return Err(rejected());
         }
         let (loaded, _, _) = Service::load_state_from_durable(durable)?;
-        if owner_store::serialize_owner(&loaded)
-            .map_err(state_serialization_error)?
-            .as_slice()
-            != self.logical.as_slice()
+        let loaded_logical =
+            owner_store::serialize_owner(&loaded).map_err(state_serialization_error)?;
+        if loaded_logical.as_slice() != self.logical.as_slice()
+            || !self.local_digest.matches(&loaded_logical)
             || durable.replay_epoch() != loaded.replay_epoch
         {
             return Err(rejected());
         }
         match self.identity {
-            StateIdentity::Legacy(digest) => {
-                if records::decode_root(publication.expose())?.is_some()
-                    || crypto::digest(&self.logical) != digest
-                {
+            StateIdentity::Legacy(_) => {
+                // The exact remote identity remains checked before and after
+                // this observation. Local canonical bytes were independently
+                // bound to the actual authenticated publication above.
+                if records::decode_root(publication.expose())?.is_some() {
                     return Err(rejected());
                 }
                 if let Some(manifest) =
