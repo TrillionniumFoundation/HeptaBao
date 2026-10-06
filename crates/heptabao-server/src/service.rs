@@ -733,8 +733,12 @@ struct InitializationStage {
 impl InitializationStage {
     fn create(final_path: &Path) -> Result<Self, io::Error> {
         // The native file backend accepts a pre-created empty data directory.
-        // Retain its actual exclusive owner; publication replaces it atomically
-        // only while it is still the same private, empty directory.
+        // Retain its actual exclusive owner and verify its identity immediately
+        // before publication under the held parent. Unix rename atomically
+        // publishes the prepared directory and refuses a nonempty target.
+        // The parent lock serializes cooperating writers; this preflight does
+        // not provide an atomic inode comparison against an uncooperative
+        // process that can rename entries in the private parent directory.
         let existing_empty = match fs::symlink_metadata(final_path) {
             Ok(metadata) => {
                 if !metadata.is_dir() || metadata.file_type().is_symlink() {

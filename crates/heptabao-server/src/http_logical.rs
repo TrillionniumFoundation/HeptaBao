@@ -200,7 +200,7 @@ mod tests {
         };
         assert_eq!(
             response.body["request_id"],
-            "00000000-0000-4000-8000-000000000000"
+            "00000000-0000-0000-0000-000000000000"
         );
         assert_eq!(response.body.as_object().map(|value| value.len()), Some(8));
         assert!(response.body["auth"].get("identity_policies").is_none());
@@ -242,7 +242,7 @@ mod tests {
         assert_eq!(response.body["data"], data);
         assert_eq!(
             response.body["request_id"],
-            "00000000-0000-4000-8000-000000000000"
+            "00000000-0000-0000-0000-000000000000"
         );
         assert_eq!(response.body.as_object().map(|body| body.len()), Some(8));
         assert!(response.body["auth"].is_null());
