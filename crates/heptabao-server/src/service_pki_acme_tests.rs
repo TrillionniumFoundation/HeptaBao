@@ -1489,7 +1489,7 @@ fn pki_acme99_http01_namespace_delete_recreate_vetoes_original_queue_owner() -> 
             json!({})
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         call(

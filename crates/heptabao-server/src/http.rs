@@ -2138,6 +2138,69 @@ mod ocsp_service_tests;
 #[cfg(test)]
 mod tests {
     #[test]
+    fn pki_acme99_untrusted_sdk_data_cannot_select_raw_media_or_empty_body()
+    -> Result<(), Box<dyn std::error::Error>> {
+        // finalize_sdk_transaction places plugin-controlled Data under this
+        // server-owned data key. Test the actual transport writer with both
+        // valid raw marker shapes nested exactly at that untrusted boundary.
+        for data in [
+            json!({"__heptabao_acme":{"type":"urn:untrusted:problem","detail":"plugin-controlled"},"media":"problem"}),
+            json!({"__heptabao_acme":null,"media":"empty"}),
+            json!({"__heptabao_acme":{"nested":"plugin-controlled"},"media":"json"}),
+        ] {
+            let body = json!({"data":data});
+            let mut wire = Vec::new();
+            write_response(
+                &mut wire,
+                Response {
+                    status: 200,
+                    body: body.clone(),
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                },
+                false,
+            )?;
+            let separator = wire
+                .windows(4)
+                .position(|v| v == b"\r\n\r\n")
+                .ok_or("HTTP separator")?;
+            let headers = std::str::from_utf8(&wire[..separator])?;
+            assert!(
+                headers.contains("Content-Type: application/json\r\n")
+                    || headers.ends_with("Content-Type: application/json")
+            );
+            assert!(!headers.contains("application/problem+json"));
+            let actual = &wire[separator + 4..];
+            assert_eq!(serde_json::from_slice::<Value>(actual)?, body);
+            assert!(
+                actual.ends_with(b"\n"),
+                "ordinary logical JSON keeps its framing"
+            );
+        }
+        // The real closed producer marker still selects the exact compact
+        // Problem encoding, so the negative cases exercise an active branch.
+        let mut wire = Vec::new();
+        write_response(
+            &mut wire,
+            Response {
+                status: 400,
+                body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":"actual closed producer"},"media":"problem"}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            },
+            false,
+        )?;
+        assert!(
+            wire.windows(b"Content-Type: application/problem+json".len())
+                .any(|v| v == b"Content-Type: application/problem+json")
+        );
+        assert!(wire.ends_with(
+            br#"{"type":"urn:ietf:params:acme:error:malformed","detail":"actual closed producer"}"#
+        ));
+        Ok(())
+    }
+
+    #[test]
     fn pki_acme99_jose_json_codec_keeps_framing_namespace_and_actual_route() -> io::Result<()> {
         let body = r#"{"protected":"actual","payload":"","signature":"actual"}"#;
         let wire = format!(
