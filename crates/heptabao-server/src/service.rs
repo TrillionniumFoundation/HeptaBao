@@ -4018,6 +4018,7 @@ impl Service {
             || admitted.engines.has_transit_byok_state()
             || admitted.auth.has_jwt_user_claim_state()
             || admitted.auth.has_jwt_pem_keyset_state()
+            || admitted.auth.has_auth_mount_options_state()
         {
             admitted.schema = admitted.writer_schema();
         }
