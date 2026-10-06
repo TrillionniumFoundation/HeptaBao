@@ -1349,7 +1349,7 @@ mod durable_tests {
         let before = service.state.clone().ok_or("before policy")?;
         let backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
         let paths = Paths::from_actual(
-            &json!({"Root":["root/+/write","root*","root-exact"],"Unauthenticated":["public/+/read"]}),
+            &json!({"Root":["root/+/write","privileged*","privileged-exact"],"Unauthenticated":["public/+/read"]}),
         )?;
         let mut captured = before.clone();
         captured
@@ -1391,7 +1391,7 @@ mod durable_tests {
         );
         assert!(!paths.is_root("root/alice/write"));
         assert!(paths.is_root("root/+/write"));
-        assert!(!paths.is_root("root-exact-more"));
+        assert!(!paths.is_root("privileged-exact-more"));
         assert_eq!(
             call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
             204
