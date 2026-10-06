@@ -747,7 +747,8 @@ impl ChallengeAttempt {
                 &self.queued.challenge.token,
                 &self.queued.thumbprint,
                 &self.queued.dns_resolver,
-                self.deadline.min(Instant::now() + Duration::from_secs(30)),
+                self.deadline
+                    .min(std::time::Instant::now() + Duration::from_secs(30)),
             );
         }
         if !self.queued.dns_resolver.is_empty() {
