@@ -16,6 +16,9 @@ const MAX_GROUP_DEPTH: usize = 32;
 mod acl_templates;
 #[path = "identity_runtime.rs"]
 mod runtime;
+#[cfg(test)]
+#[path = "identity_uuid_tests.rs"]
+mod uuid_tests;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub(super) struct IdentityState {
@@ -1558,21 +1561,43 @@ impl IdentityState {
             && self.group_alias_keys.is_empty()
     }
 
+    fn identifier_reserved(&self, id: &str) -> bool {
+        self.entities.contains_key(id)
+            || self.aliases.contains_key(id)
+            || self.groups.contains_key(id)
+            || self.group_aliases.contains_key(id)
+            || self
+                .entities
+                .values()
+                .any(|entity| entity.merged_entity_ids.contains(id))
+    }
+
     fn allocate_id(&mut self, prefix: char) -> Result<String> {
         let next = self
             .next_id
             .checked_add(1)
             .ok_or_else(|| error(507, "identity identifier space exhausted"))?;
-        let id = format!("{prefix}-{next:032x}");
-        let occupied = self.entities.contains_key(&id)
-            || self.aliases.contains_key(&id)
-            || self.groups.contains_key(&id)
-            || self.group_aliases.contains_key(&id)
-            || self
-                .entities
-                .values()
-                .any(|entity| entity.merged_entity_ids.contains(&id));
-        if occupied {
+        // Retain the durable allocation frontier and legacy reservations. UUIDs
+        // do not make a rolled-back or exhausted allocator legitimate.
+        let visible = self
+            .entities
+            .len()
+            .checked_add(self.aliases.len())
+            .and_then(|count| count.checked_add(self.groups.len()))
+            .and_then(|count| count.checked_add(self.group_aliases.len()))
+            .and_then(|count| u64::try_from(count).ok())
+            .ok_or_else(|| error(507, "identity identifier space exhausted"))?;
+        let legacy = format!("{prefix}-{next:032x}");
+        if self.next_id < visible || self.identifier_reserved(&legacy) {
+            return Err(error(
+                503,
+                "identity allocator would reuse a reserved identifier",
+            ));
+        }
+        let random = crate::crypto::random::<16>()
+            .map_err(|_| error(503, "identity identifier randomness unavailable"))?;
+        let id = crate::crypto::uuid_v4_from_bytes(&random);
+        if self.identifier_reserved(&id) {
             return Err(error(
                 503,
                 "identity allocator would reuse a reserved identifier",
