@@ -522,14 +522,6 @@ impl Pki {
         }
         Ok(())
     }
-    pub(in crate::engines) fn acme_revocation_requires_external(
-        &self,
-        revoked: &Revocation,
-    ) -> Result<bool> {
-        Ok(self
-            .external_acme_issuer_evidence(&revoked.issuer)?
-            .is_some())
-    }
     pub(in crate::engines) fn validate_live_acme_revocation(
         &self,
         revoked: &Revocation,
