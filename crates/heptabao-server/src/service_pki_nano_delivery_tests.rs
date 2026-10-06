@@ -43,17 +43,6 @@ fn precise_dispatch(
 }
 
 fn actor_in_service(service: &mut Service, admin: &str) -> TestResult<(String, u64)> {
-    assert_eq!(
-        call(
-            service,
-            "PUT",
-            "sys/policies/acl/nano-pki",
-            admin,
-            json!({"policy":r#"path "external-ca/issue/leaf" { capabilities=["update"] }"#}),
-        )
-        .status,
-        204
-    );
     let state = service.state.as_ref().ok_or("issuer fixture state")?;
     let auth_floor = state.auth.terminal_token_clock_floor();
     let base = state
@@ -114,6 +103,17 @@ fn actor_in_service(service: &mut Service, admin: &str) -> TestResult<(String, u
 
 fn actor_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String, u64)> {
     let (root, mut service, _unseal, admin) = leaf_fixture(remote)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/nano-pki",
+            &admin,
+            json!({"policy":r#"path "external-ca/issue/leaf" { capabilities=["update"] }"#}),
+        )
+        .status,
+        204
+    );
     let (actor, base) = actor_in_service(&mut service, &admin)?;
     Ok((root, service, admin, actor, base))
 }
@@ -378,13 +378,15 @@ fn pki_nano_actual_durable_floor_rejects_prior_actor_and_new_fixture_owns_curren
 -> TestResult {
     let remote = RemoteTransit::new_kind("ed25519")?;
     let (_root, mut service, admin, actor, original_base) = actor_fixture(&remote)?;
-    assert_eq!(original_base, 100);
     let precursor = precise_dispatch(
         &mut service,
         &admin,
         "external-ca/issue/leaf",
         json!({"common_name":"precursor.example.test","ttl":"10m"}),
-        RequestClock::anchored(Duration::new(105, 500_000_000), Instant::now())?,
+        RequestClock::anchored(
+            Duration::new(original_base + 5, 500_000_000),
+            Instant::now(),
+        )?,
     );
     assert_eq!(service.finish_synchronous_request(precursor).status, 200);
     let floor = service
@@ -394,7 +396,7 @@ fn pki_nano_actual_durable_floor_rejects_prior_actor_and_new_fixture_owns_curren
         .engines
         .lease_clock();
     assert!(
-        floor >= 105,
+        floor >= original_base + 5,
         "actual signed precursor advances the engine clock"
     );
     let before = remote.calls()?;
@@ -403,7 +405,7 @@ fn pki_nano_actual_durable_floor_rejects_prior_actor_and_new_fixture_owns_curren
         &actor,
         "external-ca/issue/leaf",
         json!({"common_name":"old-actor.example.test","ttl":"10m"}),
-        RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?,
+        RequestClock::anchored(Duration::new(original_base, 500_000_000), Instant::now())?,
     );
     let RequestExecution::Complete(response) = old else {
         return Err("expired prior actor must be vetoed before provider staging".into());
