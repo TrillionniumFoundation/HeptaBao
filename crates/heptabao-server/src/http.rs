@@ -1923,6 +1923,14 @@ fn write_response_with_namespace(
             Some("empty") if response.body["__heptabao_acme"].is_null() => {
                 Some((Vec::new(), "application/json"))
             }
+            Some("certificate") if response.status == 200 => response.body["__heptabao_acme"]
+                .as_str()
+                .filter(|pem| {
+                    pem.len() <= 512 * 1024
+                        && pem.starts_with("-----BEGIN CERTIFICATE-----\n")
+                        && pem.ends_with("-----END CERTIFICATE-----\n")
+                })
+                .map(|pem| (pem.as_bytes().to_vec(), "application/pem-certificate-chain")),
             Some("json" | "problem") if response.body["__heptabao_acme"].is_object() => {
                 let payload = &response.body["__heptabao_acme"];
                 #[derive(serde::Serialize)]
@@ -1948,8 +1956,17 @@ fn write_response_with_namespace(
                 } else {
                     serde_json::to_vec(payload)?
                 };
-                // These closed logical raw JSON responses retain their exact
-                // native compact encoding without Vault's outer JSON envelope.
+                // Go's JSON encoder escapes HTML and JavaScript separators even
+                // in these closed logical raw responses. Bound the final bytes
+                // before HTTP computes Content-Length or chooses chunked framing.
+                bytes = String::from_utf8(bytes)
+                    .map_err(io::Error::other)?
+                    .replace('&', "\\u0026")
+                    .replace('<', "\\u003c")
+                    .replace('>', "\\u003e")
+                    .replace('\u{2028}', "\\u2028")
+                    .replace('\u{2029}', "\\u2029")
+                    .into_bytes();
                 if bytes.len() <= 128 * 1024 {
                     Some((
                         std::mem::take(&mut bytes),
@@ -2200,6 +2217,7 @@ mod tests {
             json!({"__heptabao_acme":{"type":"urn:untrusted:problem","detail":"plugin-controlled"},"media":"problem"}),
             json!({"__heptabao_acme":null,"media":"empty"}),
             json!({"__heptabao_acme":{"nested":"plugin-controlled"},"media":"json"}),
+            json!({"__heptabao_acme":"-----BEGIN CERTIFICATE-----\nplugin controlled\n-----END CERTIFICATE-----\n","media":"certificate"}),
         ] {
             let body = json!({"data":data});
             let mut wire = Vec::new();
@@ -2453,6 +2471,40 @@ mod tests {
         }
         Ok(())
     }
+    #[test]
+    fn raw_acme_problem_uses_go_html_escape_and_final_content_length() -> io::Result<()> {
+        let detail = "actual <nil> & > \u{2028} \u{2029}";
+        let mut wire = Vec::new();
+        write_response(
+            &mut wire,
+            Response {
+                status: 400,
+                body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":detail},"media":"problem"}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            },
+            false,
+        )?;
+        let boundary = wire
+            .windows(4)
+            .position(|b| b == b"\r\n\r\n")
+            .ok_or_else(|| io::Error::other("missing actual HTTP response boundary"))?
+            + 4;
+        let headers = String::from_utf8_lossy(&wire[..boundary]);
+        let body = &wire[boundary..];
+        assert!(headers.contains(&format!("Content-Length: {}\r\n", body.len())));
+        assert!(
+            body.windows(b"\\u003cnil\\u003e".len())
+                .any(|v| v == b"\\u003cnil\\u003e")
+        );
+        for escaped in [b"\\u0026", b"\\u2028", b"\\u2029"] {
+            assert!(body.windows(escaped.len()).any(|v| v == escaped));
+        }
+        let decoded: Value = serde_json::from_slice(body)?;
+        assert_eq!(decoded["detail"], detail);
+        Ok(())
+    }
+
     #[test]
     fn deleted_pki_root_empty_crl_retains_only_closed_raw_content_type() -> io::Result<()> {
         for (encoded, expected) in [("", "application/pkix-crl"), ("MAA=", "application/json")] {

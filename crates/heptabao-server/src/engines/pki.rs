@@ -63,6 +63,8 @@ pub(crate) mod local_ocsp;
 pub(in crate::engines) mod precise_time;
 use precise_time::PkiInstant;
 
+#[path = "pki_acme_certificate.rs"]
+pub(crate) mod acme_certificate;
 #[path = "pki_acme_eab.rs"]
 pub(crate) mod acme_eab;
 #[path = "../engine_pki_acme.rs"]
@@ -557,6 +559,7 @@ impl Pki {
                 return Err(bad("invalid PKI issued-certificate state"));
             }
         }
+        self.validate_acme_certificates()?;
         self.validate_local_crls(clock)?;
         Ok(())
     }
@@ -1487,7 +1490,26 @@ impl Pki {
         body: &Value,
         authority: LeafAuthority<'_>,
     ) -> Result<LeafTemplate> {
-        let LeafAuthority {
+        self.prepare_leaf_for_owner(
+            route,
+            body,
+            LeafPreparationAuthority {
+                owner: LeafOwner::Vault(authority.owner.clone()),
+                owner_expires: authority.owner_expires,
+                precise_owner_expires: authority.precise_owner_expires,
+                time: authority.time,
+                clock: authority.clock,
+                identity_templates: authority.identity_templates,
+            },
+        )
+    }
+    fn prepare_leaf_for_owner(
+        &self,
+        route: IssuanceRoute<'_>,
+        body: &Value,
+        authority: LeafPreparationAuthority<'_>,
+    ) -> Result<LeafTemplate> {
+        let LeafPreparationAuthority {
             owner,
             owner_expires,
             precise_owner_expires,
@@ -1900,6 +1922,13 @@ impl Pki {
         leaf_public: &LocalPublicKey,
         external: bool,
     ) -> Result<EngineResponse> {
+        // The ordinary Vault publication lane cannot admit a public account
+        // owner, even for a no_store response. ACME has its own typed asset.
+        let owner = prepared
+            .owner
+            .vault_owner()
+            .ok_or_else(|| error(503, "public ACME owner cannot publish a Vault lease"))?
+            .clone();
         prepared.validate_publication(prepared.issued)?;
         let root = self.selected_issuer(if prepared.local_issuer_id.is_empty() {
             "default"
@@ -1972,7 +2001,7 @@ impl Pki {
                 external_issuer_owner: None,
                 leased: prepared.leased,
                 lease_id: prepared.lease_id,
-                owner: prepared.owner,
+                owner,
                 path: prepared.path,
                 issued: prepared.issued,
                 expires: prepared.expires,
@@ -2582,6 +2611,27 @@ pub(super) struct LeafAuthority<'a> {
 }
 
 #[derive(Clone)]
+enum LeafOwner {
+    Vault(LeaseOwner),
+    Acme(acme_certificate::Binding),
+}
+impl LeafOwner {
+    fn vault_owner(&self) -> Option<&LeaseOwner> {
+        match self {
+            Self::Vault(owner) => Some(owner),
+            Self::Acme(_) => None,
+        }
+    }
+}
+struct LeafPreparationAuthority<'a> {
+    owner: LeafOwner,
+    owner_expires: Option<u64>,
+    precise_owner_expires: Option<crate::auth::Timestamp>,
+    time: crate::auth::AuthorityTime,
+    clock: Option<crate::auth::RequestClock>,
+    identity_templates: Option<&'a crate::auth::IdentityTemplateValues>,
+}
+#[derive(Clone)]
 struct LeafTemplate {
     url_entries: Option<UrlEntries>,
     csr_public_key: Option<LocalPublicKey>,
@@ -2599,7 +2649,7 @@ struct LeafTemplate {
     serial: String,
     path: String,
     lease_id: String,
-    owner: LeaseOwner,
+    owner: LeafOwner,
     owner_expires: Option<u64>,
     precise_owner_expires: Option<crate::auth::Timestamp>,
     publication_time: crate::auth::AuthorityTime,

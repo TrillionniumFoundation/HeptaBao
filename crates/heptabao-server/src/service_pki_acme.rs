@@ -309,6 +309,12 @@ fn engine_problem(error: crate::engines::EngineError) -> Response {
         == "the request must include a value for the 'externalAccountBinding' field"
     {
         "externalAccountRequired"
+    } else if error.message.starts_with("the CSR is unacceptable:") {
+        "badCSR"
+    } else if error.message.starts_with(
+        "the request attempted to finalize an order that is not ready to be finalized:",
+    ) {
+        "orderNotReady"
     } else if error.status == 401 {
         "unauthorized"
     } else if error.status >= 500 {
@@ -389,7 +395,10 @@ impl Service {
             || view
                 .endpoint
                 .strip_prefix("order/")
-                .is_some_and(|id| !id.is_empty() && !id.contains('/'))
+                .is_some_and(|rest| match rest.split_once('/') {
+                    None => !rest.is_empty(),
+                    Some((id, action)) => !id.is_empty() && matches!(action, "finalize" | "cert"),
+                })
             || view
                 .endpoint
                 .strip_prefix("authorization/")
@@ -587,9 +596,13 @@ impl Service {
                 .acme_account_request(view, key, &verified, kid.as_deref(), at)
                 .map(|(status, body, location)| (status, body, Some(location)))
         } else {
-            admitted
-                .engines
-                .acme_order_request(view, &verified, kid.as_deref(), at)
+            admitted.engines.acme_order_request(
+                view,
+                &verified,
+                kid.as_deref(),
+                at,
+                request.token_clock,
+            )
         };
         match result {
             Ok((status, body, location)) => {
@@ -607,6 +620,20 @@ impl Service {
                 }
                 let headers = Some(metadata);
                 match ResponseHeaders::from_sdk(headers.as_ref(), &view.headers) {
+                    Ok(headers)
+                        if view.endpoint.starts_with("order/")
+                            && view.endpoint.ends_with("/cert") =>
+                    {
+                        if status != 200 || !body.is_string() {
+                            return Response::error(503, "ACME certificate response rejected");
+                        }
+                        Response {
+                            status,
+                            body: json!({"__heptabao_acme":body,"media":"certificate"}),
+                            response_headers: headers,
+                            consistency_index: None,
+                        }
+                    }
                     Ok(headers) => wire(status, Some(body), false, headers),
                     Err(()) => Response::error(503, "ACME account response metadata rejected"),
                 }

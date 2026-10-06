@@ -10,8 +10,28 @@ fn initialization_existing_empty_native_api_publishes_unseals_and_reopens() -> T
     private_directory(&root.path.join("data"))?;
     let mut service = root.service()?;
     assert!(!service.initialized());
+    let sealed = call(&mut service, "GET", "sys/seal-status", "", json!({}));
+    assert_eq!(sealed.status, 200);
+    assert!(sealed.body.get("cluster_id").is_none());
+    assert!(sealed.body.get("cluster_name").is_none());
     let (key, token) = bootstrap_unmounted(&mut service)?;
     assert!(service.initialized());
+    let status = call(&mut service, "GET", "sys/seal-status", "", json!({}));
+    assert_eq!(status.status, 200);
+    let cluster_id = status.body["cluster_id"]
+        .as_str()
+        .ok_or("cluster ID")?
+        .to_owned();
+    assert_eq!(cluster_id.len(), 36);
+    assert_eq!(cluster_id.as_bytes()[8], b'-');
+    assert_eq!(cluster_id.as_bytes()[13], b'-');
+    assert_eq!(cluster_id.as_bytes()[18], b'-');
+    assert_eq!(cluster_id.as_bytes()[23], b'-');
+    assert_eq!(status.body["cluster_name"], "heptabao-single-node");
+    assert_eq!(
+        service.state.as_ref().ok_or("state")?.cluster_id,
+        cluster_id
+    );
     assert_eq!(
         call(
             &mut service,
@@ -51,6 +71,9 @@ fn initialization_existing_empty_native_api_publishes_unseals_and_reopens() -> T
         call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
         200
     );
+    let status = call(&mut reopened, "GET", "sys/seal-status", "", json!({}));
+    assert_eq!(status.body["cluster_id"], cluster_id);
+    assert_eq!(status.body["cluster_name"], "heptabao-single-node");
     let fetched = call(&mut reopened, "GET", "probe/data/kept", &token, json!({}));
     assert_eq!(fetched.status, 200);
     assert_eq!(fetched.body["data"]["data"]["value"], "kept-after-reopen");

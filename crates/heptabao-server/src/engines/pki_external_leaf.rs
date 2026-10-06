@@ -1138,7 +1138,7 @@ impl Pki {
                 serial: serial.clone(),
                 path: issued.path.clone(),
                 lease_id: issued.lease_id.clone(),
-                owner: issued.owner.clone(),
+                owner: LeafOwner::Vault(issued.owner.clone()),
                 owner_expires: None,
                 precise_owner_expires: None,
                 publication_time: crate::auth::AuthorityTime::Coarse(issued.issued),
@@ -1203,7 +1203,7 @@ impl ExternalPkiTemplate {
     }
     pub(crate) fn leaf_owner(&self) -> Option<&LeaseOwner> {
         match self.consumption.as_ref() {
-            Some(ConsumptionTemplate::Leaf(prepared)) => Some(&prepared.owner),
+            Some(ConsumptionTemplate::Leaf(prepared)) => prepared.owner.vault_owner(),
             _ => None,
         }
     }

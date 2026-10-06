@@ -4937,7 +4937,7 @@ impl Service {
         } else {
             u8::try_from(self.unseal_shares.len()).unwrap_or(u8::MAX)
         };
-        Response::ok(json!({
+        let mut body = json!({
             "type": seal_type,
             "initialized": self.initialized(),
             "sealed": self.state.is_none(),
@@ -4950,7 +4950,16 @@ impl Service {
             "recovery_seal": self.seal.as_ref().is_some_and(SealMetadata::is_wrapper),
             "storage_type": if self.ha.is_some() { "heptabao-raft-v1" } else { "heptabao-durable-v2" },
             "seal_generation": self.seal.as_ref().map_or(0, |seal| seal.generation),
-        }))
+        });
+        if let Some(state) = &self.state {
+            body["cluster_id"] = json!(state.cluster_id);
+            body["cluster_name"] = json!(if self.ha.is_some() {
+                "heptabao-ha"
+            } else {
+                "heptabao-single-node"
+            });
+        }
+        Response::ok(body)
     }
 
     fn initialize(
@@ -5281,7 +5290,7 @@ impl Service {
             }
         } else {
             match crypto::random::<16>() {
-                Ok(value) => STANDARD.encode(value),
+                Ok(value) => crypto::uuid_from_bytes(value),
                 Err(error) => return (Response::error(503, error), false),
             }
         };

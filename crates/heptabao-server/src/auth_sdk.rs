@@ -146,6 +146,24 @@ impl Binding {
         &self.descriptor
     }
 }
+/// An in-memory owned Storage observation. It is neither cloneable nor a
+/// persisted grant; the exact mount includes every observed cell and metadata.
+pub(crate) struct StorageWitness {
+    mount: Mount,
+}
+impl StorageWitness {
+    pub(crate) fn check(&self, auth: &AuthState, binding: &Binding) -> Result<(), AuthError> {
+        auth.sdk_auth_owner_gate(binding)?;
+        if auth.plugin_auth_mounts[&binding.namespace][&binding.mount]
+            .sdk
+            .as_ref()
+            != Some(&self.mount)
+        {
+            return Err(err(503, "SDK Auth admitted Storage owner changed"));
+        }
+        Ok(())
+    }
+}
 pub(crate) struct Entry {
     pub key: String,
     pub value: Zeroizing<Vec<u8>>,
@@ -526,6 +544,48 @@ impl AuthState {
         }
         Ok(())
     }
+    pub(crate) fn sdk_auth_storage_witness(
+        &self,
+        binding: &Binding,
+    ) -> Result<StorageWitness, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        Ok(StorageWitness {
+            mount: self.plugin_auth_mounts[&binding.namespace][&binding.mount]
+                .sdk
+                .as_ref()
+                .ok_or_else(|| err(503, "SDK Auth Storage owner absent"))?
+                .clone(),
+        })
+    }
+
+    /// Merge only the plugin's owned cells into current Auth. The original
+    /// transaction's tokens, ACLs, clocks and other mounts never become current.
+    pub(crate) fn merge_sdk_auth_storage(
+        &mut self,
+        binding: &Binding,
+        original: &StorageWitness,
+        working: &AuthState,
+    ) -> Result<(), AuthError> {
+        original.check(self, binding)?;
+        working.sdk_auth_owner_gate(binding)?;
+        let changed = working.plugin_auth_mounts[&binding.namespace][&binding.mount]
+            .sdk
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK Auth working Storage absent"))?;
+        if !original.mount.same_binding(changed) {
+            return Err(err(503, "SDK Auth working mount changed"));
+        }
+        let mut candidate = original.mount.clone();
+        candidate.storage = changed.storage.clone();
+        candidate.validate_local(Some(&binding.owner))?;
+        self.plugin_auth_mounts
+            .get_mut(&binding.namespace)
+            .and_then(|mounts| mounts.get_mut(&binding.mount))
+            .ok_or_else(|| err(503, "SDK Auth current Storage absent"))?
+            .sdk = Some(candidate);
+        Ok(())
+    }
+
     pub(crate) fn sdk_auth_storage_get(
         &self,
         binding: &Binding,

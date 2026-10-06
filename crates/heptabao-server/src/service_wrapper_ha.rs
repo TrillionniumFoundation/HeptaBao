@@ -123,7 +123,7 @@ pub(super) fn load_pending(data_dir: &Path) -> Result<PendingInitialization, Res
 }
 
 impl InitializationStage {
-    fn retain_ha_pending(
+    pub(super) fn retain_ha_pending(
         &mut self,
         data_dir: &Path,
         parent: &ExclusiveDirectory,

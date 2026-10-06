@@ -1649,3 +1649,6 @@ fn pki_acme99_dns01_actual_jws_queue_encrypted_reopen_and_current_owner_proof() 
 
 #[path = "service_pki_acme_eab_tests.rs"]
 mod eab_tests;
+
+#[path = "service_pki_acme_finalize_tests.rs"]
+mod finalize_tests;

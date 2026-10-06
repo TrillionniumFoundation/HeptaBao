@@ -408,6 +408,7 @@ impl EngineState {
         proof: &pki::acme_jws::VerifiedJws,
         kid: Option<&str>,
         at: Timestamp,
+        clock: Option<crate::auth::RequestClock>,
     ) -> Result<(u16, Value, Option<String>)> {
         let id = kid
             .and_then(|kid| kid.rsplit('/').next())
@@ -430,6 +431,97 @@ impl EngineState {
         } else {
             None
         };
+        if let Some((order_id, action)) = view
+            .endpoint
+            .strip_prefix("order/")
+            .and_then(|rest| rest.split_once('/'))
+        {
+            let raw = if action == "finalize" {
+                Some(pki::acme_certificate::parse_payload(payload)?)
+            } else {
+                None
+            };
+            let mounted = self.acme_pki(&view.owner)?;
+            let protocol = mounted
+                .acme_protocol
+                .as_ref()
+                .ok_or_else(|| error(503, "ACME order owner unavailable"))?;
+            let order = protocol
+                .orders
+                .get(order_id)
+                .filter(|o| o.account == id && o.directory == view.directory)
+                .ok_or_else(|| bad("order does not exist: the request message was malformed"))?
+                .clone();
+            let status = order.status(protocol, at);
+            if action == "cert" {
+                if status != "valid" {
+                    return Err(pki::acme_certificate::order_not_ready(status, "valid"));
+                }
+                let cert = order
+                    .certificate
+                    .as_ref()
+                    .ok_or_else(|| error(503, "ACME completed certificate unavailable"))?;
+                return Ok((
+                    200,
+                    Value::String(mounted.acme_certificate_chain(cert)?),
+                    None,
+                ));
+            }
+            if action != "finalize" {
+                return Err(bad("invalid ACME order route"));
+            }
+            if status != "ready" {
+                return Err(pki::acme_certificate::order_not_ready(status, "ready"));
+            }
+            let certificate = mounted.acme_finalize_local(
+                &order,
+                raw.as_ref().ok_or_else(|| bad("missing csr in payload"))?,
+                at,
+                clock,
+            )?;
+            // Observe the same accepted ingress clock after the actual signature;
+            // a long signing operation cannot revive an expired authorization.
+            let end = clock
+                .map(|c| c.with_timestamp_floor(at).observed_at())
+                .transpose()
+                .map_err(|_| error(503, "ACME original signing clock unavailable"))?
+                .unwrap_or(at);
+            let end = self.observe_acme(end)?;
+            let mounted = self.acme_pki_mut(&view.owner)?;
+            let protocol = mounted
+                .acme_protocol
+                .as_mut()
+                .ok_or_else(|| error(503, "ACME order owner unavailable"))?;
+            protocol.observe_time(end);
+            if order.status(protocol, end) != "ready"
+                || !protocol.accounts.get(id).is_some_and(|a| {
+                    a.status == AccountStatus::Valid && a.thumbprint == order.account_thumbprint
+                })
+            {
+                return Err(error(403, "the client lacks sufficient authorization"));
+            }
+            let current = protocol
+                .orders
+                .get_mut(order_id)
+                .filter(|o| **o == order)
+                .ok_or_else(|| {
+                    error(
+                        503,
+                        "ACME order owner changed before certificate publication",
+                    )
+                })?;
+            current.certificate = Some(certificate);
+            protocol.validate()?;
+            let order = protocol
+                .orders
+                .get(order_id)
+                .ok_or_else(|| error(503, "ACME completed order unavailable"))?;
+            return Ok((
+                200,
+                order.descriptor(protocol, &view.base, end),
+                Some(format!("{}order/{order_id}", view.base)),
+            ));
+        }
         let at = self.observe_acme(at)?;
         let protocol = self
             .acme_pki_mut(&view.owner)?
@@ -915,7 +1007,7 @@ impl pki::Pki {
     }
     // Directory eligibility uses the actual selected issuer. This performs no
     // signature effects and never upgrades a public JWS to Vault authority.
-    fn acme_directory_issuer(&self, prefix: &str) -> Result<&pki::RootCa> {
+    pub(super) fn acme_directory_issuer(&self, prefix: &str) -> Result<&pki::RootCa> {
         let parts: Vec<_> = prefix.split('/').collect();
         let (explicit_issuer, explicit_role) = match parts.as_slice() {
             ["issuer", issuer, "roles", role] => (Some(*issuer), Some(*role)),

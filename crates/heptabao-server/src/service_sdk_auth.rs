@@ -2,7 +2,7 @@
 //! encrypted auth owner. Plugin JSON never becomes a Principal or bearer.
 use super::*;
 use crate::auth::Timestamp;
-use crate::auth::sdk::{Binding, Entry, Paths, RenewalTarget};
+use crate::auth::sdk::{Binding, Entry, Paths, RenewalTarget, StorageWitness};
 use heptabao_plugin_host::sdk_backend::SdkBackendType;
 
 struct Context {
@@ -24,6 +24,47 @@ struct StageTarget<'a> {
     deadline: Instant,
     renewal: Option<RenewalTarget>,
 }
+/// Minted only by stage_sdk_auth after the actual entrance authentication,
+/// consumed use, parameter ACL and SpecialPaths authorization. The moved
+/// authority is retained, never cloned or reconstructed from plugin JSON.
+struct Admission {
+    authority: Mutex<plugin::PluginResponseAuthority>,
+    backend: Arc<Control>,
+    storage: Mutex<StorageWitness>,
+}
+impl Admission {
+    fn clock_and_deadline(&self, auth: &AuthState) -> Result<(), Response> {
+        let mut authority = self
+            .authority
+            .lock()
+            .map_err(|_| Response::error(503, "SDK admitted authority unavailable"))?;
+        if authority.deadline_expired() {
+            return Err(Response::error(503, "SDK admitted HTTP deadline expired"));
+        }
+        authority.apply_sdk_auth_clock_floor(auth)?;
+        authority.token_time()?;
+        if authority.deadline_expired() {
+            return Err(Response::error(503, "SDK admitted HTTP deadline expired"));
+        }
+        Ok(())
+    }
+    fn owned_storage(&self, auth: &AuthState, binding: &Binding) -> Result<(), Response> {
+        self.storage
+            .lock()
+            .map_err(|_| Response::error(503, "SDK admitted Storage observation unavailable"))?
+            .check(auth, binding)
+            .map_err(auth_error)
+    }
+    fn published(&self, auth: &AuthState, binding: &Binding) -> Result<(), Response> {
+        let current = auth.sdk_auth_storage_witness(binding).map_err(auth_error)?;
+        *self
+            .storage
+            .lock()
+            .map_err(|_| Response::error(503, "SDK admitted Storage observation unavailable"))? =
+            current;
+        Ok(())
+    }
+}
 struct Transaction {
     auth: CowOwner<AuthState>,
     identity: crate::state_record_root::StateIdentity,
@@ -33,6 +74,7 @@ pub(in crate::service) struct Plan {
     binding: Binding,
     paths: Option<Paths>,
     caller: Mutex<Option<plugin::PluginResponseAuthority>>,
+    admission: Option<Admission>,
     control: Arc<Control>,
     transaction: Mutex<Transaction>,
     operation: String,
@@ -169,7 +211,9 @@ impl Plan {
         }
         auth.sdk_auth_owner_gate(&self.binding)
             .map_err(auth_error)?;
-        if let Some(caller) = self
+        if let Some(admission) = &self.admission {
+            admission.clock_and_deadline(auth)?;
+        } else if let Some(caller) = self
             .caller
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth original capsule unavailable"))?
@@ -792,7 +836,7 @@ impl Service {
     ) -> Response {
         let StageTarget {
             binding,
-            caller,
+            mut caller,
             context,
             operation,
             path,
@@ -866,11 +910,29 @@ impl Service {
             Ok(paths) => paths,
             Err(error) => return auth_error(error),
         };
+        let admission =
+            if operation == "update" && path == "config" && renewal.is_none() && caller.is_some() {
+                let Some(authority) = caller.take() else {
+                    return Response::error(503, "SDK admitted actual caller unavailable");
+                };
+                let storage = match state.auth.sdk_auth_storage_witness(&binding) {
+                    Ok(storage) => storage,
+                    Err(error) => return auth_error(error),
+                };
+                Some(Admission {
+                    authority: Mutex::new(authority),
+                    backend: Arc::clone(&control),
+                    storage: Mutex::new(storage),
+                })
+            } else {
+                None
+            };
         self.pending_sdk_auth_request = Some(Plan {
             context,
             binding,
             paths,
             caller: Mutex::new(caller),
+            admission,
             control,
             transaction: Mutex::new(Transaction {
                 auth: state.auth.clone(),
@@ -912,7 +974,24 @@ impl Service {
             .caller
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth original capsule unavailable"))?;
-        if let Some(caller) = caller.as_mut() {
+        if let Some(admission) = &plan.admission {
+            if !Arc::ptr_eq(&admission.backend, &plan.control) {
+                return Err(Response::error(503, "SDK admitted backend owner changed"));
+            }
+            // Synchronize current owners, without a second authentication/use.
+            // In-flight SDK authorization is the actual entrance snapshot.
+            self.revalidate_online_authority_with_sync(
+                &plan.context.namespace,
+                &plan.context.activation,
+                Self::sync_from_ha,
+            )?;
+            let state = self
+                .state
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK admitted owner unavailable"))?;
+            admission.clock_and_deadline(&state.auth)?;
+            admission.owned_storage(&state.auth, &plan.binding)?;
+        } else if let Some(caller) = caller.as_mut() {
             if let Some(state) = self.state.as_ref() {
                 caller.apply_sdk_auth_clock_floor(&state.auth)?;
             }
@@ -978,7 +1057,7 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
-        if self.current_state_identity()? != transaction.identity {
+        if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
             return Err(Response::error(
                 503,
                 "SDK Auth Storage root changed since admission",
@@ -988,6 +1067,7 @@ impl Service {
             .state
             .clone()
             .ok_or_else(|| Response::error(503, "SDK Auth current owner unavailable"))?;
+        transaction.identity = self.current_state_identity()?;
         let at = plan.time(&current.auth)?;
         let changed = current.auth.observe_sdk_auth_clock(at);
         if changed {
@@ -1083,7 +1163,7 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
-        if self.current_state_identity()? != transaction.identity {
+        if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
             return Err(Response::error(
                 503,
                 "SDK Auth original root changed before publication",
@@ -1093,7 +1173,27 @@ impl Service {
             .state
             .clone()
             .ok_or_else(|| Response::error(503, "SDK Auth current state unavailable"))?;
-        candidate.auth = transaction.auth.clone();
+        transaction.identity = self.current_state_identity()?;
+        if let Some(admission) = &plan.admission {
+            let original = admission.storage.lock().map_err(|_| {
+                Response::error(503, "SDK admitted Storage observation unavailable")
+            })?;
+            candidate
+                .auth
+                .merge_sdk_auth_storage(&plan.binding, &original, &transaction.auth)
+                .map_err(auth_error)?;
+            if value.is_some_and(|value| {
+                value.get("auth").is_some_and(|v| !v.is_null())
+                    || value.get("secret").is_some_and(|v| !v.is_null())
+            }) {
+                return Err(Response::error(
+                    501,
+                    "SDK admitted Auth or Secret response not implemented",
+                ));
+            }
+        } else {
+            candidate.auth = transaction.auth.clone();
+        }
         let at = plan.time(&candidate.auth)?;
         candidate.auth.observe_sdk_auth_clock(at);
         let mut response = if plan.operation == "renew" {
@@ -1224,6 +1324,16 @@ impl Service {
                     .map_err(auth_error)?;
             }
             transaction.identity = self.current_state_identity()?;
+            if let Some(admission) = &plan.admission {
+                let auth = &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Response::error(503, "SDK admitted published owner unavailable")
+                    })?
+                    .auth;
+                admission.published(auth, &plan.binding)?;
+            }
             self.sdk_auth_gate(plan)?;
             Ok(())
         })();
@@ -1455,6 +1565,268 @@ mod durable_tests {
                 .as_slice(),
             b"durable-Auth-owned-config"
         );
+        Ok(())
+    }
+    #[test]
+    fn sdk_admission_storage_merge_preserves_current_revocation_policy_and_reopen() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (key, root) = bootstrap(&mut service)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/policies/acl/admitted",
+                &root,
+                json!({"policy":"path \"auth/sdk/config\" { capabilities = [\"update\"] }"})
+            )
+            .status,
+            204
+        );
+        let issued = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root,
+            json!({"policies":["admitted"],"ttl":60}),
+        );
+        assert_eq!(issued.status, 200);
+        let token = issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("issued token")?
+            .to_owned();
+        let mut initial = service.state.clone().ok_or("state")?;
+        let binding = mount(&mut initial, &root)?;
+        publish(&mut service, initial)?;
+        let original = service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .sdk_auth_storage_witness(&binding)?;
+        let mut working = service.state.as_ref().ok_or("state")?.auth.clone();
+        working.sdk_auth_storage_put(
+            &binding,
+            Entry {
+                key: "config".into(),
+                value: Zeroizing::new(b"admitted-inflight-write".to_vec()),
+                seal_wrap: false,
+            },
+        )?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/token/revoke",
+                &root,
+                json!({"token":token})
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/policies/acl/admitted",
+                &root,
+                json!({"policy":"path \"auth/sdk/config\" { capabilities = [\"deny\"] }"})
+            )
+            .status,
+            204
+        );
+        let mut current = service.state.clone().ok_or("current")?;
+        assert!(current.auth.authenticate(&token, 100).is_err());
+        current
+            .auth
+            .merge_sdk_auth_storage(&binding, &original, &working)?;
+        assert!(current.auth.authenticate(&token, 100).is_err());
+        publish(&mut service, current)?;
+        let policy = call(
+            &mut service,
+            "GET",
+            "sys/policies/acl/admitted",
+            &root,
+            json!({}),
+        );
+        assert_eq!(policy.status, 200);
+        assert!(
+            policy.body["data"]["policy"]
+                .as_str()
+                .ok_or("current policy")?
+                .contains("deny")
+        );
+        assert_eq!(
+            call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
+            204
+        );
+        drop(service);
+        let mut reopened = directory.service()?;
+        assert_eq!(
+            call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+        let auth = &mut reopened.state.as_mut().ok_or("reopened")?.auth;
+        assert!(auth.authenticate(&token, 100).is_err());
+        assert_eq!(
+            auth.sdk_auth_storage_get(&binding, "config")?
+                .ok_or("durable admitted config")?
+                .value
+                .as_slice(),
+            b"admitted-inflight-write"
+        );
+        let policy = call(
+            &mut reopened,
+            "GET",
+            "sys/policies/acl/admitted",
+            &root,
+            json!({}),
+        );
+        assert!(
+            policy.body["data"]["policy"]
+                .as_str()
+                .ok_or("reopened policy")?
+                .contains("deny")
+        );
+        Ok(())
+    }
+    #[test]
+    fn sdk_admission_storage_merge_rejects_changed_cells_and_retired_mount() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_, root) = bootstrap(&mut service)?;
+        let mut initial = service.state.clone().ok_or("state")?;
+        let binding = mount(&mut initial, &root)?;
+        publish(&mut service, initial)?;
+        let original = service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .sdk_auth_storage_witness(&binding)?;
+        let mut working = service.state.as_ref().ok_or("state")?.auth.clone();
+        working.sdk_auth_storage_put(
+            &binding,
+            Entry {
+                key: "config".into(),
+                value: Zeroizing::new(b"held-write".to_vec()),
+                seal_wrap: false,
+            },
+        )?;
+        let mut changed = service.state.clone().ok_or("state")?;
+        changed.auth.sdk_auth_storage_put(
+            &binding,
+            Entry {
+                key: "new-member".into(),
+                value: Zeroizing::new(b"current-writer".to_vec()),
+                seal_wrap: false,
+            },
+        )?;
+        publish(&mut service, changed)?;
+        let mut current = service.state.clone().ok_or("state")?;
+        assert!(original.check(&current.auth, &binding).is_err());
+        assert!(
+            current
+                .auth
+                .merge_sdk_auth_storage(&binding, &original, &working)
+                .is_err()
+        );
+        assert!(
+            current
+                .auth
+                .sdk_auth_storage_get(&binding, "config")?
+                .is_none()
+        );
+        assert_eq!(
+            current
+                .auth
+                .sdk_auth_storage_get(&binding, "new-member")?
+                .ok_or("current member")?
+                .value
+                .as_slice(),
+            b"current-writer"
+        );
+        let principal = current.auth.authenticate(&root, 100)?;
+        assert_eq!(
+            current
+                .auth
+                .handle(
+                    Some(&principal),
+                    "",
+                    "DELETE",
+                    "sys/auth/sdk",
+                    &json!({}),
+                    100
+                )?
+                .ok_or("retirement")?
+                .status,
+            204
+        );
+        assert!(
+            current
+                .auth
+                .merge_sdk_auth_storage(&binding, &original, &working)
+                .is_err()
+        );
+        Ok(())
+    }
+    #[test]
+    fn sdk_admission_original_http_deadline_rejects_even_with_live_owner() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_, root) = bootstrap(&mut service)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let binding = mount(&mut state, &root)?;
+        publish(&mut service, state)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let principal = state.auth.authenticate(&root, 100)?;
+        let clock =
+            RequestClock::anchored(Duration::new(100, 0), Instant::now()).map_err(|_| "clock")?;
+        let body = json!({"username":"value"});
+        let request = RequestView {
+            namespace: "",
+            method: "POST",
+            path: "auth/sdk/config",
+            token: &root,
+            body: &body,
+            now: 100,
+            wrap_ttl_seconds: None,
+            enforce_namespace: true,
+            token_clock: Some(clock),
+            admission_started: clock.started(),
+            allow_forward: false,
+            origin_peer: None,
+            client_certificates: None,
+        };
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_millis(20),
+        );
+        let authority = plugin::PluginResponseAuthority::new(
+            principal,
+            &state,
+            &request,
+            "update",
+            false,
+            &service.unseal_nonce,
+        )
+        .with_sdk_clock();
+        let (sender, _receiver) = mpsc::sync_channel(1);
+        let admission = Admission {
+            authority: Mutex::new(authority),
+            backend: Arc::new(Control {
+                sender,
+                busy: Arc::new(AtomicBool::new(false)),
+                fenced: Arc::new(AtomicBool::new(false)),
+                retiring: AtomicBool::new(false),
+            }),
+            storage: Mutex::new(state.auth.sdk_auth_storage_witness(&binding)?),
+        };
+        admission
+            .clock_and_deadline(&state.auth)
+            .map_err(|_| "initial deadline")?;
+        std::thread::sleep(Duration::from_millis(25));
+        assert!(admission.clock_and_deadline(&state.auth).is_err());
+        assert!(admission.owned_storage(&state.auth, &binding).is_ok());
         Ok(())
     }
     #[test]

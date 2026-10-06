@@ -105,6 +105,8 @@ pub(crate) struct Order {
     pub public_expires: String,
     pub identifiers: Vec<Identifier>,
     pub authorizations: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub certificate: Option<super::acme_certificate::Certificate>,
 }
 
 pub(crate) fn uuid() -> Result<String> {
@@ -293,7 +295,12 @@ impl Authorization {
     }
 }
 impl Order {
-    pub(crate) fn descriptor(&self, protocol: &Protocol, base: &str, now: Timestamp) -> Value {
+    pub(crate) fn status(&self, protocol: &Protocol, now: Timestamp) -> &'static str {
+        // A native completed order retains its valid status after its creation
+        // window. Current account eligibility remains a separate JWS gate.
+        if self.certificate.is_some() {
+            return "valid";
+        }
         let invalid = now > self.expires
             || self.authorizations.iter().any(|id| {
                 protocol.authorizations.get(id).is_none_or(|a| {
@@ -306,7 +313,24 @@ impl Order {
                         .any(|c| c.validated.as_ref().is_some_and(|v| now > v.expires))
                 })
             });
-        let authorizations: Vec<_> = if invalid {
+        if invalid {
+            "invalid"
+        } else if !self.authorizations.is_empty()
+            && self.authorizations.iter().all(|id| {
+                protocol
+                    .authorizations
+                    .get(id)
+                    .is_some_and(|a| a.status == AuthorizationStatus::Valid)
+            })
+        {
+            "ready"
+        } else {
+            "pending"
+        }
+    }
+    pub(crate) fn descriptor(&self, protocol: &Protocol, base: &str, now: Timestamp) -> Value {
+        let status = self.status(protocol, now);
+        let authorizations: Vec<_> = if status == "invalid" {
             Vec::new()
         } else {
             self.authorizations
@@ -314,7 +338,11 @@ impl Order {
                 .map(|id| format!("{base}authorization/{id}"))
                 .collect()
         };
-        json!({"status":if invalid {"invalid"} else if !self.authorizations.is_empty() && self.authorizations.iter().all(|id|protocol.authorizations.get(id).is_some_and(|a|a.status==AuthorizationStatus::Valid)){"ready"} else {"pending"},"expires":self.public_expires,"identifiers":if self.identifiers.is_empty(){Value::Null}else{json!(self.identifiers.iter().map(|i|i.descriptor(true)).collect::<Vec<_>>())},"authorizations":if authorizations.is_empty(){Value::Null}else{json!(authorizations)},"finalize":format!("{base}order/{}/finalize",self.id)})
+        let mut body = json!({"status":status,"expires":self.public_expires,"identifiers":if self.identifiers.is_empty(){Value::Null}else{json!(self.identifiers.iter().map(|i|i.descriptor(true)).collect::<Vec<_>>())},"authorizations":if authorizations.is_empty(){Value::Null}else{json!(authorizations)},"finalize":format!("{base}order/{}/finalize",self.id)});
+        if self.certificate.is_some() {
+            body["certificate"] = json!(format!("{base}order/{}/cert", self.id));
+        }
+        body
     }
 }
 impl Protocol {
@@ -352,6 +380,7 @@ impl Protocol {
             {
                 return Err(error(503, "ACME durable order owner rejected"));
             }
+            self.validate_completed_order(order)?;
             for (identifier, auth_id) in order.identifiers.iter().zip(&order.authorizations) {
                 identifier.validate()?;
                 let authorization = self
@@ -543,6 +572,7 @@ impl Protocol {
                 public_expires,
                 identifiers,
                 authorizations,
+                certificate: None,
             },
         );
         Ok(id)
@@ -553,9 +583,20 @@ impl Protocol {
                 .orders
                 .get(id)
                 .ok_or_else(|| error(503, "ACME order cannot disappear"))?;
-            if old != next {
-                return Err(error(503, "ACME order owner cannot change"));
+            let mut same_owner = next.clone();
+            same_owner.certificate = old.certificate.clone();
+            if old != &same_owner
+                || old
+                    .certificate
+                    .as_ref()
+                    .is_some_and(|cert| next.certificate.as_ref() != Some(cert))
+            {
+                return Err(error(
+                    503,
+                    "ACME order owner or signed certificate cannot change",
+                ));
             }
+            self.validate_completed_order(next)?;
         }
         for (id, old) in &previous.authorizations {
             let next = self
