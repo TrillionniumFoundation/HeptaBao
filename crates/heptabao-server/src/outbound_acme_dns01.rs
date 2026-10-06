@@ -276,6 +276,23 @@ pub(crate) fn verify_dns01(
     let mut last = "dns-01: no resolver completed".to_owned();
     for address in resolvers(resolver)? {
         match exchange(address, &message, deadline).and_then(|raw| parse(&raw, id, &question)) {
+            Ok(records) if records.is_empty() => {
+                // Go's custom Dial changes the socket destination, while its
+                // DNSError still names the first system resolver. Preserve
+                // that public diagnostic for an empty successful TXT reply.
+                let reported = if resolver.is_empty() {
+                    address
+                } else {
+                    resolvers("")?
+                        .first()
+                        .copied()
+                        .ok_or("dns-01: no system resolver available")?
+                };
+                remaining(deadline)?;
+                return Err(format!(
+                    "dns-01: failed to lookup TXT records for domain ({question}) via resolver {resolver}: lookup {question} on {reported}: no such host"
+                ));
+            }
             Ok(records) => return validate_records(&records, token, thumbprint, deadline),
             Err(error) => last = error,
         }
@@ -313,7 +330,7 @@ mod tests {
     }
     #[test]
     fn pki_acme99_dns01_actual_udp_txt_split_multiple_tcp_and_wrong_proof() -> TestResult {
-        for mode in ["plain", "split", "multiple", "TCP", "wrong"] {
+        for mode in ["plain", "split", "multiple", "TCP", "wrong", "empty"] {
             let socket = UdpSocket::bind("127.0.0.1:0")?;
             let address = socket.local_addr()?;
             socket.set_read_timeout(Some(Duration::from_secs(3)))?;
@@ -332,6 +349,7 @@ mod tests {
                     "split" => vec![vec![&proof[..13], &proof[13..]]],
                     "multiple" => vec![vec!["wrong"], vec![proof.as_str()]],
                     "wrong" => vec![vec!["wrong"]],
+                    "empty" => vec![],
                     _ => vec![vec![proof.as_str()]],
                 };
                 socket.send_to(&answer(&bytes, &records, mode == "TCP"), peer)?;
@@ -361,6 +379,17 @@ mod tests {
                 assert_eq!(
                     result.as_ref().err().map(String::as_str),
                     Some("dns-01: challenge failed against 1 records")
+                );
+            } else if mode == "empty" {
+                let reported = resolvers("")?
+                    .first()
+                    .copied()
+                    .ok_or("no system resolver")?;
+                assert_eq!(
+                    result.as_ref().err(),
+                    Some(&format!(
+                        "dns-01: failed to lookup TXT records for domain (_acme-challenge.proof.example) via resolver {address}: lookup _acme-challenge.proof.example on {reported}: no such host"
+                    ))
                 );
             } else {
                 assert!(result.is_ok(), "{result:?}");
@@ -428,8 +457,11 @@ mod final_deadline_tests {
             .checked_sub(Duration::from_millis(1))
             .ok_or("clock underflow")?;
         assert_eq!(
-            validate_records(&records, "token", "thumb", original_deadline).as_deref(),
-            Err("dns-01: attempt deadline exceeded")
+            validate_records(&records, "token", "thumb", original_deadline)
+                .as_ref()
+                .err()
+                .map(String::as_str),
+            Some("dns-01: attempt deadline exceeded")
         );
         Ok(())
     }
