@@ -23,24 +23,36 @@ _KV_UPGRADE_PENDING = (
 )
 
 
-def wait_for_empty_backend(client: Client) -> None:
-    # A fresh official KV v2 mount initializes asynchronously. Readiness is a
-    # separate fixture prerequisite, never an accepted business error contract.
+def wait_for_empty_backend_response(request) -> None:
+    # The same monotonic deadline covers transport, body decoding and delivery.
     deadline = time.monotonic() + 2.0
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise ScenarioFailure("metadata_cas.fixture_readiness_timeout")
+        status, body = request(remaining)
+        if time.monotonic() >= deadline:
+            raise ScenarioFailure("metadata_cas.fixture_readiness_timeout")
+        if type(status) is int and status == 200:
+            return
+        if (type(status) is not int or status != 400
+                or body != {"errors": [_KV_UPGRADE_PENDING]}):
+            raise ScenarioFailure("metadata_cas.fixture_readiness_rejected")
+        time.sleep(min(0.025, max(0.0, deadline - time.monotonic())))
+
+
+def wait_for_empty_backend(client: Client, prefix: str = PREFIX) -> None:
+    # Readiness is a separate fixture prerequisite, never an accepted business
+    # error contract. Keep the exact transport, token, CA and namespace.
     original_timeout = client.timeout
+
+    def request(remaining):
+        client.timeout = min(original_timeout, remaining)
+        response = client.request("GET", "/v1/" + prefix + "config")
+        return response.status, response.body
+
     try:
-        while True:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise ScenarioFailure("metadata_cas.fixture_readiness_timeout")
-            client.timeout = min(original_timeout, remaining)
-            response = client.request("GET", "/v1/" + PREFIX + "config")
-            if response.status == 200:
-                return
-            if (response.status != 400
-                    or response.body != {"errors": [_KV_UPGRADE_PENDING]}):
-                raise ScenarioFailure("metadata_cas.fixture_readiness_rejected")
-            time.sleep(min(0.025, max(0.0, deadline - time.monotonic())))
+        wait_for_empty_backend_response(request)
     finally:
         client.timeout = original_timeout
 

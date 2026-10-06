@@ -52,6 +52,14 @@ class ReadinessContract(unittest.TestCase):
         self.assertEqual(len(client.calls), 1)
         self.assertEqual(client.timeout, 15)
 
+    def test_late_200_is_rejected_after_delivery_with_original_deadline(self):
+        client = ReadinessClient([SimpleNamespace(status=200, body={"data": {}})])
+        with patch.object(subject.time, "monotonic", side_effect=[100.0, 100.2, 102.0]):
+            with self.assertRaises(subject.ScenarioFailure):
+                subject.wait_for_empty_backend(client)
+        self.assertEqual(len(client.calls), 1)
+        self.assertEqual(client.timeout, 15)
+
     def test_readiness_timeout_restores_business_timeout(self):
         client = ReadinessClient([])
         with patch.object(subject.time, "monotonic", side_effect=[100.0, 102.0]):

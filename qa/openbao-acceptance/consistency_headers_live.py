@@ -168,6 +168,10 @@ class RestartableOfficial(Official):
         raise FixtureError("official_readiness")
 
 
+from core_isolation import ScenarioFailure
+from kv_metadata_cas_live import wait_for_empty_backend_response
+
+
 def common(instance,endpoint,trace):
     value,_=trace.request("initialize",endpoint,"POST","sys/init",200,body={"secret_shares":1,"secret_threshold":1},timeout=INITIALIZATION_TIMEOUT)
     token,key=value["root_token"],value["keys_base64"][0]
@@ -175,6 +179,13 @@ def common(instance,endpoint,trace):
     # Unsealed is not yet active: wait on a read-only health probe, never retry a mutation.
     ready(endpoint,200)
     trace.request("mount",endpoint,"POST","sys/mounts/"+MOUNT,204,token,{"type":"kv","options":{"version":"2"}})
+    try:
+        wait_for_empty_backend_response(
+            lambda remaining: call(
+                endpoint, "GET", MOUNT + "/config", token,
+                timeout=min(REQUEST_TIMEOUT, remaining))[:2])
+    except ScenarioFailure:
+        raise FixtureError("fixture.kv_readiness") from None
     trace.request("write",endpoint,"POST",PATH,200,token,{"data":{"fixture":"retained"}})
     for name,headers in VALID_HEADERS:
         value,_=trace.request("valid_"+name,endpoint,"GET",PATH,200,token,headers=headers)

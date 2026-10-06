@@ -73,12 +73,16 @@ def normalize_fixture(client):
     return original
 
 
+from kv_metadata_cas_live import wait_for_empty_backend
+
+
 def run_scenarios(client, rows, cli_env, cli_binary):
     original = normalize_fixture(client)
     t = Trace(client, rows)
     for name, version in (("discovery-v1", "1"), ("discovery-v2", "2")):
         t.call("mount." + name, "POST", "sys/mounts/" + name, 204,
                {"type": "kv", "options": {"version": version}})
+    wait_for_empty_backend(client, "discovery-v2/")
     t.call("fixture.data.v2", "POST", "discovery-v2/data/item", 200, {"data": {"value": MARKER}})
     t.call("fixture.data.v1", "POST", "discovery-v1/item", 204, {"value": MARKER})
     tokens = {"root": client._token, "anonymous": "", "invalid": "synthetic-invalid-token"}
