@@ -211,7 +211,7 @@ fn crypto_response(
     }
 }
 
-fn enrolled_pki_routes(
+pub(super) fn enrolled_pki_routes(
     outbound: &crate::outbound::Outbound,
     request: &SecretValue,
 ) -> Result<(String, String), Response> {

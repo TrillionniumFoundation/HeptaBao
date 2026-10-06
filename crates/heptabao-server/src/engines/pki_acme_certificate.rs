@@ -34,6 +34,99 @@ pub(crate) struct Certificate {
     pub(super) urls: Option<UrlEntries>,
 }
 
+// This process-local plan retains the accepted public order/CSR owner. It is
+// never a Vault Principal, token lease, or a new source of request time.
+struct PreparedCertificate {
+    root: RootCa,
+    prepared: LeafTemplate,
+    binding: Binding,
+    raw: Vec<u8>,
+}
+impl PreparedCertificate {
+    fn into_certificate(self, der: Vec<u8>) -> Result<Certificate> {
+        let public = self
+            .prepared
+            .csr_public_key
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME original CSR public key unavailable"))?;
+        let evidence = LeafProfilePublicEvidence::capture(&self.prepared, public)
+            .ok_or_else(|| error(503, "ACME leaf public evidence unavailable"))?;
+        let created = self
+            .prepared
+            .publication_time
+            .exact()
+            .ok_or_else(|| error(503, "ACME accepted precise issuance time missing"))?;
+        Ok(Certificate {
+            binding: self.binding,
+            created,
+            issuer: self.root.issuer_id.clone(),
+            serial: self.prepared.serial,
+            common_name: self.prepared.common_name,
+            expires: self.prepared.expires,
+            csr: self.raw,
+            der,
+            evidence,
+            urls: self.prepared.url_entries,
+        })
+    }
+}
+pub(crate) struct ExternalCertificateTemplate {
+    pub(crate) reference: String,
+    public: external::ExternalPkiPublicKey,
+    scheme: LeafSignature,
+    tbs: Vec<u8>,
+    plan: Box<PreparedCertificate>,
+}
+impl ExternalCertificateTemplate {
+    pub(crate) fn validate_time(&self, at: Timestamp) -> Result<()> {
+        self.plan
+            .prepared
+            .validate_publication_observed(AuthorityTime::Precise(at))
+    }
+    pub(crate) fn validate_provider_public(
+        &self,
+        public: &external::ExternalPkiPublicKey,
+    ) -> Result<()> {
+        if &self.public != public {
+            return Err(error(503, "ACME external issuer public key changed"));
+        }
+        Ok(())
+    }
+    pub(crate) fn validate_issuer(&self, pki: &Pki) -> Result<()> {
+        let key = pki.external_issuer_key(&self.plan.root.issuer_id)?;
+        let root = pki.external_issuer_root(&self.plan.root.issuer_id)?;
+        if key.reference != self.reference
+            || key.public_key != self.public
+            || root.key_id != self.plan.root.key_id
+            || root.certificate_der != self.plan.root.certificate_der
+        {
+            return Err(error(503, "ACME original external signer owner changed"));
+        }
+        Ok(())
+    }
+    pub(crate) fn signing_input(&self) -> Result<Vec<u8>> {
+        self.public.signing_input_leaf(&self.tbs, self.scheme)
+    }
+    pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
+        self.scheme.hash_algorithm()
+    }
+    pub(crate) fn signature_algorithm(&self) -> &'static str {
+        if self.scheme.pss() { "pss" } else { "pkcs1v15" }
+    }
+    pub(crate) fn signature_size_bound(&self) -> usize {
+        self.public.signature_size_bound()
+    }
+    pub(crate) fn finish(self, signature: &[u8], pki: &Pki, at: Timestamp) -> Result<Certificate> {
+        self.validate_time(at)?;
+        self.validate_issuer(pki)?;
+        self.public.verify_leaf(&self.tbs, signature, self.scheme)?;
+        let der = signed_der_with_scheme(&self.tbs, signature, self.scheme);
+        let certificate = self.plan.into_certificate(der)?;
+        pki.validate_acme_certificate(&certificate)?;
+        Ok(certificate)
+    }
+}
+
 pub(crate) fn bad_csr(detail: &str) -> EngineError {
     bad(&format!("the CSR is unacceptable: {detail}"))
 }
@@ -292,13 +385,13 @@ impl Protocol {
     }
 }
 impl Pki {
-    pub(crate) fn acme_finalize_local(
+    fn acme_prepare_certificate(
         &self,
         order: &Order,
         raw: &[u8],
         time: Timestamp,
         clock: Option<RequestClock>,
-    ) -> Result<Certificate> {
+    ) -> Result<PreparedCertificate> {
         validate_csr_order(raw, order)?;
         let request = local_intermediate::parse_csr(raw)?;
         let account = self
@@ -320,12 +413,6 @@ impl Pki {
             .trim_end_matches("acme/")
             .trim_end_matches('/');
         let issuer = self.acme_directory_issuer(prefix)?;
-        if issuer.is_external() {
-            return Err(error(
-                501,
-                "external ACME finalization requires a qualified provider signing lane",
-            ));
-        }
         let issuer_id = issuer.issuer_id.clone();
         let explicit_role = match prefix.split('/').collect::<Vec<_>>().as_slice() {
             ["roles", role] | ["issuer", _, "roles", role] => Some((*role).to_owned()),
@@ -367,6 +454,9 @@ impl Pki {
         }
         .min(MAX_ACME_CERT_TTL);
         let mut candidate = self.clone();
+        if issuer.is_external() {
+            candidate.select_external_default(&issuer_id)?;
+        }
         let role_key = "__acme-finalize";
         candidate.roles.insert(role_key.into(), role.clone());
         // Override only this admitted certificate's expiry behavior. The live
@@ -435,11 +525,34 @@ impl Pki {
         if !matches!(&prepared.owner,LeafOwner::Acme(owner)if owner==&binding) {
             return Err(error(503, "ACME prepared public account owner changed"));
         }
+        let root = candidate.selected_issuer(&issuer_id)?.clone();
+        Ok(PreparedCertificate {
+            root,
+            prepared,
+            binding,
+            raw: raw.to_vec(),
+        })
+    }
+    pub(crate) fn acme_finalize_local(
+        &self,
+        order: &Order,
+        raw: &[u8],
+        time: Timestamp,
+        clock: Option<RequestClock>,
+    ) -> Result<Certificate> {
+        let plan = self.acme_prepare_certificate(order, raw, time, clock)?;
+        if plan.root.is_external() {
+            return Err(error(
+                501,
+                "external ACME finalization requires a qualified provider signing lane",
+            ));
+        }
+        let prepared = &plan.prepared;
         let leaf = prepared
             .csr_public_key
             .as_ref()
             .ok_or_else(|| error(503, "ACME signed leaf has no original CSR public key"))?;
-        let root = candidate.selected_issuer(&issuer_id)?;
+        let root = &plan.root;
         let root_pair = root.local_key()?;
         let name = root_fields::certificate_subject(&root.certificate_der)?;
         let key_id = root_fields::certificate_key_identifier(&root.certificate_der)?;
@@ -471,26 +584,68 @@ impl Pki {
             prepared.role_name_policy.as_ref(),
         )?;
         prepared.validate_publication(prepared.issued)?;
-        let evidence = LeafProfilePublicEvidence::capture(&prepared, leaf)
-            .ok_or_else(|| error(503, "ACME leaf public evidence unavailable"))?;
-        let created = prepared
-            .publication_time
-            .exact()
-            .ok_or_else(|| error(503, "ACME accepted precise issuance time missing"))?;
-        let certificate = Certificate {
-            binding,
-            created,
-            issuer: issuer_id,
-            serial: prepared.serial,
-            common_name: prepared.common_name,
-            expires: prepared.expires,
-            csr: raw.to_vec(),
-            der,
-            evidence,
-            urls: prepared.url_entries,
-        };
+        let certificate = plan.into_certificate(der)?;
         self.validate_acme_certificate(&certificate)?;
         Ok(certificate)
+    }
+    pub(crate) fn acme_prepare_external_certificate(
+        &self,
+        order: &Order,
+        raw: &[u8],
+        time: Timestamp,
+        clock: Option<RequestClock>,
+    ) -> Result<Option<ExternalCertificateTemplate>> {
+        let prefix = order
+            .directory
+            .trim_end_matches("acme/")
+            .trim_end_matches('/');
+        if !self.acme_directory_issuer(prefix)?.is_external() {
+            return Ok(None);
+        }
+        let plan = self.acme_prepare_certificate(order, raw, time, clock)?;
+        let key = self.external_issuer_key(&plan.root.issuer_id)?;
+        let public = key.public_key.clone();
+        let subject = plan
+            .prepared
+            .csr_public_key
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME original CSR public key unavailable"))?;
+        let scheme = public.leaf_signature(plan.prepared.role_name_policy.as_ref());
+        let name = root_fields::certificate_subject(&plan.root.certificate_der)?;
+        let key_id = root_fields::certificate_key_identifier(&plan.root.certificate_der)?;
+        let prepared = &plan.prepared;
+        let tbs = certificate_tbs_with(
+            CertificateSpec {
+                url_entries: prepared.url_entries.as_ref(),
+                serial: &prepared.serial,
+                issuer_cn: &plan.root.common_name,
+                subject_cn: &prepared.common_name,
+                issuer_name_der: Some(&name),
+                subject_name_der: None,
+                public_key: &[],
+                authority_key_id: key_id.as_deref(),
+                not_before: prepared.not_before,
+                not_after: prepared.expires,
+                is_ca: false,
+                alt_names: &prepared.alt_names,
+                email_sans: &prepared.email_sans,
+                ip_sans: &prepared.ip_sans,
+                uri_sans: &prepared.uri_sans,
+                exclude_cn_from_sans: prepared.exclude_cn_from_sans,
+                max_path_length: None,
+                permitted_dns_domains: &[],
+                role_leaf_profile: prepared.role_leaf_profile.as_ref(),
+            },
+            &subject.spki()?,
+            &scheme.algorithm(),
+        )?;
+        Ok(Some(ExternalCertificateTemplate {
+            reference: key.reference.clone(),
+            public,
+            scheme,
+            tbs,
+            plan: Box::new(plan),
+        }))
     }
     fn validate_acme_certificate(&self, issued: &Certificate) -> Result<()> {
         let evidence = &issued.evidence;
@@ -608,6 +763,21 @@ impl Pki {
 }
 
 impl Pki {
+    pub(super) fn has_external_acme_issuer_reference(&self, id: &str, der: &[u8]) -> Result<bool> {
+        let mut found = false;
+        for certificate in self
+            .acme_certificates()
+            .filter(|certificate| certificate.issuer == id)
+        {
+            let (issuer, _) = self.profile_leaf_issuer_evidence(id)?;
+            if issuer != der {
+                return Err(bad("ACME public issuer archive changed"));
+            }
+            self.validate_acme_certificate(certificate)?;
+            found = true;
+        }
+        Ok(found)
+    }
     pub(super) fn acme_certificates(&self) -> impl Iterator<Item = &Certificate> {
         self.acme_protocol
             .iter()

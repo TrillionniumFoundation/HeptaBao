@@ -94,6 +94,7 @@ pub(super) struct Authority {
     nonce: Option<String>,
     nonce_deadline: Option<(Timestamp, std::time::Instant)>,
     operator: Option<plugin::PluginResponseAuthority>,
+    external_delivery: Option<crate::engines::AcmeExternalDelivery>,
 }
 impl Drop for Authority {
     fn drop(&mut self) {
@@ -126,6 +127,7 @@ impl Authority {
             nonce,
             nonce_deadline: None,
             operator: None,
+            external_delivery: None,
         }
     }
     pub(super) fn with_operator(mut self, operator: plugin::PluginResponseAuthority) -> Self {
@@ -143,6 +145,15 @@ impl Authority {
             Some(operator) => operator.validate_live_auth(auth),
             None => Ok(()),
         }
+    }
+    pub(super) fn bind_external_delivery(
+        &mut self,
+        delivery: crate::engines::AcmeExternalDelivery,
+    ) {
+        self.external_delivery = Some(delivery);
+    }
+    pub(super) fn deadline(&self) -> Option<std::time::Instant> {
+        self.deadline
     }
     pub(super) fn observed_at(&self) -> Result<Timestamp, Response> {
         match self.clock {
@@ -201,6 +212,11 @@ impl Authority {
             ));
         }
         let at = self.observed_at()?;
+        if let Some(delivery) = &self.external_delivery {
+            delivery
+                .validate(&state.engines, at)
+                .map_err(Response::from_engine_error)?;
+        }
         if self.nonce_deadline.is_some_and(|(expires, monotonic)| {
             at > expires || std::time::Instant::now() > monotonic
         }) {
@@ -272,7 +288,12 @@ impl Authority {
     }
 }
 
-fn wire(status: u16, body: Option<Value>, problem: bool, headers: ResponseHeaders) -> Response {
+pub(super) fn wire(
+    status: u16,
+    body: Option<Value>,
+    problem: bool,
+    headers: ResponseHeaders,
+) -> Response {
     Response {
         status,
         body: json!({"__heptabao_acme":body,"media":if problem {"problem"} else if body.is_none() {"empty"} else {"json"}}),
@@ -366,7 +387,13 @@ impl Service {
             Ok(identity) => identity,
             Err(error) => return Some(error),
         };
-        let mut authority = Authority::capture(admitted, &view, request, &self.unseal_nonce, None);
+        let mut authority = Some(Authority::capture(
+            admitted,
+            &view,
+            request,
+            &self.unseal_nonce,
+            None,
+        ));
         // Bao 2.7 advertises keyChange and exempts it from token ACLs, but
         // registers no handler. The unsupported route does not redeem JWS.
         let mut response = if view.endpoint == "key-change" {
@@ -421,7 +448,7 @@ impl Service {
             if request.method != "POST" {
                 Response::error(405, "unsupported operation")
             } else {
-                self.acme_signed_account(request, admitted, &view)
+                self.acme_signed_account(request, admitted, &view, &mut authority)
             }
         } else if view
             .endpoint
@@ -439,6 +466,15 @@ impl Service {
                 "serverInternal",
                 "ACME order, challenge and certificate operation is not implemented",
             )
+        };
+        if self.pending_acme_external.is_some() {
+            return Some(response);
+        }
+        let Some(mut authority) = authority else {
+            return Some(Response::error(
+                503,
+                "ACME original response authority was lost",
+            ));
         };
         let mut issued_nonce = None;
         // The genuine wrapper adds nonce metadata only after a successful
@@ -553,6 +589,7 @@ impl Service {
         request: &RequestView<'_>,
         admitted: &mut State,
         view: &AcmeView,
+        authority: &mut Option<Authority>,
     ) -> Response {
         let parsed = match AcmeParsedJws::parse(request.body) {
             Ok(parsed) => parsed,
@@ -604,6 +641,17 @@ impl Service {
         };
         if let Err(error) = namespace_runtime::request_live() {
             return error;
+        }
+        match admitted.engines.prepare_acme_external_finalize(
+            view,
+            &verified,
+            kid.as_deref(),
+            at,
+            request.token_clock,
+        ) {
+            Ok(Some(plan)) => return self.stage_acme_external(admitted, view, authority, plan),
+            Ok(None) => {}
+            Err(error) => return engine_problem(error),
         }
         let result = if view.endpoint == "new-account" || view.endpoint.starts_with("account/") {
             admitted
@@ -672,6 +720,32 @@ impl Service {
             }
             Err(error) => engine_problem(error),
         }
+    }
+    pub(super) fn decorate_acme_external_success(
+        &mut self,
+        authority: &mut Authority,
+        state: &mut State,
+        view: &AcmeView,
+        response: &mut Response,
+    ) -> Result<(), Response> {
+        let at = authority.observed_at()?;
+        let at = state
+            .engines
+            .acme_activate_nonce_owner(&view.owner, at)
+            .map_err(Response::from_engine_error)?;
+        let nonce = self.acme_nonces.mint(&view.owner, &self.unseal_nonce, at)?;
+        let headers = json!({"Replay-Nonce":[nonce],"Link":[format!("<{}directory>;rel=\"index\"",view.base)]});
+        response
+            .response_headers
+            .append_from_sdk(Some(&headers), &view.headers)
+            .map_err(|_| Response::error(503, "ACME external response metadata rejected"))?;
+        authority.nonce_deadline = self
+            .acme_nonces
+            .0
+            .get(&nonce)
+            .map(|grant| (grant.expires, grant.monotonic));
+        authority.nonce = Some(nonce);
+        Ok(())
     }
     pub(super) fn complete_pending_acme_delivery(
         &mut self,

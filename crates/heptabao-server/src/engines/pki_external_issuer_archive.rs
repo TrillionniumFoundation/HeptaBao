@@ -182,4 +182,12 @@ impl Pki {
         }
         Ok(())
     }
+    pub(in crate::engines::pki) fn archive_external_acme_issuer(&mut self, id: &str) -> Result<()> {
+        let mut selected = self.clone();
+        selected.select_external_default(id)?;
+        let issuer = selected.captured_external_issuer()?;
+        self.admit_external_issuer_archive(&issuer)?;
+        self.external.archived_issuers.insert(id.to_owned(), issuer);
+        Ok(())
+    }
 }
