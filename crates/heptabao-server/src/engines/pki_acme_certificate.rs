@@ -92,7 +92,7 @@ impl ExternalCertificateTemplate {
         }
         Ok(())
     }
-    pub(crate) fn validate_issuer(&self, pki: &Pki) -> Result<()> {
+    pub(in crate::engines) fn validate_issuer(&self, pki: &Pki) -> Result<()> {
         let key = pki.external_issuer_key(&self.plan.root.issuer_id)?;
         let root = pki.external_issuer_root(&self.plan.root.issuer_id)?;
         if key.reference != self.reference
@@ -116,7 +116,12 @@ impl ExternalCertificateTemplate {
     pub(crate) fn signature_size_bound(&self) -> usize {
         self.public.signature_size_bound()
     }
-    pub(crate) fn finish(self, signature: &[u8], pki: &Pki, at: Timestamp) -> Result<Certificate> {
+    pub(in crate::engines) fn finish(
+        self,
+        signature: &[u8],
+        pki: &Pki,
+        at: Timestamp,
+    ) -> Result<Certificate> {
         self.validate_time(at)?;
         self.validate_issuer(pki)?;
         self.public.verify_leaf(&self.tbs, signature, self.scheme)?;

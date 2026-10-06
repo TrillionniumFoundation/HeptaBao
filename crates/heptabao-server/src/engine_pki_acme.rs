@@ -1307,12 +1307,12 @@ impl EngineState {
             Timestamp::whole(self.lease_clock)
                 .map_err(|_| error(503, "ACME durable signing floor unavailable"))?,
         );
+        let empty = json!({});
+        let raw = pki::acme_certificate::parse_payload(proof.payload().unwrap_or(&empty))?;
         let status = order.status(protocol, at);
         if status != "ready" {
             return Err(pki::acme_certificate::order_not_ready(status, "ready"));
         }
-        let empty = json!({});
-        let raw = pki::acme_certificate::parse_payload(proof.payload().unwrap_or(&empty))?;
         let template = mounted
             .acme_prepare_external_certificate(&order, &raw, at, clock)?
             .ok_or_else(|| error(503, "ACME original external signer changed"))?;
