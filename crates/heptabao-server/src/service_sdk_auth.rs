@@ -2,7 +2,7 @@
 //! encrypted auth owner. Plugin JSON never becomes a Principal or bearer.
 use super::*;
 use crate::auth::Timestamp;
-use crate::auth::sdk::{Binding, Entry};
+use crate::auth::sdk::{Binding, Entry, Paths};
 use heptabao_plugin_host::sdk_backend::SdkBackendType;
 
 struct Context {
@@ -21,7 +21,6 @@ struct StageTarget<'a> {
     context: Context,
     operation: &'a str,
     path: &'a str,
-    login: bool,
     deadline: Instant,
 }
 struct Transaction {
@@ -31,13 +30,13 @@ struct Transaction {
 pub(in crate::service) struct Plan {
     context: Context,
     binding: Binding,
+    paths: Option<Paths>,
     caller: Mutex<Option<plugin::PluginResponseAuthority>>,
     control: Arc<Control>,
     transaction: Mutex<Transaction>,
     operation: String,
     path: String,
     data: Value,
-    login: bool,
     deadline: Instant,
 }
 impl Drop for Plan {
@@ -72,6 +71,11 @@ impl Plan {
             path: self.path.clone(),
             data: self.data.clone(),
             lease: None,
+            expected_auth_paths: if self.operation == "_mount" {
+                None
+            } else {
+                Some(self.paths.clone().unwrap_or_else(Paths::legacy).wire())
+            },
             deadline,
             events,
         };
@@ -248,10 +252,26 @@ impl Service {
                 Err(e) => return auth_error(e),
             }
         };
-        let login = relative.as_ref().is_some_and(|b| {
-            request.path == format!("auth/{}/login", b.mount)
-                && matches!(request.method, "POST" | "PUT")
+        let path_policy = match relative.as_ref() {
+            Some(binding) => match state.auth.sdk_auth_paths(binding) {
+                Ok(paths) => Some(paths.unwrap_or_else(Paths::legacy)),
+                Err(error) => return auth_error(error),
+            },
+            None => None,
+        };
+        let relative_path = relative.as_ref().and_then(|binding| {
+            request
+                .path
+                .strip_prefix(&format!("auth/{}/", binding.mount))
         });
+        let root_path = path_policy
+            .as_ref()
+            .zip(relative_path)
+            .is_some_and(|(policy, path)| policy.is_root(path));
+        let login = path_policy
+            .as_ref()
+            .zip(relative_path)
+            .is_some_and(|(policy, path)| policy.is_public(path));
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "SDK Auth response wrapping is not implemented");
         }
@@ -276,7 +296,7 @@ impl Service {
                 &state,
                 request,
                 capability,
-                control,
+                control || root_path,
                 &self.unseal_nonce,
             )
             .with_sdk_clock();
@@ -617,7 +637,6 @@ impl Service {
                     context,
                     operation: "_mount",
                     path: "",
-                    login: false,
                     deadline,
                 },
             );
@@ -630,6 +649,7 @@ impl Service {
             "LIST" | "SCAN" => "list",
             "DELETE" => "delete",
             "POST" | "PUT" => "update",
+            "PATCH" => "patch",
             _ => return Response::error(405, "SDK Auth method unsupported"),
         };
         let path = request
@@ -645,7 +665,6 @@ impl Service {
                 context,
                 operation,
                 path,
-                login,
                 deadline,
             },
         )
@@ -675,7 +694,6 @@ impl Service {
             context,
             operation,
             path,
-            login,
             deadline,
         } = target;
         let Some(config) = self.sdk_configuration.clone() else {
@@ -741,9 +759,14 @@ impl Service {
             Ok(id) => id,
             Err(e) => return e,
         };
+        let paths = match state.auth.sdk_auth_paths(&binding) {
+            Ok(paths) => paths,
+            Err(error) => return auth_error(error),
+        };
         self.pending_sdk_auth_request = Some(Plan {
             context,
             binding,
+            paths,
             caller: Mutex::new(caller),
             control,
             transaction: Mutex::new(Transaction {
@@ -753,13 +776,28 @@ impl Service {
             operation: operation.into(),
             path: path.into(),
             data: request.body.clone(),
-            login,
             deadline,
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
     fn sdk_auth_gate(&mut self, plan: &Plan) -> Result<(), Response> {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        if plan.operation != "_mount" {
+            let Some(state) = self.state.as_ref() else {
+                return Err(Response::error(503, "SDK metadata owner unavailable"));
+            };
+            if state
+                .auth
+                .sdk_auth_paths(&plan.binding)
+                .map_err(auth_error)?
+                != plan.paths
+            {
+                return Err(Response::error(
+                    503,
+                    "SDK path policy changed after admission",
+                ));
+            }
+        }
         if Instant::now() >= plan.deadline || plan.control.fenced.load(Ordering::Acquire) {
             return Err(Response::error(
                 503,
@@ -954,17 +992,19 @@ impl Service {
         let at = plan.time(&candidate.auth)?;
         candidate.auth.observe_sdk_auth_clock(at);
         let mut response = if plan.operation == "_mount" {
+            let metadata = value
+                .and_then(|value| value.get("auth_paths"))
+                .ok_or_else(|| Response::error(503, "SDK owned Setup metadata missing"))?;
+            let paths = Paths::from_actual(metadata).map_err(auth_error)?;
+            candidate
+                .auth
+                .capture_sdk_auth_paths(&plan.binding, paths)
+                .map_err(auth_error)?;
             empty_response()
         } else if let Some(auth) = value
             .and_then(|value| value.get("auth"))
             .filter(|value| !value.is_null())
         {
-            if !plan.login {
-                return Err(Response::error(
-                    501,
-                    "SDK Auth responses are only admitted from original login",
-                ));
-            }
             if value
                 .and_then(|v| v.get("secret"))
                 .is_some_and(|v| !v.is_null())

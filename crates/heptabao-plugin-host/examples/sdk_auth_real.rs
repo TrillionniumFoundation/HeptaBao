@@ -221,30 +221,32 @@ mod unix_fixture {
             &mut checks,
         )?;
         host.close(&mut storage)?;
-        for (round, label) in [
-            (
-                4,
-                "actual-SDK-private-login-metadata-cannot-mint-public-login",
-            ),
-            (
-                5,
-                "actual-SDK-Root-path-cannot-drop-sudo-through-first-admission",
-            ),
+        for (round, root, public) in [
+            (4, json!([]), json!([])),
+            (5, json!(["config"]), json!(["login"])),
         ] {
             let before_cells = storage.cells.clone();
             let before_calls = storage.calls.clone();
-            let rejected = SdkBackendHost::launch_typed_before(
+            let mut captured = SdkBackendHost::launch_typed_before(
                 &config(round)?,
                 &mut storage,
                 SdkBackendType::Auth,
                 Instant::now() + Duration::from_secs(10),
-            );
-            check(rejected.is_err(), label, &mut checks)?;
+            )?;
+            let metadata = captured
+                .auth_special_paths()
+                .ok_or("actual SDK policy metadata")?;
             check(
-                storage.cells == before_cells && storage.calls == before_calls,
-                "rejected-special-paths-no-Storage-or-config-effect",
+                metadata["Root"] == root && metadata["Unauthenticated"] == public,
+                "actual-SDK-private-and-Root-policy-captured-without-caller-grant",
                 &mut checks,
             )?;
+            check(
+                storage.cells == before_cells && storage.calls == before_calls,
+                "metadata-Setup-no-Storage-effect",
+                &mut checks,
+            )?;
+            captured.close(&mut storage)?;
         }
         fs::write(
             out.join("result.original.json"),

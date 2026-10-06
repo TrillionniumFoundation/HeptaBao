@@ -192,6 +192,7 @@ pub struct SdkBackendHost {
     _thread_owner: PhantomData<Rc<()>>,
     timeout: Duration,
     backend_type: SdkBackendType,
+    auth_paths: Option<Value>,
     call: u64,
     storage_rpc: u64,
     fenced: bool,
@@ -375,6 +376,7 @@ impl SdkBackendHost {
             _thread_owner: PhantomData,
             timeout: config.timeout,
             backend_type,
+            auth_paths: None,
             call: 1,
             storage_rpc: 0,
             fenced: false,
@@ -396,10 +398,18 @@ impl SdkBackendHost {
         if ready.get("backend_type").and_then(Value::as_str) != Some(backend_type.label()) {
             return Err(SdkBridgeError::OutcomeUnknown);
         }
-        if backend_type == SdkBackendType::Auth && !admitted_auth_paths(ready.get("auth_paths")) {
-            return Err(SdkBridgeError::OutcomeUnknown);
+        if backend_type == SdkBackendType::Auth {
+            host.auth_paths = Some(
+                normalized_auth_paths(ready.get("auth_paths"))
+                    .ok_or(SdkBridgeError::OutcomeUnknown)?,
+            );
         }
         Ok(host)
+    }
+
+    /// Actual SDK SpecialPaths captured at owned Setup, without a caller grant.
+    pub fn auth_special_paths(&self) -> Option<&Value> {
+        self.auth_paths.as_ref()
     }
 
     pub fn handle_request(
@@ -826,10 +836,14 @@ fn storage_callback(
 // Auth100 currently implements one exact public login route and ordinary
 // authenticated paths. SDK special root/local/seal-wrap/forwarded semantics
 // must never be silently dropped during admission of an arbitrary backend.
-fn admitted_auth_paths(value: Option<&Value>) -> bool {
-    let Some(paths) = value.and_then(Value::as_object) else {
-        return false;
-    };
+fn normalized_auth_paths(value: Option<&Value>) -> Option<Value> {
+    let value = value?;
+    if value.is_null() {
+        return Some(
+            json!({"Root":[],"Unauthenticated":[],"LocalStorage":[],"SealWrapStorage":[],"WriteForwardedStorage":[]}),
+        );
+    }
+    let paths = value.as_object()?;
     if paths.len() != 5
         || paths.keys().any(|key| {
             !matches!(
@@ -842,55 +856,54 @@ fn admitted_auth_paths(value: Option<&Value>) -> bool {
             )
         })
     {
-        return false;
+        return None;
     }
-    let Some(unauthenticated) = paths.get("Unauthenticated").and_then(Value::as_array) else {
-        return false;
-    };
-    if unauthenticated.len() != 1 || unauthenticated[0].as_str() != Some("login") {
-        return false;
-    }
-    [
+    let mut normalized = serde_json::Map::new();
+    for key in [
         "Root",
+        "Unauthenticated",
         "LocalStorage",
         "SealWrapStorage",
         "WriteForwardedStorage",
-    ]
-    .into_iter()
-    .all(|key| {
-        paths
-            .get(key)
-            .is_some_and(|value| value.is_null() || value.as_array().is_some_and(Vec::is_empty))
-    })
+    ] {
+        let raw = paths.get(key)?;
+        let values: Vec<String> = if raw.is_null() {
+            Vec::new()
+        } else {
+            serde_json::from_value(raw.clone()).ok()?
+        };
+        if !heptabao_plugin_contracts::sdk_paths::valid(&values)
+            || (!matches!(key, "Root" | "Unauthenticated") && !values.is_empty())
+        {
+            return None;
+        }
+        normalized.insert(key.into(), json!(values));
+    }
+    Some(Value::Object(normalized))
 }
 #[cfg(test)]
 mod auth_paths_tests {
     use super::*;
     #[test]
     fn actual_sdk_auth_special_paths_cannot_mint_public_or_drop_root_scope() {
-        let admitted = json!({"Root":null,"Unauthenticated":["login"],"LocalStorage":null,"SealWrapStorage":null,"WriteForwardedStorage":null});
-        assert!(admitted_auth_paths(Some(&admitted)));
-        for field in [
-            "Root",
-            "LocalStorage",
-            "SealWrapStorage",
-            "WriteForwardedStorage",
-        ] {
+        let admitted = json!({"Root":["config"],"Unauthenticated":["login","public/+/*"],"LocalStorage":null,"SealWrapStorage":null,"WriteForwardedStorage":null});
+        let Some(actual) = normalized_auth_paths(Some(&admitted)) else {
+            panic!("literal valid policy")
+        };
+        assert_eq!(actual["Root"], json!(["config"]));
+        assert_eq!(actual["Unauthenticated"], json!(["login", "public/+/*"]));
+        let Some(private) = normalized_auth_paths(Some(&Value::Null)) else {
+            panic!("private policy")
+        };
+        assert_eq!(private["Unauthenticated"], json!([]));
+        for field in ["LocalStorage", "SealWrapStorage", "WriteForwardedStorage"] {
             let mut rejected = admitted.clone();
             rejected[field] = json!(["config"]);
-            assert!(!admitted_auth_paths(Some(&rejected)));
+            assert!(normalized_auth_paths(Some(&rejected)).is_none());
         }
-        for public in [
-            json!(null),
-            json!([]),
-            json!(["login/*"]),
-            json!(["login", "config"]),
-        ] {
-            let mut rejected = admitted.clone();
-            rejected["Unauthenticated"] = public;
-            assert!(!admitted_auth_paths(Some(&rejected)));
-        }
-        assert!(!admitted_auth_paths(None));
-        assert!(!admitted_auth_paths(Some(&Value::Null)));
+        let mut malformed = admitted.clone();
+        malformed["Unauthenticated"] = json!(["foo+bar"]);
+        assert!(normalized_auth_paths(Some(&malformed)).is_none());
+        assert!(normalized_auth_paths(None).is_none());
     }
 }

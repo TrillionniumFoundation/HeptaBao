@@ -19,11 +19,67 @@ impl Drop for Cell {
         self.value.zeroize()
     }
 }
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Paths {
+    root: Vec<String>,
+    unauthenticated: Vec<String>,
+}
+impl Paths {
+    pub(crate) fn from_actual(value: &Value) -> Result<Self, AuthError> {
+        let root: Vec<String> = serde_json::from_value(
+            value
+                .get("Root")
+                .cloned()
+                .ok_or_else(|| bad("SDK Root metadata missing"))?,
+        )
+        .map_err(|_| bad("SDK Root metadata malformed"))?;
+        let unauthenticated: Vec<String> = serde_json::from_value(
+            value
+                .get("Unauthenticated")
+                .cloned()
+                .ok_or_else(|| bad("SDK public metadata missing"))?,
+        )
+        .map_err(|_| bad("SDK public metadata malformed"))?;
+        let paths = Self {
+            root,
+            unauthenticated,
+        };
+        paths.validate()?;
+        Ok(paths)
+    }
+    fn validate(&self) -> Result<(), AuthError> {
+        if !heptabao_plugin_contracts::sdk_paths::valid(&self.root)
+            || !heptabao_plugin_contracts::sdk_paths::valid(&self.unauthenticated)
+        {
+            return Err(bad("SDK path policy rejected"));
+        }
+        Ok(())
+    }
+    pub(crate) fn wire(&self) -> Value {
+        json!({"Root":self.root,"Unauthenticated":self.unauthenticated,"LocalStorage":[],"SealWrapStorage":[],"WriteForwardedStorage":[]})
+    }
+    pub(crate) fn is_root(&self, path: &str) -> bool {
+        heptabao_plugin_contracts::sdk_paths::matches(&self.root, path)
+    }
+    pub(crate) fn is_public(&self, path: &str) -> bool {
+        !self.is_root(path)
+            && heptabao_plugin_contracts::sdk_paths::matches(&self.unauthenticated, path)
+    }
+    pub(crate) fn legacy() -> Self {
+        Self {
+            root: Vec::new(),
+            unauthenticated: vec!["login".into()],
+        }
+    }
+}
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Mount {
     descriptor: Descriptor,
     mount: AuthMount,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    special_paths: Option<Paths>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     storage: BTreeMap<String, Cell>,
 }
@@ -34,7 +90,9 @@ impl std::fmt::Debug for Mount {
 }
 impl Mount {
     pub(super) fn same_binding(&self, other: &Self) -> bool {
-        self.descriptor == other.descriptor && self.mount == other.mount
+        self.descriptor == other.descriptor
+            && self.mount == other.mount
+            && self.special_paths == other.special_paths
     }
     pub(super) fn validate_local(&self, current: Option<&AuthMount>) -> Result<(), AuthError> {
         self.descriptor
@@ -46,6 +104,9 @@ impl Mount {
             || self.mount.revision == 0
         {
             return Err(err(503, "SDK Auth exact mount identity rejected"));
+        }
+        if let Some(paths) = &self.special_paths {
+            paths.validate()?;
         }
         if self.storage.len() > 4096 {
             return Err(err(503, "SDK Auth storage cell bound exceeded"));
@@ -101,6 +162,44 @@ impl AuthState {
                 .plugin_auth_mounts
                 .values()
                 .any(|mounts| mounts.values().any(|mount| mount.sdk.is_some()))
+    }
+    pub(crate) fn sdk_auth_paths(&self, binding: &Binding) -> Result<Option<Paths>, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        Ok(self
+            .plugin_auth_mounts
+            .get(&binding.namespace)
+            .and_then(|mounts| mounts.get(&binding.mount))
+            .and_then(|config| config.sdk.as_ref())
+            .and_then(|sdk| sdk.special_paths.clone()))
+    }
+    pub(crate) fn capture_sdk_auth_paths(
+        &mut self,
+        binding: &Binding,
+        paths: Paths,
+    ) -> Result<(), AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        paths.validate()?;
+        let sdk = self
+            .plugin_auth_mounts
+            .get_mut(&binding.namespace)
+            .and_then(|mounts| mounts.get_mut(&binding.mount))
+            .and_then(|config| config.sdk.as_mut())
+            .ok_or_else(|| err(503, "SDK metadata owner absent"))?;
+        if sdk.special_paths.is_some() {
+            return Err(err(409, "SDK metadata already captured"));
+        }
+        sdk.special_paths = Some(paths);
+        Ok(())
+    }
+    pub(super) fn sdk_public_path(&self, namespace: &str, path: &str) -> Option<bool> {
+        let binding = self.sdk_auth_binding(namespace, path).ok().flatten()?;
+        let relative = path.strip_prefix(&format!("auth/{}/", binding.mount))?;
+        let paths = self
+            .sdk_auth_paths(&binding)
+            .ok()
+            .flatten()
+            .unwrap_or_else(Paths::legacy);
+        Some(paths.is_public(relative))
     }
     pub(crate) fn sdk_auth_clock_floor(&self) -> Option<Timestamp> {
         self.sdk_auth_clock
@@ -338,6 +437,7 @@ impl AuthState {
             sdk: Some(Mount {
                 descriptor: descriptor.clone(),
                 mount: owner.clone(),
+                special_paths: None,
                 storage: BTreeMap::new(),
             }),
             plugin_id: descriptor.name.clone(),

@@ -163,6 +163,7 @@ struct WorkerJob {
     path: String,
     data: Value,
     lease: Option<SdkLeaseCallback>,
+    expected_auth_paths: Option<Value>,
     deadline: Instant,
     events: Sender<Event>,
 }
@@ -299,7 +300,13 @@ fn start_worker_typed(
                         )?);
                     }
                     if job.operation == "_mount" {
-                        return Ok(None);
+                        return if family==SdkBackendType::Auth {
+                            Ok(Some(json!({"auth_paths":host.as_ref().ok_or(SdkBridgeError::Fenced)?.auth_special_paths().ok_or(SdkBridgeError::Fenced)?})))
+                        } else {Ok(None)};
+                    }
+                    if let Some(expected)=job.expected_auth_paths.as_ref()
+                        && host.as_ref().and_then(SdkBackendHost::auth_special_paths)!=Some(expected) {
+                        return Err(SdkBridgeError::Fenced);
                     }
                     host.as_mut()
                         .ok_or(SdkBridgeError::Fenced)?
@@ -433,6 +440,7 @@ impl Plan {
                 .as_ref()
                 .map_or_else(|| self.data.clone(), |call| call.request_data()),
             lease: lease_callback,
+            expected_auth_paths: None,
             deadline,
             events,
         };

@@ -3,6 +3,8 @@
 
 //! Plugin registration, lifecycle and call-outcome contracts.
 
+pub mod sdk_paths;
+
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;

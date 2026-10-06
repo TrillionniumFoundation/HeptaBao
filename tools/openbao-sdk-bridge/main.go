@@ -70,7 +70,7 @@ type message struct {
 	Response          *logical.Response `json:"response"`
 	Error             string            `json:"error,omitempty"`
 	BackendType       string            `json:"backend_type,omitempty"`
-	AuthPaths         *logical.Paths    `json:"auth_paths,omitempty"`
+	AuthPaths         *logical.Paths    `json:"auth_paths"`
 }
 type wire struct {
 	writes    sync.Mutex

@@ -3778,6 +3778,13 @@ impl AuthState {
     /// exact mounted endpoints. Never classify a route by an arbitrary `/login`
     /// suffix: mount kind, namespace, operation and suffix all bind this decision.
     pub(super) fn is_public_login(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if matches!(
+            method,
+            "GET" | "HEAD" | "POST" | "PUT" | "PATCH" | "DELETE" | "LIST" | "SCAN"
+        ) && let Some(public) = self.sdk_public_path(namespace, path)
+        {
+            return public;
+        }
         if !matches!(method, "POST" | "PUT") {
             return false;
         }
