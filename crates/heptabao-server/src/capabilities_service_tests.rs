@@ -282,30 +282,115 @@ fn capabilities_foreign_selectors_require_endpoint_authorization() -> TestResult
 }
 
 #[test]
-fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestResult {
+fn capabilities_openbao270_weak_fields_and_duplicates_preserve_state_and_actor() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
     let before = snapshot(&s)?;
-    for (case_index, payload) in [
-        json!({}),
-        json!({"paths":[]}),
-        json!({"paths":["a","a"]}),
-        json!({"path":"a","paths":["a"]}),
-        json!({"paths":[3]}),
-        json!({"paths":["../outside"]}),
-        json!({"paths":["secret/*"]}),
-        json!({"paths":["a".repeat(2049)]}),
-        json!({"paths":vec!["a";65]}),
-    ]
-    .into_iter()
-    .enumerate()
-    {
+    let cases = [
+        (json!({}), None),
+        (json!({"paths":[]}), None),
+        (
+            json!({"paths":["a","a"]}),
+            Some(vec!["a".to_owned(), "a".to_owned()]),
+        ),
+        (
+            json!({"path":"unused","paths":["a"]}),
+            Some(vec!["a".to_owned()]),
+        ),
+        (json!({"paths":[3]}), Some(vec!["3".to_owned()])),
+        (
+            json!({"paths":["../outside"]}),
+            Some(vec!["../outside".to_owned()]),
+        ),
+        (
+            json!({"paths":["secret/*"]}),
+            Some(vec!["secret/*".to_owned()]),
+        ),
+        (
+            json!({"paths":["a".repeat(2049)]}),
+            Some(vec!["a".repeat(2049)]),
+        ),
+        (
+            json!({"paths":vec!["a";65]}),
+            Some(vec!["a".to_owned(); 65]),
+        ),
+        (
+            json!({"paths":" a,b , c "}),
+            Some(vec!["a".to_owned(), "b".to_owned(), "c".to_owned()]),
+        ),
+        (
+            json!({"paths":["a,b"," x "]}),
+            Some(vec!["a,b".to_owned(), "x".to_owned()]),
+        ),
+        (json!({"paths":true}), Some(vec!["1".to_owned()])),
+        (
+            json!({"paths":[true,false,3,1.25]}),
+            Some(vec![
+                "1".to_owned(),
+                "0".to_owned(),
+                "3".to_owned(),
+                "1.25".to_owned(),
+            ]),
+        ),
+        (
+            json!({"paths":null,"path":"a,b"}),
+            Some(vec!["a".to_owned(), "b".to_owned()]),
+        ),
+        (json!({"paths":{},"path":["a"]}), Some(vec!["a".to_owned()])),
+        (
+            json!({"paths":"","path":"fallback"}),
+            Some(vec!["fallback".to_owned()]),
+        ),
+    ];
+    for (case_index, (payload, paths)) in cases.into_iter().enumerate() {
+        let response = call(&mut s, &root, "sys/capabilities-self", payload);
+        if let Some(paths) = paths {
+            assert_eq!(response.status, 200, "case {case_index}");
+            let mut expected = serde_json::Map::new();
+            for path in &paths {
+                expected.insert(path.clone(), json!(["root"]));
+            }
+            if paths.len() == 1 {
+                expected.insert("capabilities".to_owned(), json!(["root"]));
+            }
+            assert_eq!(
+                response.body["data"],
+                Value::Object(expected),
+                "case {case_index}"
+            );
+        } else {
+            assert_eq!(response.status, 400, "case {case_index}");
+            assert_eq!(response.body["errors"], json!(["paths must be supplied"]));
+        }
         assert_eq!(
-            call(&mut s, &root, "sys/capabilities-self", payload).status,
-            400,
-            "capabilities bound case {case_index}"
+            before,
+            snapshot(&s)?,
+            "case {case_index} changed durable owner state"
         );
+    }
+    for (payload, message) in [
+        (
+            json!({"paths":[{}]}),
+            "Field validation failed: error converting input for field \"paths\": 1 error(s) decoding:\n\n* '[0]' expected type 'string', got unconvertible type 'map[string]interface {}', value: 'map[]'",
+        ),
+        (
+            json!({"paths":[[]]}),
+            "Field validation failed: error converting input for field \"paths\": 1 error(s) decoding:\n\n* '[0]' expected type 'string', got unconvertible type '[]interface {}', value: '[]'",
+        ),
+        (
+            json!({"paths":["a"],"path":[{}]}),
+            "Field validation failed: error converting input for field \"path\": 1 error(s) decoding:\n\n* '[0]' expected type 'string', got unconvertible type 'map[string]interface {}', value: 'map[]'",
+        ),
+        (
+            json!({"paths":[""]}),
+            "1 error occurred:\n\t* missing path\n\n",
+        ),
+    ] {
+        let response = call(&mut s, &root, "sys/capabilities-self", payload);
+        assert_eq!(response.status, 400);
+        assert_eq!(response.body["errors"], json!([message]));
+        assert_eq!(before, snapshot(&s)?);
     }
     let self_response = call(
         &mut s,

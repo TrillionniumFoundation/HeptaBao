@@ -104,7 +104,11 @@ impl AuthState {
         identity_templates: &IdentityTemplateValues,
     ) -> Result<Vec<&'static str>, AuthError> {
         validate_namespace(namespace)?;
-        validate_path(path, false)?;
+        // Introspection accepts literal query strings even when they are not
+        // admissible execution routes. It produces capabilities, never a grant.
+        if path.is_empty() {
+            return Err(bad("1 error occurred:\n\t* missing path\n\n"));
+        }
         if identity_disabled {
             return Ok(vec!["deny"]);
         }
