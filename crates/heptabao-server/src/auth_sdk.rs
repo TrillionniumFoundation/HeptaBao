@@ -211,6 +211,31 @@ impl AuthState {
         changed
     }
     pub(crate) fn validate_sdk_auth_clock(&self, previous: Option<&Self>) -> Result<(), AuthError> {
+        if let Some(previous) = previous {
+            for (namespace, mounts) in &previous.plugin_auth_mounts {
+                for (mount, config) in mounts {
+                    let Some(old) = config
+                        .sdk
+                        .as_ref()
+                        .filter(|sdk| sdk.special_paths.is_some())
+                    else {
+                        continue;
+                    };
+                    let current = self
+                        .plugin_auth_mounts
+                        .get(namespace)
+                        .and_then(|mounts| mounts.get(mount))
+                        .and_then(|config| config.sdk.as_ref());
+                    if let Some(current) = current
+                        && current.descriptor == old.descriptor
+                        && current.mount.accessor == old.mount.accessor
+                        && current.special_paths != old.special_paths
+                    {
+                        return Err(err(503, "SDK original mounted path policy cannot change"));
+                    }
+                }
+            }
+        }
         if previous
             .and_then(|state| state.sdk_auth_clock)
             .is_some_and(|floor| self.sdk_auth_clock.is_none_or(|time| time < floor))

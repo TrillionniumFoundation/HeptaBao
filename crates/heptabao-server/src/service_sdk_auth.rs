@@ -1334,4 +1334,88 @@ mod durable_tests {
         assert!(lower.validate_format().is_err());
         Ok(())
     }
+    #[test]
+    fn sdk_auth100_actual_path_policy_cannot_roll_back_same_clock_and_reopens_encrypted()
+    -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (key, root) = bootstrap(&mut service)?;
+        let mut initial = service.state.clone().ok_or("state")?;
+        let binding = mount(&mut initial, &root)?;
+        publish(&mut service, initial)?;
+        let before = service.state.clone().ok_or("before policy")?;
+        let backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+        let paths = Paths::from_actual(
+            &json!({"Root":["root/+/write","root*","root-exact"],"Unauthenticated":["public/+/read"]}),
+        )?;
+        let mut captured = before.clone();
+        captured
+            .auth
+            .capture_sdk_auth_paths(&binding, paths.clone())?;
+        captured.auth.sdk_auth_storage_put(
+            &binding,
+            Entry {
+                key: "config".into(),
+                value: Zeroizing::new(b"policy-bound-real-cell".to_vec()),
+                seal_wrap: false,
+            },
+        )?;
+        // Policy capture is a separate cut even when the original observation
+        // floor has not moved. Restore may never recover the old guessed login.
+        assert_eq!(
+            before.auth.sdk_auth_clock_floor(),
+            captured.auth.sdk_auth_clock_floor()
+        );
+        publish(&mut service, captured)?;
+        assert!(service.prepare_snapshot_restore(&backup).is_err());
+        let current = service.state.as_ref().ok_or("current")?;
+        assert!(
+            before
+                .auth
+                .validate_sdk_auth_clock(Some(&current.auth))
+                .is_err()
+        );
+        assert_eq!(
+            current.auth.sdk_public_path("", "auth/sdk/login"),
+            Some(false)
+        );
+        assert_eq!(
+            current
+                .auth
+                .sdk_public_path("", "auth/sdk/public/alice/read"),
+            Some(true)
+        );
+        assert!(!paths.is_root("root/alice/write"));
+        assert!(paths.is_root("root/+/write"));
+        assert!(!paths.is_root("root-exact-more"));
+        assert_eq!(
+            call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
+            204
+        );
+        drop(service);
+        let mut reopened = directory.service()?;
+        assert_eq!(
+            call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+        let actual = reopened.state.as_ref().ok_or("reopened")?;
+        assert!(actual.auth.sdk_auth_paths(&binding)? == Some(paths));
+        assert_eq!(
+            actual
+                .auth
+                .sdk_auth_storage_get(&binding, "config")?
+                .ok_or("cell")?
+                .value
+                .as_slice(),
+            b"policy-bound-real-cell"
+        );
+        assert!(
+            before
+                .auth
+                .validate_sdk_auth_clock(Some(&actual.auth))
+                .is_err()
+        );
+        assert!(reopened.prepare_snapshot_restore(&backup).is_err());
+        Ok(())
+    }
 }

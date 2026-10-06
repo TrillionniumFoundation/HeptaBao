@@ -92,12 +92,6 @@ mod tests {
         assert!(root_matches(&shadow, "root-other"));
         assert!(!root_matches(&shadow, "root-exact-more"));
         assert!(!matches(&shadow, "root-exact-more"));
-        assert!(
-            matches(
-                &["root*".into(), "root-exact".into(), "root-+/+".into()],
-                "root-exact-more"
-            ) == false
-        );
         assert!(!root_matches(&["a*".into(), "a".into()], "ab"));
         assert!(root_matches(&["a".into(), "a*".into()], "ab"));
         assert!(matches(&["login".into()], "login"));

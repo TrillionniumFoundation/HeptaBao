@@ -888,16 +888,13 @@ fn normalized_auth_paths(value: Option<&Value>) -> Option<Value> {
 mod auth_paths_tests {
     use super::*;
     #[test]
-    fn actual_sdk_auth_special_paths_cannot_mint_public_or_drop_root_scope() {
+    fn actual_sdk_auth_special_paths_cannot_mint_public_or_drop_root_scope()
+    -> Result<(), &'static str> {
         let admitted = json!({"Root":["config"],"Unauthenticated":["login","public/+/*"],"LocalStorage":null,"SealWrapStorage":null,"WriteForwardedStorage":null});
-        let Some(actual) = normalized_auth_paths(Some(&admitted)) else {
-            panic!("literal valid policy")
-        };
+        let actual = normalized_auth_paths(Some(&admitted)).ok_or("literal valid policy")?;
         assert_eq!(actual["Root"], json!(["config"]));
         assert_eq!(actual["Unauthenticated"], json!(["login", "public/+/*"]));
-        let Some(private) = normalized_auth_paths(Some(&Value::Null)) else {
-            panic!("private policy")
-        };
+        let private = normalized_auth_paths(Some(&Value::Null)).ok_or("private policy")?;
         assert_eq!(private["Unauthenticated"], json!([]));
         for field in ["LocalStorage", "SealWrapStorage", "WriteForwardedStorage"] {
             let mut rejected = admitted.clone();
@@ -908,5 +905,6 @@ mod auth_paths_tests {
         malformed["Unauthenticated"] = json!(["foo+bar"]);
         assert!(normalized_auth_paths(Some(&malformed)).is_none());
         assert!(normalized_auth_paths(None).is_none());
+        Ok(())
     }
 }
