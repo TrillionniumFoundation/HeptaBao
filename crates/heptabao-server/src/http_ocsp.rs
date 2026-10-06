@@ -132,8 +132,16 @@ pub(super) fn head_candidate(method: &str, path: &str) -> bool {
             .all(|byte| byte.is_ascii_graphic() && !matches!(byte, b'?' | b'#'))
 }
 
+fn sdk_auth_query_candidate(method: &str, path: &str, query: &str) -> bool {
+    matches!(method, "GET" | "LIST" | "SCAN")
+        && !query.is_empty()
+        && path.starts_with("auth/")
+        && path.len() <= 4096
+}
+
 fn query_candidate(method: &str, path: &str, query: &str) -> bool {
-    head_candidate(method, path)
+    sdk_auth_query_candidate(method, path, query)
+        || head_candidate(method, path)
         || (matches!(method, "GET" | "LIST" | "SCAN")
             && !query.is_empty()
             && !path.starts_with("sys/")
@@ -187,8 +195,11 @@ pub(crate) fn query_request<'a>(
 }
 
 impl QueryRequest<'_> {
-    pub(crate) fn resolve(&self, actual_kv: bool) -> Result<(&str, CarrierBody), Response> {
-        if actual_kv || self.wire_method == "HEAD" {
+    pub(crate) fn resolve(
+        &self,
+        actual_native_query: bool,
+    ) -> Result<(&str, CarrierBody), Response> {
+        if actual_native_query || self.wire_method == "HEAD" {
             return kv_query(self.wire_method, self.query);
         }
         let mut body = CarrierBody(json!({}));
@@ -750,5 +761,50 @@ mod tests {
                     .is_some_and(|r| r.resolve(false).is_err())
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod sdk_auth_query_tests {
+    use super::*;
+
+    #[test]
+    fn sdk_auth_query_original_strings_duplicates_and_selected_operation() {
+        let body = query_carrier_body(
+            "GET",
+            "auth/sdk/record",
+            "username=a%2Bb&delay_ms=2000&value=x&value=y&bare&bad=%zz&semicolon=x;y&help=1&list=false",
+        )
+        .unwrap_or_else(|| unreachable!());
+        let carrier =
+            query_request("GET", "auth/sdk/record", &body).unwrap_or_else(|| unreachable!());
+        let (method, projected) = carrier.resolve(true).unwrap_or_else(|_| unreachable!());
+        assert_eq!(method, "GET");
+        assert_eq!(
+            projected.0,
+            json!({
+                "username":"a+b", "delay_ms":"2000", "value":["x","y"], "bare":"", "list":"false"
+            })
+        );
+        assert!(carrier.resolve(false).is_err());
+        assert!(query_request("GET", "auth/other/record", &body).is_none());
+        assert!(query_request("POST", "auth/sdk/record", &body).is_none());
+    }
+
+    #[test]
+    fn sdk_auth_query_list_consumes_only_selector_and_preserves_repeated_data() {
+        let body = query_carrier_body(
+            "GET",
+            "auth/sdk/record",
+            "list=true&list=false&scan=false&n=1&n=2",
+        )
+        .unwrap_or_else(|| unreachable!());
+        let carrier =
+            query_request("LIST", "auth/sdk/record", &body).unwrap_or_else(|| unreachable!());
+        let (method, projected) = carrier.resolve(true).unwrap_or_else(|_| unreachable!());
+        assert_eq!(method, "LIST");
+        assert_eq!(projected.0, json!({"scan":"false","n":["1","2"]}));
+        assert!(query_request("GET", "auth/sdk/record", &body).is_none());
+        assert!(query_carrier_body("POST", "auth/sdk/record", "x=1").is_none());
     }
 }

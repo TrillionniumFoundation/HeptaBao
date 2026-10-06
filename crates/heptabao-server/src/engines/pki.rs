@@ -73,6 +73,8 @@ pub(in crate::engines) mod acme_engine;
 pub(crate) mod acme_jws;
 #[path = "pki_acme_orders.rs"]
 pub(crate) mod acme_orders;
+#[path = "pki_acme_revoke.rs"]
+pub(crate) mod acme_revoke;
 #[path = "pki_acme_state.rs"]
 pub(crate) mod acme_state;
 

@@ -278,7 +278,7 @@ impl Pki {
                 }
                 if let Some(cert) = self.acme_certificate_for_serial(&serial)? {
                     return Ok(ok(
-                        json!({"certificate":stored_pem("CERTIFICATE", &cert.der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        json!({"certificate":stored_pem("CERTIFICATE", &cert.der),"revocation_time":self.acme_revocation(&serial).map_or(0,|r|r.at.seconds()),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_default()}),
                         false,
                     ));
                 }
@@ -289,7 +289,7 @@ impl Pki {
                         mutated: false,
                     });
                 };
-                let projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
+                let projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_else(||certificate.revoked_at.map(timestamp).unwrap_or_default())});
                 Ok(ok(projection, false))
             }
             PkiPublicRead::RawCertificate(serial, format) => {

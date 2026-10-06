@@ -578,6 +578,11 @@ impl Protocol {
         Ok(id)
     }
     pub(crate) fn validate_order_successor(&self, previous: &Self) -> Result<()> {
+        for (serial, previous) in &previous.revocations {
+            if self.revocations.get(serial) != Some(previous) {
+                return Err(error(503, "ACME certificate revocation cannot regress"));
+            }
+        }
         for (id, old) in &previous.orders {
             let next = self
                 .orders

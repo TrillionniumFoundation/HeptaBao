@@ -299,6 +299,7 @@ impl Pki {
             })
             .collect();
         revoked.extend(self.signed_ca_revocations(root));
+        revoked.extend(self.acme_revoked_for_issuer(&root.issuer_id));
         revoked
     }
 

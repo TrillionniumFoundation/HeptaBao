@@ -309,6 +309,15 @@ fn engine_problem(error: crate::engines::EngineError) -> Response {
         == "the request must include a value for the 'externalAccountBinding' field"
     {
         "externalAccountRequired"
+    } else if error
+        .message
+        .ends_with("the revocation reason provided is not allowed by the server")
+    {
+        "badRevocationReason"
+    } else if error.message.ends_with(
+        "the request specified a certificate to be revoked that has already been revoked",
+    ) {
+        "alreadyRevoked"
     } else if error.message.starts_with("the CSR is unacceptable:") {
         "badCSR"
     } else if error.message.starts_with(
@@ -385,6 +394,7 @@ impl Service {
                 .is_some_and(|id| !id.is_empty() && !id.contains('/'))
             || view.endpoint == "new-order"
             || view.endpoint == "orders"
+            || view.endpoint == "revoke-cert"
             || view
                 .endpoint
                 .strip_prefix("challenge/")
@@ -437,6 +447,7 @@ impl Service {
                         || view.endpoint.starts_with("account/")
                         || view.endpoint == "new-order"
                         || view.endpoint == "orders"
+                        || view.endpoint == "revoke-cert"
                         || view.endpoint.starts_with("order/")
                         || view.endpoint.starts_with("authorization/")
                         || view.endpoint.starts_with("challenge/")))
@@ -595,6 +606,23 @@ impl Service {
                 .engines
                 .acme_account_request(view, key, &verified, kid.as_deref(), at)
                 .map(|(status, body, location)| (status, body, Some(location)))
+        } else if view.endpoint == "revoke-cert" {
+            admitted.engines.acme_revoke_request(
+                view,
+                crate::engines::AcmeRevocationRequest {
+                    key: &key,
+                    proof: &verified,
+                    kid: kid.as_deref(),
+                    at,
+                    clock: request.token_clock,
+                },
+                || {
+                    namespace_runtime::request_live().map_err(|_| crate::engines::EngineError {
+                        status: 503,
+                        message: "ACME revocation original request expired".into(),
+                    })
+                },
+            )
         } else {
             admitted.engines.acme_order_request(
                 view,

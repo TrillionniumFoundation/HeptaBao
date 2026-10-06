@@ -14,6 +14,7 @@ struct HaRecoveryIndexAdmissionFailure {
     response: Response,
     phase: HaRecoveryIndexFailurePhase,
     index_readback: Option<Box<ReadbackRecoveryIndexPublication>>,
+    index_write_attempted: bool,
 }
 impl From<Response> for HaRecoveryIndexAdmissionFailure {
     fn from(response: Response) -> Self {
@@ -21,6 +22,7 @@ impl From<Response> for HaRecoveryIndexAdmissionFailure {
             response,
             phase: HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication,
             index_readback: None,
+            index_write_attempted: true,
         }
     }
 }
@@ -225,6 +227,7 @@ impl Service {
     ) -> Result<AdmittedRecoverySeal, HaRecoveryIndexAdmissionFailure> {
         let mut phase = HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication;
         let mut index_readback = None;
+        let mut index_write_attempted = false;
         let result: Result<AdmittedRecoverySeal, Response> = (|| {
             live(deadline)?;
             let admitted = self
@@ -315,6 +318,7 @@ impl Service {
             // Even a write error may follow a durable publication. Reset the
             // phase before the attempt; later errors always require a fence.
             phase = HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication;
+            index_write_attempted = true;
             let publication = self.publish_ha_recovery_index(current, &target, deadline)?;
             // A generic post-index failure still fences. Only a completed
             // local owner may distinguish a successful authority observation
@@ -346,6 +350,7 @@ impl Service {
             response,
             phase,
             index_readback,
+            index_write_attempted,
         })
     }
 
@@ -509,9 +514,30 @@ impl Service {
         deadline: Option<std::time::Instant>,
         context: HaRecoveryIndexOwnerContext,
     ) -> Result<(), Response> {
+        self.reconcile_ha_recovery_index_with_context_and_observer(deadline, context, |_| {})
+    }
+
+    fn reconcile_ha_recovery_index_with_context_and_observer(
+        &mut self,
+        deadline: Option<std::time::Instant>,
+        context: HaRecoveryIndexOwnerContext,
+        observer: impl FnOnce(&mut Self),
+    ) -> Result<(), Response> {
         if self.ha.is_none() {
             return Ok(());
         }
+        let unchanged_shamir = if matches!(context, HaRecoveryIndexOwnerContext::Unchanged) {
+            match ha_received::UnchangedShamirLocalOwner::capture(self, deadline) {
+                Ok(owner) => owner,
+                Err(error) => {
+                    self.fence_recovery_delivery();
+                    return Err(error);
+                }
+            }
+        } else {
+            None
+        };
+        observer(self);
         let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {
             self.durable
                 .as_mut()
@@ -532,6 +558,18 @@ impl Service {
             Ok(())
         })();
         result.map_err(|failure| {
+            // This private no-write observation grants nothing, including when
+            // the original budget expired during ReadIndex. It cannot repair an
+            // index or replace any completed publication/quorum authority.
+            if !failure.index_write_attempted
+                && unchanged_shamir
+                    .as_ref()
+                    .is_some_and(|owner| owner.verify_negative(self, deadline).is_ok())
+            {
+                self.ha_activation = None;
+                self.ha_read_cache = None;
+                return Response::error(503, "HA recovery application identity is not current");
+            }
             // Only an unchanged local Wrapper owner may wait for a fresh
             // committed target after an actual ReadIndex failure before any
             // index publication. Local corruption and every possible write
@@ -3518,3 +3556,7 @@ mod ha_index_phase_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_unchanged_shamir_index_tests.rs"]
+mod unchanged_shamir_index_tests;

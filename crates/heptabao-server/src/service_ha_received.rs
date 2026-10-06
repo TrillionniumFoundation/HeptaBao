@@ -285,6 +285,192 @@ impl UnpublishedLocalAdmission {
     }
 }
 
+/// Negative integrity observation of the same complete local Shamir owner.
+/// This is never a received, completed, quorum, or response authority. Its only
+/// consumer may retain loaded buffers and withhold a failed no-write request.
+pub(super) struct UnchangedShamirLocalOwner {
+    ha: Arc<Mutex<crate::ha::HaProcess>>,
+    seal: SealMetadata,
+    unseal_nonce: Zeroizing<String>,
+    barrier_digest: [u8; 32],
+    original_deadline: Instant,
+    identity: StateIdentity,
+    generation: u64,
+    logical: Zeroizing<Vec<u8>>,
+    published: Zeroizing<Vec<u8>>,
+}
+impl UnchangedShamirLocalOwner {
+    pub(super) fn capture(
+        service: &mut Service,
+        deadline: Option<Instant>,
+    ) -> Result<Option<Self>, Response> {
+        let Some(original_deadline) = deadline else {
+            return Ok(None);
+        };
+        live(Some(original_deadline))?;
+        let state = service.state.as_ref().ok_or_else(rejected)?;
+        let seal = service.seal.as_ref().ok_or_else(rejected)?;
+        if seal.is_wrapper() || state.auth.has_recovery_state() {
+            return Ok(None);
+        }
+        if seal.schema != 1 || service.openbao_wrapper_owner.is_some() {
+            return Err(rejected());
+        }
+        let durable = service.durable.as_ref().ok_or_else(rejected)?;
+        let publication = durable
+            .get("system", "state")
+            .map_err(|_| rejected())?
+            .ok_or_else(rejected)?;
+        let owner = Self {
+            ha: Arc::clone(service.ha.as_ref().ok_or_else(rejected)?),
+            seal: seal.clone(),
+            unseal_nonce: Zeroizing::new(service.unseal_nonce.clone()),
+            barrier_digest: crypto::digest(
+                service
+                    .barrier_key
+                    .as_ref()
+                    .ok_or_else(rejected)?
+                    .as_slice(),
+            ),
+            original_deadline,
+            identity: service.current_state_identity()?,
+            generation: durable.generation(),
+            logical: owner_store::serialize_owner(state).map_err(state_serialization_error)?,
+            published: Zeroizing::new(publication.expose().to_vec()),
+        };
+        owner.verify_negative(service, deadline)?;
+        Ok(Some(owner))
+    }
+
+    // The original request may have exhausted its budget. These reads cannot
+    // admit any response or write, renew that budget, or establish current HA
+    // authority; they only distinguish intact unchanged local buffers from a
+    // corrupted/changed owner. Every later request needs its own fresh gates.
+    pub(super) fn verify_negative(
+        &self,
+        service: &mut Service,
+        deadline: Option<Instant>,
+    ) -> Result<(), Response> {
+        if deadline != Some(self.original_deadline)
+            || service.recovery_required
+            || service.audit_failed
+            || service.openbao_wrapper_owner.is_some()
+            || service.seal.as_ref() != Some(&self.seal)
+            || service.unseal_nonce != *self.unseal_nonce
+            || service
+                .ha
+                .as_ref()
+                .is_none_or(|ha| !Arc::ptr_eq(ha, &self.ha))
+            || service
+                .barrier_key
+                .as_ref()
+                .is_none_or(|key| crypto::digest(key.as_slice()) != self.barrier_digest)
+            || service.current_state_identity()? != self.identity
+        {
+            return Err(rejected());
+        }
+        let state = service.state.as_ref().ok_or_else(rejected)?;
+        if self.seal.schema != 1
+            || self.seal.is_wrapper()
+            || state.auth.has_recovery_state()
+            || owner_store::serialize_owner(state)
+                .map_err(state_serialization_error)?
+                .as_slice()
+                != self.logical.as_slice()
+        {
+            return Err(rejected());
+        }
+        self.seal.validate().map_err(|_| rejected())?;
+        if load_seal_metadata(&service.data_dir)
+            .ok()
+            .flatten()
+            .as_ref()
+            != Some(&self.seal)
+        {
+            return Err(rejected());
+        }
+        service
+            .durable
+            .as_mut()
+            .ok_or_else(rejected)?
+            .verify_live_ownership()
+            .map_err(|_| rejected())?;
+        let durable = service.durable.as_ref().ok_or_else(rejected)?;
+        if durable.recovery_required() || durable.generation() != self.generation {
+            return Err(rejected());
+        }
+        let publication = durable
+            .get("system", "state")
+            .map_err(|_| rejected())?
+            .ok_or_else(rejected)?;
+        if publication.expose() != self.published.as_slice() {
+            return Err(rejected());
+        }
+        let (loaded, _, _) = Service::load_state_from_durable(durable)?;
+        if owner_store::serialize_owner(&loaded)
+            .map_err(state_serialization_error)?
+            .as_slice()
+            != self.logical.as_slice()
+            || durable.replay_epoch() != loaded.replay_epoch
+        {
+            return Err(rejected());
+        }
+        match self.identity {
+            StateIdentity::Legacy(digest) => {
+                if records::decode_root(publication.expose())?.is_some()
+                    || crypto::digest(&self.logical) != digest
+                {
+                    return Err(rejected());
+                }
+                if let Some(manifest) =
+                    owner_store::decode_manifest(publication.expose()).map_err(|_| rejected())?
+                {
+                    manifest
+                        .verify_logical(&self.logical)
+                        .map_err(|_| rejected())?;
+                }
+            }
+            StateIdentity::RecordsV5(_) => {
+                let root = RecordStateRoot::decode(publication.expose()).map_err(|_| rejected())?;
+                if root.identity().map_err(|_| rejected())? != self.identity
+                    || root.state_schema != loaded.schema
+                    || root.cluster_id != loaded.cluster_id
+                    || root.replay_epoch != loaded.replay_epoch
+                {
+                    return Err(rejected());
+                }
+            }
+        }
+        service
+            .durable
+            .as_mut()
+            .ok_or_else(rejected)?
+            .verify_live_ownership()
+            .map_err(|_| rejected())?;
+        if service.durable.as_ref().ok_or_else(rejected)?.generation() != self.generation
+            || service.current_state_identity()? != self.identity
+            || service.seal.as_ref() != Some(&self.seal)
+            || service.unseal_nonce != *self.unseal_nonce
+            || service
+                .ha
+                .as_ref()
+                .is_none_or(|ha| !Arc::ptr_eq(ha, &self.ha))
+            || service
+                .barrier_key
+                .as_ref()
+                .is_none_or(|key| crypto::digest(key.as_slice()) != self.barrier_digest)
+            || load_seal_metadata(&service.data_dir)
+                .ok()
+                .flatten()
+                .as_ref()
+                != Some(&self.seal)
+        {
+            return Err(rejected());
+        }
+        Ok(())
+    }
+}
+
 enum ReceivedPublication {
     Materialized {
         owner_manifest_digest: Option<[u8; 32]>,

@@ -581,6 +581,7 @@ impl Pki {
                 self.validate_acme_certificate(cert)?;
             }
         }
+        self.validate_acme_revocations()?;
         Ok(())
     }
     pub(crate) fn acme_certificate_chain(&self, certificate: &Certificate) -> Result<String> {

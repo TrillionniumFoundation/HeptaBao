@@ -152,6 +152,8 @@ pub(crate) struct Protocol {
     pub authorizations: BTreeMap<String, super::acme_orders::Authorization>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub eab_keys: BTreeMap<String, super::acme_eab::Key>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub revocations: BTreeMap<String, super::acme_revoke::Revocation>,
 }
 
 impl Protocol {
@@ -168,6 +170,7 @@ impl Protocol {
             orders: BTreeMap::new(),
             authorizations: BTreeMap::new(),
             eab_keys: BTreeMap::new(),
+            revocations: BTreeMap::new(),
         })
     }
 
@@ -188,6 +191,7 @@ impl Protocol {
             }
         }
         self.validate_eab()?;
+        self.validate_revocations()?;
         self.validate_orders()?;
         Ok(())
     }

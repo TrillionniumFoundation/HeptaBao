@@ -402,6 +402,59 @@ impl EngineState {
             format!("{}account/{id}", view.base),
         ))
     }
+    pub(crate) fn acme_revoke_request(
+        &mut self,
+        view: &AcmeView,
+        request: pki::acme_revoke::Request<'_>,
+        before_effect: impl FnOnce() -> Result<()>,
+    ) -> Result<(u16, Value, Option<String>)> {
+        let pki::acme_revoke::Request {
+            key,
+            proof,
+            kid,
+            at,
+            clock,
+        } = request;
+        let account = if let Some(kid) = kid {
+            let stored = self.acme_account_key(view, kid)?;
+            if stored.thumbprint()? != proof.key_thumbprint() {
+                return Err(error(401, "the client lacks sufficient authorization"));
+            }
+            Some(
+                kid.rsplit('/')
+                    .next()
+                    .ok_or_else(|| bad("invalid ACME account identifier"))?,
+            )
+        } else {
+            None
+        };
+        let floor = Timestamp::whole(self.lease_clock)
+            .map_err(|_| error(503, "ACME original revocation floor unavailable"))?;
+        let at = clock
+            .map(|c| c.with_timestamp_floor(at.max(floor)).observed_at())
+            .transpose()
+            .map_err(|_| error(503, "ACME original revocation clock unavailable"))?
+            .unwrap_or(at.max(floor));
+        let at = self.observe_acme(at)?;
+        let body = self.acme_pki_mut(&view.owner)?.acme_revoke_certificate(
+            key,
+            proof,
+            account,
+            at,
+            clock,
+            before_effect,
+        )?;
+        let end = clock
+            .map(|c| c.with_timestamp_floor(at).observed_at())
+            .transpose()
+            .map_err(|_| error(503, "ACME original revocation clock unavailable"))?
+            .unwrap_or(at);
+        self.observe_acme(end)?;
+        // The actual CRL was signed at the original observed time. Its existing
+        // global lease-clock validator must retain that same publication floor.
+        self.lease_clock = self.lease_clock.max(end.seconds());
+        Ok((200, body, None))
+    }
     pub(crate) fn acme_order_request(
         &mut self,
         view: &AcmeView,

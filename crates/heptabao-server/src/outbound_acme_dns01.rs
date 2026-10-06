@@ -331,14 +331,33 @@ mod tests {
     #[test]
     fn pki_acme99_dns01_actual_udp_txt_split_multiple_tcp_and_wrong_proof() -> TestResult {
         for mode in ["plain", "split", "multiple", "TCP", "wrong", "empty"] {
-            let socket = UdpSocket::bind("127.0.0.1:0")?;
+            let (socket, tcp) = if mode == "TCP" {
+                // A UDP-selected ephemeral port may already belong to a TCP
+                // client or listener. Reserve both transports before the
+                // original verification deadline starts.
+                let mut pair = None;
+                for _ in 0..16 {
+                    let tcp = TcpListener::bind("127.0.0.1:0")?;
+                    match UdpSocket::bind(tcp.local_addr()?) {
+                        Ok(socket) => {
+                            pair = Some((socket, Some(tcp)));
+                            break;
+                        }
+                        Err(error) if error.kind() == io::ErrorKind::AddrInUse => {}
+                        Err(error) => return Err(error.into()),
+                    }
+                }
+                pair.ok_or_else(|| {
+                    io::Error::new(
+                        io::ErrorKind::AddrInUse,
+                        "DNS fixture transport pair unavailable",
+                    )
+                })?
+            } else {
+                (UdpSocket::bind("127.0.0.1:0")?, None)
+            };
             let address = socket.local_addr()?;
             socket.set_read_timeout(Some(Duration::from_secs(3)))?;
-            let tcp = if mode == "TCP" {
-                Some(TcpListener::bind(address)?)
-            } else {
-                None
-            };
             let server = std::thread::spawn(move || -> io::Result<()> {
                 let mut bytes = vec![0; 2048];
                 let (size, peer) = socket.recv_from(&mut bytes)?;

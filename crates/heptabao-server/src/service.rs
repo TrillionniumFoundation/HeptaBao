@@ -3054,18 +3054,29 @@ impl Service {
                 .state
                 .as_ref()
                 .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
-            ordinary_get = Some(match carrier.resolve(actual_kv || actual_ocsp) {
-                Ok((method, body)) => (
-                    match method {
-                        "LIST" => "LIST",
-                        "SCAN" => "SCAN",
-                        "HEAD" => "HEAD",
-                        _ => "GET",
-                    },
-                    body,
-                ),
-                Err(response) => return response,
-            });
+            let actual_sdk_auth = match self
+                .state
+                .as_ref()
+                .map(|state| state.auth.sdk_auth_binding(namespace, path))
+                .transpose()
+            {
+                Ok(binding) => binding.flatten().is_some(),
+                Err(error) => return Response::error(error.status, &error.message),
+            };
+            ordinary_get = Some(
+                match carrier.resolve(actual_kv || actual_ocsp || actual_sdk_auth) {
+                    Ok((method, body)) => (
+                        match method {
+                            "LIST" => "LIST",
+                            "SCAN" => "SCAN",
+                            "HEAD" => "HEAD",
+                            _ => "GET",
+                        },
+                        body,
+                    ),
+                    Err(response) => return response,
+                },
+            );
             None
         } else {
             None

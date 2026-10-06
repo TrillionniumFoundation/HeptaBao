@@ -537,3 +537,229 @@ fn pki_acme99_finalize_rsa_missing_parameters_rejected_before_order_state() -> T
     assert_eq!(pending.body["__heptabao_acme"]["status"], "pending");
     Ok(())
 }
+
+#[test]
+fn pki_acme99_revoke_account_and_leaf_possession_actual_crl_reopen_and_rollback() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (account_key, account_jwk) = key()?;
+    let kid = order_account(&mut service, &account_key, &account_jwk)?;
+    let (other_key, other_jwk) = key()?;
+    let other_kid = order_account(&mut service, &other_key, &other_jwk)?;
+    let mut last_public = None;
+    for possession in [false, true] {
+        let domain = if possession {
+            "possession.revoke-proof.example"
+        } else {
+            "account.revoke-proof.example"
+        };
+        let order = ready(
+            &mut service,
+            &admin,
+            &account_key,
+            &account_jwk,
+            &kid,
+            domain,
+        )?;
+        let (leaf_key, leaf_jwk) = key()?;
+        let csr = csr_with_key(domain, &leaf_key)?;
+        let issued = order_post(
+            &mut service,
+            &account_key,
+            &account_jwk,
+            &kid,
+            &format!("{order}/finalize"),
+            Some(json!({"csr":URL_SAFE_NO_PAD.encode(&csr)})),
+        )?;
+        assert_eq!(issued.status, 200);
+        let fetched = order_post(
+            &mut service,
+            &account_key,
+            &account_jwk,
+            &kid,
+            &format!("{order}/cert"),
+            None,
+        )?;
+        let certificates = X509::stack_from_pem(
+            fetched.body["__heptabao_acme"]
+                .as_str()
+                .ok_or("PEM")?
+                .as_bytes(),
+        )?;
+        assert_eq!(certificates.len(), 2);
+        let raw = certificates[0].to_der()?;
+        let serial = certificates[0]
+            .serial_number()
+            .to_bn()?
+            .to_hex_str()?
+            .to_string();
+        let route = format!("acmeca/cert/{serial}");
+        let body = json!({"certificate":URL_SAFE_NO_PAD.encode(&raw)});
+        let cross = order_post(
+            &mut service,
+            &other_key,
+            &other_jwk,
+            &other_kid,
+            "revoke-cert",
+            Some(body.clone()),
+        )?;
+        assert_eq!(cross.status, 400);
+        assert_eq!(
+            cross.body["__heptabao_acme"]["type"],
+            "urn:ietf:params:acme:error:malformed"
+        );
+        let n = nonce(&mut service)?;
+        let wrong = call(
+            &mut service,
+            "POST",
+            "acmeca/acme/revoke-cert",
+            "",
+            signed(
+                &other_key,
+                &other_jwk,
+                &n,
+                "https://acme.example.test/v1/acmeca/acme/revoke-cert",
+                None,
+                Some(body.clone()),
+            )?,
+        );
+        assert_eq!(wrong.status, 400);
+        let bad_reason = order_post(
+            &mut service,
+            &account_key,
+            &account_jwk,
+            &kid,
+            "revoke-cert",
+            Some(json!({"certificate":URL_SAFE_NO_PAD.encode(&raw),"reason":1})),
+        )?;
+        assert_eq!(bad_reason.status, 400);
+        assert_eq!(
+            bad_reason.body["__heptabao_acme"]["type"],
+            "urn:ietf:params:acme:error:badRevocationReason"
+        );
+        assert_eq!(
+            call(&mut service, "GET", &route, "", json!({})).body["data"]["revocation_time"],
+            0
+        );
+        let predecessor = service.state.as_ref().ok_or("predecessor")?.clone();
+        let revoked = if possession {
+            let n = nonce(&mut service)?;
+            call(
+                &mut service,
+                "POST",
+                "acmeca/acme/revoke-cert",
+                "",
+                signed(
+                    &leaf_key,
+                    &leaf_jwk,
+                    &n,
+                    "https://acme.example.test/v1/acmeca/acme/revoke-cert",
+                    None,
+                    Some(body.clone()),
+                )?,
+            )
+        } else {
+            order_post(
+                &mut service,
+                &account_key,
+                &account_jwk,
+                &kid,
+                "revoke-cert",
+                Some(json!({"certificate":URL_SAFE_NO_PAD.encode(&raw),"reason":0.9})),
+            )?
+        };
+        assert_eq!(revoked.status, 200, "{:?}", revoked.body);
+        assert_eq!(revoked.body["__heptabao_acme"]["state"], "revoked");
+        let public = call(&mut service, "GET", &route, "", json!({}));
+        assert_eq!(public.status, 200);
+        assert_eq!(
+            public.body["data"]["revocation_time"],
+            revoked.body["__heptabao_acme"]["revocation_time"]
+        );
+        assert_eq!(
+            public.body["data"]["revocation_time_rfc3339"],
+            revoked.body["__heptabao_acme"]["revocation_time_rfc3339"]
+        );
+        let repeated = order_post(
+            &mut service,
+            &account_key,
+            &account_jwk,
+            &kid,
+            "revoke-cert",
+            Some(body),
+        )?;
+        assert_eq!(repeated.status, 400);
+        assert_eq!(
+            repeated.body["__heptabao_acme"]["type"],
+            "urn:ietf:params:acme:error:alreadyRevoked"
+        );
+        assert_eq!(
+            repeated.body["__heptabao_acme"]["detail"],
+            "unable to revoke certificate: the request specified a certificate to be revoked that has already been revoked"
+        );
+        let crl = call(&mut service, "GET", "acmeca/crl", "", json!({}));
+        assert_eq!(crl.status, 200);
+        let der = base64::engine::general_purpose::STANDARD
+            .decode(crl.body["__heptabao_pki_crl"].as_str().ok_or("CRL DER")?)?;
+        let crl = openssl::x509::X509Crl::from_der(&der)?;
+        let issuer_public = certificates[1].public_key()?;
+        assert!(crl.verify(&issuer_public)?);
+        assert!(crl.get_revoked().ok_or("revoked entries")?.iter().any(|r| {
+            r.serial_number().to_bn().is_ok_and(|r| {
+                certificates[0]
+                    .serial_number()
+                    .to_bn()
+                    .is_ok_and(|s| r == s)
+            })
+        }));
+        let current = service.state.as_ref().ok_or("current")?.clone();
+        assert!(
+            current
+                .engines
+                .validate_acme_successor(Some(&predecessor.engines), |_| false)
+                .is_ok()
+        );
+        assert!(
+            predecessor
+                .engines
+                .validate_acme_successor(Some(&current.engines), |_| false)
+                .is_err()
+        );
+        let mut graph = serde_json::to_value(&current.engines)?;
+        let protocol =
+            &mut graph["namespaces"][""]["mounts"]["acmeca/"]["backend"]["Pki"]["acme_protocol"];
+        protocol["revocations"] = json!({});
+        let mut rollback = current.clone();
+        rollback.engines = serde_json::from_value(graph.clone())?;
+        erase_json(&mut graph);
+        assert!(
+            rollback
+                .engines
+                .validate_acme_successor(Some(&current.engines), |_| false)
+                .is_err(),
+            "same owner/certificate/nonce ledger cannot erase revocation"
+        );
+        last_public = Some((route, public.body.clone()));
+    }
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let (route, expected) = last_public.ok_or("revoked certificate")?;
+    assert_eq!(
+        call(&mut reopened, "GET", &route, "", json!({})).body,
+        expected
+    );
+    Ok(())
+}
