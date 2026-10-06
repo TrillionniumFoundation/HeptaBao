@@ -288,7 +288,7 @@ fn sdk_admitted_revoke_is_retained_and_original_deadline_seal_veto_data() -> Tes
         eprintln!("sdk-admitted-original-coarse-revoke={}", response.body);
         assert_eq!(
             response.body,
-            json!({"errors":["Token API observation floor was not committed"]})
+            json!({"errors":["trusted token clock is required"]})
         );
     }
     let files = Root::new();
