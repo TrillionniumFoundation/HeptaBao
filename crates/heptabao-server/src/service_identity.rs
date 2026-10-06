@@ -107,6 +107,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_sdk_auth_state() {
+            required.max(SDK_AUTH_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -116,6 +121,26 @@ impl State {
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
         self.validate_namespace_batch_state()?;
+        self.auth
+            .validate_sdk_auth_state()
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
+            .validate_sdk_auth_clock(previous.map(|state| &state.auth))
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
+        self.auth
+            .validate_sdk_auth_epoch_floor(floor.as_ref())
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_STATE_SCHEMA
+            && (self.auth.has_sdk_auth_state()
+                || previous.is_some_and(|state| state.schema >= SDK_AUTH_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth ownership requires format 100",
+            ));
+        }
+
         self.protected_state()?
             .auth
             .validate_public_origin_state()
@@ -470,6 +495,22 @@ impl State {
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.validate_namespace_batch_state()?;
+        self.auth
+            .validate_sdk_auth_state()
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_STATE_SCHEMA && self.auth.has_sdk_auth_state() {
+            return Err(Response::error(
+                503,
+                "SDK Auth ownership requires format 100",
+            ));
+        }
+        if self.schema == SDK_AUTH_STATE_SCHEMA && !self.auth.has_sdk_auth_state() {
+            return Err(Response::error(
+                503,
+                "SDK Auth retired owner evidence missing",
+            ));
+        }
+
         self.engines
             .validate_sdk_lease_cluster(&self.cluster_id)
             .map_err(|e| Response::error(503, &e.message))?;
@@ -1428,6 +1469,7 @@ impl State {
             | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             | SDK_RESPONSE_HEADERS_STATE_SCHEMA
             | SDK_SECRET_LEASE_STATE_SCHEMA
+            | SDK_AUTH_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA

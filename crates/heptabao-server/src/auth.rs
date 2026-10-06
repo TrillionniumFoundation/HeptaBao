@@ -26,6 +26,9 @@ use x509_parser::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_sdk.rs"]
+pub(crate) mod sdk;
+
 #[path = "auth_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
 
@@ -205,6 +208,10 @@ pub struct AuthState {
     /// Native origin retirement cannot erase its owner floor.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     public_origin_floor: Option<public_origin::Floor>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_auth_catalog: Option<crate::engines::sdk::Catalog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_auth_clock: Option<Timestamp>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -673,11 +680,27 @@ impl LdapMount {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct PluginAuthMount {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk: Option<sdk::Mount>,
     plugin_id: String,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
     token_num_uses: u64,
+}
+impl PluginAuthMount {
+    fn same_binding(&self, other: &Self) -> bool {
+        self.plugin_id == other.plugin_id
+            && self.policies == other.policies
+            && self.token_ttl == other.token_ttl
+            && self.token_max_ttl == other.token_max_ttl
+            && self.token_num_uses == other.token_num_uses
+            && match (&self.sdk, &other.sdk) {
+                (None, None) => true,
+                (Some(left), Some(right)) => left.same_binding(right),
+                _ => false,
+            }
+    }
 }
 
 #[derive(Clone)]
@@ -1287,6 +1310,9 @@ struct Token {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum TokenAuthProvenance {
+    Sdk {
+        origin: Box<sdk::TokenOrigin>,
+    },
     Cert {
         issued_metadata: BTreeMap<String, String>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2368,6 +2394,8 @@ impl AuthState {
                     .map_err(|_| err(503, "batch authority unavailable"))?,
             ),
             public_origin_floor: None,
+            sdk_auth_catalog: None,
+            sdk_auth_clock: None,
             namespace_batch_registry: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
@@ -2538,6 +2566,7 @@ impl AuthState {
     ) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
         let time = self.token_api_observed_time(time);
+        self.validate_sdk_auth_token_live(token, time)?;
         let time = if token.wrapping.is_some() {
             AuthorityTime::Coarse(time.seconds().max(self.wrapping_clock))
         } else {
@@ -2556,6 +2585,7 @@ impl AuthState {
                 return Err(denied());
             }
             let ancestor = self.tokens.get(parent_id).ok_or_else(denied)?;
+            self.validate_sdk_auth_token_live(ancestor, time)?;
             if !time.service_live(ancestor.token_api_precision.as_ref(), ancestor.expires_at)
                 || ancestor.uses_remaining == Some(0)
             {
@@ -4081,6 +4111,9 @@ impl AuthState {
             validate_namespace(namespace)?;
             let effective = self.effective_auth_mounts(namespace);
             for (mount, config) in mounts {
+                if let Some(sdk) = &config.sdk {
+                    sdk.validate_local(effective.get(mount))?;
+                }
                 if mount.is_empty()
                     || mount.len() > 256
                     || !mount.split('/').all(valid_name)
@@ -4161,7 +4194,7 @@ impl AuthState {
             .get(&plan.namespace)
             .and_then(|entries| entries.get(&plan.mount))
             .ok_or_else(|| err(409, "plugin authentication configuration changed"))?;
-        if current != &plan.config
+        if !current.same_binding(&plan.config)
             || !self
                 .effective_auth_mounts(&plan.namespace)
                 .get(&plan.mount)
@@ -4282,6 +4315,7 @@ impl AuthState {
                     return Err(bad("invalid plugin authentication token TTL limits"));
                 }
                 let next = PluginAuthMount {
+                    sdk: None,
                     plugin_id: plugin_id.into(),
                     policies: configured_policies,
                     token_ttl,

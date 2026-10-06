@@ -351,6 +351,21 @@ impl Service {
             ));
         }
         incoming
+            .auth
+            .validate_sdk_auth_clock(Some(&current.auth))
+            .map_err(|e| Response::error(400, &e.message))?;
+        let sdk_auth_floor = current.auth.sdk_auth_epoch_floor();
+        incoming
+            .auth
+            .validate_sdk_auth_epoch_floor(sdk_auth_floor.as_ref())
+            .map_err(|e| Response::error(400, &e.message))?;
+        if current.schema >= SDK_AUTH_STATE_SCHEMA && incoming.schema < SDK_AUTH_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK Auth ownership",
+            ));
+        }
+        incoming
             .engines
             .validate_sdk_lease_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;

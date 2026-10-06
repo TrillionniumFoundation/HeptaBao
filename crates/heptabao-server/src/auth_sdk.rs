@@ -1,0 +1,711 @@
+//! SDK Auth owns a distinct catalog and encrypted namespace auth cells. None
+//! retains historical bytes; retained catalog epochs make retirement sticky.
+//! No value in this module is a Principal or an authentication admission.
+use super::*;
+use crate::engines::sdk::{Catalog, Descriptor};
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Cell {
+    value: Vec<u8>,
+    seal_wrap: bool,
+}
+impl std::fmt::Debug for Cell {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SDK Auth cell([REDACTED])")
+    }
+}
+impl Drop for Cell {
+    fn drop(&mut self) {
+        self.value.zeroize()
+    }
+}
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct Mount {
+    descriptor: Descriptor,
+    mount: AuthMount,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    storage: BTreeMap<String, Cell>,
+}
+impl std::fmt::Debug for Mount {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SDK Auth mount([REDACTED])")
+    }
+}
+impl Mount {
+    pub(super) fn same_binding(&self, other: &Self) -> bool {
+        self.descriptor == other.descriptor && self.mount == other.mount
+    }
+    pub(super) fn validate_local(&self, current: Option<&AuthMount>) -> Result<(), AuthError> {
+        self.descriptor
+            .validate()
+            .map_err(|_| err(503, "SDK Auth descriptor rejected"))?;
+        if current != Some(&self.mount)
+            || self.mount.kind != "plugin"
+            || self.mount.accessor.as_ref().is_none_or(|a| a.is_empty())
+            || self.mount.revision == 0
+        {
+            return Err(err(503, "SDK Auth exact mount identity rejected"));
+        }
+        if self.storage.len() > 4096 {
+            return Err(err(503, "SDK Auth storage cell bound exceeded"));
+        }
+        let mut total = 0usize;
+        for (key, value) in &self.storage {
+            if key.is_empty()
+                || key.len() > 4096
+                || key.contains('\0')
+                || value.value.len() > 256 * 1024
+            {
+                return Err(err(503, "SDK Auth storage cell rejected"));
+            }
+            total = total
+                .checked_add(key.len())
+                .and_then(|n| n.checked_add(value.value.len()))
+                .ok_or_else(|| err(503, "SDK Auth storage size overflow"))?;
+            if total > 8 * 1024 * 1024 {
+                return Err(err(507, "SDK Auth storage owner capacity exceeded"));
+            }
+        }
+        Ok(())
+    }
+}
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Binding {
+    pub namespace: String,
+    pub mount: String,
+    descriptor: Descriptor,
+    owner: AuthMount,
+}
+impl Binding {
+    pub(crate) fn descriptor(&self) -> &Descriptor {
+        &self.descriptor
+    }
+}
+pub(crate) struct Entry {
+    pub key: String,
+    pub value: Zeroizing<Vec<u8>>,
+    pub seal_wrap: bool,
+}
+impl std::fmt::Debug for Entry {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SDK Auth storage entry([REDACTED])")
+    }
+}
+impl AuthState {
+    pub(crate) fn has_sdk_auth_state(&self) -> bool {
+        self.sdk_auth_catalog.is_some()
+            || self.sdk_auth_clock.is_some()
+            || self
+                .plugin_auth_mounts
+                .values()
+                .any(|mounts| mounts.values().any(|mount| mount.sdk.is_some()))
+    }
+    pub(crate) fn sdk_auth_clock_floor(&self) -> Option<Timestamp> {
+        self.sdk_auth_clock
+    }
+    pub(crate) fn observe_sdk_auth_clock(&mut self, at: Timestamp) -> bool {
+        let next = self.sdk_auth_clock.map_or(at, |floor| floor.max(at));
+        let changed = self.sdk_auth_clock != Some(next);
+        self.sdk_auth_clock = Some(next);
+        changed
+    }
+    pub(crate) fn validate_sdk_auth_clock(&self, previous: Option<&Self>) -> Result<(), AuthError> {
+        if previous
+            .and_then(|state| state.sdk_auth_clock)
+            .is_some_and(|floor| self.sdk_auth_clock.is_none_or(|time| time < floor))
+        {
+            return Err(err(
+                503,
+                "SDK Auth original observation floor cannot decrease",
+            ));
+        }
+        if self.sdk_auth_catalog.is_some() && self.sdk_auth_clock.is_none() {
+            return Err(err(503, "SDK Auth original observation floor absent"));
+        }
+        Ok(())
+    }
+    pub(crate) fn sdk_auth_epoch_floor(&self) -> Option<BTreeMap<String, u64>> {
+        self.sdk_auth_catalog.as_ref().map(Catalog::epoch_floor)
+    }
+    pub(crate) fn validate_sdk_auth_epoch_floor(
+        &self,
+        floor: Option<&BTreeMap<String, u64>>,
+    ) -> Result<(), AuthError> {
+        if floor.is_some_and(|floor| {
+            self.sdk_auth_catalog
+                .as_ref()
+                .is_none_or(|catalog| !catalog.protects_epoch_floor(floor))
+        }) {
+            return Err(err(503, "SDK Auth catalog epoch floor cannot decrease"));
+        }
+        Ok(())
+    }
+    pub(crate) fn validate_sdk_auth_state(&self) -> Result<(), AuthError> {
+        self.validate_sdk_auth_clock(None)?;
+        if let Some(catalog) = &self.sdk_auth_catalog {
+            catalog
+                .validate()
+                .map_err(|_| err(503, "SDK Auth catalog rejected"))?
+        }
+        for (namespace, mounts) in &self.plugin_auth_mounts {
+            let actual = self.effective_auth_mounts(namespace);
+            for (mount, config) in mounts {
+                if let Some(sdk) = &config.sdk {
+                    sdk.validate_local(actual.get(mount))?;
+                    if config.plugin_id != sdk.descriptor.name
+                        || self.sdk_auth_catalog.as_ref().and_then(|catalog| {
+                            catalog.get(&sdk.descriptor.name, &sdk.descriptor.version)
+                        }) != Some(&sdk.descriptor)
+                    {
+                        return Err(err(503, "SDK Auth catalog owner changed"));
+                    }
+                }
+            }
+        }
+        for token in self.tokens.values() {
+            if let Some(TokenAuthProvenance::Sdk { origin }) = &token.auth_provenance {
+                origin
+                    .binding
+                    .descriptor
+                    .validate()
+                    .map_err(|_| err(503, "SDK Auth saved issuer rejected"))?;
+                if token.namespace != origin.binding.namespace
+                    || token.auth_mount.as_ref() != Some(&origin.binding.mount)
+                    || token.renewable
+                    || token.root
+                    || token.policies.contains("root")
+                    || self.sdk_auth_catalog.as_ref().is_none_or(|c| {
+                        !c.known_generation(
+                            &origin.binding.descriptor.name,
+                            &origin.binding.descriptor.version,
+                            origin.binding.descriptor.generation,
+                        )
+                    })
+                    || self.sdk_auth_clock.is_none_or(|at| {
+                        origin.lease.issued_at > at || origin.lease.grant_started_at > at
+                    })
+                    || origin
+                        .lease
+                        .validate(
+                            token.created_at,
+                            token.expires_at,
+                            Some(origin.lease.previous_grant.ceil_seconds()),
+                        )
+                        .is_err()
+                    || token.max_expires_at != origin.maximum.ceil_seconds().ok()
+                    || origin.maximum
+                        < origin
+                            .lease
+                            .expires_at
+                            .ok_or_else(|| err(503, "SDK Auth saved expiry absent"))?
+                    || !crate::login_metadata::within_limit(&origin.metadata)
+                {
+                    return Err(err(503, "SDK Auth saved token owner rejected"));
+                }
+            }
+        }
+        Ok(())
+    }
+    pub(crate) fn sdk_auth_descriptor(&self, name: &str, version: &str) -> Option<Descriptor> {
+        self.sdk_auth_catalog.as_ref()?.get(name, version).cloned()
+    }
+    pub(crate) fn sdk_auth_descriptors(&self) -> Vec<Descriptor> {
+        self.sdk_auth_catalog
+            .as_ref()
+            .map_or_else(Vec::new, |catalog| catalog.entries().cloned().collect())
+    }
+    pub(crate) fn register_sdk_auth_descriptor(
+        &mut self,
+        descriptor: Descriptor,
+    ) -> Result<Descriptor, AuthError> {
+        if self.plugin_auth_mounts.values().any(|mounts| {
+            mounts.values().any(|config| {
+                config.sdk.as_ref().is_some_and(|owner| {
+                    owner.descriptor.name == descriptor.name
+                        && owner.descriptor.version == descriptor.version
+                })
+            })
+        }) {
+            return Err(err(409, "mounted SDK Auth descriptor cannot be replaced"));
+        }
+        self.sdk_auth_catalog
+            .get_or_insert_with(Catalog::default)
+            .register(descriptor)
+            .map_err(|e| err(e.status, &e.message))
+    }
+    pub(crate) fn deregister_sdk_auth_descriptor(
+        &mut self,
+        name: &str,
+        version: &str,
+    ) -> Result<bool, AuthError> {
+        if self.plugin_auth_mounts.values().any(|mounts| {
+            mounts.values().any(|config| {
+                config.sdk.as_ref().is_some_and(|owner| {
+                    owner.descriptor.name == name && owner.descriptor.version == version
+                })
+            })
+        }) {
+            return Err(err(409, "mounted SDK Auth descriptor cannot be removed"));
+        }
+        Ok(self
+            .sdk_auth_catalog
+            .as_mut()
+            .is_some_and(|catalog| catalog.remove(name, version)))
+    }
+    pub(crate) fn sdk_auth_owned_mount(&self, namespace: &str, mount: &str) -> bool {
+        self.plugin_auth_mounts
+            .get(namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .is_some_and(|config| config.sdk.is_some())
+    }
+    pub(crate) fn sdk_auth_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Result<Option<Binding>, AuthError> {
+        let Some(path) = path.strip_prefix("auth/") else {
+            return Ok(None);
+        };
+        let Some(mounts) = self.plugin_auth_mounts.get(namespace) else {
+            return Ok(None);
+        };
+        let Some((name, config)) = mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(&format!("{mount}/")))
+            .max_by_key(|(mount, _)| mount.len())
+        else {
+            return Ok(None);
+        };
+        let Some(sdk) = config.sdk.as_ref() else {
+            return Ok(None);
+        };
+        let binding = Binding {
+            namespace: namespace.into(),
+            mount: name.clone(),
+            descriptor: sdk.descriptor.clone(),
+            owner: sdk.mount.clone(),
+        };
+        self.sdk_auth_owner_gate(&binding)?;
+        Ok(Some(binding))
+    }
+    pub(crate) fn bind_sdk_auth_mount(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        descriptor: &Descriptor,
+    ) -> Result<Binding, AuthError> {
+        if self
+            .sdk_auth_descriptor(&descriptor.name, &descriptor.version)
+            .as_ref()
+            != Some(descriptor)
+        {
+            return Err(err(503, "SDK Auth descriptor changed before mount"));
+        }
+        let owner = self
+            .effective_auth_mounts(namespace)
+            .get(mount)
+            .cloned()
+            .filter(|m| m.kind == "plugin" && m.accessor.is_some())
+            .ok_or_else(|| err(503, "SDK Auth original mount unavailable"))?;
+        let config = PluginAuthMount {
+            sdk: Some(Mount {
+                descriptor: descriptor.clone(),
+                mount: owner.clone(),
+                storage: BTreeMap::new(),
+            }),
+            plugin_id: descriptor.name.clone(),
+            policies: BTreeSet::new(),
+            token_ttl: 0,
+            token_max_ttl: 0,
+            token_num_uses: 0,
+        };
+        if self
+            .plugin_auth_mounts
+            .get(namespace)
+            .is_some_and(|mounts| mounts.contains_key(mount))
+        {
+            return Err(err(409, "SDK Auth mount configuration already exists"));
+        }
+        self.plugin_auth_mounts
+            .entry(namespace.into())
+            .or_default()
+            .insert(mount.into(), config);
+        Ok(Binding {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            descriptor: descriptor.clone(),
+            owner,
+        })
+    }
+    pub(crate) fn sdk_auth_owner_gate(&self, binding: &Binding) -> Result<(), AuthError> {
+        let config = self
+            .plugin_auth_mounts
+            .get(&binding.namespace)
+            .and_then(|mounts| mounts.get(&binding.mount))
+            .ok_or_else(|| err(503, "SDK Auth owner absent"))?;
+        let sdk = config
+            .sdk
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK Auth typed owner absent"))?;
+        sdk.validate_local(
+            self.effective_auth_mounts(&binding.namespace)
+                .get(&binding.mount),
+        )?;
+        if sdk.descriptor != binding.descriptor
+            || sdk.mount != binding.owner
+            || self
+                .sdk_auth_descriptor(&binding.descriptor.name, &binding.descriptor.version)
+                .as_ref()
+                != Some(&binding.descriptor)
+        {
+            return Err(err(503, "SDK Auth actual owner differs from admission"));
+        }
+        Ok(())
+    }
+    pub(crate) fn sdk_auth_storage_get(
+        &self,
+        binding: &Binding,
+        key: &str,
+    ) -> Result<Option<Entry>, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        if key.is_empty() || key.len() > 4096 || key.contains('\0') {
+            return Err(bad("SDK Auth storage key rejected"));
+        }
+        let sdk = self.plugin_auth_mounts[&binding.namespace][&binding.mount]
+            .sdk
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK Auth owner absent"))?;
+        Ok(sdk.storage.get(key).map(|entry| Entry {
+            key: key.into(),
+            value: Zeroizing::new(entry.value.clone()),
+            seal_wrap: entry.seal_wrap,
+        }))
+    }
+    pub(crate) fn sdk_auth_storage_put(
+        &mut self,
+        binding: &Binding,
+        entry: Entry,
+    ) -> Result<(), AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        if entry.key.is_empty()
+            || entry.key.len() > 4096
+            || entry.key.contains('\0')
+            || entry.value.len() > 256 * 1024
+        {
+            return Err(bad("SDK Auth storage entry rejected"));
+        }
+        let current = self.plugin_auth_mounts[&binding.namespace][&binding.mount]
+            .sdk
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK Auth owner absent"))?;
+        let mut candidate = current.clone();
+        candidate.storage.insert(
+            entry.key,
+            Cell {
+                value: entry.value.to_vec(),
+                seal_wrap: entry.seal_wrap,
+            },
+        );
+        candidate.validate_local(Some(&binding.owner))?;
+        self.plugin_auth_mounts
+            .get_mut(&binding.namespace)
+            .and_then(|mounts| mounts.get_mut(&binding.mount))
+            .ok_or_else(|| err(503, "SDK Auth owner absent"))?
+            .sdk = Some(candidate);
+        Ok(())
+    }
+    pub(crate) fn sdk_auth_storage_delete(
+        &mut self,
+        binding: &Binding,
+        key: &str,
+    ) -> Result<(), AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        if key.is_empty() || key.len() > 4096 || key.contains('\0') {
+            return Err(bad("SDK Auth storage key rejected"));
+        }
+        self.plugin_auth_mounts
+            .get_mut(&binding.namespace)
+            .and_then(|mounts| mounts.get_mut(&binding.mount))
+            .and_then(|config| config.sdk.as_mut())
+            .ok_or_else(|| err(503, "SDK Auth owner absent"))?
+            .storage
+            .remove(key);
+        Ok(())
+    }
+    pub(crate) fn sdk_auth_storage_list(
+        &self,
+        binding: &Binding,
+        prefix: &str,
+        after: &str,
+        limit: i64,
+    ) -> Result<Vec<String>, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        if prefix.len() > 4096
+            || prefix.contains('\0')
+            || after.len() > 4096
+            || after.contains('\0')
+        {
+            return Err(bad("SDK Auth storage list rejected"));
+        }
+        let sdk = self.plugin_auth_mounts[&binding.namespace][&binding.mount]
+            .sdk
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK Auth owner absent"))?;
+        let keys = sdk
+            .storage
+            .keys()
+            .filter_map(|key| {
+                let suffix = key.strip_prefix(prefix)?;
+                Some(
+                    suffix
+                        .find('/')
+                        .map_or_else(|| suffix.to_owned(), |i| suffix[..=i].into()),
+                )
+            })
+            .filter(|key| after.is_empty() || key.as_str() > after)
+            .collect::<BTreeSet<_>>();
+        Ok(keys
+            .into_iter()
+            .take(if limit <= 0 {
+                usize::MAX
+            } else {
+                usize::try_from(limit).map_err(|_| bad("SDK Auth list limit rejected"))?
+            })
+            .collect())
+    }
+}
+
+/// An authenticated issuer owner retained with the native service token. It
+/// carries no bearer/Principal and cannot admit a request or authorize Storage.
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct TokenOrigin {
+    binding: Binding,
+    lease: token_precision::ServicePrecision,
+    maximum: Timestamp,
+    metadata: BTreeMap<String, String>,
+    internal_data: Value,
+}
+impl Drop for TokenOrigin {
+    fn drop(&mut self) {
+        approle_metadata::erase(&mut self.metadata);
+        erase_value(&mut self.internal_data)
+    }
+}
+fn erase_value(value: &mut Value) {
+    match value {
+        Value::String(v) => v.zeroize(),
+        Value::Array(v) => v.iter_mut().for_each(erase_value),
+        Value::Object(v) => v.values_mut().for_each(erase_value),
+        _ => {}
+    }
+    *value = Value::Null;
+}
+impl AuthState {
+    pub(super) fn validate_sdk_auth_token_live(
+        &self,
+        token: &Token,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
+        if let Some(TokenAuthProvenance::Sdk { origin }) = &token.auth_provenance {
+            self.sdk_auth_owner_gate(&origin.binding)
+                .map_err(|_| denied())?;
+            let at = time.exact().ok_or_else(denied)?;
+            let at = self.sdk_auth_clock.map_or(at, |floor| floor.max(at));
+            if origin.lease.expires_at.is_none_or(|expires| at >= expires) {
+                return Err(denied());
+            }
+        }
+        Ok(())
+    }
+    pub(crate) fn sdk_auth_issued_live(
+        &self,
+        raw: &str,
+        clock: RequestClock,
+    ) -> Result<(), AuthError> {
+        let at = clock
+            .observed_at()
+            .map_err(|_| err(503, "SDK Auth original clock unavailable"))?;
+        let token = self.active_token_observed(&hash(raw), AuthorityTime::Precise(at), false)?;
+        if !matches!(token.auth_provenance, Some(TokenAuthProvenance::Sdk { .. })) {
+            return Err(denied());
+        }
+        Ok(())
+    }
+    pub(crate) fn finish_sdk_auth_login(
+        &mut self,
+        binding: &Binding,
+        value: &Value,
+        clock: RequestClock,
+    ) -> Result<AuthResponse, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        let object = value
+            .as_object()
+            .ok_or_else(|| bad("SDK Auth response requires object"))?;
+        let unsupported = object
+            .get("renewable")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+            || object
+                .get("period")
+                .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
+            || object
+                .get("explicit_max_ttl")
+                .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
+            || object
+                .get("token_type")
+                .is_some_and(|v| !matches!(v.as_u64(), Some(0 | 1)))
+            || object
+                .get("group_aliases")
+                .is_some_and(|v| !v.is_null() && v.as_array().is_none_or(|a| !a.is_empty()))
+            || object
+                .get("bound_cidrs")
+                .is_some_and(|v| !v.is_null() && v.as_array().is_none_or(|a| !a.is_empty()));
+        if unsupported {
+            return Err(err(
+                501,
+                "SDK Auth renewal, period, batch, group and CIDR responses are not implemented",
+            ));
+        }
+        let alias = object
+            .get("alias")
+            .and_then(|v| v.get("name"))
+            .and_then(Value::as_str)
+            .ok_or_else(|| bad("SDK Auth alias required"))?;
+        if alias.is_empty() || alias.len() > 1024 || alias.chars().any(char::is_control) {
+            return Err(denied());
+        }
+        let mut policies = BTreeSet::new();
+        for key in ["policies", "token_policies"] {
+            if let Some(value) = object.get(key).filter(|v| !v.is_null()) {
+                let values = value
+                    .as_array()
+                    .ok_or_else(|| bad("SDK Auth policies require strings"))?;
+                if values.len() > 128 {
+                    return Err(bad("SDK Auth policy bound exceeded"));
+                }
+                for name in values {
+                    let name = name
+                        .as_str()
+                        .filter(|v| valid_name(v))
+                        .ok_or_else(|| bad("SDK Auth policy rejected"))?;
+                    policies.insert(name.to_owned());
+                }
+            }
+        }
+        if !object
+            .get("no_default_policy")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            policies.insert("default".into());
+        }
+        if policies.contains("root") {
+            return Err(denied());
+        }
+        let ttl = object.get("lease").and_then(Value::as_u64).unwrap_or(0);
+        let max = object.get("max_ttl").and_then(Value::as_u64).unwrap_or(0);
+        let (default, mount_max) = self.auth_mount_lease_defaults(AuthScope {
+            namespace: &binding.namespace,
+            mount: &binding.mount,
+        })?;
+        let ttl = if ttl == 0 {
+            token_precision::DurationNanos::from_seconds(default)
+        } else {
+            token_precision::DurationNanos::checked(ttl)
+        }
+        .map_err(|_| bad("SDK Auth TTL rejected"))?;
+        let mount_max = token_precision::DurationNanos::from_seconds(mount_max)
+            .map_err(|_| bad("SDK Auth maximum rejected"))?;
+        let max = if max == 0 {
+            mount_max
+        } else {
+            token_precision::DurationNanos::checked(max)
+                .map_err(|_| bad("SDK Auth maximum rejected"))?
+                .min(mount_max)
+        };
+        let ttl = ttl.min(max);
+        if ttl.is_zero() {
+            return Err(bad("SDK Auth positive lease required"));
+        }
+        let uses = object.get("num_uses").and_then(Value::as_u64).unwrap_or(0);
+        let metadata = match object.get("metadata").filter(|v| !v.is_null()) {
+            None => BTreeMap::new(),
+            Some(v) => serde_json::from_value::<BTreeMap<String, String>>(v.clone())
+                .map_err(|_| bad("SDK Auth metadata rejected"))?,
+        };
+        if !crate::login_metadata::within_limit(&metadata) {
+            return Err(err(413, "SDK Auth metadata exceeds bound"));
+        }
+        let at = clock
+            .observed_at()
+            .map_err(|_| err(503, "SDK Auth original clock unavailable"))?;
+        let at = self.sdk_auth_clock.map_or(at, |floor| at.max(floor));
+        let at = self
+            .token_api_observed_time(AuthorityTime::Precise(at))
+            .exact()
+            .ok_or_else(|| err(503, "SDK Auth precise observation absent"))?;
+        let end = at
+            .checked_add(ttl)
+            .map_err(|_| bad("SDK Auth expiry overflow"))?;
+        let maximum = at
+            .checked_add(max)
+            .map_err(|_| bad("SDK Auth maximum overflow"))?;
+        let now = at.seconds();
+        let mut token = login_token(
+            &binding.namespace,
+            policies,
+            ttl.ceil_seconds(),
+            max.ceil_seconds(),
+            uses,
+            format!("plugin-{}", binding.descriptor.name),
+            now,
+        )?;
+        token.auth_mount = Some(binding.mount.clone());
+        token.renewable = false;
+        token.expires_at = Some(
+            end.ceil_seconds()
+                .map_err(|_| bad("SDK Auth expiry projection"))?,
+        );
+        token.max_expires_at = Some(
+            maximum
+                .ceil_seconds()
+                .map_err(|_| bad("SDK Auth maximum projection"))?,
+        );
+        let lease = token_precision::ServicePrecision {
+            issued_at: at,
+            grant_started_at: at,
+            expires_at: Some(end),
+            last_renewed_at: None,
+            previous_grant: ttl,
+            creation_grant: ttl,
+            requested_period: token_precision::DurationNanos::checked(0)
+                .map_err(|_| bad("SDK Auth period"))?,
+            requested_explicit_max: token_precision::DurationNanos::checked(0)
+                .map_err(|_| bad("SDK Auth maximum"))?,
+        };
+        token.auth_provenance = Some(TokenAuthProvenance::Sdk {
+            origin: Box::new(TokenOrigin {
+                binding: binding.clone(),
+                lease,
+                maximum,
+                metadata: metadata.clone(),
+                internal_data: object.get("internal_data").cloned().unwrap_or(Value::Null),
+            }),
+        });
+        let (id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.body["auth"]["lease_duration"] = json!(ttl.public_seconds());
+        response.body["auth"]["metadata"] = json!(metadata);
+        response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
+            metadata: None,
+            mount: binding.mount.clone(),
+            alias: alias.into(),
+        });
+        self.observe_sdk_auth_clock(at);
+        self.store_token(id, token);
+        Ok(response)
+    }
+}

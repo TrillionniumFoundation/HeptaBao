@@ -81,7 +81,16 @@ impl Catalog {
     pub(crate) fn is_empty(&self) -> bool {
         self.entries.is_empty() && self.epochs.is_empty()
     }
-    pub(super) fn known_generation(&self, name: &str, version: &str, generation: u64) -> bool {
+    pub(crate) fn epoch_floor(&self) -> BTreeMap<String, u64> {
+        self.epochs.clone()
+    }
+    pub(crate) fn protects_epoch_floor(&self, floor: &BTreeMap<String, u64>) -> bool {
+        floor
+            .iter()
+            .all(|(key, epoch)| self.epochs.get(key).is_some_and(|actual| actual >= epoch))
+    }
+
+    pub(crate) fn known_generation(&self, name: &str, version: &str, generation: u64) -> bool {
         self.epochs
             .get(&catalog_key(name, version))
             .is_some_and(|g| *g >= generation)
@@ -89,7 +98,6 @@ impl Catalog {
     pub(crate) fn get(&self, name: &str, version: &str) -> Option<&Descriptor> {
         self.entries.get(&catalog_key(name, version))
     }
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
     pub(crate) fn entries(&self) -> impl Iterator<Item = &Descriptor> {
         self.entries.values()
     }
@@ -115,7 +123,7 @@ impl Catalog {
     pub(crate) fn remove(&mut self, name: &str, version: &str) -> bool {
         self.entries.remove(&catalog_key(name, version)).is_some()
     }
-    fn validate(&self) -> Result<()> {
+    pub(crate) fn validate(&self) -> Result<()> {
         if self.entries.len() > 128 || self.epochs.len() > 128 {
             return Err(error(503, "SDK catalog exceeds bound"));
         }

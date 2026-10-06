@@ -126,6 +126,8 @@ fn migration_id() -> Result<String, Response> {
     ))
 }
 
+#[path = "service_sdk_auth.rs"]
+pub(in crate::service) mod auth100;
 #[path = "service_sdk_expiry.rs"]
 mod expiry;
 #[path = "service_sdk_retirement.rs"]
@@ -258,6 +260,15 @@ impl SdkStorage for CallbackView {
 }
 
 fn start_worker(config: SdkLaunch) -> Result<Arc<Control>, Response> {
+    start_worker_typed(
+        config,
+        heptabao_plugin_host::sdk_backend::SdkBackendType::Secret,
+    )
+}
+fn start_worker_typed(
+    config: SdkLaunch,
+    family: heptabao_plugin_host::sdk_backend::SdkBackendType,
+) -> Result<Arc<Control>, Response> {
     let (sender, commands) = mpsc::sync_channel(1);
     let busy = Arc::new(AtomicBool::new(false));
     let fenced = Arc::new(AtomicBool::new(false));
@@ -280,9 +291,10 @@ fn start_worker(config: SdkLaunch) -> Result<Arc<Control>, Response> {
                         return Err(SdkBridgeError::Fenced);
                     }
                     if host.is_none() {
-                        host = Some(SdkBackendHost::launch_before(
+                        host = Some(SdkBackendHost::launch_typed_before(
                             &config,
                             &mut view,
+                            family,
                             job.deadline,
                         )?);
                     }
@@ -1022,13 +1034,21 @@ impl Service {
             let descriptors = state.engines.sdk_descriptors();
             let mut names = self.plugins.keys().cloned().collect::<BTreeSet<_>>();
             names.extend(descriptors.iter().map(|d| d.name.clone()));
-            let detailed = descriptors
+            let mut detailed = descriptors
                 .iter()
                 .map(|d| json!({"type":"secret","name":d.name,"version":d.version,"builtin":false}))
                 .collect::<Vec<_>>();
+            let auth_descriptors = state.auth.sdk_auth_descriptors();
+            let mut auth_names = self.auth_plugins.keys().cloned().collect::<BTreeSet<_>>();
+            auth_names.extend(auth_descriptors.iter().map(|d| d.name.clone()));
+            detailed.extend(
+                auth_descriptors.iter().map(
+                    |d| json!({"type":"auth","name":d.name,"version":d.version,"builtin":false}),
+                ),
+            );
             self.pending_sdk_control_authority = Some(authority);
             return Response::ok(
-                json!({"data":{"secret":names,"auth":self.auth_plugins.keys().collect::<Vec<_>>(),"database":self.database_plugins.keys().collect::<Vec<_>>(),"detailed":detailed}}),
+                json!({"data":{"secret":names,"auth":auth_names,"database":self.database_plugins.keys().collect::<Vec<_>>(),"detailed":detailed}}),
             );
         }
         let suffix = request

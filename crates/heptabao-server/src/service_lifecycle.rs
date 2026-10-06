@@ -138,6 +138,26 @@ fn prepare_database_provider(
     }
 }
 
+// SDK callback I/O has its own configured entry budget. It is fixed before
+// any SDK cleanup authority is issued, from the same native clock's accepted
+// start; no deadline is refreshed after a plan or effect has been admitted.
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+fn prepare_sdk_provider(writer: &mut Service, clock: RequestClock) -> Option<ProviderMaintenance> {
+    let config = writer.sdk_configuration.as_ref()?;
+    let deadline = clock
+        .started()
+        .checked_add(Duration::from_millis(config.timeout_ms))?;
+    if std::time::Instant::now() >= deadline {
+        return None;
+    }
+    let _sdk_scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    writer
+        .prepare_sdk_expiry(clock)
+        .ok()
+        .flatten()
+        .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
+}
+
 impl Drop for LifecycleWorker {
     fn drop(&mut self) {
         let _ = self.stop.send(());
@@ -176,10 +196,8 @@ pub(crate) fn start_lifecycle_worker(
                 };
                 let now = wall.as_secs();
                 let pending_provider = {
-                    let _read_scope = crate::request_deadline::RequestDeadlineScope::enter(
-                        std::time::Instant::now()
-                            + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET,
-                    );
+                    let generic_deadline =
+                        started + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET;
                     // One absolute read budget covers this idle pass. Timeout
                     // releases an observation attempt, never a started durable
                     // effect, and cannot authorize a cached or stale state.
@@ -200,26 +218,26 @@ pub(crate) fn start_lifecycle_worker(
                             interval
                         };
                     }
-                    if writer.maintain_raft_admin().is_err() {
-                        eprintln!("heptabao-lifecycle: autopilot transition pending");
-                    }
-                    // Local expiry is deliberately completed before any remote
-                    // provider wait. A failed or slow provider cannot suppress it.
-                    if writer
-                        .maintain_lifetimes_with_clock(now, Some(clock))
-                        .is_err()
                     {
-                        eprintln!("heptabao-lifecycle: maintenance unavailable");
+                        let _read_scope =
+                            crate::request_deadline::RequestDeadlineScope::enter(generic_deadline);
+                        if writer.maintain_raft_admin().is_err() {
+                            eprintln!("heptabao-lifecycle: autopilot transition pending");
+                        }
+                        // Local expiry is deliberately completed before any remote
+                        // provider wait. A failed or slow provider cannot suppress it.
+                        if writer
+                            .maintain_lifetimes_with_clock(now, Some(clock))
+                            .is_err()
+                        {
+                            eprintln!("heptabao-lifecycle: maintenance unavailable");
+                        }
                     }
                     #[cfg(any(target_os = "linux", target_os = "macos"))]
                     let sdk_preferred = {
                         writer.lifecycle_sdk_cursor = (writer.lifecycle_sdk_cursor + 1) % 3;
                         if writer.lifecycle_sdk_cursor == 0 {
-                            writer
-                                .prepare_sdk_expiry(clock)
-                                .ok()
-                                .flatten()
-                                .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
+                            prepare_sdk_provider(&mut writer, clock)
                         } else {
                             None
                         }
@@ -227,6 +245,8 @@ pub(crate) fn start_lifecycle_worker(
                     let prefer_openldap = writer.lifecycle_provider_cursor;
                     writer.lifecycle_provider_cursor = !prefer_openldap;
                     let mut other = || {
+                        let _read_scope =
+                            crate::request_deadline::RequestDeadlineScope::enter(generic_deadline);
                         if prefer_openldap {
                             match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
                                 Ok(Some(value)) => {
@@ -253,13 +273,7 @@ pub(crate) fn start_lifecycle_worker(
                     #[cfg(any(target_os = "linux", target_os = "macos"))]
                     let pending = match sdk_preferred {
                         Some(value) => Some(value),
-                        None => other().or_else(|| {
-                            writer
-                                .prepare_sdk_expiry(clock)
-                                .ok()
-                                .flatten()
-                                .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
-                        }),
+                        None => other().or_else(|| prepare_sdk_provider(&mut writer, clock)),
                     };
                     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
                     let pending = other();

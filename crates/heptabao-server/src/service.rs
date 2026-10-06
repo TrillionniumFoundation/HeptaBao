@@ -89,8 +89,9 @@ const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
 const SDK_SECRET_LEASE_STATE_SCHEMA: u32 = 96;
 const PKI_URLS_STATE_SCHEMA: u32 = 97;
 const EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA: u32 = 98;
+const SDK_AUTH_STATE_SCHEMA: u32 = 100;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_AUTH_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -114,6 +115,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SDK_SECRET_LEASE_STATE_SCHEMA
                 | PKI_URLS_STATE_SCHEMA
                 | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+                | SDK_AUTH_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -929,6 +931,8 @@ enum ExternalEffectPlan {
     PluginRead(plugin::PluginReadPlan),
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     SdkBackend(sdk_backend::Plan),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkAuth(sdk_backend::auth100::Plan),
     PluginKms(plugin::PluginKmsPlan),
     ExternalKey(plugin::ExternalKeyPlan),
     ExternalTransit(external_transit::ExternalTransitPlan),
@@ -950,6 +954,8 @@ pub(crate) enum ExternalEffectResult {
     PluginRead(Result<Value, Response>),
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     SdkBackend(Result<Option<Value>, Response>),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkAuth(Result<Option<Value>, Response>),
     PluginKms(Result<plugin::PluginKmsObservation, Response>),
     ExternalKey(Result<(), Response>),
     ExternalTransit(Result<external_transit::Observation, Response>),
@@ -982,6 +988,10 @@ impl PendingExternalRequest {
         deadline: std::time::Instant,
     ) -> ExternalEffectResult {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if let ExternalEffectPlan::SdkAuth(plan) = &self.effect {
+            return ExternalEffectResult::SdkAuth(plan.execute(service, deadline));
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
         if let ExternalEffectPlan::SdkBackend(plan) = &self.effect {
             return ExternalEffectResult::SdkBackend(plan.execute(service, deadline));
         }
@@ -1011,6 +1021,11 @@ impl PendingExternalRequest {
             ExternalEffectPlan::WrapperBarrierInit(plan) => {
                 ExternalEffectResult::WrapperBarrierInit(plan.execute())
             }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            ExternalEffectPlan::SdkAuth(_) => ExternalEffectResult::SdkAuth(Err(Response::error(
+                501,
+                "SDK Auth requires the Service owner dispatcher",
+            ))),
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             ExternalEffectPlan::SdkBackend(_) => ExternalEffectResult::SdkBackend(Err(
                 Response::error(501, "SDK backend requires the Service owner dispatcher"),
@@ -1096,6 +1111,8 @@ pub struct Service {
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     pending_sdk_request: Option<sdk_backend::Plan>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_auth_request: Option<sdk_backend::auth100::Plan>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     pending_sdk_control_authority: Option<plugin::PluginResponseAuthority>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -1472,6 +1489,8 @@ impl Service {
             pending_plugin_read: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             pending_sdk_request: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_auth_request: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             pending_sdk_control_authority: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -1916,6 +1935,17 @@ impl Service {
                     &pending.fingerprint,
                 );
             }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            (ExternalEffectPlan::SdkAuth(mut plan), ExternalEffectResult::SdkAuth(result)) => {
+                let response = self.finalize_sdk_auth(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_sdk_auth_delivery(&plan, response, &pending.fingerprint);
+            }
             (ExternalEffectPlan::PluginAuth(plan), ExternalEffectResult::PluginAuth(result)) => {
                 self.finalize_plugin_auth(plan, result)
             }
@@ -2149,8 +2179,9 @@ impl Service {
             return RequestExecution::Complete(self.leader_response(method));
         }
         #[cfg(any(target_os = "linux", target_os = "macos"))]
-        let sdk_pending =
-            self.pending_sdk_request.is_some() || self.pending_sdk_control_authority.is_some();
+        let sdk_pending = self.pending_sdk_request.is_some()
+            || self.pending_sdk_auth_request.is_some()
+            || self.pending_sdk_control_authority.is_some();
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_pending = false;
         if sdk_pending
@@ -2408,13 +2439,15 @@ impl Service {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         let sdk_request = self.pending_sdk_request.take();
         #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_auth = self.pending_sdk_auth_request.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
         let sdk_control = self.pending_sdk_control_authority.take();
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         let sdk_control_present = sdk_control.is_some();
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_control_present = false;
         #[cfg(any(target_os = "linux", target_os = "macos"))]
-        let sdk_staged = usize::from(sdk_request.is_some());
+        let sdk_staged = usize::from(sdk_request.is_some()) + usize::from(sdk_auth.is_some());
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_staged = 0;
         let plugin_kms = self.pending_plugin_kms.take();
@@ -2480,7 +2513,9 @@ impl Service {
                 snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
             });
         #[cfg(any(target_os = "linux", target_os = "macos"))]
-        let effect = effect.or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend));
+        let effect = effect
+            .or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend))
+            .or_else(|| sdk_auth.map(ExternalEffectPlan::SdkAuth));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
@@ -3253,6 +3288,10 @@ impl Service {
         }
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_auth_handles(&admitted, &request) {
+            return self.sdk_auth_route(admitted, principal, &request);
         }
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         if self.sdk_control_handles(&admitted, &request) {
