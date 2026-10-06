@@ -1501,7 +1501,9 @@ fn read_request_mode(
     let Some(object) = body.0.as_object_mut() else {
         return Err(bad("JSON object required"));
     };
-    let (path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
+    let (raw_path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
+    let decoded_path = decode_native_logical_path(raw_path)?;
+    let path = decoded_path.as_ref();
     if (path.contains('%') || path.contains('#'))
         && ocsp_get.is_none()
         && !ocsp::head_candidate(&method, path)
@@ -3289,5 +3291,78 @@ mod recovery_listener_policy_tests {
         body["disable_unauthed_rekey_endpoints"] = serde_json::json!("false");
         assert!(serde_json::from_value::<Config>(body).is_err());
         Ok(())
+    }
+}
+
+// Go's official API encodes literal stars and UTF-8 path characters. Decode
+// that carrier once before admission; encoded separators and traversal bytes
+// retain the existing rejection boundary and never become another route.
+fn decode_native_logical_path(path: &str) -> Result<std::borrow::Cow<'_, str>, ParseError> {
+    if !path.contains('%') {
+        return Ok(std::borrow::Cow::Borrowed(path));
+    }
+    if path.len() > 12 * 1024 {
+        return Err(bad("encoded logical path exceeds limit"));
+    }
+    let mut decoded = Vec::with_capacity(path.len());
+    let mut bytes = path.as_bytes().iter().copied();
+    while let Some(byte) = bytes.next() {
+        if byte != b'%' {
+            decoded.push(byte);
+            continue;
+        }
+        let high = bytes.next().and_then(|b| (b as char).to_digit(16));
+        let low = bytes.next().and_then(|b| (b as char).to_digit(16));
+        let byte = high
+            .zip(low)
+            .map(|(h, l)| (h * 16 + l) as u8)
+            .ok_or_else(|| bad("invalid encoded logical path"))?;
+        if byte != b'*' && byte < 0x80 {
+            return Err(bad("ambiguous encoded paths are not supported"));
+        }
+        decoded.push(byte);
+    }
+    let decoded = String::from_utf8(decoded).map_err(|_| bad("invalid UTF-8 logical path"))?;
+    if decoded
+        .chars()
+        .any(|c| !c.is_ascii() && !c.is_alphanumeric())
+    {
+        return Err(bad("unsupported encoded logical path character"));
+    }
+    Ok(std::borrow::Cow::Owned(decoded))
+}
+
+#[cfg(test)]
+mod encoded_sdk_path_tests {
+    use super::*;
+    #[test]
+    fn sdk_auth100_encoded_native_characters_do_not_decode_separators_or_traversal() {
+        assert_eq!(
+            decode_native_logical_path("auth/sdk/root%2Aliteral")
+                .map(|v| v.into_owned())
+                .ok()
+                .as_deref(),
+            Some("auth/sdk/root*literal")
+        );
+        assert_eq!(
+            decode_native_logical_path("auth/sdk/root/%E7%94%A8%E6%88%B7")
+                .map(|v| v.into_owned())
+                .ok()
+                .as_deref(),
+            Some("auth/sdk/root/用户")
+        );
+        for path in [
+            "auth/sdk/%2Fprivate",
+            "auth/sdk/%2E%2E/private",
+            "auth/sdk/%5Cprivate",
+            "auth/sdk/%25private",
+            "auth/sdk/%00private",
+            "auth/sdk/%FF",
+            "auth/sdk/%E7%94",
+            "auth/sdk/%2",
+            "auth/sdk/%20private",
+        ] {
+            assert!(decode_native_logical_path(path).is_err());
+        }
     }
 }
