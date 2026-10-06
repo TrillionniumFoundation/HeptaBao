@@ -2337,7 +2337,7 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self.auth_mounts.get(namespace).is_none_or(|entries| {
-                entries.is_empty() || *entries == userpass_names::fresh_default_auth_mounts()
+                entries.is_empty() || userpass_names::is_untouched_namespace_auth_defaults(entries)
             })
             && self
                 .jwt_mounts

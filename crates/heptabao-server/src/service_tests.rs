@@ -727,6 +727,21 @@ pub(super) fn bootstrap(
 // Tests that exercise existing secret engines explicitly provision their
 // prerequisite mounts. Production initialization and Default remain distinct.
 pub(super) fn provision_fixture_mounts(service: &mut Service, namespace: &str, token: &str) {
+    for kind in ["userpass", "approle"] {
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    &format!("sys/auth/{kind}"),
+                    namespace,
+                    token,
+                    json!({"type":kind}),
+                    100,
+                )
+                .status,
+            204,
+        );
+    }
     for (path, body) in [
         (
             "secret",

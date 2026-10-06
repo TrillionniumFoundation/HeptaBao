@@ -2,6 +2,9 @@
 use super::*;
 use crate::test_support::runtime_secret;
 
+#[path = "auth_defaults_270_tests.rs"]
+mod auth_defaults270_tests;
+
 #[path = "auth_approle_defaults_tests.rs"]
 mod approle_defaults_tests;
 #[path = "auth_approle_renewal_tests.rs"]
@@ -30,6 +33,22 @@ mod kerberos_tests;
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let principal = state.authenticate(&raw, 100).unwrap();
+    // Feature fixtures explicitly enable their prerequisites on a real fresh
+    // state; production bootstrap remains token-only.
+    for kind in ["userpass", "approle"] {
+        let enabled = state
+            .handle(
+                Some(&principal),
+                "",
+                "POST",
+                &format!("sys/auth/{kind}"),
+                &json!({"type":kind}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(enabled.status, 204);
+    }
     (state, raw, principal)
 }
 

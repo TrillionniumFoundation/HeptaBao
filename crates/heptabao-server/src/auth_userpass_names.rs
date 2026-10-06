@@ -10,11 +10,24 @@ pub(super) enum UserpassNameMode {
 }
 
 pub(super) fn fresh_default_auth_mounts() -> BTreeMap<String, AuthMount> {
+    BTreeMap::from([(
+        "token".into(),
+        AuthMount::new("token", "token based credentials"),
+    )])
+}
+
+// Older native bootstraps persisted all three factory mounts. Keep their
+// untouched cleanup behavior; deserialization still owns the original map.
+pub(super) fn prior_native_default_auth_mounts() -> BTreeMap<String, AuthMount> {
     let mut mounts = legacy_auth_mounts();
     if let Some(userpass) = mounts.get_mut("userpass") {
         userpass.userpass_name_mode = Some(UserpassNameMode::AsciiLowerV1);
     }
     mounts
+}
+
+pub(super) fn is_untouched_namespace_auth_defaults(mounts: &BTreeMap<String, AuthMount>) -> bool {
+    *mounts == fresh_default_auth_mounts() || *mounts == prior_native_default_auth_mounts()
 }
 
 impl AuthState {
@@ -38,7 +51,7 @@ impl AuthState {
         if self
             .auth_mounts
             .get(namespace)
-            .is_some_and(|mounts| *mounts == fresh_default_auth_mounts())
+            .is_some_and(is_untouched_namespace_auth_defaults)
         {
             self.auth_mounts.remove(namespace);
         }
@@ -73,8 +86,8 @@ impl AuthState {
         self.remove_unused_batch_authority_for_legacy_format_test();
         // Historical bootstrap used implicit factory mounts. Preserve changed
         // registries, but do not introduce an explicit one into schema-1 fixtures.
-        let factory = fresh_default_auth_mounts();
-        self.auth_mounts.retain(|_, mounts| *mounts != factory);
+        self.auth_mounts
+            .retain(|_, mounts| !is_untouched_namespace_auth_defaults(mounts));
         for mount in self
             .auth_mounts
             .values_mut()
