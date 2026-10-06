@@ -1,6 +1,7 @@
 //! External CA consumption contains public issuer state only. A leaf private
 //! key exists in a zeroizing effect result until one successful publication.
 use super::*;
+use crate::auth::Timestamp;
 
 #[derive(Clone)]
 pub(super) enum ConsumptionTemplate {
