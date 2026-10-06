@@ -72,8 +72,7 @@ impl Challenge {
             body["validated"] = json!(validated.public_at);
         }
         if let Some(detail) = self.validation.as_ref().and_then(|v| v.error.as_ref()) {
-            body["error"] =
-                json!({"type":"urn:ietf:params:acme:error:incorrectResponse","detail":detail});
+            body["error"] = json!({"type":"urn:ietf:params:acme:error:incorrectResponse","detail":detail,"status":400,"subproblems":[]});
         }
         body
     }

@@ -177,9 +177,8 @@ pub(crate) fn verify_http01(
     } else {
         format!("{host}:{port}")
     };
-    let mut target = ProofTarget::parse(&format!(
-        "http://{authority}/.well-known/acme-challenge/{token}"
-    ))?;
+    let initial_url = format!("http://{authority}/.well-known/acme-challenge/{token}");
+    let mut target = ProofTarget::parse(&initial_url)?;
     let mut redirect_count = 0;
     loop {
         remaining(deadline)?;
@@ -244,16 +243,23 @@ pub(crate) fn verify_http01(
         {
             redirect_count += 1;
             if redirect_count + 1 >= 10 {
-                return Err(format!(
-                    "http-01: too many redirects: {}",
-                    redirect_count + 1
+                return Err(fetch_redirect_error(
+                    &initial_url,
+                    location,
+                    &format!("http-01: too many redirects: {}", redirect_count + 1),
                 ));
             }
-            target = target.redirect(location)?;
+            target = target
+                .redirect(location)
+                .map_err(|detail| fetch_redirect_error(&initial_url, location, &detail))?;
             continue;
         }
         return verify_body(stream, headers, budget, token, thumbprint, deadline);
     }
+}
+fn fetch_redirect_error(initial_url: &str, location: &str, detail: &str) -> String {
+    let quoted = serde_json::to_string(location).unwrap_or_else(|_| "\"invalid redirect\"".into());
+    format!("http-01: failed to fetch path {initial_url}: Get {quoted}: {detail}")
 }
 fn verify_body(
     mut stream: Box<dyn ProofStream>,
@@ -356,29 +362,28 @@ mod tests {
     use super::*;
     use std::net::TcpListener;
     use std::thread;
-    fn request(stream: &mut TcpStream) -> String {
-        stream
-            .set_read_timeout(Some(Duration::from_secs(3)))
-            .unwrap();
+    fn request(stream: &mut TcpStream) -> io::Result<String> {
+        stream.set_read_timeout(Some(Duration::from_secs(3)))?;
         let mut bytes = Vec::new();
         while !bytes.ends_with(b"\r\n\r\n") {
             let mut byte = [0];
-            stream.read_exact(&mut byte).unwrap();
+            stream.read_exact(&mut byte)?;
             bytes.push(byte[0]);
             assert!(bytes.len() < 2048);
         }
-        String::from_utf8(bytes).unwrap()
+        String::from_utf8(bytes).map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))
     }
     #[test]
-    fn pki_acme99_http01_eight_redirects_and_ninth_refusal_real_network() {
+    fn pki_acme99_http01_eight_redirects_and_ninth_refusal_real_network()
+    -> Result<(), Box<dyn std::error::Error>> {
         for redirects in [8, 9] {
-            let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-            let port = listener.local_addr().unwrap().port();
+            let listener = TcpListener::bind("127.0.0.1:0")?;
+            let port = listener.local_addr()?.port();
             let server = thread::spawn(move || {
                 let mut paths = Vec::new();
                 for step in 0..=8 {
-                    let (mut socket, _) = listener.accept().unwrap();
-                    paths.push(request(&mut socket));
+                    let (mut socket, _) = listener.accept()?;
+                    paths.push(request(&mut socket)?);
                     let response = if step < redirects {
                         format!(
                             "HTTP/1.1 302 Found\r\nLocation: /step/{}/token\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
@@ -387,9 +392,9 @@ mod tests {
                     } else {
                         "HTTP/1.1 500 Result\r\nContent-Length: 11\r\nConnection: close\r\n\r\ntoken.thumb".to_owned()
                     };
-                    socket.write_all(response.as_bytes()).unwrap();
+                    socket.write_all(response.as_bytes())?;
                 }
-                paths
+                Ok::<_, io::Error>(paths)
             });
             let result = verify_http01(
                 "127.0.0.1",
@@ -401,52 +406,66 @@ mod tests {
             if redirects == 8 {
                 assert!(result.is_ok(), "{result:?}");
             } else {
-                assert_eq!(result.unwrap_err(), "http-01: too many redirects: 10");
+                assert!(
+                    result
+                        .as_ref()
+                        .err()
+                        .is_some_and(|e| e.ends_with("http-01: too many redirects: 10"))
+                );
             }
-            let paths = server.join().unwrap();
+            let paths = server
+                .join()
+                .map_err(|_| "HTTP01 fixture thread failed")??;
             assert_eq!(paths.len(), 9);
             assert!(paths[0].starts_with("GET /.well-known/acme-challenge/token HTTP/1.1"));
             assert!(paths[8].starts_with("GET /step/8/token HTTP/1.1"));
         }
+        Ok(())
     }
     #[test]
-    fn pki_acme99_http01_relative_query_url_bound_and_same_attempt_deadline() {
-        let target =
-            ProofTarget::parse("http://127.0.0.1:80/.well-known/acme-challenge/token").unwrap();
-        let relative = target.redirect("../proof/token?exact=unchanged").unwrap();
+    fn pki_acme99_http01_relative_query_url_bound_and_same_attempt_deadline()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let target = ProofTarget::parse("http://127.0.0.1:80/.well-known/acme-challenge/token")?;
+        let relative = target.redirect("../proof/token?exact=unchanged")?;
         assert_eq!(relative.path, "/.well-known/proof/token?exact=unchanged");
         assert_eq!(
-            target.redirect("?q=exact").unwrap().path,
+            target.redirect("?q=exact")?.path,
             "/.well-known/acme-challenge/token?q=exact"
         );
         assert!(
             target
                 .redirect(&format!("/proof?{}", "x".repeat(2001)))
-                .unwrap_err()
-                .contains("url length too long")
+                .as_ref()
+                .err()
+                .is_some_and(|e| e.contains("url length too long"))
         );
         assert!(
             target
                 .redirect(&format!("/proof#{}", "x".repeat(2001)))
-                .unwrap_err()
-                .contains("url length too long")
+                .as_ref()
+                .err()
+                .is_some_and(|e| e.contains("url length too long"))
         );
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let port = listener.local_addr().unwrap().port();
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let port = listener.local_addr()?.port();
         let server = thread::spawn(move || {
-            let (mut first, _) = listener.accept().unwrap();
-            request(&mut first);
-            first.write_all(b"HTTP/1.1 307 Temporary Redirect\r\nLocation: /slow-proof\r\nContent-Length: 0\r\nConnection: close\r\n\r\n").unwrap();
-            let (mut second, _) = listener.accept().unwrap();
-            assert!(request(&mut second).starts_with("GET /slow-proof HTTP/1.1"));
+            let (mut first, _) = listener.accept()?;
+            request(&mut first)?;
+            first.write_all(b"HTTP/1.1 307 Temporary Redirect\r\nLocation: /slow-proof\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")?;
+            let (mut second, _) = listener.accept()?;
+            assert!(request(&mut second)?.starts_with("GET /slow-proof HTTP/1.1"));
             thread::sleep(Duration::from_millis(200));
             let _ = second.write_all(
                 b"HTTP/1.1 200 OK\r\nContent-Length: 11\r\nConnection: close\r\n\r\ntoken.thumb",
             );
+            Ok::<_, io::Error>(())
         });
         let deadline = Instant::now() + Duration::from_millis(100);
         assert!(verify_http01("127.0.0.1", port, "token", "thumb", deadline).is_err());
         assert!(Instant::now() >= deadline);
-        server.join().unwrap();
+        server
+            .join()
+            .map_err(|_| "HTTP01 fixture thread failed")??;
+        Ok(())
     }
 }

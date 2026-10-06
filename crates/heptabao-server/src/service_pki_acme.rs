@@ -854,7 +854,7 @@ impl Service {
         );
         let result = result.map_err(|detail| {
             format!(
-                "error validating http-01 challenge {id}: {detail}; validation of challenge failed"
+                "response received didn't match the challenge's requirements: error validating http-01 challenge {id}: {detail}; this may occur if the validation target was misconfigured: check that challenge responses are available at the required locations and retry."
             )
         });
         next.engines
