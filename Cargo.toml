@@ -17,3 +17,10 @@ all = { level = "warn", priority = -1 }
 expect_used = "deny"
 panic = "deny"
 unwrap_used = "deny"
+
+# Owner validation must finish within the same bounded request deadlines.
+# Development and inherited test builds keep runtime safety checks enabled.
+[profile.dev]
+opt-level = 1
+debug-assertions = true
+overflow-checks = true
