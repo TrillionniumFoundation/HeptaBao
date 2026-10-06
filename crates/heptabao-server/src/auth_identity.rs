@@ -178,7 +178,13 @@ mod tests {
     #[test]
     fn identity_legacy_token_and_mount_fields_remain_readable_without_invented_binding()
     -> Result<(), Box<dyn std::error::Error>> {
-        let (state, raw) = AuthState::bootstrap(100)?;
+        let (mut state, raw) = AuthState::bootstrap(100)?;
+        // This legacy-field fixture represents the prior native factory map,
+        // rather than the fresh 2.7 token-only default.
+        state.auth_mounts.insert(
+            "".into(),
+            super::super::userpass_names::prior_native_default_auth_mounts(),
+        );
         let mut value = serde_json::to_value(&state)?;
         value["tokens"]
             .as_object_mut()
