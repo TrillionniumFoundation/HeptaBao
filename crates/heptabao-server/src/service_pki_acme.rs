@@ -276,6 +276,16 @@ fn engine_problem(error: crate::engines::EngineError) -> Response {
             .starts_with("an account with this key does not exist:")
     {
         "accountDoesNotExist"
+    } else if error
+        .message
+        .ends_with("an identifier is of an unsupported type")
+    {
+        "unsupportedIdentifier"
+    } else if error
+        .message
+        .starts_with("server will not issue certificates for the identifier:")
+    {
+        "rejectedIdentifier"
     } else if error.status == 401 {
         "unauthorized"
     } else if error.message.contains("binding is required") {
@@ -340,12 +350,37 @@ impl Service {
                 .endpoint
                 .strip_prefix("account/")
                 .is_some_and(|id| !id.is_empty() && !id.contains('/'))
+            || view.endpoint == "new-order"
+            || view.endpoint == "orders"
+            || view
+                .endpoint
+                .strip_prefix("challenge/")
+                .is_some_and(|rest| {
+                    rest.split_once('/')
+                        .is_some_and(|(a, k)| !a.is_empty() && !k.is_empty() && !k.contains('/'))
+                })
+            || view
+                .endpoint
+                .strip_prefix("order/")
+                .is_some_and(|id| !id.is_empty() && !id.contains('/'))
+            || view
+                .endpoint
+                .strip_prefix("authorization/")
+                .is_some_and(|id| !id.is_empty() && !id.contains('/'))
         {
             if request.method != "POST" {
                 Response::error(405, "unsupported operation")
             } else {
                 self.acme_signed_account(request, admitted, &view)
             }
+        } else if view
+            .endpoint
+            .strip_prefix("account/")
+            .is_some_and(|rest| rest.ends_with("/orders"))
+        {
+            // The official descriptor's account/<uuid>/orders alias is not an
+            // unauthenticated ACME route; the actual signed list route is orders.
+            Response::error(403, "permission denied")
         } else if matches!(view.endpoint.as_str(), "directory" | "new-nonce") {
             Response::error(405, "unsupported operation")
         } else {
@@ -362,7 +397,13 @@ impl Service {
             && response.status < 400
             && (view.endpoint == "new-nonce" && matches!(request.method, "GET" | "HEAD")
                 || request.method == "POST"
-                    && (view.endpoint == "new-account" || view.endpoint.starts_with("account/")))
+                    && (view.endpoint == "new-account"
+                        || view.endpoint.starts_with("account/")
+                        || view.endpoint == "new-order"
+                        || view.endpoint == "orders"
+                        || view.endpoint.starts_with("order/")
+                        || view.endpoint.starts_with("authorization/")
+                        || view.endpoint.starts_with("challenge/")))
         {
             let at = match request.token_time().and_then(|time| {
                 time.exact()
@@ -513,13 +554,32 @@ impl Service {
         if let Err(error) = namespace_runtime::request_live() {
             return error;
         }
-        match admitted
-            .engines
-            .acme_account_request(view, key, &verified, kid.as_deref(), at)
-        {
+        let result = if view.endpoint == "new-account" || view.endpoint.starts_with("account/") {
+            admitted
+                .engines
+                .acme_account_request(view, key, &verified, kid.as_deref(), at)
+                .map(|(status, body, location)| (status, body, Some(location)))
+        } else {
+            admitted
+                .engines
+                .acme_order_request(view, &verified, kid.as_deref(), at)
+        };
+        match result {
             Ok((status, body, location)) => {
-                let headers = json!({"Location":[location]});
-                match ResponseHeaders::from_sdk(Some(&headers), &view.headers) {
+                let mut metadata = json!({});
+                if let Some(location) = location {
+                    metadata["Location"] = json!([location]);
+                }
+                if let Some((auth, _)) = view
+                    .endpoint
+                    .strip_prefix("challenge/")
+                    .and_then(|rest| rest.split_once('/'))
+                {
+                    metadata["Link"] =
+                        json!([format!("<{}authorization/{auth}>;rel=\"up\"", view.base)]);
+                }
+                let headers = Some(metadata);
+                match ResponseHeaders::from_sdk(headers.as_ref(), &view.headers) {
                     Ok(headers) => wire(status, Some(body), false, headers),
                     Err(()) => Response::error(503, "ACME account response metadata rejected"),
                 }
@@ -571,3 +631,280 @@ impl Service {
 #[cfg(test)]
 #[path = "service_pki_acme_tests.rs"]
 mod tests;
+
+/// Durable queue identity is public protocol state, never a Caller or Principal.
+#[derive(Clone)]
+pub(crate) struct QueuedChallenge {
+    pub owner: AcmeBinding,
+    pub account: String,
+    pub thumbprint: String,
+    pub directory: String,
+    pub authorization: String,
+    pub host: String,
+    pub challenge: crate::engines::AcmeChallenge,
+    pub mount_revision: u64,
+    pub dns_resolver: String,
+}
+pub(super) struct ChallengeAttempt {
+    queued: QueuedChallenge,
+    clock: RequestClock,
+    attempt_started: Timestamp,
+    deadline: std::time::Instant,
+    activation: String,
+    delivery: namespace_runtime::DeliveryBinding,
+}
+impl ChallengeAttempt {
+    fn observed(&self) -> Result<Timestamp, Response> {
+        if std::time::Instant::now() >= self.deadline {
+            return Err(Response::error(
+                503,
+                "ACME background attempt deadline expired",
+            ));
+        }
+        self.clock
+            .observed_at()
+            .map_err(|_| Response::error(503, "ACME background original clock unavailable"))
+    }
+    fn check_state(&self, state: &State, original: bool) -> Result<(), Response> {
+        self.observed()?;
+        state.namespace_leases.validate()?;
+        if state.cluster_id != self.queued.owner.cluster_id
+            || !state.namespace_exists(&self.queued.owner.namespace)
+            || state.namespace_is_sealed(&self.queued.owner.namespace)
+            || state.namespaces.incarnation(&self.queued.owner.namespace)
+                != self.queued.owner.namespace_incarnation
+            || namespace_runtime::DeliveryBinding::capture(state, &self.queued.owner.namespace)
+                != self.delivery
+        {
+            return Err(Response::error(
+                503,
+                "ACME background namespace owner changed",
+            ));
+        }
+        let path = format!(
+            "{}{}challenge/{}/{}",
+            self.queued.owner.mount,
+            self.queued.directory,
+            self.queued.authorization,
+            self.queued.challenge.kind
+        );
+        let view = state
+            .engines
+            .acme_view(
+                &self.queued.owner.namespace,
+                &path,
+                &state.cluster_id,
+                state.namespaces.incarnation(&self.queued.owner.namespace),
+            )
+            .map_err(Response::from_engine_error)?
+            .ok_or_else(|| Response::error(503, "ACME background mount unavailable"))?;
+        if view.owner != self.queued.owner
+            || view.revision != self.queued.mount_revision
+            || !view.enabled
+        {
+            return Err(Response::error(503, "ACME background mount owner changed"));
+        }
+        state
+            .engines
+            .acme_directory_gate(&view)
+            .map_err(Response::from_engine_error)?;
+        state
+            .engines
+            .check_acme_challenge_state(&self.queued, original)
+            .map_err(Response::from_engine_error)?;
+        Ok(())
+    }
+    fn check(&self, service: &Service) -> Result<(), Response> {
+        if service.recovery_required
+            || service.audit_failed
+            || service.unseal_nonce != self.activation
+        {
+            return Err(Response::error(503, "ACME background activation changed"));
+        }
+        self.check_state(
+            service
+                .state
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "ACME background state unavailable"))?,
+            true,
+        )
+    }
+    pub(super) fn execute(&self, service: &Arc<Mutex<Service>>) -> Result<(), String> {
+        {
+            let writer = crate::request_deadline::lock_until(service, self.deadline)
+                .map_err(|_| "ACME background writer unavailable".to_owned())?;
+            self.check(&writer)
+                .map_err(|_| "ACME background owner changed before network proof".to_owned())?;
+        }
+        self.execute_port(80)
+    }
+    fn execute_port(&self, port: u16) -> Result<(), String> {
+        self.observed()
+            .map_err(|_| "ACME background attempt deadline expired".to_owned())?;
+        if self.queued.challenge.kind == "dns-01" {
+            return crate::outbound::verify_dns01(
+                &self.queued.host,
+                &self.queued.challenge.token,
+                &self.queued.thumbprint,
+                &self.queued.dns_resolver,
+                self.deadline
+                    .min(std::time::Instant::now() + Duration::from_secs(30)),
+            );
+        }
+        if !self.queued.dns_resolver.is_empty() {
+            return Err("ACME explicit DNS resolver transport is not implemented".into());
+        }
+        crate::outbound::verify_http01(
+            &self.queued.host,
+            port,
+            &self.queued.challenge.token,
+            &self.queued.thumbprint,
+            self.deadline
+                .min(std::time::Instant::now() + Duration::from_secs(10)),
+        )
+    }
+}
+impl Service {
+    pub(super) fn prepare_acme_maintenance(
+        &mut self,
+        clock: RequestClock,
+    ) -> Result<Option<ChallengeAttempt>, Response> {
+        let deadline = clock
+            .started()
+            .checked_add(Duration::from_secs(60))
+            .ok_or_else(|| Response::error(503, "ACME host attempt deadline overflow"))?;
+        if std::time::Instant::now() >= deadline {
+            return Err(Response::error(503, "ACME host attempt deadline expired"));
+        }
+        let _read_scope = crate::request_deadline::RequestDeadlineScope::enter(
+            deadline.min(clock.started() + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET),
+        );
+        if self.recovery_required || self.audit_failed || self.state.is_none() {
+            return Ok(None);
+        }
+        if let Some(ha) = &self.ha {
+            let ha = ha
+                .lock_for_request()
+                .map_err(|_| Response::error(503, "ACME maintenance HA unavailable"))?;
+            if ha
+                .leader()
+                .map_err(|_| Response::error(503, "ACME maintenance leader unavailable"))?
+                != Some(
+                    ha.local_id().map_err(|_| {
+                        Response::error(503, "ACME maintenance identity unavailable")
+                    })?,
+                )
+            {
+                return Ok(None);
+            }
+            drop(ha);
+            self.sync_from_ha_with_anchor(false)?;
+        }
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "ACME background state unavailable"))?;
+        let at = state.engines.acme_observed_time(
+            clock
+                .observed_at()
+                .map_err(|_| Response::error(503, "ACME host clock unavailable"))?,
+        );
+        let Some(queued) = state.engines.next_acme_challenge(at) else {
+            return Ok(None);
+        };
+        let plan = ChallengeAttempt {
+            attempt_started: at,
+            clock: clock
+                .with_seconds_floor(at.seconds())
+                .map_err(|_| Response::error(503, "ACME host clock floor unavailable"))?,
+            deadline,
+            activation: self.unseal_nonce.clone(),
+            delivery: namespace_runtime::DeliveryBinding::capture(state, &queued.owner.namespace),
+            queued,
+        };
+        plan.check(self)?;
+        let fingerprint = self.request_fingerprint(
+            "INTERNAL",
+            "pki/acme/challenge-validation",
+            &plan.queued.owner.namespace,
+            "",
+        );
+        if self
+            .audit_event("acme-validation-request", &fingerprint, at.seconds(), None)
+            .is_err()
+        {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "ACME background request audit unavailable",
+            ));
+        }
+        Ok(Some(plan))
+    }
+    pub(super) fn finish_acme_maintenance(
+        &mut self,
+        plan: ChallengeAttempt,
+        result: Result<(), String>,
+    ) -> Result<(), Response> {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        if self.ha.is_some() {
+            self.sync_from_ha_with_anchor(false)?;
+        }
+        plan.check(self)?;
+        let at = plan.observed()?;
+        let mut next = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "ACME background state unavailable"))?
+            .clone();
+        let id = format!(
+            "{}-{}",
+            plan.queued.authorization, plan.queued.challenge.kind
+        );
+        let result = result.map_err(|detail| {
+            format!(
+                "response received didn't match the challenge's requirements: error validating {} challenge {id}: {detail}; this may occur if the validation target was misconfigured: check that challenge responses are available at the required locations and retry.", plan.queued.challenge.kind
+            )
+        });
+        next.engines
+            .finish_acme_challenge(&plan.queued, result, at, plan.attempt_started)
+            .map_err(Response::from_engine_error)?;
+        next.schema = next.writer_schema();
+        let record = self.prepare_record_plan(&mut next)?;
+        plan.check(self)?;
+        plan.check_state(&next, false)?;
+        self.commit_record_plan_with_before_publish(
+            &next,
+            record,
+            |_| plan.check_state(&next, false),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )?;
+        self.state = Some(self.install_committed_namespace_view(next));
+        let fingerprint = self.request_fingerprint(
+            "INTERNAL",
+            "pki/acme/challenge-validation",
+            &plan.queued.owner.namespace,
+            "",
+        );
+        if self
+            .audit_event(
+                "acme-validation-response",
+                &fingerprint,
+                at.seconds(),
+                Some(204),
+            )
+            .is_err()
+        {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "ACME background result audit unavailable",
+            ));
+        }
+        plan.observed()?;
+        Ok(())
+    }
+}

@@ -231,6 +231,7 @@ mod records;
 mod state_store;
 pub(crate) use ha_activation::start_ha_activation_worker_with_budget;
 pub(crate) use lifecycle::start_lifecycle_worker;
+pub(crate) use pki_acme::QueuedChallenge;
 
 #[path = "service_leases.rs"]
 mod leases;
@@ -1151,6 +1152,7 @@ pub struct Service {
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     lifecycle_sdk_cursor: u8,
     lifecycle_provider_cursor: bool,
+    lifecycle_acme_preferred: bool,
     lifecycle_database_rotation_cursor: bool,
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
     database_plugins: BTreeMap<String, plugin::SharedDatabasePlugin>,
@@ -1531,6 +1533,7 @@ impl Service {
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             lifecycle_sdk_cursor: 0,
             lifecycle_provider_cursor: false,
+            lifecycle_acme_preferred: false,
             lifecycle_database_rotation_cursor: false,
             auth_plugins: BTreeMap::new(),
             database_plugins: BTreeMap::new(),

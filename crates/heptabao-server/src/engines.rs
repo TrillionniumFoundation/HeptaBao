@@ -46,6 +46,7 @@ mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
 pub(crate) use pki::acme_engine::{AcmeBinding, AcmeParsedJws, AcmeView};
+pub(crate) use pki::acme_orders::Challenge as AcmeChallenge;
 pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
 pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
 mod ssh;

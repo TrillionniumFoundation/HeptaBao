@@ -40,6 +40,13 @@ pub(crate) use kerberos::{
     MAX_KERBEROS_TICKET_LIFETIME, MAX_KERBEROS_TOKEN,
 };
 
+#[path = "outbound_acme_http01.rs"]
+mod acme_http01;
+pub(crate) use acme_http01::verify_http01;
+#[path = "outbound_acme_dns01.rs"]
+mod acme_dns01;
+pub(crate) use acme_dns01::verify_dns01;
+
 pub(crate) const MAX_DOCUMENT: usize = 128 * 1024;
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
