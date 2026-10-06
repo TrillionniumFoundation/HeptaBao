@@ -72,6 +72,9 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
             request_id(random)
         })
     });
+    if !wrapped && body.get("request_id").and_then(Value::as_str) == Some("") {
+        body.insert("request_id".into(), json!(request_id(random)));
+    }
     for (name, default) in [
         ("lease_id", json!("")),
         ("lease_duration", json!(0)),
@@ -286,5 +289,61 @@ mod tests {
             assert_eq!(response.body["data"], body["data"]);
             assert!(response.body["auth"].is_null());
         }
+    }
+    #[test]
+    fn complete_external_sign_envelope_fills_empty_attempt_id_and_keeps_owned_data()
+    -> io::Result<()> {
+        let data = json!({"certificate":"public-test-certificate",
+            "issuer_id":"actual-issuer-identity","serial_number":"aa:bb",
+            "request_id":""});
+        for (wrapped, prior) in [
+            (false, ""),
+            (true, ""),
+            (false, "11111111-2222-3333-4444-555555555555"),
+        ] {
+            let wrap = if wrapped {
+                json!({"token":"test-wrap-token","ttl":10})
+            } else {
+                Value::Null
+            };
+            let mut reply = snapshot::NativeReply::Json(Response {
+                status: 200,
+                response_headers: Default::default(),
+                consistency_index: None,
+                body: json!({"request_id":prior,"lease_id":"","lease_duration":0,
+                    "renewable":false,"data":data,"auth":null,"warnings":null,
+                    "wrap_info":wrap}),
+            });
+            let random = [0x35; 16];
+            project(&mut reply, &random, "pki/sign/revoke-global");
+            let snapshot::NativeReply::Json(response) = &reply else {
+                unreachable!()
+            };
+            let expected = if !wrapped && prior.is_empty() {
+                request_id(&random)
+            } else {
+                prior.to_owned()
+            };
+            assert_eq!(response.body["request_id"], expected);
+            assert_eq!(response.body["data"], data);
+            assert_eq!(response.body["data"]["request_id"], "");
+            assert_eq!(response.body["wrap_info"], wrap);
+            assert!(response.body["auth"].is_null());
+            assert_eq!(response.body.as_object().map(|v| v.len()), Some(8));
+            let mut wire = Vec::new();
+            reply.write(&mut wire, false)?;
+            let split = wire
+                .windows(4)
+                .position(|part| part == b"\r\n\r\n")
+                .ok_or_else(|| io::Error::other("missing HTTP framing"))?;
+            let header = String::from_utf8_lossy(&wire[..split]);
+            let declared = header
+                .lines()
+                .find_map(|line| line.strip_prefix("Content-Length: "))
+                .and_then(|value| value.parse::<usize>().ok())
+                .ok_or_else(|| io::Error::other("missing Content-Length"))?;
+            assert_eq!(declared, wire.len() - split - 4);
+        }
+        Ok(())
     }
 }
