@@ -137,3 +137,35 @@ fn initialization_existing_empty_rejects_added_data_replacement_and_symlink() ->
     );
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[test]
+fn initialization_existing_empty_ha_pending_retains_and_recovers_same_candidate() -> TestResult {
+    for reopen in [false, true] {
+        let root = Root::new();
+        private_directory(&root.path)?;
+        let target = root.path.join("data");
+        private_directory(&target)?;
+        let parent = ExclusiveDirectory::open(&root.path)?;
+        let mut stage = InitializationStage::create(&target)?;
+        fs::write(stage.path.join("prepared"), b"ha-pending-owned-candidate")?;
+        stage.retain_ha_pending(&target, &parent)?;
+        assert!(stage.existing_empty.is_some());
+        if reopen {
+            let pending_path = stage.path.clone();
+            drop(stage);
+            stage = InitializationStage {
+                path: pending_path,
+                retain_on_drop: true,
+                existing_empty: InitializationStage::hold_existing_empty(&target)?,
+            };
+        }
+        assert!(stage.publish(&target, &parent)?);
+        assert_eq!(
+            fs::read(target.join("prepared"))?,
+            b"ha-pending-owned-candidate"
+        );
+        assert!(!wrapper_ha::pending_exists(&target)?);
+    }
+    Ok(())
+}

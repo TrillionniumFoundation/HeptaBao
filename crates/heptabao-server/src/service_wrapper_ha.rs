@@ -129,6 +129,7 @@ impl InitializationStage {
         parent: &ExclusiveDirectory,
     ) -> io::Result<()> {
         verify_initialization_parent(parent)?;
+        self.verify_existing_target(data_dir)?;
         let pending = pending_path(data_dir)?;
         if parent.entry_exists(initialization_leaf_name(parent, &pending)?)? {
             return Err(io::Error::other(
@@ -707,13 +708,18 @@ impl Service {
                 "HA application is already initialized; original response was not retained",
             ),
         };
-        live(deadline)?;
-        self.commit_or_match_ha_initial(&state, &bytes, &metadata.operation_id, binding)?;
-        drop(durable);
         let mut stage = InitializationStage {
             path: pending.path,
             retain_on_drop: true,
+            existing_empty: InitializationStage::hold_existing_empty(&self.data_dir)
+                .map_err(|_| unavailable("HA initialization target is unsafe or busy"))?,
         };
+        stage
+            .verify_existing_target(&self.data_dir)
+            .map_err(|_| unavailable("HA initialization target changed"))?;
+        live(deadline)?;
+        self.commit_or_match_ha_initial(&state, &bytes, &metadata.operation_id, binding)?;
+        drop(durable);
         live(deadline)?;
         if !stage
             .publish(&self.data_dir, &parent)

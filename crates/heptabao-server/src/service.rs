@@ -739,6 +739,33 @@ impl InitializationStage {
         // The parent lock serializes cooperating writers; this preflight does
         // not provide an atomic inode comparison against an uncooperative
         // process that can rename entries in the private parent directory.
+        let existing_empty = Self::hold_existing_empty(final_path)?;
+        let parent = final_path
+            .parent()
+            .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+        let metadata = fs::symlink_metadata(parent)?;
+        if !metadata.is_dir() || metadata.file_type().is_symlink() {
+            return Err(io::Error::other("initialization parent is unsafe"));
+        }
+        let suffix = hex(&crypto::random::<16>().map_err(io::Error::other)?);
+        let path = parent.join(format!(".heptabao-init-{suffix}"));
+        let mut builder = fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        builder.create(&path)?;
+        let stage = Self {
+            path,
+            retain_on_drop: false,
+            existing_empty,
+        };
+        stage.verify_existing_target(final_path)?;
+        Ok(stage)
+    }
+
+    fn hold_existing_empty(final_path: &Path) -> Result<Option<ExclusiveDirectory>, io::Error> {
         let existing_empty = match fs::symlink_metadata(final_path) {
             Ok(metadata) => {
                 if !metadata.is_dir() || metadata.file_type().is_symlink() {
@@ -766,29 +793,7 @@ impl InitializationStage {
             Err(error) if error.kind() == io::ErrorKind::NotFound => None,
             Err(error) => return Err(error),
         };
-        let parent = final_path
-            .parent()
-            .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
-        let metadata = fs::symlink_metadata(parent)?;
-        if !metadata.is_dir() || metadata.file_type().is_symlink() {
-            return Err(io::Error::other("initialization parent is unsafe"));
-        }
-        let suffix = hex(&crypto::random::<16>().map_err(io::Error::other)?);
-        let path = parent.join(format!(".heptabao-init-{suffix}"));
-        let mut builder = fs::DirBuilder::new();
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::DirBuilderExt;
-            builder.mode(0o700);
-        }
-        builder.create(&path)?;
-        let stage = Self {
-            path,
-            retain_on_drop: false,
-            existing_empty,
-        };
-        stage.verify_existing_target(final_path)?;
-        Ok(stage)
+        Ok(existing_empty)
     }
 
     fn verify_existing_target(&self, final_path: &Path) -> Result<(), io::Error> {
