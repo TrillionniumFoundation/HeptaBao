@@ -399,6 +399,14 @@ impl Service {
                 "snapshot would downgrade PKI URL ownership",
             ));
         }
+        if current.schema >= SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            && incoming.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade accepted SDK Secret registration",
+            ));
+        }
         if current.schema >= SDK_SECRET_LEASE_STATE_SCHEMA
             && incoming.schema < SDK_SECRET_LEASE_STATE_SCHEMA
         {

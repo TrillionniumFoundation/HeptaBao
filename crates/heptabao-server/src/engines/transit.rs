@@ -253,6 +253,9 @@ impl Key {
             "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519" || mldsa::is_kind(&self.kind),
             "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0});
         descriptor["imported_key"] = json!(byok::imported_key(self));
+        if let Some(allowed) = byok::imported_key_allow_rotation(self) {
+            descriptor["imported_key_allow_rotation"] = json!(allowed);
+        }
         if symmetric::is_kind(&self.kind) {
             let fields = descriptor
                 .as_object_mut()

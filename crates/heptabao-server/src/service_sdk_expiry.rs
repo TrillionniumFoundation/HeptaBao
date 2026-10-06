@@ -18,13 +18,50 @@ impl Authority {
     pub(super) fn principal(&self) -> Result<&Principal, Response> {
         match self {
             Self::Client(value) => Ok(value.principal()),
-            Self::Admitted(value) if value.strict_secret => Ok(value.client.principal()),
             Self::Admitted(_) => Err(Response::error(
                 502,
                 "SDK Data admission cannot issue a Secret",
             )),
             Self::Cleanup(_) => Err(Response::error(502, "SDK cleanup cannot register a Secret")),
         }
+    }
+    pub(super) fn registered_issuer(
+        &self,
+        state: &State,
+        namespace: &str,
+        at: Timestamp,
+    ) -> Result<
+        (
+            crate::auth::LeaseOwner,
+            Option<crate::engines::sdk_registration::Registration>,
+        ),
+        Response,
+    > {
+        if let Self::Admitted(value) = self {
+            value.check_deadline()?;
+            let issuer = value.entry_issuer.as_ref().ok_or_else(|| {
+                Response::error(
+                    501,
+                    "standard SDK batch Secret registration is not implemented",
+                )
+            })?;
+            let registration = crate::engines::sdk_registration::Registration::from_entry(
+                issuer,
+                value.entry_at,
+                at,
+                value.entry_final_use,
+                &state.auth,
+                namespace,
+                value.namespace_incarnation,
+            )
+            .map_err(Response::from_engine_error)?;
+            return Ok((issuer.issuer.owner.clone(), Some(registration)));
+        }
+        let issuer = state
+            .auth
+            .typed_lease_issuer_observed(self.principal()?, namespace, AuthorityTime::Precise(at))
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok((issuer.owner, None))
     }
     pub(super) fn now(&self) -> u64 {
         match self {
@@ -60,20 +97,12 @@ impl Authority {
     pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
         match self {
             Self::Client(value) => value.validate_live_auth(auth),
-            Self::Admitted(value) if value.strict_secret => value.client.validate_live_auth(auth),
             Self::Admitted(value) => value.check_deadline(),
             Self::Cleanup(value) => value.check_deadline(),
         }
     }
     pub(super) fn admitted_data(&self) -> bool {
-        matches!(self, Self::Admitted(value) if !value.strict_secret)
-    }
-    pub(super) fn require_secret_authority(&mut self) {
-        if let Self::Admitted(value) = self {
-            // The Data continuation never creates lease authority. Retain the
-            // same original client object for the existing Secret path.
-            value.strict_secret = true;
-        }
+        matches!(self, Self::Admitted(_))
     }
     pub(super) fn after_lease_commit(&mut self, state: &State) -> Result<(), Response> {
         let Self::Cleanup(value) = self else {
@@ -106,7 +135,9 @@ pub(super) struct AdmittedAuthority {
     activation: String,
     ha: Option<Arc<Mutex<HaProcess>>>,
     deadline: Instant,
-    strict_secret: bool,
+    entry_issuer: Option<crate::auth::AcceptedSdkLeaseIssuer>,
+    entry_at: Timestamp,
+    entry_final_use: bool,
 }
 impl AdmittedAuthority {
     pub(super) fn capture(
@@ -125,6 +156,19 @@ impl AdmittedAuthority {
                 "SDK entrance precise clock unavailable",
             ));
         }
+        let entry_time = client.token_time()?;
+        let entry_at = entry_time.exact().ok_or_else(|| {
+            Response::error(503, "SDK entrance precise issuer observation absent")
+        })?;
+        let entry_issuer = state
+            .auth
+            .admitted_standard_sdk_lease_issuer_observed(
+                client.principal(),
+                request.namespace,
+                entry_time,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        let entry_final_use = client.principal().consumed_last_use();
         let value = Self {
             client,
             namespace: request.namespace.into(),
@@ -135,7 +179,9 @@ impl AdmittedAuthority {
             activation: activation.into(),
             ha,
             deadline,
-            strict_secret: false,
+            entry_issuer,
+            entry_at,
+            entry_final_use,
         };
         value.check_deadline()?;
         Ok(value)
@@ -201,9 +247,6 @@ impl Service {
         match authority {
             Authority::Client(value) => self.validate_plugin_response(value),
             Authority::Admitted(value) => {
-                if value.strict_secret {
-                    return self.validate_plugin_response(&mut value.client);
-                }
                 value.check_deadline()?;
                 if self.recovery_required
                     || self.audit_failed
@@ -361,7 +404,11 @@ impl Service {
             .sdk_cleanup_cursor
             .as_ref()
             .map(|(namespace, id)| (namespace.as_str(), id.as_str()));
-        let Some(mut record) = state.engines.sdk_cleanup_candidate(&state.auth, at, after) else {
+        let Some(mut record) = state
+            .engines
+            .sdk_cleanup_candidate(&state.auth, at, after)
+            .map_err(Response::from_engine_error)?
+        else {
             return Ok(None);
         };
         self.sdk_cleanup_cursor = Some((record.namespace.clone(), record.id.clone()));

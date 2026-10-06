@@ -1105,7 +1105,7 @@ fn sdk96_pending_revoke_intent_reopens_exact_owner_and_storage_before_retry() ->
     let state = service.state.as_ref().ok_or("reopened state")?;
     let recovered = state
         .engines
-        .sdk_cleanup_candidate(&state.auth, crate::auth::Timestamp::checked(101, 0)?, None)
+        .sdk_cleanup_candidate(&state.auth, crate::auth::Timestamp::checked(101, 0)?, None)?
         .ok_or("pending cleanup")?;
     assert_eq!(recovered.id, lease.id);
     assert!(recovered.issuer == original_issuer);
@@ -1130,7 +1130,7 @@ fn sdk96_pending_revoke_intent_reopens_exact_owner_and_storage_before_retry() ->
     assert!(
         state
             .engines
-            .sdk_cleanup_candidate(&state.auth, crate::auth::Timestamp::checked(500, 0)?, None)
+            .sdk_cleanup_candidate(&state.auth, crate::auth::Timestamp::checked(500, 0)?, None)?
             .is_none()
     );
     assert!(!state.engines.has_live_sdk_leases());
@@ -1155,18 +1155,18 @@ fn sdk96_cleanup_cursor_passes_pending_unavailable_owner_without_changing_record
     let at = crate::auth::Timestamp::checked(101, 0)?;
     let skipped = state
         .engines
-        .sdk_cleanup_candidate(&state.auth, at, None)
+        .sdk_cleanup_candidate(&state.auth, at, None)?
         .ok_or("first")?;
     assert_eq!(skipped.id, first.id);
     // The first owner's hidden/busy rejection must not make the set empty.
     let next = state
         .engines
-        .sdk_cleanup_candidate(&state.auth, at, Some((&skipped.namespace, &skipped.id)))
+        .sdk_cleanup_candidate(&state.auth, at, Some((&skipped.namespace, &skipped.id)))?
         .ok_or("later")?;
     assert_eq!(next.id, later.id);
     let wrapped = state
         .engines
-        .sdk_cleanup_candidate(&state.auth, at, Some((&next.namespace, &next.id)))
+        .sdk_cleanup_candidate(&state.auth, at, Some((&next.namespace, &next.id)))?
         .ok_or("wrapped")?;
     assert_eq!(wrapped.id, first.id);
     assert_eq!(
@@ -1528,6 +1528,399 @@ fn sdk_admitted_merge_rejects_changed_value_list_member_and_retired_mount() -> T
         )
         .status,
         200
+    );
+    Ok(())
+}
+
+fn sdk101_entry(
+    auth: &mut crate::auth::AuthState,
+    raw: &str,
+    at: crate::auth::Timestamp,
+) -> Result<crate::auth::AcceptedSdkLeaseIssuer, Box<dyn std::error::Error>> {
+    let actor = auth.authenticate_from_observed(raw, AuthorityTime::Precise(at), None)?;
+    Ok(auth
+        .admitted_standard_sdk_lease_issuer_observed(&actor, "", AuthorityTime::Precise(at))?
+        .ok_or("service entrance issuer")?)
+}
+fn sdk101_register(
+    candidate: &mut State,
+    lease: &mut crate::engines::sdk_lease::Lease,
+    accepted: &crate::auth::AcceptedSdkLeaseIssuer,
+    at: crate::auth::Timestamp,
+    final_use: bool,
+) -> TestResult {
+    let registration = crate::engines::sdk_registration::Registration::from_entry(
+        accepted,
+        at,
+        lease.issued,
+        final_use,
+        &candidate.auth,
+        "",
+        candidate.namespaces.incarnation(""),
+    )?;
+    lease.register(registration)?;
+    candidate.engines.store_sdk_lease(lease.clone())?;
+    Ok(())
+}
+#[test]
+fn sdk101_registration_encrypted_reopen_sticky_floor_and_backup_rollback_rejected() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut lease, owner) = sdk96_fixture(&mut candidate, &token)?;
+    assert!(lease.registration.is_none());
+    assert!(serde_json::to_value(&lease)?.get("registration").is_none());
+    publish(&mut service, candidate)?;
+    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 96);
+    let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let legacy = candidate.clone();
+    let at = crate::auth::Timestamp::checked(100, 0)?;
+    let accepted = sdk101_entry(&mut candidate.auth, &token, at)?;
+    let mut retroactive = candidate.clone();
+    sdk101_register(&mut retroactive, &mut lease, &accepted, at, false)?;
+    assert!(
+        retroactive
+            .validate_publication_schema(Some(&legacy))
+            .is_err()
+    );
+    // Only a genuinely new registration receives the accepted-entry model;
+    // a saved96 lease cannot silently acquire a fresh entrance after issuance.
+    lease.id = "sdk_probe/leased/accepted".into();
+    lease.registration = None;
+    sdk101_register(&mut candidate, &mut lease, &accepted, at, false)?;
+    publish(&mut service, candidate)?;
+    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 101);
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    let backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    assert!(
+        !backup
+            .windows(b"registered-secret96".len())
+            .any(|bytes| bytes == b"registered-secret96")
+    );
+    service
+        .prepare_snapshot_restore(&backup)
+        .map_err(|_| "current101 backup")?;
+    let saved = serde_json::to_value(&lease.registration)?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let actual = service.state.as_ref().ok_or("reopened")?.clone();
+    assert_eq!(actual.schema, 101);
+    assert_eq!(
+        serde_json::to_value(
+            &actual
+                .engines
+                .sdk_lease("", &lease.id)
+                .ok_or("lease")?
+                .registration
+        )?,
+        saved
+    );
+    assert_eq!(
+        actual
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "credential-record")?
+            .ok_or("Storage")?
+            .value
+            .as_slice(),
+        b"registered-secret96"
+    );
+    let mut old_reader = actual.clone();
+    old_reader.schema = 100;
+    assert!(old_reader.validate_format().is_err());
+    assert!(
+        old_reader
+            .validate_publication_schema(Some(&actual))
+            .is_err()
+    );
+    let mut retired = actual;
+    lease.revoke();
+    retired.engines.store_sdk_lease(lease)?;
+    publish(&mut service, retired)?;
+    assert_eq!(service.state.as_ref().ok_or("retired")?.schema, 101);
+    Ok(())
+}
+#[test]
+fn sdk101_registration_successor_rejects_removal_issuer_mode_and_clock_changes() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut lease, _) = sdk96_fixture(&mut candidate, &token)?;
+    let at = crate::auth::Timestamp::checked(100, 0)?;
+    let accepted = sdk101_entry(&mut candidate.auth, &token, at)?;
+    sdk101_register(&mut candidate, &mut lease, &accepted, at, false)?;
+    publish(&mut service, candidate)?;
+    let original = service.state.clone().ok_or("state")?;
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    for change in [
+        "remove",
+        "issuer",
+        "mode",
+        "accepted",
+        "registered",
+        "instance",
+        "namespace",
+    ] {
+        let mut wire = serde_json::to_value(&lease)?;
+        match change {
+            "remove" => wire
+                .as_object_mut()
+                .ok_or("lease object")?
+                .remove("registration"),
+            "issuer" => {
+                wire["issuer"] = json!("A".repeat(43));
+                None
+            }
+            "mode" => {
+                wire["registration"]["parent"] =
+                    json!({"kind":"Ended","reason":"CurrentOwnerMissing"});
+                None
+            }
+            "accepted" => {
+                wire["registration"]["accepted"] = json!({"seconds":99,"nanoseconds":1});
+                None
+            }
+            "registered" => {
+                wire["registration"]["registered"] =
+                    json!({"seconds":100,"nanoseconds":100_000_000});
+                None
+            }
+            "instance" => {
+                wire["registration"]["instance"] = json!("b".repeat(64));
+                None
+            }
+            _ => {
+                wire["registration"]["namespace_incarnation"] = json!(999);
+                None
+            }
+        };
+        let mut rejected = original.clone();
+        match serde_json::from_value::<crate::engines::sdk_lease::Lease>(wire) {
+            Err(_) => (),
+            Ok(changed) => {
+                if rejected.engines.store_sdk_lease(changed).is_ok() {
+                    assert!(
+                        rejected
+                            .validate_publication_schema(Some(&original))
+                            .is_err(),
+                        "{change}"
+                    );
+                    assert!(service.commit_state(&mut rejected).is_err(), "{change}");
+                }
+            }
+        }
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity,
+            "{change}"
+        );
+    }
+    Ok(())
+}
+#[test]
+fn sdk101_registration_actual_parent_renewal_preserves_instance_and_future_dependency() -> TestResult
+{
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let principal = candidate.auth.authenticate(&root, 100)?;
+    let response = candidate
+        .auth
+        .handle(
+            Some(&principal),
+            "",
+            "POST",
+            "auth/token/create",
+            &json!({"ttl":"5s","policies":["default"],"renewable":true}),
+            100,
+        )?
+        .ok_or("create")?;
+    let raw = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token")?
+        .to_owned();
+    let at = crate::auth::Timestamp::checked(100, 0)?;
+    let accepted = sdk101_entry(&mut candidate.auth, &raw, at)?;
+    let before = candidate
+        .auth
+        .sdk_service_parent_instance(&accepted.issuer.owner, "")?
+        .ok_or("instance")?;
+    let response = candidate
+        .auth
+        .handle(
+            Some(&principal),
+            "",
+            "POST",
+            "auth/token/renew",
+            &json!({"token":raw,"increment":"20s"}),
+            102,
+        )?
+        .ok_or("renew")?;
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        candidate
+            .auth
+            .sdk_service_parent_instance(&accepted.issuer.owner, "")?,
+        Some(before)
+    );
+    let registered = crate::auth::Timestamp::checked(103, 0)?;
+    let registration = crate::engines::sdk_registration::Registration::from_entry(
+        &accepted,
+        at,
+        registered,
+        false,
+        &candidate.auth,
+        "",
+        None,
+    )?;
+    let value = serde_json::to_value(&registration)?;
+    assert_eq!(value["parent"]["kind"], "Linked");
+    assert_eq!(value["original_expiry"]["seconds"], 105);
+    assert!(
+        value["parent"]["expiry"]["seconds"]
+            .as_u64()
+            .ok_or("current expiry")?
+            > 105
+    );
+    assert!(!registration.parent_cleanup_required(
+        &accepted.issuer.owner,
+        "",
+        &candidate.auth,
+        crate::auth::Timestamp::checked(107, 0)?
+    )?);
+    assert!(registration.parent_cleanup_required(
+        &accepted.issuer.owner,
+        "",
+        &candidate.auth,
+        crate::auth::Timestamp::checked(125, 0)?
+    )?);
+    let digest = accepted.issuer.owner.service_digest().ok_or("digest")?;
+    let mut wire = serde_json::to_value(&candidate.auth)?;
+    wire["tokens"][digest]["accessor"] = json!("replacement-token-instance");
+    let replaced: crate::auth::AuthState = serde_json::from_value(wire)?;
+    assert!(
+        crate::engines::sdk_registration::Registration::from_entry(
+            &accepted, at, registered, false, &replaced, "", None
+        )
+        .is_err()
+    );
+    assert!(registration.parent_cleanup_required(
+        &accepted.issuer.owner,
+        "",
+        &replaced,
+        registered
+    )?);
+    Ok(())
+}
+#[test]
+fn sdk101_registration_ended_parent_retains_own_lifetime_and_last_use_is_pending() -> TestResult {
+    use crate::engines::sdk_lease::Phase;
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut lease, _) = sdk96_fixture(&mut candidate, &root)?;
+    let principal = candidate.auth.authenticate(&root, 100)?;
+    let response = candidate
+        .auth
+        .handle(
+            Some(&principal),
+            "",
+            "POST",
+            "auth/token/create",
+            &json!({"ttl":"1s","policies":["default"]}),
+            100,
+        )?
+        .ok_or("create")?;
+    let raw = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token")?
+        .to_owned();
+    let at = crate::auth::Timestamp::checked(100, 0)?;
+    let accepted = sdk101_entry(&mut candidate.auth, &raw, at)?;
+    lease.issuer = accepted.issuer.owner.clone();
+    lease.issued = crate::auth::Timestamp::checked(102, 0)?;
+    lease.expires = crate::auth::Timestamp::checked(122, 0)?;
+    sdk101_register(&mut candidate, &mut lease, &accepted, at, false)?;
+    assert!(
+        candidate
+            .auth
+            .resolve_lease_owner_observed(&lease.issuer, "", AuthorityTime::Precise(lease.issued))
+            .is_none()
+    );
+    assert!(
+        !lease
+            .parent_cleanup_required(&candidate.auth, crate::auth::Timestamp::checked(110, 0)?)?
+    );
+    candidate.engines.observe_sdk_lease_clock(lease.issued);
+    assert!(
+        candidate
+            .engines
+            .sdk_cleanup_candidate(
+                &candidate.auth,
+                crate::auth::Timestamp::checked(110, 0)?,
+                None
+            )?
+            .is_none()
+    );
+    assert_eq!(
+        candidate
+            .engines
+            .sdk_cleanup_candidate(&candidate.auth, lease.expires, None)?
+            .ok_or("own expiry")?
+            .id,
+        lease.id
+    );
+    let response = candidate
+        .auth
+        .handle(
+            Some(&principal),
+            "",
+            "POST",
+            "auth/token/create",
+            &json!({"ttl":"20s","policies":["default"],"num_uses":1}),
+            100,
+        )?
+        .ok_or("create last-use")?;
+    let raw = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("last token")?
+        .to_owned();
+    let actor =
+        candidate
+            .auth
+            .authenticate_from_observed(&raw, AuthorityTime::Precise(at), None)?;
+    assert!(actor.consumed_last_use());
+    let accepted = candidate
+        .auth
+        .admitted_standard_sdk_lease_issuer_observed(&actor, "", AuthorityTime::Precise(at))?
+        .ok_or("last issuer")?;
+    let mut pending = lease;
+    pending.id = "sdk_probe/leased/last-use".into();
+    pending.registration = None;
+    pending.issuer = accepted.issuer.owner.clone();
+    sdk101_register(&mut candidate, &mut pending, &accepted, at, true)?;
+    assert!(pending.phase == Phase::PendingRevoke);
+    assert!(!pending.renewable);
+    assert!(!pending.callback().is_null());
+    assert_eq!(
+        candidate
+            .engines
+            .sdk_cleanup_candidate(&candidate.auth, pending.issued, None)?
+            .ok_or("pending callback")?
+            .id,
+        pending.id
     );
     Ok(())
 }

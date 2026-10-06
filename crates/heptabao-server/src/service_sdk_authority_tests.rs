@@ -237,7 +237,7 @@ fn data_admission(
     )))
 }
 #[test]
-fn sdk_admitted_original_expiry_retains_data_but_secret_requires_same_live_client() -> TestResult {
+fn sdk_admitted_original_expiry_preserves_secret_registration_issuer() -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
     let (_, root) = bootstrap(&mut service)?;
@@ -254,14 +254,18 @@ fn sdk_admitted_original_expiry_retains_data_but_secret_requires_same_live_clien
     authority
         .validate_live_auth(&service.state.as_ref().ok_or("state")?.auth)
         .map_err(|_| "Data prepublication")?;
-    authority.require_secret_authority();
-    assert_eq!(
-        service
-            .validate_sdk_authority(&mut authority)
-            .err()
-            .ok_or("late Secret must retain existing guard")?
-            .status,
-        403
+    let state = service.state.as_ref().ok_or("state")?;
+    let at = expiry::precise(&authority, state).map_err(|_| "original clock")?;
+    let (issuer, registration) = authority
+        .registered_issuer(state, "", at)
+        .map_err(|_| "actual accepted issuer")?;
+    assert!(issuer.service_digest().is_some());
+    assert!(registration.is_some());
+    assert!(
+        state
+            .auth
+            .resolve_lease_owner_observed(&issuer, "", AuthorityTime::Precise(at))
+            .is_none()
     );
     Ok(())
 }

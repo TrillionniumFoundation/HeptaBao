@@ -16,7 +16,8 @@ class ProfileContracts(unittest.TestCase):
     def descriptor(self):
         return {"allow_plaintext_backup": False, "auto_rotate_period": 0,
                 "deletion_allowed": False, "derived": False, "exportable": False,
-                "imported_key": True, "keys": {"1": 100}, "latest_version": 1,
+                "imported_key": True, "imported_key_allow_rotation": False,
+                "keys": {"1": 100}, "latest_version": 1,
                 "min_available_version": 0, "min_decryption_version": 1,
                 "min_encryption_version": 0, "name": "PUBLIC_FIXTURE",
                 "soft_deleted": False, "supports_decryption": True,
@@ -56,13 +57,23 @@ class ProfileContracts(unittest.TestCase):
 
     def test_descriptor_is_closed_and_typed(self):
         self.assertTrue(subject.response_data_shape("aes256-gcm96.SHA256.read", self.response(200, self.descriptor())))
-        for key, value in (("private_key", "PUBLIC_DUMMY"), ("supports_derivation", 1), ("supports_signing", True)):
+        for key, value in (("private_key", "PUBLIC_DUMMY"), ("supports_derivation", 1), ("supports_signing", True), ("imported_key_allow_rotation", 0)):
             changed = self.descriptor()
             changed[key] = value
             self.assertFalse(subject.response_data_shape("aes256-gcm96.SHA256.read", self.response(200, changed)))
         changed = self.descriptor()
         changed["keys"]["1"] = True
         self.assertFalse(subject.response_data_shape("aes256-gcm96.SHA256.read", self.response(200, changed)))
+
+    def test_rotation_field_is_conditional_on_imported_marker(self):
+        ordinary = self.descriptor()
+        ordinary["imported_key"] = False
+        self.assertFalse(subject.response_data_shape("generated.read", self.response(200, ordinary)))
+        del ordinary["imported_key_allow_rotation"]
+        self.assertTrue(subject.response_data_shape("generated.read", self.response(200, ordinary)))
+        imported = self.descriptor()
+        del imported["imported_key_allow_rotation"]
+        self.assertFalse(subject.response_data_shape("aes256-gcm96.SHA256.read", self.response(200, imported)))
 
     def test_successful_rotate_has_same_closed_descriptor(self):
         changed = self.descriptor()

@@ -168,6 +168,11 @@ impl Principal {
     }
 }
 
+pub(crate) struct AcceptedSdkLeaseIssuer {
+    pub(crate) issuer: ResolvedLeaseOwner,
+    pub(crate) instance: [u8; 32],
+}
+
 pub(crate) struct ResolvedLeaseOwner {
     pub(crate) owner: LeaseOwner,
     pub(crate) expires_at: Option<u64>,
@@ -329,6 +334,122 @@ impl AuthState {
         };
         self.resolve_lease_owner_observed(&owner, namespace, time)
             .ok_or_else(denied)
+    }
+    fn sdk_token_instance(token: &Token) -> Result<[u8; 32], AuthError> {
+        let material = crate::secret_serde::to_vec(
+            &(
+                &token.accessor,
+                &token.namespace,
+                token.created_at,
+                token
+                    .token_api_precision
+                    .as_ref()
+                    .map(|lease| lease.issued_at),
+                &token.issue_stamp,
+                &token.public_origin,
+            ),
+            1024 * 1024,
+        )
+        .map_err(|_| err(503, "SDK parent instance serialization rejected"))?;
+        Ok(crate::crypto::digest(&material))
+    }
+    pub(crate) fn sdk_service_parent_instance(
+        &self,
+        owner: &LeaseOwner,
+        namespace: &str,
+    ) -> Result<Option<[u8; 32]>, AuthError> {
+        let digest = owner.service_digest().ok_or_else(denied)?;
+        let Some(token) = self.tokens.get(digest) else {
+            return Ok(None);
+        };
+        if !token.root && token.namespace != namespace {
+            return Err(denied());
+        }
+        Ok(Some(Self::sdk_token_instance(token)?))
+    }
+    /// Read-only parent index liveness for an already admitted standard Secret.
+    /// This is not a request authentication: current ACL or provider metadata
+    /// does not cancel an accepted entry, and no Principal/use is minted here.
+    pub(crate) fn standard_sdk_service_parent_observed(
+        &self,
+        owner: &LeaseOwner,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<Option<ResolvedLeaseOwner>, AuthError> {
+        let digest = owner.service_digest().ok_or_else(denied)?;
+        let Some(token) = self.tokens.get(digest) else {
+            return Ok(None);
+        };
+        if !token.root && token.namespace != namespace {
+            return Err(denied());
+        }
+        let time = self.token_api_observed_time(time);
+        let mut expires_at = token.expires_at;
+        let mut precise_expires_at = token
+            .token_api_precision
+            .as_ref()
+            .and_then(|lease| lease.expires_at);
+        let mut seen = BTreeSet::new();
+        let mut current = Some(digest);
+        while let Some(id) = current {
+            if !seen.insert(id) {
+                return Err(err(503, "SDK parent index cycle rejected"));
+            }
+            let Some(parent) = self.tokens.get(id) else {
+                return Ok(None);
+            };
+            if !time.service_live(parent.token_api_precision.as_ref(), parent.expires_at)
+                || parent.uses_remaining == Some(0)
+            {
+                return Ok(None);
+            }
+            if let Some(end) = parent.expires_at {
+                expires_at = Some(expires_at.map_or(end, |old| old.min(end)));
+            }
+            if let Some(end) = parent
+                .token_api_precision
+                .as_ref()
+                .and_then(|lease| lease.expires_at)
+            {
+                precise_expires_at = Some(precise_expires_at.map_or(end, |old| old.min(end)));
+            }
+            current = parent.parent.as_deref();
+        }
+        if precise_expires_at.is_some()
+            && let Some(coarse) = expires_at
+        {
+            let end = Timestamp::whole(coarse).map_err(|_| denied())?;
+            precise_expires_at = precise_expires_at.map(|precise| precise.min(end));
+        }
+        Ok(Some(ResolvedLeaseOwner {
+            owner: owner.clone(),
+            expires_at,
+            precise_expires_at,
+            entity_id: token.entity_id.clone(),
+        }))
+    }
+    pub(crate) fn admitted_standard_sdk_lease_issuer_observed(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<Option<AcceptedSdkLeaseIssuer>, AuthError> {
+        let time = actor.request_authority_time(time)?;
+        match self.check_principal_observed(actor, namespace, time)? {
+            CheckedCredential::Service(token) => Ok(Some(AcceptedSdkLeaseIssuer {
+                issuer: ResolvedLeaseOwner {
+                    owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
+                    expires_at: token.expires_at,
+                    precise_expires_at: token
+                        .token_api_precision
+                        .as_ref()
+                        .and_then(|lease| lease.expires_at),
+                    entity_id: token.entity_id.clone(),
+                },
+                instance: Self::sdk_token_instance(token)?,
+            })),
+            CheckedCredential::Batch(_) => Ok(None),
+        }
     }
     /// The admitted final use may execute Kubernetes TokenRequest, but cannot
     /// release its leased credential. Persistent owner resolution stays strict;

@@ -19,6 +19,8 @@ pub(crate) struct Lease {
     pub(crate) path: String,
     pub(crate) backend: sdk::MountOwner,
     pub(crate) issuer: LeaseOwner,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) registration: Option<sdk_registration::Registration>,
     pub(crate) issued: Timestamp,
     pub(crate) expires: Timestamp,
     pub(crate) renewed: Option<Timestamp>,
@@ -60,6 +62,7 @@ impl Lease {
             path,
             backend,
             issuer,
+            registration: None,
             issued,
             expires,
             renewed: None,
@@ -72,6 +75,37 @@ impl Lease {
         };
         value.validate(&value.namespace)?;
         Ok(value)
+    }
+    pub(crate) fn register(&mut self, registration: sdk_registration::Registration) -> Result<()> {
+        if self.registration.is_some() {
+            return Err(error(503, "SDK registration already exists"));
+        }
+        if registration.final_use() {
+            self.phase = Phase::PendingRevoke;
+            self.renewable = false;
+        }
+        self.registration = Some(registration);
+        self.validate(&self.namespace)
+    }
+    pub(crate) fn parent_cleanup_required(
+        &self,
+        auth: &crate::auth::AuthState,
+        at: Timestamp,
+    ) -> Result<bool> {
+        self.registration.as_ref().map_or_else(
+            || {
+                Ok(auth
+                    .resolve_lease_owner_observed(
+                        &self.issuer,
+                        &self.namespace,
+                        crate::auth::AuthorityTime::Precise(at),
+                    )
+                    .is_none())
+            },
+            |registration| {
+                registration.parent_cleanup_required(&self.issuer, &self.namespace, auth, at)
+            },
+        )
     }
     pub(crate) fn callback(&self) -> Value {
         self.secret.0.clone()
@@ -112,6 +146,9 @@ impl Lease {
         self.data = SecretJson(Value::Null);
     }
     pub(crate) fn validate(&self, namespace: &str) -> Result<()> {
+        if let Some(registration) = &self.registration {
+            registration.validate(self)?;
+        }
         valid_path(&self.id)?;
         valid_path(self.mount.trim_end_matches('/'))?;
         valid_path(&self.path)?;
@@ -270,34 +307,27 @@ impl EngineState {
         auth: &crate::auth::AuthState,
         at: Timestamp,
         after: Option<(&str, &str)>,
-    ) -> Option<Lease> {
-        let eligible = |lease: &&Lease| {
-            lease.phase == Phase::PendingRevoke
+    ) -> Result<Option<Lease>> {
+        let mut first = None;
+        for lease in self
+            .namespaces
+            .values()
+            .flat_map(|namespace| namespace.sdk_leases.values())
+        {
+            let eligible = lease.phase == Phase::PendingRevoke
                 || (lease.phase == Phase::Active
-                    && (at >= lease.expires
-                        || auth
-                            .resolve_lease_owner_observed(
-                                &lease.issuer,
-                                &lease.namespace,
-                                crate::auth::AuthorityTime::Precise(at),
-                            )
-                            .is_none()))
-        };
-        let candidates = || {
-            self.namespaces
-                .values()
-                .flat_map(|ns| ns.sdk_leases.values())
-                .filter(eligible)
-        };
-        // The process cursor carries no authority. It advances before hidden or
-        // busy ownership is tested, so one unavailable lease cannot starve the
-        // next authenticated registered owner. Wrap only this bounded pass.
-        candidates()
-            .find(|lease| {
-                after.is_none_or(|key| (lease.namespace.as_str(), lease.id.as_str()) > key)
-            })
-            .or_else(|| candidates().next())
-            .cloned()
+                    && (at >= lease.expires || lease.parent_cleanup_required(auth, at)?));
+            if !eligible {
+                continue;
+            }
+            if first.is_none() {
+                first = Some(lease.clone());
+            }
+            if after.is_none_or(|key| (lease.namespace.as_str(), lease.id.as_str()) > key) {
+                return Ok(Some(lease.clone()));
+            }
+        }
+        Ok(first)
     }
     pub(crate) fn has_live_sdk_leases(&self) -> bool {
         self.namespaces.values().any(|ns| {
@@ -316,6 +346,7 @@ impl EngineState {
         changed
     }
     pub(crate) fn validate_sdk_lease_clock(&self, previous: Option<&Self>) -> Result<()> {
+        self.validate_sdk_registration_successor(previous)?;
         if previous
             .and_then(|old| old.sdk_lease_clock)
             .is_some_and(|floor| self.sdk_lease_clock.is_none_or(|at| at < floor))

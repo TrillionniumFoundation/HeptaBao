@@ -94,10 +94,11 @@ const PKI_ACME_ACCOUNT_STATE_SCHEMA: u32 = 99;
 #[path = "service_pki_acme.rs"]
 mod pki_acme;
 const SDK_AUTH_STATE_SCHEMA: u32 = 100;
+const SDK_ACCEPTED_SECRET_STATE_SCHEMA: u32 = 101;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_AUTH_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_ACCEPTED_SECRET_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -123,6 +124,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
                 | PKI_ACME_ACCOUNT_STATE_SCHEMA
                 | SDK_AUTH_STATE_SCHEMA
+                | SDK_ACCEPTED_SECRET_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;

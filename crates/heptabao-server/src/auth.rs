@@ -9288,7 +9288,7 @@ mod forward_actor;
 mod lease_owner;
 pub(crate) use forward_actor::ForwardActorWitness;
 
-pub(crate) use batch_principal::ResolvedLeaseOwner;
+pub(crate) use batch_principal::{AcceptedSdkLeaseIssuer, ResolvedLeaseOwner};
 pub(crate) use lease_owner::{BatchLeaseClaims, LeaseOwner, ServiceOwnerProfile};
 #[cfg(test)]
 #[path = "auth_batch_principal_tests.rs"]

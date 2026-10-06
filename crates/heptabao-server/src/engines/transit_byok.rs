@@ -76,6 +76,13 @@ pub(super) fn imported_key(key: &Key) -> bool {
     key.byok.as_ref().is_some_and(|policy| policy.imported_key)
 }
 
+pub(super) fn imported_key_allow_rotation(key: &Key) -> Option<bool> {
+    key.byok
+        .as_ref()
+        .filter(|policy| policy.imported_key)
+        .map(|policy| policy.allow_rotation)
+}
+
 fn digest(body: &Value) -> Result<envelope::OaepDigest> {
     let name = body
         .get("hash_function")

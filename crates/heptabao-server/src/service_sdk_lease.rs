@@ -253,19 +253,14 @@ impl Service {
             }
             return Response::error(400, "lease not found");
         }
-        if action == "renew"
-            && (at >= record.expires
-                || !record.renewable
-                || state
-                    .auth
-                    .resolve_lease_owner_observed(
-                        &record.issuer,
-                        request.namespace,
-                        AuthorityTime::Precise(at),
-                    )
-                    .is_none())
-        {
-            return Response::error(400, "lease is expired, revoked or not renewable");
+        if action == "renew" {
+            let parent_cleanup = match record.parent_cleanup_required(&state.auth, at) {
+                Ok(value) => value,
+                Err(error) => return Response::from_engine_error(error),
+            };
+            if at >= record.expires || !record.renewable || parent_cleanup {
+                return Response::error(400, "lease is expired, revoked or not renewable");
+            }
         }
         let increment = request.body.get("increment").map_or(Ok(0), |v| {
             v.as_u64()
@@ -312,12 +307,6 @@ impl Service {
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
-            if response
-                .as_ref()
-                .is_some_and(|value| value.get("secret").is_some_and(|secret| !secret.is_null()))
-            {
-                authority.require_secret_authority();
-            }
             self.validate_sdk_authority(&mut authority)?;
             self.sdk_binding_gate(plan).map_err(bridge_failure)?;
             let mut transaction = plan
@@ -466,14 +455,9 @@ impl Service {
                         Response::error(503, "SDK original lease clock unavailable")
                     })?;
                     if at >= lease.expires
-                        || state
-                            .auth
-                            .resolve_lease_owner_observed(
-                                &lease.issuer,
-                                &plan.namespace,
-                                AuthorityTime::Precise(at),
-                            )
-                            .is_none()
+                        || lease
+                            .parent_cleanup_required(&state.auth, at)
+                            .map_err(Response::from_engine_error)?
                     {
                         return Err(Response::error(
                             400,
@@ -507,14 +491,8 @@ impl Service {
             } else if !secret.is_null() {
                 let at =
                     at.ok_or_else(|| Response::error(503, "SDK original lease clock unavailable"))?;
-                let issuer = state
-                    .auth
-                    .typed_lease_issuer_observed(
-                        authority.principal()?,
-                        &plan.namespace,
-                        AuthorityTime::Precise(at),
-                    )
-                    .map_err(|e| Response::error(e.status, &e.message))?;
+                let (issuer, registration) =
+                    authority.registered_issuer(&state, &plan.namespace, at)?;
                 let path = format!("{}{}", plan.mount, plan.path);
                 let id = format!(
                     "{path}/{}",
@@ -523,7 +501,7 @@ impl Service {
                         "SDK lease identity entropy unavailable"
                     ))?)
                 );
-                let lease = Lease::new(
+                let mut lease = Lease::new(
                     Binding {
                         id,
                         namespace: plan.namespace.clone(),
@@ -531,7 +509,7 @@ impl Service {
                         mount: plan.mount.clone(),
                         path,
                         backend: plan.owner.clone(),
-                        issuer: issuer.owner,
+                        issuer,
                     },
                     grant(
                         std::mem::take(&mut secret.0),
@@ -540,7 +518,23 @@ impl Service {
                     )?,
                 )
                 .map_err(Response::from_engine_error)?;
-                body.0 = json!({"lease_id":lease.id,"lease_duration":lease.ttl_ns/1_000_000_000,"renewable":lease.renewable,"data":lease.response_data()});
+                if let Some(registration) = registration {
+                    lease
+                        .register(registration)
+                        .map_err(Response::from_engine_error)?;
+                }
+                if lease
+                    .registration
+                    .as_ref()
+                    .is_some_and(|registration| registration.final_use())
+                {
+                    status = 400;
+                    body.0 = json!({"errors":["Secret cannot be returned; token had one use left, so leased credentials were immediately revoked."]});
+                    headers.clear();
+                    erase_json(&mut warnings);
+                } else {
+                    body.0 = json!({"lease_id":lease.id,"lease_duration":lease.ttl_ns/1_000_000_000,"renewable":lease.renewable,"data":lease.response_data()});
+                }
                 state
                     .engines
                     .store_sdk_lease(lease)

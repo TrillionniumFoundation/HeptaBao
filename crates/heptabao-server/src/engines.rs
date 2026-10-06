@@ -40,6 +40,8 @@ pub(crate) mod namespace_assets;
 pub(crate) mod sdk;
 #[path = "engine_sdk_lease.rs"]
 pub(crate) mod sdk_lease;
+#[path = "engine_sdk_registration.rs"]
+pub(crate) mod sdk_registration;
 
 #[path = "engine_namespace_record_cells.rs"]
 mod namespace_record_cells;
