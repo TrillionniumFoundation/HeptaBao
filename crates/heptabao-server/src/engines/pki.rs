@@ -63,6 +63,8 @@ pub(crate) mod local_ocsp;
 pub(in crate::engines) mod precise_time;
 use precise_time::PkiInstant;
 
+#[path = "pki_acme_eab.rs"]
+pub(crate) mod acme_eab;
 #[path = "../engine_pki_acme.rs"]
 pub(in crate::engines) mod acme_engine;
 #[path = "pki_acme_jws.rs"]

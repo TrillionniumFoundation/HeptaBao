@@ -72,6 +72,8 @@ pub(crate) struct Account {
     pub terms_of_service_agreed: bool,
     pub created: Timestamp,
     pub deactivated: Option<Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub eab: Option<super::acme_eab::Registration>,
 }
 
 pub(super) fn valid_identifier(id: &str) -> bool {
@@ -148,6 +150,8 @@ pub(crate) struct Protocol {
     pub orders: BTreeMap<String, super::acme_orders::Order>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub authorizations: BTreeMap<String, super::acme_orders::Authorization>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub eab_keys: BTreeMap<String, super::acme_eab::Key>,
 }
 
 impl Protocol {
@@ -163,6 +167,7 @@ impl Protocol {
             native_defaults: true,
             orders: BTreeMap::new(),
             authorizations: BTreeMap::new(),
+            eab_keys: BTreeMap::new(),
         })
     }
 
@@ -182,6 +187,7 @@ impl Protocol {
                 return Err(error(503, "ACME account key ownership is ambiguous"));
             }
         }
+        self.validate_eab()?;
         self.validate_orders()?;
         Ok(())
     }

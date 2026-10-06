@@ -93,6 +93,7 @@ pub(super) struct Authority {
     deadline: Option<std::time::Instant>,
     nonce: Option<String>,
     nonce_deadline: Option<(Timestamp, std::time::Instant)>,
+    operator: Option<plugin::PluginResponseAuthority>,
 }
 impl Drop for Authority {
     fn drop(&mut self) {
@@ -104,7 +105,7 @@ impl Drop for Authority {
     }
 }
 impl Authority {
-    fn capture(
+    pub(super) fn capture(
         state: &State,
         view: &AcmeView,
         request: &RequestView<'_>,
@@ -124,9 +125,26 @@ impl Authority {
             deadline: crate::request_deadline::current(),
             nonce,
             nonce_deadline: None,
+            operator: None,
         }
     }
-    fn observed_at(&self) -> Result<Timestamp, Response> {
+    pub(super) fn with_operator(mut self, operator: plugin::PluginResponseAuthority) -> Self {
+        self.operator = Some(operator);
+        self
+    }
+    pub(super) fn observe_operator(&self, state: &mut State) -> Result<AuthorityTime, Response> {
+        self.operator
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "EAB operator authority missing"))?
+            .observe_candidate_time(state)
+    }
+    pub(super) fn validate_operator_auth(&self, auth: &AuthState) -> Result<(), Response> {
+        match &self.operator {
+            Some(operator) => operator.validate_live_auth(auth),
+            None => Ok(()),
+        }
+    }
+    pub(super) fn observed_at(&self) -> Result<Timestamp, Response> {
         match self.clock {
             Some(clock) => clock
                 .with_seconds_floor(self.at)
@@ -138,7 +156,7 @@ impl Authority {
             .map_err(|_| Response::error(503, "ACME original request time unavailable")),
         }
     }
-    fn check_state(&self, state: &State) -> Result<(), Response> {
+    pub(super) fn check_state(&self, state: &State) -> Result<(), Response> {
         if self
             .deadline
             .is_some_and(|at| std::time::Instant::now() >= at)
@@ -148,6 +166,7 @@ impl Authority {
                 "ACME original publication deadline expired",
             ));
         }
+        self.validate_operator_auth(&state.auth)?;
         state.namespace_leases.validate()?;
         if !state.namespace_exists(&self.owner.namespace)
             || state.namespace_is_sealed(&self.owner.namespace)
@@ -192,7 +211,7 @@ impl Authority {
         }
         namespace_runtime::request_live()
     }
-    fn bind_candidate(&mut self, state: &State) -> Result<(), Response> {
+    pub(super) fn bind_candidate(&mut self, state: &State) -> Result<(), Response> {
         // Preserve the admitted clock, deadline and namespace/mount ownership.
         // Only the fingerprint of this request's validated candidate can change.
         let view = state
@@ -215,7 +234,7 @@ impl Authority {
         self.fingerprint = view.fingerprint;
         self.check_state(state)
     }
-    fn check(&self, service: &mut Service) -> Result<(), Response> {
+    pub(super) fn check(&self, service: &mut Service) -> Result<(), Response> {
         let _scope = self
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
@@ -286,10 +305,12 @@ fn engine_problem(error: crate::engines::EngineError) -> Response {
         .starts_with("server will not issue certificates for the identifier:")
     {
         "rejectedIdentifier"
+    } else if error.message
+        == "the request must include a value for the 'externalAccountBinding' field"
+    {
+        "externalAccountRequired"
     } else if error.status == 401 {
         "unauthorized"
-    } else if error.message.contains("binding is required") {
-        "externalAccountRequired"
     } else if error.status >= 500 {
         "serverInternal"
     } else {
@@ -314,6 +335,12 @@ impl Service {
             Ok(None) => return None,
             Err(error) => return Some(Response::from_engine_error(error)),
         };
+        // EAB key administration belongs to the ordinary authenticated Vault
+        // API. It must never enter the public JWS dispatcher.
+        if view.endpoint == "new-eab" || view.endpoint == "eab" || view.endpoint.starts_with("eab/")
+        {
+            return None;
+        }
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl != 0) {
             return Some(Response::error(
                 400,

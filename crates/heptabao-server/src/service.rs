@@ -94,6 +94,8 @@ const PKI_ACME_ACCOUNT_STATE_SCHEMA: u32 = 99;
 #[path = "service_pki_acme.rs"]
 mod pki_acme;
 const SDK_AUTH_STATE_SCHEMA: u32 = 100;
+#[path = "service_pki_acme_eab.rs"]
+mod pki_acme_eab;
 #[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_AUTH_STATE_SCHEMA;
 
@@ -3342,6 +3344,9 @@ impl Service {
         }
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
+        }
+        if self.pki_eab_handles(&admitted, &request) {
+            return self.pki_eab_route(admitted, principal, &request);
         }
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         if self.sdk_auth_handles(&admitted, &request) {

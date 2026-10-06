@@ -108,19 +108,9 @@ pub(crate) struct Order {
 }
 
 pub(crate) fn uuid() -> Result<String> {
-    let mut bytes = crate::crypto::random::<16>()
+    let bytes = crate::crypto::random::<16>()
         .map_err(|_| error(503, "ACME identifier generation unavailable"))?;
-    bytes[6] = (bytes[6] & 15) | 64;
-    bytes[8] = (bytes[8] & 63) | 128;
-    let hex = bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
-    Ok(format!(
-        "{}-{}-{}-{}-{}",
-        &hex[..8],
-        &hex[8..12],
-        &hex[12..16],
-        &hex[16..20],
-        &hex[20..]
-    ))
+    Ok(crate::crypto::uuid_from_bytes(&bytes))
 }
 fn malformed(detail: &str) -> EngineError {
     bad(&format!("{detail}: the request message was malformed"))

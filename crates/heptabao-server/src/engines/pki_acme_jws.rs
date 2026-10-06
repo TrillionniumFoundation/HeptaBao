@@ -228,11 +228,15 @@ pub(crate) struct ParsedJws {
 pub(crate) struct VerifiedJws {
     key_thumbprint: String,
     payload: Option<Value>,
+    raw_embedded_jwk: Option<zeroize::Zeroizing<Vec<u8>>>,
 }
 
 impl VerifiedJws {
     pub(crate) fn key_thumbprint(&self) -> &str {
         &self.key_thumbprint
+    }
+    pub(crate) fn raw_embedded_jwk(&self) -> Option<&[u8]> {
+        self.raw_embedded_jwk.as_deref().map(Vec::as_slice)
     }
     pub(crate) fn payload(&self) -> Option<&Value> {
         self.payload.as_ref()
@@ -376,7 +380,17 @@ impl ParsedJws {
                 return Err(malformed("ACME payload must contain an object"));
             }
         };
+        // EAB compares the signed protected JWK's original JSON bytes. A
+        // semantically equal object with a different encoding is not this proof.
+        let protected = zeroize::Zeroizing::new(decoded(&self.protected, MAX_HEADER, false)?);
+        let raw_header: BTreeMap<String, Box<serde_json::value::RawValue>> =
+            serde_json::from_slice(&protected)
+                .map_err(|_| malformed("invalid ACME protected header"))?;
+        let raw_embedded_jwk = raw_header
+            .get("jwk")
+            .map(|raw| zeroize::Zeroizing::new(raw.get().as_bytes().to_vec()));
         Ok(VerifiedJws {
+            raw_embedded_jwk,
             key_thumbprint: key.thumbprint()?,
             payload,
         })

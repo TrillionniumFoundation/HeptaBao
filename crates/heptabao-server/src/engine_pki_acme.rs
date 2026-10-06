@@ -13,6 +13,7 @@ pub(crate) struct AcmeView {
     pub base: String,
     pub enabled: bool,
     pub eab_required: bool,
+    pub eab_policy: String,
     pub revision: u64,
     pub headers: Vec<String>,
     pub fingerprint: [u8; 32],
@@ -61,7 +62,12 @@ impl EngineState {
             return Ok(None);
         };
         let relative = &path[mount_path.len()..];
-        let Some((directory, endpoint)) = acme_parts(relative) else {
+        let parts = if relative == "eab" || relative.starts_with("eab/") {
+            Some(("acme/", relative))
+        } else {
+            acme_parts(relative)
+        };
+        let Some((directory, endpoint)) = parts else {
             return Ok(None);
         };
         let owner = AcmeBinding {
@@ -83,6 +89,7 @@ impl EngineState {
             base: format!("{}/{directory}", engine.cluster_path.trim_end_matches('/')),
             enabled: engine.acme.enabled,
             eab_required: engine.acme.eab_policy != "not-required",
+            eab_policy: engine.acme.eab_policy.clone(),
             revision: mount.revision,
             headers: engine
                 .acme_protocol
@@ -228,6 +235,9 @@ impl EngineState {
         if account.status != AccountStatus::Valid {
             return Err(error(401, "the client lacks sufficient authorization"));
         }
+        if view.eab_policy == "always-required" && account.eab.is_none() {
+            return Err(error(401, pki::acme_eab::REQUIRED));
+        }
         Ok(account.jwk.clone())
     }
     pub(crate) fn acme_account_request(
@@ -262,6 +272,16 @@ impl EngineState {
                 .transpose()
                 .map(|v| v.unwrap_or(false))
         };
+        let submitted_eab = match payload.get("externalAccountBinding") {
+            None => None,
+            Some(Value::Object(map)) if map.is_empty() => None,
+            Some(value @ Value::Object(_)) => Some(value),
+            Some(_) => {
+                return Err(bad(
+                    "the request message was malformed: externalAccountBinding field was unparseable",
+                ));
+            }
+        };
         let only_existing = flag("onlyReturnExisting")?;
         let terms = flag("termsOfServiceAgreed")?;
         let contact = match payload.get("contact") {
@@ -277,15 +297,6 @@ impl EngineState {
                 .collect::<Result<Vec<_>>>()?,
             _ => return Err(bad("invalid ACME account contact")),
         };
-        if payload.get("externalAccountBinding").is_some() {
-            return Err(error(
-                501,
-                "ACME external account binding is not implemented",
-            ));
-        }
-        if view.eab_required {
-            return Err(error(400, "ACME external account binding is required"));
-        }
         let new = view.endpoint == "new-account";
         if new && kid.is_some() {
             return Err(bad("cannot submit to newAccount with kid"));
@@ -295,6 +306,9 @@ impl EngineState {
         }
         if only_existing || new {
             if let Some(account) = protocol.by_thumbprint(thumbprint, &view.directory) {
+                if view.eab_policy == "always-required" && account.eab.is_none() {
+                    return Err(error(401, pki::acme_eab::REQUIRED));
+                }
                 return Ok((
                     200,
                     account.descriptor(&view.base),
@@ -307,19 +321,23 @@ impl EngineState {
                     "an account with this key does not exist: the request specified an account that does not exist",
                 ));
             }
-            let mut bytes = crate::crypto::random::<16>()
+            let eab = match submitted_eab {
+                Some(binding) => Some(
+                    protocol.verify_eab(
+                        &view.directory,
+                        &format!("{}new-account", view.base),
+                        proof
+                            .raw_embedded_jwk()
+                            .ok_or_else(|| bad("missing signed account jwk"))?,
+                        binding,
+                    )?,
+                ),
+                None if view.eab_required => return Err(error(401, pki::acme_eab::REQUIRED)),
+                None => None,
+            };
+            let bytes = crate::crypto::random::<16>()
                 .map_err(|_| error(503, "ACME account identifier generation unavailable"))?;
-            bytes[6] = (bytes[6] & 15) | 64;
-            bytes[8] = (bytes[8] & 63) | 128;
-            let hex = bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
-            let id = format!(
-                "{}-{}-{}-{}-{}",
-                &hex[..8],
-                &hex[8..12],
-                &hex[12..16],
-                &hex[16..20],
-                &hex[20..]
-            );
+            let id = crate::crypto::uuid_from_bytes(&bytes);
             let account = Account {
                 id: id.clone(),
                 directory: view.directory.clone(),
@@ -330,10 +348,28 @@ impl EngineState {
                 terms_of_service_agreed: terms,
                 created: at,
                 deactivated: None,
+                eab,
             };
-            let descriptor = account.descriptor(&view.base);
+            let mut descriptor = account.descriptor(&view.base);
+            if let Some(eab) = &account.eab {
+                descriptor["externalAccountBinding"] = eab.proof.0.clone();
+            }
+            let binding_id = account.eab.as_ref().map(|eab| eab.id.clone());
             protocol.insert_account(account)?;
+            if let Some(binding_id) = binding_id {
+                protocol
+                    .eab_keys
+                    .get_mut(&binding_id)
+                    .ok_or_else(|| error(503, "EAB consumed key history unavailable"))?
+                    .retire(at, Some(&id));
+                protocol.validate_eab()?;
+            }
             return Ok((201, descriptor, format!("{}account/{id}", view.base)));
+        }
+        if submitted_eab.is_some() {
+            return Err(bad(
+                "the request message was malformed: not allowed to update EAB data in accounts",
+            ));
         }
         let id = kid
             .and_then(|kid| kid.rsplit('/').next())
@@ -798,6 +834,7 @@ impl EngineState {
                                 return Err(error(503, "ACME mount protocol frontier regressed"));
                             }
                             p.validate_order_successor(protocol)?;
+                            p.validate_eab_successor(protocol)?;
                             for (id, account) in &protocol.accounts {
                                 let next = p.accounts.get(id).ok_or_else(|| {
                                     error(503, "ACME account retirement cannot disappear")
@@ -945,5 +982,78 @@ impl pki::Pki {
             }
         }
         Ok(issuer)
+    }
+}
+
+impl EngineState {
+    pub(crate) fn acme_eab_request(
+        &mut self,
+        view: &AcmeView,
+        method: &str,
+        body: &Value,
+        at: Timestamp,
+    ) -> Result<Value> {
+        let at = self.observe_acme(at)?;
+        let pki = self.acme_pki_mut(&view.owner)?;
+        if pki.acme_protocol.is_none() {
+            pki.acme_protocol = Some(Box::new(Protocol::new(view.owner.clone(), at)?));
+        }
+        let protocol = pki
+            .acme_protocol
+            .as_mut()
+            .ok_or_else(|| error(503, "EAB protocol owner unavailable"))?;
+        if protocol.owner != view.owner {
+            return Err(error(503, "EAB protocol owner changed"));
+        }
+        protocol.observe_time(at);
+        if view.endpoint == "new-eab" && matches!(method, "POST" | "PUT") {
+            let key = pki::acme_eab::Key::new(&view.owner, &view.directory, at)?;
+            let data = SecretJson(key.descriptor()?);
+            protocol.insert_eab(key)?;
+            return Ok(json!({"data":&data.0}));
+        }
+        if view.endpoint == "eab" && method == "LIST" {
+            let after = match body.get("after") {
+                None => "",
+                Some(v) => v.as_str().ok_or_else(|| bad("invalid EAB list after"))?,
+            };
+            let limit = match body.get("limit") {
+                None => 0,
+                Some(v) => v.as_i64().ok_or_else(|| bad("invalid EAB list limit"))?,
+            };
+            let mut keys = Vec::new();
+            let mut info = serde_json::Map::new();
+            for (id, key) in &protocol.eab_keys {
+                if key.private.is_none() || id.as_str() <= after {
+                    continue;
+                }
+                keys.push(id.clone());
+                info.insert(id.clone(), key.info());
+                if limit > 0 && keys.len() >= limit as usize {
+                    break;
+                }
+            }
+            if keys.is_empty() {
+                return Err(error(404, "no value found"));
+            }
+            return Ok(json!({"data":{"keys":keys,"key_info":info}}));
+        }
+        if let Some(id) = view.endpoint.strip_prefix("eab/")
+            && method == "DELETE"
+        {
+            if !pki::acme_state::valid_identifier(id) {
+                return Err(error(404, "no handler for route"));
+            }
+            if let Some(key) = protocol
+                .eab_keys
+                .get_mut(id)
+                .filter(|key| key.private.is_some())
+            {
+                key.retire(at, None);
+                return Ok(json!({"data":null}));
+            }
+            return Ok(json!({"warnings":[format!("No key id found with id: {id}")]}));
+        }
+        Err(error(405, "unsupported operation"))
     }
 }
