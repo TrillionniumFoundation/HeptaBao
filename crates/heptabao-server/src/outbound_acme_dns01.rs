@@ -15,7 +15,9 @@ fn resolvers(configured: &str) -> Result<Vec<SocketAddr>, String> {
             .map(|a| vec![a])
             .map_err(|_| "dns-01: invalid configured resolver".into());
     }
-    let config = std::fs::read_to_string("/etc/resolv.conf")
+    let mut config = String::new();
+    std::fs::File::open("/etc/resolv.conf")
+        .and_then(|file| file.take(128 * 1024 + 1).read_to_string(&mut config))
         .map_err(|_| "dns-01: system resolver configuration unavailable")?;
     if config.len() > 128 * 1024 {
         return Err("dns-01: resolver configuration exceeds bound".into());
@@ -182,6 +184,9 @@ fn parse(raw: &[u8], id: [u8; 2], question: &str) -> Result<Vec<String>, String>
             break;
         }
     }
+    if aliases.iter().any(|(name, _)| name == &owner) {
+        return Err("dns-01: CNAME chain exceeds bound".into());
+    }
     Ok(txt
         .into_iter()
         .filter(|(name, _)| name == &owner)
@@ -239,6 +244,26 @@ fn exchange(address: SocketAddr, query: &[u8], deadline: Instant) -> Result<Vec<
     remaining(deadline)?;
     Ok(raw)
 }
+fn validate_records(
+    records: &[String],
+    token: &str,
+    thumbprint: &str,
+    deadline: Instant,
+) -> Result<(), String> {
+    let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(crate::crypto::digest(
+        format!("{token}.{thumbprint}").as_bytes(),
+    ));
+    let matched = records.iter().any(|record| record == &proof);
+    remaining(deadline)?;
+    if matched {
+        Ok(())
+    } else {
+        Err(format!(
+            "dns-01: challenge failed against {} records",
+            records.len()
+        ))
+    }
+}
 pub(crate) fn verify_dns01(
     host: &str,
     token: &str,
@@ -251,19 +276,7 @@ pub(crate) fn verify_dns01(
     let mut last = "dns-01: no resolver completed".to_owned();
     for address in resolvers(resolver)? {
         match exchange(address, &message, deadline).and_then(|raw| parse(&raw, id, &question)) {
-            Ok(records) => {
-                let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(
-                    crate::crypto::digest(format!("{token}.{thumbprint}").as_bytes()),
-                );
-                return if records.iter().any(|record| record == &proof) {
-                    Ok(())
-                } else {
-                    Err(format!(
-                        "dns-01: challenge failed against {} records",
-                        records.len()
-                    ))
-                };
-            }
+            Ok(records) => return validate_records(&records, token, thumbprint, deadline),
             Err(error) => last = error,
         }
         remaining(deadline)?;
@@ -386,6 +399,35 @@ mod tests {
             .is_err()
         );
         assert!(Instant::now() >= deadline);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod final_deadline_tests {
+    use super::*;
+    #[test]
+    fn pki_acme99_dns01_parsed_actual_txt_cannot_succeed_after_original_deadline()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .encode(crate::crypto::digest(b"token.thumb"));
+        let records = vec!["wrong TXT".to_owned(), proof];
+        assert!(
+            validate_records(
+                &records,
+                "token",
+                "thumb",
+                Instant::now() + Duration::from_secs(1)
+            )
+            .is_ok()
+        );
+        let original_deadline = Instant::now()
+            .checked_sub(Duration::from_millis(1))
+            .ok_or("clock underflow")?;
+        assert_eq!(
+            validate_records(&records, "token", "thumb", original_deadline).as_deref(),
+            Err("dns-01: attempt deadline exceeded")
+        );
         Ok(())
     }
 }
