@@ -312,6 +312,12 @@ impl Service {
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
+            if response
+                .as_ref()
+                .is_some_and(|value| value.get("secret").is_some_and(|secret| !secret.is_null()))
+            {
+                authority.require_secret_authority();
+            }
             self.validate_sdk_authority(&mut authority)?;
             self.sdk_binding_gate(plan).map_err(bridge_failure)?;
             let mut transaction = plan
@@ -332,7 +338,7 @@ impl Service {
                     .is_none_or(|value| value.get("secret").is_some_and(Value::is_null));
             let publication_identity = self.current_state_identity()?;
             let identity_changed = publication_identity != transaction.identity;
-            if identity_changed && !readonly_metadata {
+            if identity_changed && !readonly_metadata && !authority.admitted_data() {
                 return Err(Response::error(
                     503,
                     "SDK transaction snapshot changed before publication",
@@ -342,7 +348,22 @@ impl Service {
                 .state
                 .clone()
                 .ok_or_else(|| Response::error(503, "SDK server sealed"))?;
-            if readonly_metadata {
+            if authority.admitted_data() {
+                let original = transaction
+                    .admitted_original
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK admitted original Storage absent"))?;
+                state
+                    .engines
+                    .sdk_merge_admitted_storage(
+                        original,
+                        &transaction.engines,
+                        &plan.namespace,
+                        &plan.mount,
+                        &plan.owner,
+                    )
+                    .map_err(Response::from_engine_error)?;
+            } else if readonly_metadata {
                 if !state
                     .engines
                     .sdk_storage_observations_match(
@@ -556,6 +577,17 @@ impl Service {
                         .ok_or_else(|| Response::error(503, "SDK committed state unavailable"))?,
                 )?;
                 transaction.identity = self.current_state_identity()?;
+                if authority.admitted_data() {
+                    transaction.admitted_original = Some(
+                        self.state
+                            .as_ref()
+                            .ok_or_else(|| {
+                                Response::error(503, "SDK admitted committed state absent")
+                            })?
+                            .engines
+                            .clone(),
+                    );
+                }
                 transaction.changed = false;
             }
             self.validate_sdk_authority(&mut authority)?;

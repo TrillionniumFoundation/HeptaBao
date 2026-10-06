@@ -348,6 +348,7 @@ fn start_worker_typed(
 
 struct StorageTransaction {
     engines: CowOwner<EngineState>,
+    admitted_original: Option<CowOwner<EngineState>>,
     identity: crate::state_record_root::StateIdentity,
     changed: bool,
 }
@@ -1300,9 +1301,29 @@ impl Service {
             .current_state_identity()
             .map_err(|_| SdkBridgeError::Fenced)?
             != transaction.identity
+            && !authority.admitted_data()
         {
             return Err(SdkBridgeError::Fenced);
         }
+        if authority.admitted_data()
+            && !state
+                .engines
+                .sdk_storage_observations_match(
+                    transaction
+                        .admitted_original
+                        .as_ref()
+                        .ok_or(SdkBridgeError::Fenced)?,
+                    &plan.namespace,
+                    &plan.mount,
+                    &plan.owner,
+                )
+                .map_err(|_| SdkBridgeError::Fenced)?
+        {
+            return Err(SdkBridgeError::Fenced);
+        }
+        let publication_identity = self
+            .current_state_identity()
+            .map_err(|_| SdkBridgeError::Fenced)?;
         transaction.engines.observe_sdk_lease_clock(observed);
         let (reply, storage_changed) = match op {
             StorageOp::Get(key) => {
@@ -1359,6 +1380,13 @@ impl Service {
                 .map_err(|_| SdkBridgeError::Fenced)?;
             self.sdk_binding_gate(plan)?;
             if self
+                .current_state_identity()
+                .map_err(|_| SdkBridgeError::Fenced)?
+                != publication_identity
+            {
+                return Err(SdkBridgeError::Fenced);
+            }
+            if self
                 .commit_record_plan_with_before_publish(
                     &state,
                     publication,
@@ -1376,6 +1404,15 @@ impl Service {
             }
             // Publish the actual committed owner even when the following gate fails.
             self.state = Some(state);
+            if authority.admitted_data() {
+                transaction.admitted_original = Some(
+                    self.state
+                        .as_ref()
+                        .ok_or(SdkBridgeError::OutcomeUnknown)?
+                        .engines
+                        .clone(),
+                );
+            }
             transaction.identity = self
                 .current_state_identity()
                 .map_err(|_| SdkBridgeError::OutcomeUnknown)?;
@@ -1546,6 +1583,24 @@ impl Service {
             Ok(identity) => identity,
             Err(error) => return error,
         };
+        if lease.is_none()
+            && matches!(operation, "read" | "update")
+            && request.token_clock.is_some()
+            && let expiry::Authority::Client(client) = authority
+        {
+            authority = match expiry::AdmittedAuthority::capture(
+                client,
+                state,
+                request,
+                &self.unseal_nonce,
+                self.ha.clone(),
+                deadline,
+            ) {
+                Ok(value) => expiry::Authority::Admitted(Box::new(value)),
+                Err(error) => return error,
+            };
+        }
+        let admitted_original = authority.admitted_data().then(|| state.engines.clone());
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             mount,
@@ -1560,6 +1615,7 @@ impl Service {
             retirement: None,
             transaction: Mutex::new(StorageTransaction {
                 engines: state.engines.clone(),
+                admitted_original,
                 identity,
                 changed: false,
             }),
@@ -1638,6 +1694,39 @@ impl Service {
                         } else {
                             self.sdk_binding_gate(plan).map_err(bridge_failure)
                         }
+                    })
+                    .and_then(|()| {
+                        if authority.admitted_data() {
+                            let transaction = plan.transaction.lock().map_err(|_| {
+                                Response::error(503, "SDK admitted terminal Storage unavailable")
+                            })?;
+                            let original =
+                                transaction.admitted_original.as_ref().ok_or_else(|| {
+                                    Response::error(503, "SDK admitted terminal witness absent")
+                                })?;
+                            let state = self.state.as_ref().ok_or_else(|| {
+                                Response::error(503, "SDK admitted terminal state absent")
+                            })?;
+                            if !state
+                                .engines
+                                .sdk_storage_observations_match(
+                                    original,
+                                    &plan.namespace,
+                                    &plan.mount,
+                                    &plan.owner,
+                                )
+                                .map_err(Response::from_engine_error)?
+                            {
+                                return Err(Response::error(
+                                    503,
+                                    "SDK admitted terminal Storage changed",
+                                ));
+                            }
+                            drop(transaction);
+                            self.validate_sdk_authority(&mut authority)?;
+                            self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                        }
+                        Ok(())
                     })
                     .map_err(|error| (error, original_now))
             }

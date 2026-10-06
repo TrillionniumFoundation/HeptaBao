@@ -1308,3 +1308,226 @@ fn sdk96_readonly_observation_rejects_same_mount_storage_and_retired_incarnation
     );
     Ok(())
 }
+
+#[test]
+fn sdk_admitted_merge_preserves_current_auth_other_mount_and_encrypted_reopen() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, root) = bootstrap(&mut service)?;
+    let actor = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root,
+        json!({"policies":["default"]}),
+    );
+    assert_eq!(actor.status, 200);
+    let actor = actor.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actor")?
+        .to_owned();
+    let mut original = service.state.clone().ok_or("state")?;
+    let owner = mount(&mut original, "sdk_probe")?;
+    let other = mount(&mut original, "sdk_other")?;
+    original
+        .engines
+        .sdk_storage_put("", "sdk_probe/", &owner, entry("delete", b"old"))?;
+    original
+        .engines
+        .sdk_storage_put("", "sdk_other/", &other, entry("other", b"old-other"))?;
+    publish(&mut service, original)?;
+    let original = service.state.clone().ok_or("original")?;
+    let mut working = original.clone();
+    working
+        .engines
+        .sdk_storage_delete("", "sdk_probe/", &owner, "delete")?;
+    working.engines.sdk_storage_put(
+        "",
+        "sdk_probe/",
+        &owner,
+        entry("new", b"original-callback"),
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &root,
+            json!({"token":actor})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/concurrent-deny",
+            &root,
+            json!({"policy":r#"path "sdk_probe/*" { capabilities=["deny"] }"#})
+        )
+        .status,
+        204
+    );
+    let mut current = service.state.clone().ok_or("current")?;
+    current
+        .engines
+        .sdk_storage_delete("", "sdk_other/", &other, "other")?;
+    current
+        .engines
+        .observe_sdk_lease_clock(crate::auth::Timestamp::checked(103, 17)?);
+    publish(&mut service, current)?;
+    let mut current = service.state.clone().ok_or("current")?;
+    let auth = crate::secret_serde::to_vec(&*current.auth, 4 * 1024 * 1024)
+        .map_err(|_| "canonical owner serialization")?;
+    assert!(current.engines.sdk_merge_admitted_storage(
+        &original.engines,
+        &working.engines,
+        "",
+        "sdk_probe/",
+        &owner
+    )?);
+    assert_eq!(
+        *auth,
+        *crate::secret_serde::to_vec(&*current.auth, 4 * 1024 * 1024)
+            .map_err(|_| "canonical owner serialization")?
+    );
+    assert_eq!(
+        current.engines.sdk_lease_clock_floor(),
+        Some(crate::auth::Timestamp::checked(103, 17)?)
+    );
+    assert!(
+        current
+            .engines
+            .sdk_storage_get("", "sdk_other/", &other, "other")?
+            .is_none()
+    );
+    publish(&mut service, current)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &actor,
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut reopened,
+            "GET",
+            "auth/token/lookup-self",
+            &actor,
+            json!({})
+        )
+        .status,
+        403
+    );
+    let state = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(
+        state
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "delete")?
+            .is_none()
+    );
+    assert_eq!(
+        state
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "new")?
+            .ok_or("new")?
+            .value
+            .as_slice(),
+        b"original-callback"
+    );
+    assert!(
+        state
+            .engines
+            .sdk_storage_get("", "sdk_other/", &other, "other")?
+            .is_none()
+    );
+    Ok(())
+}
+#[test]
+fn sdk_admitted_merge_rejects_changed_value_list_member_and_retired_mount() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let mut original = service.state.clone().ok_or("state")?;
+    let owner = mount(&mut original, "sdk_probe")?;
+    original
+        .engines
+        .sdk_storage_put("", "sdk_probe/", &owner, entry("existing", b"before"))?;
+    publish(&mut service, original)?;
+    let original = service.state.clone().ok_or("original")?;
+    let mut working = original.clone();
+    working
+        .engines
+        .sdk_storage_put("", "sdk_probe/", &owner, entry("callback", b"candidate"))?;
+    for key in ["existing", "new-member"] {
+        let mut current = original.clone();
+        current
+            .engines
+            .sdk_storage_put("", "sdk_probe/", &owner, entry(key, b"other-writer"))?;
+        let before = crate::secret_serde::to_vec(&*current.engines, 4 * 1024 * 1024)
+            .map_err(|_| "canonical owner serialization")?;
+        assert!(
+            current
+                .engines
+                .sdk_merge_admitted_storage(
+                    &original.engines,
+                    &working.engines,
+                    "",
+                    "sdk_probe/",
+                    &owner
+                )
+                .is_err()
+        );
+        assert_eq!(
+            *before,
+            *crate::secret_serde::to_vec(&*current.engines, 4 * 1024 * 1024)
+                .map_err(|_| "canonical owner serialization")?
+        );
+    }
+    let mut retired = original.clone();
+    retired
+        .engines
+        .handle("", "DELETE", "sys/mounts/sdk_probe", &json!({}), 100)?;
+    let replacement = mount(&mut retired, "sdk_probe")?;
+    assert_ne!(owner.mount_incarnation, replacement.mount_incarnation);
+    assert!(
+        retired
+            .engines
+            .sdk_merge_admitted_storage(
+                &original.engines,
+                &working.engines,
+                "",
+                "sdk_probe/",
+                &owner
+            )
+            .is_err()
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &root,
+            json!({})
+        )
+        .status,
+        200
+    );
+    Ok(())
+}

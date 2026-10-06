@@ -415,6 +415,80 @@ impl EngineState {
             }
         }
     }
+    /// Publish only the held SDK mount's Storage delta into the current graph.
+    /// The complete original Storage observation must remain equal, including
+    /// list membership. Auth, other mounts and lease/clock owners stay current.
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+    pub(crate) fn sdk_merge_admitted_storage(
+        &mut self,
+        original: &Self,
+        working: &Self,
+        namespace: &str,
+        mount: &str,
+        owner: &MountOwner,
+    ) -> Result<bool> {
+        if !self.sdk_storage_observations_match(original, namespace, mount, owner)? {
+            return Err(error(503, "SDK admitted original Storage changed"));
+        }
+        working.sdk_owner_gate(namespace, mount, owner)?;
+        let scope = Kv1Scope::new(namespace, mount, owner.mount_incarnation)
+            .map_err(kv1_records::record_error)?;
+        let mut paths = std::collections::BTreeSet::new();
+        for graph in [original, working] {
+            let root = graph
+                .records
+                .as_ref()
+                .ok_or_else(|| error(503, "SDK admitted record root absent"))?;
+            let mut cursor = None;
+            loop {
+                crate::engines::kv_versioning::deadline()?;
+                let page = root
+                    .index
+                    .scan(&scope, "sdk92/", cursor.as_deref(), 256, true)
+                    .map_err(kv1_records::record_error)?;
+                if page.next_after.is_some() && (page.keys.is_empty() || page.next_after == cursor)
+                {
+                    return Err(error(503, "SDK admitted Storage cursor did not advance"));
+                }
+                for path in page.keys {
+                    paths.insert(path);
+                    if paths.len() > 10000 {
+                        return Err(error(507, "SDK admitted Storage exceeds bound"));
+                    }
+                }
+                cursor = page.next_after;
+                if cursor.is_none() {
+                    break;
+                }
+            }
+        }
+        let root = working
+            .records
+            .as_ref()
+            .ok_or_else(|| error(503, "SDK admitted working root absent"))?;
+        let mut changed = false;
+        for path in paths {
+            crate::engines::kv_versioning::deadline()?;
+            let key = Kv1Key::new(
+                namespace,
+                mount,
+                owner.mount_incarnation,
+                &format!("sdk92/{path}"),
+            )
+            .map_err(kv1_records::record_error)?;
+            let bytes = root.index.get(&key);
+            if let Some(value) = bytes {
+                decode_record(owner, key.path(), value).map_err(kv1_records::record_error)?;
+            }
+            changed |= self
+                .records
+                .as_mut()
+                .ok_or_else(|| error(503, "SDK admitted current root absent"))?
+                .apply(key, bytes)?;
+        }
+        crate::engines::kv_versioning::deadline()?;
+        Ok(changed)
+    }
     #[cfg(any(test, target_os = "linux", target_os = "macos"))]
     pub(crate) fn sdk_storage_get(
         &self,

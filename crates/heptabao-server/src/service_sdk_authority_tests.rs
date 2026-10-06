@@ -174,3 +174,132 @@ fn sdk_authority_missing_control_capsule_fences_original_service() -> TestResult
     assert!(service.ha_activation.is_none());
     Ok(())
 }
+
+fn data_admission(
+    service: &mut Service,
+    actor: &str,
+    deadline: Instant,
+) -> TestResult<expiry::Authority> {
+    let (client, _, clock) = admitted(service, actor)?;
+    let state = service.state.as_ref().ok_or("state")?;
+    let body = json!({});
+    let request = RequestView {
+        method: "GET",
+        path: "sys/plugins/catalog",
+        namespace: "",
+        token: actor,
+        body: &body,
+        now: 100,
+        admission_started: clock.started(),
+        token_clock: Some(clock),
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    Ok(expiry::Authority::Admitted(Box::new(
+        expiry::AdmittedAuthority::capture(
+            Box::new(client),
+            state,
+            &request,
+            &service.unseal_nonce,
+            service.ha.clone(),
+            deadline,
+        )
+        .map_err(|_| "capture")?,
+    )))
+}
+#[test]
+fn sdk_admitted_original_expiry_retains_data_but_secret_requires_same_live_client() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let actor = issue(&mut service, &root)?;
+    let mut authority = data_admission(
+        &mut service,
+        &actor,
+        Instant::now() + Duration::from_secs(4),
+    )?;
+    std::thread::sleep(Duration::from_millis(1100));
+    service
+        .validate_sdk_authority(&mut authority)
+        .map_err(|_| "Data original snapshot")?;
+    authority
+        .validate_live_auth(&service.state.as_ref().ok_or("state")?.auth)
+        .map_err(|_| "Data prepublication")?;
+    authority.require_secret_authority();
+    assert_eq!(
+        service
+            .validate_sdk_authority(&mut authority)
+            .err()
+            .ok_or("late Secret must retain existing guard")?
+            .status,
+        403
+    );
+    Ok(())
+}
+#[test]
+fn sdk_admitted_revoke_is_retained_and_original_deadline_seal_veto_data() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let actor = issue(&mut service, &root)?;
+    let mut authority = data_admission(
+        &mut service,
+        &actor,
+        Instant::now() + Duration::from_secs(4),
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &root,
+            json!({"token":actor})
+        )
+        .status,
+        204
+    );
+    service
+        .validate_sdk_authority(&mut authority)
+        .map_err(|_| "Data revoke snapshot")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/plugins/catalog",
+            &actor,
+            json!({})
+        )
+        .status,
+        403
+    );
+    let mut deadline = data_admission(
+        &mut service,
+        &root,
+        Instant::now() + Duration::from_millis(20),
+    )?;
+    std::thread::sleep(Duration::from_millis(30));
+    assert_eq!(
+        service
+            .validate_sdk_authority(&mut deadline)
+            .err()
+            .ok_or("deadline veto")?
+            .status,
+        503
+    );
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
+        204
+    );
+    assert_eq!(
+        service
+            .validate_sdk_authority(&mut authority)
+            .err()
+            .ok_or("seal veto")?
+            .status,
+        503
+    );
+    Ok(())
+}

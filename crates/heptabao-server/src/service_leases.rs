@@ -140,7 +140,7 @@ impl Service {
             let mut owner = None;
             if !public {
                 let principal =
-                    principal.ok_or_else(|| Response::error(403, "missing client token"))?;
+                    principal.ok_or_else(|| Response::error(403, "permission denied"))?;
                 let capability = if method == "LIST" { "list" } else { "update" };
                 state
                     .auth

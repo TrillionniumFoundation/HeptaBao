@@ -6,6 +6,7 @@ use crate::engines::sdk_lease::{Lease, Phase};
 
 pub(super) enum Authority {
     Client(Box<plugin::PluginResponseAuthority>),
+    Admitted(Box<AdmittedAuthority>),
     Cleanup(Box<CleanupAuthority>),
 }
 impl From<plugin::PluginResponseAuthority> for Authority {
@@ -17,12 +18,18 @@ impl Authority {
     pub(super) fn principal(&self) -> Result<&Principal, Response> {
         match self {
             Self::Client(value) => Ok(value.principal()),
+            Self::Admitted(value) if value.strict_secret => Ok(value.client.principal()),
+            Self::Admitted(_) => Err(Response::error(
+                502,
+                "SDK Data admission cannot issue a Secret",
+            )),
             Self::Cleanup(_) => Err(Response::error(502, "SDK cleanup cannot register a Secret")),
         }
     }
     pub(super) fn now(&self) -> u64 {
         match self {
             Self::Client(value) => value.now(),
+            Self::Admitted(value) => value.client.now(),
             Self::Cleanup(value) => value
                 .clock
                 .observed_at()
@@ -32,6 +39,7 @@ impl Authority {
     pub(super) fn token_time(&self) -> Result<AuthorityTime, Response> {
         match self {
             Self::Client(value) => value.token_time(),
+            Self::Admitted(value) => value.client.token_time(),
             Self::Cleanup(value) => value
                 .clock
                 .observed_at()
@@ -45,13 +53,26 @@ impl Authority {
     ) -> Result<bool, Response> {
         match self {
             Self::Client(value) => value.observe_candidate_time_changed(state),
+            Self::Admitted(value) => value.client.observe_candidate_time_changed(state),
             Self::Cleanup(_) => Ok(false),
         }
     }
     pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
         match self {
             Self::Client(value) => value.validate_live_auth(auth),
+            Self::Admitted(value) if value.strict_secret => value.client.validate_live_auth(auth),
+            Self::Admitted(value) => value.check_deadline(),
             Self::Cleanup(value) => value.check_deadline(),
+        }
+    }
+    pub(super) fn admitted_data(&self) -> bool {
+        matches!(self, Self::Admitted(value) if !value.strict_secret)
+    }
+    pub(super) fn require_secret_authority(&mut self) {
+        if let Self::Admitted(value) = self {
+            // The Data continuation never creates lease authority. Retain the
+            // same original client object for the existing Secret path.
+            value.strict_secret = true;
         }
     }
     pub(super) fn after_lease_commit(&mut self, state: &State) -> Result<(), Response> {
@@ -69,6 +90,64 @@ impl Authority {
         }
         value.record = current;
         value.terminal = true;
+        Ok(())
+    }
+}
+/// Affine entrance receipt for ordinary standard SDK Data requests. The
+/// original client was authenticated, authorized and consumed before moving
+/// here. Later Auth graph changes are retained; no Principal is reconstructed.
+pub(super) struct AdmittedAuthority {
+    client: Box<plugin::PluginResponseAuthority>,
+    namespace: String,
+    namespace_catalog_required: bool,
+    namespace_incarnation: Option<u64>,
+    binding: namespace_runtime::DeliveryBinding,
+    cluster: String,
+    activation: String,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    deadline: Instant,
+    strict_secret: bool,
+}
+impl AdmittedAuthority {
+    pub(super) fn capture(
+        client: Box<plugin::PluginResponseAuthority>,
+        state: &State,
+        request: &RequestView<'_>,
+        activation: &str,
+        ha: Option<Arc<Mutex<HaProcess>>>,
+        deadline: Instant,
+    ) -> Result<Self, Response> {
+        if request.token_clock.is_none()
+            || !matches!(client.token_time()?, AuthorityTime::Precise(_))
+        {
+            return Err(Response::error(
+                503,
+                "SDK entrance precise clock unavailable",
+            ));
+        }
+        let value = Self {
+            client,
+            namespace: request.namespace.into(),
+            namespace_catalog_required: request.enforce_namespace,
+            namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            binding: namespace_runtime::DeliveryBinding::capture(state, request.namespace),
+            cluster: state.cluster_id.clone(),
+            activation: activation.into(),
+            ha,
+            deadline,
+            strict_secret: false,
+        };
+        value.check_deadline()?;
+        Ok(value)
+    }
+    fn check_deadline(&self) -> Result<(), Response> {
+        self.client.token_time()?;
+        if Instant::now() >= self.deadline {
+            return Err(Response::error(
+                503,
+                "SDK admitted original deadline expired",
+            ));
+        }
         Ok(())
     }
 }
@@ -121,6 +200,58 @@ impl Service {
     ) -> Result<(), Response> {
         match authority {
             Authority::Client(value) => self.validate_plugin_response(value),
+            Authority::Admitted(value) => {
+                if value.strict_secret {
+                    return self.validate_plugin_response(&mut value.client);
+                }
+                value.check_deadline()?;
+                if self.recovery_required
+                    || self.audit_failed
+                    || self.unseal_nonce != value.activation
+                {
+                    return Err(Response::error(503, "SDK admitted activation unavailable"));
+                }
+                match (&self.ha, &value.ha) {
+                    (Some(current), Some(original)) if Arc::ptr_eq(current, original) => {
+                        let node = current.lock_for_request().map_err(|_| {
+                            Response::error(503, "SDK admitted HA owner unavailable")
+                        })?;
+                        if node
+                            .leader()
+                            .map_err(|_| Response::error(503, "SDK admitted leader unavailable"))?
+                            != Some(node.local_id().map_err(|_| {
+                                Response::error(503, "SDK admitted node unavailable")
+                            })?)
+                        {
+                            return Err(Response::error(
+                                503,
+                                "SDK admitted requires current leader",
+                            ));
+                        }
+                        drop(node);
+                        self.sync_from_ha_with_anchor(false)?;
+                    }
+                    (None, None) => {}
+                    _ => return Err(Response::error(503, "SDK admitted HA owner changed")),
+                }
+                let state = self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK admitted server sealed"))?;
+                if state.cluster_id != value.cluster
+                    || (value.namespace_catalog_required
+                        && !state.namespace_exists(&value.namespace))
+                    || state.namespace_is_sealed(&value.namespace)
+                    || (state.namespaces.inherited_owner(&value.namespace).is_some()
+                        && !self.namespace_runtime.is_loaded(&value.namespace))
+                    || state.namespaces.incarnation(&value.namespace) != value.namespace_incarnation
+                    || namespace_runtime::DeliveryBinding::capture(state, &value.namespace)
+                        != value.binding
+                {
+                    return Err(Response::error(503, "SDK admitted namespace owner changed"));
+                }
+                value.check_deadline()
+            }
             Authority::Cleanup(value) => {
                 value.check_deadline()?;
                 if self.recovery_required
