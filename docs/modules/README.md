@@ -74,9 +74,9 @@ Run `python scripts/validate_module_closure.py` to check the closed set.
 ```text
 python scripts/validate_repository_v2.py
 python -m unittest discover -s tests/repository -p 'test_*.py' -v
-cargo +1.98.0 test --locked --workspace --all-targets
-cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
-cargo +1.98.0 doc --locked --workspace --no-deps
+cargo +1.99.0 test --locked --workspace --all-targets
+cargo +1.99.0 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.99.0 doc --locked --workspace --no-deps
 ```
 
 A package change updates source, tests, guide, capability matrix and blocker evidence together. Documentation coverage is not production qualification or compatibility admission.

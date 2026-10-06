@@ -55,7 +55,7 @@ The architecture and current owner boundaries are in [the current runtime archit
 | `heptabao-telemetry` | no | Standalone label validation/MemoryTelemetry; no current server metrics exporter | `crates/heptabao-telemetry/src/lib.rs::sensitive_or_high_cardinality_labels_are_rejected` |
 | `heptabao-token` | no | Standalone token model; current auth/token/* uses server/auth.rs | `crates/heptabao-token/src/lib.rs::token_lifecycle_enforces_expiry_renewal_and_revocation` |
 
-Run a row with `cargo +1.98.0 test --locked -p <package> <test-name>` (illustrative placeholders). Discovery counts in the inventory describe source functions, not assertions, acceptance surfaces, successful executions or production readiness.
+Run a row with `cargo +1.99.0 test --locked -p <package> <test-name>` (illustrative placeholders). Discovery counts in the inventory describe source functions, not assertions, acceptance surfaces, successful executions or production readiness.
 
 `python scripts/validate_current_documentation_semantics.py` checks every row against workspace manifests, the server's actual dependency closure and a discovered Rust test in that same package. Changing a dependency or deleting/renaming the selected test requires reviewing this map. These checks cannot prove semantic completeness, so code review must still compare handler behavior with the corresponding human guide.
 

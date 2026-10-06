@@ -77,13 +77,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
       - name: Validate unchanged Rust workspace
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --locked --workspace --all-targets
-          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
-          cargo +1.98.0 doc --locked --workspace --no-deps
+          cargo +1.99.0 fmt --all -- --check
+          cargo +1.99.0 test --locked --workspace --all-targets
+          cargo +1.99.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.99.0 doc --locked --workspace --no-deps
           git diff --exit-code

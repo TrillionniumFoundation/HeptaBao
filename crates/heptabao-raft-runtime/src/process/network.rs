@@ -130,7 +130,7 @@ impl RemoteNetworkFactory {
         }
         let request_id = self
             .read_sequence
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+            .try_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
                 value.checked_add(1)
             })
             .map_err(|_| RemoteRaftError::InvalidRpc)?;

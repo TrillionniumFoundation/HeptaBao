@@ -568,7 +568,7 @@ fn serve_inner(
         // service lock waiting, forwarding, provider work, and response writes.
         let deadline = Instant::now() + timeout;
         if connections
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 (value < config.max_connections).then_some(value + 1)
             })
             .is_err()

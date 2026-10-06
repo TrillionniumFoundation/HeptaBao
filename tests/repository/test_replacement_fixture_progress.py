@@ -22,9 +22,30 @@ class ReplacementFixtureProgressTests(unittest.TestCase):
         self.assertIn('qualify', self.workflow['jobs']['qualification-verdict']['needs'])
         self.assertIn('always()', self.workflow['jobs']['qualification-verdict']['if'])
 
+    def assert_bound_diagnostic_upload(self, steps):
+        uploads = [s for s in steps
+                   if s.get('name') == 'Retain sanitized OpenBao 2.7 comparison diagnostics']
+        self.assertEqual(len(uploads), 1)
+        self.assertEqual(uploads[0], {
+            'name': 'Retain sanitized OpenBao 2.7 comparison diagnostics',
+            'if': '${{ always() }}',
+            'uses': 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a',
+            'with': {
+                'name': 'comparison270-diagnostic-${{ matrix.source_kind }}-${{ github.run_id }}-${{ github.run_attempt }}',
+                'path': '${{ runner.temp }}/heptabao-safe-reports/comparison270-diagnostic.json',
+                'if-no-files-found': 'warn',
+                'retention-days': 7,
+            },
+        })
+        return uploads[0]
+
+    def runtime_profiles(self, steps):
+        diagnostic = self.assert_bound_diagnostic_upload(steps)
+        start = next(i for i,s in enumerate(steps) if s.get('id') == 'runtime_ready')
+        return [step for step in steps[start+1:] if step is not diagnostic]
+
     def test_independent_runtime_profiles_follow_product_readiness_not_sibling_success(self):
-        start = next(i for i,s in enumerate(self.steps) if s.get('id') == 'runtime_ready')
-        for step in self.steps[start+1:]:
+        for step in self.runtime_profiles(self.steps):
             with self.subTest(name=step['name']):
                 condition = step.get('if', '')
                 self.assertIn('!cancelled()', condition)
@@ -33,6 +54,34 @@ class ReplacementFixtureProgressTests(unittest.TestCase):
         native = self.named['Exercise actual Valkey ACL persistence and session revocation']['if']
         self.assertIn("steps.provider_packages_ready.outcome == 'success'", native)
         self.assertNotIn('oracle_ready', native)
+
+    def test_diagnostic_upload_identity_cannot_drift_or_duplicate(self):
+        original = self.assert_bound_diagnostic_upload(self.steps)
+        for change in (
+            {'if': '${{ !cancelled() }}'},
+            {'uses': 'actions/upload-artifact@main'},
+            {'with': dict(original['with'], path='${{ runner.temp }}/heptabao-safe-reports/')},
+            {'with': dict(original['with'], path=original['with']['path'] + '*')},
+            {'with': dict(original['with'], name='other-diagnostics')},
+            {'with': {**original['with'], 'if-no-files-found': 'ignore'}},
+            {'with': {**original['with'], 'retention-days': 30}},
+            {'env': {'UNREVIEWED_OUTPUT': 'true'}},
+        ):
+            changed = copy.deepcopy(self.steps)
+            self.assert_bound_diagnostic_upload(changed).update(change)
+            with self.subTest(change=change), self.assertRaises(AssertionError):
+                self.assert_bound_diagnostic_upload(changed)
+        with self.assertRaises(AssertionError):
+            self.assert_bound_diagnostic_upload([s for s in self.steps if s is not original])
+        with self.assertRaises(AssertionError):
+            self.assert_bound_diagnostic_upload(self.steps + [copy.deepcopy(original)])
+
+    def test_unregistered_uploads_remain_runtime_profiles(self):
+        diagnostic = self.assert_bound_diagnostic_upload(self.steps)
+        for name in (diagnostic['name'] + ' copy', 'Retain unrelated runtime evidence'):
+            additional = {**copy.deepcopy(diagnostic), 'name': name}
+            with self.subTest(name=name):
+                self.assertIn(additional, self.runtime_profiles(self.steps + [additional]))
 
     def assert_bound_oracle_prerequisite(self, step):
         lanes = {

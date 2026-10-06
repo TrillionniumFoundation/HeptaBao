@@ -173,9 +173,9 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         self.assertNotIn("persist-credentials: true", workflow)
         self.assertIn("pull_request:", workflow)
         self.assertIn("prospective-merge", workflow)
-        self.assertIn("cargo +1.98.0 test --locked --workspace --all-targets", workflow)
+        self.assertIn("cargo +1.99.0 test --locked --workspace --all-targets", workflow)
         self.assertIn(
-            "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+            "cargo +1.99.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
             workflow,
         )
 

@@ -6,10 +6,10 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 
 - **Capability domain:** local filesystem fencing
 - **Repository state:** `INHERITED_IMPLEMENTED`.
-- **Source root:** `crates/heptabao-filesystem-guard`; Rust files: `crates/heptabao-filesystem-guard/src/lib.rs`.
+- **Source root:** `crates/heptabao-filesystem-guard`; Rust files: `crates/heptabao-filesystem-guard/src/lib.rs`, `crates/heptabao-filesystem-guard/src/relative.rs`, `crates/heptabao-filesystem-guard/src/relative_tests.rs`.
 - **Internal dependencies:** none.
 - **Runtime placement:** `no/standalone or indirect; verify CURRENT_RUNTIME_MAP`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
-- **Public design surface:** const `MAX_GUARDED_LEAF_BYTES`; struct `DirectoryIdentity`; const `fn`; const `fn`; struct `ExclusiveDirectory`; fn `open`; fn `original_path`; fn `access_path`; const `fn`; fn `leaf_path`; fn `verify`; fn `sync_all`; enum `DirectoryGuardError`
+- **Public design surface:** const `MAX_GUARDED_LEAF_BYTES`; struct `DirectoryIdentity`; const `fn`; const `fn`; struct `ExclusiveDirectory`; fn `open`; fn `original_path`; fn `access_path`; const `fn`; fn `leaf_path`; fn `verify`; fn `sync_all`; enum `DirectoryGuardError`; fn `normalize_root_owned_system_alias`; fn `normalize_root_owned_system_alias`; fn `open_absolute_directory_no_symlinks`; enum `FileAccess`; fn `open_file`; fn `entry_exists`; fn `remove_file`; fn `remove_file_in_directory`; fn `remove_directory_all`; fn `rename`; fn `entries`
 
 The module owns only the state and transitions described by its source files. It must not silently create an HTTP route, persistence format, authorization decision, external effect, or production guarantee unless that responsibility is visible in the source and in the current runtime map. Cross-module state is passed through typed APIs; callers remain responsible for transaction scope and durable publication where this package has no storage dependency.
 
@@ -29,9 +29,9 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `c13fbb03264fd11a000b8f0d19265ea373c5cf0c780e04de45f3d1408433458d`; manifest SHA-256 `a9ea4b0d9f7a5284049fbbb60a81509260c4e675ea04d5933468363738da9cb8`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `28bb89dbb80b5020baac5dc0a5e264ddc87f4317725e0707e0c92b8dedf90280`; manifest SHA-256 `b607d463be7303589954370438b25f2ee351c506fb874c26c51e97b3dbd61895`.
 - **Named executable anchor:** `root_is_descriptor_bound_and_leaf_names_are_closed` in `crates/heptabao-filesystem-guard/src/lib.rs`.
-- **Required command:** `cargo +1.98.0 test --locked -p heptabao-filesystem-guard` (must be executed against this exact source tree; historical CI output is not current evidence).
+- **Required command:** `cargo +1.99.0 test --locked -p heptabao-filesystem-guard` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 

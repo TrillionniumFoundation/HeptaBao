@@ -49,4 +49,4 @@ class ExactPythonEnvironmentTests(unittest.TestCase):
     def test_workflow_checks_exact_environment_before_native_tests(self):
         text=(ROOT/'.github/workflows/codex-openbao-replacement-ci.yml').read_text()
         self.assertIn('python scripts/verify_python_environment.py',text)
-        self.assertLess(text.index('python scripts/verify_python_environment.py'),text.index('cargo +1.98.0 test'))
+        self.assertLess(text.index('python scripts/verify_python_environment.py'),text.index('cargo +1.99.0 test'))

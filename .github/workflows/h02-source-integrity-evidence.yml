@@ -46,10 +46,19 @@ jobs:
           python scripts/validate_dependency_execution_profiles_v1.py
           python -m unittest discover -s tests/platform -p 'test_*.py' -v
 
+      - name: Install MIT Kerberos build and acceptance prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends krb5-kdc krb5-admin-server krb5-user libkrb5-dev pkg-config clang
+
+
       - name: Install pinned Rust
         run: |
-          rustup toolchain install 1.98.0 --profile minimal --component clippy,rustfmt
-          rustup override set 1.98.0
+          rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+          rustup override set 1.99.0
 
       - name: Rust format, tests and clippy
         run: |

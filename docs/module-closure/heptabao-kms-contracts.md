@@ -29,9 +29,9 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `3c5e27611cd106c0b040a8d272f51bab786c4fcca00268433902dbd373b3fd3a`; manifest SHA-256 `1f1ab2ce86c8a398a7fd2c7fbca106b861ad8caee0271b43c64b4dd420b2b6c9`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `096ee8001d6debd4e08872be70bd05893fb65a8c6b99607395dbfe0c61469005`; manifest SHA-256 `1f1ab2ce86c8a398a7fd2c7fbca106b861ad8caee0271b43c64b4dd420b2b6c9`.
 - **Named executable anchor:** `key_lifecycle_is_fail_closed_and_monotonic` in `crates/heptabao-kms-contracts/src/lib.rs`.
-- **Required command:** `cargo +1.98.0 test --locked -p heptabao-kms-contracts` (must be executed against this exact source tree; historical CI output is not current evidence).
+- **Required command:** `cargo +1.99.0 test --locked -p heptabao-kms-contracts` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 

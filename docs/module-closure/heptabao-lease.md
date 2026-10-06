@@ -9,7 +9,7 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 - **Source root:** `crates/heptabao-lease`; Rust files: `crates/heptabao-lease/src/lib.rs`.
 - **Internal dependencies:** `heptabao-domain`.
 - **Runtime placement:** `no/standalone or indirect; verify CURRENT_RUNTIME_MAP`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
-- **Public design surface:** enum `LeaseKind`; enum `LeaseState`; struct `LeaseIssue`; struct `LeaseView`; struct `LeaseStore`; fn `issue`; fn `validate`; fn `renew`; fn `revoke`; fn `revoke_prefix`; enum `LeaseError`
+- **Public design surface:** enum `LeaseKind`; enum `LeaseState`; struct `LeaseIssue`; struct `LeaseView`; struct `LeaseStore`; fn `issue`; fn `validate`; fn `renew`; fn `renew_bounded`; fn `revoke`; fn `revoke_prefix`; enum `LeaseError`
 
 The module owns only the state and transitions described by its source files. It must not silently create an HTTP route, persistence format, authorization decision, external effect, or production guarantee unless that responsibility is visible in the source and in the current runtime map. Cross-module state is passed through typed APIs; callers remain responsible for transaction scope and durable publication where this package has no storage dependency.
 
@@ -29,9 +29,9 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `e91a73fc68c8fe24a9875633608259b9687a968e989a5fb40560d942992cd40c`; manifest SHA-256 `23320b5bc43b0658b19373e2fa290f867791b0ec13219341f1a24f777ba369a5`.
-- **Named executable anchor:** `lease_lifecycle_is_monotonic` in `crates/heptabao-lease/src/lib.rs`.
-- **Required command:** `cargo +1.98.0 test --locked -p heptabao-lease` (must be executed against this exact source tree; historical CI output is not current evidence).
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `6541cd20c5b295829abf97c961fd983ddea4e40f4f23efe911ba125b7bdb0900`; manifest SHA-256 `23320b5bc43b0658b19373e2fa290f867791b0ec13219341f1a24f777ba369a5`.
+- **Named executable anchor:** `bounded_renewal_cannot_extend_absolute_lifetime` in `crates/heptabao-lease/src/lib.rs`.
+- **Required command:** `cargo +1.99.0 test --locked -p heptabao-lease` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 

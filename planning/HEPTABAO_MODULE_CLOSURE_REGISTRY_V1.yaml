@@ -7,13 +7,6 @@ required_sections:
 - Acceptance evidence
 - Known gaps and evolution
 modules:
-- crate: heptabao-linux-parent-death
-  dossier: docs/module-closure/heptabao-linux-parent-death.md
-  guide: docs/modules/heptabao-linux-parent-death.md
-  source: crates/heptabao-linux-parent-death/src
-  test_anchor: spawning_thread_exit_kills_and_reaps_actual_child
-  test_anchor_path: crates/heptabao-linux-parent-death/src/lib.rs
-  state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-agent
   dossier: docs/module-closure/heptabao-agent.md
   guide: docs/modules/heptabao-agent.md
@@ -28,7 +21,7 @@ modules:
   guide: docs/modules/heptabao-authbus-contracts.md
   source: crates/heptabao-authbus-contracts/src
   manifest_sha256: ad5036850399f73079300c0538f96667ed815eee88753724a7a6bd07125ca60d
-  source_sha256: a7b3c70123249f10d305ad28c207b66c126aef7e7de1878fba40f7beba47041e
+  source_sha256: 12a8884a212f4c5e61240f12f0b7b23d756c82362f6948c0ffc6941f3f9a4a73
   test_anchor: valid_assertion_authenticates_but_does_not_authorize
   test_anchor_path: crates/heptabao-authbus-contracts/src/lib.rs
   state: INHERITED_IMPLEMENTED
@@ -91,16 +84,16 @@ modules:
   guide: docs/modules/heptabao-durable-service.md
   source: crates/heptabao-durable-service/src
   manifest_sha256: c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad
-  source_sha256: 6019b698839b30d29c14344f5ad779b7f62eb4fb037422e8fbc845194bf48281
-  test_anchor: automatic_checkpoint_retains_every_binding_and_survives_restart
-  test_anchor_path: crates/heptabao-durable-service/src/capacity.rs
+  source_sha256: f039f6214620ca2e1bfb5aa0d8fe2996e79ba4f0408d9365a0270f8a402804b3
+  test_anchor: initialize_load_append_and_stale_offset
+  test_anchor_path: crates/heptabao-durable-service/src/backend.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-filesystem-guard
   dossier: docs/module-closure/heptabao-filesystem-guard.md
   guide: docs/modules/heptabao-filesystem-guard.md
   source: crates/heptabao-filesystem-guard/src
-  manifest_sha256: a9ea4b0d9f7a5284049fbbb60a81509260c4e675ea04d5933468363738da9cb8
-  source_sha256: c13fbb03264fd11a000b8f0d19265ea373c5cf0c780e04de45f3d1408433458d
+  manifest_sha256: b607d463be7303589954370438b25f2ee351c506fb874c26c51e97b3dbd61895
+  source_sha256: 28bb89dbb80b5020baac5dc0a5e264ddc87f4317725e0707e0c92b8dedf90280
   test_anchor: root_is_descriptor_bound_and_leaf_names_are_closed
   test_anchor_path: crates/heptabao-filesystem-guard/src/lib.rs
   state: INHERITED_IMPLEMENTED
@@ -126,8 +119,8 @@ modules:
   dossier: docs/module-closure/heptabao-ha-service.md
   guide: docs/modules/heptabao-ha-service.md
   source: crates/heptabao-ha-service/src
-  manifest_sha256: 648494a4d8863a0e03dfae35dd284492a1afeccc4a0d0494cf927894b9ce9a16
-  source_sha256: 4a6356ca015b580c4bcdd2eb5edb70e6ac355f41bd907b7d36136a27cbaa6e70
+  manifest_sha256: 52c49a8c5a1a7686037ab247c62be9a50737d31c81cc5d5f35ea580ed77ca3b6
+  source_sha256: 77b17800ec02e1c7b81db92009b5f452ee45b9fdef6ee7ebc3c3fb8053019faa
   test_anchor: leader_executes_and_follower_forwards_with_deduplication
   test_anchor_path: crates/heptabao-ha-service/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -172,7 +165,7 @@ modules:
   guide: docs/modules/heptabao-kms-contracts.md
   source: crates/heptabao-kms-contracts/src
   manifest_sha256: 1f1ab2ce86c8a398a7fd2c7fbca106b861ad8caee0271b43c64b4dd420b2b6c9
-  source_sha256: 3c5e27611cd106c0b040a8d272f51bab786c4fcca00268433902dbd373b3fd3a
+  source_sha256: 096ee8001d6debd4e08872be70bd05893fb65a8c6b99607395dbfe0c61469005
   test_anchor: key_lifecycle_is_fail_closed_and_monotonic
   test_anchor_path: crates/heptabao-kms-contracts/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -190,18 +183,27 @@ modules:
   guide: docs/modules/heptabao-lease.md
   source: crates/heptabao-lease/src
   manifest_sha256: 23320b5bc43b0658b19373e2fa290f867791b0ec13219341f1a24f777ba369a5
-  source_sha256: e91a73fc68c8fe24a9875633608259b9687a968e989a5fb40560d942992cd40c
-  test_anchor: lease_lifecycle_is_monotonic
+  source_sha256: 6541cd20c5b295829abf97c961fd983ddea4e40f4f23efe911ba125b7bdb0900
+  test_anchor: bounded_renewal_cannot_extend_absolute_lifetime
   test_anchor_path: crates/heptabao-lease/src/lib.rs
+  state: IMPLEMENTED_REVIEW_REQUIRED
+- crate: heptabao-linux-parent-death
+  dossier: docs/module-closure/heptabao-linux-parent-death.md
+  guide: docs/modules/heptabao-linux-parent-death.md
+  source: crates/heptabao-linux-parent-death/src
+  manifest_sha256: a5b16877d5d9a454961bf43ae24ee54e04c62bda833eedab268124cdad0b0a32
+  source_sha256: 766f76f183233fb1068d0ede1cb8f15a4067a8449e95eb1866890eddddcf670e
+  test_anchor: spawning_thread_exit_kills_and_reaps_actual_child
+  test_anchor_path: crates/heptabao-linux-parent-death/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-migration
   dossier: docs/module-closure/heptabao-migration.md
   guide: docs/modules/heptabao-migration.md
   source: crates/heptabao-migration/src
-  manifest_sha256: 8bcfb80c1bf22f374ea1868050725e72b8babe9e9d27ef3a2af0f574832ef3b2
-  source_sha256: 0593e196d79aad33f359c706fe15a9618aeecff4bc63319f5c18a7bdadd5f95c
-  test_anchor: inventory_is_closed_sorted_dependency_checked_and_hashed
-  test_anchor_path: crates/heptabao-migration/src/durable.rs
+  manifest_sha256: 3b3ff5af501a1298f593d77038e55d49e92bc766603081d1b30477af16c3af1f
+  source_sha256: e5f157ca9fff358e0311848deae0bc47d6eafea1d835a8bf1218f9f9310ba1e4
+  test_anchor: ambiguous_or_incomplete_options_are_rejected
+  test_anchor_path: crates/heptabao-migration/src/bin/inspect-openbao-snapshot.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-mount-router
   dossier: docs/module-closure/heptabao-mount-router.md
@@ -225,8 +227,10 @@ modules:
   dossier: docs/module-closure/heptabao-openbao-grpc.md
   guide: docs/modules/heptabao-openbao-grpc.md
   source: crates/heptabao-openbao-grpc/src
-  test_anchor: timeout_fences_and_never_replays
-  test_anchor_path: crates/heptabao-openbao-grpc/src/tests.rs
+  manifest_sha256: 1d283990770b8a2fe75e3c2c85c1d64216f085bce673f0a69de6ceba052b134e
+  source_sha256: b598afed505130e0d201411b9a68971f1246b74f8eda56590f2f705125b8cac6
+  test_anchor: automatic_handshake_has_one_literal_six_field_certificate_contract
+  test_anchor_path: crates/heptabao-openbao-grpc/src/automatic_tls.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-operation-ledger
   dossier: docs/module-closure/heptabao-operation-ledger.md
@@ -259,8 +263,8 @@ modules:
   dossier: docs/module-closure/heptabao-p0-server.md
   guide: docs/modules/heptabao-p0-server.md
   source: crates/heptabao-p0-server/src
-  manifest_sha256: 9aab2dfc3c34a4295478fa867bc246bf7bb97b9daf90d0507062c54677453962
-  source_sha256: fc94658825adfafa1c785aeaac34c7048e994a99b124f1e88be02859e66e1dc8
+  manifest_sha256: 8b6bd3639a49d84a28c53c898fcb81c26431da0e5955c6920c56aeea94766d17
+  source_sha256: e7e3df0408f246006026e5b3fceb6e007866f4d53adc7b5ec65b4a9ea3e774e8
   test_anchor: fresh_server_starts_fail_closed_and_sealed
   test_anchor_path: crates/heptabao-p0-server/src/lib.rs
   state: INHERITED_IMPLEMENTED
@@ -287,7 +291,7 @@ modules:
   guide: docs/modules/heptabao-plugin-contracts.md
   source: crates/heptabao-plugin-contracts/src
   manifest_sha256: f65f8c26ed9b3989b8a2fece8b8bd2913d87697905e05ee6715fc1edbe2e4e02
-  source_sha256: 80c79cf3a09089d79940a62b308161b4464aa4182bc5716be29cf9be8f9c522a
+  source_sha256: f5edfcf81409e22eb944677d63c599a8ad1c6ba02a8e047abf4e450162065d00
   test_anchor: lifecycle_is_monotonic_after_revocation
   test_anchor_path: crates/heptabao-plugin-contracts/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -295,8 +299,8 @@ modules:
   dossier: docs/module-closure/heptabao-plugin-host.md
   guide: docs/modules/heptabao-plugin-host.md
   source: crates/heptabao-plugin-host/src
-  manifest_sha256: e3b38eb71633b42def1909170307da08a6a6f0ff6e892bb57cf613d745449d87
-  source_sha256: 77072c9cdad67527b4f48b3ee53de0b358c9e8d13441137cde79e42d1161febd
+  manifest_sha256: 4107770b8dce805dcf409f7972306cef0314e32fd8863a7e300ca945d1b568b9
+  source_sha256: 067fa46f93bc446a640a1077ef6bc5ea7dd9716ba536a595e87324d99bdc8513
   test_anchor: blocked_stdin_obeys_deadline_before_any_output
   test_anchor_path: crates/heptabao-plugin-host/src/command_runner_tests.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -331,8 +335,8 @@ modules:
   dossier: docs/module-closure/heptabao-raft-runtime.md
   guide: docs/modules/heptabao-raft-runtime.md
   source: crates/heptabao-raft-runtime/src
-  manifest_sha256: 2f60db3259415fdf977e757a82741c6af2b8d5757d159d1ada347e28596d4087
-  source_sha256: b03a83c067fc60a5c7b39e865731d7dd0d68f35ace6f322cb28a9e47dc7cee24
+  manifest_sha256: 5cc5e8a860fa39c811b8d792f60920f8c3f48153bb5029425bde844ff4e33b37
+  source_sha256: 3349abad1ad22730a5f85bec4a9945ff5b135e5d2bee88934069dc923a64bf35
   test_anchor: envelope_status_v3_round_trip_and_legacy_compatibility
   test_anchor_path: crates/heptabao-raft-runtime/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -368,7 +372,7 @@ modules:
   guide: docs/modules/heptabao-runtime-service.md
   source: crates/heptabao-runtime-service/src
   manifest_sha256: c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927
-  source_sha256: 9c08b6dc6c1b27c6a8ab57bb6a353eace9930a191d5f3ba8980ac8dc0006f523
+  source_sha256: 61d86fdb189d827fb47315b349fdfca183ae22d61eb735e389c43b47d6651714
   test_anchor: invalid_credential_cannot_allocate_durable_request_identity
   test_anchor_path: crates/heptabao-runtime-service/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -376,8 +380,8 @@ modules:
   dossier: docs/module-closure/heptabao-server.md
   guide: docs/modules/heptabao-server.md
   source: crates/heptabao-server/src
-  manifest_sha256: d21014fe016940b364b759de364eaebc8865dbdbdd8ba5cee2daf3e3701e2f97
-  source_sha256: 5b60ece27627f2c81e7312225df524d1f53d94fa8ebd84e5bce75b2041eb364c
+  manifest_sha256: badf03e17d13852f641496a297933137b5a613e93210aaeef83142afd9cf01f3
+  source_sha256: 7d7fd97a18cdd4cf137b59d44f722b9807247da05ddaad83e67fe2f920fe602c
   test_anchor: target_abi_opens_private_regular_files_and_real_directories
   test_anchor_path: crates/heptabao-server/src/audit_platform_tests.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -395,7 +399,7 @@ modules:
   guide: docs/modules/heptabao-single-node-journal.md
   source: crates/heptabao-single-node-journal/src
   manifest_sha256: 01ff4f6fd366388129bf4694d126102e209898a924f65f8fd957029c06168a6f
-  source_sha256: 4347f8e2e59c1a886c52098e367c55ce9c48041f0f73edf3d110dd353e51f119
+  source_sha256: 7999855a8b526131d9c153680cd1f2c2c83d3f873b8de184703327ea8fb67027
   test_anchor: create_append_replay_and_reopen_round_trip
   test_anchor_path: crates/heptabao-single-node-journal/src/lib.rs
   state: INHERITED_IMPLEMENTED
@@ -404,7 +408,7 @@ modules:
   guide: docs/modules/heptabao-single-node-store.md
   source: crates/heptabao-single-node-store/src
   manifest_sha256: 5bdf319b0ad7bb439ac31c2f5a24364a1ce8f972aa540141c0008d565e1751b4
-  source_sha256: 78226ca5bf76870084ed17288f8dd59da72981cf6c6eb9cd6f6d3573397226db
+  source_sha256: c084d4883d59792ed502d01fd6aae27c8dd7c723e25d5b841e299395d514f790
   test_anchor: create_commit_load_and_reopen_round_trip
   test_anchor_path: crates/heptabao-single-node-store/src/lib.rs
   state: INHERITED_IMPLEMENTED

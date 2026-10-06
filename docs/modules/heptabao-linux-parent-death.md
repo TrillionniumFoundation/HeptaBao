@@ -25,3 +25,7 @@ the provider admission authority.
 
 See the [module closure dossier](../module-closure/heptabao-linux-parent-death.md)
 and the [Linux kernel userspace contract](https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html).
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-linux-parent-death.md).

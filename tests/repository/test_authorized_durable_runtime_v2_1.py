@@ -181,7 +181,7 @@ class AuthorizedDurableRuntimeV21Tests(unittest.TestCase):
         self.assertIn("contents: read", workflow)
         self.assertNotIn("contents: write", workflow)
         self.assertNotIn("persist-credentials: true", workflow)
-        self.assertIn("cargo +1.98.0 test --locked --workspace --all-targets", workflow)
+        self.assertIn("cargo +1.99.0 test --locked --workspace --all-targets", workflow)
         self.assertIn("tests/repository", workflow)
 
     def test_authority_claims_remain_false(self) -> None:

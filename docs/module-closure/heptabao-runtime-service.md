@@ -29,9 +29,9 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `9c08b6dc6c1b27c6a8ab57bb6a353eace9930a191d5f3ba8980ac8dc0006f523`; manifest SHA-256 `c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `61d86fdb189d827fb47315b349fdfca183ae22d61eb735e389c43b47d6651714`; manifest SHA-256 `c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927`.
 - **Named executable anchor:** `invalid_credential_cannot_allocate_durable_request_identity` in `crates/heptabao-runtime-service/src/lib.rs`.
-- **Required command:** `cargo +1.98.0 test --locked -p heptabao-runtime-service` (must be executed against this exact source tree; historical CI output is not current evidence).
+- **Required command:** `cargo +1.99.0 test --locked -p heptabao-runtime-service` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
