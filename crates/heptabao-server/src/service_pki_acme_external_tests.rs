@@ -1082,14 +1082,20 @@ fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reope
             .ok_or("actual state")?
             .engines
             .acme_observed_time(crate::auth::Timestamp::whole(100)?);
-        assert!(before_acme < crate::auth::Timestamp::whole(101)?);
+        // The real provider and encrypted fixture can already advance its
+        // durable frontier past 101. This request starts after that actual
+        // predecessor; no actor expiry or existing request budget is changed.
+        let revoke_at = before_acme
+            .ceil_seconds()?
+            .checked_add(1)
+            .ok_or("actual request timestamp overflow")?;
         let revoked = service.handle_at(
             "POST",
             "external-ca/revoke",
             "",
             &admin,
             json!({"serial_number":serial}),
-            101,
+            revoke_at,
         );
         assert_eq!(
             revoked.status,
@@ -1108,7 +1114,7 @@ fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reope
             .ok_or("published actual state")?
             .engines
             .acme_observed_time(crate::auth::Timestamp::whole(100)?);
-        assert!(after_acme >= crate::auth::Timestamp::whole(101)?);
+        assert!(after_acme >= crate::auth::Timestamp::whole(revoke_at)?);
         assert!(after_acme > before_acme);
 
         let repeated = call(
