@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import math
 import os
@@ -311,7 +312,7 @@ class Client:
             return Response(status, decoded, index, index_valid, retry_seconds)
         except BaoError:
             raise
-        except (OSError, urllib.error.URLError, ValueError):
+        except (OSError, urllib.error.URLError, ValueError, http.client.HTTPException):
             # Never retry a write automatically. Even a timeout can follow a commit.
             raise BaoError("transport_outcome_unknown" if method not in ("GET", "LIST", "HEAD")
                            else "transport_read_failed") from None

@@ -302,8 +302,17 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
         result["finished_at_unix"] = time.time()
         private_write(output, result)
+    # These are fixed synthetic scenario labels already retained in the safe
+    # report, never a request body, HTTP parser line, or server error text.
+    last_cases = {}
+    for side, observations in result["cases"].items():
+        case = observations[-1].get("case") if observations else None
+        if (isinstance(case, str) and 0 < len(case) <= 256
+                and all(character.isascii() and (character.isalnum() or character in "._-") for character in case)):
+            last_cases[side] = case
     print(json.dumps({"status": result["status"], "cases_per_side": result.get("case_count_per_side", 0),
-                      "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}), "full_openbao_compatibility": False}))
+                      "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}),
+                      "last_completed_case": last_cases, "full_openbao_compatibility": False}))
     return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
 
 

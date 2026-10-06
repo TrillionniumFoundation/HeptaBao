@@ -1,4 +1,5 @@
 import contextlib
+import http.client
 import io
 import json
 import os
@@ -7,7 +8,7 @@ import sys
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from heptabao import cli
@@ -139,6 +140,34 @@ sys.exit(1)
         for namespace in ("/", "/team", "team//", "team//child"):
             with self.subTest(namespace=namespace),self.assertRaisesRegex(BaoError,"invalid_namespace"):
                 Client("https://localhost","not-used","synthetic",namespace=namespace)
+
+    def test_http_protocol_failures_are_private_and_never_retried(self):
+        sentinel = "synthetic-private-peer-response"
+        for method in ("GET", "LIST", "HEAD", "POST", "PUT", "PATCH", "DELETE"):
+            for stage in ("open", "read"):
+                with self.subTest(method=method, stage=stage):
+                    client = object.__new__(Client)
+                    client.address, client.namespace = "https://localhost:8200", ""
+                    client._token, client.timeout = "synthetic-private-bearer", 15
+                    client._opener = MagicMock()
+                    failure = (http.client.BadStatusLine(sentinel) if stage == "open"
+                               else http.client.IncompleteRead(sentinel.encode(), 128))
+                    if stage == "open":
+                        client._opener.open.side_effect = failure
+                    else:
+                        response = MagicMock()
+                        response.code, response.headers = 200, {}
+                        response.__enter__.return_value = response
+                        response.read.side_effect = failure
+                        client._opener.open.return_value = response
+                    with self.assertRaises(BaoError) as caught:
+                        client.request(method, "/v1/synthetic-fixture", {})
+                    expected = ("transport_read_failed" if method in ("GET", "LIST", "HEAD")
+                                else "transport_outcome_unknown")
+                    self.assertEqual(caught.exception.code, expected)
+                    self.assertNotIn(sentinel, str(caught.exception))
+                    self.assertTrue(caught.exception.__suppress_context__)
+                    self.assertEqual(client._opener.open.call_count, 1)
 
     def test_header_injection_rejected_before_network(self):
         client=object.__new__(Client)
