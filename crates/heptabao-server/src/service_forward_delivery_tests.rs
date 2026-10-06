@@ -112,8 +112,13 @@ fn prepare_with_ttl_and_root(
     }
     let id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
     let cluster = crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &id)?;
-    service.ha = Some(Arc::clone(&cluster.processes[0]));
-    service.sync_from_ha().map_err(|_| "initial HA state")?;
+    // The actual Raft cluster already exists. A short actor is issued through
+    // the real local Service before its first authenticated Raft publication,
+    // so issuance does not perform repeated HA transactions inside its 1s grant.
+    if ttl != "1s" {
+        service.ha = Some(Arc::clone(&cluster.processes[0]));
+        service.sync_from_ha().map_err(|_| "initial HA state")?;
+    }
     let precise_before_mint = service
         .state
         .as_ref()
@@ -151,8 +156,43 @@ fn prepare_with_ttl_and_root(
         .as_str()
         .ok_or("accessor")?
         .to_owned();
+    if ttl == "1s" {
+        observe_short_actor(&service, &accessor, "after_real_local_mint")?;
+        service.ha = Some(Arc::clone(&cluster.processes[0]));
+        service
+            .sync_from_ha()
+            .map_err(|_| "initial short actor HA publication")?;
+        observe_short_actor(&service, &accessor, "after_actual_initial_ha_publication")?;
+    }
     Ok((service, cluster, actor, accessor, token))
 }
+fn observe_short_actor(service: &Service, accessor: &str, phase: &str) -> TestResult {
+    let state = service.state.as_ref().ok_or("short actor state")?;
+    let mut auth = serde_json::to_value(&state.auth)?;
+    let observed = (|| -> TestResult {
+        let actor = auth["tokens"]
+            .as_object()
+            .ok_or("short actor token map")?
+            .values()
+            .find(|token| token["accessor"] == accessor)
+            .ok_or("original short actor")?;
+        let precision = &actor["token_api_precision"];
+        assert!(precision.is_object(), "actual precise issuance is required");
+        // Only public time scalars are emitted. This is a read-only observation,
+        // never a RequestClock, authority re-anchor, renewal or admission.
+        eprintln!(
+            "[Root-short-actor-original-stage] phase={phase} observer_wall_ns={} actual_issued_at={} actual_expiry={} current_token_floor={:?}",
+            SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos(),
+            precision["issued_at"],
+            precision["expires_at"],
+            state.auth.terminal_token_clock_floor(),
+        );
+        Ok(())
+    })();
+    crate::service::erase_json(&mut auth);
+    observed
+}
+
 fn prepare(
     root: &Root,
 ) -> TestResult<(
