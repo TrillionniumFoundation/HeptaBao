@@ -795,8 +795,8 @@ impl Pki {
             .acme_certificates()
             .filter(|certificate| certificate.issuer == id)
         {
-            let (issuer, _) = self.profile_leaf_issuer_evidence(id)?;
-            if issuer != der {
+            let issuer = self.acme_issuer_evidence(id)?;
+            if issuer.certificate_der != der {
                 return Err(bad("ACME public issuer archive changed"));
             }
             self.validate_acme_certificate(certificate)?;

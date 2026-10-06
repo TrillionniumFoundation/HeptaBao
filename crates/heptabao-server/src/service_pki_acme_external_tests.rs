@@ -342,8 +342,9 @@ fn pki_acme_external_real_seven_tls_signers_csr_public_binding_encrypted_reopen(
         assert_eq!(
             finalized.status,
             200,
-            "remote kind {kind} static errors {:?}",
-            finalized.body["__heptabao_acme"].get("detail")
+            "remote kind {kind} static errors {:?} {:?}",
+            finalized.body["__heptabao_acme"].get("detail"),
+            finalized.body.get("errors")
         );
         assert_eq!(finalized.body["__heptabao_acme"]["status"], "valid");
         assert_eq!(
@@ -559,8 +560,10 @@ fn pki_acme_external_postaudit_host_revoke_and_enrollment_replace_withhold_deliv
         };
         let response = service.finalize_acme_external(&mut plan, result);
         assert_eq!(
-            response.status, 200,
-            "actual signed publication before audit"
+            response.status,
+            200,
+            "actual signed publication before audit static errors {:?}",
+            response.body.get("errors")
         );
         let issued_nonce = header(&response, "Replay-Nonce")?;
         service.pending_acme_authority = plan.authority.take();
