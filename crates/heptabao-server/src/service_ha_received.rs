@@ -45,6 +45,8 @@ struct SelectedSupersedingApplication {
 
 pub(super) struct ReceivedHaState {
     state: State,
+    // Canonical bytes of this immutable received target; never a live proof.
+    logical: Zeroizing<Vec<u8>>,
     identity: StateIdentity,
     previous: StateIdentity,
     generation: u64,
@@ -125,6 +127,9 @@ impl ShamirLocalPublicationOwner {
 
     fn verify(&self, receipt: &ReceivedHaState, service: &mut Service) -> Result<(), Response> {
         live(Some(self.deadline))?;
+        // Only the immutable target is reused. The service and durable graph
+        // are still independently read and checked at every original gate.
+        let logical = receipt.logical.as_slice();
         if receipt.deadline != Some(self.deadline)
             || receipt.state.auth.has_recovery_state()
             || service.recovery_required
@@ -145,15 +150,13 @@ impl ShamirLocalPublicationOwner {
             || owner_store::serialize_owner(service.state.as_ref().ok_or_else(rejected)?)
                 .map_err(state_serialization_error)?
                 .as_slice()
-                != owner_store::serialize_owner(&receipt.state)
-                    .map_err(state_serialization_error)?
-                    .as_slice()
+                != logical
         {
             return Err(rejected());
         }
         self.seal.validate().map_err(|_| rejected())?;
         receipt.verify_local_seal(service)?;
-        receipt.verify_local_publication(service)?;
+        receipt.verify_local_publication_with_logical(service, logical)?;
         service
             .durable
             .as_mut()
@@ -457,10 +460,7 @@ impl ExistingLocalPublication {
             || receipt.seal.as_ref() != Some(&self.seal)
             || receipt.deadline != self.deadline
             || receipt.source_witness.is_none()
-            || owner_store::serialize_owner(&receipt.state)
-                .map_err(state_serialization_error)?
-                .as_slice()
-                != self.logical.as_slice()
+            || receipt.logical.as_slice() != self.logical.as_slice()
         {
             return Err(rejected());
         }
@@ -831,9 +831,7 @@ impl KnownIndexPublicationCompleted<'_> {
             || owner_store::serialize_owner(service.state.as_ref().ok_or_else(rejected)?)
                 .map_err(state_serialization_error)?
                 .as_slice()
-                != owner_store::serialize_owner(&receipt.state)
-                    .map_err(state_serialization_error)?
-                    .as_slice()
+                != receipt.logical.as_slice()
         {
             return Err(rejected());
         }
@@ -949,8 +947,11 @@ impl ReceivedHaState {
             return Err(rejected());
         }
         let shamir_owner = ShamirLocalPublicationOwner::capture(service, &state, deadline)?;
+        let logical = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
+        live(deadline)?;
         let token = Self {
             state,
+            logical,
             identity,
             previous: service.current_state_identity()?,
             generation: durable.generation(),
@@ -1089,6 +1090,15 @@ impl ReceivedHaState {
 
     fn verify_local_publication(&self, service: &mut Service) -> Result<(), Response> {
         live(self.deadline)?;
+        self.verify_local_publication_with_logical(service, self.logical.as_slice())
+    }
+
+    fn verify_local_publication_with_logical(
+        &self,
+        service: &mut Service,
+        logical: &[u8],
+    ) -> Result<(), Response> {
+        live(self.deadline)?;
         service
             .durable
             .as_mut()
@@ -1108,11 +1118,9 @@ impl ReceivedHaState {
             ReceivedPublication::Materialized {
                 owner_manifest_digest,
             } => {
-                let logical =
-                    owner_store::serialize_owner(&self.state).map_err(state_serialization_error)?;
                 match owner_store::decode_manifest(published.expose()).map_err(|_| rejected())? {
                     Some(manifest) => {
-                        manifest.verify_logical(&logical).map_err(|_| rejected())?;
+                        manifest.verify_logical(logical).map_err(|_| rejected())?;
                         if manifest.state_schema() != self.state.schema
                             || manifest.cluster_id() != self.state.cluster_id
                             || manifest.replay_epoch() != self.state.replay_epoch
@@ -1135,7 +1143,7 @@ impl ReceivedHaState {
                         if owner_store::serialize_owner(&loaded)
                             .map_err(state_serialization_error)?
                             .as_slice()
-                            != logical.as_slice()
+                            != logical
                             || loaded.schema != self.state.schema
                             || loaded.cluster_id != self.state.cluster_id
                             || loaded.replay_epoch != self.state.replay_epoch
@@ -1170,9 +1178,7 @@ impl ReceivedHaState {
             || owner_store::serialize_owner(&loaded)
                 .map_err(state_serialization_error)?
                 .as_slice()
-                != owner_store::serialize_owner(&self.state)
-                    .map_err(state_serialization_error)?
-                    .as_slice()
+                != logical
         {
             return Err(rejected());
         }
@@ -1500,6 +1506,7 @@ mod tests {
         let manifest = owner_store::decode_manifest(published.expose())?.ok_or("V4")?;
         let mut receipt = ReceivedHaState {
             state: state.clone(),
+            logical: owner_store::serialize_owner(&state)?,
             identity: service.current_state_identity().map_err(|_| "identity")?,
             previous: service.current_state_identity().map_err(|_| "identity")?,
             generation: durable.generation(),
@@ -1522,12 +1529,17 @@ mod tests {
         };
         assert!(receipt.verify_local_publication(&mut service).is_ok());
         receipt.state.cluster_id = "different-target".into();
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.state = state.clone();
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         receipt.state.schema -= 1;
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.state = state.clone();
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         receipt.state.replay_epoch += 1;
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         assert!(receipt.verify_local_publication(&mut service).is_err());
         // Staging a Records root really changes the durable publication. A
         // previous materialized receipt cannot pass merely on a cached cursor.
@@ -1545,8 +1557,10 @@ mod tests {
             .persist_record_plan_local(&plan, "received-readback-test", true)
             .map_err(|_| "publish received record plan")?;
         receipt.state = state.clone();
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.state = record_state;
+        receipt.logical = owner_store::serialize_owner(&receipt.state)?;
         receipt.identity = identity;
         receipt.publication = ReceivedPublication::Records {
             root_bytes: root_bytes.clone(),
@@ -1612,6 +1626,7 @@ mod tests {
             .publication_binding(&fixed, &a_bytes)?;
         let receipt = ReceivedHaState {
             state: a.clone(),
+            logical: owner_store::serialize_owner(&a)?,
             identity: StateIdentity::Legacy(crypto::digest(&a_bytes)),
             previous: service.current_state_identity().map_err(|_| "identity")?,
             generation: service.durable.as_ref().ok_or("durable")?.generation(),
