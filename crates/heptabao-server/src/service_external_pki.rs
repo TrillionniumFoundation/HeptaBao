@@ -543,7 +543,13 @@ impl Service {
             erase_json(&mut response.body);
             return Response::error(503, "PKI no-effect owner changed before commit");
         }
-        if let Err(error) = self.commit_record_plan(&candidate, record) {
+        if let Err(error) = self.commit_record_plan_with_before_publish(
+            &candidate,
+            record,
+            |auth| authority.validate_live_auth(auth),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        ) {
             erase_json(&mut response.body);
             return error;
         }

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Three fresh HTTPS processes verify direct external Ed25519 roots and CSRs.
 
-The pinned official remote Transit owns every private key. Public certificates,
-CSR bytes, tokens and provider configuration are never report data.
+The pinned official remote Transit owns every private key. CSR bytes, tokens
+and provider configuration are never report data.
 Only actual public root DER/TBS/signatures and fresh wrong public keys are
 retained for independent cryptographic verification.
 This bounded profile does not qualify leaf issuance, CRLs, non-Ed25519 issuers,
