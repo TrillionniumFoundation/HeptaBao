@@ -42,23 +42,31 @@ fn precise_dispatch(
     )
 }
 
-fn actor_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
-    let (root, mut service, _unseal, admin) = leaf_fixture(remote)?;
+fn actor_in_service(service: &mut Service, admin: &str) -> TestResult<(String, u64)> {
     assert_eq!(
         call(
-            &mut service,
+            service,
             "PUT",
             "sys/policies/acl/nano-pki",
-            &admin,
+            admin,
             json!({"policy":r#"path "external-ca/issue/leaf" { capabilities=["update"] }"#}),
         )
         .status,
         204
     );
-    let clock = RequestClock::anchored(Duration::new(100, 250_000_000), Instant::now())?;
+    let state = service.state.as_ref().ok_or("issuer fixture state")?;
+    let auth_floor = state.auth.terminal_token_clock_floor();
+    let base = state
+        .engines
+        .lease_clock()
+        .max(100)
+        .max(auth_floor.map_or(0, |at| {
+            at.seconds() + u64::from(at.duration_since_epoch().subsec_nanos() >= 250_000_000)
+        }));
+    let clock = RequestClock::anchored(Duration::new(base, 250_000_000), Instant::now())?;
     let execution = precise_dispatch(
-        &mut service,
-        &admin,
+        service,
+        admin,
         "auth/token/create",
         json!({"ttl":"2s","policies":["nano-pki"],"no_default_policy":true}),
         clock,
@@ -86,7 +94,7 @@ fn actor_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, S
         .ok_or("actual actor lease owner")?;
     assert_eq!(
         binding.expires_at,
-        Some(103),
+        Some(base + 3),
         "public ceil is not private expiry"
     );
     let expiry = binding
@@ -99,18 +107,24 @@ fn actor_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, S
         service.state.as_ref().ok_or("state")?.engines.lease_clock(),
         clock.started().elapsed().as_nanos()
     );
-    assert_eq!(expiry.seconds(), 102);
-    assert!(expiry < Timestamp::checked(102, 500_000_000)?);
-    Ok((root, service, admin, actor))
+    assert_eq!(expiry.seconds(), base + 2);
+    assert!(expiry < Timestamp::checked(base + 2, 500_000_000)?);
+    Ok((actor, base))
+}
+
+fn actor_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String, u64)> {
+    let (root, mut service, _unseal, admin) = leaf_fixture(remote)?;
+    let (actor, base) = actor_in_service(&mut service, &admin)?;
+    Ok((root, service, admin, actor, base))
 }
 
 #[test]
 fn pki_nano_tls_provider_before_entry_metadata_and_signature_expiry_never_retries() -> TestResult {
     for cut in 0..3 {
         let remote = RemoteTransit::new_kind("ed25519")?;
-        let (_root, mut service, _admin, actor) = actor_fixture(&remote)?;
+        let (_root, mut service, _admin, actor, base) = actor_fixture(&remote)?;
         let before = remote.calls()?;
-        let clock = RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?;
+        let clock = RequestClock::anchored(Duration::new(base, 500_000_000), Instant::now())?;
         let pending = match precise_dispatch(
             &mut service,
             &actor,
@@ -168,9 +182,9 @@ fn pki_nano_tls_provider_before_entry_metadata_and_signature_expiry_never_retrie
 fn pki_nano_tls_actual_signed_publication_then_post_audit_actor_expiry_withholds_private()
 -> TestResult {
     let remote = RemoteTransit::new_kind("ed25519")?;
-    let (root, mut service, _admin, actor) = actor_fixture(&remote)?;
+    let (root, mut service, _admin, actor, base) = actor_fixture(&remote)?;
     let before = remote.calls()?;
-    let clock = RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?;
+    let clock = RequestClock::anchored(Duration::new(base, 500_000_000), Instant::now())?;
     let pending = match precise_dispatch(
         &mut service,
         &actor,
@@ -195,7 +209,7 @@ fn pki_nano_tls_actual_signed_publication_then_post_audit_actor_expiry_withholds
         response.status, 200,
         "actual verified signature durably published"
     );
-    assert_eq!(response.body["data"]["expiration"], 102);
+    assert_eq!(response.body["data"]["expiration"], base + 2);
     let certificate = response.body["data"]["certificate"]
         .as_str()
         .ok_or("actual signed certificate")?;
@@ -232,7 +246,7 @@ fn pki_nano_tls_actual_signed_publication_then_post_audit_actor_expiry_withholds
         service.complete_external_pki_delivery(&mut plan, response, &pending.fingerprint);
     assert_eq!(
         response.status, 403,
-        "private actor expired before public ceil 103"
+        "private actor expired before its later public ceil"
     );
     assert!(response.body.get("data").is_none());
     assert!(response.body.get("auth").is_none());
@@ -269,9 +283,9 @@ fn pki_nano_tls_actual_signed_publication_then_post_audit_actor_expiry_withholds
 #[test]
 fn pki_nano_tls_live_precise_actor_delivers_after_actual_terminal_clock_audit() -> TestResult {
     let remote = RemoteTransit::new_kind("ed25519")?;
-    let (_root, mut service, _admin, actor) = actor_fixture(&remote)?;
+    let (_root, mut service, _admin, actor, base) = actor_fixture(&remote)?;
     let before = remote.calls()?;
-    let clock = RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?;
+    let clock = RequestClock::anchored(Duration::new(base, 500_000_000), Instant::now())?;
     let execution = precise_dispatch(
         &mut service,
         &actor,
@@ -284,7 +298,7 @@ fn pki_nano_tls_live_precise_actor_delivers_after_actual_terminal_clock_audit() 
         response.status, 200,
         "live precise actor must survive its owned clock-only audit write"
     );
-    assert_eq!(response.body["data"]["expiration"], 102);
+    assert_eq!(response.body["data"]["expiration"], base + 2);
     assert!(response.body["data"]["private_key"].as_str().is_some());
     assert_eq!(remote.calls()?, before + 2);
     Ok(())
@@ -294,9 +308,9 @@ fn pki_nano_tls_live_precise_actor_delivers_after_actual_terminal_clock_audit() 
 fn pki_nano_tls_clock_receipt_cannot_carry_unrelated_state_before_or_after_audit() -> TestResult {
     for before_audit in [true, false] {
         let remote = RemoteTransit::new_kind("ed25519")?;
-        let (_root, mut service, admin, actor) = actor_fixture(&remote)?;
+        let (_root, mut service, admin, actor, base) = actor_fixture(&remote)?;
         let before = remote.calls()?;
-        let clock = RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?;
+        let clock = RequestClock::anchored(Duration::new(base, 500_000_000), Instant::now())?;
         let pending = match precise_dispatch(
             &mut service,
             &actor,
@@ -324,7 +338,7 @@ fn pki_nano_tls_clock_receipt_cannot_carry_unrelated_state_before_or_after_audit
                 &admin,
                 "external-ca/roles/unrelated",
                 json!({"allow_any_name":true,"key_type":"ed25519","ttl":"10m"}),
-                RequestClock::anchored(Duration::new(100, 600_000_000), Instant::now())?,
+                RequestClock::anchored(Duration::new(base, 600_000_000), Instant::now())?,
             );
             assert_eq!(
                 service.finish_synchronous_request(execution).status,
@@ -356,5 +370,86 @@ fn pki_nano_tls_clock_receipt_cannot_carry_unrelated_state_before_or_after_audit
         assert!(response.body.get("data").is_none());
         assert_eq!(remote.calls()?, before + 2, "veto never repeats signing");
     }
+    Ok(())
+}
+
+#[test]
+fn pki_nano_actual_durable_floor_rejects_prior_actor_and_new_fixture_owns_current_time()
+-> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, admin, actor, original_base) = actor_fixture(&remote)?;
+    assert_eq!(original_base, 100);
+    let precursor = precise_dispatch(
+        &mut service,
+        &admin,
+        "external-ca/issue/leaf",
+        json!({"common_name":"precursor.example.test","ttl":"10m"}),
+        RequestClock::anchored(Duration::new(105, 500_000_000), Instant::now())?,
+    );
+    assert_eq!(service.finish_synchronous_request(precursor).status, 200);
+    let floor = service
+        .state
+        .as_ref()
+        .ok_or("actual durable floor")?
+        .engines
+        .lease_clock();
+    assert!(
+        floor >= 105,
+        "actual signed precursor advances the engine clock"
+    );
+    let before = remote.calls()?;
+    let old = precise_dispatch(
+        &mut service,
+        &actor,
+        "external-ca/issue/leaf",
+        json!({"common_name":"old-actor.example.test","ttl":"10m"}),
+        RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?,
+    );
+    let RequestExecution::Complete(response) = old else {
+        return Err("expired prior actor must be vetoed before provider staging".into());
+    };
+    eprintln!(
+        "PKI_NANO_FLOOR_SAFE floor={} old_actor_status={} static_errors={:?}",
+        floor,
+        response.status,
+        response.body.get("errors")
+    );
+    assert_eq!(response.status, 403);
+    assert_eq!(
+        remote.calls()?,
+        before,
+        "expired prior actor never reaches metadata or sign"
+    );
+    let (current_actor, base) = actor_in_service(&mut service, &admin)?;
+    assert!(base >= floor);
+    let current = precise_dispatch(
+        &mut service,
+        &current_actor,
+        "external-ca/issue/leaf",
+        json!({"common_name":"current-actor.example.test","ttl":"10m"}),
+        RequestClock::anchored(Duration::new(base, 500_000_000), Instant::now())?,
+    );
+    let delivered = service.finish_synchronous_request(current);
+    assert_eq!(delivered.status, 200);
+    assert_eq!(delivered.body["data"]["expiration"], base + 2);
+    let certificate = openssl::x509::X509::from_pem(
+        delivered.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual certificate")?
+            .as_bytes(),
+    )?;
+    let issuer = openssl::x509::X509::from_pem(
+        delivered.body["data"]["issuing_ca"]
+            .as_str()
+            .ok_or("actual issuer")?
+            .as_bytes(),
+    )?;
+    let public = issuer.public_key()?;
+    assert!(certificate.verify(&public)?);
+    assert_eq!(
+        remote.calls()?,
+        before + 2,
+        "new actual2s actor has exactly one metadata and sign"
+    );
     Ok(())
 }
