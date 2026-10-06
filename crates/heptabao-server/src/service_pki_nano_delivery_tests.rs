@@ -10,6 +10,20 @@ fn precise_dispatch(
     body: Value,
     clock: RequestClock,
 ) -> RequestExecution {
+    if let (Some(state), Ok(at)) = (service.state.as_ref(), clock.observed_at()) {
+        eprintln!(
+            "PKI_NANO_OBSERVER_SAFE path={} original_elapsed_ns={} raw_time={}.{:09} engine_floor={} auth_floor={:?}",
+            path,
+            clock.started().elapsed().as_nanos(),
+            at.seconds(),
+            at.duration_since_epoch().subsec_nanos(),
+            state.engines.lease_clock(),
+            state
+                .auth
+                .terminal_token_clock_floor()
+                .map(|t| (t.seconds(), t.duration_since_epoch().subsec_nanos()))
+        );
+    }
     service.begin_at_mode_precise(
         RequestDispatch {
             method: "POST",
@@ -78,6 +92,13 @@ fn actor_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, S
     let expiry = binding
         .precise_expires_at
         .ok_or("actual private actor expiry")?;
+    eprintln!(
+        "PKI_NANO_OBSERVER_SAFE actual_actor_expiry={}.{:09} engine_floor={} actual_issuer_elapsed_ns={}",
+        expiry.seconds(),
+        expiry.duration_since_epoch().subsec_nanos(),
+        service.state.as_ref().ok_or("state")?.engines.lease_clock(),
+        clock.started().elapsed().as_nanos()
+    );
     assert_eq!(expiry.seconds(), 102);
     assert!(expiry < Timestamp::checked(102, 500_000_000)?);
     Ok((root, service, admin, actor))
