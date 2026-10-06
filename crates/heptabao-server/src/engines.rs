@@ -1157,7 +1157,15 @@ impl EngineState {
             return Err(error(503, "external PKI mount type changed"));
         };
         let response = engine.publish_external(material, signatures, now.max(self.lease_clock))?;
+        // A remote administrative revocation advances the exact protocol time.
+        // Publish that actual frontier with its CRL and retained actor owner.
+        let acme_at = engine.acme_protocol.as_ref().map(|protocol| protocol.clock);
         self.lease_clock = self.lease_clock.max(now);
+        if response.mutated
+            && let Some(at) = acme_at
+        {
+            self.acme_observe_publication(at)?;
+        }
         Ok(response)
     }
 

@@ -1070,17 +1070,26 @@ fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reope
             json!({"serial_number":serial}),
         );
         assert_eq!(denied.status, 403);
+        assert_eq!(denied.body, json!({"errors":["permission denied"]}));
         assert_eq!(
             remote.calls()?,
             before,
             "unauthenticated caller cannot enter a signing effect"
         );
-        let revoked = call(
-            &mut service,
+        let before_acme = service
+            .state
+            .as_ref()
+            .ok_or("actual state")?
+            .engines
+            .acme_observed_time(crate::auth::Timestamp::whole(100)?);
+        assert!(before_acme < crate::auth::Timestamp::whole(101)?);
+        let revoked = service.handle_at(
             "POST",
             "external-ca/revoke",
+            "",
             &admin,
             json!({"serial_number":serial}),
+            101,
         );
         assert_eq!(
             revoked.status,
@@ -1093,6 +1102,15 @@ fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reope
             before + 3,
             "one original metadata and full/delta signatures"
         );
+        let after_acme = service
+            .state
+            .as_ref()
+            .ok_or("published actual state")?
+            .engines
+            .acme_observed_time(crate::auth::Timestamp::whole(100)?);
+        assert!(after_acme >= crate::auth::Timestamp::whole(101)?);
+        assert!(after_acme > before_acme);
+
         let repeated = call(
             &mut service,
             "POST",

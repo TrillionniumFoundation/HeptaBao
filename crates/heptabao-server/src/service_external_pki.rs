@@ -445,7 +445,7 @@ impl Service {
         request: &RequestView<'_>,
     ) -> Response {
         let Some(principal) = principal else {
-            return Response::error(403, "missing client token");
+            return Response::error(403, "permission denied");
         };
         let Some(capability) =
             state
