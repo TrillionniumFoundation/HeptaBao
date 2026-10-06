@@ -127,38 +127,7 @@ impl EngineState {
             .directory
             .trim_end_matches("acme/")
             .trim_end_matches('/');
-        let parts: Vec<_> = prefix.split('/').collect();
-        let role = match parts.as_slice() {
-            ["roles", name] | ["issuer", _, "roles", name] => Some(*name),
-            _ => pki.acme.default_directory_policy.strip_prefix("role:"),
-        };
-        if role.is_none() && pki.acme.default_directory_policy == "forbid" {
-            return Err(error(500, "ACME default directory is forbidden"));
-        }
-        if let Some(name) = role {
-            let role = pki
-                .roles
-                .get(name)
-                .ok_or_else(|| bad("ACME role does not exist"))?;
-            if role
-                .role_name_policy
-                .as_ref()
-                .is_some_and(|names| names.no_store)
-            {
-                return Err(error(500, "ACME role cannot disable certificate storage"));
-            }
-            if !pki.acme.allowed_roles.iter().any(|r| r == "*" || r == name) {
-                return Err(bad("ACME role is not allowed"));
-            }
-        }
-        // Explicit issuer directories stay closed until their complete native
-        // selection policy is integrated. No fallback to another issuer.
-        if prefix.starts_with("issuer/") {
-            return Err(error(
-                501,
-                "ACME explicit issuer directory is not implemented",
-            ));
-        }
+        pki.acme_directory_issuer(prefix)?;
         Ok(())
     }
     pub(crate) fn acme_observe_publication(&mut self, at: Timestamp) -> Result<()> {
@@ -511,5 +480,78 @@ impl EngineState {
             }
         }
         Ok(())
+    }
+}
+
+impl pki::Pki {
+    // Directory eligibility uses the actual selected issuer. This performs no
+    // signature effects and never upgrades a public JWS to Vault authority.
+    fn acme_directory_issuer(&self, prefix: &str) -> Result<&pki::RootCa> {
+        let parts: Vec<_> = prefix.split('/').collect();
+        let (explicit_issuer, explicit_role) = match parts.as_slice() {
+            ["issuer", issuer, "roles", role] => (Some(*issuer), Some(*role)),
+            ["issuer", issuer] => (Some(*issuer), None),
+            ["roles", role] => (None, Some(*role)),
+            _ => (None, None),
+        };
+        let role_name = match explicit_role {
+            Some(role) => Some(role),
+            None if self.acme.default_directory_policy == "forbid" => {
+                return Err(error(
+                    500,
+                    "the server experienced an internal error: default directory not allowed by ACME policy",
+                ));
+            }
+            None => self.acme.default_directory_policy.strip_prefix("role:"),
+        };
+        let role = role_name.map(|name| {
+            let role = self.roles.get(name).ok_or_else(|| error(400,
+                "the request message was malformed: role does not exist"))?;
+            if role.role_name_policy.as_ref().is_some_and(|names| names.no_store) {
+                return Err(error(500,
+                    "the server experienced an internal error: role can not be used as NoStore is set to true"));
+            }
+            if explicit_role.is_some()
+                && !self.acme.allowed_roles.iter().any(|allowed| allowed == "*" || allowed == name)
+            {
+                return Err(error(500,
+                    "the server experienced an internal error: specified role not allowed by ACME policy"));
+            }
+            Ok(role)
+        }).transpose()?;
+        let reference = explicit_issuer.unwrap_or_else(|| {
+            role.filter(|role| !role.issuer_ref.is_empty())
+                .map_or("default", |role| role.issuer_ref.as_str())
+        });
+        let issuer = self.selected_issuer(reference).map_err(|_| {
+            error(
+                400,
+                "the request message was malformed: issuer does not exist",
+            )
+        })?;
+        if issuer.key_id.is_empty() {
+            return Err(error(
+                500,
+                "the server experienced an internal error: issuer missing proper issuance usage or key",
+            ));
+        }
+        if self.acme.allowed_issuers.as_slice() != ["*"] {
+            let mut allowed = false;
+            for (index, reference) in self.acme.allowed_issuers.iter().enumerate() {
+                let candidate = self.selected_issuer(reference).map_err(|_| error(500,
+                    &format!("failed to resolve reference for allowed_issuer entry {index}: unable to find PKI issuer for reference: {reference}")))?;
+                if candidate.issuer_id == issuer.issuer_id {
+                    allowed = true;
+                    break;
+                }
+            }
+            if !allowed {
+                return Err(error(
+                    500,
+                    "the server experienced an internal error: specified issuer not allowed by ACME policy",
+                ));
+            }
+        }
+        Ok(issuer)
     }
 }

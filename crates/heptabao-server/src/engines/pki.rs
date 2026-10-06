@@ -457,7 +457,7 @@ impl Pki {
                 ));
             }
         }
-        validate_acme_config(&self.acme, &self.roles)?;
+        validate_acme_config(&self.acme)?;
         if self.acme.enabled && self.cluster_path.is_empty() {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));
         }
@@ -1424,7 +1424,8 @@ impl Pki {
                 .ok_or_else(|| bad("ACME eab_policy must be a string"))?
                 .to_owned();
         }
-        validate_acme_config(&config, &self.roles)?;
+        self.validate_acme_config_write(&config)?;
+        validate_acme_config(&config)?;
         if config.enabled && self.cluster_path.is_empty() {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));
         }
@@ -2220,7 +2221,67 @@ impl AcmeConfig {
     }
 }
 
-fn validate_acme_config(config: &AcmeConfig, roles: &BTreeMap<String, Role>) -> Result<()> {
+impl Pki {
+    fn validate_acme_config_write(&self, config: &AcmeConfig) -> Result<()> {
+        // Persisted allowlists retain references after retirement. Validate live
+        // references only on API configuration writes, as the native backend does.
+        let write_error =
+            |message: String| error(500, &format!("1 error occurred:\n\t* {message}\n\n"));
+        if config.allowed_issuers.len() != 1 || config.allowed_issuers[0] != "*" {
+            for (index, name) in config.allowed_issuers.iter().enumerate() {
+                if name == "*" {
+                    return Err(write_error(format!(
+                        "cannot use '*' as issuer name at index {index}"
+                    )));
+                }
+                self.selected_issuer(name).map_err(|_| write_error(format!(
+                    "failed validating allowed_issuers: unable to fetch issuer: {name}: unable to find PKI issuer for reference: {name}")))?;
+            }
+        }
+        for name in config
+            .allowed_roles
+            .iter()
+            .filter(|name| name.as_str() != "*")
+        {
+            let role = self.roles.get(name).ok_or_else(|| write_error(format!(
+                "allowed_role {name} is not a valid acme role: the request message was malformed: role does not exist")))?;
+            if role
+                .role_name_policy
+                .as_ref()
+                .is_some_and(|names| names.no_store)
+            {
+                return Err(write_error(format!(
+                    "allowed_role {name} is not a valid acme role: the server experienced an internal error: role can not be used as NoStore is set to true"
+                )));
+            }
+        }
+        if let Some(name) = config.default_directory_policy.strip_prefix("role:") {
+            let role = self.roles.get(name).ok_or_else(|| write_error(format!(
+                "default directory policy role {name} is not a valid ACME role: the request message was malformed: role does not exist")))?;
+            if role
+                .role_name_policy
+                .as_ref()
+                .is_some_and(|names| names.no_store)
+            {
+                return Err(write_error(format!(
+                    "default directory policy role {name} is not a valid ACME role: the server experienced an internal error: role can not be used as NoStore is set to true"
+                )));
+            }
+            if config.allowed_roles.as_slice() != ["*"]
+                && !config.allowed_roles.iter().any(|allowed| allowed == name)
+            {
+                return Err(write_error(format!(
+                    "default directory policy {} was not specified in allowed_roles: [{}]",
+                    config.default_directory_policy,
+                    config.allowed_roles.join(" ")
+                )));
+            }
+        }
+        Ok(())
+    }
+}
+
+fn validate_acme_config(config: &AcmeConfig) -> Result<()> {
     validate_acme_names(&config.allowed_roles, "allowed_roles")?;
     if config.allowed_issuers.is_empty()
         || config.allowed_issuers.len() > MAX_ACME_LIST
@@ -2231,30 +2292,17 @@ fn validate_acme_config(config: &AcmeConfig, roles: &BTreeMap<String, Role>) -> 
     {
         return Err(bad("invalid ACME allowed_issuers"));
     }
-    if config.allowed_issuers.len() != 1 || config.allowed_issuers[0] != "*" {
-        return Err(error(
-            501,
-            "PKI ACME issuer selection is not implemented; allowed_issuers must remain ['*']",
-        ));
-    }
-    for role in config
-        .allowed_roles
-        .iter()
-        .filter(|role| role.as_str() != "*")
-    {
-        if !roles.contains_key(role) {
-            return Err(bad("ACME allowed role does not exist"));
-        }
+    if config.allowed_issuers.iter().any(|name| {
+        name == "*" && config.allowed_issuers.len() != 1 || name != "*" && valid_name(name).is_err()
+    }) {
+        return Err(bad("invalid ACME allowed_issuers"));
     }
     match config.default_directory_policy.as_str() {
         "forbid" | "sign-verbatim" => {}
         value
-            if value.strip_prefix("role:").is_some_and(|name| {
-                !name.is_empty()
-                    && roles.contains_key(name)
-                    && (config.allowed_roles.len() == 1 && config.allowed_roles[0] == "*"
-                        || config.allowed_roles.iter().any(|role| role == name))
-            }) => {}
+            if value
+                .strip_prefix("role:")
+                .is_some_and(|name| !name.is_empty() && valid_name(name).is_ok()) => {}
         _ => return Err(bad("invalid ACME default_directory_policy")),
     }
     if config.dns_resolver.len() > MAX_ACME_CONFIG_STRING {
@@ -3200,7 +3248,7 @@ mod tests {
                 json!({"path":"file:///secret-location"}),
                 500,
             ),
-            ("config/acme", json!({"allowed_issuers":["issuer-a"]}), 501),
+            ("config/acme", json!({"allowed_issuers":["issuer-a"]}), 500),
         ] {
             let rejected = pki.handle_admin("POST", path, &body, 1_700_000_000);
             assert_eq!(

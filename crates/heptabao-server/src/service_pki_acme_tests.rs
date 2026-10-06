@@ -529,3 +529,254 @@ fn pki_acme99_namespace_retirement_uses_actual_catalog_frontier_and_retains_root
     assert_eq!(service.state.as_ref().ok_or("state")?.schema, 99);
     Ok(())
 }
+
+#[test]
+fn pki_acme99_actual_issuer_selection_role_override_and_policy_rejection() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let first = call(
+        &mut service,
+        "GET",
+        "acmeca/config/issuers",
+        &admin,
+        json!({}),
+    )
+    .body["data"]["default"]
+        .as_str()
+        .ok_or("actual default issuer")?
+        .to_owned();
+    let second = call(
+        &mut service,
+        "POST",
+        "acmeca/root/generate/internal",
+        &admin,
+        json!({"common_name":"Actual second ACME CA","issuer_name":"second","key_type":"ed25519","ttl":"4h"}),
+    );
+    assert_eq!(second.status, 200);
+    let second_id = second.body["data"]["issuer_id"]
+        .as_str()
+        .ok_or("second issuer")?
+        .to_owned();
+    assert_ne!(first, second_id);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/config/acme",
+            &admin,
+            json!({"allowed_issuers":[first]})
+        )
+        .status,
+        200
+    );
+    for (path, status) in [
+        ("acmeca/acme/directory".to_owned(), 200),
+        (format!("acmeca/issuer/{first}/acme/directory"), 200),
+        ("acmeca/issuer/second/acme/directory".to_owned(), 500),
+        ("acmeca/issuer/missing/acme/directory".to_owned(), 400),
+    ] {
+        assert_eq!(
+            call(&mut service, "GET", &path, "", json!({})).status,
+            status
+        );
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/config/issuers",
+            &admin,
+            json!({"default":"second"})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "GET", "acmeca/acme/directory", "", json!({})).status,
+        500
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/roles/web",
+            &admin,
+            json!({"issuer_ref":first,"allowed_domains":["example.test"]})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "acmeca/roles/web/acme/directory",
+            "",
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "acmeca/issuer/second/roles/web/acme/directory",
+            "",
+            json!({})
+        )
+        .status,
+        500
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/config/acme",
+            &admin,
+            json!({"allowed_issuers":["*"],"default_directory_policy":"forbid"})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "acmeca/issuer/second/acme/directory",
+            "",
+            json!({})
+        )
+        .status,
+        500
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "acmeca/issuer/second/roles/web/acme/directory",
+            "",
+            json!({})
+        )
+        .status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_acme99_retired_allowlist_reference_reopens_without_rebinding_another_issuer() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let second = call(
+        &mut service,
+        "POST",
+        "acmeca/root/generate/internal",
+        &admin,
+        json!({"common_name":"Retired ACME CA","issuer_name":"retiring","key_type":"ed25519","ttl":"4h"}),
+    );
+    assert_eq!(second.status, 200);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/config/acme",
+            &admin,
+            json!({"allowed_issuers":["retiring"]})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "acmeca/issuer/retiring/acme/directory",
+            "",
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "acmeca/issuer/retiring",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "acmeca/issuer/retiring/acme/directory",
+            "",
+            json!({})
+        )
+        .status,
+        400
+    );
+    let refused = call(&mut service, "GET", "acmeca/acme/directory", "", json!({}));
+    assert_eq!(refused.status, 500);
+    assert!(
+        refused.body["__heptabao_acme"]["detail"]
+            .as_str()
+            .is_some_and(|s| s.contains("allowed_issuer entry 0"))
+    );
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/config/acme",
+            &admin,
+            json!({"allowed_issuers":["missing"]})
+        )
+        .status,
+        500
+    );
+    assert!(
+        identity
+            == service
+                .current_state_identity()
+                .map_err(|_| "unchanged identity")?
+    );
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut reopened, "GET", "acmeca/acme/directory", "", json!({})).status,
+        500
+    );
+    assert_eq!(
+        call(
+            &mut reopened,
+            "GET",
+            "acmeca/config/acme",
+            &admin,
+            json!({})
+        )
+        .body["data"]["allowed_issuers"],
+        json!(["retiring"])
+    );
+    assert_eq!(reopened.state.as_ref().ok_or("reopened")?.schema, 99);
+    Ok(())
+}
