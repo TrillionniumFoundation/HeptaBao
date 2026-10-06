@@ -958,8 +958,20 @@ fn write_http1_reply(
         // Error text can carry peer/provider bytes. Only closed error kinds and
         // counters are emitted; no path, token, headers, body or parser line.
         eprintln!(
-            "HBHTTP-RESPONSE-WRITE-FAILURE io_kind={:?} accepted_plaintext_bytes={} flush_attempted={} original_deadline_expired={}",
-            error.kind(),
+            "HBHTTP-RESPONSE-WRITE-FAILURE io_kind={} accepted_plaintext_bytes={} flush_attempted={} original_deadline_expired={}",
+            match error.kind() {
+                io::ErrorKind::TimedOut => "timed_out",
+                io::ErrorKind::WouldBlock => "would_block",
+                io::ErrorKind::BrokenPipe => "broken_pipe",
+                io::ErrorKind::ConnectionReset => "connection_reset",
+                io::ErrorKind::ConnectionAborted => "connection_aborted",
+                io::ErrorKind::WriteZero => "write_zero",
+                io::ErrorKind::Interrupted => "interrupted",
+                io::ErrorKind::UnexpectedEof => "unexpected_eof",
+                io::ErrorKind::InvalidInput => "invalid_input",
+                io::ErrorKind::InvalidData => "invalid_data",
+                _ => "other",
+            },
             observation.accepted_plaintext_bytes,
             observation.flush_attempted,
             Instant::now() >= deadline

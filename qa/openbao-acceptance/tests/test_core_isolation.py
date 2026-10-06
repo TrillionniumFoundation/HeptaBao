@@ -73,6 +73,41 @@ class CoreIsolationHarnessTests(unittest.TestCase):
             path.write_bytes(b"not-an-executable")
             self.assertEqual(core_isolation.file_hash(path), hashlib.sha256(b"not-an-executable").hexdigest())
 
+    def test_response_write_log_keeps_only_closed_numeric_diagnostics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "server.log"
+            accepted = (b"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=timed_out "
+                        b"accepted_plaintext_bytes=11 flush_attempted=false "
+                        b"original_deadline_expired=true")
+            path.write_bytes(
+                b"sentinel-private-response\n"
+                b"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=SensitivePeerBytes "
+                b"accepted_plaintext_bytes=11 flush_attempted=false original_deadline_expired=true\n"
+                + accepted + b" extra-private-bytes\n" + accepted + b"\n"
+            )
+            result = core_isolation.bounded_response_write_observations(path)
+            self.assertEqual(result["rows"], [{
+                "io_kind": "timed_out", "accepted_plaintext_bytes": 11,
+                "flush_attempted": False, "original_deadline_expired": True,
+            }])
+            self.assertNotIn("private", json.dumps(result))
+            self.assertNotIn("SensitivePeerBytes", json.dumps(result))
+            self.assertFalse(result["tail_only"])
+            self.assertFalse(result["rows_truncated"])
+
+    def test_response_write_log_tail_and_row_limits_are_explicit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "server.log"
+            row = (b"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=broken_pipe "
+                   b"accepted_plaintext_bytes=0 flush_attempted=false "
+                   b"original_deadline_expired=false\n")
+            path.write_bytes(b"x" * (128 * 1024) + b"\n" + row * 65)
+            result = core_isolation.bounded_response_write_observations(path)
+            self.assertTrue(result["tail_only"])
+            self.assertTrue(result["rows_truncated"])
+            self.assertEqual(result["examined_bytes"], 128 * 1024)
+            self.assertEqual(len(result["rows"]), 64)
+
 
 if __name__ == "__main__":
     unittest.main()

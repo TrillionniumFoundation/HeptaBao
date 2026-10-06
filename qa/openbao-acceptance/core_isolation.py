@@ -138,7 +138,7 @@ def bounded_response_write_observations(path: Path) -> dict:
     except OSError:
         return {"read_failed": True, "rows": []}
     pattern = re.compile(
-        rb"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=([A-Z][A-Za-z]{0,31}) "
+        rb"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=(timed_out|would_block|broken_pipe|connection_reset|connection_aborted|write_zero|interrupted|unexpected_eof|invalid_input|invalid_data|other) "
         rb"accepted_plaintext_bytes=([0-9]{1,20}) flush_attempted=(true|false) "
         rb"original_deadline_expired=(true|false)"
     )
