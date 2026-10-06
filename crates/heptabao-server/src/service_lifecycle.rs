@@ -103,7 +103,8 @@ pub(crate) struct LifecycleWorker {
     join: Option<JoinHandle<()>>,
 }
 
-enum ProviderMaintenance {
+pub(super) enum ProviderMaintenance {
+    Acme(Box<pki_acme::ChallengeAttempt>),
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     Sdk(Box<sdk_backend::Plan>),
     Database(Box<database::DatabaseMaintenance>),
@@ -158,6 +159,61 @@ fn prepare_sdk_provider(writer: &mut Service, clock: RequestClock) -> Option<Pro
         .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
 }
 
+pub(super) fn prepare_provider_maintenance(
+    writer: &mut Service,
+    now: u64,
+    clock: RequestClock,
+    generic_deadline: std::time::Instant,
+) -> Option<ProviderMaintenance> {
+    let prefer_acme = writer.lifecycle_acme_preferred;
+    writer.lifecycle_acme_preferred = !prefer_acme;
+    if prefer_acme && let Ok(Some(plan)) = writer.prepare_acme_maintenance(clock) {
+        return Some(ProviderMaintenance::Acme(Box::new(plan)));
+    }
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    let sdk_preferred = {
+        writer.lifecycle_sdk_cursor = (writer.lifecycle_sdk_cursor + 1) % 3;
+        if writer.lifecycle_sdk_cursor == 0 {
+            prepare_sdk_provider(writer, clock)
+        } else {
+            None
+        }
+    };
+    let prefer_openldap = writer.lifecycle_provider_cursor;
+    writer.lifecycle_provider_cursor = !prefer_openldap;
+    let mut other = || {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(generic_deadline);
+        if prefer_openldap {
+            match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
+                Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(Box::new(value))),
+                Ok(None) | Err(_) => prepare_database_provider(writer, now, clock),
+            }
+        } else {
+            match prepare_database_provider(writer, now, clock) {
+                Some(value) => Some(value),
+                None => match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
+                    Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(Box::new(value))),
+                    Ok(None) | Err(_) => None,
+                },
+            }
+        }
+    };
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    let pending = match sdk_preferred {
+        Some(value) => Some(value),
+        None => other().or_else(|| prepare_sdk_provider(writer, clock)),
+    };
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    let pending = other();
+    pending.or_else(|| {
+        writer
+            .prepare_acme_maintenance(clock)
+            .ok()
+            .flatten()
+            .map(|plan| ProviderMaintenance::Acme(Box::new(plan)))
+    })
+}
+
 impl Drop for LifecycleWorker {
     fn drop(&mut self) {
         let _ = self.stop.send(());
@@ -208,11 +264,10 @@ pub(crate) fn start_lifecycle_worker(
                     // every attempt still captures its own native affine clock.
                     #[cfg(any(target_os = "linux", target_os = "macos"))]
                     {
-                        next_interval = if writer
-                            .state
-                            .as_ref()
-                            .is_some_and(|state| state.engines.has_live_sdk_leases())
-                        {
+                        next_interval = if writer.state.as_ref().is_some_and(|state| {
+                            state.engines.has_live_sdk_leases()
+                                || state.engines.has_pending_acme_challenges()
+                        }) {
                             interval.min(Duration::from_secs(1))
                         } else {
                             interval
@@ -233,57 +288,22 @@ pub(crate) fn start_lifecycle_worker(
                             eprintln!("heptabao-lifecycle: maintenance unavailable");
                         }
                     }
-                    #[cfg(any(target_os = "linux", target_os = "macos"))]
-                    let sdk_preferred = {
-                        writer.lifecycle_sdk_cursor = (writer.lifecycle_sdk_cursor + 1) % 3;
-                        if writer.lifecycle_sdk_cursor == 0 {
-                            prepare_sdk_provider(&mut writer, clock)
-                        } else {
-                            None
-                        }
-                    };
-                    let prefer_openldap = writer.lifecycle_provider_cursor;
-                    writer.lifecycle_provider_cursor = !prefer_openldap;
-                    let mut other = || {
-                        let _read_scope =
-                            crate::request_deadline::RequestDeadlineScope::enter(generic_deadline);
-                        if prefer_openldap {
-                            match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
-                                Ok(Some(value)) => {
-                                    Some(ProviderMaintenance::OpenLdap(Box::new(value)))
-                                }
-                                Ok(None) | Err(_) => {
-                                    prepare_database_provider(&mut writer, now, clock)
-                                }
-                            }
-                        } else {
-                            match prepare_database_provider(&mut writer, now, clock) {
-                                Some(value) => Some(value),
-                                None => match writer
-                                    .prepare_openldap_maintenance_with_clock(now, Some(clock))
-                                {
-                                    Ok(Some(value)) => {
-                                        Some(ProviderMaintenance::OpenLdap(Box::new(value)))
-                                    }
-                                    Ok(None) | Err(_) => None,
-                                },
-                            }
-                        }
-                    };
-                    #[cfg(any(target_os = "linux", target_os = "macos"))]
-                    let pending = match sdk_preferred {
-                        Some(value) => Some(value),
-                        None => other().or_else(|| prepare_sdk_provider(&mut writer, clock)),
-                    };
-                    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-                    let pending = other();
-                    pending
+                    prepare_provider_maintenance(&mut writer, now, clock, generic_deadline)
                 };
                 let Some(pending) = pending_provider else {
                     continue;
                 };
                 // No Service writer is held while provider I/O/readback runs.
                 match pending {
+                    ProviderMaintenance::Acme(plan) => {
+                        let result = plan.execute(&service);
+                        let Ok(mut writer) = service.try_lock() else {
+                            continue;
+                        };
+                        if writer.finish_acme_maintenance(*plan, result).is_err() {
+                            eprintln!("heptabao-lifecycle: ACME verification remains pending");
+                        }
+                    }
                     #[cfg(any(target_os = "linux", target_os = "macos"))]
                     ProviderMaintenance::Sdk(plan) => {
                         let result = plan.execute(&service, plan.deadline);

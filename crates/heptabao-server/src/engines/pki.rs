@@ -69,6 +69,8 @@ pub(in crate::engines) mod acme_engine;
 pub(crate) mod acme_jws;
 #[path = "pki_acme_state.rs"]
 pub(crate) mod acme_state;
+#[path = "pki_acme_orders.rs"]
+pub(crate) mod acme_orders;
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;

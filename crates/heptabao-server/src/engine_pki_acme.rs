@@ -366,6 +366,351 @@ impl EngineState {
             format!("{}account/{id}", view.base),
         ))
     }
+    pub(crate) fn acme_order_request(
+        &mut self,
+        view: &AcmeView,
+        proof: &pki::acme_jws::VerifiedJws,
+        kid: Option<&str>,
+        at: Timestamp,
+    ) -> Result<(u16, Value, Option<String>)> {
+        let id = kid
+            .and_then(|kid| kid.rsplit('/').next())
+            .filter(|id| !id.is_empty())
+            .ok_or_else(|| bad("ACME order operation requires kid"))?;
+        let key = self.acme_account_key(
+            view,
+            kid.ok_or_else(|| bad("ACME order operation requires kid"))?,
+        )?;
+        if key.thumbprint()? != proof.key_thumbprint() {
+            return Err(error(401, "the client lacks sufficient authorization"));
+        }
+        let empty = json!({});
+        let payload = proof.payload().unwrap_or(&empty);
+        let identifiers = if view.endpoint == "new-order" {
+            let identifiers = pki::acme_orders::parse_identifiers(payload)?;
+            self.acme_pki(&view.owner)?
+                .acme_validate_order_names(&view.directory, &identifiers)?;
+            Some(identifiers)
+        } else {
+            None
+        };
+        let at = self.observe_acme(at)?;
+        let protocol = self
+            .acme_pki_mut(&view.owner)?
+            .acme_protocol
+            .as_mut()
+            .ok_or_else(|| error(503, "ACME order owner unavailable"))?;
+        protocol.observe_time(at);
+        if let Some(identifiers) = identifiers {
+            let order_id = protocol.insert_order(id, &view.directory, identifiers, at)?;
+            let order = protocol
+                .orders
+                .get(&order_id)
+                .ok_or_else(|| error(503, "ACME inserted order unavailable"))?;
+            return Ok((
+                201,
+                order.descriptor(protocol, &view.base, at),
+                Some(format!("{}order/{order_id}", view.base)),
+            ));
+        }
+        if view.endpoint == "orders" {
+            // Native list uses stored state; a computed invalid GET is not saved.
+            let orders: Vec<_> = protocol
+                .orders
+                .values()
+                .filter(|order| order.account == id && order.directory == view.directory)
+                .map(|order| format!("{}order/{}", view.base, order.id))
+                .collect();
+            return Ok((200, json!({"orders":orders}), None));
+        }
+        if let Some(order_id) = view.endpoint.strip_prefix("order/") {
+            let order = protocol
+                .orders
+                .get(order_id)
+                .filter(|order| order.account == id && order.directory == view.directory)
+                .ok_or_else(|| bad("order does not exist: the request message was malformed"))?;
+            return Ok((
+                200,
+                order.descriptor(protocol, &view.base, at),
+                Some(format!("{}order/{order_id}", view.base)),
+            ));
+        }
+        if let Some(auth_id) = view.endpoint.strip_prefix("authorization/") {
+            let auth = protocol
+                .authorizations
+                .get_mut(auth_id)
+                .filter(|auth| auth.account == id && auth.directory == view.directory)
+                .ok_or_else(|| {
+                    error(
+                        500,
+                        "failed to load authorization: authorization does not exist",
+                    )
+                })?;
+            if !payload.as_object().is_some_and(|object| object.is_empty()) {
+                let status = payload.get("status");
+                if let Some(status) = status
+                    && !status.is_string()
+                {
+                    return Err(bad(&format!(
+                        "bad type ({}) for value 'status': the request message was malformed",
+                        pki::acme_orders::go_type(status)
+                    )));
+                }
+                if status.and_then(Value::as_str) != Some("deactivated") {
+                    return Err(bad("the request message was malformed"));
+                }
+                if !matches!(
+                    auth.status,
+                    pki::acme_orders::AuthorizationStatus::Pending
+                        | pki::acme_orders::AuthorizationStatus::Valid
+                ) {
+                    return Err(bad(
+                        "unable to deactivate authorization in 'deactivated' status: the request message was malformed",
+                    ));
+                }
+                auth.status = pki::acme_orders::AuthorizationStatus::Deactivated;
+                auth.deactivated = Some(at);
+                for challenge in &mut auth.challenges {
+                    challenge.status = pki::acme_orders::ChallengeStatus::Invalid;
+                }
+            }
+            return Ok((200, auth.descriptor(&view.base), None));
+        }
+        if let Some(rest) = view.endpoint.strip_prefix("challenge/") {
+            let (auth_id, kind) = rest
+                .split_once('/')
+                .ok_or_else(|| bad("invalid ACME challenge route"))?;
+            let auth = protocol
+                .authorizations
+                .get_mut(auth_id)
+                .filter(|a| a.account == id && a.directory == view.directory)
+                .ok_or_else(|| {
+                    error(
+                        500,
+                        "failed to load authorization: authorization does not exist",
+                    )
+                })?;
+            let index = auth.challenges.iter().position(|c|c.kind==kind).ok_or_else(||bad(&format!("unknown challenge of type '{kind}' in authorization: the request message was malformed")))?;
+            if let Some(payload) = proof.payload() {
+                if !payload.as_object().is_some_and(|o| o.is_empty()) {
+                    return Err(bad(
+                        "unexpected request parameters: the request message was malformed",
+                    ));
+                }
+                let challenge = &auth.challenges[index];
+                if challenge.status != pki::acme_orders::ChallengeStatus::Processing {
+                    if auth.status != pki::acme_orders::AuthorizationStatus::Pending {
+                        let status = match auth.status {
+                            pki::acme_orders::AuthorizationStatus::Valid => "valid",
+                            pki::acme_orders::AuthorizationStatus::Deactivated => "deactivated",
+                            _ => "invalid",
+                        };
+                        return Err(bad(&format!(
+                            "error submitting challenge for validation: the request message was malformed: cannot accept already validated authorization {auth_id} ({status})"
+                        )));
+                    }
+                    if auth.challenges.iter().enumerate().any(|(i, c)| {
+                        i != index && c.status != pki::acme_orders::ChallengeStatus::Pending
+                    }) {
+                        return Err(bad(
+                            "error submitting challenge for validation: only a single challenge within an authorization can be accepted: the request message was malformed",
+                        ));
+                    }
+                    if kind != "http-01" {
+                        return Err(error(
+                            501,
+                            "ACME DNS01 and TLSALPN01 network verification is not implemented",
+                        ));
+                    }
+                    let challenge = &mut auth.challenges[index];
+                    challenge.status = pki::acme_orders::ChallengeStatus::Processing;
+                    challenge.validation = Some(pki::acme_orders::Validation {
+                        initiated: at,
+                        retry_after: at,
+                        retry_count: 0,
+                        error: None,
+                    });
+                }
+            }
+            return Ok((
+                200,
+                auth.challenges[index].descriptor(&view.base, auth_id),
+                None,
+            ));
+        }
+        Err(error(
+            501,
+            "ACME challenge and certificate operation is not implemented",
+        ))
+    }
+    pub(crate) fn has_pending_acme_challenges(&self) -> bool {
+        self.namespaces.values().any(|n|n.mounts.values().any(|m|matches!(&m.backend,Backend::Pki(p) if p.acme_protocol.as_ref().is_some_and(|s|s.authorizations.values().any(|a|a.challenges.iter().any(|c|c.status==pki::acme_orders::ChallengeStatus::Processing))))))
+    }
+    pub(crate) fn next_acme_challenge(
+        &self,
+        at: Timestamp,
+    ) -> Option<crate::service::QueuedChallenge> {
+        for n in self.namespaces.values() {
+            for m in n.mounts.values() {
+                let Backend::Pki(p) = &m.backend else {
+                    continue;
+                };
+                let Some(protocol) = &p.acme_protocol else {
+                    continue;
+                };
+                if !p.acme.enabled {
+                    continue;
+                }
+                for a in protocol.authorizations.values() {
+                    if a.status != pki::acme_orders::AuthorizationStatus::Pending
+                        || !protocol
+                            .accounts
+                            .get(&a.account)
+                            .is_some_and(|v| v.status == AccountStatus::Valid)
+                    {
+                        continue;
+                    }
+                    for c in &a.challenges {
+                        if c.status == pki::acme_orders::ChallengeStatus::Processing
+                            && c.validation.as_ref().is_some_and(|v| v.retry_after <= at)
+                        {
+                            return Some(crate::service::QueuedChallenge {
+                                owner: a.owner.clone(),
+                                account: a.account.clone(),
+                                thumbprint: a.account_thumbprint.clone(),
+                                directory: a.directory.clone(),
+                                authorization: a.id.clone(),
+                                host: a.identifier.value.clone(),
+                                challenge: c.clone(),
+                                mount_revision: m.revision,
+                                dns_resolver: p.acme.dns_resolver.clone(),
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        None
+    }
+    pub(crate) fn check_acme_challenge_state(
+        &self,
+        queued: &crate::service::QueuedChallenge,
+        original: bool,
+    ) -> Result<()> {
+        let p = self.acme_pki(&queued.owner)?;
+        let protocol = p
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME queued protocol owner unavailable"))?;
+        let a = protocol
+            .authorizations
+            .get(&queued.authorization)
+            .ok_or_else(|| error(503, "ACME queued authorization unavailable"))?;
+        if !p.acme.enabled
+            || p.acme.dns_resolver != queued.dns_resolver
+            || a.owner != queued.owner
+            || a.account != queued.account
+            || a.account_thumbprint != queued.thumbprint
+            || a.directory != queued.directory
+            || a.identifier.value != queued.host
+            || (original && a.status != pki::acme_orders::AuthorizationStatus::Pending)
+            || !a.challenges.iter().any(|c| {
+                c.kind == queued.challenge.kind
+                    && c.token == queued.challenge.token
+                    && if original {
+                        c == &queued.challenge
+                    } else {
+                        c.validation
+                            .as_ref()
+                            .zip(queued.challenge.validation.as_ref())
+                            .is_some_and(|(next, old)| next.initiated == old.initiated)
+                    }
+            })
+            || !protocol.accounts.get(&a.account).is_some_and(|account| {
+                account.status == AccountStatus::Valid
+                    && account.thumbprint == queued.thumbprint
+                    && account.directory == queued.directory
+            })
+        {
+            return Err(error(503, "ACME queued account or challenge owner changed"));
+        }
+        Ok(())
+    }
+    pub(crate) fn finish_acme_challenge(
+        &mut self,
+        queued: &crate::service::QueuedChallenge,
+        result: std::result::Result<(), String>,
+        at: Timestamp,
+        validation_started: Timestamp,
+    ) -> Result<()> {
+        self.check_acme_challenge_state(queued, true)?;
+        let at = self.observe_acme(at)?;
+        let protocol = self
+            .acme_pki_mut(&queued.owner)?
+            .acme_protocol
+            .as_mut()
+            .ok_or_else(|| error(503, "ACME queued protocol unavailable"))?;
+        protocol.observe_time(at);
+        let a = protocol
+            .authorizations
+            .get_mut(&queued.authorization)
+            .ok_or_else(|| error(503, "ACME queued authorization unavailable"))?;
+        let c = a
+            .challenges
+            .iter_mut()
+            .find(|c| c.kind == queued.challenge.kind)
+            .ok_or_else(|| error(503, "ACME queued challenge unavailable"))?;
+        if let Err(detail) = result {
+            let v = c
+                .validation
+                .as_mut()
+                .ok_or_else(|| error(503, "ACME validation owner unavailable"))?;
+            v.error = Some(detail);
+            if v.retry_count > 5 {
+                c.status = pki::acme_orders::ChallengeStatus::Invalid;
+                a.status = pki::acme_orders::AuthorizationStatus::Invalid;
+                for c in &mut a.challenges {
+                    c.status = pki::acme_orders::ChallengeStatus::Invalid;
+                }
+            } else {
+                v.retry_count += 1;
+                v.retry_after = Timestamp::checked(
+                    at.seconds()
+                        .checked_add(u64::from(v.retry_count) * 5)
+                        .ok_or_else(|| error(503, "ACME retry expiry overflow"))?,
+                    at.duration_since_epoch().subsec_nanos(),
+                )
+                .map_err(|_| error(503, "ACME retry expiry overflow"))?;
+            }
+        } else {
+            let at = validation_started;
+            let expires = Timestamp::checked(
+                at.seconds()
+                    .checked_add(15 * 86400)
+                    .ok_or_else(|| error(503, "ACME validated expiry overflow"))?,
+                at.duration_since_epoch().subsec_nanos(),
+            )
+            .map_err(|_| error(503, "ACME validated expiry overflow"))?;
+            c.validated = Some(pki::acme_orders::Validated {
+                at,
+                expires,
+                public_at: at
+                    .truncate_seconds()
+                    .local_rfc3339()
+                    .map_err(|_| error(503, "ACME validated time unavailable"))?,
+                public_expires: expires
+                    .truncate_seconds()
+                    .local_rfc3339()
+                    .map_err(|_| error(503, "ACME validated expiry unavailable"))?,
+            });
+            if let Some(v) = c.validation.as_mut() {
+                v.error = None;
+            }
+            c.status = pki::acme_orders::ChallengeStatus::Valid;
+            a.status = pki::acme_orders::AuthorizationStatus::Valid;
+        }
+        Ok(())
+    }
     pub(crate) fn validate_acme_state(
         &self,
         cluster: &str,
@@ -452,6 +797,7 @@ impl EngineState {
                             {
                                 return Err(error(503, "ACME mount protocol frontier regressed"));
                             }
+                            p.validate_order_successor(protocol)?;
                             for (id, account) in &protocol.accounts {
                                 let next = p.accounts.get(id).ok_or_else(|| {
                                     error(503, "ACME account retirement cannot disappear")
@@ -484,6 +830,52 @@ impl EngineState {
 }
 
 impl pki::Pki {
+    fn acme_validate_order_names(
+        &self,
+        directory: &str,
+        identifiers: &[pki::acme_orders::Identifier],
+    ) -> Result<()> {
+        let prefix = directory.trim_end_matches("acme/").trim_end_matches('/');
+        let parts: Vec<_> = prefix.split('/').collect();
+        let explicit_role = match parts.as_slice() {
+            ["roles", role] | ["issuer", _, "roles", role] => Some(*role),
+            _ => None,
+        };
+        let name =
+            explicit_role.or_else(|| self.acme.default_directory_policy.strip_prefix("role:"));
+        let Some(name) = name else {
+            return Ok(());
+        };
+        let role = self
+            .roles
+            .get(name)
+            .ok_or_else(|| bad("the request message was malformed: role does not exist"))?;
+        for identifier in identifiers {
+            let allowed = match identifier.kind {
+                pki::acme_orders::IdentifierType::Dns => {
+                    role.role_name_policy.as_ref().map_or_else(
+                        || role.allows(&identifier.original),
+                        |policy| policy.allows_name(role, &identifier.original),
+                    )
+                }
+                pki::acme_orders::IdentifierType::Ip => role.allow_ip_sans,
+            };
+            if !allowed {
+                let detail = match identifier.kind {
+                    pki::acme_orders::IdentifierType::Dns => format!(
+                        "server will not issue certificates for the identifier: role ({name}) will not issue certificate for name {}",
+                        identifier.original
+                    ),
+                    pki::acme_orders::IdentifierType::Ip => format!(
+                        "server will not issue certificates for the identifier: role ({name}) does not allow IP sans, so cannot issue certificate for {}",
+                        identifier.original
+                    ),
+                };
+                return Err(bad(&detail));
+            }
+        }
+        Ok(())
+    }
     // Directory eligibility uses the actual selected issuer. This performs no
     // signature effects and never upgrades a public JWS to Vault authority.
     fn acme_directory_issuer(&self, prefix: &str) -> Result<&pki::RootCa> {

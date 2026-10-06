@@ -780,3 +780,735 @@ fn pki_acme99_retired_allowlist_reference_reopens_without_rebinding_another_issu
     assert_eq!(reopened.state.as_ref().ok_or("reopened")?.schema, 99);
     Ok(())
 }
+
+fn order_post(
+    service: &mut Service,
+    key: &PKey<Private>,
+    jwk: &Value,
+    kid: &str,
+    endpoint: &str,
+    payload: Option<Value>,
+) -> TestResult<Response> {
+    let n = nonce(service)?;
+    let base = "https://acme.example.test/v1/acmeca/acme/";
+    let request = signed(
+        key,
+        jwk,
+        &n,
+        &format!("{base}{endpoint}"),
+        Some(kid),
+        payload,
+    )?;
+    Ok(call(
+        service,
+        "POST",
+        &format!("acmeca/acme/{endpoint}"),
+        "",
+        request,
+    ))
+}
+fn order_account(service: &mut Service, key: &PKey<Private>, jwk: &Value) -> TestResult<String> {
+    let n = nonce(service)?;
+    let created = call(
+        service,
+        "POST",
+        "acmeca/acme/new-account",
+        "",
+        signed(
+            key,
+            jwk,
+            &n,
+            "https://acme.example.test/v1/acmeca/acme/new-account",
+            None,
+            Some(json!({"termsOfServiceAgreed":true})),
+        )?,
+    );
+    assert_eq!(created.status, 201);
+    header(&created, "Location")
+}
+#[test]
+fn pki_acme99_pending_orders_real_jws_challenges_encrypted_reopen_and_deactivation() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (key, jwk) = key()?;
+    let kid = order_account(&mut service, &key, &jwk)?;
+    let empty = order_post(
+        &mut service,
+        &key,
+        &jwk,
+        &kid,
+        "new-order",
+        Some(json!({"identifiers":[]})),
+    )?;
+    assert_eq!(empty.status, 201);
+    assert_eq!(empty.body["__heptabao_acme"]["identifiers"], Value::Null);
+    assert_eq!(empty.body["__heptabao_acme"]["authorizations"], Value::Null);
+    let identifiers = json!([{"type":"dns","value":"example.test"},{"type":"dns","value":"example.test"},{"type":"dns","value":"*.example.test"},{"type":"ip","value":"127.0.0.1"},{"type":"ip","value":"2001:db8::1"}]);
+    let created = order_post(
+        &mut service,
+        &key,
+        &jwk,
+        &kid,
+        "new-order",
+        Some(json!({"identifiers":identifiers})),
+    )?;
+    assert_eq!(created.status, 201);
+    assert_eq!(created.body["__heptabao_acme"]["identifiers"], identifiers);
+    let order_url = header(&created, "Location")?;
+    let order_endpoint = order_url.split("/acme/").nth(1).ok_or("order route")?;
+    let auth_urls: Vec<String> = created.body["__heptabao_acme"]["authorizations"]
+        .as_array()
+        .ok_or("authorizations")?
+        .iter()
+        .map(|v| v.as_str().ok_or("auth URL").map(str::to_owned))
+        .collect::<Result<_, _>>()?;
+    assert_ne!(
+        auth_urls[0], auth_urls[1],
+        "duplicate identifiers retain independently owned authorizations"
+    );
+    for (index, url) in auth_urls.iter().enumerate() {
+        let auth = order_post(
+            &mut service,
+            &key,
+            &jwk,
+            &kid,
+            url.split("/acme/").nth(1).ok_or("auth route")?,
+            None,
+        )?;
+        assert_eq!(auth.status, 200);
+        let data = &auth.body["__heptabao_acme"];
+        let challenges = data["challenges"].as_array().ok_or("challenges")?;
+        let expected: &[&str] = if index < 2 {
+            &["http-01", "dns-01", "tls-alpn-01"]
+        } else if index == 2 {
+            &["dns-01"]
+        } else {
+            &["http-01"]
+        };
+        assert_eq!(
+            challenges
+                .iter()
+                .filter_map(|c| c["type"].as_str())
+                .collect::<Vec<_>>(),
+            expected
+        );
+        for c in challenges {
+            assert_eq!(
+                URL_SAFE_NO_PAD
+                    .decode(c["token"].as_str().ok_or("public token")?)?
+                    .len(),
+                21
+            );
+        }
+        assert_eq!(data["wildcard"], index == 2);
+        if index == 2 {
+            assert_eq!(data["identifier"]["value"], "example.test");
+        }
+    }
+    let actual = service.state.as_ref().ok_or("state")?;
+    let value = serde_json::to_value(actual)?;
+    let protocol =
+        &value["engines"]["namespaces"][""]["mounts"]["acmeca/"]["backend"]["Pki"]["acme_protocol"];
+    let order_id = order_endpoint.strip_prefix("order/").ok_or("order ID")?;
+    let private_created: Timestamp =
+        serde_json::from_value(protocol["orders"][order_id]["created"].clone())?;
+    let private_expires: Timestamp =
+        serde_json::from_value(protocol["orders"][order_id]["expires"].clone())?;
+    assert_eq!(private_expires.seconds() - private_created.seconds(), 86400);
+    assert_eq!(
+        private_expires.duration_since_epoch().subsec_nanos(),
+        private_created.duration_since_epoch().subsec_nanos()
+    );
+    assert_eq!(actual.schema, 99);
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &admin, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":unseal})).status,
+        200
+    );
+    let read = order_post(&mut service, &key, &jwk, &kid, order_endpoint, None)?;
+    assert_eq!(read.status, 200);
+    assert_eq!(
+        read.body["__heptabao_acme"],
+        created.body["__heptabao_acme"]
+    );
+    let stale = service.state.as_ref().ok_or("state")?.clone();
+    let auth_endpoint = auth_urls[0].split("/acme/").nth(1).ok_or("auth route")?;
+    let deactivated = order_post(
+        &mut service,
+        &key,
+        &jwk,
+        &kid,
+        auth_endpoint,
+        Some(json!({"status":"deactivated"})),
+    )?;
+    assert_eq!(deactivated.status, 200);
+    assert!(
+        deactivated.body["__heptabao_acme"]["challenges"]
+            .as_array()
+            .ok_or("challenges")?
+            .iter()
+            .all(|c| c["status"] == "invalid")
+    );
+    let invalid = order_post(&mut service, &key, &jwk, &kid, order_endpoint, None)?;
+    assert_eq!(invalid.body["__heptabao_acme"]["status"], "invalid");
+    assert_eq!(
+        invalid.body["__heptabao_acme"]["authorizations"],
+        Value::Null
+    );
+    let listed = order_post(&mut service, &key, &jwk, &kid, "orders", None)?;
+    assert!(
+        listed.body["__heptabao_acme"]["orders"]
+            .as_array()
+            .ok_or("orders")?
+            .contains(&json!(order_url)),
+        "native computed GET invalid is not a persisted list transition"
+    );
+    let current = service.state.as_ref().ok_or("state")?;
+    assert!(
+        Service::validate_snapshot_protected_floor(current, &stale).is_err(),
+        "retained authorization deactivation cannot roll back within same99"
+    );
+    Ok(())
+}
+#[test]
+fn pki_acme99_order_account_proof_and_authenticated_relation_cannot_be_forged() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (first_key, first_jwk) = key()?;
+    let kid = order_account(&mut service, &first_key, &first_jwk)?;
+    let order = order_post(
+        &mut service,
+        &first_key,
+        &first_jwk,
+        &kid,
+        "new-order",
+        Some(json!({"identifiers":[{"type":"dns","value":"example.test"}]})),
+    )?;
+    assert_eq!(order.status, 201);
+    let location = header(&order, "Location")?;
+    let endpoint = location.split("/acme/").nth(1).ok_or("order route")?;
+    let id = endpoint.strip_prefix("order/").ok_or("order ID")?;
+    let (other_key, other_jwk) = key()?;
+    let other_kid = order_account(&mut service, &other_key, &other_jwk)?;
+    assert_eq!(
+        order_post(
+            &mut service,
+            &other_key,
+            &other_jwk,
+            &other_kid,
+            endpoint,
+            None
+        )?
+        .status,
+        400,
+        "valid foreign account proof does not own this order"
+    );
+    let actual = service.state.as_ref().ok_or("state")?;
+    for field in ["account", "owner", "authorizations"] {
+        let mut value = serde_json::to_value(actual)?;
+        let p = &mut value["engines"]["namespaces"][""]["mounts"]["acmeca/"]["backend"]["Pki"]["acme_protocol"];
+        match field {
+            "account" => {
+                p["orders"][id]["account"] = json!(other_kid.rsplit('/').next().ok_or("account")?)
+            }
+            "owner" => p["orders"][id]["owner"]["mount_incarnation"] = json!(2),
+            _ => p["orders"][id]["authorizations"] = json!([]),
+        }
+        let forged: State = serde_json::from_value(value)?;
+        assert!(
+            forged.validate_format().is_err(),
+            "actual authenticated order relation rejects {field}"
+        );
+    }
+    let missing = order_post(
+        &mut service,
+        &first_key,
+        &first_jwk,
+        &kid,
+        "new-order",
+        Some(json!({})),
+    )?;
+    assert_eq!(missing.status, 400);
+    assert_eq!(
+        missing.body["__heptabao_acme"]["detail"],
+        "missing required identifiers argument: the request message was malformed"
+    );
+    let unsupported = order_post(
+        &mut service,
+        &first_key,
+        &first_jwk,
+        &kid,
+        "new-order",
+        Some(json!({"identifiers":[{"type":"uri","value":"https://example.test"}]})),
+    )?;
+    assert_eq!(
+        unsupported.body["__heptabao_acme"]["type"],
+        "urn:ietf:params:acme:error:unsupportedIdentifier"
+    );
+    Ok(())
+}
+
+fn pending_http01(
+    service: &mut Service,
+    key: &PKey<Private>,
+    jwk: &Value,
+    kid: &str,
+) -> TestResult<(String, String, String)> {
+    let order = order_post(
+        service,
+        key,
+        jwk,
+        kid,
+        "new-order",
+        Some(json!({"identifiers":[{"type":"ip","value":"127.0.0.1"}]})),
+    )?;
+    assert_eq!(order.status, 201);
+    let order = header(&order, "Location")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("order route")?
+        .to_owned();
+    let get = order_post(service, key, jwk, kid, &order, None)?;
+    let auth = get.body["__heptabao_acme"]["authorizations"][0]
+        .as_str()
+        .ok_or("auth route")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("auth route")?
+        .to_owned();
+    let get = order_post(service, key, jwk, kid, &auth, None)?;
+    let challenge = get.body["__heptabao_acme"]["challenges"][0]["url"]
+        .as_str()
+        .ok_or("challenge")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("challenge route")?
+        .to_owned();
+    Ok((order, auth, challenge))
+}
+fn maintenance_clock(at: u64) -> TestResult<RequestClock> {
+    Ok(RequestClock::anchored(
+        Duration::from_secs(at),
+        std::time::Instant::now(),
+    )?)
+}
+#[test]
+fn pki_acme99_http01_actual_network_owned_queue_reopen_and_ready() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (key, jwk) = key()?;
+    let kid = order_account(&mut service, &key, &jwk)?;
+    let (order, auth, challenge) = pending_http01(&mut service, &key, &jwk, &kid)?;
+    let fetch = order_post(&mut service, &key, &jwk, &kid, &challenge, None)?;
+    assert_eq!(fetch.status, 200);
+    assert_eq!(fetch.body["__heptabao_acme"]["status"], "pending");
+    assert!(
+        service
+            .prepare_acme_maintenance(maintenance_clock(101)?)
+            .map_err(|_| "prepare")?
+            .is_none()
+    );
+    let bad = order_post(
+        &mut service,
+        &key,
+        &jwk,
+        &kid,
+        &challenge,
+        Some(json!({"unexpected":true})),
+    )?;
+    assert_eq!(bad.status, 400);
+    let accept = order_post(&mut service, &key, &jwk, &kid, &challenge, Some(json!({})))?;
+    assert_eq!(accept.status, 200);
+    assert_eq!(accept.body["__heptabao_acme"]["status"], "processing");
+    let original = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "prepare")?
+        .ok_or("queue")?;
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert!(
+        original.check(&service).is_err(),
+        "process activation never resurrects an old attempt"
+    );
+    let plan = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "prepare")?
+        .ok_or("persisted queue")?;
+    let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+    let port = listener.local_addr()?.port();
+    let expected = format!(
+        "  {}.{} \n",
+        plan.queued.challenge.token, plan.queued.thumbprint
+    );
+    let token = plan.queued.challenge.token.clone();
+    let server = std::thread::spawn(move || -> std::io::Result<()> {
+        use std::io::{Read, Write};
+        let (mut socket, _) = listener.accept()?;
+        socket.set_read_timeout(Some(Duration::from_secs(3)))?;
+        let mut raw = Vec::new();
+        let mut one = [0; 1];
+        while !raw.ends_with(b"\r\n\r\n") {
+            socket.read_exact(&mut one)?;
+            raw.push(one[0]);
+            if raw.len() > 4096 {
+                return Err(std::io::Error::other("oversized request"));
+            }
+        }
+        assert!(String::from_utf8_lossy(&raw).starts_with(&format!(
+            "GET /.well-known/acme-challenge/{token} HTTP/1.1\r\n"
+        )));
+        socket.write_all(
+            format!(
+                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{expected}",
+                expected.len()
+            )
+            .as_bytes(),
+        )
+    });
+    let result = plan.execute_port(port);
+    server.join().map_err(|_| "listener thread")??;
+    assert!(result.is_ok());
+    service
+        .finish_acme_maintenance(plan, result)
+        .map_err(|_| "actual proof publication")?;
+    let valid = order_post(&mut service, &key, &jwk, &kid, &auth, None)?;
+    assert_eq!(valid.body["__heptabao_acme"]["status"], "valid");
+    assert!(valid.body["__heptabao_acme"]["expires"].is_string());
+    let ready = order_post(&mut service, &key, &jwk, &kid, &order, None)?;
+    assert_eq!(ready.body["__heptabao_acme"]["status"], "ready");
+    let repeat = order_post(&mut service, &key, &jwk, &kid, &challenge, Some(json!({})))?;
+    assert_eq!(repeat.status, 400);
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let ready = order_post(&mut service, &key, &jwk, &kid, &order, None)?;
+    assert_eq!(ready.body["__heptabao_acme"]["status"], "ready");
+    Ok(())
+}
+#[test]
+fn pki_acme99_http01_attempt_vetoes_retired_account_authorization_mount_and_timeout() -> TestResult
+{
+    for cut in ["account", "authorization", "mount", "timeout"] {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_, admin) = bootstrap(&mut service)?;
+        setup(&mut service, &admin)?;
+        let (key, jwk) = key()?;
+        let kid = order_account(&mut service, &key, &jwk)?;
+        let (order, auth, challenge) = pending_http01(&mut service, &key, &jwk, &kid)?;
+        assert_eq!(
+            order_post(&mut service, &key, &jwk, &kid, &challenge, Some(json!({})))?.status,
+            200
+        );
+        let mut plan = service
+            .prepare_acme_maintenance(maintenance_clock(101)?)
+            .map_err(|_| "prepare")?
+            .ok_or("queue")?;
+        match cut {
+            "account" => {
+                let endpoint = kid.split("/acme/").nth(1).ok_or("account route")?;
+                assert_eq!(
+                    order_post(
+                        &mut service,
+                        &key,
+                        &jwk,
+                        &kid,
+                        endpoint,
+                        Some(json!({"status":"deactivated"}))
+                    )?
+                    .status,
+                    200
+                );
+            }
+            "authorization" => {
+                assert_eq!(
+                    order_post(
+                        &mut service,
+                        &key,
+                        &jwk,
+                        &kid,
+                        &auth,
+                        Some(json!({"status":"deactivated"}))
+                    )?
+                    .status,
+                    200
+                );
+            }
+            "mount" => {
+                assert_eq!(
+                    call(
+                        &mut service,
+                        "DELETE",
+                        "sys/mounts/acmeca",
+                        &admin,
+                        json!({})
+                    )
+                    .status,
+                    204
+                );
+                setup(&mut service, &admin)?;
+            }
+            _ => plan.deadline = std::time::Instant::now() - Duration::from_millis(1),
+        }
+        assert!(
+            plan.check(&service).is_err(),
+            "{cut} must veto before network"
+        );
+        assert!(
+            service.finish_acme_maintenance(plan, Ok(())).is_err(),
+            "{cut} must veto after network and before publication"
+        );
+        if cut == "authorization" {
+            let invalid = order_post(&mut service, &key, &jwk, &kid, &order, None)?;
+            assert_eq!(invalid.body["__heptabao_acme"]["status"], "invalid");
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_acme99_http01_slow_network_cannot_refresh_attempt_deadline_or_publish_valid() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (key, jwk) = key()?;
+    let kid = order_account(&mut service, &key, &jwk)?;
+    let (_, auth, challenge) = pending_http01(&mut service, &key, &jwk, &kid)?;
+    assert_eq!(
+        order_post(&mut service, &key, &jwk, &kid, &challenge, Some(json!({})))?.status,
+        200
+    );
+    let mut plan = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "prepare")?
+        .ok_or("queue")?;
+    plan.deadline = std::time::Instant::now() + Duration::from_millis(100);
+    let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+    let port = listener.local_addr()?.port();
+    let proof = format!("{}.{}", plan.queued.challenge.token, plan.queued.thumbprint);
+    let server = std::thread::spawn(move || -> std::io::Result<()> {
+        use std::io::{Read, Write};
+        let (mut socket, _) = listener.accept()?;
+        socket.set_read_timeout(Some(Duration::from_secs(3)))?;
+        let mut raw = Vec::new();
+        let mut one = [0; 1];
+        while !raw.ends_with(b"\r\n\r\n") {
+            socket.read_exact(&mut one)?;
+            raw.push(one[0]);
+        }
+        std::thread::sleep(Duration::from_millis(250));
+        let _ = socket.write_all(
+            format!(
+                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{proof}",
+                proof.len()
+            )
+            .as_bytes(),
+        );
+        Ok(())
+    });
+    let result = plan.execute_port(port);
+    assert!(
+        result.is_err(),
+        "actual late network proof must fail the original deadline"
+    );
+    server.join().map_err(|_| "owned HTTP thread")??;
+    assert!(
+        service.finish_acme_maintenance(plan, result).is_err(),
+        "a new finalize time cannot refresh the exhausted attempt"
+    );
+    let observed = order_post(&mut service, &key, &jwk, &kid, &auth, None)?;
+    assert_eq!(observed.body["__heptabao_acme"]["status"], "pending");
+    assert_eq!(
+        observed.body["__heptabao_acme"]["challenges"][0]["status"],
+        "processing"
+    );
+    assert!(
+        observed.body["__heptabao_acme"]["challenges"][0]
+            .get("validated")
+            .is_none()
+    );
+    assert!(
+        service
+            .prepare_acme_maintenance(maintenance_clock(102)?)
+            .map_err(|_| "prepare")?
+            .is_some(),
+        "durable queue can receive a fresh host attempt without resurrecting the expired one"
+    );
+    Ok(())
+}
+#[test]
+fn pki_acme99_http01_namespace_delete_recreate_vetoes_original_queue_owner() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/challenge",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let namespace = "challenge";
+    let mut ns_call = |method: &str, path: &str, token: &str, body: Value| {
+        service.handle_at(method, path, namespace, token, body, 100)
+    };
+    for (path, body, status) in [
+        ("sys/mounts/acmeca", json!({"type":"pki"}), 204),
+        (
+            "acmeca/root/generate/internal",
+            json!({"common_name":"Actual namespace CA","key_type":"ed25519","ttl":"4h"}),
+            200,
+        ),
+        (
+            "acmeca/config/cluster",
+            json!({"path":"https://acme.example.test/v1/acmeca"}),
+            200,
+        ),
+        (
+            "acmeca/config/acme",
+            json!({"enabled":true,"eab_policy":"not-required"}),
+            200,
+        ),
+        (
+            "sys/mounts/acmeca/tune",
+            json!({"allowed_response_headers":["Replay-Nonce","Link","Location"]}),
+            204,
+        ),
+    ] {
+        assert_eq!(ns_call("POST", path, &admin, body).status, status);
+    }
+    let (key, jwk) = key()?;
+    let base = "https://acme.example.test/v1/acmeca/acme/";
+    let mut ns_post =
+        |endpoint: &str, kid: Option<&str>, payload: Option<Value>| -> TestResult<Response> {
+            let n = header(
+                &ns_call("HEAD", "acmeca/acme/new-nonce", "", json!({})),
+                "Replay-Nonce",
+            )?;
+            Ok(ns_call(
+                "POST",
+                &format!("acmeca/acme/{endpoint}"),
+                "",
+                signed(&key, &jwk, &n, &format!("{base}{endpoint}"), kid, payload)?,
+            ))
+        };
+    let account = ns_post(
+        "new-account",
+        None,
+        Some(json!({"termsOfServiceAgreed":true})),
+    )?;
+    assert_eq!(account.status, 201);
+    let kid = header(&account, "Location")?;
+    let order = ns_post(
+        "new-order",
+        Some(&kid),
+        Some(json!({"identifiers":[{"type":"ip","value":"127.0.0.1"}]})),
+    )?;
+    assert_eq!(order.status, 201);
+    let auth = order.body["__heptabao_acme"]["authorizations"][0]
+        .as_str()
+        .ok_or("auth")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("auth route")?
+        .to_owned();
+    let fetched = ns_post(&auth, Some(&kid), None)?;
+    let challenge = fetched.body["__heptabao_acme"]["challenges"][0]["url"]
+        .as_str()
+        .ok_or("challenge")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("challenge route")?
+        .to_owned();
+    assert_eq!(
+        ns_post(&challenge, Some(&kid), Some(json!({})))?.status,
+        200
+    );
+    let plan = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "prepare")?
+        .ok_or("actual child queue")?;
+    assert_eq!(plan.queued.owner.namespace, namespace);
+    assert_eq!(
+        service
+            .handle_at(
+                "DELETE",
+                "sys/mounts/acmeca",
+                namespace,
+                &admin,
+                json!({}),
+                101
+            )
+            .status,
+        204,
+        "owned mount cleanup precedes namespace retirement"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/challenge",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/challenge",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert!(
+        plan.check(&service).is_err(),
+        "same namespace string cannot renew the retired incarnation"
+    );
+    assert!(
+        service.finish_acme_maintenance(plan, Ok(())).is_err(),
+        "late network result cannot publish into the recreated namespace"
+    );
+    Ok(())
+}

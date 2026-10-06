@@ -74,7 +74,7 @@ pub(crate) struct Account {
     pub deactivated: Option<Timestamp>,
 }
 
-fn valid_identifier(id: &str) -> bool {
+pub(super) fn valid_identifier(id: &str) -> bool {
     id.len() == 36
         && id.bytes().enumerate().all(|(i, b)| {
             if matches!(i, 8 | 13 | 18 | 23) {
@@ -144,6 +144,10 @@ pub(crate) struct Protocol {
     pub clock: Timestamp,
     pub accounts: BTreeMap<String, Account>,
     pub native_defaults: bool,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub orders: BTreeMap<String, super::acme_orders::Order>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub authorizations: BTreeMap<String, super::acme_orders::Authorization>,
 }
 
 impl Protocol {
@@ -157,6 +161,8 @@ impl Protocol {
             clock: at,
             accounts: BTreeMap::new(),
             native_defaults: true,
+            orders: BTreeMap::new(),
+            authorizations: BTreeMap::new(),
         })
     }
 
@@ -176,6 +182,7 @@ impl Protocol {
                 return Err(error(503, "ACME account key ownership is ambiguous"));
             }
         }
+        self.validate_orders()?;
         Ok(())
     }
 
