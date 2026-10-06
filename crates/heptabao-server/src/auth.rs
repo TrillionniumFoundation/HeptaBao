@@ -1782,7 +1782,7 @@ fn validate_path(path: &str, pattern: bool) -> Result<(), AuthError> {
                 "only whole-segment + and terminal * ACL wildcards are supported",
             ));
         }
-    } else if path.contains('*') || path.contains('+') {
+    } else if path.contains('*') {
         return Err(bad("wildcards are not permitted in request paths"));
     }
     Ok(())
