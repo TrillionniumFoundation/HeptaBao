@@ -1,4 +1,5 @@
 use super::*;
+use crate::engines::{EngineState, IdentityNamespace};
 
 fn native_uuid(id: &str) -> bool {
     let bytes = id.as_bytes();
