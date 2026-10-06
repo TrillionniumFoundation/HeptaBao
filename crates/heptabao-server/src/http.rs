@@ -1502,7 +1502,11 @@ fn read_request_mode(
         return Err(bad("JSON object required"));
     };
     let (raw_path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
-    let decoded_path = decode_native_logical_path(raw_path)?;
+    let decoded_path = if ocsp_get.is_some() || ocsp::head_candidate(&method, raw_path) {
+        std::borrow::Cow::Borrowed(raw_path)
+    } else {
+        decode_native_logical_path(raw_path)?
+    };
     let path = decoded_path.as_ref();
     if (path.contains('%') || path.contains('#'))
         && ocsp_get.is_none()

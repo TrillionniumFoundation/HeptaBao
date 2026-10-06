@@ -1771,17 +1771,16 @@ fn validate_path(path: &str, pattern: bool) -> Result<(), AuthError> {
     {
         return Err(bad("invalid ACL path"));
     }
-    if pattern {
-        if path.contains("{{")
+    if pattern
+        && (path.contains("{{")
             || path.contains("${")
             || path.matches('*').count() > 1
             || path.contains('*') && !path.ends_with('*')
-            || path.split('/').any(|s| s.contains('+') && s != "+")
-        {
-            return Err(bad(
-                "only whole-segment + and terminal * ACL wildcards are supported",
-            ));
-        }
+            || path.split('/').any(|s| s.contains('+') && s != "+"))
+    {
+        return Err(bad(
+            "only whole-segment + and terminal * ACL wildcards are supported",
+        ));
     }
     Ok(())
 }
