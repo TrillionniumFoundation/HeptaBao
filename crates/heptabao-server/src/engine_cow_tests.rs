@@ -46,6 +46,8 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
             lease_clock: 0,
             kubernetes_artifact_clock: None,
             sdk_lease_clock: None,
+            acme_clock: None,
+            acme_revision: 0,
             namespaces: BTreeMap::from([("".into(), CowNamespace(Arc::new(namespace)))]),
         };
         let path = if bytes == LEGACY_KV1 {

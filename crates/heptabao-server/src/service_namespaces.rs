@@ -524,6 +524,19 @@ impl NamespaceRegistry {
         }
     }
 
+    pub(super) fn retires_namespace_incarnation(&self, previous: &Self, path: &str) -> bool {
+        let Some(old) = previous
+            .incarnation(path)
+            .filter(|incarnation| *incarnation != 0)
+        else {
+            return false;
+        };
+        self.next_incarnation
+            .get(path)
+            .is_some_and(|next| *next > old)
+            && self.incarnation(path).is_none_or(|current| current > old)
+    }
+
     pub(super) fn is_sealed(&self, path: &str) -> bool {
         if path.is_empty() {
             return false;

@@ -28,7 +28,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_full_dn_crl_state() {
+        let required = if self.engines.has_pki_acme_state() {
+            PKI_ACME_ACCOUNT_STATE_SCHEMA
+        } else if self.engines.has_full_dn_crl_state() {
             EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
         } else if self.engines.has_pki_url_state() {
             PKI_URLS_STATE_SCHEMA
@@ -116,6 +118,15 @@ impl State {
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
         self.validate_namespace_batch_state()?;
+        self.engines
+            .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA && self.engines.has_pki_acme_state() {
+            return Err(Response::error(
+                503,
+                "ACME durable account ownership requires schema 99",
+            ));
+        }
         self.protected_state()?
             .auth
             .validate_public_origin_state()
@@ -138,6 +149,23 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        self.engines
+            .validate_acme_successor(previous.map(|state| &*state.engines), |namespace| {
+                previous.is_some_and(|old| {
+                    self.namespaces
+                        .retires_namespace_incarnation(&old.namespaces, namespace)
+                })
+            })
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA
+            && (self.engines.has_pki_acme_state()
+                || previous.is_some_and(|s| s.schema >= PKI_ACME_ACCOUNT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "ACME durable account ownership requires schema 99",
             ));
         }
         self.engines
@@ -470,6 +498,16 @@ impl State {
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.validate_namespace_batch_state()?;
+        self.engines
+            .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA && self.engines.has_pki_acme_state() {
+            return Err(Response::error(
+                503,
+                "ACME durable account ownership requires schema 99",
+            ));
+        }
+
         self.engines
             .validate_sdk_lease_cluster(&self.cluster_id)
             .map_err(|e| Response::error(503, &e.message))?;
@@ -1430,6 +1468,7 @@ impl State {
             | SDK_SECRET_LEASE_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+            | PKI_ACME_ACCOUNT_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA

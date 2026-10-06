@@ -352,6 +352,22 @@ impl Service {
         }
         incoming
             .engines
+            .validate_acme_successor(Some(&current.engines), |namespace| {
+                incoming
+                    .namespaces
+                    .retires_namespace_incarnation(&current.namespaces, namespace)
+            })
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_ACME_ACCOUNT_STATE_SCHEMA
+            && incoming.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade ACME account ownership",
+            ));
+        }
+        incoming
+            .engines
             .validate_sdk_lease_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
         incoming

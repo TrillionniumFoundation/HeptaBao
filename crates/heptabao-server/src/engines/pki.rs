@@ -63,6 +63,13 @@ pub(crate) mod local_ocsp;
 pub(in crate::engines) mod precise_time;
 use precise_time::PkiInstant;
 
+#[path = "../engine_pki_acme.rs"]
+pub(in crate::engines) mod acme_engine;
+#[path = "pki_acme_jws.rs"]
+pub(crate) mod acme_jws;
+#[path = "pki_acme_state.rs"]
+pub(crate) mod acme_state;
+
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
 const MAX_TTL: u64 = 10 * 365 * 24 * 3600;
@@ -161,6 +168,8 @@ impl AcmeConfig {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct Pki {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(in crate::engines) acme_protocol: Option<Box<acme_state::Protocol>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     urls: Option<PkiUrls>,
     #[serde(default = "default_leaf_ttl")]
@@ -326,6 +335,7 @@ impl Default for Pki {
             cluster_path: String::new(),
             aia_path: String::new(),
             acme: Box::new(AcmeConfig::default()),
+            acme_protocol: None,
             urls: None,
             root: None,
             local_issuers: None,
@@ -352,6 +362,25 @@ impl Pki {
             .unwrap_or(self.max_ttl);
         if default == 0 || default > max || max > MAX_TTL {
             return Err(bad("PKI mount lease TTL policy is outside bounds"));
+        }
+        if let Some(value) = body.get("allowed_response_headers") {
+            let names = string_list(Some(value))?;
+            if !crate::service::validate_sdk_header_allowlist(&names) {
+                return Err(bad("invalid PKI allowed response headers"));
+            }
+            let protocol = self.acme_protocol.as_mut().ok_or_else(|| {
+                error(
+                    501,
+                    "ACME nonce owner must be activated before header tuning",
+                )
+            })?;
+            if protocol.allowed_response_headers != names {
+                protocol.response_config_revision = protocol
+                    .response_config_revision
+                    .checked_add(1)
+                    .ok_or_else(|| error(507, "ACME response configuration exhausted"))?;
+                protocol.allowed_response_headers = names;
+            }
         }
         self.default_ttl = default;
         self.max_ttl = max;
@@ -419,6 +448,15 @@ impl Pki {
         validate_uri(&self.cluster_path, "PKI cluster path")?;
         validate_uri(&self.aia_path, "PKI AIA path")?;
         self.validate_urls()?;
+        if let Some(protocol) = &self.acme_protocol {
+            protocol.validate()?;
+            if protocol.owner.namespace != namespace || protocol.owner.mount != mount {
+                return Err(error(
+                    503,
+                    "ACME persisted namespace or mount owner changed",
+                ));
+            }
+        }
         validate_acme_config(&self.acme, &self.roles)?;
         if self.acme.enabled && self.cluster_path.is_empty() {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));

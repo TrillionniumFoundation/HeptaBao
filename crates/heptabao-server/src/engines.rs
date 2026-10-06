@@ -44,6 +44,7 @@ pub(crate) mod sdk_lease;
 mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
+pub(crate) use pki::acme_engine::{AcmeBinding, AcmeParsedJws, AcmeView};
 pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
 pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
 mod ssh;
@@ -52,6 +53,10 @@ mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    acme_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
+    acme_revision: u64,
     #[serde(default, skip_serializing_if = "sdk::Catalog::is_empty")]
     sdk_catalog: sdk::Catalog,
     #[serde(skip)]
@@ -2788,6 +2793,7 @@ fn handle_mounts(
                     "default_lease_ttl",
                     "max_lease_ttl",
                     "cas_revision",
+                    "allowed_response_headers",
                 ],
             )?;
             engine.tune(&tune)?;

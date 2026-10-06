@@ -257,6 +257,8 @@ impl EngineState {
             && self.lease_clock == previous.lease_clock
             && self.kubernetes_artifact_clock == previous.kubernetes_artifact_clock
             && self.sdk_lease_clock == previous.sdk_lease_clock
+            && self.acme_clock == previous.acme_clock
+            && self.acme_revision == previous.acme_revision
             && self.namespace_record_owners == previous.namespace_record_owners
             && self.namespaces.len() == previous.namespaces.len()
             && self.namespaces.iter().all(|(name, state)| {

@@ -1380,6 +1380,13 @@ fn read_request_mode(
         return Err(bad("token header exceeds limit"));
     }
     let query_only = matches!(method.as_str(), "GET" | "HEAD" | "DELETE" | "LIST" | "SCAN");
+    // A media type is only a body codec. The Service still resolves the actual
+    // PKI mount and verifies its durable public JWS account owner.
+    let jose_acme = method == "POST"
+        && route.split('/').any(|part| part == "acme")
+        && map
+            .get("content-type")
+            .is_some_and(|media| media.split(';').next() == Some("application/jose+json"));
     if length > 0
         && !leader_route
         && !native_snapshot
@@ -1388,6 +1395,7 @@ fn read_request_mode(
         && !ocsp::post_route(&method, route)
         && !query_only
         && !help_selected
+        && !jose_acme
         && map.get("content-type").is_some_and(|v| {
             !matches!(
                 v.split(';').next(),
@@ -1900,8 +1908,64 @@ fn write_response_with_namespace(
     } else {
         None
     };
+    let raw_acme = if response
+        .body
+        .as_object()
+        .is_some_and(|body| body.len() == 2 && body.contains_key("__heptabao_acme"))
+    {
+        match response.body["media"].as_str() {
+            Some("empty") if response.body["__heptabao_acme"].is_null() => {
+                Some((Vec::new(), "application/json"))
+            }
+            Some("json" | "problem") if response.body["__heptabao_acme"].is_object() => {
+                let payload = &response.body["__heptabao_acme"];
+                #[derive(serde::Serialize)]
+                struct AcmeProblem<'a> {
+                    #[serde(rename = "type")]
+                    kind: &'a str,
+                    detail: &'a str,
+                }
+                let mut bytes = if response.body["media"] == "problem" {
+                    let map = payload
+                        .as_object()
+                        .filter(|map| map.len() == 2)
+                        .ok_or_else(|| io::Error::other("invalid ACME problem transport"))?;
+                    let kind = map
+                        .get("type")
+                        .and_then(Value::as_str)
+                        .ok_or_else(|| io::Error::other("invalid ACME problem type"))?;
+                    let detail = map
+                        .get("detail")
+                        .and_then(Value::as_str)
+                        .ok_or_else(|| io::Error::other("invalid ACME problem detail"))?;
+                    serde_json::to_vec(&AcmeProblem { kind, detail })?
+                } else {
+                    serde_json::to_vec(payload)?
+                };
+                // These closed logical raw JSON responses retain their exact
+                // native compact encoding without Vault's outer JSON envelope.
+                if bytes.len() <= 128 * 1024 {
+                    Some((
+                        std::mem::take(&mut bytes),
+                        if response.body["media"] == "problem" {
+                            "application/problem+json"
+                        } else {
+                            "application/json"
+                        },
+                    ))
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        }
+    } else {
+        None
+    };
     let raw_ocsp = crate::engines::raw_ocsp_response(response.status, &response.body);
-    let content_type = if raw_ocsp.is_some() {
+    let content_type = if let Some((_, media)) = &raw_acme {
+        *media
+    } else if raw_ocsp.is_some() {
         "application/ocsp-response"
     } else if let Some((_, media)) = &raw_certificate {
         *media
@@ -1914,8 +1978,14 @@ fn write_response_with_namespace(
     } else {
         "application/json"
     };
-    let raw_body = raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
-    let mut bytes = Zeroizing::new(if let Some(raw) = raw_ocsp {
+    let raw_body =
+        raw_acme.is_some() || raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
+    let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
+    let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
+
+    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_acme {
+        raw
+    } else if let Some(raw) = raw_ocsp {
         raw
     } else if let Some((raw, _)) = raw_certificate {
         raw
@@ -2026,11 +2096,11 @@ fn write_response_with_namespace(
     // https://github.com/golang/go/blob/go1.25.1/src/net/http/server.go
     let no_body = status == 204 || status == 304 || (100..200).contains(&status);
     let chunked = !no_body && !head && !raw_body && bytes.len() > 2048;
-    write!(
-        writer,
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: {content_type}\r\n"
-    )?;
-    if !no_body && (raw_body || bytes.len() <= 2048) {
+    write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
+    if !acme_no_media {
+        write!(writer, "Content-Type: {content_type}\r\n")?;
+    }
+    if !no_body && !(head && acme_empty) && (raw_body || bytes.len() <= 2048) {
         write!(writer, "Content-Length: {}\r\n", bytes.len())?;
     } else if chunked {
         writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
@@ -2067,6 +2137,25 @@ mod ocsp_service_tests;
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn pki_acme99_jose_json_codec_keeps_framing_namespace_and_actual_route() -> io::Result<()> {
+        let body = r#"{"protected":"actual","payload":"","signature":"actual"}"#;
+        let wire = format!(
+            "POST /v1/nested/pki/acme/new-account HTTP/1.1\r\nHost: localhost\r\nX-Vault-Namespace: team/\r\nContent-Type: application/jose+json\r\nContent-Length: {}\r\n\r\n{body}",
+            body.len()
+        );
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("ACME JWS body codec"))?;
+        assert_eq!(request.path, "nested/pki/acme/new-account");
+        assert_eq!(request.namespace, "team");
+        assert!(request.token.is_empty());
+        assert_eq!(request.body.0, serde_json::from_str::<Value>(body)?);
+        let trailing = format!("{wire}extra");
+        assert!(read_request(&mut trailing.as_bytes(), Duration::from_secs(1)).is_err());
+        let ordinary = wire.replace("nested/pki/acme/new-account", "secret/item");
+        assert!(read_request(&mut ordinary.as_bytes(), Duration::from_secs(1)).is_err());
+        Ok(())
+    }
     #[test]
     fn head_operation_keeps_original_query_values_and_does_not_select_list() -> io::Result<()> {
         let wire = "HEAD /v1/secret/ocsp/plainkey?list=true&unknown=one&unknown=two&help= HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n";

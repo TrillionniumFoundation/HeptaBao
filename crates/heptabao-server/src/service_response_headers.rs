@@ -125,6 +125,27 @@ impl Headers {
         }
         Ok(result)
     }
+    pub(crate) fn append_from_sdk(
+        &mut self,
+        value: Option<&Value>,
+        allowed: &[String],
+    ) -> Result<(), ()> {
+        let other = Self::from_sdk(value, allowed)?;
+        let mut combined = HeaderValue(serde_json::to_value(&*self).map_err(|_| ())?);
+        let encoded = HeaderValue(serde_json::to_value(&other).map_err(|_| ())?);
+        let map = combined.0.as_object_mut().ok_or(())?;
+        for (name, values) in encoded.0.as_object().ok_or(())? {
+            map.entry(name.clone())
+                .or_insert_with(|| Value::Array(Vec::new()))
+                .as_array_mut()
+                .ok_or(())?
+                .extend(values.as_array().ok_or(())?.iter().cloned());
+        }
+        // Already admitted canonical case variants may have more than 32
+        // values. Keep the HA codec's actual total-byte bound after merging.
+        *self = Self::from_bounded_map(Some(&combined.0), allowed, 32 * 1024 / 5)?;
+        Ok(())
+    }
     pub(crate) fn copy_for_forward(&self) -> Self {
         Self(
             self.0

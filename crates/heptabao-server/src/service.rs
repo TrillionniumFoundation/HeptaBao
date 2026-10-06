@@ -1,3 +1,4 @@
+use crate::auth::Timestamp;
 use crate::request_deadline::HaLock;
 use crate::{
     auth::{AuthState, AuthorityTime, Principal, RequestClock},
@@ -89,8 +90,11 @@ const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
 const SDK_SECRET_LEASE_STATE_SCHEMA: u32 = 96;
 const PKI_URLS_STATE_SCHEMA: u32 = 97;
 const EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA: u32 = 98;
+const PKI_ACME_ACCOUNT_STATE_SCHEMA: u32 = 99;
+#[path = "service_pki_acme.rs"]
+mod pki_acme;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ACME_ACCOUNT_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -114,6 +118,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SDK_SECRET_LEASE_STATE_SCHEMA
                 | PKI_URLS_STATE_SCHEMA
                 | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+                | PKI_ACME_ACCOUNT_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -1118,6 +1123,8 @@ pub struct Service {
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
+    pending_acme_authority: Option<pki_acme::Authority>,
+    acme_nonces: pki_acme::Nonces,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
@@ -1494,6 +1501,8 @@ impl Service {
             pending_ha_step_down: None,
             pending_forward_delivery: None,
             pending_help_authority: None,
+            pending_acme_authority: None,
+            acme_nonces: Default::default(),
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
@@ -2173,6 +2182,7 @@ impl Service {
             || self.pending_ha_step_down.is_some()
             || self.pending_forward_delivery.is_some()
             || self.pending_help_authority.is_some()
+            || self.pending_acme_authority.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
             erase_json(&mut body);
@@ -2428,6 +2438,7 @@ impl Service {
         let token_api_authority = self.pending_token_api_authority.take();
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
+        let acme_authority = self.pending_acme_authority.take();
         let staged = sdk_staged
             + usize::from(database.is_some())
             + usize::from(database_config.is_some())
@@ -2446,6 +2457,7 @@ impl Service {
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
+            + usize::from(acme_authority.is_some())
             + usize::from(step_down.is_some())
             + usize::from(sdk_control_present);
         if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
@@ -2503,6 +2515,8 @@ impl Service {
         }
         self.pending_token_api_authority = token_api_authority;
         self.pending_help_authority = help_authority;
+        let acme_expected = acme_authority.is_some();
+        self.pending_acme_authority = acme_authority;
         let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         let mut response =
@@ -2529,6 +2543,7 @@ impl Service {
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
         let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
+        let response = self.complete_pending_acme_delivery(acme_expected, response, &fingerprint);
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
         let response = self.complete_forward_delivery(response, &fingerprint);
@@ -2977,6 +2992,9 @@ impl Service {
                 && admitted.engines.is_actual_pki_ocsp(namespace, path))
         {
             return Response::error(405, "unsupported operation");
+        }
+        if let Some(response) = self.handle_pki_acme(&request, &mut admitted) {
+            return response;
         }
         let help_projection = if method == "HELP" {
             if crate::http::help::request(method, path, body).is_none() {
@@ -3719,7 +3737,52 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if admitted.engines.has_kubernetes_opaque_artifact_state()
+        if response.status < 300
+            && matches!(method, "POST" | "PUT")
+            && path.ends_with("config/acme")
+        {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let at = match time
+                .exact()
+                .or_else(|| Timestamp::whole(time.seconds()).ok())
+            {
+                Some(at) => at,
+                None => return Response::error(503, "ACME accepted clock unavailable"),
+            };
+            if let Err(error) = admitted.engines.acme_activate_config(
+                namespace,
+                path,
+                &admitted.cluster_id,
+                admitted.namespaces.incarnation(namespace),
+                at,
+            ) {
+                return Response::from_engine_error(error);
+            }
+        }
+        if admitted.engines.has_pki_acme_state()
+            && response.status < 300
+            && matches!(method, "POST" | "PUT" | "PATCH" | "DELETE")
+        {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let at = match time
+                .exact()
+                .or_else(|| Timestamp::whole(time.seconds()).ok())
+            {
+                Some(at) => at,
+                None => return Response::error(503, "ACME original publication clock unavailable"),
+            };
+            if let Err(error) = admitted.engines.acme_observe_publication(at) {
+                return Response::from_engine_error(error);
+            }
+        }
+        if admitted.engines.has_pki_acme_state()
+            || admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
             || admitted.has_namespace_batch_state()
             || admitted.engines.has_pki_url_state()
