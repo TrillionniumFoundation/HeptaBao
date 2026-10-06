@@ -100,7 +100,7 @@ fn prepare_with_ttl_and_root(
                 json!({"token":warm_token}),
             )
             .status,
-            200
+            204
         );
         assert!(
             service
