@@ -640,7 +640,13 @@ fn serve_inner(
                         "request rate limit exceeded",
                         deadline,
                     );
-                    let _ = write_response(&mut stream, response, false);
+                    write_http1_reply(
+                        &mut stream,
+                        snapshot::NativeReply::Json(response),
+                        false,
+                        "",
+                        deadline,
+                    );
                     return;
                 }
                 // Parsing and a bounded rejected-body discard must leave time for
@@ -669,7 +675,7 @@ fn serve_inner(
                     consistency_settings,
                     deadline,
                 );
-                let _ = reply.write_with_namespace(&mut stream, head, &namespace);
+                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
             });
         if spawn.is_err() {
             #[cfg(target_os = "linux")]
@@ -914,6 +920,50 @@ struct ConnectionGuard(Arc<AtomicUsize>);
 impl Drop for ConnectionGuard {
     fn drop(&mut self) {
         self.0.fetch_sub(1, Ordering::Release);
+    }
+}
+
+struct ResponseWriteObservation<'a, W> {
+    writer: &'a mut W,
+    accepted_plaintext_bytes: usize,
+    flush_attempted: bool,
+}
+impl<W: Write> Write for ResponseWriteObservation<'_, W> {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        let count = self.writer.write(bytes)?;
+        self.accepted_plaintext_bytes = self.accepted_plaintext_bytes.saturating_add(count);
+        Ok(count)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.flush_attempted = true;
+        self.writer.flush()
+    }
+}
+
+// Diagnostic observations do not acknowledge network delivery or grant retry.
+// Preserve the original deadline and each underlying write/flush exactly.
+fn write_http1_reply(
+    writer: &mut impl Write,
+    reply: snapshot::NativeReply,
+    head: bool,
+    namespace: &str,
+    deadline: Instant,
+) {
+    let mut observation = ResponseWriteObservation {
+        writer,
+        accepted_plaintext_bytes: 0,
+        flush_attempted: false,
+    };
+    if let Err(error) = reply.write_with_namespace(&mut observation, head, namespace) {
+        // Error text can carry peer/provider bytes. Only closed error kinds and
+        // counters are emitted; no path, token, headers, body or parser line.
+        eprintln!(
+            "HBHTTP-RESPONSE-WRITE-FAILURE io_kind={:?} accepted_plaintext_bytes={} flush_attempted={} original_deadline_expired={}",
+            error.kind(),
+            observation.accepted_plaintext_bytes,
+            observation.flush_attempted,
+            Instant::now() >= deadline
+        );
     }
 }
 

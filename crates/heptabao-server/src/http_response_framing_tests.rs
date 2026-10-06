@@ -280,3 +280,58 @@ fn sdk_headers95_transport_owned_primary_json_precedence() -> io::Result<()> {
     assert!(chrono::DateTime::parse_from_rfc2822(dates[0]).is_ok());
     Ok(())
 }
+
+#[test]
+fn response_write_observation_retains_short_write_and_partial_error_semantics() -> io::Result<()> {
+    struct PartialFailure {
+        accepted: Vec<u8>,
+        limit: usize,
+        flush_calls: usize,
+    }
+    impl Write for PartialFailure {
+        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+            if self.accepted.len() == self.limit {
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "sensitive peer bytes",
+                ));
+            }
+            let count = bytes.len().min(3).min(self.limit - self.accepted.len());
+            self.accepted.extend_from_slice(&bytes[..count]);
+            Ok(count)
+        }
+        fn flush(&mut self) -> io::Result<()> {
+            self.flush_calls += 1;
+            Ok(())
+        }
+    }
+    let mut direct = PartialFailure {
+        accepted: Vec::new(),
+        limit: 11,
+        flush_calls: 0,
+    };
+    let direct_error = write_response(&mut direct, Response::error(400, "negative"), false)
+        .err()
+        .ok_or_else(|| io::Error::other("partial failure not reached"))?;
+    let mut observed = PartialFailure {
+        accepted: Vec::new(),
+        limit: 11,
+        flush_calls: 0,
+    };
+    let mut observation = ResponseWriteObservation {
+        writer: &mut observed,
+        accepted_plaintext_bytes: 0,
+        flush_attempted: false,
+    };
+    let observed_error = write_response(&mut observation, Response::error(400, "negative"), false)
+        .err()
+        .ok_or_else(|| io::Error::other("observed partial failure not reached"))?;
+    assert_eq!(observed_error.kind(), direct_error.kind());
+    assert_eq!(observation.accepted_plaintext_bytes, 11);
+    assert!(!observation.flush_attempted);
+    drop(observation);
+    assert_eq!(observed.accepted, direct.accepted);
+    assert_eq!(observed.flush_calls, direct.flush_calls);
+    assert_eq!(observed.accepted, b"HTTP/1.1 40");
+    Ok(())
+}

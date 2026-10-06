@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import socket
@@ -124,6 +125,36 @@ def file_hash(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+
+
+def bounded_response_write_observations(path: Path) -> dict:
+    """Read only the server's closed diagnostic shape from a bounded log tail."""
+    maximum_bytes, maximum_rows = 128 * 1024, 64
+    try:
+        with path.open("rb") as stream:
+            size = stream.seek(0, os.SEEK_END)
+            stream.seek(max(0, size - maximum_bytes))
+            tail = stream.read(maximum_bytes)
+    except OSError:
+        return {"read_failed": True, "rows": []}
+    pattern = re.compile(
+        rb"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=([A-Z][A-Za-z]{0,31}) "
+        rb"accepted_plaintext_bytes=([0-9]{1,20}) flush_attempted=(true|false) "
+        rb"original_deadline_expired=(true|false)"
+    )
+    matches = [pattern.fullmatch(line) for line in tail.splitlines()]
+    matches = [match for match in matches if match is not None]
+    return {
+        "read_failed": False, "examined_bytes": len(tail),
+        "tail_only": size > maximum_bytes, "rows_truncated": len(matches) > maximum_rows,
+        "rows": [
+            {"io_kind": match[1].decode("ascii"),
+             "accepted_plaintext_bytes": int(match[2]),
+             "flush_attempted": match[3] == b"true",
+             "original_deadline_expired": match[4] == b"true"}
+            for match in matches[:maximum_rows]
+        ],
+    }
 
 def successful_comparison(cases: dict, side_failures: dict) -> bool:
     """Never admit matching failed/empty prefixes or mismatched observations."""
@@ -295,6 +326,8 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         result["safe_failure_code"] = "unexpected_" + type(error).__name__
     finally:
         instance.stop()
+        result["candidate_response_write_observations"] = bounded_response_write_observations(
+            instance.root / "server.log")
         if oracle is not None:
             stop_oracle(oracle)
             shutil.rmtree(oracle["root"])
@@ -312,7 +345,9 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
             last_cases[side] = case
     print(json.dumps({"status": result["status"], "cases_per_side": result.get("case_count_per_side", 0),
                       "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}),
-                      "last_completed_case": last_cases, "full_openbao_compatibility": False}))
+                      "last_completed_case": last_cases,
+                      "candidate_response_write_observations": result.get("candidate_response_write_observations"),
+                      "full_openbao_compatibility": False}))
     return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
 
 
