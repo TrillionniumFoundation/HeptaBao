@@ -63,8 +63,7 @@ impl Paths {
         heptabao_plugin_contracts::sdk_paths::root_matches(&self.root, path)
     }
     pub(crate) fn is_public(&self, path: &str) -> bool {
-        !self.is_root(path)
-            && heptabao_plugin_contracts::sdk_paths::matches(&self.unauthenticated, path)
+        heptabao_plugin_contracts::sdk_paths::matches(&self.unauthenticated, path)
     }
     pub(crate) fn legacy() -> Self {
         Self {

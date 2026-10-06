@@ -272,6 +272,9 @@ impl Service {
             .as_ref()
             .zip(relative_path)
             .is_some_and(|(policy, path)| policy.is_public(path));
+        if login && root_path {
+            return Response::error(400, "cannot access root path in unauthenticated request");
+        }
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "SDK Auth response wrapping is not implemented");
         }
