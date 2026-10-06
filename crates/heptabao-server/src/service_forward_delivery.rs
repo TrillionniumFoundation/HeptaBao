@@ -52,6 +52,29 @@ impl Service {
         );
         Ok(crate::ha_forward_completion::digest(&bytes))
     }
+    // Denied OIDC callbacks can ignore unrelated Auth publication only. Every
+    // other durable owner, namespace/catalog graph, KV record, replay/schema
+    // and cluster binding remains exact and authenticated by the source MAC.
+    fn forward_non_auth_owner_projection(&self) -> Result<[u8; 32], Response> {
+        let root = self.record_root.as_ref().ok_or_else(unavailable)?;
+        let other: Vec<_> = root
+            .owners
+            .iter()
+            .filter(|owner| owner.name != "auth")
+            .map(|owner| (&owner.name, owner.digest))
+            .collect();
+        let bytes = Zeroizing::new(
+            serde_json::to_vec(&(
+                root.state_schema,
+                &root.cluster_id,
+                root.replay_epoch,
+                other,
+                &root.kv1,
+            ))
+            .map_err(|_| unavailable())?,
+        );
+        Ok(crate::ha_forward_completion::digest(&bytes))
+    }
     pub(super) fn expects_local_ha_step_down(&self, path: &str, response: &Response) -> bool {
         path == "sys/step-down"
             && response.status == 204
@@ -83,6 +106,41 @@ impl Service {
         self.check_forward_delivery(&result, "stage")?;
         Ok(result)
     }
+    // A completed peer response is held while only local materialization
+    // catches up. Only the authenticated Superseded outcome may continue;
+    // callback execution, Actor admission and use consumption never repeat.
+    fn sync_forward_delivery_before(&mut self, deadline: Instant) -> Result<(), Response> {
+        if Instant::now() >= deadline {
+            return Err(unavailable());
+        }
+        let progress = self.sync_from_ha_with_anchor_progress(false)?;
+        self.continue_forward_local_sync(progress, deadline)
+    }
+
+    pub(super) fn continue_forward_local_sync(
+        &mut self,
+        mut progress: ha_received::HaSyncProgress,
+        deadline: Instant,
+    ) -> Result<(), Response> {
+        loop {
+            if Instant::now() >= deadline
+                || crate::request_deadline::current()
+                    .is_some_and(|original| Instant::now() >= original)
+            {
+                return Err(unavailable());
+            }
+            match progress {
+                ha_received::HaSyncProgress::Current => return Ok(()),
+                ha_received::HaSyncProgress::Superseded(error) => {
+                    if Instant::now() >= deadline {
+                        return Err(error);
+                    }
+                    progress = self.sync_from_ha_with_anchor_progress(false)?;
+                }
+            }
+        }
+    }
+
     fn check_forward_delivery(
         &mut self,
         authority: &ForwardDelivery,
@@ -107,12 +165,13 @@ impl Service {
         // the first materialization. The final witness must authenticate this
         // same actual Service graph before any owner or Actor check follows.
         let (actual_identity, witness) = loop {
-            self.sync_from_ha_with_anchor(false).inspect_err(|error| {
-                eprintln!(
-                    "heptabao-forward-diagnostic: phase={phase} guard=sync status={}",
-                    error.status
-                );
-            })?;
+            self.sync_forward_delivery_before(authority.receipt.deadline)
+                .inspect_err(|error| {
+                    eprintln!(
+                        "heptabao-forward-diagnostic: phase={phase} guard=sync status={}",
+                        error.status
+                    );
+                })?;
             let (identity, witness) = authority
                 .ha
                 .lock_for_request()
@@ -126,14 +185,29 @@ impl Service {
                 return Err(unavailable());
             }
         };
-        if !witness.covers_completed_prefix(authority.receipt.prefix())
-            || self
-                .forward_owner_projection()
-                .map_err(|_| diagnostic_unavailable(phase, "current_projection"))?
-                != authority.receipt.owner_projection()
-        {
+        let prefix_covers = witness.covers_completed_prefix(authority.receipt.prefix());
+        let owner_matches = self
+            .forward_owner_projection()
+            .map_err(|_| diagnostic_unavailable(phase, "current_projection"))?
+            == authority.receipt.owner_projection();
+        let typed_no_effect_denial =
+            if let Some(denial) = authority.receipt.oidc_missing_session_denial() {
+                self.state
+                    .as_ref()
+                    .ok_or_else(unavailable)?
+                    .auth
+                    .validate_oidc_missing_session_denial(&denial.denial, &authority.namespace)
+                    .map_err(|_| diagnostic_unavailable(phase, "oidc_denial_owner"))?;
+                if self.forward_non_auth_owner_projection()? != denial.non_auth_owner_projection {
+                    return Err(diagnostic_unavailable(phase, "oidc_denial_non_auth_owner"));
+                }
+                true
+            } else {
+                false
+            };
+        if !prefix_covers || (!owner_matches && !typed_no_effect_denial) {
             eprintln!(
-                "heptabao-forward-diagnostic: phase={phase} guard=prefix_or_owner actual_digest={:02x?} receipt_digest={:02x?}",
+                "heptabao-forward-diagnostic: phase={phase} guard=prefix_or_owner prefix_covers={prefix_covers} owner_matches={owner_matches} typed_no_effect_denial={typed_no_effect_denial} actual_digest={:02x?} receipt_digest={:02x?}",
                 actual_identity.digest(),
                 authority.receipt.identity().digest()
             );
@@ -364,6 +438,17 @@ impl Service {
                 precise: state.has_token_api_precision_state(),
                 audit_sequence: self.audit_sequence,
                 audit_mac: self.audit_previous,
+                non_auth_owner_projection: if CompletionScope::has_oidc_missing_session_denial() {
+                    match self.forward_non_auth_owner_projection() {
+                        Ok(projection) => projection,
+                        Err(_) => {
+                            seal_diagnostic("denial_non_auth_projection");
+                            return;
+                        }
+                    }
+                } else {
+                    [0; 32]
+                },
             },
         );
     }

@@ -1049,3 +1049,257 @@ fn completed_forward_real_raft_after_peer_budget_keeps_original_business_deadlin
     drop(cluster);
     Ok(())
 }
+
+fn oidc_missing_session_completion(
+    root: &Root,
+) -> TestResult<(
+    Service,
+    crate::ha::snapshot_test_support::Cluster,
+    String,
+    TestCompletion,
+)> {
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let warm = native(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root_token,
+        json!({"ttl":"10m","policies":["root"],"no_default_policy":true}),
+    );
+    assert_eq!(warm.status, 200);
+    let mut state = service.state.as_ref().ok_or("state")?.clone();
+    let callback = state.auth.install_consumed_oidc_fixture_for_test()?;
+    state.schema = state.writer_schema();
+    service
+        .commit_state(&mut state)
+        .map_err(|_| "OIDC prerequisite commit")?;
+    service.state = Some(state);
+    let id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|_| "initial HA")?;
+    let nonce = crate::crypto::random::<32>()?;
+    let request = crate::ha_forward::encode_completed_index_request_for_cluster(
+        &id,
+        (2, 1),
+        &crate::ha_forward::ForwardContext {
+            method: "POST",
+            path: "auth/browser/oidc/callback",
+            namespace: "",
+            token: "",
+            body: &callback,
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+            origin_peer: None,
+            caller_deadline: None,
+        },
+        Some(nonce),
+    )?;
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let scope = CompletionScope::enter(Some(nonce), &request, deadline, &id, 1, false);
+    let response = native(
+        &mut service,
+        "POST",
+        "auth/browser/oidc/callback",
+        "",
+        callback,
+    );
+    assert_eq!(response.status, 403);
+    assert_eq!(response.body, json!({"errors":["permission denied"]}));
+    assert!(
+        service.pending_online_auth_effect.is_none(),
+        "no provider code-exchange plan"
+    );
+    service.seal_forward_completion(&response);
+    let wire = scope.finish().ok_or("missing genuine completed denial")?;
+    assert!(wire.oidc_missing_session_denial.is_some());
+    assert!(wire.actor.is_none());
+    assert!(scope.finish().is_none());
+    drop(scope);
+    Ok((
+        service,
+        cluster,
+        root_token,
+        (response, wire, request, nonce, deadline),
+    ))
+}
+
+fn verified_oidc_missing_completion(
+    service: &Service,
+    completion: TestCompletion,
+) -> TestResult<(Response, CompletedForwardReceipt)> {
+    let (response, wire, request, nonce, deadline) = completion;
+    let receipt = CompletedForwardReceipt::verified(
+        wire,
+        crate::ha_forward_completion::CompletedExchange {
+            cluster: service.state.as_ref().ok_or("state")?.cluster_id.clone(),
+            source: 1,
+            target: 2,
+            deadline,
+            nonce,
+            request: &request,
+            response_digest: response_digest(&response)?,
+        },
+    )?;
+    Ok((response, receipt))
+}
+
+#[test]
+fn completed_forward_oidc_no_effect_denial_survives_unrelated_auth_publication() -> TestResult {
+    let files = Root::new();
+    let (mut service, cluster, root, completion) = oidc_missing_session_completion(&files)?;
+    let (response, receipt) = verified_oidc_missing_completion(&service, completion)?;
+    let source_projection = receipt.owner_projection();
+    let source_other = receipt
+        .oidc_missing_session_denial()
+        .ok_or("typed denial")?
+        .non_auth_owner_projection;
+    let issued = native(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root,
+        json!({"ttl":"10m","policies":["default"]}),
+    );
+    assert_eq!(issued.status, 200);
+    assert_ne!(
+        service
+            .forward_owner_projection()
+            .map_err(|_| "projection")?,
+        source_projection
+    );
+    assert_eq!(
+        service
+            .forward_non_auth_owner_projection()
+            .map_err(|_| "other owners")?,
+        source_other
+    );
+    service.ha = Some(Arc::clone(&cluster.processes[1]));
+    let original_clock = clock()?;
+    let authority = service
+        .stage_forward_delivery(
+            receipt,
+            Arc::clone(&cluster.processes[1]),
+            "",
+            Some(original_clock),
+            100,
+        )
+        .map_err(|_| "follower typed no-effect denial")?;
+    service.pending_forward_delivery = Some(PendingForwardDelivery::Completed(Box::new(authority)));
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let index = cluster.processes[1]
+        .lock()
+        .map_err(|_| "HA")?
+        .leader_status()?
+        .committed_index;
+    let sequence = service.audit_sequence;
+    let denied = service.audit_completed_response(
+        "original-OIDC-missing-session",
+        100,
+        Some(original_clock),
+        response,
+    );
+    let denied = service.complete_forward_delivery(denied, "original-OIDC-missing-session");
+    assert_eq!(denied.status, 403);
+    assert_eq!(denied.body, json!({"errors":["permission denied"]}));
+    assert!(denied.response_headers.is_empty() && denied.consistency_index.is_none());
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+        before
+    );
+    assert_eq!(service.audit_sequence, sequence + 1);
+    assert_eq!(
+        cluster.processes[1]
+            .lock()
+            .map_err(|_| "HA")?
+            .leader_status()?
+            .committed_index,
+        index
+    );
+    assert!(
+        service.pending_forward_delivery.is_none() && service.pending_online_auth_effect.is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn completed_forward_oidc_no_effect_denial_still_rejects_other_durable_owner_change() -> TestResult
+{
+    let files = Root::new();
+    let (mut service, cluster, root, completion) = oidc_missing_session_completion(&files)?;
+    let (_response, receipt) = verified_oidc_missing_completion(&service, completion)?;
+    let written = native(
+        &mut service,
+        "PUT",
+        "secret/data/concurrent-other-owner",
+        &root,
+        json!({"data":{"value":"independent-KV-effect"}}),
+    );
+    assert_eq!(written.status, 200);
+    service.ha = Some(Arc::clone(&cluster.processes[1]));
+    let withheld = service.stage_forward_delivery(
+        receipt,
+        Arc::clone(&cluster.processes[1]),
+        "",
+        Some(clock()?),
+        100,
+    );
+    assert!(withheld.is_err());
+    assert!(service.pending_forward_delivery.is_none());
+    Ok(())
+}
+
+#[test]
+fn completed_forward_oidc_no_effect_denial_cannot_be_forged_or_used_for_success() -> TestResult {
+    let files = Root::new();
+    let (mut service, cluster, _root, completion) = oidc_missing_session_completion(&files)?;
+    let (response, wire, request, nonce, deadline) = completion;
+    let id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let raw = serde_json::to_value(&wire)?;
+    assert!(
+        CompletedForwardReceipt::verified(
+            serde_json::from_value(raw.clone())?,
+            crate::ha_forward_completion::CompletedExchange {
+                cluster: id.clone(),
+                source: 1,
+                target: 2,
+                deadline,
+                nonce,
+                request: &request,
+                response_digest: response_digest(&Response::ok(
+                    json!({"auth":{"client_token":"forged"}})
+                ))?,
+            }
+        )
+        .is_err()
+    );
+    let mut tampered = raw;
+    tampered["oidc_missing_session_denial"]["denial"]["version"] = json!(0);
+    let receipt = CompletedForwardReceipt::verified(
+        serde_json::from_value(tampered)?,
+        crate::ha_forward_completion::CompletedExchange {
+            cluster: id,
+            source: 1,
+            target: 2,
+            deadline,
+            nonce,
+            request: &request,
+            response_digest: response_digest(&response)?,
+        },
+    )?;
+    service.ha = Some(Arc::clone(&cluster.processes[1]));
+    assert!(
+        service
+            .stage_forward_delivery(
+                receipt,
+                Arc::clone(&cluster.processes[1]),
+                "",
+                Some(clock()?),
+                100
+            )
+            .is_err(),
+        "tampered typed denial must fail the actual publication MAC"
+    );
+    Ok(())
+}

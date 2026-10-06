@@ -53,8 +53,8 @@ mod kerberos;
 pub(crate) use kerberos::{KerberosLoginObservation, KerberosLoginPlan};
 pub(crate) use kubernetes::{KubernetesLoginObservation, KubernetesLoginPlan};
 pub(crate) use oidc::{
-    OidcBeginObservation, OidcBeginPlan, OidcConfigObservation, OidcConfigPlan, OidcExchange,
-    OidcLoginObservation,
+    OidcBeginObservation, OidcBeginPlan, OidcConfigObservation, OidcConfigPlan, OidcConsumption,
+    OidcExchange, OidcLoginObservation, OidcMissingSessionDenial,
 };
 
 #[path = "auth_remote.rs"]

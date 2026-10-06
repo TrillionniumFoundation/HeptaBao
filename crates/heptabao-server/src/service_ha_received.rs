@@ -7,6 +7,34 @@ use crate::state_record_root::StateIdentity;
 use heptabao_raft_runtime::ApplicationReadWitness;
 use std::time::Instant;
 
+// This private result can be constructed only after the same authenticated
+// local publication owner proved supersession. It carries the original public
+// denial for ordinary callers; it never grants delivery or a new publication.
+pub(super) enum HaSyncProgress {
+    Current,
+    Superseded(Response),
+}
+impl HaSyncProgress {
+    pub(super) fn from_record_publication(progress: HaRecordPublicationProgress) -> Self {
+        match progress {
+            HaRecordPublicationProgress::Current => Self::Current,
+            HaRecordPublicationProgress::UnpublishedSuperseded => Self::Superseded(
+                Response::error(503, "HA received target advanced before local publication"),
+            ),
+            HaRecordPublicationProgress::CompletedSuperseded => Self::Superseded(Response::error(
+                503,
+                "HA local publication is catching up to a newer committed target",
+            )),
+        }
+    }
+    pub(super) fn into_result(self) -> Result<(), Response> {
+        match self {
+            Self::Current => Ok(()),
+            Self::Superseded(error) => Err(error),
+        }
+    }
+}
+
 // A selected complete application and its coeval opaque runtime witness.
 // Materialized transition envelopes intentionally retain exact-current checks.
 struct SelectedSupersedingApplication {
@@ -1209,11 +1237,26 @@ impl Service {
         result
     }
 
+    #[cfg(test)]
     pub(super) fn reconcile_existing_ha_publication(
         &mut self,
         local: &ExistingLocalPublication,
         receipt: &ReceivedHaState,
     ) -> Result<(), Response> {
+        match self.reconcile_existing_ha_publication_progress(local, receipt)? {
+            HaLocalPublicationProgress::Current => Ok(()),
+            HaLocalPublicationProgress::Superseded => Err(Response::error(
+                503,
+                "HA existing publication is catching up to a newer committed target",
+            )),
+        }
+    }
+
+    pub(super) fn reconcile_existing_ha_publication_progress(
+        &mut self,
+        local: &ExistingLocalPublication,
+        receipt: &ReceivedHaState,
+    ) -> Result<HaLocalPublicationProgress, Response> {
         let result = (|| {
             let completed = local.after_received(receipt, self)?;
             let progress = completed.publication_progress(self)?;
@@ -1223,11 +1266,7 @@ impl Service {
             self.reconcile_completed_ha_recovery_index(&completed)
         })();
         match result {
-            Ok(HaLocalPublicationProgress::Current) => Ok(()),
-            Ok(HaLocalPublicationProgress::Superseded) => Err(Response::error(
-                503,
-                "HA existing publication is catching up to a newer committed target",
-            )),
+            Ok(progress) => Ok(progress),
             Err(error) => {
                 self.fence_recovery_delivery();
                 Err(error)
@@ -2261,6 +2300,77 @@ mod tests {
                 &c_plan.objects,
             )?;
         match case {
+            "forward" | "forward_expired" | "forward_quorum" => {
+                let publication = service
+                    .install_committed_ha_records(received)
+                    .map_err(|_| "actual unpublished B withholding")?;
+                assert_eq!(
+                    publication,
+                    HaRecordPublicationProgress::UnpublishedSuperseded
+                );
+                assert_eq!(
+                    service.current_state_identity().map_err(|_| "same A")?,
+                    a_identity
+                );
+                assert_eq!(
+                    service.durable.as_ref().ok_or("durable")?.generation(),
+                    generation_a
+                );
+                let progress = HaSyncProgress::from_record_publication(publication);
+                let deadline = crate::request_deadline::current().ok_or("original deadline")?;
+                if case == "forward" {
+                    service
+                        .continue_forward_local_sync(progress, deadline)
+                        .map_err(|_| "same deadline local C catch-up")?;
+                    assert_eq!(
+                        service.current_state_identity().map_err(|_| "C")?,
+                        c_plan.identity
+                    );
+                    let (loaded, _, _) = Service::load_state_from_durable(
+                        service.durable.as_ref().ok_or("durable")?,
+                    )
+                    .map_err(|_| "actual encrypted C")?;
+                    assert_eq!(
+                        owner_store::serialize_owner(&loaded)?.as_slice(),
+                        owner_store::serialize_owner(&c)?.as_slice()
+                    );
+                } else {
+                    let _bounded = if case == "forward_expired" {
+                        crate::request_deadline::RequestDeadlineScope::enter(
+                            Instant::now() - Duration::from_millis(1),
+                        )
+                    } else {
+                        cluster.isolate_all_peers(true);
+                        crate::request_deadline::RequestDeadlineScope::enter(
+                            Instant::now() + Duration::from_millis(250),
+                        )
+                    };
+                    assert!(
+                        service
+                            .continue_forward_local_sync(
+                                progress,
+                                crate::request_deadline::current().ok_or("same bound")?
+                            )
+                            .is_err()
+                    );
+                    assert_eq!(
+                        service.current_state_identity().map_err(|_| "same A")?,
+                        a_identity
+                    );
+                    assert_eq!(
+                        service.durable.as_ref().ok_or("durable")?.generation(),
+                        generation_a
+                    );
+                    assert_eq!(
+                        service
+                            .durable
+                            .as_ref()
+                            .ok_or("durable")?
+                            .get("system", "state")?,
+                        stored_a
+                    );
+                }
+            }
             "positive" => {
                 assert_eq!(
                     service
@@ -2420,6 +2530,21 @@ mod tests {
             _ => return Err("unknown unpublished test case".into()),
         }
         Ok(())
+    }
+
+    #[test]
+    fn completed_forward_local_catchup_installs_real_newer_c_without_replaying_effect() -> TestResult
+    {
+        actual_unpublished_shamir_case("forward")
+    }
+    #[test]
+    fn completed_forward_local_catchup_keeps_original_expired_deadline() -> TestResult {
+        actual_unpublished_shamir_case("forward_expired")
+    }
+    #[test]
+    fn completed_forward_local_catchup_rejects_real_lost_quorum_without_publication() -> TestResult
+    {
+        actual_unpublished_shamir_case("forward_quorum")
     }
 
     #[test]

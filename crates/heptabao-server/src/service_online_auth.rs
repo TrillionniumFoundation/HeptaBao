@@ -666,14 +666,20 @@ impl Service {
         } else {
             let entered = std::time::Instant::now();
             let mut state = admitted.clone();
-            let exchange =
-                match state
-                    .auth
-                    .consume_oidc(request.namespace, &mount, request.body, request.now)
-                {
-                    Ok(exchange) => exchange,
-                    Err(error) => return Some(auth_error(error)),
-                };
+            let exchange = match state.auth.consume_oidc_with_denial(
+                request.namespace,
+                &mount,
+                request.body,
+                request.now,
+            ) {
+                Ok(crate::auth::OidcConsumption::Exchange(exchange)) => exchange,
+                Ok(crate::auth::OidcConsumption::MissingSession(denial)) => {
+                    let response = Response::error(403, "permission denied");
+                    crate::ha_forward_completion::oidc_missing_session_denied(denial, &response);
+                    return Some(response);
+                }
+                Err(error) => return Some(auth_error(error)),
+            };
             state.schema = state.writer_schema();
             // Critical order: one-use session removal is replicated and durable
             // before the global Service writer is released for code exchange.
@@ -690,7 +696,7 @@ impl Service {
             OnlineAuthEffect::OidcCallback {
                 namespace: request.namespace.into(),
                 mount,
-                exchange: Box::new(exchange),
+                exchange,
                 now: request.now,
                 started: entered,
             }

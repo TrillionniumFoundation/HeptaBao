@@ -7365,9 +7365,17 @@ impl Service {
     }
 
     fn sync_from_ha_with_anchor(&mut self, allow_initial_anchor: bool) -> Result<(), Response> {
+        self.sync_from_ha_with_anchor_progress(allow_initial_anchor)?
+            .into_result()
+    }
+
+    fn sync_from_ha_with_anchor_progress(
+        &mut self,
+        allow_initial_anchor: bool,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
         let before = self.local_activation_key();
         let result = self.sync_from_ha_with_anchor_inner(allow_initial_anchor);
-        if result.is_ok() {
+        if matches!(&result, Ok(ha_received::HaSyncProgress::Current)) {
             // This is the serialized application activation publication point,
             // after ReadIndex, authenticated materialization and local admission.
             self.publish_ha_activation_after_sync(before);
@@ -7380,9 +7388,9 @@ impl Service {
     fn sync_from_ha_with_anchor_inner(
         &mut self,
         allow_initial_anchor: bool,
-    ) -> Result<(), Response> {
+    ) -> Result<ha_received::HaSyncProgress, Response> {
         let Some(ha) = self.ha.as_ref().cloned() else {
-            return Ok(());
+            return Ok(ha_received::HaSyncProgress::Current);
         };
         let known = self.reusable_ha_cursor().cloned();
         let previous_cache = self.ha_read_cache.take();
@@ -7402,7 +7410,7 @@ impl Service {
         let committed = match observed {
             crate::ha::CommittedStateRead::Unchanged => {
                 self.ha_read_cache = previous_cache;
-                return Ok(());
+                return Ok(ha_received::HaSyncProgress::Current);
             }
             crate::ha::CommittedStateRead::Records(committed) => {
                 return self.sync_record_state_from_ha(&ha, *committed);
@@ -7441,7 +7449,7 @@ impl Service {
                     self.commit_state(&mut state)?;
                 }
             }
-            return Ok(());
+            return Ok(ha_received::HaSyncProgress::Current);
         };
         if self.record_root.is_some() {
             return Err(Response::error(
@@ -7456,12 +7464,19 @@ impl Service {
                 // available for a later pass, but local integrity failures fence.
                 let local = self.capture_existing_ha_publication()?;
                 let received = self.receive_materialized_ha_state(&committed)?;
-                self.reconcile_existing_ha_publication(&local, &received)?;
+                if self.reconcile_existing_ha_publication_progress(&local, &received)?
+                    == ha_received::HaLocalPublicationProgress::Superseded
+                {
+                    return Ok(ha_received::HaSyncProgress::Superseded(Response::error(
+                        503,
+                        "HA existing publication is catching up to a newer committed target",
+                    )));
+                }
             } else {
                 self.reconcile_unchanged_ha_recovery_index(crate::request_deadline::current())?;
             }
             self.cache_verified_ha_state(&committed)?;
-            return Ok(());
+            return Ok(ha_received::HaSyncProgress::Current);
         }
         let received = self.receive_materialized_ha_state(&committed)?;
         let state = received.state();
@@ -7585,10 +7600,10 @@ impl Service {
         match publication {
             Ok(ha_received::HaLocalPublicationProgress::Current) => {}
             Ok(ha_received::HaLocalPublicationProgress::Superseded) => {
-                return Err(Response::error(
+                return Ok(ha_received::HaSyncProgress::Superseded(Response::error(
                     503,
                     "HA local publication is catching up to a newer committed target",
-                ));
+                )));
             }
             Err(error) => {
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
@@ -7607,7 +7622,7 @@ impl Service {
             self.ha_activation = None;
             return Err(error);
         }
-        Ok(())
+        Ok(ha_received::HaSyncProgress::Current)
     }
 
     fn ha_observation(&mut self) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {

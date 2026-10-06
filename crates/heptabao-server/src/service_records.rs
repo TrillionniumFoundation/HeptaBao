@@ -873,30 +873,31 @@ impl Service {
         &mut self,
         ha: &Arc<Mutex<HaProcess>>,
         committed: crate::ha::CommittedRecordState,
-    ) -> Result<(), Response> {
+    ) -> Result<ha_received::HaSyncProgress, Response> {
         if self.current_state_identity()? == committed.identity {
             if self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
                 let local = self.capture_existing_ha_publication()?;
                 let received = self.receive_ha_records(ha, &committed)?;
-                self.reconcile_existing_ha_publication(&local, received.owner())?;
+                if self.reconcile_existing_ha_publication_progress(&local, received.owner())?
+                    == ha_received::HaLocalPublicationProgress::Superseded
+                {
+                    return Ok(ha_received::HaSyncProgress::Superseded(Response::error(
+                        503,
+                        "HA existing publication is catching up to a newer committed target",
+                    )));
+                }
             } else {
                 self.reconcile_unchanged_ha_recovery_index(crate::request_deadline::current())?;
             }
-            return self.cache_verified_ha_records(&committed);
+            self.cache_verified_ha_records(&committed)?;
+            return Ok(ha_received::HaSyncProgress::Current);
         }
         let received = self.receive_ha_records(ha, &committed)?;
         match self.install_committed_ha_records(received) {
             Ok(ha_received::HaRecordPublicationProgress::Current) => {}
-            Ok(ha_received::HaRecordPublicationProgress::UnpublishedSuperseded) => {
-                return Err(Response::error(
-                    503,
-                    "HA received target advanced before local publication",
-                ));
-            }
-            Ok(ha_received::HaRecordPublicationProgress::CompletedSuperseded) => {
-                return Err(Response::error(
-                    503,
-                    "HA local publication is catching up to a newer committed target",
+            Ok(progress) => {
+                return Ok(ha_received::HaSyncProgress::from_record_publication(
+                    progress,
                 ));
             }
             Err(error) => {
@@ -915,7 +916,7 @@ impl Service {
             return Err(error);
         }
         self.recovery_required = false;
-        Ok(())
+        Ok(ha_received::HaSyncProgress::Current)
     }
 
     pub(super) fn materialize_committed_ha_records(

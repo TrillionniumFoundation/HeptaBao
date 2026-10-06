@@ -31,6 +31,15 @@ pub(crate) struct CompletionWire {
     pub publication_mac: [u8; 32],
     pub actor: Option<crate::auth::ForwardActorWitness>,
     pub acknowledgement_only: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub oidc_missing_session_denial: Option<OidcDenialPublication>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct OidcDenialPublication {
+    pub denial: crate::auth::OidcMissingSessionDenial,
+    pub non_auth_owner_projection: [u8; 32],
 }
 
 pub(crate) struct CompletedExchange<'a> {
@@ -79,6 +88,11 @@ impl CompletedForwardReceipt {
             || wire.owner_projection == [0; 32]
             || wire.publication_mac == [0; 32]
             || (wire.precise && wire.floor.is_none())
+            || (wire.oidc_missing_session_denial.is_some() && wire.actor.is_some())
+            || wire
+                .oidc_missing_session_denial
+                .as_ref()
+                .is_some_and(|denial| denial.non_auth_owner_projection == [0; 32])
         {
             return Err("HA completed-forward proof is invalid".into());
         }
@@ -111,6 +125,9 @@ impl CompletedForwardReceipt {
     }
     pub(crate) fn actor(&self) -> Option<&crate::auth::ForwardActorWitness> {
         self.wire.actor.as_ref()
+    }
+    pub(crate) fn oidc_missing_session_denial(&self) -> Option<&OidcDenialPublication> {
+        self.wire.oidc_missing_session_denial.as_ref()
     }
     pub(crate) fn acknowledgement_only(&self) -> bool {
         self.wire.acknowledgement_only
@@ -154,6 +171,7 @@ struct Capture {
     actor: Option<crate::auth::ForwardActorWitness>,
     acknowledgement_only: bool,
     diagnostic_step_down: bool,
+    oidc_missing_session_denial: Option<(crate::auth::OidcMissingSessionDenial, [u8; 32])>,
     complete: Option<CompletionWire>,
 }
 thread_local! { static CAPTURE: RefCell<Option<Capture>> = const {RefCell::new(None)}; }
@@ -181,10 +199,18 @@ impl CompletionScope {
                 actor: None,
                 acknowledgement_only: acknowledgement_route,
                 diagnostic_step_down: false,
+                oidc_missing_session_denial: None,
                 complete: None,
             }))
         });
         Self { previous }
+    }
+    pub(crate) fn has_oidc_missing_session_denial() -> bool {
+        CAPTURE.with(|slot| {
+            slot.borrow()
+                .as_ref()
+                .is_some_and(|c| c.oidc_missing_session_denial.is_some())
+        })
     }
     pub(crate) fn active() -> bool {
         CAPTURE.with(|slot| slot.borrow().is_some())
@@ -286,9 +312,29 @@ pub(crate) fn diagnostic_response(phase: &'static str, response: &crate::Respons
         error.map_or([0; 32], |value| digest(value.as_bytes()))
     );
 }
+// Only the real no-effect OIDC branch can supply this private affine value.
+// A response status or error string never creates it.
+pub(crate) fn oidc_missing_session_denied(
+    denial: crate::auth::OidcMissingSessionDenial,
+    response: &crate::Response,
+) {
+    let Ok(expected_response) = response_digest(response) else {
+        return;
+    };
+    CAPTURE.with(|slot| {
+        if let Some(c) = slot.borrow_mut().as_mut()
+            && c.actor.is_none()
+            && !c.acknowledgement_only
+            && Instant::now() < c.deadline
+        {
+            c.oidc_missing_session_denial = Some((denial, expected_response));
+        }
+    });
+}
 pub(crate) fn actor(actor: crate::auth::ForwardActorWitness) {
     CAPTURE.with(|slot| {
         if let Some(c) = slot.borrow_mut().as_mut() {
+            c.oidc_missing_session_denial = None;
             c.actor = Some(actor);
         }
     });
@@ -311,6 +357,7 @@ pub(crate) struct CompletedPublication<'a> {
     pub precise: bool,
     pub audit_sequence: u64,
     pub audit_mac: [u8; 32],
+    pub non_auth_owner_projection: [u8; 32],
 }
 pub(crate) fn original_actor_live(
     response: &crate::Response,
@@ -345,6 +392,7 @@ pub(crate) fn seal(response: &crate::Response, publication: CompletedPublication
         precise,
         audit_sequence,
         audit_mac,
+        non_auth_owner_projection,
     } = publication;
     let applied_index = prefix.index();
     CAPTURE.with(|slot| {
@@ -359,6 +407,7 @@ pub(crate) fn seal(response: &crate::Response, publication: CompletedPublication
             let Ok(response_digest) = response_digest(response) else {
                 return;
             };
+            let no_actor = c.actor.is_none();
             let mut wire = CompletionWire {
                 nonce: c.nonce,
                 request_digest: c.request_digest,
@@ -373,6 +422,19 @@ pub(crate) fn seal(response: &crate::Response, publication: CompletedPublication
                 owner_projection,
                 publication_mac: [0; 32],
                 actor: c.actor.take(),
+                oidc_missing_session_denial: c.oidc_missing_session_denial.take().and_then(
+                    |(denial, expected)| {
+                        (expected == response_digest
+                            && no_actor
+                            && non_auth_owner_projection != [0; 32]
+                            && response.response_headers.is_empty()
+                            && response.consistency_index.is_none())
+                        .then_some(OidcDenialPublication {
+                            denial,
+                            non_auth_owner_projection,
+                        })
+                    },
+                ),
                 acknowledgement_only: c.acknowledgement_only
                     && response.status == 204
                     && response.body.is_null()
@@ -402,7 +464,7 @@ fn publication_bytes(
     cluster: &str,
     source: u64,
 ) -> Result<zeroize::Zeroizing<Vec<u8>>, String> {
-    serde_json::to_vec(&(
+    let original = serde_json::to_vec(&(
         cluster,
         source,
         (
@@ -421,5 +483,15 @@ fn publication_bytes(
         (&wire.actor, wire.acknowledgement_only),
     ))
     .map(zeroize::Zeroizing::new)
-    .map_err(|_| "HA completed-forward publication is unavailable".into())
+    .map_err(|_| "HA completed-forward publication is unavailable")?;
+    match &wire.oidc_missing_session_denial {
+        None => Ok(original),
+        Some(denial) => serde_json::to_vec(&(
+            "HeptaBao/completed-forward/OIDC-missing-session-no-effect/v1",
+            original.as_slice(),
+            denial,
+        ))
+        .map(zeroize::Zeroizing::new)
+        .map_err(|_| "HA completed-forward publication is unavailable".into()),
+    }
 }

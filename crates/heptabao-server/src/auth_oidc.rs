@@ -131,6 +131,23 @@ pub(crate) struct OidcExchange {
     code: Zeroizing<String>,
 }
 
+// A no-effect denial is minted only by the actual missing-session branch
+// below. It is not an Actor or a callback/exchange capability. The wire form is
+// untrusted until the completed source publication MAC has been verified.
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct OidcMissingSessionDenial {
+    version: u8,
+    namespace: String,
+    mount: String,
+    missing_session: String,
+    route_owner: [u8; 32],
+}
+pub(crate) enum OidcConsumption {
+    Exchange(Option<Box<OidcExchange>>),
+    MissingSession(OidcMissingSessionDenial),
+}
+
 pub(crate) struct OidcBeginPlan {
     namespace: String,
     mount: String,
@@ -1255,6 +1272,8 @@ impl AuthState {
         Ok(response(json!({"auth_url":auth_url}), true))
     }
 
+    // Standalone historical test callers retain their original error API.
+    #[cfg(test)]
     pub(crate) fn consume_oidc(
         &mut self,
         namespace: &str,
@@ -1262,6 +1281,66 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<Option<OidcExchange>, AuthError> {
+        match self.consume_oidc_with_denial(namespace, mount, body, now)? {
+            OidcConsumption::Exchange(exchange) => Ok(exchange.map(|exchange| *exchange)),
+            OidcConsumption::MissingSession(_) => Err(denied()),
+        }
+    }
+
+    fn oidc_denial_owner_digest(
+        &self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<[u8; 32], AuthError> {
+        if !self.online_mount_enabled(namespace, mount, "oidc") {
+            return Err(denied());
+        }
+        let mounts = self.effective_auth_mounts(namespace);
+        let revision = mounts.get(mount).ok_or_else(denied)?;
+        let current = self
+            .oidc_at(AuthScope { namespace, mount })
+            .ok_or_else(denied)?;
+        let bytes = Zeroizing::new(
+            serde_json::to_vec(&(namespace, mount, revision, &current.config, &current.roles))
+                .map_err(|_| err(503, "OIDC denial owner unavailable"))?,
+        );
+        let mut owner = [0; 32];
+        owner.copy_from_slice(digest::digest(&digest::SHA256, &bytes).as_ref());
+        Ok(owner)
+    }
+
+    pub(crate) fn validate_oidc_missing_session_denial(
+        &self,
+        denial: &OidcMissingSessionDenial,
+        namespace: &str,
+    ) -> Result<(), AuthError> {
+        if denial.version != 1
+            || denial.namespace != namespace
+            || !proof(&denial.missing_session)
+            || denial.route_owner == [0; 32]
+            || self.oidc_denial_owner_digest(namespace, &denial.mount)? != denial.route_owner
+        {
+            return Err(denied());
+        }
+        let current = self
+            .oidc_at(AuthScope {
+                namespace,
+                mount: &denial.mount,
+            })
+            .ok_or_else(denied)?;
+        if current.sessions.contains_key(&denial.missing_session) {
+            return Err(denied());
+        }
+        Ok(())
+    }
+
+    pub(crate) fn consume_oidc_with_denial(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<OidcConsumption, AuthError> {
         reject_unknown(body, &["state", "code", "client_nonce"])?;
         let state_id = string_field(body, "state")?;
         let code = string_field(body, "code")?;
@@ -1279,11 +1358,18 @@ impl AuthState {
             .ok_or_else(denied)?;
         let scope = AuthScope { namespace, mount };
         let state = self.oidc_at(scope).ok_or_else(denied)?;
-        let session = state
-            .sessions
-            .get(&hash(state_id))
-            .cloned()
-            .ok_or_else(denied)?;
+        let missing_session = hash(state_id);
+        let Some(session) = state.sessions.get(&missing_session).cloned() else {
+            // No mutation, session consumption, candidate commit or external
+            // code-exchange plan has occurred in this branch.
+            return Ok(OidcConsumption::MissingSession(OidcMissingSessionDenial {
+                version: 1,
+                namespace: namespace.into(),
+                mount: mount.into(),
+                missing_session,
+                route_owner: self.oidc_denial_owner_digest(namespace, mount)?,
+            }));
+        };
         if now < state.clock
             || now < session.created_at
             || hash(client_proof) != session.client_proof_hash
@@ -1297,7 +1383,7 @@ impl AuthState {
             let state = self.oidc_mut(scope);
             state.clock = now;
             state.sessions.remove(&hash(state_id));
-            return Ok(None);
+            return Ok(OidcConsumption::Exchange(None));
         }
         let config = state.config.as_ref().cloned().ok_or_else(denied)?;
         let role = state.roles.get(&session.role).cloned().ok_or_else(denied)?;
@@ -1309,13 +1395,13 @@ impl AuthState {
         let state = self.oidc_mut(scope);
         state.clock = now;
         state.sessions.remove(&hash(state_id));
-        Ok(Some(OidcExchange {
+        Ok(OidcConsumption::Exchange(Some(Box::new(OidcExchange {
             mount_revision,
             config,
             role,
             session,
             code: Zeroizing::new(code.into()),
-        }))
+        }))))
     }
     pub(crate) fn finish_oidc_observation(
         &mut self,
@@ -1384,6 +1470,37 @@ impl AuthState {
 impl AuthState {
     pub(crate) fn oidc_test_fixture() -> (Self, String, Value) {
         tests::setup()
+    }
+
+    pub(crate) fn install_consumed_oidc_fixture_for_test(&mut self) -> Result<Value, AuthError> {
+        let (mut seed, _, callback) = tests::setup();
+        if !matches!(
+            seed.consume_oidc_with_denial("", "browser", &callback, 110)?,
+            OidcConsumption::Exchange(Some(_))
+        ) {
+            return Err(denied());
+        }
+        let revision = seed
+            .effective_auth_mounts("")
+            .get("browser")
+            .cloned()
+            .ok_or_else(denied)?;
+        let oidc = seed
+            .oidc_at(AuthScope {
+                namespace: "",
+                mount: "browser",
+            })
+            .cloned()
+            .ok_or_else(denied)?;
+        self.auth_mounts
+            .entry(String::new())
+            .or_default()
+            .insert("browser".into(), revision);
+        self.oidc_mounts
+            .entry(String::new())
+            .or_default()
+            .insert("browser".into(), oidc);
+        Ok(callback)
     }
 }
 
@@ -1917,6 +2034,127 @@ fn restored_oidc_sessions_are_discarded_without_revoking_issued_authority()
             .authenticate(&root, 110)
             .map_err(|_| "root")?
             .is_root()
+    );
+    Ok(())
+}
+
+#[cfg(test)]
+#[test]
+fn oidc_missing_session_typed_denial_has_no_effect_and_rejects_restored_session()
+-> Result<(), Box<dyn std::error::Error>> {
+    let (mut state, root, callback) = tests::setup();
+    let scope = AuthScope {
+        namespace: "",
+        mount: "browser",
+    };
+    let session_key = hash(string_field(&callback, "state")?);
+    let saved = state
+        .oidc_at(scope)
+        .ok_or("OIDC")?
+        .sessions
+        .get(&session_key)
+        .cloned()
+        .ok_or("session")?;
+    assert!(matches!(
+        state.consume_oidc_with_denial("", "browser", &callback, 110)?,
+        OidcConsumption::Exchange(Some(_))
+    ));
+    let before = serde_json::to_vec(&state)?;
+    let OidcConsumption::MissingSession(denial) =
+        state.consume_oidc_with_denial("", "browser", &callback, 111)?
+    else {
+        return Err("typed missing-session denial absent".into());
+    };
+    assert_eq!(
+        serde_json::to_vec(&state)?,
+        before,
+        "no use, token, session or effect mutation"
+    );
+    state.validate_oidc_missing_session_denial(&denial, "")?;
+    assert!(
+        state
+            .validate_oidc_missing_session_denial(&denial, "other")
+            .is_err()
+    );
+    let actor = state.authenticate(&root, 111)?;
+    let issued = state
+        .handle(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/create",
+            &json!({"policies":["default"],"ttl":"10m"}),
+            111,
+        )?
+        .ok_or("token route")?;
+    assert_eq!(issued.status, 200);
+    assert_ne!(serde_json::to_vec(&state)?, before);
+    state.validate_oidc_missing_session_denial(&denial, "")?;
+    state.oidc_mut(scope).sessions.insert(session_key, saved);
+    assert!(
+        state
+            .validate_oidc_missing_session_denial(&denial, "")
+            .is_err()
+    );
+    Ok(())
+}
+
+#[cfg(test)]
+#[test]
+fn oidc_missing_session_typed_denial_rejects_changed_mount_config_and_role()
+-> Result<(), Box<dyn std::error::Error>> {
+    let (mut state, _, callback) = tests::setup();
+    assert!(matches!(
+        state.consume_oidc_with_denial("", "browser", &callback, 110)?,
+        OidcConsumption::Exchange(Some(_))
+    ));
+    let OidcConsumption::MissingSession(denial) =
+        state.consume_oidc_with_denial("", "browser", &callback, 111)?
+    else {
+        return Err("missing-session denial".into());
+    };
+    let mut changed = state.clone();
+    changed
+        .oidc_mut(AuthScope {
+            namespace: "",
+            mount: "browser",
+        })
+        .roles
+        .get_mut("app")
+        .ok_or("role")?
+        .token_ttl += 1;
+    assert!(
+        changed
+            .validate_oidc_missing_session_denial(&denial, "")
+            .is_err()
+    );
+    let mut changed = state.clone();
+    let config = changed
+        .oidc_mut(AuthScope {
+            namespace: "",
+            mount: "browser",
+        })
+        .config
+        .as_mut()
+        .ok_or("config")?;
+    let original = config.pkce_s256_enrolled;
+    config.pkce_s256_enrolled = !original;
+    assert_ne!(config.pkce_s256_enrolled, original);
+    assert!(
+        changed
+            .validate_oidc_missing_session_denial(&denial, "")
+            .is_err()
+    );
+    state
+        .auth_mounts
+        .get_mut("")
+        .and_then(|m| m.get_mut("browser"))
+        .ok_or("mount")?
+        .revision += 1;
+    assert!(
+        state
+            .validate_oidc_missing_session_denial(&denial, "")
+            .is_err()
     );
     Ok(())
 }
