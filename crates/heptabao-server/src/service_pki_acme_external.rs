@@ -5,7 +5,7 @@ use super::*;
 use crate::engines::{AcmeExternalFinalize, AcmeView};
 use base64::engine::general_purpose::STANDARD as BASE64;
 use heptabao_kms_contracts::KmsCapability;
-use heptabao_plugin_host::PluginHostState;
+use heptabao_plugin_host::{CommandSandboxRunner, PluginHost, PluginHostState};
 use std::sync::Arc;
 use zeroize::Zeroizing;
 
@@ -37,8 +37,27 @@ pub(super) struct ProviderReceipt {
     outbound: crate::outbound::Outbound,
     binding: Option<(SharedKmsPlugin, KmsKeyBinding, u64)>,
 }
+pub(super) type DeliveryHostGuard<'a> = std::sync::MutexGuard<'a, PluginHost<CommandSandboxRunner>>;
 impl ProviderReceipt {
+    pub(super) fn hold_for_delivery(&self) -> Result<Option<DeliveryHostGuard<'_>>, Response> {
+        self.binding
+            .as_ref()
+            .map(|(host, _, _)| {
+                host.try_lock().map_err(|_| {
+                    Response::error(503, "ACME external signer host busy before delivery")
+                })
+            })
+            .transpose()
+    }
     pub(super) fn check(&self, service: &Service) -> Result<(), Response> {
+        let held = self.hold_for_delivery()?;
+        self.check_held(service, held.as_ref())
+    }
+    pub(super) fn check_held(
+        &self,
+        service: &Service,
+        held: Option<&DeliveryHostGuard<'_>>,
+    ) -> Result<(), Response> {
         if ![&self.sign_url, &self.metadata_url]
             .iter()
             .all(|url| service.outbound.same_https_enrollment(&self.outbound, url))
@@ -52,9 +71,15 @@ impl ProviderReceipt {
             &self.binding,
             service.kms_plugins.get("transit"),
             service.kms_keys.get("transit"),
+            held,
         ) {
-            (None, None, None) => true,
-            (Some((host, binding, generation)), Some(current), Some(current_binding)) => {
+            (None, None, None, None) => true,
+            (
+                Some((host, binding, generation)),
+                Some(current),
+                Some(current_binding),
+                Some(guard),
+            ) => {
                 Arc::ptr_eq(host, current)
                     && binding.enabled
                     && current_binding.enabled
@@ -62,10 +87,8 @@ impl ProviderReceipt {
                     && binding.key_version == current_binding.key_version
                     && binding.capabilities == current_binding.capabilities
                     && binding.capabilities.contains(&KmsCapability::Sign)
-                    && host.try_lock().is_ok_and(|guard| {
-                        guard.state() == PluginHostState::Active
-                            && guard.manifest().descriptor().generation() == *generation
-                    })
+                    && guard.state() == PluginHostState::Active
+                    && guard.manifest().descriptor().generation() == *generation
             }
             _ => false,
         };

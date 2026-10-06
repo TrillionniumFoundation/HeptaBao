@@ -656,9 +656,22 @@ impl Pki {
             plan: Box::new(plan),
         }))
     }
+    fn acme_issuer_evidence(&self, id: &str) -> Result<external::AcmeIssuerEvidence> {
+        if let Some(evidence) = self.external_acme_issuer_evidence(id)? {
+            return Ok(evidence);
+        }
+        let (der, public) = self.profile_leaf_issuer_evidence(id)?;
+        Ok(external::AcmeIssuerEvidence {
+            certificate_der: der.to_vec(),
+            public_key: public,
+            parents: Vec::new(),
+        })
+    }
     fn validate_acme_certificate(&self, issued: &Certificate) -> Result<()> {
         let evidence = &issued.evidence;
-        let (issuer_der, issuer_public) = self.profile_leaf_issuer_evidence(&issued.issuer)?;
+        let issuer = self.acme_issuer_evidence(&issued.issuer)?;
+        let issuer_der = issuer.certificate_der.as_slice();
+        let issuer_public = issuer.public_key;
         if let Some(urls) = &issued.urls {
             urls.validate()?;
         }
@@ -750,9 +763,13 @@ impl Pki {
     }
     pub(crate) fn acme_certificate_chain(&self, certificate: &Certificate) -> Result<String> {
         self.validate_acme_certificate(certificate)?;
-        let (issuer_der, _) = self.profile_leaf_issuer_evidence(&certificate.issuer)?;
+        let issuer = self.acme_issuer_evidence(&certificate.issuer)?;
+        let issuer_der = issuer.certificate_der.as_slice();
         let mut body = pem("CERTIFICATE", &certificate.der);
         body.push_str(&pem("CERTIFICATE", issuer_der));
+        for parent in &issuer.parents {
+            body.push_str(&pem("CERTIFICATE", parent));
+        }
         // Historical issuer chain remains public after private-key retirement.
         if let Ok(root) = self.local_issuer(&certificate.issuer) {
             for text in root.local_ca_chain_pem() {

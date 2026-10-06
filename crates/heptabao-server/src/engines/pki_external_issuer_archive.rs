@@ -22,6 +22,14 @@ pub(super) struct ExternalPublicIssuer {
     parents: Option<Vec<Vec<u8>>>,
 }
 
+// An effect/delivery validation view of an actual public issuer. It has no
+// provider reference or private signing capability and is never serialized.
+pub(in crate::engines::pki) struct AcmeIssuerEvidence {
+    pub(in crate::engines::pki) certificate_der: Vec<u8>,
+    pub(in crate::engines::pki) public_key: LocalPublicKey,
+    pub(in crate::engines::pki) parents: Vec<Vec<u8>>,
+}
+
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(in crate::engines::pki) struct ExternalLeafIssuerOwner {
@@ -181,6 +189,30 @@ impl Pki {
             ));
         }
         Ok(())
+    }
+    pub(in crate::engines::pki) fn external_acme_issuer_evidence(
+        &self,
+        id: &str,
+    ) -> Result<Option<AcmeIssuerEvidence>> {
+        let issuer = if let Some(archived) = self.external.archived_issuers.get(id) {
+            archived.validate()?;
+            archived.clone()
+        } else if let Some((key, root)) =
+            self.external_signers().find(|(key, _)| key.issuer_id == id)
+        {
+            ExternalPublicIssuer::capture(root, key)?
+        } else {
+            return Ok(None);
+        };
+        if issuer.issuer_id != id {
+            return Err(bad("ACME archived external issuer identity changed"));
+        }
+        let public_key = LocalPublicKey::from_spki(&issuer.public_key.spki()?)?;
+        Ok(Some(AcmeIssuerEvidence {
+            certificate_der: issuer.certificate_der,
+            public_key,
+            parents: issuer.parents.unwrap_or_default(),
+        }))
     }
     pub(in crate::engines::pki) fn archive_external_acme_issuer(&mut self, id: &str) -> Result<()> {
         let mut selected = self.clone();

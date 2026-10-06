@@ -258,6 +258,54 @@ impl Authority {
         self.fingerprint = view.fingerprint;
         self.check_state(state)
     }
+    fn hold_provider_for_delivery(
+        &self,
+    ) -> Result<Option<super::pki_acme_external::DeliveryHostGuard<'_>>, Response> {
+        match &self.external_provider {
+            Some(provider) => provider.hold_for_delivery(),
+            None => Ok(None),
+        }
+    }
+    fn check_held_delivery(
+        &self,
+        service: &Service,
+        held: Option<&super::pki_acme_external::DeliveryHostGuard<'_>>,
+    ) -> Result<(), Response> {
+        if service.recovery_required || service.unseal_nonce != self.activation {
+            return Err(Response::error(
+                503,
+                "ACME response authority expired or changed",
+            ));
+        }
+        if let Some(provider) = &self.external_provider {
+            provider.check_held(service, held)?;
+        } else if held.is_some() {
+            return Err(Response::error(
+                503,
+                "ACME delivery signer authority mismatch",
+            ));
+        }
+        // HA synchronization already completed under the original check. The
+        // Service writer owns this state; the independently shared provider is
+        // now locked through these final checks, any veto audit, and return.
+        let state = service
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "ACME response state unavailable"))?;
+        self.check_state(state)?;
+        let at = self.observed_at()?;
+        if let Some(nonce) = &self.nonce
+            && service.acme_nonces.0.get(nonce).is_none_or(|grant| {
+                grant.expires < at
+                    || std::time::Instant::now() > grant.monotonic
+                    || grant.owner != self.owner
+                    || grant.activation != self.activation
+            })
+        {
+            return Err(Response::error(503, "ACME nonce expired before delivery"));
+        }
+        namespace_runtime::request_live()
+    }
     pub(super) fn check(&self, service: &mut Service) -> Result<(), Response> {
         let _scope = self
             .deadline
@@ -761,8 +809,22 @@ impl Service {
     pub(super) fn complete_pending_acme_delivery(
         &mut self,
         expected: bool,
+        response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        self.complete_pending_acme_delivery_with_held_receipt(
+            expected,
+            response,
+            fingerprint,
+            || {},
+        )
+    }
+    pub(super) fn complete_pending_acme_delivery_with_held_receipt(
+        &mut self,
+        expected: bool,
         mut response: Response,
         fingerprint: &str,
+        after_hold: impl FnOnce(),
     ) -> Response {
         let authority = match (expected, self.pending_acme_authority.take()) {
             (true, Some(authority)) => authority,
@@ -774,28 +836,45 @@ impl Service {
             }
         };
         if let Err(error) = authority.check(self) {
-            erase_json(&mut response.body);
-            response.response_headers.clear();
-            response.consistency_index = None;
-            if let Some(nonce) = authority.nonce.as_ref() {
-                self.acme_nonces.0.remove(nonce);
-            }
-            if self
-                .audit_event(
-                    "acme-delivery-veto",
-                    fingerprint,
-                    authority.at,
-                    Some(error.status),
-                )
-                .is_err()
-            {
-                self.recovery_required = true;
-                self.ha_activation = None;
-                return Response::error(503, "ACME response veto audit failed");
-            }
-            return error;
+            return self.veto_acme_delivery(&authority, response, fingerprint, error);
+        }
+        let held = match authority.hold_provider_for_delivery() {
+            Ok(held) => held,
+            Err(error) => return self.veto_acme_delivery(&authority, response, fingerprint, error),
+        };
+        after_hold();
+        if let Err(error) = authority.check_held_delivery(self, held.as_ref()) {
+            return self.veto_acme_delivery(&authority, response, fingerprint, error);
         }
         response
+    }
+    fn veto_acme_delivery(
+        &mut self,
+        authority: &Authority,
+        mut response: Response,
+        fingerprint: &str,
+        error: Response,
+    ) -> Response {
+        erase_json(&mut response.body);
+        response.response_headers.clear();
+        response.consistency_index = None;
+        if let Some(nonce) = authority.nonce.as_ref() {
+            self.acme_nonces.0.remove(nonce);
+        }
+        if self
+            .audit_event(
+                "acme-delivery-veto",
+                fingerprint,
+                authority.at,
+                Some(error.status),
+            )
+            .is_err()
+        {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(503, "ACME response veto audit failed");
+        }
+        error
     }
 }
 

@@ -518,7 +518,7 @@ fn pki_acme_external_sign_grant_retirement_during_effect_vetoes_publication() ->
 #[test]
 fn pki_acme_external_postaudit_host_revoke_and_enrollment_replace_withhold_delivery() -> TestResult
 {
-    for scenario in ["host-revoke", "enrollment-replace"] {
+    for scenario in ["host-revoke", "enrollment-replace", "concurrent-revoker"] {
         let remote = RemoteTransit::new_kind("ed25519")?;
         let (_root, mut service, _unseal, admin) = remote.fixture_kms_capabilities(
             Some(true),
@@ -565,6 +565,7 @@ fn pki_acme_external_postaudit_host_revoke_and_enrollment_replace_withhold_deliv
         let issued_nonce = header(&response, "Replay-Nonce")?;
         service.pending_acme_authority = plan.authority.take();
         let host = std::sync::Arc::clone(service.kms_plugins.get("transit").ok_or("host")?);
+        let mut audit_host_error = None;
         let response = service.audit_completed_response_with_receipt(
             &pending.fingerprint,
             pending.now,
@@ -572,14 +573,72 @@ fn pki_acme_external_postaudit_host_revoke_and_enrollment_replace_withhold_deliv
             response,
             || {
                 if scenario == "host-revoke" {
-                    host.lock().expect("owned fixture host").revoke();
+                    match host.lock() {
+                        Ok(mut host) => host.revoke(),
+                        Err(_) => audit_host_error = Some("owned audit host lock"),
+                    }
                 }
             },
         );
+        if let Some(error) = audit_host_error {
+            return Err(error.into());
+        }
         assert_eq!(
             response.status, 200,
             "mandatory audit completed before delivery gate"
         );
+        if scenario == "concurrent-revoker" {
+            let (ready_tx, ready_rx) = std::sync::mpsc::channel();
+            let (done_tx, done_rx) = std::sync::mpsc::channel();
+            let mut revoker = None;
+            let mut hold_observation: TestResult = Ok(());
+            let delivered = service.complete_pending_acme_delivery_with_held_receipt(
+                true,
+                response,
+                &pending.fingerprint,
+                || {
+                    revoker = Some(std::thread::spawn(move || -> Result<(), &'static str> {
+                        let blocked =
+                            matches!(host.try_lock(), Err(std::sync::TryLockError::WouldBlock));
+                        ready_tx.send(blocked).map_err(|_| "owned revoker ready")?;
+                        host.lock()
+                            .map_err(|_| "owned revoker actual host")?
+                            .revoke();
+                        done_tx.send(()).map_err(|_| "owned revoker completed")?;
+                        Ok(())
+                    }));
+                    hold_observation = (|| -> TestResult {
+                        assert!(ready_rx.recv_timeout(Duration::from_secs(1))?);
+                        assert!(matches!(
+                            done_rx.try_recv(),
+                            Err(std::sync::mpsc::TryRecvError::Empty)
+                        ));
+                        Ok(())
+                    })();
+                },
+            );
+            assert_eq!(
+                delivered.status, 200,
+                "held actual host linearizes delivery before revoke"
+            );
+            hold_observation?;
+            done_rx.recv_timeout(Duration::from_secs(1))?;
+            revoker
+                .ok_or("actual revoker handle")?
+                .join()
+                .map_err(|_| "actual revoker panicked")??;
+            assert_eq!(
+                service
+                    .kms_plugins
+                    .get("transit")
+                    .ok_or("actual host")?
+                    .lock()
+                    .map_err(|_| "host lock")?
+                    .state(),
+                heptabao_plugin_host::PluginHostState::Revoked
+            );
+            continue;
+        }
         if scenario == "enrollment-replace" {
             // Installation remains immutable while unsealed. This test seam
             // changes the actual enrollment after audit, without minting a grant.
