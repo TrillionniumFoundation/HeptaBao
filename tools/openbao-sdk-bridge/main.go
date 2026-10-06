@@ -70,6 +70,7 @@ type message struct {
 	Response          *logical.Response `json:"response"`
 	Error             string            `json:"error,omitempty"`
 	BackendType       string            `json:"backend_type,omitempty"`
+	AuthPaths         *logical.Paths    `json:"auth_paths,omitempty"`
 }
 type wire struct {
 	writes    sync.Mutex
@@ -337,7 +338,11 @@ func run() (outcome error) {
 	if err != nil {
 		return err
 	}
-	if err = w.send(message{Kind: "ready", Call: 1, BackendType: actualType}); err != nil {
+	var authPaths *logical.Paths
+	if actualType == "auth" {
+		authPaths = backend.SpecialPaths()
+	}
+	if err = w.send(message{Kind: "ready", Call: 1, BackendType: actualType, AuthPaths: authPaths}); err != nil {
 		return err
 	}
 	last := uint64(1)
