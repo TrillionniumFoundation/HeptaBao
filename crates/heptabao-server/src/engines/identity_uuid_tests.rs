@@ -4,8 +4,6 @@ use crate::engines::{EngineState, IdentityNamespace};
 fn native_uuid(id: &str) -> bool {
     let bytes = id.as_bytes();
     bytes.len() == 36
-        && bytes[14] == b'4'
-        && matches!(bytes[19], b'8' | b'9' | b'a' | b'b')
         && bytes.iter().enumerate().all(|(index, byte)| {
             if matches!(index, 8 | 13 | 18 | 23) {
                 *byte == b'-'
@@ -198,4 +196,18 @@ fn identity_invalid_scope_and_failed_allocation_leave_existing_owner_unchanged()
         .entity_id;
     assert!(native_uuid(&root));
     Ok(())
+}
+
+#[test]
+fn identity_uuid_preserves_all_native_random_bits() {
+    // go-uuid v1.0.3 GenerateUUIDWithReader/FormatUUID, also used by
+    // OpenBao 2.7.0: neither version nor variant bits are overwritten.
+    assert_eq!(
+        crate::crypto::uuid_from_bytes(&[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
+        "00010203-0405-0607-0809-0a0b0c0d0e0f"
+    );
+    assert_eq!(
+        crate::crypto::uuid_from_bytes(&[255; 16]),
+        "ffffffff-ffff-ffff-ffff-ffffffffffff"
+    );
 }

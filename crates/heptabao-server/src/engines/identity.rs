@@ -1610,7 +1610,7 @@ impl IdentityState {
         }
         let random = crate::crypto::random::<16>()
             .map_err(|_| error(503, "identity identifier randomness unavailable"))?;
-        let mut id = crate::crypto::uuid_v4_from_bytes(&random);
+        let mut id = crate::crypto::uuid_from_bytes(&random);
         if let Some(namespace) = &self.uuid_namespace {
             id.push('.');
             id.push_str(namespace);

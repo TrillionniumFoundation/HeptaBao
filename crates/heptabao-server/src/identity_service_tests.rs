@@ -1696,8 +1696,13 @@ fn identity_namespace_uuid_native_service_and_encrypted_reopen() -> TestResult {
         let (uuid, suffix) = id.rsplit_once('.').ok_or("missing namespace suffix")?;
         assert_eq!(suffix, ns_id);
         assert_eq!(uuid.len(), 36);
-        assert_eq!(uuid.as_bytes()[14], b'4');
-        assert!(matches!(uuid.as_bytes()[19], b'8' | b'9' | b'a' | b'b'));
+        assert!(uuid.bytes().enumerate().all(|(index, byte)| {
+            if matches!(index, 8 | 13 | 18 | 23) {
+                byte == b'-'
+            } else {
+                byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()
+            }
+        }));
     }
     assert_eq!(
         call(

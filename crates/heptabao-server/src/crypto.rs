@@ -522,11 +522,10 @@ mod recovery_wire_tests {
     }
 }
 
-// Logical request and freshly allocated identity IDs share the native UUID form.
-pub(crate) fn uuid_v4_from_bytes(random: &[u8; 16]) -> String {
-    let mut bytes = *random;
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+// OpenBao uses go-uuid FormatUUID: retain all 128 random bits, including
+// the version and variant positions, in the native 8-4-4-4-12 form.
+pub(crate) fn uuid_from_bytes(random: &[u8; 16]) -> String {
+    let bytes = *random;
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut id = String::with_capacity(36);
     for (index, byte) in bytes.into_iter().enumerate() {
