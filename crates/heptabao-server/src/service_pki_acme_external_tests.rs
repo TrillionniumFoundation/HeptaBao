@@ -312,7 +312,7 @@ fn assert_no_completed_order(service: &Service, order: &str) -> TestResult {
     Ok(())
 }
 #[test]
-fn pki_acme_external_real_seven_TLS_signers_csr_public_binding_encrypted_reopen() -> TestResult {
+fn pki_acme_external_real_seven_tls_signers_csr_public_binding_encrypted_reopen() -> TestResult {
     for kind in [
         "ed25519",
         "ecdsa-p256",
@@ -372,7 +372,15 @@ fn pki_acme_external_real_seven_TLS_signers_csr_public_binding_encrypted_reopen(
             chain[0].public_key()?.public_key_to_der()?,
             leaf.public_key_to_der()?
         );
-        let (wrong, _) = key()?;
+        let wrong = match issuer.id() {
+            openssl::pkey::Id::ED25519 => PKey::generate_ed25519()?,
+            openssl::pkey::Id::EC => PKey::from_ec_key(EcKey::generate(issuer.ec_key()?.group())?)?,
+            openssl::pkey::Id::RSA => {
+                PKey::from_rsa(openssl::rsa::Rsa::generate(issuer.rsa()?.size() * 8)?)?
+            }
+            _ => return Err("unexpected actual issuer algorithm".into()),
+        };
+        assert_eq!(wrong.id(), issuer.id());
         assert!(!chain[0].verify(&wrong).unwrap_or(false));
         let current = service.state.as_ref().ok_or("current typed owner")?;
         assert_eq!(current.schema, 99);
