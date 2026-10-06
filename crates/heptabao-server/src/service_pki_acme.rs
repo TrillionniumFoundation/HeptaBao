@@ -741,6 +741,15 @@ impl ChallengeAttempt {
     fn execute_port(&self, port: u16) -> Result<(), String> {
         self.observed()
             .map_err(|_| "ACME background attempt deadline expired".to_owned())?;
+        if self.queued.challenge.kind == "dns-01" {
+            return crate::outbound::verify_dns01(
+                &self.queued.host,
+                &self.queued.challenge.token,
+                &self.queued.thumbprint,
+                &self.queued.dns_resolver,
+                self.deadline.min(Instant::now() + Duration::from_secs(30)),
+            );
+        }
         if !self.queued.dns_resolver.is_empty() {
             return Err("ACME explicit DNS resolver transport is not implemented".into());
         }
@@ -854,7 +863,7 @@ impl Service {
         );
         let result = result.map_err(|detail| {
             format!(
-                "response received didn't match the challenge's requirements: error validating http-01 challenge {id}: {detail}; this may occur if the validation target was misconfigured: check that challenge responses are available at the required locations and retry."
+                "response received didn't match the challenge's requirements: error validating {} challenge {id}: {detail}; this may occur if the validation target was misconfigured: check that challenge responses are available at the required locations and retry.", plan.queued.challenge.kind
             )
         });
         next.engines

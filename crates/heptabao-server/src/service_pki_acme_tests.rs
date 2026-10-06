@@ -1512,3 +1512,137 @@ fn pki_acme99_http01_namespace_delete_recreate_vetoes_original_queue_owner() -> 
     );
     Ok(())
 }
+
+#[test]
+fn pki_acme99_dns01_actual_jws_queue_encrypted_reopen_and_current_owner_proof() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let socket = std::net::UdpSocket::bind("127.0.0.1:0")?;
+    socket.set_read_timeout(Some(Duration::from_secs(3)))?;
+    let address = socket.local_addr()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/config/acme",
+            &admin,
+            json!({"dns_resolver":address.to_string()})
+        )
+        .status,
+        200
+    );
+    let (key, jwk) = key()?;
+    let kid = order_account(&mut service, &key, &jwk)?;
+    let created = order_post(
+        &mut service,
+        &key,
+        &jwk,
+        &kid,
+        "new-order",
+        Some(json!({"identifiers":[{"type":"dns","value":"*.dns-proof.example"}]})),
+    )?;
+    assert_eq!(created.status, 201);
+    let order = header(&created, "Location")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("order route")?
+        .to_owned();
+    let auth = created.body["__heptabao_acme"]["authorizations"][0]
+        .as_str()
+        .ok_or("authorization")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("auth route")?
+        .to_owned();
+    let fetched = order_post(&mut service, &key, &jwk, &kid, &auth, None)?;
+    assert_eq!(fetched.body["__heptabao_acme"]["wildcard"], true);
+    let challenge = fetched.body["__heptabao_acme"]["challenges"][0]["url"]
+        .as_str()
+        .ok_or("challenge")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("challenge route")?
+        .to_owned();
+    assert!(challenge.ends_with("/dns-01"));
+    assert_eq!(
+        order_post(&mut service, &key, &jwk, &kid, &challenge, Some(json!({})))?.body["__heptabao_acme"]
+            ["status"],
+        "processing"
+    );
+    let original = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "original prepare")?
+        .ok_or("queued challenge")?;
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert!(original.check(&service).is_err());
+    let plan = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "reopened prepare")?
+        .ok_or("reopened challenge")?;
+    assert_eq!(plan.queued.challenge.kind, "dns-01");
+    assert_eq!(plan.queued.host, "dns-proof.example");
+    assert_eq!(plan.queued.dns_resolver, address.to_string());
+    let proof = URL_SAFE_NO_PAD.encode(crate::crypto::digest(
+        format!("{}.{}", plan.queued.challenge.token, plan.queued.thumbprint).as_bytes(),
+    ));
+    let responder = std::thread::spawn(move || -> std::io::Result<()> {
+        let mut query = vec![0; 2048];
+        let (n, peer) = socket.recv_from(&mut query)?;
+        query.truncate(n);
+        let mut response = query[..2].to_vec();
+        response.extend_from_slice(&[0x81, 0x80, 0, 1, 0, 1, 0, 0, 0, 0]);
+        response.extend_from_slice(&query[12..]);
+        response.extend_from_slice(&[0xc0, 0x0c, 0, 16, 0, 1, 0, 0, 0, 30]);
+        response.extend_from_slice(&((proof.len() + 1) as u16).to_be_bytes());
+        response.push(proof.len() as u8);
+        response.extend_from_slice(proof.as_bytes());
+        socket.send_to(&response, peer)?;
+        Ok(())
+    });
+    let result = plan.execute_port(80);
+    responder.join().map_err(|_| "DNS responder")??;
+    assert!(result.is_ok(), "{result:?}");
+    service
+        .finish_acme_maintenance(plan, result)
+        .map_err(|_| "proof publication")?;
+    assert_eq!(
+        order_post(&mut service, &key, &jwk, &kid, &auth, None)?.body["__heptabao_acme"]["status"],
+        "valid"
+    );
+    assert_eq!(
+        order_post(&mut service, &key, &jwk, &kid, &order, None)?.body["__heptabao_acme"]["status"],
+        "ready"
+    );
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        order_post(&mut reopened, &key, &jwk, &kid, &order, None)?.body["__heptabao_acme"]["status"],
+        "ready"
+    );
+    Ok(())
+}

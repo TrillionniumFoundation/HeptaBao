@@ -516,10 +516,10 @@ impl EngineState {
                             "error submitting challenge for validation: only a single challenge within an authorization can be accepted: the request message was malformed",
                         ));
                     }
-                    if kind != "http-01" {
+                    if !matches!(kind, "http-01" | "dns-01") {
                         return Err(error(
                             501,
-                            "ACME DNS01 and TLSALPN01 network verification is not implemented",
+                            "ACME TLSALPN01 network verification is not implemented",
                         ));
                     }
                     let challenge = &mut auth.challenges[index];
