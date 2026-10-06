@@ -1782,8 +1782,6 @@ fn validate_path(path: &str, pattern: bool) -> Result<(), AuthError> {
                 "only whole-segment + and terminal * ACL wildcards are supported",
             ));
         }
-    } else if path.contains('*') {
-        return Err(bad("wildcards are not permitted in request paths"));
     }
     Ok(())
 }
@@ -9330,3 +9328,29 @@ mod public_origin;
 #[cfg(test)]
 #[path = "auth_token_renew_target_tests.rs"]
 mod token_renew_target_tests;
+
+#[cfg(test)]
+mod sdk_request_path_tests {
+    use super::*;
+    #[test]
+    fn sdk_auth100_literal_request_star_never_becomes_an_acl_pattern() {
+        assert!(validate_path("auth/sdk/root*literal", false).is_ok());
+        assert!(validate_path("auth/sdk/root/用户", false).is_ok());
+        assert!(validate_path("auth/sdk/root*literal", true).is_err());
+        assert!(!path_matches(
+            "auth/sdk/root-exact",
+            "auth/sdk/root*literal"
+        ));
+        assert!(!path_matches("auth/sdk/private", "auth/sdk/*"));
+        assert!(path_matches("auth/sdk/root*", "auth/sdk/root*literal"));
+        assert!(path_matches("auth/sdk/root/+", "auth/sdk/root/用户"));
+        for path in [
+            "auth//sdk",
+            "auth/sdk/../private",
+            "auth/sdk/%2e",
+            "auth/sdk/\\private",
+        ] {
+            assert!(validate_path(path, false).is_err());
+        }
+    }
+}

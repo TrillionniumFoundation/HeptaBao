@@ -1146,6 +1146,22 @@ fn logical_sdk_error(data: &Value) -> Option<&str> {
 mod error_tests {
     use super::*;
     #[test]
+    fn sdk_auth100_literal_characters_preserve_namespace_and_traversal_boundaries() {
+        assert!(super::super::valid_path("auth/sdk/root*literal"));
+        assert!(super::super::valid_path("auth/sdk/root/用户"));
+        assert!(!super::super::valid_namespace("用户"));
+        for path in [
+            "/auth/sdk",
+            "auth//sdk",
+            "auth/sdk/../private",
+            "auth/sdk/用户\n",
+            "auth/sdk/%2e",
+            "auth/sdk/\\private",
+        ] {
+            assert!(!super::super::valid_path(path));
+        }
+    }
+    #[test]
     fn sdk_auth100_logical_error_matches_actual_sdk_shape_without_flattening_business_data() {
         assert_eq!(
             logical_sdk_error(&json!({"error":"invalid credentials"})),

@@ -8767,8 +8767,8 @@ fn valid_path(value: &str) -> bool {
         && value.trim_end_matches('/').split('/').all(|s| {
             !s.is_empty()
                 && !matches!(s, "." | "..")
-                && s.bytes()
-                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.' | b':' | b'+'))
+                && s.chars()
+                    .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '.' | ':' | '+' | '*'))
         })
 }
 fn hex(bytes: &[u8]) -> String {
