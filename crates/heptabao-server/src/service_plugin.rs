@@ -295,6 +295,16 @@ impl PluginResponseAuthority {
         Ok(time)
     }
 
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pub(super) fn apply_sdk_auth_clock_floor(&mut self, auth: &AuthState) -> Result<(), Response> {
+        if let Some(floor) = auth.sdk_auth_clock_floor() {
+            let clock = self.token_clock.ok_or_else(|| {
+                Response::error(503, "SDK Auth original precise capsule unavailable")
+            })?;
+            self.token_clock = Some(clock.with_timestamp_floor(floor));
+        }
+        Ok(())
+    }
     pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
         if self.deadline_expired() {
             return Err(Response::error(

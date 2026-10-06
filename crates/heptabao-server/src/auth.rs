@@ -26,6 +26,9 @@ use x509_parser::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_sdk.rs"]
+pub(crate) mod sdk;
+
 #[path = "auth_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
 
@@ -205,6 +208,10 @@ pub struct AuthState {
     /// Native origin retirement cannot erase its owner floor.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     public_origin_floor: Option<public_origin::Floor>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_auth_catalog: Option<crate::engines::sdk::Catalog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_auth_clock: Option<Timestamp>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -673,11 +680,27 @@ impl LdapMount {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct PluginAuthMount {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk: Option<sdk::Mount>,
     plugin_id: String,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
     token_num_uses: u64,
+}
+impl PluginAuthMount {
+    fn same_binding(&self, other: &Self) -> bool {
+        self.plugin_id == other.plugin_id
+            && self.policies == other.policies
+            && self.token_ttl == other.token_ttl
+            && self.token_max_ttl == other.token_max_ttl
+            && self.token_num_uses == other.token_num_uses
+            && match (&self.sdk, &other.sdk) {
+                (None, None) => true,
+                (Some(left), Some(right)) => left.same_binding(right),
+                _ => false,
+            }
+    }
 }
 
 #[derive(Clone)]
@@ -1287,6 +1310,9 @@ struct Token {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum TokenAuthProvenance {
+    Sdk {
+        origin: Box<sdk::TokenOrigin>,
+    },
     Cert {
         issued_metadata: BTreeMap<String, String>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1745,19 +1771,16 @@ fn validate_path(path: &str, pattern: bool) -> Result<(), AuthError> {
     {
         return Err(bad("invalid ACL path"));
     }
-    if pattern {
-        if path.contains("{{")
+    if pattern
+        && (path.contains("{{")
             || path.contains("${")
             || path.matches('*').count() > 1
             || path.contains('*') && !path.ends_with('*')
-            || path.split('/').any(|s| s.contains('+') && s != "+")
-        {
-            return Err(bad(
-                "only whole-segment + and terminal * ACL wildcards are supported",
-            ));
-        }
-    } else if path.contains('*') || path.contains('+') {
-        return Err(bad("wildcards are not permitted in request paths"));
+            || path.split('/').any(|s| s.contains('+') && s != "+"))
+    {
+        return Err(bad(
+            "only whole-segment + and terminal * ACL wildcards are supported",
+        ));
     }
     Ok(())
 }
@@ -2368,6 +2391,8 @@ impl AuthState {
                     .map_err(|_| err(503, "batch authority unavailable"))?,
             ),
             public_origin_floor: None,
+            sdk_auth_catalog: None,
+            sdk_auth_clock: None,
             namespace_batch_registry: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
@@ -2538,6 +2563,7 @@ impl AuthState {
     ) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
         let time = self.token_api_observed_time(time);
+        self.validate_sdk_auth_token_live(token, time)?;
         let time = if token.wrapping.is_some() {
             AuthorityTime::Coarse(time.seconds().max(self.wrapping_clock))
         } else {
@@ -2556,6 +2582,7 @@ impl AuthState {
                 return Err(denied());
             }
             let ancestor = self.tokens.get(parent_id).ok_or_else(denied)?;
+            self.validate_sdk_auth_token_live(ancestor, time)?;
             if !time.service_live(ancestor.token_api_precision.as_ref(), ancestor.expires_at)
                 || ancestor.uses_remaining == Some(0)
             {
@@ -3748,6 +3775,13 @@ impl AuthState {
     /// exact mounted endpoints. Never classify a route by an arbitrary `/login`
     /// suffix: mount kind, namespace, operation and suffix all bind this decision.
     pub(super) fn is_public_login(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if matches!(
+            method,
+            "GET" | "HEAD" | "POST" | "PUT" | "PATCH" | "DELETE" | "LIST" | "SCAN"
+        ) && let Some(public) = self.sdk_public_path(namespace, method, path)
+        {
+            return public;
+        }
         if !matches!(method, "POST" | "PUT") {
             return false;
         }
@@ -4081,6 +4115,9 @@ impl AuthState {
             validate_namespace(namespace)?;
             let effective = self.effective_auth_mounts(namespace);
             for (mount, config) in mounts {
+                if let Some(sdk) = &config.sdk {
+                    sdk.validate_local(effective.get(mount))?;
+                }
                 if mount.is_empty()
                     || mount.len() > 256
                     || !mount.split('/').all(valid_name)
@@ -4161,7 +4198,7 @@ impl AuthState {
             .get(&plan.namespace)
             .and_then(|entries| entries.get(&plan.mount))
             .ok_or_else(|| err(409, "plugin authentication configuration changed"))?;
-        if current != &plan.config
+        if !current.same_binding(&plan.config)
             || !self
                 .effective_auth_mounts(&plan.namespace)
                 .get(&plan.mount)
@@ -4282,6 +4319,7 @@ impl AuthState {
                     return Err(bad("invalid plugin authentication token TTL limits"));
                 }
                 let next = PluginAuthMount {
+                    sdk: None,
                     plugin_id: plugin_id.into(),
                     policies: configured_policies,
                     token_ttl,
@@ -9289,3 +9327,29 @@ mod public_origin;
 #[cfg(test)]
 #[path = "auth_token_renew_target_tests.rs"]
 mod token_renew_target_tests;
+
+#[cfg(test)]
+mod sdk_request_path_tests {
+    use super::*;
+    #[test]
+    fn sdk_auth100_literal_request_star_never_becomes_an_acl_pattern() {
+        assert!(validate_path("auth/sdk/root*literal", false).is_ok());
+        assert!(validate_path("auth/sdk/root/用户", false).is_ok());
+        assert!(validate_path("auth/sdk/root*literal", true).is_err());
+        assert!(!path_matches(
+            "auth/sdk/root-exact",
+            "auth/sdk/root*literal"
+        ));
+        assert!(!path_matches("auth/sdk/private", "auth/sdk/*"));
+        assert!(path_matches("auth/sdk/root*", "auth/sdk/root*literal"));
+        assert!(path_matches("auth/sdk/root/+", "auth/sdk/root/用户"));
+        for path in [
+            "auth//sdk",
+            "auth/sdk/../private",
+            "auth/sdk/%2e",
+            "auth/sdk/\\private",
+        ] {
+            assert!(validate_path(path, false).is_err());
+        }
+    }
+}

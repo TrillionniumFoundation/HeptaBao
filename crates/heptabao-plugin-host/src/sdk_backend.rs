@@ -144,6 +144,22 @@ impl std::fmt::Display for SdkBridgeError {
 }
 impl std::error::Error for SdkBridgeError {}
 
+/// Backend family admitted by the owning Service catalog. A plugin's reported
+/// family can only confirm this value and never grants token authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SdkBackendType {
+    Secret,
+    Auth,
+}
+impl SdkBackendType {
+    fn label(self) -> &'static str {
+        match self {
+            Self::Secret => "secret",
+            Self::Auth => "auth",
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct SdkLaunch {
     pub companion: PathBuf,
@@ -175,6 +191,8 @@ pub struct SdkBackendHost {
     _socket: File,
     _thread_owner: PhantomData<Rc<()>>,
     timeout: Duration,
+    backend_type: SdkBackendType,
+    auth_paths: Option<Value>,
     call: u64,
     storage_rpc: u64,
     fenced: bool,
@@ -200,6 +218,15 @@ impl SdkBackendHost {
     pub fn launch_before(
         config: &SdkLaunch,
         storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Self, SdkBridgeError> {
+        Self::launch_typed_before(config, storage, SdkBackendType::Secret, original_deadline)
+    }
+
+    pub fn launch_typed_before(
+        config: &SdkLaunch,
+        storage: &mut dyn SdkStorage,
+        backend_type: SdkBackendType,
         original_deadline: Instant,
     ) -> Result<Self, SdkBridgeError> {
         if Instant::now() >= original_deadline {
@@ -348,13 +375,15 @@ impl SdkBackendHost {
             _socket: socket_directory,
             _thread_owner: PhantomData,
             timeout: config.timeout,
+            backend_type,
+            auth_paths: None,
             call: 1,
             storage_rpc: 0,
             fenced: false,
         };
         nonblocking(&host.input)?;
         nonblocking(&host.output)?;
-        let setup = json!({"version":1,"kind":"setup","call":1,
+        let setup = json!({"version":1,"kind":"setup","call":1,"backend_type":backend_type.label(),
             "plugin":host._plugin.descriptor_path(),"args":config.plugin_args,
             "socket_dir":socket_alias,"timeout_ms":config.timeout.as_millis(),
             "default_ttl_seconds":config.default_ttl_seconds,"max_ttl_seconds":config.max_ttl_seconds});
@@ -366,10 +395,21 @@ impl SdkBackendHost {
         };
         host.send(&setup, deadline)?;
         let ready = host.exchange(storage, "ready", deadline)?;
-        if ready.get("backend_type").and_then(Value::as_str) != Some("secret") {
+        if ready.get("backend_type").and_then(Value::as_str) != Some(backend_type.label()) {
             return Err(SdkBridgeError::OutcomeUnknown);
         }
+        if backend_type == SdkBackendType::Auth {
+            host.auth_paths = Some(
+                normalized_auth_paths(ready.get("auth_paths"))
+                    .ok_or(SdkBridgeError::OutcomeUnknown)?,
+            );
+        }
         Ok(host)
+    }
+
+    /// Actual SDK SpecialPaths captured at owned Setup, without a caller grant.
+    pub fn auth_special_paths(&self) -> Option<&Value> {
+        self.auth_paths.as_ref()
     }
 
     pub fn handle_request(
@@ -478,12 +518,13 @@ impl SdkBackendHost {
         if response.is_null() {
             Ok(None)
         } else {
-            if !response.is_object()
-                || response.get("auth").is_none_or(|v| !v.is_null())
-                || response
-                    .get("secret")
-                    .is_none_or(|v| !v.is_null() && !v.is_object())
-            {
+            let auth_valid = response.get("auth").is_some_and(|value| {
+                value.is_null() || self.backend_type == SdkBackendType::Auth && value.is_object()
+            });
+            let secret_valid = response.get("secret").is_some_and(|value| {
+                value.is_null() || self.backend_type == SdkBackendType::Secret && value.is_object()
+            });
+            if !response.is_object() || !auth_valid || !secret_valid {
                 self.fenced = true;
                 return Err(SdkBridgeError::OutcomeUnknown);
             }
@@ -789,5 +830,81 @@ fn storage_callback(
             Ok(json!({"keys":keys}))
         }
         _ => Err(SdkBridgeError::Storage),
+    }
+}
+
+// Auth100 currently implements one exact public login route and ordinary
+// authenticated paths. SDK special root/local/seal-wrap/forwarded semantics
+// must never be silently dropped during admission of an arbitrary backend.
+fn normalized_auth_paths(value: Option<&Value>) -> Option<Value> {
+    let value = value?;
+    if value.is_null() {
+        return Some(
+            json!({"Root":[],"Unauthenticated":[],"LocalStorage":[],"SealWrapStorage":[],"WriteForwardedStorage":[]}),
+        );
+    }
+    let paths = value.as_object()?;
+    if paths.len() != 5
+        || paths.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "Root"
+                    | "Unauthenticated"
+                    | "LocalStorage"
+                    | "SealWrapStorage"
+                    | "WriteForwardedStorage"
+            )
+        })
+    {
+        return None;
+    }
+    let mut normalized = serde_json::Map::new();
+    for key in [
+        "Root",
+        "Unauthenticated",
+        "LocalStorage",
+        "SealWrapStorage",
+        "WriteForwardedStorage",
+    ] {
+        let raw = paths.get(key)?;
+        let values: Vec<String> = if raw.is_null() {
+            Vec::new()
+        } else {
+            serde_json::from_value(raw.clone()).ok()?
+        };
+        if !(if key == "Root" {
+            heptabao_plugin_contracts::sdk_paths::valid_root(&values)
+        } else {
+            heptabao_plugin_contracts::sdk_paths::valid(&values)
+        }) || (!matches!(key, "Root" | "Unauthenticated") && !values.is_empty())
+        {
+            return None;
+        }
+        normalized.insert(key.into(), json!(values));
+    }
+    Some(Value::Object(normalized))
+}
+#[cfg(test)]
+mod auth_paths_tests {
+    use super::*;
+    #[test]
+    fn actual_sdk_auth_special_paths_cannot_mint_public_or_drop_root_scope()
+    -> Result<(), &'static str> {
+        let admitted = json!({"Root":["config"],"Unauthenticated":["login","public/+/*"],"LocalStorage":null,"SealWrapStorage":null,"WriteForwardedStorage":null});
+        let actual = normalized_auth_paths(Some(&admitted)).ok_or("literal valid policy")?;
+        assert_eq!(actual["Root"], json!(["config"]));
+        assert_eq!(actual["Unauthenticated"], json!(["login", "public/+/*"]));
+        let private = normalized_auth_paths(Some(&Value::Null)).ok_or("private policy")?;
+        assert_eq!(private["Unauthenticated"], json!([]));
+        for field in ["LocalStorage", "SealWrapStorage", "WriteForwardedStorage"] {
+            let mut rejected = admitted.clone();
+            rejected[field] = json!(["config"]);
+            assert!(normalized_auth_paths(Some(&rejected)).is_none());
+        }
+        let mut malformed = admitted.clone();
+        malformed["Unauthenticated"] = json!(["foo+bar"]);
+        assert!(normalized_auth_paths(Some(&malformed)).is_none());
+        assert!(normalized_auth_paths(None).is_none());
+        Ok(())
     }
 }
