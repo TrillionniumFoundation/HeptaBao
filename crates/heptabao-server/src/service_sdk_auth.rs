@@ -484,7 +484,10 @@ impl Service {
                     match caller.as_mut() {
                         Some(authority) => authority,
                         None => {
-                            return Response::error(503, "SDK Auth original control capsule absent");
+                            return Response::error(
+                                503,
+                                "SDK Auth original control capsule absent",
+                            );
                         }
                     },
                     &expected,
@@ -547,22 +550,23 @@ impl Service {
                 }
             }
             for flag in ["local", "seal_wrap", "external_entropy_access"] {
-                if let Some(value) = object.remove(flag) {
-                    if value.as_bool() != Some(false) {
-                        return Response::error(
-                            501,
-                            "SDK Auth nondefault mount flags are not implemented",
-                        );
-                    }
-                }
-            }
-            if let Some(value) = object.remove("options") {
-                if !value.is_null() && value.as_object().is_none_or(|options| !options.is_empty()) {
+                if let Some(value) = object.remove(flag)
+                    && value.as_bool() != Some(false)
+                {
                     return Response::error(
                         501,
-                        "SDK Auth nondefault mount options are not implemented",
+                        "SDK Auth nondefault mount flags are not implemented",
                     );
                 }
+            }
+            if let Some(value) = object.remove("options")
+                && !value.is_null()
+                && value.as_object().is_none_or(|options| !options.is_empty())
+            {
+                return Response::error(
+                    501,
+                    "SDK Auth nondefault mount options are not implemented",
+                );
             }
             object.insert("type".into(), json!("plugin"));
             match state.auth.handle_with_connection_clock(
@@ -1001,10 +1005,10 @@ impl Service {
                 ));
             }
             let data = value.get("data").cloned().unwrap_or(Value::Null);
-            if let Some(errors) = data.get("errors").and_then(Value::as_array) {
+            if let Some(error) = logical_sdk_error(&data) {
                 Response {
                     status: 400,
-                    body: json!({"errors":errors}),
+                    body: json!({"errors":[error]}),
                     response_headers: Default::default(),
                     consistency_index: None,
                 }
@@ -1081,5 +1085,36 @@ impl Service {
             return self.sdk_delivery_veto(response, error, fingerprint, now);
         }
         response
+    }
+}
+
+// Exact SDK v2.7.0 logical.Response.IsError shape. A business field named
+// error alongside arbitrary other data remains ordinary data.
+fn logical_sdk_error(data: &Value) -> Option<&str> {
+    let data = data.as_object()?;
+    if data.len() == 1 || data.len() == 2 && data.get("data").is_some_and(|value| !value.is_null())
+    {
+        data.get("error").and_then(Value::as_str)
+    } else {
+        None
+    }
+}
+#[cfg(test)]
+mod error_tests {
+    use super::*;
+    #[test]
+    fn sdk_auth100_logical_error_matches_actual_sdk_shape_without_flattening_business_data() {
+        assert_eq!(
+            logical_sdk_error(&json!({"error":"invalid credentials"})),
+            Some("invalid credentials")
+        );
+        assert_eq!(
+            logical_sdk_error(&json!({"error":"rejected","data":{}})),
+            Some("rejected")
+        );
+        assert!(logical_sdk_error(&json!({"error":"business","other":1})).is_none());
+        assert!(logical_sdk_error(&json!({"error":"business","data":null})).is_none());
+        assert!(logical_sdk_error(&json!({"error":null})).is_none());
+        assert!(logical_sdk_error(&json!({"errors":["business"]})).is_none());
     }
 }
