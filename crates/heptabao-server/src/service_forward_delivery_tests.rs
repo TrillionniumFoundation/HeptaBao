@@ -76,6 +76,40 @@ fn prepare_with_ttl_and_root(
         .status,
         200
     );
+    if ttl == "1s" {
+        // The one-second actor below is the subject of the late-audit test.
+        // Activate the real precise token state before the Raft fixture so
+        // its original lifetime does not include first-use state migration.
+        let warm = native(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &token,
+            json!({"ttl":"10m","policies":["root"],"no_default_policy":true}),
+        );
+        assert_eq!(warm.status, 200);
+        let warm_token = warm.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("precision prerequisite token")?;
+        assert_eq!(
+            native(
+                &mut service,
+                "POST",
+                "auth/token/revoke",
+                &token,
+                json!({"token":warm_token}),
+            )
+            .status,
+            200
+        );
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .has_token_api_precision_state()
+        );
+    }
     let id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
     let cluster = crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &id)?;
     service.ha = Some(Arc::clone(&cluster.processes[0]));
