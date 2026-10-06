@@ -1,4 +1,4 @@
-"""Linux same-UID Unix-socket proxy for an explicit, finite route allowlist.
+"""Linux/macOS same-UID Unix-socket proxy for an explicit, finite route allowlist.
 
 The upstream HTTPS origin and namespace are fixed by an admitted AppRole agent.
 No incoming credentials, redirects, arbitrary URLs, caches, retry, auth/system
@@ -166,9 +166,53 @@ def send_response(stream,status,body,end,head=False,*,consistency_index=None,ret
     stream.settimeout(_remaining(end));stream.sendall(header+(b'' if head else raw))
 
 
+
+def _peer_uid(stream):
+    if sys.platform == 'linux' and hasattr(socket, 'SO_PEERCRED'):
+        return struct.unpack('3i', stream.getsockopt(
+            socket.SOL_SOCKET, socket.SO_PEERCRED, struct.calcsize('3i')))[1]
+    if sys.platform == 'darwin':
+        # Darwin's libc reports the effective credentials at connect/listen.
+        # https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/getpeereid.3.html
+        import ctypes
+        libc = ctypes.CDLL(None, use_errno=True)
+        query = libc.getpeereid
+        query.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_uint),
+                         ctypes.POINTER(ctypes.c_uint)]
+        query.restype = ctypes.c_int
+        uid, gid = ctypes.c_uint(), ctypes.c_uint()
+        if query(stream.fileno(), ctypes.byref(uid), ctypes.byref(gid)) != 0:
+            raise OSError(ctypes.get_errno(), 'proxy peer credentials unavailable')
+        return uid.value
+    raise BaoError('proxy_requires_kernel_peer_credentials')
+
+
+def _bind_listener(listener, directory):
+    directory.check()
+    if sys.platform == 'linux':
+        listener.bind(f'/proc/self/fd/{directory.fd}/api.sock')
+        return
+    if sys.platform != 'darwin':
+        raise BaoError('proxy_requires_descriptor_bound_socket')
+    # The CLI has one serial worker. A process-wide cwd change is permitted only
+    # before any additional threads exist; both directories remain open by fd.
+    if (threading.current_thread() is not threading.main_thread()
+            or threading.active_count() != 1):
+        raise BaoError('proxy_macos_binding_requires_single_thread')
+    previous = os.open('.', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+    try:
+        os.fchdir(directory.fd)
+        listener.bind('api.sock')
+    finally:
+        try:
+            os.fchdir(previous)
+        finally:
+            os.close(previous)
+
+
 def serve(config,agent_config,stop):
-    if sys.platform!='linux' or not hasattr(socket,'SO_PEERCRED'):
-        raise BaoError('proxy_requires_linux_peer_credentials')
+    if sys.platform not in ('linux', 'darwin'):
+        raise BaoError('proxy_requires_kernel_peer_credentials')
     with StateDirectory(config['socket_dir'],writer=True) as directory:
         # A stale socket requires explicit operator cleanup; never delete an
         # unknown listener/file to "recover" automatically.
@@ -178,9 +222,10 @@ def serve(config,agent_config,stop):
         listener=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
         bound=False
         try:
-            listener.bind(f'/proc/self/fd/{directory.fd}/api.sock');bound=True
+            _bind_listener(listener, directory);bound=True
             os.chmod('api.sock',0o600,dir_fd=directory.fd,follow_symlinks=False)
             owned=os.stat('api.sock',dir_fd=directory.fd,follow_symlinks=False)
+            directory.check()
             listener.listen(16);listener.settimeout(0.2)
             deadline=time.monotonic()+config['max_runtime_seconds']
             requests=0
@@ -193,7 +238,7 @@ def serve(config,agent_config,stop):
                 except socket.timeout:continue
                 requests+=1
                 with stream:
-                    _,uid,_=struct.unpack('3i',stream.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,struct.calcsize('3i')))
+                    uid = _peer_uid(stream)
                     if uid!=os.geteuid():continue
                     end=time.monotonic()+config['timeout']
                     try:
