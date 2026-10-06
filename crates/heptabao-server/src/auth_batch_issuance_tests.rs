@@ -1,5 +1,6 @@
 // Test setup failures are assertions; this module is only compiled under cfg(test).
 #![allow(clippy::unwrap_used)]
+use super::tests::mount_auth;
 use super::*;
 
 fn call(

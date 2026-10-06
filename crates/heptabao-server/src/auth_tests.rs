@@ -2643,7 +2643,13 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
     assert!(matches!(renewal_after_role_delete, Err(error) if error.status == 403));
 }
 
-fn mount_auth(state: &mut AuthState, root: &Principal, namespace: &str, mount: &str, kind: &str) {
+pub(super) fn mount_auth(
+    state: &mut AuthState,
+    root: &Principal,
+    namespace: &str,
+    mount: &str,
+    kind: &str,
+) {
     assert_eq!(
         call(
             state,

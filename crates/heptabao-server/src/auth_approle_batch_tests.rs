@@ -1,4 +1,5 @@
 #![allow(clippy::unwrap_used)]
+use super::tests::mount_auth;
 use super::*;
 fn call(
     state: &mut AuthState,
