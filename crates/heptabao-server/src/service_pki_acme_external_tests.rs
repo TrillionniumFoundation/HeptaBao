@@ -311,6 +311,61 @@ fn assert_no_completed_order(service: &Service, order: &str) -> TestResult {
     erase_json(&mut state);
     Ok(())
 }
+
+fn wrapped_no_effect_revocation(
+    service: &mut Service,
+    admin: &str,
+    serial: &str,
+    expected_data: &Value,
+    remote: &RemoteTransit,
+) -> TestResult {
+    let before = remote.calls()?;
+    let execution = service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "external-ca/revoke",
+        namespace: "",
+        token: admin,
+        body: json!({"serial_number":serial}),
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: None,
+        client_certificates: None,
+    });
+    let RequestExecution::Complete(wrapped) = execution else {
+        return Err("idempotent revocation entered a new provider effect".into());
+    };
+    assert_eq!(wrapped.status, 200);
+    assert_eq!(wrapped.body["lease_duration"], 0);
+    assert_eq!(
+        wrapped.body["wrap_info"]["creation_path"],
+        "external-ca/revoke"
+    );
+    let bearer = zeroize::Zeroizing::new(
+        wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("private no-effect wrapping credential")?
+            .to_owned(),
+    );
+    drop(wrapped);
+    let response = call(service, "POST", "sys/wrapping/unwrap", &bearer, json!({}));
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        &response.body["data"], expected_data,
+        "the original revocation is immutable"
+    );
+    assert_eq!(
+        call(service, "POST", "sys/wrapping/unwrap", &bearer, json!({})).status,
+        400
+    );
+    assert_eq!(
+        remote.calls()?,
+        before,
+        "no-effect wrapping and unwrap never fetch metadata or sign"
+    );
+    Ok(())
+}
 #[test]
 fn pki_acme_external_real_seven_tls_signers_csr_public_binding_encrypted_reopen() -> TestResult {
     for kind in [
@@ -969,6 +1024,14 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
             .as_str()
             .is_some_and(|id| !id.is_empty())
     );
+    wrapped_no_effect_revocation(
+        &mut service,
+        &admin,
+        &serial,
+        &json!({"revocation_time":public.body["data"]["revocation_time"],
+            "revocation_time_rfc3339":public.body["data"]["revocation_time_rfc3339"],"state":"revoked"}),
+        &remote,
+    )?;
     assert!(
         service
             .state
@@ -1278,6 +1341,13 @@ fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reope
             before + 3,
             "idempotent revocation must not re-sign"
         );
+        wrapped_no_effect_revocation(
+            &mut service,
+            &admin,
+            &serial,
+            &revoked.body["data"],
+            &remote,
+        )?;
         let fetched = call(&mut service, "GET", "external-ca/crl", "", json!({}));
         assert_eq!(fetched.status, 200);
         let crl_der = BASE64.decode(

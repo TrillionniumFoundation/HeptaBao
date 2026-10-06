@@ -193,6 +193,32 @@ impl Protocol {
     }
 }
 impl Pki {
+    pub(in crate::engines) fn external_no_effect_revocation(
+        &self,
+        body: &Value,
+        context: &crate::engines::PkiRequestContext<'_>,
+    ) -> Result<Option<EngineResponse>> {
+        reject_unknown(body, &["serial_number"])?;
+        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+        if let Some(prior) = self.acme_revocation(&serial) {
+            // Includes an actual Vault leaf revoked by its own ACME key proof.
+            // Keep the signed asset's original, precise revocation unchanged.
+            return Ok(Some(ok(prior.descriptor(), false)));
+        }
+        if self.acme_certificate_for_serial(&serial)?.is_some()
+            && self
+                .prepare_acme_operator_revocation(&serial, context)?
+                .is_none()
+        {
+            return Ok(Some(EngineResponse {
+                status: 200,
+                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                mutated: false,
+            }));
+        }
+        Ok(None)
+    }
+
     pub(super) fn acme_revocation(&self, serial: &str) -> Option<&Revocation> {
         self.acme_protocol.as_ref()?.revocations.get(serial)
     }

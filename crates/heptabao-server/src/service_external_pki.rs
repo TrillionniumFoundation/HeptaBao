@@ -150,6 +150,12 @@ struct RelatedPkiLane {
     metadata_url: String,
 }
 
+pub(super) struct NoEffectPkiPlan {
+    authority: PluginResponseAuthority,
+    namespace: String,
+    binding: crate::engines::PkiNoEffectBinding,
+}
+
 pub(super) struct ExternalPkiPlan {
     request: SecretValue,
     template: Box<crate::engines::ExternalPkiTemplate>,
@@ -440,6 +446,182 @@ impl ExternalPkiPlan {
 }
 
 impl Service {
+    fn complete_external_pki_no_effect_publication(
+        &mut self,
+        admitted: &State,
+        principal: Principal,
+        request: &RequestView<'_>,
+        capability: &'static str,
+        binding: crate::engines::PkiNoEffectBinding,
+        mut result: crate::engines::EngineResponse,
+    ) -> Response {
+        if result.mutated {
+            return Response::error(503, "PKI no-effect result unexpectedly changed state");
+        }
+        let mut authority = PluginResponseAuthority::new(
+            principal,
+            admitted,
+            request,
+            capability,
+            false,
+            &self.unseal_nonce,
+        )
+        .with_time_floor(admitted.engines.lease_clock());
+        let mut response = Response {
+            response_headers: Default::default(),
+            consistency_index: None,
+            status: result.status,
+            body: std::mem::take(&mut result.body),
+        };
+        if let Err(error) = self.validate_plugin_response(&mut authority) {
+            erase_json(&mut response.body);
+            return error;
+        }
+        let Some(mut candidate) = self.state.clone() else {
+            erase_json(&mut response.body);
+            return unknown();
+        };
+        if !candidate
+            .engines
+            .external_pki_no_effect_current(request.namespace, &binding)
+        {
+            erase_json(&mut response.body);
+            return Response::error(503, "PKI no-effect owner changed before publication");
+        }
+        let observed = match authority.observe_candidate_time(&mut candidate) {
+            Ok(time) => time,
+            Err(error) => {
+                erase_json(&mut response.body);
+                return error;
+            }
+        };
+        if let Some(ttl) = request.wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
+            let mut wrapped = match candidate.auth.wrap_response(
+                request.namespace,
+                request.path,
+                ttl,
+                &response.body,
+                observed.seconds(),
+            ) {
+                Ok(value) => value,
+                Err(error) => {
+                    erase_json(&mut response.body);
+                    return Response::error(error.status, &error.message);
+                }
+            };
+            erase_json(&mut response.body);
+            response.status = wrapped.status;
+            response.body = std::mem::take(&mut wrapped.body);
+        }
+        candidate.schema = candidate.writer_schema();
+        if let Err(error) = candidate.validate_format() {
+            erase_json(&mut response.body);
+            return error;
+        }
+        let record = match self.prepare_record_plan(&mut candidate) {
+            Ok(value) => value,
+            Err(error) => {
+                erase_json(&mut response.body);
+                return error;
+            }
+        };
+        if let Err(error) = self
+            .validate_plugin_response(&mut authority)
+            .and_then(|()| authority.validate_live_auth(&candidate.auth))
+        {
+            erase_json(&mut response.body);
+            return error;
+        }
+        if !self.state.as_ref().is_some_and(|state| {
+            state
+                .engines
+                .external_pki_no_effect_current(request.namespace, &binding)
+        }) || !candidate
+            .engines
+            .external_pki_no_effect_current(request.namespace, &binding)
+        {
+            erase_json(&mut response.body);
+            return Response::error(503, "PKI no-effect owner changed before commit");
+        }
+        if let Err(error) = self.commit_record_plan(&candidate, record) {
+            erase_json(&mut response.body);
+            return error;
+        }
+        self.state = Some(candidate);
+        // The original moved actor, request time and exact unchanged PKI receipt
+        // remain held through the response audit and final delivery check.
+        self.pending_external_pki_no_effect = Some(NoEffectPkiPlan {
+            authority,
+            namespace: request.namespace.to_owned(),
+            binding,
+        });
+        response
+    }
+
+    pub(super) fn complete_pending_external_pki_no_effect_delivery(
+        &mut self,
+        expected: bool,
+        mut response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        let mut plan = match (expected, self.pending_external_pki_no_effect.take()) {
+            (true, Some(plan)) => plan,
+            (false, None) => return response,
+            _ => {
+                erase_json(&mut response.body);
+                response.response_headers = Default::default();
+                response.consistency_index = None;
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                return Response::error(503, "PKI no-effect delivery capsule was lost");
+            }
+        };
+        if response.status >= 300 {
+            return response;
+        }
+        let checked = self
+            .validate_plugin_response(&mut plan.authority)
+            .and_then(|()| {
+                let state = self.state.as_ref().ok_or_else(unknown)?;
+                plan.authority.validate_live_auth(&state.auth)?;
+                if !state
+                    .engines
+                    .external_pki_no_effect_current(&plan.namespace, &plan.binding)
+                {
+                    return Err(Response::error(
+                        503,
+                        "PKI no-effect owner changed before delivery",
+                    ));
+                }
+                Ok(())
+            });
+        if let Err(error) = checked {
+            erase_json(&mut response.body);
+            response.response_headers = Default::default();
+            response.consistency_index = None;
+            if self
+                .audit_event(
+                    "external-pki-no-effect-delivery-veto",
+                    fingerprint,
+                    plan.authority.now(),
+                    Some(error.status),
+                )
+                .is_err()
+            {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                return Response::error(
+                    503,
+                    "PKI no-effect delivery veto audit failed; recovery required",
+                );
+            }
+            return error;
+        }
+        response
+    }
+
     pub(super) fn stage_external_pki(
         &mut self,
         state: &State,
@@ -497,6 +679,26 @@ impl Service {
                 Ok(values) => values,
                 Err(cause) => return cause,
             };
+        match state.engines.prepare_external_pki_no_effect(
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            crate::engines::PkiRequestContext {
+                owner: owner.as_ref(),
+                time,
+                clock: request.token_clock,
+                identity_templates: None,
+            },
+        ) {
+            Ok(Some((binding, response))) => {
+                return self.complete_external_pki_no_effect_publication(
+                    state, principal, request, capability, binding, response,
+                );
+            }
+            Ok(None) => {}
+            Err(cause) => return Response::from_engine_error(cause),
+        }
         let plan = match state.engines.prepare_external_pki(
             request.namespace,
             request.method,

@@ -33,7 +33,7 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
-pub(crate) use leases::PkiRequestContext;
+pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
 #[path = "engine_sdk.rs"]

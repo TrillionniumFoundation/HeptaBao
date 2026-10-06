@@ -15,7 +15,85 @@ impl PkiRequestContext<'_> {
     }
 }
 
+/// A response-only receipt for an unchanged, actual PKI mount. It grants no
+/// provider or local signing operation and contains no private key material.
+#[derive(PartialEq, Eq)]
+pub(crate) struct PkiNoEffectBinding {
+    mount: String,
+    incarnation: u64,
+    revision: u64,
+    fingerprint: [u8; 32],
+}
+
 impl EngineState {
+    fn pki_no_effect_binding(
+        &self,
+        namespace: &str,
+        mount_path: &str,
+    ) -> Result<PkiNoEffectBinding> {
+        let mount = self
+            .namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(engine) = &mount.backend else {
+            return Err(not_found());
+        };
+        let encoded = zeroize::Zeroizing::new(
+            crate::secret_serde::to_vec(engine.as_ref(), crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| error(503, "PKI no-effect owner exceeds bounds"))?,
+        );
+        Ok(PkiNoEffectBinding {
+            mount: mount_path.to_owned(),
+            incarnation: mount.incarnation,
+            revision: mount.revision,
+            fingerprint: crate::crypto::digest(&encoded),
+        })
+    }
+
+    pub(crate) fn external_pki_no_effect_current(
+        &self,
+        namespace: &str,
+        expected: &PkiNoEffectBinding,
+    ) -> bool {
+        self.pki_no_effect_binding(namespace, &expected.mount)
+            .is_ok_and(|current| current == *expected)
+    }
+
+    pub(crate) fn prepare_external_pki_no_effect(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+    ) -> Result<Option<(PkiNoEffectBinding, EngineResponse)>> {
+        let Some(mount_path) = self.pki_mount(namespace, path) else {
+            return Ok(None);
+        };
+        if !write_method(method) || &path[mount_path.len()..] != "revoke" {
+            return Ok(None);
+        }
+        let mount = self
+            .namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(engine) = &mount.backend else {
+            return Ok(None);
+        };
+        let Some(response) = engine.external_no_effect_revocation(body, &context)? else {
+            return Ok(None);
+        };
+        if response.mutated {
+            return Err(error(503, "PKI no-effect result changed its owner"));
+        }
+        Ok(Some((
+            self.pki_no_effect_binding(namespace, mount_path)?,
+            response,
+        )))
+    }
+
     fn ssh_mount(&self, namespace: &str, path: &str) -> Option<&str> {
         let state = self.namespaces.get(namespace)?;
         let mount = state
