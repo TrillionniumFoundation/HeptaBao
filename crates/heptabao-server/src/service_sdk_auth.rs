@@ -15,10 +15,18 @@ struct Context {
     clock: RequestClock,
     namespace_required: bool,
 }
+struct StageTarget<'a> {
+    binding: Binding,
+    caller: Option<plugin::PluginResponseAuthority>,
+    context: Context,
+    operation: &'a str,
+    path: &'a str,
+    login: bool,
+    deadline: Instant,
+}
 struct Transaction {
     auth: CowOwner<AuthState>,
     identity: crate::state_record_root::StateIdentity,
-    changed: bool,
 }
 pub(in crate::service) struct Plan {
     context: Context,
@@ -377,7 +385,15 @@ impl Service {
                     }
                     if let Err(e) = self.sdk_auth_commit_control(
                         &mut state,
-                        caller.as_mut().expect("control requires original caller"),
+                        match caller.as_mut() {
+                            Some(authority) => authority,
+                            None => {
+                                return Response::error(
+                                    503,
+                                    "SDK Auth original control capsule absent",
+                                );
+                            }
+                        },
                         &expected,
                         clock,
                     ) {
@@ -398,7 +414,15 @@ impl Service {
                     }
                     if let Err(e) = self.sdk_auth_commit_control(
                         &mut state,
-                        caller.as_mut().expect("control requires original caller"),
+                        match caller.as_mut() {
+                            Some(authority) => authority,
+                            None => {
+                                return Response::error(
+                                    503,
+                                    "SDK Auth original control capsule absent",
+                                );
+                            }
+                        },
                         &expected,
                         clock,
                     ) {
@@ -457,7 +481,12 @@ impl Service {
                 }
                 if let Err(e) = self.sdk_auth_commit_control(
                     &mut state,
-                    caller.as_mut().expect("original caller"),
+                    match caller.as_mut() {
+                        Some(authority) => authority,
+                        None => {
+                            return Response::error(503, "SDK Auth original control capsule absent");
+                        }
+                    },
                     &expected,
                     clock,
                 ) {
@@ -503,6 +532,7 @@ impl Service {
                     "plugin_name" => v.as_str().is_none_or(|n| !n.is_empty() && n != name),
                     "default_lease_ttl" | "max_lease_ttl" => v.as_str() != Some(""),
                     "force_no_cache" => v.as_bool() != Some(false),
+                    "options" => !v.is_null() && v.as_object().is_none_or(|o| !o.is_empty()),
                     "allowed_response_headers"
                     | "audit_non_hmac_request_keys"
                     | "audit_non_hmac_response_keys" => {
@@ -513,6 +543,24 @@ impl Service {
                     return Response::error(
                         501,
                         "SDK Auth nondefault mount config is not implemented",
+                    );
+                }
+            }
+            for flag in ["local", "seal_wrap", "external_entropy_access"] {
+                if let Some(value) = object.remove(flag) {
+                    if value.as_bool() != Some(false) {
+                        return Response::error(
+                            501,
+                            "SDK Auth nondefault mount flags are not implemented",
+                        );
+                    }
+                }
+            }
+            if let Some(value) = object.remove("options") {
+                if !value.is_null() && value.as_object().is_none_or(|options| !options.is_empty()) {
+                    return Response::error(
+                        501,
+                        "SDK Auth nondefault mount options are not implemented",
                     );
                 }
             }
@@ -544,7 +592,12 @@ impl Service {
                 };
             if let Err(e) = self.sdk_auth_commit_control(
                 &mut state,
-                caller.as_mut().expect("original caller"),
+                match caller.as_mut() {
+                    Some(authority) => authority,
+                    None => {
+                        return Response::error(503, "SDK Auth original control capsule absent");
+                    }
+                },
                 &expected,
                 clock,
             ) {
@@ -552,10 +605,22 @@ impl Service {
             }
             self.state = Some(state.clone());
             return self.stage_sdk_auth(
-                &state, request, binding, caller, context, "_mount", "", false, deadline,
+                &state,
+                request,
+                StageTarget {
+                    binding,
+                    caller,
+                    context,
+                    operation: "_mount",
+                    path: "",
+                    login: false,
+                    deadline,
+                },
             );
         }
-        let binding = relative.expect("actual SDK Auth binding");
+        let Some(binding) = relative else {
+            return Response::error(503, "SDK Auth actual mount binding absent");
+        };
         let operation = match request.method {
             "GET" | "HEAD" => "read",
             "LIST" | "SCAN" => "list",
@@ -568,7 +633,17 @@ impl Service {
             .strip_prefix(&format!("auth/{}/", binding.mount))
             .unwrap_or("");
         self.stage_sdk_auth(
-            &state, request, binding, caller, context, operation, path, login, deadline,
+            &state,
+            request,
+            StageTarget {
+                binding,
+                caller,
+                context,
+                operation,
+                path,
+                login,
+                deadline,
+            },
         )
     }
     fn sdk_auth_commit_control(
@@ -588,14 +663,17 @@ impl Service {
         &mut self,
         state: &State,
         request: &RequestView<'_>,
-        binding: Binding,
-        caller: Option<plugin::PluginResponseAuthority>,
-        context: Context,
-        operation: &str,
-        path: &str,
-        login: bool,
-        deadline: Instant,
+        target: StageTarget<'_>,
     ) -> Response {
+        let StageTarget {
+            binding,
+            caller,
+            context,
+            operation,
+            path,
+            login,
+            deadline,
+        } = target;
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK Auth runtime absent");
         };
@@ -667,7 +745,6 @@ impl Service {
             transaction: Mutex::new(Transaction {
                 auth: state.auth.clone(),
                 identity,
-                changed: false,
             }),
             operation: operation.into(),
             path: path.into(),
@@ -809,7 +886,6 @@ impl Service {
                         },
                     )
                     .map_err(auth_error)?;
-                transaction.changed = true;
                 StorageReply::Empty
             }
             StorageOp::Delete(key) => {
@@ -817,7 +893,6 @@ impl Service {
                     .auth
                     .sdk_auth_storage_delete(&plan.binding, &key)
                     .map_err(auth_error)?;
-                transaction.changed = true;
                 StorageReply::Empty
             }
             StorageOp::List(prefix, after, limit) => StorageReply::Keys(
