@@ -46,7 +46,7 @@ mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
 pub(crate) use pki::acme_engine::{
-    AcmeBinding, AcmeExternalDelivery, AcmeExternalFinalize, AcmeParsedJws, AcmeView,
+    AcmeBinding, AcmeExternalDelivery, AcmeExternalEffect, AcmeParsedJws, AcmeView,
 };
 pub(crate) use pki::acme_orders::Challenge as AcmeChallenge;
 pub(crate) use pki::acme_revoke::Request as AcmeRevocationRequest;

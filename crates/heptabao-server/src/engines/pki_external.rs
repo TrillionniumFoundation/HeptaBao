@@ -8,6 +8,7 @@ mod public_key;
 pub(crate) use public_key::ExternalPkiPublicKey;
 #[path = "pki_external_leaf.rs"]
 mod leaf;
+pub(crate) use leaf::AcmeCrlTemplate;
 use leaf::{ConsumptionMaterial, ConsumptionTemplate, CrlSet, LeafPublic};
 #[path = "pki_external_issuer_archive.rs"]
 mod issuer_archive;

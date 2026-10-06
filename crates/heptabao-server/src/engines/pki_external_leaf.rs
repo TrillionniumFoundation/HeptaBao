@@ -122,7 +122,7 @@ impl CrlSet {
     pub(super) fn empty(now: u64, urls: Option<UrlEntries>) -> Self {
         Self::prepare(1, now, BTreeMap::new(), urls)
     }
-    fn prepare(
+    pub(super) fn prepare(
         number: u64,
         now: u64,
         revoked: BTreeMap<String, u64>,
@@ -610,6 +610,7 @@ impl Pki {
                 })
                 .collect::<BTreeMap<_, _>>();
             entries.extend(self.external_signed_ca_revocations(&key.issuer_id, now));
+            entries.extend(self.acme_revoked_for_issuer(&key.issuer_id));
             if let Some((serial, at)) = &revoked {
                 entries.insert(serial.clone(), *at);
             }
@@ -997,6 +998,9 @@ impl Pki {
                     .is_some_and(|(id, _, _, revoked)| {
                         id != issuer.issuer_id || revoked != Some(*at)
                     })
+                    || self.acme_revocation(serial).is_some_and(|revoked| {
+                        revoked.issuer != issuer.issuer_id || revoked.at.seconds() != *at
+                    })
             }) {
                 return Err(bad("external CRL certificate issuer ownership mismatch"));
             }
@@ -1271,6 +1275,134 @@ impl ExternalPkiTemplate {
                 leaf_pkcs8,
                 leaf_public,
             }),
+        })
+    }
+}
+
+// The effect owns a selected private signer and the exact prior signed CRLs.
+// An ACME proof supplies only the public certificate revocation, never a token.
+pub(crate) struct AcmeCrlTemplate {
+    pub(crate) reference: String,
+    issuer: ExternalPublicIssuer,
+    prior_full: Vec<u8>,
+    prior_delta: Vec<u8>,
+    prepared: CrlSet,
+    parts: Vec<Vec<u8>>,
+}
+impl AcmeCrlTemplate {
+    pub(crate) fn validate_provider_public(&self, public: &ExternalPkiPublicKey) -> Result<()> {
+        if public != &self.issuer.public_key {
+            return Err(error(503, "ACME CRL provider public key changed"));
+        }
+        Ok(())
+    }
+    pub(in crate::engines) fn validate_issuer(&self, pki: &Pki) -> Result<()> {
+        let mut selected = pki.clone();
+        selected.select_external_default(&self.issuer.issuer_id)?;
+        let actual = selected.captured_external_issuer()?;
+        let key = selected.external.root.as_ref().ok_or_else(not_found)?;
+        let crls = selected.external.crls.as_ref().ok_or_else(not_found)?;
+        if actual != self.issuer
+            || key.reference != self.reference
+            || crls.full.der != self.prior_full
+            || crls.delta.der != self.prior_delta
+        {
+            return Err(error(
+                503,
+                "ACME original CRL signer or signed frontier changed",
+            ));
+        }
+        Ok(())
+    }
+    pub(crate) fn signing_inputs(&self) -> Result<Vec<Vec<u8>>> {
+        self.parts
+            .iter()
+            .map(|part| {
+                self.issuer
+                    .public_key
+                    .signing_input_leaf(part, self.issuer.public_key.leaf_signature(None))
+            })
+            .collect()
+    }
+    pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
+        self.issuer.public_key.leaf_signature(None).hash_algorithm()
+    }
+    pub(crate) fn signature_algorithm(&self) -> &'static str {
+        "pkcs1v15"
+    }
+    pub(crate) fn signature_size_bound(&self) -> usize {
+        self.issuer.public_key.signature_size_bound()
+    }
+    pub(in crate::engines) fn publish(
+        self,
+        pki: &mut Pki,
+        signatures: &[Zeroizing<Vec<u8>>],
+        at: Timestamp,
+    ) -> Result<()> {
+        self.validate_issuer(pki)?;
+        let original = pki.external.root.as_ref().map(|key| key.issuer_id.clone());
+        let mut selected = pki.clone();
+        selected.select_external_default(&self.issuer.issuer_id)?;
+        let mut crls = self.prepared;
+        crls.sign(
+            &self.issuer.common_name,
+            &self.issuer.public_key,
+            signatures,
+        )?;
+        crls.validate(&self.issuer, at.seconds())?;
+        selected.external.crls = Some(crls);
+        selected.restore_external_default(original.as_deref())?;
+        *pki = selected;
+        Ok(())
+    }
+}
+impl Pki {
+    pub(in crate::engines) fn prepare_acme_external_crl(
+        &self,
+        revoked: &super::acme_revoke::Revocation,
+        at: Timestamp,
+    ) -> Result<AcmeCrlTemplate> {
+        let mut selected = self.clone();
+        selected.select_external_default(&revoked.issuer)?;
+        let issuer = selected.captured_external_issuer()?;
+        let key = selected.external.root.as_ref().ok_or_else(not_found)?;
+        let previous = selected.external.crls.as_ref().ok_or_else(not_found)?;
+        let number = previous
+            .delta
+            .number
+            .checked_add(1)
+            .filter(|number| *number != u64::MAX)
+            .ok_or_else(|| error(507, "external CRL sequence exhausted"))?;
+        let mut entries = selected
+            .issued
+            .iter()
+            .filter_map(|(serial, cert)| {
+                cert.revoked_at
+                    .filter(|_| {
+                        cert.expires > at.seconds()
+                            && selected.external_leaf_belongs_to_active(serial)
+                    })
+                    .map(|time| (serial.clone(), time))
+            })
+            .collect::<BTreeMap<_, _>>();
+        entries.extend(selected.external_signed_ca_revocations(&issuer.issuer_id, at.seconds()));
+        entries.extend(selected.acme_revoked_for_issuer(&issuer.issuer_id));
+        entries.insert(revoked.serial.clone(), revoked.at.seconds());
+        let prepared = CrlSet::prepare(
+            number,
+            at.seconds(),
+            entries,
+            selected.capture_urls(&issuer.issuer_id)?,
+        )
+        .with_certificate_issuer(&issuer.certificate_der, &issuer.common_name)?;
+        let parts = prepared.tbs(&issuer.common_name, &issuer.public_key)?;
+        Ok(AcmeCrlTemplate {
+            reference: key.reference.clone(),
+            issuer,
+            prior_full: previous.full.der.clone(),
+            prior_delta: previous.delta.der.clone(),
+            prepared,
+            parts,
         })
     }
 }

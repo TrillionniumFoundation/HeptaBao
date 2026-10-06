@@ -94,7 +94,7 @@ fn parse_certificate(payload: &Value) -> Result<Vec<u8>> {
     Ok(raw)
 }
 impl Revocation {
-    fn validate(&self, protocol: &Protocol, clock: Timestamp) -> Result<()> {
+    pub(in crate::engines) fn validate(&self, protocol: &Protocol, clock: Timestamp) -> Result<()> {
         let (rest, cert) = x509_parser::parse_x509_certificate(&self.certificate)
             .map_err(|_| bad("invalid ACME revoked certificate DER"))?;
         if !rest.is_empty()
@@ -364,15 +364,14 @@ impl Pki {
         }
         Ok(())
     }
-    pub(in crate::engines) fn acme_revoke_certificate(
-        &mut self,
+    pub(in crate::engines) fn acme_prepare_revocation(
+        &self,
         key: &Jwk,
         proof: &VerifiedJws,
         account: Option<&str>,
         at: Timestamp,
         clock: Option<RequestClock>,
-        mut before_effect: impl FnMut() -> Result<()>,
-    ) -> Result<Value> {
+    ) -> Result<Revocation> {
         if key.thumbprint()? != proof.key_thumbprint() {
             return Err(error(401, "the client lacks sufficient authorization"));
         }
@@ -477,21 +476,82 @@ impl Pki {
             proof: authorization,
         };
         revoked.validate(protocol, at)?;
+        Ok(revoked)
+    }
+    pub(in crate::engines) fn acme_revoke_certificate(
+        &mut self,
+        key: &Jwk,
+        proof: &VerifiedJws,
+        account: Option<&str>,
+        at: Timestamp,
+        clock: Option<RequestClock>,
+        mut before_effect: impl FnMut() -> Result<()>,
+    ) -> Result<Value> {
+        let revoked = self.acme_prepare_revocation(key, proof, account, at, clock)?;
+        let at = revoked.at;
         before_effect()?;
-        // Prove the selected issuer remains local before any durable mutation.
         self.local_issuer(&revoked.issuer)?.local_key()?;
-        if let Some(cert) = self.issued.get_mut(&serial) {
-            cert.revoked_at = Some(at.seconds());
+        if let Some(cert) = self.issued.get_mut(&revoked.serial) {
+            cert.revoked_at = Some(revoked.at.seconds());
         }
         let response = revoked.descriptor();
         let protocol = self
             .acme_protocol
             .as_mut()
             .ok_or_else(|| error(503, "ACME revocation protocol unavailable"))?;
-        protocol.observe_time(at);
-        protocol.revocations.insert(serial, revoked);
+        protocol.observe_time(revoked.at);
+        protocol.revocations.insert(revoked.serial.clone(), revoked);
         self.local_revocation_changed_guarded(at.seconds(), &mut before_effect)?;
         self.validate_acme_revocations()?;
         Ok(response)
+    }
+    pub(in crate::engines) fn acme_revocation_requires_external(
+        &self,
+        revoked: &Revocation,
+    ) -> Result<bool> {
+        Ok(self
+            .external_acme_issuer_evidence(&revoked.issuer)?
+            .is_some())
+    }
+    pub(in crate::engines) fn validate_live_acme_revocation(
+        &self,
+        revoked: &Revocation,
+        at: Timestamp,
+        published: bool,
+    ) -> Result<()> {
+        let protocol = self
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME revocation protocol unavailable"))?;
+        revoked.validate(protocol, at)?;
+        let certificate = self
+            .acme_certificate_for_serial(&revoked.serial)?
+            .ok_or_else(|| error(503, "ACME original revoked certificate unavailable"))?;
+        if certificate.der != revoked.certificate
+            || certificate.issuer != revoked.issuer
+            || certificate.created > revoked.at
+            || Timestamp::whole(certificate.expires)
+                .map_err(|_| bad("invalid certificate expiry"))?
+                < at
+            || if published {
+                protocol.revocations.get(&revoked.serial) != Some(revoked)
+            } else {
+                protocol.revocations.contains_key(&revoked.serial)
+            }
+        {
+            return Err(error(503, "ACME original revocation asset changed"));
+        }
+        if let Proof::Account {
+            account,
+            thumbprint,
+        } = &revoked.proof
+            && !protocol
+                .accounts
+                .get(account)
+                .is_some_and(|a| a.status == AccountStatus::Valid && a.thumbprint == *thumbprint)
+        {
+            return Err(error(403, "the client lacks sufficient authorization"));
+        }
+        self.validate_acme_certificates()
     }
 }

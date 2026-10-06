@@ -1058,7 +1058,7 @@ pub(crate) enum ExternalEffectResult {
     ExternalKey(Result<(), Response>),
     ExternalTransit(Result<external_transit::Observation, Response>),
     ExternalPki(Result<external_pki::Observation, Response>),
-    AcmeExternal(Result<zeroize::Zeroizing<Vec<u8>>, Response>),
+    AcmeExternal(Result<Vec<zeroize::Zeroizing<Vec<u8>>>, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
