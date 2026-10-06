@@ -145,6 +145,12 @@ def run(binary, output):
                 instance.token,
             )
 
+            for client, side in ((oracle_client, "oracle"), (candidate, "candidate")):
+                enabled = client.request(
+                    "PUT", "/v1/sys/auth/openapi-userpass", {"type": "userpass"}
+                )
+                check(side + "_explicit_userpass_mount", enabled.status in (200, 204))
+
             oracle_response = oracle_client.request(
                 "GET", "/v1/sys/internal/specs/openapi"
             )

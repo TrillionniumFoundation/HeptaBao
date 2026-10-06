@@ -1,5 +1,6 @@
 use super::{Response, Value};
 use serde_json::{Map, json};
+use std::collections::BTreeMap;
 
 struct Route {
     path: &'static str,
@@ -308,7 +309,132 @@ fn add_mount_route(
     add_route_parts(paths, &path, methods, description, false, false);
 }
 
-pub(super) fn handle(method: &str, body: &Value, root_visibility: bool) -> Response {
+fn add_actual_mount_routes(
+    paths: &mut Map<String, Value>,
+    generic: bool,
+    auth_mounts: &BTreeMap<String, Value>,
+    secret_mounts: &BTreeMap<String, Value>,
+) {
+    for (mount, descriptor) in secret_mounts {
+        let kind = descriptor.get("type").and_then(Value::as_str);
+        match kind {
+            Some("kv") => {
+                let prefix = if generic {
+                    "{kv_mount_path}"
+                } else {
+                    mount.trim_end_matches('/')
+                };
+                if descriptor["options"]["version"] == "2" {
+                    add_mount_route(
+                        paths,
+                        format!("/{prefix}/data/{{path}}"),
+                        &["get", "post", "delete"],
+                        "Read, write or soft-delete a KV v2 value.",
+                    );
+                    add_mount_route(
+                        paths,
+                        format!("/{prefix}/metadata/{{path}}"),
+                        &["get", "post", "delete"],
+                        "Read, tune or destroy KV v2 metadata.",
+                    );
+                } else {
+                    add_mount_route(
+                        paths,
+                        format!("/{prefix}/{{path}}"),
+                        &["get", "post", "put", "delete"],
+                        "Read, write or delete a KV v1 value.",
+                    );
+                }
+            }
+            Some("transit") => {
+                let prefix = if generic {
+                    "{transit_mount_path}"
+                } else {
+                    mount.trim_end_matches('/')
+                };
+                for (suffix, methods, description) in [
+                    (
+                        "keys/{name}",
+                        &["get", "post", "delete"][..],
+                        "Read, create or delete a Transit key.",
+                    ),
+                    (
+                        "encrypt/{name}",
+                        &["post", "put"][..],
+                        "Encrypt bounded plaintext with a Transit key.",
+                    ),
+                    (
+                        "decrypt/{name}",
+                        &["post", "put"][..],
+                        "Decrypt bounded Transit ciphertext.",
+                    ),
+                ] {
+                    add_mount_route(paths, format!("/{prefix}/{suffix}"), methods, description);
+                }
+            }
+            _ => {}
+        }
+    }
+    for (mount, descriptor) in auth_mounts {
+        let kind = descriptor.get("type").and_then(Value::as_str);
+        match kind {
+            Some("userpass") => {
+                let prefix = if generic {
+                    "auth/{userpass_mount_path}"
+                } else {
+                    mount.trim_end_matches('/')
+                };
+                add_mount_route(
+                    paths,
+                    format!("/{prefix}/users/{{username}}"),
+                    &["get", "post", "put", "delete"],
+                    "Manage a userpass principal.",
+                );
+                add_mount_route(
+                    paths,
+                    format!("/{prefix}/login/{{username}}"),
+                    &["post", "put"],
+                    "Authenticate a userpass principal.",
+                );
+            }
+            Some("approle") => {
+                let prefix = if generic {
+                    "auth/{approle_mount_path}"
+                } else {
+                    mount.trim_end_matches('/')
+                };
+                for (suffix, methods, description) in [
+                    (
+                        "role/{role_name}",
+                        &["get", "post", "put", "delete"][..],
+                        "Manage an AppRole role.",
+                    ),
+                    (
+                        "role/{role_name}/custom-secret-id",
+                        &["post", "put"][..],
+                        "Issue a bounded operator-supplied AppRole SecretID.",
+                    ),
+                    (
+                        "login",
+                        &["post", "put"][..],
+                        "Authenticate with AppRole credentials.",
+                    ),
+                ] {
+                    add_mount_route(paths, format!("/{prefix}/{suffix}"), methods, description);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+pub(super) fn handle(
+    method: &str,
+    body: &Value,
+    root_visibility: bool,
+    auth_mounts: &BTreeMap<String, Value>,
+    secret_mounts: &BTreeMap<String, Value>,
+) -> Response {
     if !matches!(method, "GET" | "POST") {
         return Response::error(405, "OpenAPI document requires GET or POST");
     }
@@ -359,82 +485,7 @@ pub(super) fn handle(method: &str, body: &Value, root_visibility: bool) -> Respo
         }));
     }
 
-    let kv = if generic { "{kv_mount_path}" } else { "secret" };
-    add_mount_route(
-        &mut paths,
-        format!("/{kv}/data/{{path}}"),
-        &["get", "post", "delete"],
-        "Read, write or soft-delete a KV v2 value.",
-    );
-    add_mount_route(
-        &mut paths,
-        format!("/{kv}/metadata/{{path}}"),
-        &["get", "post", "delete"],
-        "Read, tune or destroy KV v2 metadata.",
-    );
-    let transit = if generic {
-        "{transit_mount_path}"
-    } else {
-        "transit"
-    };
-    add_mount_route(
-        &mut paths,
-        format!("/{transit}/keys/{{name}}"),
-        &["get", "post", "delete"],
-        "Read, create or delete a Transit key.",
-    );
-    add_mount_route(
-        &mut paths,
-        format!("/{transit}/encrypt/{{name}}"),
-        &["post", "put"],
-        "Encrypt bounded plaintext with a Transit key.",
-    );
-    add_mount_route(
-        &mut paths,
-        format!("/{transit}/decrypt/{{name}}"),
-        &["post", "put"],
-        "Decrypt bounded Transit ciphertext.",
-    );
-    let userpass = if generic {
-        "{userpass_mount_path}"
-    } else {
-        "userpass"
-    };
-    add_mount_route(
-        &mut paths,
-        format!("/auth/{userpass}/users/{{username}}"),
-        &["get", "post", "put", "delete"],
-        "Manage a userpass principal.",
-    );
-    add_mount_route(
-        &mut paths,
-        format!("/auth/{userpass}/login/{{username}}"),
-        &["post", "put"],
-        "Authenticate a userpass principal.",
-    );
-    let approle = if generic {
-        "{approle_mount_path}"
-    } else {
-        "approle"
-    };
-    add_mount_route(
-        &mut paths,
-        format!("/auth/{approle}/role/{{role_name}}"),
-        &["get", "post", "put", "delete"],
-        "Manage an AppRole role.",
-    );
-    add_mount_route(
-        &mut paths,
-        format!("/auth/{approle}/role/{{role_name}}/custom-secret-id"),
-        &["post", "put"],
-        "Issue a bounded operator-supplied AppRole SecretID.",
-    );
-    add_mount_route(
-        &mut paths,
-        format!("/auth/{approle}/login"),
-        &["post", "put"],
-        "Authenticate with AppRole credentials.",
-    );
+    add_actual_mount_routes(&mut paths, generic, auth_mounts, secret_mounts);
 
     Response::ok(json!({
         "openapi": "3.0.2",
@@ -465,6 +516,20 @@ pub(super) fn handle(method: &str, body: &Value, root_visibility: bool) -> Respo
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn handle(method: &str, body: &Value, root_visibility: bool) -> Response {
+        let auth_mounts = BTreeMap::from([
+            ("auth/userpass/".into(), json!({"type":"userpass"})),
+            ("auth/approle/".into(), json!({"type":"approle"})),
+        ]);
+        let secret_mounts = BTreeMap::from([
+            (
+                "secret/".into(),
+                json!({"type":"kv","options":{"version":"2"}}),
+            ),
+            ("transit/".into(), json!({"type":"transit"})),
+        ]);
+        super::handle(method, body, root_visibility, &auth_mounts, &secret_mounts)
+    }
 
     #[test]
     fn generated_document_is_deterministic_and_does_not_advertise_unimplemented_auth()

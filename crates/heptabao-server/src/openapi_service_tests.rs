@@ -145,3 +145,142 @@ fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
     );
     Ok(())
 }
+
+#[test]
+fn openapi_uses_actual_mounts_after_remount_disable_and_restart()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, token) = bootstrap(&mut service)?;
+    let initial = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        &token,
+        json!({}),
+    );
+    assert_eq!(initial.status, 200);
+    assert!(
+        initial.body["paths"]
+            .get("/auth/userpass/login/{username}")
+            .is_none()
+    );
+    assert!(initial.body["paths"].get("/auth/approle/login").is_none());
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/auth/team/login",
+            &token,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/mounts/team/plain",
+            &token,
+            json!({"type":"kv","options":{"version":"1"}})
+        )
+        .status,
+        204
+    );
+    let mounted = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        &token,
+        json!({}),
+    );
+    assert_eq!(mounted.status, 200);
+    assert!(
+        mounted.body["paths"]
+            .get("/auth/team/login/login/{username}")
+            .is_some()
+    );
+    assert!(mounted.body["paths"].get("/team/plain/{path}").is_some());
+    assert!(
+        mounted.body["paths"]
+            .get("/team/plain/data/{path}")
+            .is_none()
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/remount",
+            &token,
+            json!({"from":"auth/team/login/","to":"auth/team/accounts/"})
+        )
+        .status
+            < 300
+    );
+    let moved = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        &token,
+        json!({}),
+    );
+    assert_eq!(moved.status, 200);
+    assert!(
+        moved.body["paths"]
+            .get("/auth/team/accounts/login/{username}")
+            .is_some()
+    );
+    assert!(
+        moved.body["paths"]
+            .get("/auth/team/login/login/{username}")
+            .is_none()
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/auth/team/accounts",
+            &token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let disabled = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        &token,
+        json!({}),
+    );
+    assert!(
+        disabled.body["paths"]
+            .get("/auth/team/accounts/login/{username}")
+            .is_none()
+    );
+    let expected = disabled.body;
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let reopened = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        &token,
+        json!({}),
+    );
+    assert_eq!(reopened.status, 200);
+    assert_eq!(reopened.body, expected);
+    Ok(())
+}

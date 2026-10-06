@@ -4587,7 +4587,13 @@ impl Service {
             {
                 return Response::error(error.status, &error.message);
             }
-            return openapi::handle(method, body, principal.is_root());
+            return openapi::handle(
+                method,
+                body,
+                principal.is_root(),
+                &state.auth.ui_auth_mounts(namespace),
+                &state.engines.ui_secret_mounts(namespace),
+            );
         }
         if path == "sys/leader" && method == "GET" {
             return Response::error(500, "leader route escaped service HA boundary");
