@@ -1025,6 +1025,7 @@ impl Service {
                 &mut candidate.auth,
                 &mut candidate.engines,
                 &mut issued,
+                &candidate.namespaces,
                 &plan.context.namespace,
                 at.seconds(),
                 AuthorityTime::Precise(at),
