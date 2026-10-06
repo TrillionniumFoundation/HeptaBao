@@ -94,7 +94,7 @@ fn parse_certificate(payload: &Value) -> Result<Vec<u8>> {
     Ok(raw)
 }
 impl Revocation {
-    fn validate(&self, protocol: &Protocol, clock: Timestamp) -> Result<()> {
+    pub(in crate::engines) fn validate(&self, protocol: &Protocol, clock: Timestamp) -> Result<()> {
         let (rest, cert) = x509_parser::parse_x509_certificate(&self.certificate)
             .map_err(|_| bad("invalid ACME revoked certificate DER"))?;
         if !rest.is_empty()
@@ -193,6 +193,32 @@ impl Protocol {
     }
 }
 impl Pki {
+    pub(in crate::engines) fn external_no_effect_revocation(
+        &self,
+        body: &Value,
+        context: &crate::engines::PkiRequestContext<'_>,
+    ) -> Result<Option<EngineResponse>> {
+        reject_unknown(body, &["serial_number"])?;
+        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+        if let Some(prior) = self.acme_revocation(&serial) {
+            // Includes an actual Vault leaf revoked by its own ACME key proof.
+            // Keep the signed asset's original, precise revocation unchanged.
+            return Ok(Some(ok(prior.descriptor(), false)));
+        }
+        if self.acme_certificate_for_serial(&serial)?.is_some()
+            && self
+                .prepare_acme_operator_revocation(&serial, context)?
+                .is_none()
+        {
+            return Ok(Some(EngineResponse {
+                status: 200,
+                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                mutated: false,
+            }));
+        }
+        Ok(None)
+    }
+
     pub(super) fn acme_revocation(&self, serial: &str) -> Option<&Revocation> {
         self.acme_protocol.as_ref()?.revocations.get(serial)
     }
@@ -208,19 +234,16 @@ impl Pki {
             })
     }
 
-    pub(in crate::engines) fn revoke_acme_by_operator(
-        &mut self,
-        body: &Value,
-        context: crate::engines::PkiRequestContext<'_>,
-        before_effect: &mut impl FnMut() -> Result<()>,
-    ) -> Result<Option<EngineResponse>> {
-        reject_unknown(body, &["serial_number"])?;
-        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
-        let Some(cert) = self.acme_certificate_for_serial(&serial)? else {
+    pub(in crate::engines) fn prepare_acme_operator_revocation(
+        &self,
+        serial: &str,
+        context: &crate::engines::PkiRequestContext<'_>,
+    ) -> Result<Option<Revocation>> {
+        let Some(cert) = self.acme_certificate_for_serial(serial)? else {
             return Ok(None);
         };
-        if let Some(prior) = self.acme_revocation(&serial) {
-            return Ok(Some(ok(prior.descriptor(), false)));
+        if self.acme_revocation(serial).is_some() {
+            return Ok(None);
         }
         let actor = context
             .owner
@@ -263,11 +286,7 @@ impl Pki {
         }
         if cert.expires < at.seconds().saturating_add(2) && !self.local_expired_revocation_allowed()
         {
-            return Ok(Some(EngineResponse {
-                status: 200,
-                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
-                mutated: false,
-            }));
+            return Ok(None);
         }
         let protocol = self
             .acme_protocol
@@ -276,7 +295,7 @@ impl Pki {
         let revoked = Revocation {
             owner: protocol.owner.clone(),
             issuer: cert.issuer.clone(),
-            serial: serial.clone(),
+            serial: serial.to_owned(),
             certificate: cert.der.clone(),
             at,
             proof: Proof::Administrative {
@@ -286,6 +305,34 @@ impl Pki {
             },
         };
         revoked.validate(protocol, at)?;
+        Ok(Some(revoked))
+    }
+
+    pub(in crate::engines) fn revoke_acme_by_operator(
+        &mut self,
+        body: &Value,
+        context: crate::engines::PkiRequestContext<'_>,
+        before_effect: &mut impl FnMut() -> Result<()>,
+    ) -> Result<Option<EngineResponse>> {
+        reject_unknown(body, &["serial_number"])?;
+        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+        if self.acme_certificate_for_serial(&serial)?.is_none() {
+            return Ok(None);
+        }
+        if let Some(prior) = self.acme_revocation(&serial) {
+            return Ok(Some(ok(prior.descriptor(), false)));
+        }
+        let Some(revoked) = self.prepare_acme_operator_revocation(&serial, &context)? else {
+            return Ok(Some(EngineResponse {
+                status: 200,
+                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                mutated: false,
+            }));
+        };
+        let at = revoked.at;
+        let actor = context
+            .owner
+            .ok_or_else(|| error(403, "administrative PKI revocation requires actual caller"))?;
         before_effect()?;
         self.local_issuer(&revoked.issuer)?.local_key()?;
         let response = revoked.descriptor();
@@ -351,12 +398,17 @@ impl Pki {
                     .issued
                     .get(&revoked.serial)
                     .ok_or_else(|| bad("ACME revoked global certificate missing"))?;
+                let issuer = if cert.external_issuer_owner.is_some()
+                    || self.profile_leaf_is_external(&revoked.serial)
+                {
+                    self.external_leaf_issuer_reference(&revoked.serial)?
+                } else {
+                    &cert.local_issuer_id
+                };
                 if cert.certificate_der != revoked.certificate
-                    || cert.local_issuer_id != revoked.issuer
+                    || issuer != revoked.issuer
                     || cert.revoked_at != Some(revoked.at.seconds())
                     || cert.issued > revoked.at.seconds()
-                    || cert.external_issuer_owner.is_some()
-                    || self.profile_leaf_is_external(&revoked.serial)
                 {
                     return Err(bad("ACME global revocation certificate owner rejected"));
                 }
@@ -364,15 +416,14 @@ impl Pki {
         }
         Ok(())
     }
-    pub(in crate::engines) fn acme_revoke_certificate(
-        &mut self,
+    pub(in crate::engines) fn acme_prepare_revocation(
+        &self,
         key: &Jwk,
         proof: &VerifiedJws,
         account: Option<&str>,
         at: Timestamp,
         clock: Option<RequestClock>,
-        mut before_effect: impl FnMut() -> Result<()>,
-    ) -> Result<Value> {
+    ) -> Result<Revocation> {
         if key.thumbprint()? != proof.key_thumbprint() {
             return Err(error(401, "the client lacks sufficient authorization"));
         }
@@ -396,15 +447,13 @@ impl Pki {
                 self.acme_revocation(&serial).is_some(),
             )
         } else if let Some(cert) = self.issued.get(&serial) {
-            if cert.external_issuer_owner.is_some() || self.profile_leaf_is_external(&serial) {
-                return Err(error(
-                    501,
-                    "external ACME revocation requires a qualified provider signing lane",
-                ));
-            }
             (
                 &cert.certificate_der,
-                cert.local_issuer_id.clone(),
+                if cert.external_issuer_owner.is_some() || self.profile_leaf_is_external(&serial) {
+                    self.external_leaf_issuer_reference(&serial)?.to_owned()
+                } else {
+                    cert.local_issuer_id.clone()
+                },
                 cert.revoked_at.is_some(),
             )
         } else {
@@ -477,21 +526,116 @@ impl Pki {
             proof: authorization,
         };
         revoked.validate(protocol, at)?;
+        Ok(revoked)
+    }
+    pub(in crate::engines) fn acme_revoke_certificate(
+        &mut self,
+        key: &Jwk,
+        proof: &VerifiedJws,
+        account: Option<&str>,
+        at: Timestamp,
+        clock: Option<RequestClock>,
+        mut before_effect: impl FnMut() -> Result<()>,
+    ) -> Result<Value> {
+        let revoked = self.acme_prepare_revocation(key, proof, account, at, clock)?;
+        let at = revoked.at;
         before_effect()?;
-        // Prove the selected issuer remains local before any durable mutation.
         self.local_issuer(&revoked.issuer)?.local_key()?;
-        if let Some(cert) = self.issued.get_mut(&serial) {
-            cert.revoked_at = Some(at.seconds());
+        if let Some(cert) = self.issued.get_mut(&revoked.serial) {
+            cert.revoked_at = Some(revoked.at.seconds());
         }
         let response = revoked.descriptor();
         let protocol = self
             .acme_protocol
             .as_mut()
             .ok_or_else(|| error(503, "ACME revocation protocol unavailable"))?;
-        protocol.observe_time(at);
-        protocol.revocations.insert(serial, revoked);
+        protocol.observe_time(revoked.at);
+        protocol.revocations.insert(revoked.serial.clone(), revoked);
         self.local_revocation_changed_guarded(at.seconds(), &mut before_effect)?;
         self.validate_acme_revocations()?;
         Ok(response)
+    }
+    pub(in crate::engines) fn mark_acme_external_global_revocation(
+        &mut self,
+        revoked: &Revocation,
+    ) -> Result<()> {
+        if let Some(certificate) = self.issued.get_mut(&revoked.serial) {
+            if certificate.certificate_der != revoked.certificate
+                || certificate.revoked_at.is_some()
+            {
+                return Err(error(503, "ACME original global revocation asset changed"));
+            }
+            certificate.revoked_at = Some(revoked.at.seconds());
+        }
+        Ok(())
+    }
+    pub(in crate::engines) fn validate_live_acme_revocation(
+        &self,
+        revoked: &Revocation,
+        at: Timestamp,
+        published: bool,
+    ) -> Result<()> {
+        let protocol = self
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME revocation protocol unavailable"))?;
+        revoked.validate(protocol, at)?;
+        let (raw, issuer, created, expires, global_revocation) =
+            if let Some(certificate) = self.acme_certificate_for_serial(&revoked.serial)? {
+                (
+                    certificate.der.as_slice(),
+                    certificate.issuer.clone(),
+                    certificate.created,
+                    certificate.expires,
+                    None,
+                )
+            } else {
+                let certificate = self
+                    .issued
+                    .get(&revoked.serial)
+                    .ok_or_else(|| error(503, "ACME original revoked certificate unavailable"))?;
+                let issuer = if certificate.external_issuer_owner.is_some()
+                    || self.profile_leaf_is_external(&revoked.serial)
+                {
+                    self.external_leaf_issuer_reference(&revoked.serial)?
+                        .to_owned()
+                } else {
+                    certificate.local_issuer_id.clone()
+                };
+                (
+                    certificate.certificate_der.as_slice(),
+                    issuer,
+                    Timestamp::whole(certificate.issued)
+                        .map_err(|_| bad("invalid original issuance time"))?,
+                    certificate.expires,
+                    Some(certificate.revoked_at),
+                )
+            };
+        if raw != revoked.certificate
+            || issuer != revoked.issuer
+            || created > revoked.at
+            || Timestamp::whole(expires).map_err(|_| bad("invalid certificate expiry"))? < at
+            || if published {
+                protocol.revocations.get(&revoked.serial) != Some(revoked)
+                    || global_revocation.is_some_and(|value| value != Some(revoked.at.seconds()))
+            } else {
+                protocol.revocations.contains_key(&revoked.serial)
+                    || global_revocation.is_some_and(|value| value.is_some())
+            }
+        {
+            return Err(error(503, "ACME original revocation asset changed"));
+        }
+        if let Proof::Account {
+            account,
+            thumbprint,
+        } = &revoked.proof
+            && !protocol
+                .accounts
+                .get(account)
+                .is_some_and(|a| a.status == AccountStatus::Valid && a.thumbprint == *thumbprint)
+        {
+            return Err(error(403, "the client lacks sufficient authorization"));
+        }
+        self.validate_acme_certificates()
     }
 }

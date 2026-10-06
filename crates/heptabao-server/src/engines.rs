@@ -33,7 +33,7 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
-pub(crate) use leases::PkiRequestContext;
+pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
 #[path = "engine_sdk.rs"]
@@ -48,7 +48,7 @@ mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
 pub(crate) use pki::acme_engine::{
-    AcmeBinding, AcmeExternalDelivery, AcmeExternalFinalize, AcmeParsedJws, AcmeView,
+    AcmeBinding, AcmeExternalDelivery, AcmeExternalEffect, AcmeParsedJws, AcmeView,
 };
 pub(crate) use pki::acme_orders::Challenge as AcmeChallenge;
 pub(crate) use pki::acme_revoke::Request as AcmeRevocationRequest;
@@ -1159,7 +1159,15 @@ impl EngineState {
             return Err(error(503, "external PKI mount type changed"));
         };
         let response = engine.publish_external(material, signatures, now.max(self.lease_clock))?;
+        // A remote administrative revocation advances the exact protocol time.
+        // Publish that actual frontier with its CRL and retained actor owner.
+        let acme_at = engine.acme_protocol.as_ref().map(|protocol| protocol.clock);
         self.lease_clock = self.lease_clock.max(now);
+        if response.mutated
+            && let Some(at) = acme_at
+        {
+            self.acme_observe_publication(at)?;
+        }
         Ok(response)
     }
 

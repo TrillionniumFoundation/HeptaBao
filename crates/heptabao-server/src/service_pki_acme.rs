@@ -704,6 +704,7 @@ impl Service {
         match admitted.engines.prepare_acme_external_finalize(
             view,
             &verified,
+            &key,
             kid.as_deref(),
             at,
             request.token_clock,

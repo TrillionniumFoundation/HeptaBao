@@ -1281,10 +1281,14 @@ impl EngineState {
         &self,
         view: &AcmeView,
         proof: &pki::acme_jws::VerifiedJws,
+        key: &AcmeJwk,
         kid: Option<&str>,
         at: Timestamp,
         clock: Option<crate::auth::RequestClock>,
-    ) -> Result<Option<AcmeExternalFinalize>> {
+    ) -> Result<Option<AcmeExternalEffect>> {
+        if view.endpoint == "revoke-cert" {
+            return self.prepare_acme_external_revoke(view, proof, key, kid, at, clock);
+        }
         let Some((id, "finalize")) = view
             .endpoint
             .strip_prefix("order/")
@@ -1353,14 +1357,14 @@ impl EngineState {
             clock,
         };
         plan.validate_before_effect(self, at)?;
-        Ok(Some(plan))
+        Ok(Some(AcmeExternalEffect::Finalize(Box::new(plan))))
     }
     pub(crate) fn publish_acme_external_finalize(
         &mut self,
         plan: AcmeExternalFinalize,
         signature: &[u8],
         at: Timestamp,
-    ) -> Result<(Value, String, AcmeExternalDelivery)> {
+    ) -> Result<(Value, String, AcmeExternalCertificateDelivery)> {
         plan.validate_before_effect(self, at)?;
         let at = self.acme_observed_time(at);
         let certificate = plan
@@ -1373,7 +1377,7 @@ impl EngineState {
             .map_err(|_| error(503, "ACME original external signing clock unavailable"))?
             .unwrap_or(at);
         let at = self.observe_acme(at)?;
-        let delivery = AcmeExternalDelivery {
+        let delivery = AcmeExternalCertificateDelivery {
             owner: plan.owner.clone(),
             original: plan.order.clone(),
             certificate: certificate.clone(),
@@ -1424,12 +1428,12 @@ impl EngineState {
     }
 }
 
-pub(crate) struct AcmeExternalDelivery {
+pub(crate) struct AcmeExternalCertificateDelivery {
     owner: AcmeBinding,
     original: pki::acme_orders::Order,
     certificate: pki::acme_certificate::Certificate,
 }
-impl AcmeExternalDelivery {
+impl AcmeExternalCertificateDelivery {
     pub(crate) fn validate(&self, engines: &EngineState, at: Timestamp) -> Result<()> {
         let at = engines.acme_observed_time(at).max(
             Timestamp::whole(engines.lease_clock)
@@ -1464,3 +1468,7 @@ impl AcmeExternalDelivery {
         mounted.validate_acme_certificates()
     }
 }
+
+#[path = "engine_pki_acme_external_revoke.rs"]
+mod external_revoke;
+pub(crate) use external_revoke::{AcmeExternalDelivery, AcmeExternalEffect};

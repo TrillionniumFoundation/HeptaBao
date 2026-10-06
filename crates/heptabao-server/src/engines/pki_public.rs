@@ -277,10 +277,11 @@ impl Pki {
                     ));
                 }
                 if let Some(cert) = self.acme_certificate_for_serial(&serial)? {
-                    return Ok(ok(
-                        json!({"certificate":stored_pem("CERTIFICATE", &cert.der),"revocation_time":self.acme_revocation(&serial).map_or(0,|r|r.at.seconds()),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_default()}),
-                        false,
-                    ));
+                    let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &cert.der),"revocation_time":self.acme_revocation(&serial).map_or(0,|r|r.at.seconds()),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_default()});
+                    if let Some(revoked) = self.acme_revocation(&serial) {
+                        projection["issuer_id"] = json!(revoked.issuer);
+                    }
+                    return Ok(ok(projection, false));
                 }
                 let Some(certificate) = self.issued.get(&serial) else {
                     return Ok(EngineResponse {
@@ -289,7 +290,10 @@ impl Pki {
                         mutated: false,
                     });
                 };
-                let projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_else(||certificate.revoked_at.map(timestamp).unwrap_or_default())});
+                let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":self.acme_revocation(&serial).map(|r|r.at.rfc3339()).unwrap_or_else(||certificate.revoked_at.map(timestamp).unwrap_or_default())});
+                if let Some(revoked) = self.acme_revocation(&serial) {
+                    projection["issuer_id"] = json!(revoked.issuer);
+                }
                 Ok(ok(projection, false))
             }
             PkiPublicRead::RawCertificate(serial, format) => {

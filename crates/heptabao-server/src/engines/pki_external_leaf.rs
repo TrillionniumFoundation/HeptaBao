@@ -1,12 +1,14 @@
 //! External CA consumption contains public issuer state only. A leaf private
 //! key exists in a zeroizing effect result until one successful publication.
 use super::*;
+use crate::auth::Timestamp;
 
 #[derive(Clone)]
 pub(super) enum ConsumptionTemplate {
     Leaf(Box<LeafTemplate>),
     Crl {
         revoked: Option<(String, u64)>,
+        acme_revocation: Option<Box<OperatorRevocationPlan>>,
         prepared: Box<CrlSet>,
     },
 }
@@ -15,6 +17,45 @@ pub(super) struct ConsumptionMaterial {
     pub(super) template: ConsumptionTemplate,
     pub(super) leaf_pkcs8: Zeroizing<Vec<u8>>,
     pub(super) leaf_public: Option<LocalPublicKey>,
+}
+
+// Effect-only ownership: this is the original admitted operator, not an ACME
+// account impersonating a Vault principal or a refreshed request clock.
+#[derive(Clone)]
+pub(super) struct OperatorRevocationPlan {
+    revoked: super::acme_revoke::Revocation,
+    clock: Option<crate::auth::RequestClock>,
+}
+impl OperatorRevocationPlan {
+    fn validate(&self, pki: &Pki, now: u64) -> Result<()> {
+        let floor = self
+            .revoked
+            .at
+            .max(Timestamp::whole(now).map_err(|_| bad("invalid operator publication time"))?);
+        let at = self
+            .clock
+            .map(|clock| clock.with_timestamp_floor(floor).observed_at())
+            .transpose()
+            .map_err(|_| error(503, "original operator clock unavailable"))?
+            .unwrap_or(floor);
+        let super::acme_revoke::Proof::Administrative {
+            expires_at,
+            precise_expires_at,
+            ..
+        } = &self.revoked.proof
+        else {
+            return Err(bad("actual administrative PKI owner required"));
+        };
+        if precise_expires_at.is_some_and(|end| at > end)
+            || precise_expires_at.is_none() && expires_at.is_some_and(|end| at.seconds() >= end)
+        {
+            return Err(error(
+                403,
+                "administrative PKI original caller expired before signing",
+            ));
+        }
+        pki.validate_live_acme_revocation(&self.revoked, at, false)
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -122,7 +163,7 @@ impl CrlSet {
     pub(super) fn empty(now: u64, urls: Option<UrlEntries>) -> Self {
         Self::prepare(1, now, BTreeMap::new(), urls)
     }
-    fn prepare(
+    pub(super) fn prepare(
         number: u64,
         now: u64,
         revoked: BTreeMap<String, u64>,
@@ -573,10 +614,38 @@ impl Pki {
             {
                 return Err(unsupported());
             }
+            let acme_revocation = if path == "revoke" {
+                let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+                if self.acme_certificate_for_serial(&serial)?.is_some() {
+                    let Some(revoked) = self.prepare_acme_operator_revocation(&serial, &context)?
+                    else {
+                        // Already revoked and expired records use the original no-effect route.
+                        return Ok(None);
+                    };
+                    Some(Box::new(OperatorRevocationPlan {
+                        revoked,
+                        clock: context.clock,
+                    }))
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            let crl_now = acme_revocation
+                .as_ref()
+                .map_or(now, |plan| now.max(plan.revoked.at.seconds()));
             let revoked = if path == "revoke" {
                 reject_unknown(body, &["serial_number"])?;
                 let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
-                let at = if let Some(issued) = self.issued.get(&serial) {
+                let at = if let Some(plan) = &acme_revocation {
+                    if plan.revoked.issuer != key.issuer_id {
+                        return Err(bad(
+                            "ACME certificate requires its original external issuer",
+                        ));
+                    }
+                    plan.revoked.at.seconds()
+                } else if let Some(issued) = self.issued.get(&serial) {
                     if !self.external_leaf_belongs_to_active(&serial) {
                         return Err(error(
                             501,
@@ -610,6 +679,7 @@ impl Pki {
                 })
                 .collect::<BTreeMap<_, _>>();
             entries.extend(self.external_signed_ca_revocations(&key.issuer_id, now));
+            entries.extend(self.acme_revoked_for_issuer(&key.issuer_id));
             if let Some((serial, at)) = &revoked {
                 entries.insert(serial.clone(), *at);
             }
@@ -624,12 +694,13 @@ impl Pki {
             }
             ConsumptionTemplate::Crl {
                 revoked,
+                acme_revocation,
                 prepared: Box::new(
-                    CrlSet::prepare(number, now, entries, self.capture_urls(&key.issuer_id)?)
+                    CrlSet::prepare(number, crl_now, entries, self.capture_urls(&key.issuer_id)?)
                         .with_certificate_issuer(
-                            &captured_issuer.certificate_der,
-                            &captured_issuer.common_name,
-                        )?,
+                        &captured_issuer.certificate_der,
+                        &captured_issuer.common_name,
+                    )?,
                 ),
             }
         } else {
@@ -777,14 +848,29 @@ impl Pki {
             }
             ConsumptionTemplate::Crl {
                 revoked,
+                acme_revocation,
                 mut prepared,
             } => {
+                if let Some(plan) = &acme_revocation {
+                    plan.validate(self, now)?;
+                }
                 prepared.sign(
                     &material.template.common_name,
                     &material.public_key,
                     signatures,
                 )?;
-                let response = if let Some((serial, at)) = revoked {
+                let response = if let Some(plan) = acme_revocation {
+                    let response = plan.revoked.descriptor();
+                    let protocol = self
+                        .acme_protocol
+                        .as_mut()
+                        .ok_or_else(|| error(503, "ACME administrative protocol unavailable"))?;
+                    protocol.observe_time(plan.revoked.at);
+                    protocol
+                        .revocations
+                        .insert(plan.revoked.serial.clone(), plan.revoked);
+                    response
+                } else if let Some((serial, at)) = revoked {
                     if let Some(issued) = self.issued.get_mut(&serial) {
                         issued.revoked_at = Some(at);
                     } else {
@@ -800,6 +886,7 @@ impl Pki {
                     json!({"success":true})
                 };
                 self.external.crls = Some(*prepared);
+                self.validate_acme_revocations()?;
                 Ok(ok(response, true))
             }
         }
@@ -996,6 +1083,9 @@ impl Pki {
                     .signed_ca_owner(serial)
                     .is_some_and(|(id, _, _, revoked)| {
                         id != issuer.issuer_id || revoked != Some(*at)
+                    })
+                    || self.acme_revocation(serial).is_some_and(|revoked| {
+                        revoked.issuer != issuer.issuer_id || revoked.at.seconds() != *at
                     })
             }) {
                 return Err(bad("external CRL certificate issuer ownership mismatch"));
@@ -1271,6 +1361,134 @@ impl ExternalPkiTemplate {
                 leaf_pkcs8,
                 leaf_public,
             }),
+        })
+    }
+}
+
+// The effect owns a selected private signer and the exact prior signed CRLs.
+// An ACME proof supplies only the public certificate revocation, never a token.
+pub(crate) struct AcmeCrlTemplate {
+    pub(crate) reference: String,
+    issuer: ExternalPublicIssuer,
+    prior_full: Vec<u8>,
+    prior_delta: Vec<u8>,
+    prepared: CrlSet,
+    parts: Vec<Vec<u8>>,
+}
+impl AcmeCrlTemplate {
+    pub(crate) fn validate_provider_public(&self, public: &ExternalPkiPublicKey) -> Result<()> {
+        if public != &self.issuer.public_key {
+            return Err(error(503, "ACME CRL provider public key changed"));
+        }
+        Ok(())
+    }
+    pub(in crate::engines) fn validate_issuer(&self, pki: &Pki) -> Result<()> {
+        let mut selected = pki.clone();
+        selected.select_external_default(&self.issuer.issuer_id)?;
+        let actual = selected.captured_external_issuer()?;
+        let key = selected.external.root.as_ref().ok_or_else(not_found)?;
+        let crls = selected.external.crls.as_ref().ok_or_else(not_found)?;
+        if actual != self.issuer
+            || key.reference != self.reference
+            || crls.full.der != self.prior_full
+            || crls.delta.der != self.prior_delta
+        {
+            return Err(error(
+                503,
+                "ACME original CRL signer or signed frontier changed",
+            ));
+        }
+        Ok(())
+    }
+    pub(crate) fn signing_inputs(&self) -> Result<Vec<Vec<u8>>> {
+        self.parts
+            .iter()
+            .map(|part| {
+                self.issuer
+                    .public_key
+                    .signing_input_leaf(part, self.issuer.public_key.leaf_signature(None))
+            })
+            .collect()
+    }
+    pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
+        self.issuer.public_key.leaf_signature(None).hash_algorithm()
+    }
+    pub(crate) fn signature_algorithm(&self) -> &'static str {
+        "pkcs1v15"
+    }
+    pub(crate) fn signature_size_bound(&self) -> usize {
+        self.issuer.public_key.signature_size_bound()
+    }
+    pub(in crate::engines) fn publish(
+        self,
+        pki: &mut Pki,
+        signatures: &[Zeroizing<Vec<u8>>],
+        at: Timestamp,
+    ) -> Result<()> {
+        self.validate_issuer(pki)?;
+        let original = pki.external.root.as_ref().map(|key| key.issuer_id.clone());
+        let mut selected = pki.clone();
+        selected.select_external_default(&self.issuer.issuer_id)?;
+        let mut crls = self.prepared;
+        crls.sign(
+            &self.issuer.common_name,
+            &self.issuer.public_key,
+            signatures,
+        )?;
+        crls.validate(&self.issuer, at.seconds())?;
+        selected.external.crls = Some(crls);
+        selected.restore_external_default(original.as_deref())?;
+        *pki = selected;
+        Ok(())
+    }
+}
+impl Pki {
+    pub(in crate::engines) fn prepare_acme_external_crl(
+        &self,
+        revoked: &super::acme_revoke::Revocation,
+        at: Timestamp,
+    ) -> Result<AcmeCrlTemplate> {
+        let mut selected = self.clone();
+        selected.select_external_default(&revoked.issuer)?;
+        let issuer = selected.captured_external_issuer()?;
+        let key = selected.external.root.as_ref().ok_or_else(not_found)?;
+        let previous = selected.external.crls.as_ref().ok_or_else(not_found)?;
+        let number = previous
+            .delta
+            .number
+            .checked_add(1)
+            .filter(|number| *number != u64::MAX)
+            .ok_or_else(|| error(507, "external CRL sequence exhausted"))?;
+        let mut entries = selected
+            .issued
+            .iter()
+            .filter_map(|(serial, cert)| {
+                cert.revoked_at
+                    .filter(|_| {
+                        cert.expires > at.seconds()
+                            && selected.external_leaf_belongs_to_active(serial)
+                    })
+                    .map(|time| (serial.clone(), time))
+            })
+            .collect::<BTreeMap<_, _>>();
+        entries.extend(selected.external_signed_ca_revocations(&issuer.issuer_id, at.seconds()));
+        entries.extend(selected.acme_revoked_for_issuer(&issuer.issuer_id));
+        entries.insert(revoked.serial.clone(), revoked.at.seconds());
+        let prepared = CrlSet::prepare(
+            number,
+            at.seconds(),
+            entries,
+            selected.capture_urls(&issuer.issuer_id)?,
+        )
+        .with_certificate_issuer(&issuer.certificate_der, &issuer.common_name)?;
+        let parts = prepared.tbs(&issuer.common_name, &issuer.public_key)?;
+        Ok(AcmeCrlTemplate {
+            reference: key.reference.clone(),
+            issuer,
+            prior_full: previous.full.der.clone(),
+            prior_delta: previous.delta.der.clone(),
+            prepared,
+            parts,
         })
     }
 }

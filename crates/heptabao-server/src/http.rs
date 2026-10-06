@@ -1875,6 +1875,7 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
         .map_err(|_| bad("invalid query text"))
 }
 
+#[cfg(test)]
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
     write_response_with_namespace(writer, response, head, "")
 }

@@ -329,7 +329,6 @@ fn response_write_observation_retains_short_write_and_partial_error_semantics() 
     assert_eq!(observed_error.kind(), direct_error.kind());
     assert_eq!(observation.accepted_plaintext_bytes, 11);
     assert!(!observation.flush_attempted);
-    drop(observation);
     assert_eq!(observed.accepted, direct.accepted);
     assert_eq!(observed.flush_calls, direct.flush_calls);
     assert_eq!(observed.accepted, b"HTTP/1.1 40");

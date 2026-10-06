@@ -428,7 +428,9 @@ impl Pki {
                 .to_owned()
         } else if path == "revoke" {
             let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
-            if let Some((issuer, _, _, _)) = self.signed_ca_owner(&serial) {
+            if let Some(certificate) = self.acme_certificate_for_serial(&serial)? {
+                certificate.issuer.clone()
+            } else if let Some((issuer, _, _, _)) = self.signed_ca_owner(&serial) {
                 issuer.to_owned()
             } else {
                 self.external_leaf_issuer_reference(&serial)?.to_owned()

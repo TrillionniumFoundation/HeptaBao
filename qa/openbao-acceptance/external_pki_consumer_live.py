@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Three fresh HTTPS processes verify direct external Ed25519 roots and CSRs.
 
-The pinned official remote Transit owns every private key. Public certificates,
-CSR bytes, signatures, tokens and provider configuration are never report data.
+The pinned official remote Transit owns every private key. CSR bytes, tokens
+and provider configuration are never report data.
+Only actual public root DER/TBS/signatures and fresh wrong public keys are
+retained for independent cryptographic verification.
 This bounded profile does not qualify leaf issuance, CRLs, non-Ed25519 issuers,
 multi-issuer migration or production/release authority.
 """
 from __future__ import annotations
 import base64
 import copy
+import datetime
 import importlib.util
 import json
 import os
@@ -19,6 +22,7 @@ import tempfile
 import time
 
 from cryptography import x509
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ec, ed25519
 from cryptography.hazmat.primitives import serialization
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
@@ -64,7 +68,7 @@ def sign_entries(remote):
             count+=1
     return count
 
-def validate_crypto(data,kind,public):
+def validate_crypto(data,kind,public,*,request_interval_ns=None,observation=None):
     if kind=="root":
         document=x509.load_pem_x509_certificate(data["certificate"].encode())
         verified=public.verify(document.signature,document.tbs_certificate_bytes)
@@ -79,7 +83,40 @@ def validate_crypto(data,kind,public):
         exact &= constraints.ca is True and constraints.path_length is None and usage.key_cert_sign and usage.crl_sign
         exact &= not usage.digital_signature and not usage.key_encipherment
         exact &= ski==x509.SubjectKeyIdentifier.from_public_key(document.public_key()).digest and aki==ski
-        exact &= int((document.not_valid_after-document.not_valid_before).total_seconds())==3630
+        # Native computes NotAfter before private key/provider preparation and
+        # NotBefore at a later creation clock. DER truncates both to seconds.
+        # A fixed 3630-second difference incorrectly rejects a valid root if
+        # that intervening preparation crosses a second boundary.
+        before=document.not_valid_before.replace(tzinfo=datetime.timezone.utc)
+        after=document.not_valid_after.replace(tzinfo=datetime.timezone.utc)
+        not_before=int(before.timestamp());not_after=int(after.timestamp())
+        bounded=(isinstance(request_interval_ns,tuple) and len(request_interval_ns)==2
+            and all(type(value) is int for value in request_interval_ns)
+            and request_interval_ns[0]<=request_interval_ns[1])
+        if bounded:
+            start,finish=(value//1_000_000_000 for value in request_interval_ns)
+            bounded=(start+3600<=not_after<=finish+3600
+                and start-30<=not_before<=finish-30
+                and not_after-3600<=not_before+30)
+        exact &= bounded and type(data.get("expiration")) is int and data["expiration"]==not_after
+        wrong_public=ed25519.Ed25519PrivateKey.generate().public_key()
+        try:wrong_public.verify(document.signature,document.tbs_certificate_bytes)
+        except InvalidSignature:wrong_rejected=True
+        else:wrong_rejected=False
+        exact &= wrong_rejected
+        if observation is not None:
+            observation.update(actual_request_interval_nanoseconds=request_interval_ns,
+                actual_not_before=not_before,actual_not_after=not_after,
+                original_ttl_seconds=3600,original_backdate_seconds=30,
+                request_clock_and_creation_order_valid=bool(bounded),
+                actual_signed_duration_seconds=not_after-not_before,
+                actual_root_DER_base64=base64.b64encode(document.public_bytes(serialization.Encoding.DER)).decode(),
+                actual_TBS_base64=base64.b64encode(document.tbs_certificate_bytes).decode(),
+                actual_signature_base64=base64.b64encode(document.signature).decode(),
+                actual_correct_issuer_SPki_base64=base64.b64encode(public.public_bytes(serialization.Encoding.DER,serialization.PublicFormat.SubjectPublicKeyInfo)).decode(),
+                actual_fresh_wrong_issuer_SPki_base64=base64.b64encode(wrong_public.public_bytes(serialization.Encoding.DER,serialization.PublicFormat.SubjectPublicKeyInfo)).decode(),
+                actual_correct_issuer_verified=verified is None,
+                actual_fresh_wrong_issuer_rejected=wrong_rejected)
         exact &= bool(re.fullmatch(r"[0-9a-f]{2}(?::[0-9a-f]{2}){19}",data["serial_number"]))
         exact &= int(data["serial_number"].replace(":",""),16)==document.serial_number
     else:
@@ -170,7 +207,9 @@ def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_na
                 t.check(prefix+"missing_grant_no_sign",sign_entries(remote)==before)
                 t.call(prefix+"grant",client,"POST",CONFIG+"/keys/fixed/grants/"+mount,204)
                 before=sign_entries(remote)
+                request_before_ns=time.time_ns()
                 response=client.request("POST","/v1/"+mount+"/"+route,body)
+                request_after_ns=time.time_ns()
                 t.check(prefix+"generate",response.status==200,response.status)
                 if observe_provider_signs:
                     observed=sign_entries(remote)-before
@@ -184,8 +223,12 @@ def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_na
                     t.check(prefix+"actual_self_signature",verified)
                     t.check(prefix+"local_spki_distinct",spki)
                 else:
-                    exact,spki,verified=validate_crypto(data,kind,public)
-                    t.check(prefix+"exact_response",exact)
+                    observed={}
+                    exact,spki,verified=validate_crypto(data,kind,public,
+                        request_interval_ns=(request_before_ns,request_after_ns),observation=observed)
+                    try:t.check(prefix+"exact_response",exact)
+                    finally:
+                        if kind=="root":rows[-1]["actual_root_validation"]=observed
                     t.check(prefix+"actual_signature",verified)
                     t.check(prefix+"spki_matches",spki)
                 t.check(prefix+"private_key_absent","private_key" not in data)
@@ -198,15 +241,20 @@ def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_na
             t.call(side+".namespace_mapping",client,"POST",CONFIG+"/keys/fixed",204,mapping,namespace="team")
             t.call(side+".namespace_grant",client,"POST",CONFIG+"/keys/fixed/grants/pki",204,namespace="team")
             before=sign_entries(remote)
+            request_before_ns=time.time_ns()
             response=scoped_client(client,"team").request("POST","/v1/pki/root/generate/kms",body)
+            request_after_ns=time.time_ns()
             t.check(side+".namespace_generate",response.status==200,response.status)
             if observe_provider_signs:
                 observed=sign_entries(remote)-before
                 expected=3
                 try:t.check(side+".namespace_provider_sign_exact",observed==expected)
                 finally:rows[-1].update(observed_provider_sign_entries=observed,expected_provider_sign_entries=expected)
-            exact,spki,verified=validate_crypto(response.body.get("data",{}),"root",public)
-            t.check(side+".namespace_signature",exact and spki and verified)
+            observed={}
+            exact,spki,verified=validate_crypto(response.body.get("data",{}),"root",public,
+                request_interval_ns=(request_before_ns,request_after_ns),observation=observed)
+            try:t.check(side+".namespace_signature",exact and spki and verified)
+            finally:rows[-1]["actual_root_validation"]=observed
             response=client.request("GET","/v1/pki-root/cert/ca")
             t.check(side+".root_readback",response.status==200 and response.body.get("data",{}).get("certificate")==certificates[side],response.status)
             if side=="candidate" and not oracle_contract:shared.restart_candidate(native,unseal,remote,ca)

@@ -2,7 +2,7 @@
 //! An account proof never becomes a Vault Principal or renews a request deadline.
 use super::plugin::{KmsKeyBinding, SharedKmsPlugin};
 use super::*;
-use crate::engines::{AcmeExternalFinalize, AcmeView};
+use crate::engines::{AcmeExternalEffect, AcmeView};
 use base64::engine::general_purpose::STANDARD as BASE64;
 use heptabao_kms_contracts::KmsCapability;
 use heptabao_plugin_host::{CommandSandboxRunner, PluginHost, PluginHostState};
@@ -104,7 +104,7 @@ impl ProviderReceipt {
 
 pub(super) struct Plan {
     pub(super) authority: Option<super::pki_acme::Authority>,
-    engine: Option<AcmeExternalFinalize>,
+    engine: Option<AcmeExternalEffect>,
     view: AcmeView,
     // This immutable admission snapshot checks elapsed authorization lifetime
     // between provider calls. Only the final writer can check current live state.
@@ -152,7 +152,7 @@ impl Plan {
             .iter()
             .all(|url| outbound.same_https_enrollment(&self.outbound, url))
     }
-    pub(super) fn execute(&self) -> Result<Zeroizing<Vec<u8>>, Response> {
+    pub(super) fn execute(&self) -> Result<Vec<Zeroizing<Vec<u8>>>, Response> {
         let _scope = self
             .authority()?
             .deadline()
@@ -160,7 +160,7 @@ impl Plan {
         self.check_before_effect()?;
         let engine = self.engine.as_ref().ok_or_else(unknown)?;
         let envelope = SensitiveJson(
-            crate::auth::parse_strict_json(engine.request.expose()).map_err(|_| unknown())?,
+            crate::auth::parse_strict_json(engine.request().expose()).map_err(|_| unknown())?,
         );
         let token = envelope.0["token"].as_str().ok_or_else(unknown)?;
         let namespace = envelope.0["namespace"].as_str().ok_or_else(unknown)?;
@@ -190,62 +190,65 @@ impl Plan {
         let public = crate::engines::ExternalPkiPublicKey::from_metadata(kind, key)
             .map_err(Response::from_engine_error)?;
         engine
-            .template
             .validate_provider_public(&public)
             .map_err(Response::from_engine_error)?;
         self.check_before_effect()?;
-        let input = engine
-            .template
-            .signing_input()
+        let inputs = engine
+            .signing_inputs()
             .map_err(Response::from_engine_error)?;
-        let mut body = SensitiveJson(
-            json!({"input":BASE64.encode(input),"key_version":version.to_string(),"prehashed":engine.template.hash_algorithm().is_some(),"signature_algorithm":engine.template.signature_algorithm()}),
-        );
-        if let Some(hash) = engine.template.hash_algorithm() {
-            body.0["hash_algorithm"] = json!(hash);
-        }
-        if engine.template.signature_algorithm() == "pss" {
-            body.0["salt_length"] = json!("hash");
-        }
-        // No metadata read or TBS preparation can extend this original deadline.
-        self.check_before_effect()?;
-        let signed = crypto_response(
-            self.outbound
-                .put_external_transit(&self.sign_url, token, namespace, &body.0)
-                .map_err(|error| Response::error(503, error))?,
-        )?;
-        let data = signed.0["data"].as_object().ok_or_else(unknown)?;
-        if data
-            .keys()
-            .any(|key| !matches!(key.as_str(), "signature" | "key_version"))
-            || data
-                .get("key_version")
-                .is_some_and(|key| key.as_u64() != Some(version))
-        {
-            return Err(unknown());
-        }
-        let prefix = format!("vault:v{version}:");
-        let signature = data
-            .get("signature")
-            .and_then(Value::as_str)
-            .and_then(|signature| signature.strip_prefix(&prefix))
-            .ok_or_else(unknown)?;
-        if signature.is_empty()
-            || signature.len() > engine.template.signature_size_bound().div_ceil(3) * 4
-        {
-            return Err(unknown());
-        }
-        let signature = Zeroizing::new(BASE64.decode(signature).map_err(|_| unknown())?);
-        if BASE64.encode(&*signature)
-            != data["signature"]
-                .as_str()
+        let mut signatures = Vec::with_capacity(inputs.len());
+        for input in inputs {
+            self.check_before_effect()?;
+            let mut body = SensitiveJson(
+                json!({"input":BASE64.encode(input),"key_version":version.to_string(),"prehashed":engine.hash_algorithm().is_some(),"signature_algorithm":engine.signature_algorithm()}),
+            );
+            if let Some(hash) = engine.hash_algorithm() {
+                body.0["hash_algorithm"] = json!(hash);
+            }
+            if engine.signature_algorithm() == "pss" {
+                body.0["salt_length"] = json!("hash");
+            }
+            // No metadata read or TBS preparation can extend this original deadline.
+            self.check_before_effect()?;
+            let signed = crypto_response(
+                self.outbound
+                    .put_external_transit(&self.sign_url, token, namespace, &body.0)
+                    .map_err(|error| Response::error(503, error))?,
+            )?;
+            let data = signed.0["data"].as_object().ok_or_else(unknown)?;
+            if data
+                .keys()
+                .any(|key| !matches!(key.as_str(), "signature" | "key_version"))
+                || data
+                    .get("key_version")
+                    .is_some_and(|key| key.as_u64() != Some(version))
+            {
+                return Err(unknown());
+            }
+            let prefix = format!("vault:v{version}:");
+            let signature = data
+                .get("signature")
+                .and_then(Value::as_str)
                 .and_then(|signature| signature.strip_prefix(&prefix))
-                .ok_or_else(unknown)?
-        {
-            return Err(unknown());
+                .ok_or_else(unknown)?;
+            if signature.is_empty()
+                || signature.len() > engine.signature_size_bound().div_ceil(3) * 4
+            {
+                return Err(unknown());
+            }
+            let signature = Zeroizing::new(BASE64.decode(signature).map_err(|_| unknown())?);
+            if BASE64.encode(&*signature)
+                != data["signature"]
+                    .as_str()
+                    .and_then(|signature| signature.strip_prefix(&prefix))
+                    .ok_or_else(unknown)?
+            {
+                return Err(unknown());
+            }
+            self.check_before_effect()?;
+            signatures.push(signature);
         }
-        self.check_before_effect()?;
-        Ok(signature)
+        Ok(signatures)
     }
 }
 impl Service {
@@ -254,7 +257,7 @@ impl Service {
         state: &State,
         view: &AcmeView,
         authority: &mut Option<super::pki_acme::Authority>,
-        engine: AcmeExternalFinalize,
+        engine: AcmeExternalEffect,
     ) -> Response {
         if self.pending_acme_external.is_some() {
             return unknown();
@@ -275,7 +278,7 @@ impl Service {
             return Response::from_engine_error(error);
         }
         let (sign_url, metadata_url) =
-            match super::external_pki::enrolled_pki_routes(&self.outbound, &engine.request) {
+            match super::external_pki::enrolled_pki_routes(&self.outbound, engine.request()) {
                 Ok(routes) => routes,
                 Err(error) => return error,
             };
@@ -339,9 +342,9 @@ impl Service {
     pub(super) fn finalize_acme_external(
         &mut self,
         plan: &mut Plan,
-        result: Result<Zeroizing<Vec<u8>>, Response>,
+        result: Result<Vec<Zeroizing<Vec<u8>>>, Response>,
     ) -> Response {
-        let signature = match result {
+        let signatures = match result {
             Ok(value) => value,
             Err(error) => return error,
         };
@@ -423,18 +426,18 @@ impl Service {
         let Some(engine) = plan.engine.take() else {
             return unknown();
         };
-        let (body, location, delivery) = match candidate
-            .engines
-            .publish_acme_external_finalize(engine, &signature, at)
-        {
-            Ok(value) => value,
-            Err(error) => return Response::from_engine_error(error),
-        };
+        let (body, location, delivery) =
+            match candidate
+                .engines
+                .publish_acme_external_effect(engine, &signatures, at)
+            {
+                Ok(value) => value,
+                Err(error) => return Response::from_engine_error(error),
+            };
         authority.bind_external_delivery(delivery);
-        let headers = match ResponseHeaders::from_sdk(
-            Some(&json!({"Location":[location]})),
-            &plan.view.headers,
-        ) {
+        let metadata =
+            location.map_or_else(|| json!({}), |location| json!({"Location":[location]}));
+        let headers = match ResponseHeaders::from_sdk(Some(&metadata), &plan.view.headers) {
             Ok(headers) => headers,
             Err(()) => return unknown(),
         };

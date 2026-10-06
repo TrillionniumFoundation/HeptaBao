@@ -1063,7 +1063,7 @@ pub(crate) enum ExternalEffectResult {
     ExternalKey(Result<(), Response>),
     ExternalTransit(Result<external_transit::Observation, Response>),
     ExternalPki(Result<external_pki::Observation, Response>),
-    AcmeExternal(Result<zeroize::Zeroizing<Vec<u8>>, Response>),
+    AcmeExternal(Result<Vec<zeroize::Zeroizing<Vec<u8>>>, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
@@ -1234,6 +1234,7 @@ pub struct Service {
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
     pending_external_pki: Option<external_pki::ExternalPkiPlan>,
+    pending_external_pki_no_effect: Option<external_pki::NoEffectPkiPlan>,
     pending_acme_external: Option<pki_acme_external::Plan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
@@ -1617,6 +1618,7 @@ impl Service {
             pending_external_key: None,
             pending_external_transit: None,
             pending_external_pki: None,
+            pending_external_pki_no_effect: None,
             pending_acme_external: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
@@ -2327,6 +2329,7 @@ impl Service {
             || self.pending_external_key.is_some()
             || self.pending_external_transit.is_some()
             || self.pending_external_pki.is_some()
+            || self.pending_external_pki_no_effect.is_some()
             || self.pending_acme_external.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
@@ -2588,6 +2591,7 @@ impl Service {
         let external_key = self.pending_external_key.take();
         let external_transit = self.pending_external_transit.take();
         let external_pki = self.pending_external_pki.take();
+        let external_pki_no_effect = self.pending_external_pki_no_effect.take();
         let acme_external = self.pending_acme_external.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
@@ -2615,6 +2619,7 @@ impl Service {
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
+            + usize::from(external_pki_no_effect.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
             + usize::from(acme_authority.is_some())
@@ -2674,6 +2679,7 @@ impl Service {
             ));
         }
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
+        let external_pki_no_effect_expected = external_pki_no_effect.is_some();
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
         let step_down_expected = self.expects_local_ha_step_down(path, &response);
@@ -2681,6 +2687,7 @@ impl Service {
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        self.pending_external_pki_no_effect = external_pki_no_effect;
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         {
             self.pending_sdk_control_authority = sdk_control;
@@ -2714,6 +2721,11 @@ impl Service {
         };
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
+        let response = self.complete_pending_external_pki_no_effect_delivery(
+            external_pki_no_effect_expected,
+            response,
+            &fingerprint,
+        );
         let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
         let response = self.complete_pending_acme_delivery(acme_expected, response, &fingerprint);
         let response =
