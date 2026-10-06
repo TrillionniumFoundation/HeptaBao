@@ -125,7 +125,7 @@ impl State {
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
         self.auth
-            .validate_sdk_auth_clock(previous.map(|state| &state.auth))
+            .validate_sdk_auth_clock(previous.map(|state| &*state.auth))
             .map_err(|e| Response::error(e.status, &e.message))?;
         let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
         self.auth

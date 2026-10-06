@@ -1,6 +1,7 @@
 //! The real SDK credential family uses the original Service admission and
 //! encrypted auth owner. Plugin JSON never becomes a Principal or bearer.
 use super::*;
+use crate::auth::Timestamp;
 use crate::auth::sdk::{Binding, Entry};
 use heptabao_plugin_host::sdk_backend::SdkBackendType;
 
@@ -152,7 +153,7 @@ fn auth_error(error: crate::auth::AuthError) -> Response {
 fn sdk_auth_key(cluster: &str, binding: &Binding) -> Result<String, Response> {
     let data = serde_json::to_vec(&(cluster, binding))
         .map_err(|_| Response::error(503, "SDK Auth host identity encoding failed"))?;
-    Ok(format!("AUTH:{}", hex(&crypto::sha256(&data))))
+    Ok(format!("AUTH:{}", hex(&crypto::digest(&data))))
 }
 fn empty_response() -> Response {
     Response {
@@ -168,7 +169,11 @@ fn has_sdk_owner(auth: &AuthState, namespace: &str, mount: &str) -> bool {
     auth.sdk_auth_owned_mount(namespace, mount)
 }
 impl Service {
-    pub(super) fn sdk_auth_handles(&self, state: &State, request: &RequestView<'_>) -> bool {
+    pub(in crate::service) fn sdk_auth_handles(
+        &self,
+        state: &State,
+        request: &RequestView<'_>,
+    ) -> bool {
         if request.path == "sys/plugins/catalog/auth"
             || request.path.starts_with("sys/plugins/catalog/auth/")
         {
@@ -204,7 +209,7 @@ impl Service {
             Ok(Some(_)) | Err(_)
         )
     }
-    pub(super) fn sdk_auth_route(
+    pub(in crate::service) fn sdk_auth_route(
         &mut self,
         mut state: State,
         principal: Option<Principal>,
@@ -825,7 +830,7 @@ impl Service {
         self.sdk_auth_gate(plan)?;
         Ok(reply)
     }
-    pub(super) fn finalize_sdk_auth(
+    pub(in crate::service) fn finalize_sdk_auth(
         &mut self,
         plan: &mut Plan,
         result: Result<Option<Value>, Response>,
@@ -963,7 +968,7 @@ impl Service {
         }
         Ok(response)
     }
-    pub(super) fn complete_sdk_auth_delivery(
+    pub(in crate::service) fn complete_sdk_auth_delivery(
         &mut self,
         plan: &Plan,
         response: Response,
