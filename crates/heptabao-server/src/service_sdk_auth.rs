@@ -1379,14 +1379,14 @@ mod durable_tests {
                 .is_err()
         );
         assert_eq!(
-            current.auth.sdk_public_path("", "auth/sdk/login"),
-            Some(false)
+            current.auth.is_public_login("", "GET", "auth/sdk/login"),
+            false
         );
         assert_eq!(
             current
                 .auth
-                .sdk_public_path("", "auth/sdk/public/alice/read"),
-            Some(true)
+                .is_public_login("", "GET", "auth/sdk/public/alice/read"),
+            true
         );
         assert!(!paths.is_root("root/alice/write"));
         assert!(paths.is_root("root/+/write"));
