@@ -15,7 +15,9 @@ fn resolvers(configured: &str) -> Result<Vec<SocketAddr>, String> {
             .map(|a| vec![a])
             .map_err(|_| "dns-01: invalid configured resolver".into());
     }
-    let config = std::fs::read_to_string("/etc/resolv.conf")
+    let mut config = String::new();
+    std::fs::File::open("/etc/resolv.conf")
+        .and_then(|file| file.take(128 * 1024 + 1).read_to_string(&mut config))
         .map_err(|_| "dns-01: system resolver configuration unavailable")?;
     if config.len() > 128 * 1024 {
         return Err("dns-01: resolver configuration exceeds bound".into());
@@ -182,6 +184,9 @@ fn parse(raw: &[u8], id: [u8; 2], question: &str) -> Result<Vec<String>, String>
             break;
         }
     }
+    if aliases.iter().any(|(name, _)| name == &owner) {
+        return Err("dns-01: CNAME chain exceeds bound".into());
+    }
     Ok(txt
         .into_iter()
         .filter(|(name, _)| name == &owner)
@@ -239,6 +244,26 @@ fn exchange(address: SocketAddr, query: &[u8], deadline: Instant) -> Result<Vec<
     remaining(deadline)?;
     Ok(raw)
 }
+fn validate_records(
+    records: &[String],
+    token: &str,
+    thumbprint: &str,
+    deadline: Instant,
+) -> Result<(), String> {
+    let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(crate::crypto::digest(
+        format!("{token}.{thumbprint}").as_bytes(),
+    ));
+    let matched = records.iter().any(|record| record == &proof);
+    remaining(deadline)?;
+    if matched {
+        Ok(())
+    } else {
+        Err(format!(
+            "dns-01: challenge failed against {} records",
+            records.len()
+        ))
+    }
+}
 pub(crate) fn verify_dns01(
     host: &str,
     token: &str,
@@ -251,19 +276,24 @@ pub(crate) fn verify_dns01(
     let mut last = "dns-01: no resolver completed".to_owned();
     for address in resolvers(resolver)? {
         match exchange(address, &message, deadline).and_then(|raw| parse(&raw, id, &question)) {
-            Ok(records) => {
-                let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(
-                    crate::crypto::digest(format!("{token}.{thumbprint}").as_bytes()),
-                );
-                return if records.iter().any(|record| record == &proof) {
-                    Ok(())
+            Ok(records) if records.is_empty() => {
+                // Go's custom Dial changes the socket destination, while its
+                // DNSError still names the first system resolver. Preserve
+                // that public diagnostic for an empty successful TXT reply.
+                let reported = if resolver.is_empty() {
+                    address
                 } else {
-                    Err(format!(
-                        "dns-01: challenge failed against {} records",
-                        records.len()
-                    ))
+                    resolvers("")?
+                        .first()
+                        .copied()
+                        .ok_or("dns-01: no system resolver available")?
                 };
+                remaining(deadline)?;
+                return Err(format!(
+                    "dns-01: failed to lookup TXT records for domain ({question}) via resolver {resolver}: lookup {question} on {reported}: no such host"
+                ));
             }
+            Ok(records) => return validate_records(&records, token, thumbprint, deadline),
             Err(error) => last = error,
         }
         remaining(deadline)?;
@@ -278,7 +308,7 @@ mod tests {
     use super::*;
     use std::net::TcpListener;
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
-    fn answer(query: &[u8], records: &[Vec<&str>], truncated: bool) -> Vec<u8> {
+    pub(super) fn answer(query: &[u8], records: &[Vec<&str>], truncated: bool) -> Vec<u8> {
         let mut out = query[..2].to_vec();
         out.extend_from_slice(&(if truncated { 0x8380u16 } else { 0x8180u16 }).to_be_bytes());
         out.extend_from_slice(&1u16.to_be_bytes());
@@ -300,7 +330,7 @@ mod tests {
     }
     #[test]
     fn pki_acme99_dns01_actual_udp_txt_split_multiple_tcp_and_wrong_proof() -> TestResult {
-        for mode in ["plain", "split", "multiple", "TCP", "wrong"] {
+        for mode in ["plain", "split", "multiple", "TCP", "wrong", "empty"] {
             let socket = UdpSocket::bind("127.0.0.1:0")?;
             let address = socket.local_addr()?;
             socket.set_read_timeout(Some(Duration::from_secs(3)))?;
@@ -319,6 +349,7 @@ mod tests {
                     "split" => vec![vec![&proof[..13], &proof[13..]]],
                     "multiple" => vec![vec!["wrong"], vec![proof.as_str()]],
                     "wrong" => vec![vec!["wrong"]],
+                    "empty" => vec![],
                     _ => vec![vec![proof.as_str()]],
                 };
                 socket.send_to(&answer(&bytes, &records, mode == "TCP"), peer)?;
@@ -348,6 +379,17 @@ mod tests {
                 assert_eq!(
                     result.as_ref().err().map(String::as_str),
                     Some("dns-01: challenge failed against 1 records")
+                );
+            } else if mode == "empty" {
+                let reported = resolvers("")?
+                    .first()
+                    .copied()
+                    .ok_or("no system resolver")?;
+                assert_eq!(
+                    result.as_ref().err(),
+                    Some(&format!(
+                        "dns-01: failed to lookup TXT records for domain (_acme-challenge.proof.example) via resolver {address}: lookup _acme-challenge.proof.example on {reported}: no such host"
+                    ))
                 );
             } else {
                 assert!(result.is_ok(), "{result:?}");
@@ -386,6 +428,41 @@ mod tests {
             .is_err()
         );
         assert!(Instant::now() >= deadline);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod final_deadline_tests {
+    use super::*;
+    #[test]
+    fn pki_acme99_dns01_parsed_actual_txt_cannot_succeed_after_original_deadline()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .encode(crate::crypto::digest(b"token.thumb"));
+        let (message, id) = query("_acme-challenge.proof.example")?;
+        let response =
+            super::tests::answer(&message, &[vec!["wrong TXT"], vec![proof.as_str()]], false);
+        let records = parse(&response, id, "_acme-challenge.proof.example")?;
+        assert!(
+            validate_records(
+                &records,
+                "token",
+                "thumb",
+                Instant::now() + Duration::from_secs(1)
+            )
+            .is_ok()
+        );
+        let original_deadline = Instant::now()
+            .checked_sub(Duration::from_millis(1))
+            .ok_or("clock underflow")?;
+        assert_eq!(
+            validate_records(&records, "token", "thumb", original_deadline)
+                .as_ref()
+                .err()
+                .map(String::as_str),
+            Some("dns-01: attempt deadline exceeded")
+        );
         Ok(())
     }
 }
