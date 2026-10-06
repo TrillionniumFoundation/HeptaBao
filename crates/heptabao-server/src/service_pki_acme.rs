@@ -95,6 +95,7 @@ pub(super) struct Authority {
     nonce_deadline: Option<(Timestamp, std::time::Instant)>,
     operator: Option<plugin::PluginResponseAuthority>,
     external_delivery: Option<crate::engines::AcmeExternalDelivery>,
+    external_provider: Option<super::pki_acme_external::ProviderReceipt>,
 }
 impl Drop for Authority {
     fn drop(&mut self) {
@@ -128,6 +129,7 @@ impl Authority {
             nonce_deadline: None,
             operator: None,
             external_delivery: None,
+            external_provider: None,
         }
     }
     pub(super) fn with_operator(mut self, operator: plugin::PluginResponseAuthority) -> Self {
@@ -151,6 +153,12 @@ impl Authority {
         delivery: crate::engines::AcmeExternalDelivery,
     ) {
         self.external_delivery = Some(delivery);
+    }
+    pub(super) fn bind_external_provider(
+        &mut self,
+        provider: super::pki_acme_external::ProviderReceipt,
+    ) {
+        self.external_provider = Some(provider);
     }
     pub(super) fn deadline(&self) -> Option<std::time::Instant> {
         self.deadline
@@ -267,6 +275,9 @@ impl Authority {
         }
         if service.ha.is_some() {
             service.sync_from_ha_with_anchor(false)?;
+        }
+        if let Some(provider) = &self.external_provider {
+            provider.check(service)?;
         }
         let state = service
             .state

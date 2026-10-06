@@ -470,10 +470,14 @@ impl Pki {
         if selected.leaf_not_after_behavior.unwrap_or_default() == IssuerLeafNotAfterBehavior::Err {
             selected.leaf_not_after_behavior = Some(IssuerLeafNotAfterBehavior::Truncate);
         }
-        if candidate
-            .root
-            .as_ref()
-            .is_some_and(|r| r.issuer_id == issuer_id)
+        // select_external_default already selected this exact retained typed
+        // signer. Its historical RootCa deliberately has empty local IDs; the
+        // temporary preparation view must not fall through to the local index.
+        if issuer.is_external()
+            || candidate
+                .root
+                .as_ref()
+                .is_some_and(|r| r.issuer_id == issuer_id)
         {
             candidate.root = Some(selected);
         } else {

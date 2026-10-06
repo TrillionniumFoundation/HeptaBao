@@ -29,6 +29,56 @@ fn crypto_response(
         )),
     }
 }
+// This process-local receipt remains in the original ACME response capsule
+// after the signing Plan and its publication lock have been consumed.
+pub(super) struct ProviderReceipt {
+    sign_url: String,
+    metadata_url: String,
+    outbound: crate::outbound::Outbound,
+    binding: Option<(SharedKmsPlugin, KmsKeyBinding, u64)>,
+}
+impl ProviderReceipt {
+    pub(super) fn check(&self, service: &Service) -> Result<(), Response> {
+        if ![&self.sign_url, &self.metadata_url]
+            .iter()
+            .all(|url| service.outbound.same_https_enrollment(&self.outbound, url))
+        {
+            return Err(Response::error(
+                503,
+                "ACME external signer enrollment changed before delivery",
+            ));
+        }
+        let current = match (
+            &self.binding,
+            service.kms_plugins.get("transit"),
+            service.kms_keys.get("transit"),
+        ) {
+            (None, None, None) => true,
+            (Some((host, binding, generation)), Some(current), Some(current_binding)) => {
+                Arc::ptr_eq(host, current)
+                    && binding.enabled
+                    && current_binding.enabled
+                    && binding.key_id == current_binding.key_id
+                    && binding.key_version == current_binding.key_version
+                    && binding.capabilities == current_binding.capabilities
+                    && binding.capabilities.contains(&KmsCapability::Sign)
+                    && host.try_lock().is_ok_and(|guard| {
+                        guard.state() == PluginHostState::Active
+                            && guard.manifest().descriptor().generation() == *generation
+                    })
+            }
+            _ => false,
+        };
+        if !current {
+            return Err(Response::error(
+                503,
+                "ACME external signer host authority changed before delivery",
+            ));
+        }
+        Ok(())
+    }
+}
+
 pub(super) struct Plan {
     pub(super) authority: Option<super::pki_acme::Authority>,
     engine: Option<AcmeExternalFinalize>,
@@ -240,6 +290,15 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let Some(original) = authority.as_mut() else {
+            return unknown();
+        };
+        original.bind_external_provider(ProviderReceipt {
+            sign_url: sign_url.clone(),
+            metadata_url: metadata_url.clone(),
+            outbound: self.outbound.clone(),
+            binding: provider_binding.clone(),
+        });
         self.pending_acme_external = Some(Plan {
             authority: authority.take(),
             engine: Some(engine),

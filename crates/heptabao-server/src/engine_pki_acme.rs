@@ -1059,8 +1059,12 @@ impl pki::Pki {
     // signature effects and never upgrades a public JWS to Vault authority.
     fn acme_issuer_with_signing_owner(&self, reference: &str) -> Result<pki::RootCa> {
         let mut issuer = self.selected_issuer(reference)?.clone();
-        if issuer.is_external() {
-            let key = self.external_issuer_key(reference)?;
+        if issuer.is_external()
+            && let Ok(key) = self.external_issuer_key(reference)
+            && self
+                .external_issuer_root(reference)
+                .is_ok_and(|owned| owned.certificate_der == issuer.certificate_der)
+        {
             // The historical external RootCa has empty local identifiers. This
             // process-local view carries the actual retained typed remote owner;
             // it never rewrites or relabels that persisted historical RootCa.

@@ -343,7 +343,7 @@ fn pki_acme_external_real_seven_tls_signers_csr_public_binding_encrypted_reopen(
             finalized.status,
             200,
             "remote kind {kind} static errors {:?}",
-            finalized.body.get("errors")
+            finalized.body["__heptabao_acme"].get("detail")
         );
         assert_eq!(finalized.body["__heptabao_acme"]["status"], "valid");
         assert_eq!(
@@ -509,5 +509,110 @@ fn pki_acme_external_sign_grant_retirement_during_effect_vetoes_publication() ->
     );
     assert!(response.response_headers.is_empty());
     assert_no_completed_order(&service, &order)?;
+    Ok(())
+}
+
+// Only this fixture uses the Linux native KMS host shim; the remote signature
+// itself is produced and verified over the real TLS Transit boundary.
+#[cfg(target_os = "linux")]
+#[test]
+fn pki_acme_external_postaudit_host_revoke_and_enrollment_replace_withhold_delivery() -> TestResult
+{
+    for scenario in ["host-revoke", "enrollment-replace"] {
+        let remote = RemoteTransit::new_kind("ed25519")?;
+        let (_root, mut service, _unseal, admin) = remote.fixture_kms_capabilities(
+            Some(true),
+            Some(vec!["wrap".into(), "unwrap".into(), "sign".into()]),
+        )?;
+        for (path, body, status) in [
+            ("sys/mounts/external-ca", json!({"type":"pki"}), 204),
+            (
+                "sys/external-keys/configs/remote/keys/v2",
+                json!({"verify":false,"name":"remote","version":2}),
+                204,
+            ),
+            (
+                "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+                json!({}),
+                204,
+            ),
+            ("external-ca/root/generate/kms", body(), 200),
+        ] {
+            assert_eq!(
+                call(&mut service, "POST", path, &admin, body).status,
+                status
+            );
+        }
+        setup_remote(&mut service, &admin)?;
+        let (account, jwk) = key()?;
+        let kid = order_account(&mut service, &account, &jwk)?;
+        let domain = "postaudit.acme.example.test";
+        let order = ready(&mut service, &admin, &account, &jwk, &kid, domain)?;
+        let (_, raw) = csr(domain)?;
+        let pending = prepare_signed_finalize(&mut service, &account, &jwk, &kid, &order, &raw)?;
+        let result = pending.execute();
+        let ExternalEffectPlan::AcmeExternal(mut plan) = pending.effect else {
+            return Err("actual managed signing plan".into());
+        };
+        let ExternalEffectResult::AcmeExternal(result) = result else {
+            return Err("actual managed signing result".into());
+        };
+        let response = service.finalize_acme_external(&mut plan, result);
+        assert_eq!(
+            response.status, 200,
+            "actual signed publication before audit"
+        );
+        let issued_nonce = header(&response, "Replay-Nonce")?;
+        service.pending_acme_authority = plan.authority.take();
+        let host = std::sync::Arc::clone(service.kms_plugins.get("transit").ok_or("host")?);
+        let response = service.audit_completed_response_with_receipt(
+            &pending.fingerprint,
+            pending.now,
+            pending.token_clock,
+            response,
+            || {
+                if scenario == "host-revoke" {
+                    host.lock().expect("owned fixture host").revoke();
+                }
+            },
+        );
+        assert_eq!(
+            response.status, 200,
+            "mandatory audit completed before delivery gate"
+        );
+        if scenario == "enrollment-replace" {
+            // Installation remains immutable while unsealed. This test seam
+            // changes the actual enrollment after audit, without minting a grant.
+            service.outbound =
+                crate::outbound::Outbound::new(Vec::new()).map_err(|_| "replacement enrollment")?;
+        }
+        let veto = service.complete_pending_acme_delivery(true, response, &pending.fingerprint);
+        assert_eq!(
+            veto.status, 503,
+            "{scenario} must veto the original capsule"
+        );
+        assert!(veto.response_headers.is_empty());
+        assert!(veto.consistency_index.is_none());
+        assert!(veto.body.get("__heptabao_acme").is_none());
+        let replay = call(
+            &mut service,
+            "POST",
+            &format!("external-ca/acme/{order}"),
+            "",
+            signed(
+                &account,
+                &jwk,
+                &issued_nonce,
+                &format!("https://acme.example.test/v1/external-ca/acme/{order}"),
+                Some(&kid),
+                None,
+            )?,
+        );
+        assert_eq!(replay.status, 400);
+        assert_eq!(
+            replay.body["__heptabao_acme"]["type"],
+            "urn:ietf:params:acme:error:badNonce"
+        );
+    }
     Ok(())
 }
