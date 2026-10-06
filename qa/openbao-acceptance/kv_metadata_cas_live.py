@@ -6,6 +6,7 @@ pins the official artifact and records hashes; this profile checks metadata CAS,
 not full KV compatibility or production qualification.
 """
 from pathlib import Path
+import time
 
 from bao_http import Client
 from core_isolation import ScenarioFailure
@@ -14,6 +15,34 @@ import core_isolation
 PREFIX = "metadata-cas/"
 WARNING = ('"metadata_cas_required" set to false, but is mandated by backend '
            'config. This value will be ignored.')
+
+
+_KV_UPGRADE_PENDING = (
+    "Upgrading from non-versioned to versioned data. This backend will be "
+    "unavailable for a brief period and will resume service shortly."
+)
+
+
+def wait_for_empty_backend(client: Client) -> None:
+    # A fresh official KV v2 mount initializes asynchronously. Readiness is a
+    # separate fixture prerequisite, never an accepted business error contract.
+    deadline = time.monotonic() + 2.0
+    original_timeout = client.timeout
+    try:
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise ScenarioFailure("metadata_cas.fixture_readiness_timeout")
+            client.timeout = min(original_timeout, remaining)
+            response = client.request("GET", "/v1/" + PREFIX + "config")
+            if response.status == 200:
+                return
+            if (response.status != 400
+                    or response.body != {"errors": [_KV_UPGRADE_PENDING]}):
+                raise ScenarioFailure("metadata_cas.fixture_readiness_rejected")
+            time.sleep(min(0.025, max(0.0, deadline - time.monotonic())))
+    finally:
+        client.timeout = original_timeout
 
 
 def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dict]:
@@ -46,6 +75,7 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
 
     call("mount", "POST", "sys/mounts/metadata-cas",
          {"type": "kv", "options": {"version": "2"}})
+    wait_for_empty_backend(client)
     cfg = call("config.default", "GET", PREFIX + "config", expected=200)["data"]
     check("config.default_flag", cfg.get("metadata_cas_required") is False)
     call("data.create", "POST", PREFIX + "data/data-first", {"data": {"value": "synthetic"}}, 200)
