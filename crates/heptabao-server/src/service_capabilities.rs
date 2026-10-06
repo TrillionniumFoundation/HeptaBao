@@ -41,12 +41,8 @@ impl Service {
             let mut target_body = body.clone();
             if let Some(value) = object.get(selector) {
                 let spelling = capabilities_scalar(value).ok_or_else(|| {
-                    Response::error(
-                        400,
-                        &format!(
-                            "error converting input for field \"{selector}\": expected string"
-                        ),
-                    )
+                    let kind=if value.is_object(){"map[string]interface {}"}else{"[]interface {}"};
+                    Response::error(400,&format!("Field validation failed: error converting input for field \"{selector}\": '' expected type 'string', got unconvertible type '{kind}'"))
                 })?;
                 target_body[selector] = Value::String(spelling);
             }
@@ -112,6 +108,20 @@ impl Service {
             // under data. Envelope keys never overwrite the authoritative map.
             let mut envelope = data.clone();
             envelope.insert("data".into(), Value::Object(data));
+            let ignored: Vec<_> = object
+                .keys()
+                .filter(|key| !matches!(key.as_str(), "path" | "paths") && key.as_str() != selector)
+                .map(String::as_str)
+                .collect();
+            if !ignored.is_empty() {
+                envelope.insert(
+                    "warnings".into(),
+                    json!([format!(
+                        "Endpoint ignored these unrecognized parameters: [{}]",
+                        ignored.join(" ")
+                    )]),
+                );
+            }
             Ok(Response::ok(Value::Object(envelope)))
         })();
         result.unwrap_or_else(|error| error)

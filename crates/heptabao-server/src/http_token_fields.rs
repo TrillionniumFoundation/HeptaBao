@@ -1,4 +1,4 @@
-//! Original JSON number spelling for the token backend's weak string fields.
+//! Original JSON number spelling for token and capabilities weak string fields.
 //! The HTTP parser always wraps these routes, including requests without numbers;
 //! client JSON resembling this marker consequently remains ordinary inner data.
 use serde_json::{Map, Value, json, value::RawValue};
@@ -14,6 +14,8 @@ const CREATE_FIELDS: &[&str] = &[
     "renewable",
     "meta",
 ];
+const CAPABILITY_FIELDS: &[&str] = &["path", "paths", "token"];
+const CAPABILITY_ACCESSOR_FIELDS: &[&str] = &["path", "paths", "accessor"];
 const ROLE_FIELDS: &[&str] = &[
     "orphan",
     "renewable",
@@ -34,7 +36,11 @@ const ROLE_FIELDS: &[&str] = &[
 ];
 
 fn fields(path: &str) -> &'static [&'static str] {
-    if path.starts_with("auth/token/roles/") {
+    if path == "sys/capabilities-accessor" {
+        CAPABILITY_ACCESSOR_FIELDS
+    } else if matches!(path, "sys/capabilities" | "sys/capabilities-self") {
+        CAPABILITY_FIELDS
+    } else if path.starts_with("auth/token/roles/") {
         ROLE_FIELDS
     } else {
         CREATE_FIELDS
@@ -44,7 +50,9 @@ fn fields(path: &str) -> &'static [&'static str] {
 fn array_field(field: &str) -> bool {
     matches!(
         field,
-        "policies"
+        "path"
+            | "paths"
+            | "policies"
             | "allowed_policies"
             | "disallowed_policies"
             | "allowed_policies_glob"
@@ -70,7 +78,11 @@ pub(crate) fn eligible(method: &str, path: &str) -> bool {
     matches!(method, "POST" | "PUT")
         && (matches!(path, "auth/token/create" | "auth/token/create-orphan")
             || path.starts_with("auth/token/create/")
-            || path.starts_with("auth/token/roles/"))
+            || path.starts_with("auth/token/roles/")
+            || matches!(
+                path,
+                "sys/capabilities" | "sys/capabilities-self" | "sys/capabilities-accessor"
+            ))
 }
 
 pub(crate) fn transport_body(
@@ -472,5 +484,28 @@ mod tests {
             assert!(request("POST", "auth/token/create", &invalid).is_err());
         }
         assert!(crate::auth::parse_strict_json(br#"{"other":1e9999}"#).is_err());
+    }
+}
+
+#[cfg(test)]
+mod capabilities_number_tests {
+    use super::*;
+    #[test]
+    fn capabilities_raw_numbers_keep_original_parameter_acl_body()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let bytes = br#"{"paths":[1.00,1E+08,-0,9007199254740993],"token":1E-08}"#;
+        let original: Value = serde_json::from_slice(bytes)?;
+        let mut body = original.clone();
+        transport_body("POST", "sys/capabilities-self", &mut body, bytes)?;
+        let carrier = request("POST", "sys/capabilities-self", &body)?.ok_or("carrier missing")?;
+        assert_eq!(carrier.original, &original);
+        let backend = carrier.backend_body();
+        assert_eq!(
+            backend.0["paths"],
+            json!(["1.00", "1E+08", "-0", "9007199254740993"])
+        );
+        assert_eq!(backend.0["token"], json!("1E-08"));
+        assert!(carrier.original["paths"][0].is_number());
+        Ok(())
     }
 }

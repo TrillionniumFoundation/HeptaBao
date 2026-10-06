@@ -94,6 +94,58 @@ impl AuthState {
         self.policy_template_selectors(namespace, &target.policies, policies)
     }
 
+    fn inspection_acl_path<'p>(
+        &self,
+        namespace: &str,
+        path: &'p str,
+        target: &InspectionTarget,
+        identity_policies: &BTreeSet<String>,
+        templates: &IdentityTemplateValues,
+    ) -> Result<&'p str, AuthError> {
+        // OpenBao ACL.Capabilities uses ListOperation. Leading separators are
+        // removed from the full namespace-prefixed path, and an exact rule for
+        // a single trailing-slash trim wins only when the original has no exact
+        // rule. This adjusts metadata evaluation, never an execution route.
+        let path = if namespace.is_empty() {
+            path.trim_start_matches('/')
+        } else {
+            path
+        };
+        let Some(trimmed) = path.strip_suffix('/') else {
+            return Ok(path);
+        };
+        let mut original_exact = false;
+        let mut trimmed_exact = false;
+        let mut inspect = |rules: &[Rule]| -> Result<(), AuthError> {
+            for rule in rules {
+                if let Some(rendered) = acl_template::render(&rule.path, templates)?
+                    && !rendered.ends_with('*')
+                    && !rendered.split('/').any(|part| part == "+")
+                {
+                    original_exact |= rendered == path;
+                    trimmed_exact |= rendered == trimmed;
+                }
+            }
+            Ok(())
+        };
+        for name in target.policies.iter().chain(identity_policies) {
+            if let Some(policy) = self
+                .policies
+                .get(namespace)
+                .and_then(|entries| entries.get(name))
+            {
+                inspect(&policy.rules)?;
+            } else if name == "default" {
+                inspect(&default_policy::compiled()?.rules)?;
+            }
+        }
+        Ok(if !original_exact && trimmed_exact {
+            trimmed
+        } else {
+            path
+        })
+    }
+
     pub(crate) fn inspect_capabilities(
         &self,
         namespace: &str,
@@ -122,6 +174,15 @@ impl AuthState {
                 vec!["deny"]
             });
         }
+        let path = self
+            .inspection_acl_path(
+                namespace,
+                path,
+                target,
+                identity_policies,
+                identity_templates,
+            )
+            .map_err(|_| denied())?;
         let mut capabilities = Vec::new();
         for capability in CAPABILITIES
             .iter()

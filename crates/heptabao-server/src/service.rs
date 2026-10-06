@@ -4292,15 +4292,17 @@ impl Service {
         {
             return Self::lease_route(state, principal, namespace, method, path, body, time);
         }
+        // Restore weak string-field spelling only after the parameter ACL.
+        let token_backend_body = token_fields.map(|carrier| carrier.backend_body());
+        let auth_body = token_backend_body.as_ref().map_or(body, |body| &body.0);
         if matches!(
             path,
             "sys/capabilities" | "sys/capabilities-self" | "sys/capabilities-accessor"
         ) {
-            return Self::capabilities_route(state, principal, namespace, method, path, body, now);
+            return Self::capabilities_route(
+                state, principal, namespace, method, path, auth_body, now,
+            );
         }
-        // Restore weak string-field spelling only after the parameter ACL.
-        let token_backend_body = token_fields.map(|carrier| carrier.backend_body());
-        let auth_body = token_backend_body.as_ref().map_or(body, |body| &body.0);
         let mut auth = state.auth.clone();
         match auth.handle_with_connection_clock(
             principal,

@@ -641,3 +641,53 @@ fn capabilities_self_official_go_token_field_cannot_select_another_principal() -
     );
     Ok(())
 }
+
+#[test]
+fn capabilities_leading_and_list_exact_fallback_keep_literal_keys_and_deny() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    assert_eq!(call(&mut s,&root,"sys/policies/acl/cap-query",json!({"policy":"path \"secret/item\" { capabilities = [\"read\"] }\npath \"secret/item/\" { capabilities = [\"deny\"] }\npath \"secret/exact\" { capabilities = [\"read\"] }"})).status,204);
+    let (token, _) = create_token(&mut s, &root, json!({"policies":["default","cap-query"]}))?;
+    let before = snapshot(&s)?;
+    for (query, caps) in [
+        ("/secret/item", "read"),
+        ("//secret/item", "read"),
+        ("secret/item/", "deny"),
+        ("secret/exact/", "read"),
+        ("/secret/exact/", "read"),
+        ("../outside", "deny"),
+        ("secret/*", "deny"),
+    ] {
+        let response = call(
+            &mut s,
+            &token,
+            "sys/capabilities-self",
+            json!({"paths":[query]}),
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"][query], json!([caps]));
+    }
+    let r = call(
+        &mut s,
+        &token,
+        "sys/capabilities-self",
+        json!({"paths":["secret/exact"],"bogus":true,"unknown":3}),
+    );
+    assert_eq!(
+        r.body["warnings"],
+        json!(["Endpoint ignored these unrecognized parameters: [bogus unknown]"])
+    );
+    assert_eq!(before, snapshot(&s)?);
+    assert_eq!(
+        call(
+            &mut s,
+            &token,
+            "secret/exact",
+            json!({"data":{"value":"still unauthorized"}})
+        )
+        .status,
+        403
+    );
+    Ok(())
+}
