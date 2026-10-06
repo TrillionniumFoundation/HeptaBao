@@ -287,7 +287,7 @@ fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestRe
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
     let before = snapshot(&s)?;
-    for payload in [
+    for (case_index, payload) in [
         json!({}),
         json!({"paths":[]}),
         json!({"paths":["a","a"]}),
@@ -297,10 +297,14 @@ fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestRe
         json!({"paths":["secret/*"]}),
         json!({"paths":["a".repeat(2049)]}),
         json!({"paths":vec!["a";65]}),
-    ] {
+    ]
+    .into_iter()
+    .enumerate()
+    {
         assert_eq!(
             call(&mut s, &root, "sys/capabilities-self", payload).status,
-            400
+            400,
+            "capabilities bound case {case_index}"
         );
     }
     let self_response = call(

@@ -7,7 +7,7 @@ const MAX_EFFECTIVE_POLICIES: usize = 256;
 
 impl IdentityState {
     #[cfg(test)]
-    pub(super) fn fixture_rebind_entity_id(&mut self, old: &str, replacement: &str) -> Result<()> {
+    pub(crate) fn fixture_rebind_entity_id(&mut self, old: &str, replacement: &str) -> Result<()> {
         valid_identifier(replacement, "fixture entity id")?;
         let entity = self.entities.get(old).ok_or_else(not_found)?;
         if self.entities.contains_key(replacement)

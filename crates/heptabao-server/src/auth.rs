@@ -3796,7 +3796,10 @@ impl AuthState {
                 };
                 match entry.kind.as_str() {
                     "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
-                    "approle" | "jwt" | "kubernetes" | "radius" | "kerberos" => suffix == "login",
+                    "approle" | "jwt" | "kubernetes" | "kerberos" => suffix == "login",
+                    "radius" => {
+                        suffix == "login" || suffix.strip_prefix("login/").is_some_and(valid_name)
+                    }
                     "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
                     "cert" => suffix == "login",
                     "plugin" => suffix == "login",
