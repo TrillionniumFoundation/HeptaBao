@@ -211,7 +211,7 @@ impl Pki {
     pub(in crate::engines) fn prepare_acme_operator_revocation(
         &self,
         serial: &str,
-        context: crate::engines::PkiRequestContext<'_>,
+        context: &crate::engines::PkiRequestContext<'_>,
     ) -> Result<Option<Revocation>> {
         let Some(cert) = self.acme_certificate_for_serial(serial)? else {
             return Ok(None);
@@ -296,7 +296,7 @@ impl Pki {
         if let Some(prior) = self.acme_revocation(&serial) {
             return Ok(Some(ok(prior.descriptor(), false)));
         }
-        let Some(revoked) = self.prepare_acme_operator_revocation(&serial, context)? else {
+        let Some(revoked) = self.prepare_acme_operator_revocation(&serial, &context)? else {
             return Ok(Some(EngineResponse {
                 status: 200,
                 body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),

@@ -538,11 +538,11 @@ impl Service {
                         })
                     },
                 ) {
-                    Ok(response) if !response.mutated => Response {
+                    Ok(mut response) if !response.mutated => Response {
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: response.status,
-                        body: response.body,
+                        body: std::mem::take(&mut response.body),
                     },
                     Ok(_) => Response::error(503, "no-effect revocation changed state"),
                     Err(cause) => Response::from_engine_error(cause),

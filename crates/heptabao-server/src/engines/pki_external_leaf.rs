@@ -617,7 +617,7 @@ impl Pki {
             let acme_revocation = if path == "revoke" {
                 let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
                 if self.acme_certificate_for_serial(&serial)?.is_some() {
-                    let Some(revoked) = self.prepare_acme_operator_revocation(&serial, context)?
+                    let Some(revoked) = self.prepare_acme_operator_revocation(&serial, &context)?
                     else {
                         // Already revoked and expired records use the original no-effect route.
                         return Ok(None);
