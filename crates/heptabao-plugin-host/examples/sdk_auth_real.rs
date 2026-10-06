@@ -106,7 +106,11 @@ mod unix_fixture {
                 companion_sha256: sha(&companion)?,
                 plugin: plugin.clone(),
                 plugin_sha256: sha(&plugin)?,
-                plugin_args: vec!["--serve".into()],
+                plugin_args: match round {
+                    4 => vec!["--serve".into(), "--private-login".into()],
+                    5 => vec!["--serve".into(), "--root-special".into()],
+                    _ => vec!["--serve".into()],
+                },
                 socket_directory: socket,
                 private_log: out.join(format!("companion-{round}.private.log")),
                 timeout: Duration::from_secs(10),
@@ -217,6 +221,31 @@ mod unix_fixture {
             &mut checks,
         )?;
         host.close(&mut storage)?;
+        for (round, label) in [
+            (
+                4,
+                "actual-SDK-private-login-metadata-cannot-mint-public-login",
+            ),
+            (
+                5,
+                "actual-SDK-Root-path-cannot-drop-sudo-through-first-admission",
+            ),
+        ] {
+            let before_cells = storage.cells.clone();
+            let before_calls = storage.calls.clone();
+            let rejected = SdkBackendHost::launch_typed_before(
+                &config(round)?,
+                &mut storage,
+                SdkBackendType::Auth,
+                Instant::now() + Duration::from_secs(10),
+            );
+            check(rejected.is_err(), label, &mut checks)?;
+            check(
+                storage.cells == before_cells && storage.calls == before_calls,
+                "rejected-special-paths-no-Storage-or-config-effect",
+                &mut checks,
+            )?;
+        }
         fs::write(
             out.join("result.original.json"),
             serde_json::to_vec_pretty(
