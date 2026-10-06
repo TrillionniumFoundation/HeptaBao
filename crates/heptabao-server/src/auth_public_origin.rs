@@ -40,17 +40,8 @@ impl MetadataInput {
                 // Pinned TypeKVPairs first WeakDecodes into map[string]string.
                 // A failed map attempt is discarded before the independent
                 // []string attempt; no partial map can escape on an error.
-                let mut decoded = None;
-                let mut map = if weak_map(value, &mut decoded) {
-                    let Some(map) = decoded else {
-                        return Ok(Self::DecodedNull);
-                    };
-                    map
-                } else {
-                    if let Some(mut map) = decoded {
-                        approle_metadata::erase(&mut map);
-                    }
-                    weak_pairs(value)?
+                let Some(mut map) = key_pairs(value, "meta")? else {
+                    return Ok(Self::DecodedNull);
                 };
                 if !crate::login_metadata::within_limit(&map) {
                     approle_metadata::erase(&mut map);
@@ -128,7 +119,21 @@ fn replace_value(map: &mut BTreeMap<String, String>, name: &str, value: String) 
     }
 }
 
-fn weak_pairs(value: &Value) -> Result<BTreeMap<String, String>, AuthError> {
+pub(super) fn key_pairs(
+    value: &Value,
+    field: &str,
+) -> Result<Option<BTreeMap<String, String>>, AuthError> {
+    let mut decoded = None;
+    if weak_map(value, &mut decoded) {
+        return Ok(decoded);
+    }
+    if let Some(mut map) = decoded {
+        approle_metadata::erase(&mut map);
+    }
+    weak_pairs(value, field).map(Some)
+}
+
+fn weak_pairs(value: &Value, field: &str) -> Result<BTreeMap<String, String>, AuthError> {
     // WeakDecode lifts a scalar or a nonempty map into a single-element slice;
     // []string conversion errors accumulate in actual input index order. Null
     // string elements decode to an empty slot, rather than being filtered out.
@@ -154,7 +159,7 @@ fn weak_pairs(value: &Value) -> Result<BTreeMap<String, String>, AuthError> {
     }
     if !failures.is_empty() {
         return Err(bad(&format!(
-            "Field validation failed: error converting input for field \"meta\": decoding failed due to the following error(s):\n\n{}",
+            "Field validation failed: error converting input for field \"{field}\": decoding failed due to the following error(s):\n\n{}",
             failures.join("\n")
         )));
     }
@@ -163,7 +168,7 @@ fn weak_pairs(value: &Value) -> Result<BTreeMap<String, String>, AuthError> {
         let Some((name, value)) = pair.split_once('=').filter(|(name, _)| !name.is_empty()) else {
             approle_metadata::erase(&mut map);
             return Err(bad(&format!(
-                "Field validation failed: error converting input for field \"meta\": invalid key pair at index {index} in field \"meta\""
+                "Field validation failed: error converting input for field \"{field}\": invalid key pair at index {index} in field \"{field}\""
             )));
         };
         replace_value(&mut map, name, value.into());

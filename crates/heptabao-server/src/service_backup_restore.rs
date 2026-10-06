@@ -399,6 +399,14 @@ impl Service {
                 "snapshot would downgrade PKI URL ownership",
             ));
         }
+        if current.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+            && incoming.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade auth mount options",
+            ));
+        }
         if current.schema >= SDK_ACCEPTED_SECRET_STATE_SCHEMA
             && incoming.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
         {

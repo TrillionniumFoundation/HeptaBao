@@ -119,6 +119,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_auth_mount_options_state() {
+            required.max(AUTH_MOUNT_OPTIONS_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -127,6 +132,18 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        self.auth
+            .validate_auth_mount_options_state()
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+            && (self.auth.has_auth_mount_options_state()
+                || previous.is_some_and(|state| state.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "auth mount options require schema 103",
+            ));
+        }
         self.validate_namespace_batch_state()?;
         self.engines
             .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
@@ -539,6 +556,16 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.auth
+            .validate_auth_mount_options_state()
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA && self.auth.has_auth_mount_options_state()
+        {
+            return Err(Response::error(
+                503,
+                "auth mount options require schema 103",
+            ));
+        }
         self.validate_namespace_batch_state()?;
         self.auth
             .validate_sdk_auth_state()
@@ -1537,6 +1564,7 @@ impl State {
             | SDK_SECRET_LEASE_STATE_SCHEMA
             | SDK_AUTH_STATE_SCHEMA
             | SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA

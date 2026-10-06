@@ -97,10 +97,12 @@ mod pki_acme;
 mod pki_acme_external;
 const SDK_AUTH_STATE_SCHEMA: u32 = 100;
 const SDK_ACCEPTED_SECRET_STATE_SCHEMA: u32 = 101;
+// Persisted native auth mount options must survive older readers and writers.
+const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_ACCEPTED_SECRET_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = AUTH_MOUNT_OPTIONS_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -127,6 +129,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ACME_ACCOUNT_STATE_SCHEMA
                 | SDK_AUTH_STATE_SCHEMA
                 | SDK_ACCEPTED_SECRET_STATE_SCHEMA
+                | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -9534,3 +9537,7 @@ mod sdk_storage_tests;
 #[cfg(all(test, unix))]
 #[path = "service_initialization_existing_tests.rs"]
 mod initialization_existing_tests;
+
+#[cfg(test)]
+#[path = "service_auth_mount_options_tests.rs"]
+mod auth_mount_options_tests;

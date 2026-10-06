@@ -100,6 +100,8 @@ mod jwt_renewal;
 mod ldap_native;
 #[path = "auth_ldap_renewal.rs"]
 mod ldap_renewal;
+#[path = "auth_mount_options.rs"]
+mod mount_options;
 #[path = "auth_mount_visibility.rs"]
 mod mount_visibility;
 #[path = "auth_token_policies.rs"]
@@ -1146,6 +1148,8 @@ impl Drop for JwtMountState {
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    options: Option<mount_options::Options>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     token_type: Option<batch_issuance::MountTokenType>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     userpass_name_mode: Option<userpass_names::UserpassNameMode>,
@@ -1194,6 +1198,7 @@ const fn auth_mount_revision_one() -> u64 {
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            options: None,
             token_type: None,
             userpass_name_mode: None,
             accessor: None,
@@ -1217,7 +1222,7 @@ impl AuthMount {
             "description": self.description,
             "local": false,
             "seal_wrap": false,
-            "options": {},
+            "options": self.options.as_ref().map_or_else(|| json!({}), mount_options::Options::descriptor),
             "config": {
                 "default_lease_ttl": self.default_lease_ttl,
                 "max_lease_ttl": self.max_lease_ttl,
@@ -3693,7 +3698,7 @@ impl AuthState {
             "POST" | "PUT" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &["type", "description", "cas_revision"])?;
+                reject_unknown(body, &["type", "description", "options", "cas_revision"])?;
                 let kind = body
                     .get("type")
                     .and_then(Value::as_str)
@@ -3725,6 +3730,15 @@ impl AuthState {
                 if description.len() > 512 || description.chars().any(char::is_control) {
                     return Err(bad("invalid auth mount description"));
                 }
+                let options = mount_options::Options::parse(body)?;
+                if options
+                    .as_ref()
+                    .is_some_and(mount_options::Options::has_version)
+                {
+                    return Err(bad(&format!(
+                        "auth method \"{kind}\" does not allow setting a version"
+                    )));
+                }
                 let mut entries = self.effective_auth_mounts(namespace);
                 let existing = entries.get(mount).cloned();
                 if mount == "token" || existing.as_ref().is_some_and(|old| old.kind != kind) {
@@ -3744,6 +3758,7 @@ impl AuthState {
                     None => require_absent_auth_revision(optional_auth_revision(body)?)?,
                 }
                 let mut next = AuthMount::new(kind, description);
+                next.options = options;
                 if let Some(old) = existing.as_ref() {
                     next.token_type = old.token_type;
                     next.userpass_name_mode = old.userpass_name_mode;
@@ -3754,7 +3769,10 @@ impl AuthState {
                     next.user_lockout_duration = old.user_lockout_duration;
                     next.user_lockout_counter_reset_duration =
                         old.user_lockout_counter_reset_duration;
-                    if old.description != description {
+                    if body.get("options").is_none() {
+                        next.options = old.options.clone();
+                    }
+                    if old.description != description || old.options != next.options {
                         next.revision = next_auth_revision(old.revision)?;
                     }
                 } else {
