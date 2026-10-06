@@ -156,7 +156,7 @@ sys.exit(1)
                         client._opener.open.side_effect = failure
                     else:
                         response = MagicMock()
-                        response.code, response.headers = 200, {}
+                        response.code, response.headers = 200, http.client.HTTPMessage()
                         response.__enter__.return_value = response
                         response.read.side_effect = failure
                         client._opener.open.return_value = response
