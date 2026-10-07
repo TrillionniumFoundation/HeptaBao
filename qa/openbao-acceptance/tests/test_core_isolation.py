@@ -149,6 +149,95 @@ class TransportDiagnosticReportTests(unittest.TestCase):
             self.assertNotIn(sentinel, output.read_text() + stdout.getvalue())
             self.assertEqual(report["cases"], {})
 
+
+    def test_main_restart_failure_retains_original_side_without_unbound_or_stale_client(self):
+        from fixture_transport_case import begin_case
+        for failure_phase in ("candidate_restart_startup", "candidate_restart_unseal",
+                              "oracle_restart_startup"):
+            with self.subTest(phase=failure_phase), tempfile.TemporaryDirectory() as directory:
+                sentinel = "synthetic-private-restart-peer"
+                root = Path(directory)
+                root.chmod(0o700)
+                output = root / "report.json"
+                class Instance:
+                    def __init__(self, binary, owned_root):
+                        self.root = owned_root
+                        owned_root.mkdir(mode=0o700)
+                        (owned_root / "server.log").write_text(sentinel)
+                        self.starts = self.unseals = 0
+                        self.address = "https://localhost:8200"
+                    def start(self):
+                        self.starts += 1
+                        if self.starts == 2 and failure_phase == "candidate_restart_startup":
+                            raise urllib.error.URLError(ConnectionResetError(104, sentinel))
+                    def stop(self):
+                        pass
+                    def call(self, method, path, body=None):
+                        if path == "sys/init":
+                            return 200, {"root_token": "synthetic-private-root-token",
+                                         "keys_base64": ["synthetic-private-unseal-key"]}
+                        if path == "sys/unseal":
+                            self.unseals += 1
+                            if self.unseals == 2 and failure_phase == "candidate_restart_unseal":
+                                raise urllib.error.URLError(ConnectionResetError(104, sentinel))
+                            return 200, {}
+                        raise AssertionError("unknown fixed fixture request")
+                class FixtureClient:
+                    def __init__(self, *args, **kwargs):
+                        self._heptabao_derived_pending_case = None
+                def started(*args, **kwargs):
+                    owned = root / "oracle"
+                    owned.mkdir(mode=0o700)
+                    token = owned / "token"
+                    token.write_text("synthetic-private-oracle-token")
+                    token.chmod(0o600)
+                    return {"root": owned, "token_file": token,
+                            "address": "https://localhost:8201", "ca_file": str(owned / "ca"),
+                            "storage_backend": "file"}
+                def restarted(oracle):
+                    if failure_phase == "oracle_restart_startup":
+                        raise urllib.error.URLError(ConnectionResetError(104, sentinel))
+                def scenarios(client, rows):
+                    rows.append({"case": "fixed.initial.completed", "passed": True})
+                def restart_scenarios(client, rows):
+                    rows.append({"case": "fixed.restart.completed", "passed": True})
+                    # Deliberately leave a known previous-side capsule to prove
+                    # that restart-startup failures never adopt that Client.
+                    begin_case(client, "xchacha20-poly1305.convergent.hmac_context.1")
+                fake_spec = types.SimpleNamespace(loader=types.SimpleNamespace(exec_module=lambda _: None))
+                fake_module = types.SimpleNamespace(Instance=Instance)
+                stdout = io.StringIO()
+                with patch.object(sys, "argv", ["compare", "--binary", sys.executable,
+                                                "--output", str(output)]), \
+                        patch.object(core_isolation.importlib.util, "spec_from_file_location",
+                                     return_value=fake_spec), \
+                        patch.object(core_isolation.importlib.util, "module_from_spec",
+                                     return_value=fake_module), \
+                        patch.object(core_isolation, "Client", FixtureClient), \
+                        patch.object(core_isolation, "start_oracle", side_effect=started), \
+                        patch.object(core_isolation, "restart_oracle", side_effect=restarted), \
+                        patch.object(core_isolation, "stop_oracle"), \
+                        contextlib.redirect_stdout(stdout):
+                    code = core_isolation.main(scenario_runner=scenarios,
+                                               restart_runner=restart_scenarios)
+                self.assertEqual(code, 1)
+                report = json.loads(output.read_text())
+                side = "oracle" if failure_phase.startswith("oracle") else "candidate"
+                self.assertEqual(report["side_failures"], {side: "unexpected_URLError"})
+                detail = report["transport_failures"][side]
+                self.assertEqual(detail, {
+                    "fixture_phase": failure_phase, "phase": "fixture_call",
+                    "exception_class": "urllib.error.URLError",
+                    "reason_exception_class": "ConnectionResetError", "reason_errno": 104,
+                })
+                self.assertNotIn("pending_request_case", detail)
+                self.assertNotIn("UnboundLocalError", output.read_text() + stdout.getvalue())
+                for private in (sentinel, "synthetic-private-root-token",
+                                "synthetic-private-unseal-key", "synthetic-private-oracle-token"):
+                    self.assertNotIn(private, output.read_text() + stdout.getvalue())
+                self.assertEqual(report["status"], "mismatch")
+
+
     def test_projection_rejects_dynamic_context_and_nontransport_exception(self):
         result = {}
         error = OSError(13, "synthetic-private-error")

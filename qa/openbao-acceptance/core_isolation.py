@@ -314,6 +314,7 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
                 retain_transport_failure(result, name, phase, error, client=client)
         if restart_runner is not None and not result["side_failures"]:
             for name in ("candidate", "oracle"):
+                restarted = None
                 try:
                     if name == "candidate":
                         instance.stop()
