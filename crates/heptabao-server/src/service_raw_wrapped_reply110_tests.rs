@@ -691,7 +691,7 @@ fn raw110_actual_pki_rewrap_and_encrypted_reopen_keep_original_complete_reply() 
     Ok(())
 }
 #[test]
-fn raw110_actual_pki_owner_rejects_forged_body_wrong_format_namespace_and_shadow_mount()
+fn raw110_actual_pki_owner_rejects_forged_body_wrong_format_namespace_and_retired_remount()
 -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
@@ -736,22 +736,35 @@ fn raw110_actual_pki_owner_rejects_forged_body_wrong_format_namespace_and_shadow
             .wrapping_raw_pki_reply("", "GET", "rawpki/ca", 200, &altered)
             .is_none()
     );
+    // Real catalogs reject overlapping mounts. Retire the actual PKI and
+    // remount its allowed path as KV; its old producer body cannot mint proof.
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/mounts/rawpki",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
     assert_eq!(
         call(
             &mut service,
             "POST",
-            "sys/mounts/rawpki/shadow",
+            "sys/mounts/rawpki",
             &admin,
             json!({"type":"kv","options":{"version":"1"}})
         )
         .status,
         204
     );
-    let state = service.state.as_ref().ok_or("shadow state")?;
+    let state = service.state.as_ref().ok_or("retired PKI remount state")?;
     assert!(
         state
             .engines
-            .wrapping_raw_pki_reply("", "GET", "rawpki/shadow/ca", 200, &genuine.body)
+            .wrapping_raw_pki_reply("", "GET", "rawpki/ca", 200, &genuine.body)
             .is_none()
     );
     erase_json(&mut altered);
