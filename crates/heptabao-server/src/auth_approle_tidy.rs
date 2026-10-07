@@ -188,11 +188,9 @@ impl AuthState {
             }
         }
         let more = items.len() > 256;
-        if more {
-            if let Some((mut role, mut verifier)) = items.pop() {
-                role.zeroize();
-                verifier.zeroize();
-            }
+        if more && let Some((mut role, mut verifier)) = items.pop() {
+            role.zeroize();
+            verifier.zeroize();
         }
         let next_cursor = if more {
             items.last().map(|(role, verifier)| Cursor {

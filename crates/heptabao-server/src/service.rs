@@ -1220,6 +1220,9 @@ fn classify_request_effect(
     }
 }
 
+#[cfg(test)]
+type NativeRecordRoleHook = Box<dyn FnOnce(&HaProcess) + Send>;
+
 pub struct Service {
     openbao_wrapper_owner: Option<openbao_wrapper::ServiceWrapperOwner>,
     openbao_wrapper_generation: u64,
@@ -1270,7 +1273,7 @@ pub struct Service {
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_namespace_deletion: Option<namespace_deletion::AcceptedDelete>,
     #[cfg(test)]
-    native_record_role_hook: Option<Box<dyn FnOnce(&HaProcess) + Send>>,
+    native_record_role_hook: Option<NativeRecordRoleHook>,
     pending_approle_tidy: Option<approle_tidy::Accepted>,
     approle_tidy_jobs: std::collections::VecDeque<approle_tidy::Task>,
     approle_tidy_slots: BTreeMap<(String, String), approle_tidy::Slot>,
