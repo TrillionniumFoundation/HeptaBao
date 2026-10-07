@@ -4659,12 +4659,8 @@ impl Service {
             let Some(principal) = principal else {
                 return openapi::handle_anonymous(method, body);
             };
-            if let Err(error) = state
-                .auth
-                .authorize_request(principal, namespace, path, "read", now)
-            {
-                return Response::error(error.status, &error.message);
-            }
+            // This public discovery endpoint accepts every live token. Its
+            // document visibility remains a separate projection of that actor.
             return openapi::handle(
                 method,
                 body,

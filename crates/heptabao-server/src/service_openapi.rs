@@ -838,8 +838,20 @@ fn handle_with_visibility(
         return Response::error(400, "unsupported OpenAPI parameter");
     }
     let generic = match object.get("generic_mount_paths") {
-        None => false,
+        None | Some(Value::Null) => false,
         Some(Value::Bool(value)) => *value,
+        Some(Value::String(value)) => match value.as_str() {
+            "1" | "t" | "T" | "TRUE" | "true" | "True" => true,
+            "" | "0" | "f" | "F" | "FALSE" | "false" | "False" => false,
+            _ => return Response::error(400, "generic_mount_paths must be a boolean"),
+        },
+        // The native HTTP decoder uses json.Number. Weak bool conversion
+        // therefore parses its lexical integer 0/1 rather than numeric truth.
+        Some(Value::Number(value)) => match value.to_string().as_str() {
+            "0" => false,
+            "1" => true,
+            _ => return Response::error(400, "generic_mount_paths must be a boolean"),
+        },
         Some(_) => {
             return Response::error(400, "generic_mount_paths must be a boolean");
         }
@@ -1046,10 +1058,48 @@ mod tests {
     fn invalid_parameters_and_methods_fail_closed() {
         assert_eq!(handle("DELETE", &json!({}), true).status, 405);
         assert_eq!(
-            handle("POST", &json!({"generic_mount_paths":"true"}), true).status,
+            handle("POST", &json!({"generic_mount_paths":"yes"}), true).status,
             400
         );
         assert_eq!(handle("POST", &json!({"unknown":true}), true).status, 400);
+    }
+
+    #[test]
+    fn generic_mount_paths_weak_boolean_matches_actual_native_fields()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for (value, expected) in [
+            (Value::Null, false),
+            (json!(true), true),
+            (json!(false), false),
+            (json!("true"), true),
+            (json!("True"), true),
+            (json!("t"), true),
+            (json!("1"), true),
+            (json!("false"), false),
+            (json!("0"), false),
+            (json!(""), false),
+            (json!(0), false),
+            (json!(1), true),
+        ] {
+            let response = handle("POST", &json!({"generic_mount_paths":value}), true);
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["x-heptabao-generic-mount-paths"], expected);
+        }
+        for value in [
+            json!("yes"),
+            json!("2"),
+            json!(2),
+            json!(-1),
+            json!(0.5),
+            json!([]),
+            json!({}),
+        ] {
+            assert_eq!(
+                handle("POST", &json!({"generic_mount_paths":value}), true).status,
+                400
+            );
+        }
+        Ok(())
     }
 
     #[test]
