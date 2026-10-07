@@ -300,6 +300,17 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
             != before_owned_namespace_delete,
         "actual namespace retirement publishes a new authoritative identity"
     );
+    let pending = service.state.as_ref().ok_or("pending team deletion")?;
+    assert!(
+        pending.namespaces.contains("team") && pending.namespace_is_tainted("team"),
+        "the accepted deletion keeps the original namespace tainted until real cleanup"
+    );
+    super::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "team",
+        std::time::Duration::from_secs(100),
+    )
+    .map_err(|_| "actual native team cleanup failed")?;
     assert!(
         service
             .state
@@ -335,13 +346,19 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
             == 200,
         "actual empty namespace deletion remains available at retired schema70"
     );
+    super::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "empty",
+        std::time::Duration::from_secs(100),
+    )
+    .map_err(|_| "actual native empty cleanup failed")?;
     let current = service.state.as_ref().ok_or("test_state_missing")?;
     assert!(
         !current.engines.has_transit_byok_state()
-            && current.schema == NAMESPACE_BATCH_STATE_SCHEMA
+            && current.schema == NAMESPACE_DELETION_STATE_SCHEMA
             && current.namespaces.has_custody_state()
-            && current.has_namespace_batch_state(),
-        "actual namespace retirement carries custody81 and batch91 while retaining the older BYOK70 floor"
+            && current.has_namespace_deletion_state(),
+        "real terminal namespace cleanup retains custody81, BYOK70 and the actual deletion106 owner floor"
     );
     let mut lower = current.clone();
     lower.schema = JWT_PEM_KEYSET_STATE_SCHEMA;
