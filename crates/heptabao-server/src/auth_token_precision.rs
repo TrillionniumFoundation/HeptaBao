@@ -271,7 +271,8 @@ impl RequestClock {
     }
     pub(crate) fn observed_at(self) -> Result<Timestamp, PrecisionError> {
         let elapsed = self.started.elapsed();
-        // The elapsed span is request bounded; reject rather than saturate.
+        // Keep the original elapsed span, including long-lived native owners;
+        // reject arithmetic overflow rather than saturating or re-anchoring.
         let observed = self.wall.checked_add(DurationNanos::checked(
             u64::try_from(elapsed.as_nanos()).map_err(|_| PrecisionError::Clock)?,
         )?)?;

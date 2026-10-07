@@ -643,13 +643,13 @@ fn native_approle_tidy_real_two_batch_cleanup_keeps_original_clock_and_busy_guar
     );
     let task = service.approle_tidy_jobs.front().ok_or("task")?;
     let started = task.clock.started();
-    let deadline = task.deadline;
+    let deadline = task.admission_deadline;
     assert!(service.maintain_approle_tidies());
     let task = service.approle_tidy_jobs.front().ok_or("second batch")?;
     assert_eq!(task.checked, 256);
     assert!((255..=256).contains(&task.removed));
     assert_eq!(task.clock.started(), started);
-    assert_eq!(task.deadline, deadline);
+    assert_eq!(task.admission_deadline, deadline);
     assert_eq!(
         tidy(&mut service, clock(200)?, "", &admin, "build", None).status,
         200
@@ -665,7 +665,7 @@ fn native_approle_tidy_real_two_batch_cleanup_keeps_original_clock_and_busy_guar
     assert_eq!(task.checked, 258);
     assert_eq!(task.removed, 257);
     assert_eq!(task.clock.started(), started);
-    assert_eq!(task.deadline, deadline);
+    assert_eq!(task.admission_deadline, deadline);
     drop(task);
     assert!(service.approle_tidy_jobs.is_empty());
     assert!(
@@ -688,7 +688,7 @@ fn native_approle_tidy_expired_original_native_producer_cannot_reset_clock_or_qu
     let (_, admin) = bootstrap(&mut service)?;
     mount(&mut service, clock(100)?, "", &admin, "build");
     let expired = issue(&mut service, clock(100)?, "", &admin, "build", 1)?;
-    let started = Instant::now() - TASK_BUDGET - Duration::from_secs(1);
+    let started = Instant::now() - ADMISSION_BUDGET - Duration::from_secs(1);
     let old = RequestClock::anchored(Duration::new(100, 1), started)?;
     let identity = service.current_state_identity().map_err(|_| "identity")?;
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
@@ -826,12 +826,12 @@ fn native_approle_tidy_original_http_deadline_expiry_does_not_cancel_accepted_ta
         .approle_tidy_jobs
         .front()
         .ok_or("actual accepted task")?;
-    let native_deadline = task.deadline;
-    assert!(native_deadline > original_http_deadline);
+    let native_admission_deadline = task.admission_deadline;
+    assert!(native_admission_deadline > original_http_deadline);
     std::thread::sleep(
         original_http_deadline.saturating_duration_since(Instant::now()) + Duration::from_millis(5),
     );
-    assert!(Instant::now() >= original_http_deadline && Instant::now() < native_deadline);
+    assert!(Instant::now() >= original_http_deadline && Instant::now() < native_admission_deadline);
     assert!(service.maintain_approle_tidies());
     assert!(service.approle_tidy_jobs.is_empty());
     assert_eq!(
@@ -900,5 +900,123 @@ fn native_approle_tidy_same_path_two_namespaces_have_distinct_cas_and_actual_cle
         200
     );
     assert!(service.approle_tidy_jobs.is_empty());
+    Ok(())
+}
+
+#[test]
+fn native_approle_tidy_actual_accepted_owner_survives_original_sixty_seconds_without_clock_rearm()
+-> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    mount(&mut service, clock(100)?, "", &admin, "build");
+    let expired = issue(&mut service, clock(100)?, "", &admin, "build", 1)?;
+    let active = issue(&mut service, clock(100)?, "", &admin, "build", 0)?;
+    assert_eq!(
+        tidy(&mut service, clock(200)?, "", &admin, "build", None).status,
+        202
+    );
+    let task = service
+        .approle_tidy_jobs
+        .front()
+        .ok_or("actual accepted task")?;
+    let original_started = task.clock.started();
+    let original_admission_deadline = task.admission_deadline;
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+
+    // Age the real accepted clock. No test clock, deadline field or task owner
+    // is rewritten to manufacture an old task.
+    std::thread::sleep(
+        original_admission_deadline.saturating_duration_since(Instant::now())
+            + Duration::from_millis(20),
+    );
+    assert!(Instant::now() >= original_admission_deadline);
+    assert_eq!(
+        tidy(&mut service, clock(270)?, "", &admin, "build", None).status,
+        200
+    );
+    assert_eq!(service.approle_tidy_jobs.len(), 1);
+    let same = service
+        .approle_tidy_jobs
+        .front()
+        .ok_or("same accepted task")?;
+    assert_eq!(same.clock.started(), original_started);
+    assert_eq!(same.admission_deadline, original_admission_deadline);
+    assert_eq!(same.checked, 0);
+    assert!(service.maintain_approle_tidies());
+    assert!(service.approle_tidy_jobs.is_empty());
+    assert!(service.current_state_identity().map_err(|_| "identity")? != identity);
+    assert!(service.durable.as_ref().ok_or("durable")?.generation() > generation);
+    assert_eq!(
+        lookup(&mut service, clock(270)?, "", &admin, "build", &expired),
+        404
+    );
+    assert_eq!(
+        lookup(&mut service, clock(270)?, "", &admin, "build", &active),
+        200
+    );
+    assert!(
+        service
+            .approle_tidy_slots
+            .values()
+            .all(|slot| slot.busy.upgrade().is_none())
+    );
+    Ok(())
+}
+
+#[test]
+fn native_approle_tidy_expired_attempt_scope_cannot_extend_wait_or_publish_and_drops_only_owned_task()
+-> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    mount(&mut service, clock(100)?, "", &admin, "build");
+    let expired = issue(&mut service, clock(100)?, "", &admin, "build", 1)?;
+    assert_eq!(
+        tidy(&mut service, clock(200)?, "", &admin, "build", None).status,
+        202
+    );
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let expired_attempt = Instant::now() - Duration::from_secs(1);
+    {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(expired_attempt);
+        assert_eq!(crate::request_deadline::current(), Some(expired_attempt));
+        assert!(service.maintain_approle_tidies());
+        assert_eq!(crate::request_deadline::current(), Some(expired_attempt));
+    }
+    assert!(service.approle_tidy_jobs.is_empty());
+    assert!(service.pending_approle_tidy.is_none());
+    assert!(
+        service
+            .approle_tidy_slots
+            .values()
+            .all(|slot| slot.busy.upgrade().is_none())
+    );
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        identity
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(
+        lookup(&mut service, clock(270)?, "", &admin, "build", &expired),
+        200
+    );
+    // The failed task was not re-armed. A distinct real foreground admission
+    // after the prepublication veto is still permitted by the released CAS.
+    assert_eq!(
+        tidy(&mut service, clock(270)?, "", &admin, "build", None).status,
+        202
+    );
+    assert!(service.maintain_approle_tidies());
+    assert!(service.approle_tidy_jobs.is_empty());
+    assert_eq!(
+        lookup(&mut service, clock(270)?, "", &admin, "build", &expired),
+        404
+    );
     Ok(())
 }

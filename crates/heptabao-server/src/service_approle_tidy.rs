@@ -11,7 +11,10 @@ use std::time::{Duration, Instant};
 const STARTED: &str = "Tidy operation successfully started. Any information from the operation will be printed to OpenBao's server logs.";
 const BUSY: &str = "Tidy operation already in progress.";
 const PERIOD: Duration = Duration::from_secs(60);
-const TASK_BUDGET: Duration = Duration::from_secs(60);
+// Admission rejects a stale native producer; it is not an accepted-task lifetime.
+const ADMISSION_BUDGET: Duration = Duration::from_secs(60);
+// One background operation keeps a fixed wait bound through all its HA/COW work.
+const WAIT_BUDGET: Duration = Duration::from_secs(60);
 const MAX_JOBS: usize = 128;
 
 fn unavailable() -> Response {
@@ -53,7 +56,7 @@ pub(in crate::service) struct Task {
     owner: AppRoleTidyOwner,
     _guard: BusyGuard,
     clock: RequestClock,
-    deadline: Instant,
+    admission_deadline: Instant,
     cluster: String,
     incarnation: Option<u64>,
     delivery: namespace_runtime::DeliveryBinding,
@@ -74,7 +77,7 @@ impl Task {
         owner: AppRoleTidyOwner,
         guard: BusyGuard,
         clock: RequestClock,
-        deadline: Instant,
+        admission_deadline: Instant,
     ) -> Result<Self, Response> {
         let state = service.state.as_ref().ok_or_else(unavailable)?;
         let role = if let Some(ha) = &service.ha {
@@ -101,35 +104,37 @@ impl Task {
             owner,
             _guard: guard,
             clock,
-            deadline,
+            admission_deadline,
             cursor: None,
             checked: 0,
             removed: 0,
         };
-        task.check(service)?;
+        task.check(service, admission_deadline)?;
         Ok(task)
     }
-    fn check_deadline(&self) -> Result<(), Response> {
+    fn check_wait(&self, wait_deadline: Instant) -> Result<(), Response> {
         self.clock.observed_at().map_err(|_| unavailable())?;
-        if Instant::now() >= self.deadline {
+        let wait_deadline = crate::request_deadline::current()
+            .map_or(wait_deadline, |outer| outer.min(wait_deadline));
+        if Instant::now() >= wait_deadline {
             return Err(unavailable());
         }
         Ok(())
     }
-    fn time(&self, auth: &AuthState) -> Result<Timestamp, Response> {
-        self.check_deadline()?;
+    fn time(&self, auth: &AuthState, wait_deadline: Instant) -> Result<Timestamp, Response> {
+        self.check_wait(wait_deadline)?;
         auth.token_api_observed_time(AuthorityTime::Precise(
             self.clock.observed_at().map_err(|_| unavailable())?,
         ))
         .exact()
         .ok_or_else(unavailable)
     }
-    fn check_role(&self, service: &Service) -> Result<(), Response> {
-        self.check_deadline()?;
+    fn check_role(&self, service: &Service, wait_deadline: Instant) -> Result<(), Response> {
+        self.check_wait(wait_deadline)?;
         match (&self.ha, &service.ha, self.role) {
             (None, None, None) => Ok(()),
             (Some(original), Some(current), Some(expected)) if Arc::ptr_eq(original, current) => {
-                let _scope = crate::request_deadline::RequestDeadlineScope::enter(self.deadline);
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(wait_deadline);
                 let node = current.lock_for_request().map_err(|_| unavailable())?;
                 let before = node.leader_status().map_err(|_| unavailable())?;
                 if !before.local_is_leader
@@ -152,8 +157,13 @@ impl Task {
             _ => Err(unavailable()),
         }
     }
-    fn check_state(&self, service: &Service, state: &State) -> Result<(), Response> {
-        self.check_deadline()?;
+    fn check_state(
+        &self,
+        service: &Service,
+        state: &State,
+        wait_deadline: Instant,
+    ) -> Result<(), Response> {
+        self.check_wait(wait_deadline)?;
         self.leases.validate()?;
         state.namespace_leases.validate()?;
         state.validate_namespace_deletion_state()?;
@@ -176,21 +186,30 @@ impl Task {
         }
         self.owner.check(&state.auth).map_err(auth_error)
     }
-    fn check(&self, service: &Service) -> Result<(), Response> {
-        self.check_role(service)?;
-        self.check_state(service, service.state.as_ref().ok_or_else(unavailable)?)
+    fn check(&self, service: &Service, wait_deadline: Instant) -> Result<(), Response> {
+        self.check_role(service, wait_deadline)?;
+        self.check_state(
+            service,
+            service.state.as_ref().ok_or_else(unavailable)?,
+            wait_deadline,
+        )
     }
     fn step(&mut self, service: &mut Service) -> Result<bool, Response> {
-        let _scope = crate::request_deadline::RequestDeadlineScope::enter(self.deadline);
+        // This original wait span belongs to one attempt. The accepted clock and
+        // private owner stay unchanged across all batches and cannot be re-armed.
+        let wait_deadline = Instant::now()
+            .checked_add(WAIT_BUDGET)
+            .ok_or_else(unavailable)?;
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(wait_deadline);
         // A synchronization cannot adopt a new leader, term, mount, clock or deadline.
-        self.check_role(service)?;
+        self.check_role(service, wait_deadline)?;
         if self.ha.is_some() {
             service.sync_from_ha_with_anchor(false)?;
         }
-        self.check(service)?;
+        self.check(service, wait_deadline)?;
         let current = service.state.as_ref().ok_or_else(unavailable)?;
         let expected = service.current_state_identity()?;
-        let at = self.time(&current.auth)?;
+        let at = self.time(&current.auth, wait_deadline)?;
         service
             .audit_event(
                 "approle-tidy-task-request",
@@ -209,8 +228,8 @@ impl Task {
             candidate.schema = candidate.writer_schema();
             candidate.validate_format()?;
             let plan = service.prepare_record_plan(&mut candidate)?;
-            self.check(service)?;
-            self.check_state(service, &candidate)?;
+            self.check(service, wait_deadline)?;
+            self.check_state(service, &candidate, wait_deadline)?;
             if service.current_state_identity()? != expected {
                 return Err(unavailable());
             }
@@ -219,7 +238,7 @@ impl Task {
                 plan,
                 self.role,
                 |live_auth| {
-                    self.check_deadline()?;
+                    self.check_wait(wait_deadline)?;
                     self.owner.check(live_auth).map_err(auth_error)?;
                     candidate.namespace_leases.validate()?;
                     candidate.validate_namespace_deletion_state()?;
@@ -230,14 +249,14 @@ impl Task {
                     {
                         return Err(unavailable());
                     }
-                    self.check_deadline()
+                    self.check_wait(wait_deadline)
                 },
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
             )?;
             // Cursor progress follows only this actual durable publication.
             service.state = Some(candidate);
-            self.check(service)?;
+            self.check(service, wait_deadline)?;
         }
         self.checked = self
             .checked
@@ -249,7 +268,10 @@ impl Task {
             .ok_or_else(unavailable)?;
         let complete = batch.cursor.is_none();
         self.cursor = batch.cursor;
-        let at = self.time(&service.state.as_ref().ok_or_else(unavailable)?.auth)?;
+        let at = self.time(
+            &service.state.as_ref().ok_or_else(unavailable)?.auth,
+            wait_deadline,
+        )?;
         if service
             .audit_event(
                 "approle-tidy-task-response",
@@ -263,7 +285,7 @@ impl Task {
             service.ha_activation = None;
             return Err(unavailable());
         }
-        self.check(service)?;
+        self.check(service, wait_deadline)?;
         Ok(complete)
     }
 }
@@ -335,7 +357,7 @@ impl Service {
                 let started = Instant::now();
                 let clock = RequestClock::anchored(at.duration_since_epoch(), started)
                     .map_err(|_| unavailable())?;
-                let task = Task::capture(self, owner, guard, clock, started + TASK_BUDGET)?;
+                let task = Task::capture(self, owner, guard, clock, started + ADMISSION_BUDGET)?;
                 (
                     Some(task),
                     Response {
@@ -406,7 +428,7 @@ impl Service {
                     accepted
                         .task
                         .as_ref()
-                        .map_or(Ok(()), |task| task.check(self))
+                        .map_or(Ok(()), |task| task.check(self, task.admission_deadline))
                 })
         };
         if let Err(error) = result {
@@ -521,7 +543,13 @@ impl Service {
             let Some(guard) = self.reserve_approle_tidy(&owner)? else {
                 continue;
             };
-            let task = Task::capture(self, owner, guard, clock, clock.started() + TASK_BUDGET)?;
+            let task = Task::capture(
+                self,
+                owner,
+                guard,
+                clock,
+                clock.started() + ADMISSION_BUDGET,
+            )?;
             self.approle_tidy_jobs.push_back(task);
             queued += 1;
         }
@@ -563,7 +591,7 @@ pub(crate) fn start_worker(service: &Arc<Mutex<Service>>) -> Result<Worker, Stri
                         && let Ok(clock) = RequestClock::anchored(wall, started)
                     {
                         let _scope = crate::request_deadline::RequestDeadlineScope::enter(
-                            started + TASK_BUDGET,
+                            started + ADMISSION_BUDGET,
                         );
                         if writer.queue_periodic_approle_tidies(clock).is_err() {
                             eprintln!("heptabao-approle-tidy: periodic admission stopped");
