@@ -2328,6 +2328,10 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
         .ok_or("actual original credential")?
         .clone();
     assert!(logical.phase == Phase::PendingRevoke && credential.phase == Phase::PendingRevoke);
+    let credential_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&credential, 4 * 1024 * 1024)
+            .map_err(|_| "original retained credential snapshot rejected")?,
+    );
     let sealed = owned_body(
         &mut f.service,
         "POST",
@@ -2340,12 +2344,21 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
     let closed = f.service.state.as_ref().ok_or("actual installed closed")?;
     assert!(closed.namespace_is_sealed(NS));
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
+    let retained = closed
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("actual global credential retained while namespace assets are closed")?;
     assert!(
-        closed
-            .auth
-            .sdk_credential_record(NS, &f.credential.id)
-            .is_none()
+        retained.phase == credential.phase
+            && retained.registration == credential.registration
+            && retained.issued == credential.issued
+            && retained.backend == credential.backend
     );
+    let retained_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&retained, 4 * 1024 * 1024)
+            .map_err(|_| "closed retained credential snapshot rejected")?,
+    );
+    assert!(&*retained_bytes == &*credential_bytes);
     assert!(closed.namespaces.deletions == jobs);
     let bytes = owner_store::serialize_owner(closed)?;
     for marker in [
@@ -2383,6 +2396,15 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
             .sdk_credential_record(NS, &credential.id)
             .is_some_and(|record| record.phase == Phase::PendingRevoke)
     );
+    let reopened_credential = state
+        .auth
+        .sdk_credential_record(NS, &credential.id)
+        .ok_or("actual reopened original retained credential")?;
+    let reopened_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&reopened_credential, 4 * 1024 * 1024)
+            .map_err(|_| "reopened retained credential snapshot rejected")?,
+    );
+    assert!(&*reopened_bytes == &*credential_bytes);
     state
         .validate_format()
         .map_err(|_| "reopened full typed graph")?;
@@ -2429,6 +2451,14 @@ fn namespace109_authenticated_independent_seal_preserves_two_original_descendant
         204
     );
     let original = f.service.state.as_ref().ok_or("actual two loaded owners")?;
+    let credential = original
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("actual original global credential before independent seal")?;
+    let credential_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&credential, 4 * 1024 * 1024)
+            .map_err(|_| "original retained credential snapshot rejected")?,
+    );
     let parent = original
         .namespaces
         .custody_owner(NS)
@@ -2466,12 +2496,21 @@ fn namespace109_authenticated_independent_seal_preserves_two_original_descendant
             && parent_closed.seal_frontier() == parent.seal_frontier() + 1
     );
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
+    let retained = closed
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("actual global credential retained while namespace assets are closed")?;
     assert!(
-        closed
-            .auth
-            .sdk_credential_record(NS, &f.credential.id)
-            .is_none()
+        retained.phase == credential.phase
+            && retained.registration == credential.registration
+            && retained.issued == credential.issued
+            && retained.backend == credential.backend
     );
+    let retained_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&retained, 4 * 1024 * 1024)
+            .map_err(|_| "closed retained credential snapshot rejected")?,
+    );
+    assert!(&*retained_bytes == &*credential_bytes);
     let Fixture {
         directory,
         service,
@@ -2524,6 +2563,21 @@ fn namespace109_authenticated_independent_seal_preserves_two_original_descendant
     );
     let actual = reopened.state.as_ref().ok_or("actual child unseal")?;
     assert_original_sdk_and_storage(actual, &logical, &credential)?;
+    let reopened_credential = actual
+        .auth
+        .sdk_credential_record(NS, &credential.id)
+        .ok_or("actual reopened original retained credential")?;
+    assert!(
+        reopened_credential.phase == credential.phase
+            && reopened_credential.registration == credential.registration
+            && reopened_credential.issued == credential.issued
+            && reopened_credential.backend == credential.backend
+    );
+    let reopened_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&reopened_credential, 4 * 1024 * 1024)
+            .map_err(|_| "reopened retained credential snapshot rejected")?,
+    );
+    assert!(&*reopened_bytes == &*credential_bytes);
     let read = reopened.begin_request_before(
         ServiceRequest {
             method: "GET",
@@ -2778,5 +2832,96 @@ fn namespace109_authenticated_seal_rejects_changed_ciphertext_and_resource_cells
         )?;
         assert!(!f.service.namespace_runtime.is_loaded(NS));
     }
+    Ok(())
+}
+
+#[test]
+fn namespace109_authenticated_seal_rejects_original_captured_deadline_after_proof() -> TestResult {
+    let (mut f, _) = fixture_with_owner(true)?;
+    begin(&mut f)?;
+    assert!(crate::request_deadline::current().is_none());
+    let original = f
+        .service
+        .state
+        .clone()
+        .ok_or("actual loaded original graph")?;
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "original identity")?;
+    let generation = f
+        .service
+        .durable
+        .as_ref()
+        .ok_or("actual durable")?
+        .generation();
+    let owner_bytes = owner_store::serialize_owner(&original)?;
+    let jobs = original.namespaces.deletions.clone();
+    assert!(!original.namespace_is_sealed(NS));
+    assert!(f.service.namespace_runtime.is_loaded(NS));
+    assert_original_sdk_and_storage(&original, &f.logical, &f.credential)?;
+
+    // Capture the real request deadline while it is still live. The same
+    // affine proof must retain it after the original thread-local scope ends.
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let proof = {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        assert_eq!(crate::request_deadline::current(), Some(deadline));
+        let proof = f
+            .service
+            .prepare_namespace_seal_publication(&original, NS)
+            .map_err(|_| "actual full proof captured under original live deadline")?;
+        proof
+            .check_original_custody()
+            .map_err(|_| "actual original proof is live")?;
+        proof
+    };
+    assert!(crate::request_deadline::current().is_none());
+    proof
+        .check_original_custody()
+        .map_err(|_| "same captured proof remains live after original scope ends")?;
+    assert!(Instant::now() < deadline);
+    // No new deadline scope is entered and neither clock nor proof is rearmed.
+    std::thread::sleep(
+        deadline.saturating_duration_since(Instant::now()) + Duration::from_millis(1),
+    );
+    assert!(Instant::now() >= deadline);
+    assert!(crate::request_deadline::current().is_none());
+    let expired = proof
+        .check_original_custody()
+        .err()
+        .ok_or("same captured proof must reject after original deadline")?;
+    assert_eq!(expired.status, 503);
+    let before_publish = std::cell::Cell::new(false);
+    let failure = f
+        .service
+        .commit_namespace_seal_publication(proof, |_, _| {
+            before_publish.set(true);
+            Ok(())
+        })
+        .err()
+        .ok_or("same original expired proof must not publish")?;
+    assert_eq!(failure.status, 503);
+    assert!(!before_publish.get());
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "unchanged identity")?
+            == identity
+    );
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let actual = f.service.state.as_ref().ok_or("unchanged original graph")?;
+    assert!(!actual.namespace_is_sealed(NS));
+    assert!(f.service.namespace_runtime.is_loaded(NS));
+    assert!(actual.namespaces.deletions == jobs);
+    let actual_bytes = owner_store::serialize_owner(actual)?;
+    assert!(&*actual_bytes == &*owner_bytes);
+    assert_original_sdk_and_storage(actual, &f.logical, &f.credential)?;
+    assert!(
+        f.service.pending_sdk_request.is_none() && f.service.pending_sdk_auth_request.is_none()
+    );
     Ok(())
 }
