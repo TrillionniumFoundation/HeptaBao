@@ -669,6 +669,11 @@ impl AuthState {
             let Some(next) = self.tokens.get(id) else {
                 continue;
             }; // Existing revoke can delete the token.
+            if old.raw_wrapped_reply_custody.is_none() && next.raw_wrapped_reply_custody.is_some() {
+                return Err(bad(
+                    "retained historical token cannot promote original reply custody",
+                ));
+            }
             if let Some(origin) = &old.raw_wrapped_reply_custody {
                 let next_origin = next
                     .raw_wrapped_reply_custody
@@ -695,6 +700,51 @@ impl AuthState {
 
 #[cfg(test)]
 impl AuthState {
+    /// Deliberate attack built from a real historical producer/consume and a
+    /// distinct newly issued private raw wrapper, never user Data flags.
+    pub(crate) fn raw110_promote_historical_countercandidate(
+        &self,
+        historical_bearer: &str,
+        raw_bearer: &str,
+        consumed: bool,
+    ) -> Result<Self, AuthError> {
+        let mut next = self.clone();
+        let source = self
+            .tokens
+            .get(&hash(raw_bearer))
+            .ok_or_else(|| bad("private raw source"))?;
+        let wrapping = source
+            .wrapping
+            .as_ref()
+            .ok_or_else(|| bad("private raw wrapping"))?;
+        if source.raw_wrapped_reply_custody.is_none() || wrapping.stored_reply.is_none() {
+            return Err(bad("actual private raw source missing"));
+        }
+        let target = next
+            .tokens
+            .get_mut(&hash(historical_bearer))
+            .ok_or_else(|| bad("historical target"))?;
+        if target.raw_wrapped_reply_custody.is_some()
+            || target.wrapping.is_some()
+            || target.uses_remaining != Some(0)
+        {
+            return Err(bad("actual historical consume required"));
+        }
+        target.wrapping = Some(wrapping.clone());
+        target.uses_remaining = Some(1);
+        target.raw_wrapped_reply_custody = Some(RawReplyTokenCustody::live(target)?);
+        if consumed {
+            target.wrapping = None;
+            target.uses_remaining = Some(0);
+            target
+                .raw_wrapped_reply_custody
+                .as_mut()
+                .ok_or_else(|| bad("custody"))?
+                .consume();
+        }
+        Ok(next)
+    }
+
     /// Hostile test-only candidate of an actual retained private token, no issuer.
     pub(crate) fn raw110_token_countercandidate(&self, case: usize) -> Result<Self, AuthError> {
         let mut next = self.clone();
@@ -1170,6 +1220,53 @@ mod tests {
         deleted.tokens.remove(&hash(&bearer));
         assert!(deleted.validate_raw_wrapped_reply_successor(&live).is_ok());
         assert!(deleted.raw_wrapped_reply_floor);
+        Ok(())
+    }
+
+    #[test]
+    fn raw110_actual_historical_consume_cannot_promote_retained_id_to_raw_live_or_consumed()
+    -> TestResult {
+        let (mut state, root) = AuthState::bootstrap(100)?;
+        let historical = wrapper_token(&state.wrap_response(
+            "",
+            "sys/wrapping/wrap",
+            60,
+            &json!({"data":{"legacy":true}}),
+            100,
+        )?)?;
+        let admin = state.authenticate(&root, 100)?;
+        let _ = state.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":historical}),
+            100,
+        )?;
+        let old = state.clone();
+        let target = &state.tokens[&hash(&historical)];
+        assert!(
+            target.wrapping.is_none()
+                && target.uses_remaining == Some(0)
+                && target.raw_wrapped_reply_custody.is_none()
+        );
+        let raw = issue(
+            &mut state,
+            &json!({"data":{"private_new":true}}),
+            [0x96; 16],
+        )?;
+        assert!(state.validate_raw_wrapped_reply_state().is_ok());
+        assert!(state.validate_raw_wrapped_reply_successor(&old).is_ok()); // Genuine new ID is admitted.
+        for consumed in [false, true] {
+            let candidate =
+                state.raw110_promote_historical_countercandidate(&historical, &raw, consumed)?;
+            assert!(candidate.validate_raw_wrapped_reply_state().is_ok());
+            assert!(
+                candidate
+                    .validate_raw_wrapped_reply_successor(&state)
+                    .is_err()
+            );
+        }
         Ok(())
     }
 

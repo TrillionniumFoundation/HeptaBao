@@ -248,3 +248,75 @@ fn raw110_actual_service_terminal_vetoes_current_publication_snapshot_and_cow() 
     );
     Ok(())
 }
+
+#[test]
+fn raw110_actual_service_historical_consume_promotion_vetoes_publication_snapshot_and_cow()
+-> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    // Actual direct Service producer has no ingress and retains historical None.
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        &admin,
+        json!({"legacy":true}),
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let issued = service.handle_request_at(request, 100);
+    assert_eq!(issued.status, 200);
+    let historical = issued.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("historical bearer")?
+        .to_owned();
+    let consumed = call(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &admin,
+        json!({"token":historical}),
+    );
+    assert_eq!(consumed.status, 200);
+    assert!(
+        consumed
+            .unwrapped_json
+            .as_ref()
+            .ok_or("historical origin")?
+            .raw_bytes(&consumed.body)?
+            .is_none()
+    );
+    let old = service.state.as_ref().ok_or("historical terminal")?.clone();
+    let raw = issue(&mut service, &admin, [0xe5; 16])?;
+    let current = service.state.as_ref().ok_or("actual new raw")?.clone();
+    assert!(current.validate_publication_schema(Some(&old)).is_ok());
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for consumed in [false, true] {
+        let mut candidate = current.clone();
+        candidate.auth = current
+            .auth
+            .raw110_promote_historical_countercandidate(&historical, &raw, consumed)?
+            .into();
+        assert!(candidate.validate_format().is_ok()); // Canonical current shape alone cannot establish history.
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&current))
+                .is_err()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&current, &candidate).is_err());
+        assert!(service.prepare_record_plan(&mut candidate).is_err());
+        let mut healthy = current.clone();
+        let plan = service.prepare_record_plan(&mut healthy)?;
+        assert!(service.commit_record_plan(&candidate, plan).is_err());
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    Ok(())
+}
