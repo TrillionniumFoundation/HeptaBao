@@ -30,6 +30,67 @@ class BaoError(Exception):
         super().__init__(code)
 
 
+
+@dataclass(frozen=True, repr=False)
+class _StatusLineDiagnostic:
+    shape: str
+    examined_characters: int
+    length_capped: bool
+    examined_ascii: bool
+    terminator: str
+
+
+_STATUS_LINE_SHAPES = frozenset(("empty", "stdlib_empty_sentinel", "non_http_prefix",
+                               "http_malformed_status", "http_status_out_of_range",
+                               "http_status_valid_but_rejected"))
+_STATUS_LINE_TERMINATORS = frozenset(("crlf", "lf", "none"))
+_STATUS_LINE_MAXIMUM = 65537
+
+
+def _status_line_diagnostic(error):
+    # Only this exact stdlib class has a known line field. Peer subclasses and
+    # arbitrary line values cannot invoke str/repr/properties during reporting.
+    if type(error) is not http.client.BadStatusLine:
+        return None
+    line = vars(error).get("line")
+    if type(line) is not str:
+        return None
+    capped = len(line) > _STATUS_LINE_MAXIMUM
+    examined = line[:_STATUS_LINE_MAXIMUM]
+    terminator = "crlf" if examined.endswith("\r\n") else "lf" if examined.endswith("\n") else "none"
+    if examined == "":
+        shape = "empty"
+    elif examined == "''":
+        # BadStatusLine.__init__ replaces an empty str with repr(empty_str).
+        # This is a constructor sentinel, not evidence of original wire bytes.
+        shape = "stdlib_empty_sentinel"
+    elif not examined.startswith("HTTP/"):
+        shape = "non_http_prefix"
+    else:
+        fields = examined.split(None, 2)
+        if len(fields) < 2 or len(fields[1]) != 3 or not fields[1].isascii() or not fields[1].isdigit():
+            shape = "http_malformed_status"
+        elif not 100 <= int(fields[1]) <= 999:
+            shape = "http_status_out_of_range"
+        else:
+            shape = "http_status_valid_but_rejected"
+    return _StatusLineDiagnostic(shape, len(examined), capped, examined.isascii(), terminator)
+
+
+def _project_status_line(diagnostic):
+    if (type(diagnostic) is not _StatusLineDiagnostic
+            or type(diagnostic.shape) is not str or diagnostic.shape not in _STATUS_LINE_SHAPES
+            or type(diagnostic.examined_characters) is not int
+            or not 0 <= diagnostic.examined_characters <= _STATUS_LINE_MAXIMUM
+            or type(diagnostic.length_capped) is not bool
+            or type(diagnostic.examined_ascii) is not bool
+            or type(diagnostic.terminator) is not str or diagnostic.terminator not in _STATUS_LINE_TERMINATORS):
+        return None
+    return {"shape": diagnostic.shape, "examined_characters": diagnostic.examined_characters,
+            "length_capped": diagnostic.length_capped, "examined_ascii": diagnostic.examined_ascii,
+            "terminator": diagnostic.terminator}
+
+
 @dataclass(frozen=True, repr=False)
 class _TransportDiagnostic:
     phase: str
@@ -37,6 +98,7 @@ class _TransportDiagnostic:
     errno: int | None = None
     reason_exception_class: str | None = None
     reason_errno: int | None = None
+    status_line: _StatusLineDiagnostic | None = None
 
 
 # Exact stdlib types only: subclass names and peer exception messages are not data.
@@ -73,17 +135,20 @@ def _transport_diagnostic(error, phase):
     name = _TRANSPORT_CLASSES.get(type(error), "other")
     number = _bounded_errno(getattr(error, "errno", None)) if type(error) in _TRANSPORT_CLASSES else None
     reason_name = reason_number = None
+    status_line = _status_line_diagnostic(error)
     if type(error) is urllib.error.URLError:
         reason = error.reason
         if isinstance(reason, BaseException):
             reason_name = _TRANSPORT_CLASSES.get(type(reason), "other")
+            if type(reason) is http.client.BadStatusLine:
+                status_line = _status_line_diagnostic(reason)
             if type(reason) in _TRANSPORT_CLASSES:
                 reason_number = _bounded_errno(getattr(reason, "errno", None))
-    return _TransportDiagnostic(phase, name, number, reason_name, reason_number)
+    return _TransportDiagnostic(phase, name, number, reason_name, reason_number, status_line)
 
 
 def transport_diagnostic(error):
-    """Project closed diagnostics; never read exception args, messages or URLs."""
+    """Project closed diagnostics; never expose exception text, lines or URLs."""
     diagnostic = error._diagnostic if type(error) is BaoError else _transport_diagnostic(error, "fixture_call")
     names = set(_TRANSPORT_CLASSES.values()) | {"other"}
     if (type(diagnostic) is not _TransportDiagnostic
@@ -99,6 +164,9 @@ def transport_diagnostic(error):
         number = _bounded_errno(diagnostic.reason_errno)
         if number is not None:
             result["reason_errno"] = number
+    status_line = _project_status_line(diagnostic.status_line)
+    if status_line is not None:
+        result["status_line"] = status_line
     return result
 
 

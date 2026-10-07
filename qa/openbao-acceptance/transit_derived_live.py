@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM, ChaCha20Poly1305
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from core_isolation import ScenarioFailure, main as compare
+from fixture_transport_case import begin_case, complete_case
 
 KINDS = ("aes128-gcm96", "aes256-gcm96", "chacha20-poly1305", "xchacha20-poly1305")
 MODES = (("ordinary", False, False), ("derived", True, False), ("convergent", True, True))
@@ -30,7 +31,9 @@ class Trace:
             raise ScenarioFailure(row["case"])
 
     def call(self, name, method, path, status, body=None):
+        begin_case(self.client, name)
         response = self.client.request(method, "/v1/" + path, body)
+        complete_case(self.client)
         row = {"case": "derived270." + name, "status": response.status, "passed": response.status == status}
         self.rows.append(row)
         if not row["passed"]:
@@ -78,13 +81,23 @@ def options(message, context=ABSENT, aad=ABSENT, **extra):
     return result
 
 
-def run_scenarios(client, rows=None):
+def _validate_selected_profile(selected_profile):
+    if selected_profile is not None and (
+            type(selected_profile) is not str or selected_profile not in
+            ("xchacha20-poly1305.ordinary", "xchacha20-poly1305.convergent")):
+        raise ValueError("unknown selected transport fixture profile")
+
+
+def run_scenarios(client, rows=None, *, selected_profile=None):
+    _validate_selected_profile(selected_profile)
     rows = [] if rows is None else rows
     t = Trace(client, rows)
     t.call("mount", "POST", "sys/mounts/derivedfixture", 204, {"type": "transit"})
     saved = []
     for kind in KINDS:
         for mode, derived, convergent in MODES:
+            if selected_profile is not None and kind + "." + mode != selected_profile:
+                continue
             name = kind + "-" + mode
             label = kind + "." + mode
             kp = "derivedfixture/keys/" + name
@@ -210,9 +223,12 @@ def run_scenarios(client, rows=None):
     return rows
 
 
-def run_after_restart(client, rows):
+def run_after_restart(client, rows, *, selected_profile=None):
+    _validate_selected_profile(selected_profile)
     saved = _CONTEXT.pop(id(rows), None)
-    if not saved or len(saved) != 12:
+    expected = 12 if selected_profile is None else 1
+    if (not saved or len(saved) != expected
+            or selected_profile is not None and saved[0][1] != selected_profile):
         raise ScenarioFailure("derived270.restart_context_missing")
     t = Trace(client, rows)
     for name, label, ctx, old, current, old_plain, current_plain, derived, convergent in saved:

@@ -210,10 +210,16 @@ class TransportDiagnosticTests(unittest.TestCase):
                 diagnostic = transport_diagnostic(caught.exception)
                 self.assertEqual(caught.exception.code, "transport_outcome_unknown")
                 self.assertEqual(str(caught.exception), "transport_outcome_unknown")
-                self.assertEqual(diagnostic, {
+                expected = {
                     "phase": "open_response" if stage == "open" else "read_response",
                     "exception_class": "http.client.BadStatusLine" if stage == "open" else "http.client.IncompleteRead",
-                })
+                }
+                if stage == "open":
+                    expected["status_line"] = {
+                        "shape": "non_http_prefix", "examined_characters": len(sentinel) + 2,
+                        "length_capped": False, "examined_ascii": True, "terminator": "crlf",
+                    }
+                self.assertEqual(diagnostic, expected)
                 self.assertNotIn(sentinel.decode(), json.dumps(diagnostic))
                 self.assertTrue(caught.exception.__suppress_context__)
                 self.assertEqual(opener.open.call_count, 1)
