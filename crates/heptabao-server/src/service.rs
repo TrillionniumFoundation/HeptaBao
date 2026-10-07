@@ -168,6 +168,8 @@ mod external_pki;
 pub(crate) fn public_origin_observation() -> Option<Duration> {
     external_pki::public_origin_observation()
 }
+#[path = "service_approle_tidy.rs"]
+mod approle_tidy;
 #[path = "service_external_transit.rs"]
 mod external_transit;
 #[path = "service_forward_delivery.rs"]
@@ -206,6 +208,7 @@ mod namespace_config;
 mod namespace_runtime;
 #[path = "service_namespaces.rs"]
 mod namespaces;
+pub(crate) use approle_tidy::start_worker as start_approle_tidy_worker;
 #[path = "service_native_remount.rs"]
 mod native_remount;
 pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
@@ -1224,6 +1227,9 @@ fn classify_request_effect(
     }
 }
 
+#[cfg(test)]
+type NativeRecordRoleHook = Box<dyn FnOnce(&HaProcess) + Send>;
+
 pub struct Service {
     openbao_wrapper_owner: Option<openbao_wrapper::ServiceWrapperOwner>,
     openbao_wrapper_generation: u64,
@@ -1275,6 +1281,12 @@ pub struct Service {
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_namespace_deletion: Option<namespace_deletion::AcceptedDelete>,
+    #[cfg(test)]
+    native_record_role_hook: Option<NativeRecordRoleHook>,
+    pending_approle_tidy: Option<approle_tidy::Accepted>,
+    approle_tidy_jobs: std::collections::VecDeque<approle_tidy::Task>,
+    approle_tidy_slots: BTreeMap<(String, String), approle_tidy::Slot>,
+    approle_tidy_periodic_cursor: Option<(String, String)>,
     pending_native_remount: Option<native_remount::AcceptedMove>,
     native_remount_jobs: std::collections::VecDeque<native_remount::Task>,
     native_remount_statuses: BTreeMap<String, native_remount::Status>,
@@ -1671,6 +1683,12 @@ impl Service {
             pending_forward_delivery: None,
             pending_help_authority: None,
             pending_namespace_deletion: None,
+            #[cfg(test)]
+            native_record_role_hook: None,
+            pending_approle_tidy: None,
+            approle_tidy_jobs: Default::default(),
+            approle_tidy_slots: BTreeMap::new(),
+            approle_tidy_periodic_cursor: None,
             pending_native_remount: None,
             native_remount_jobs: Default::default(),
             native_remount_statuses: BTreeMap::new(),
@@ -2387,6 +2405,7 @@ impl Service {
             || self.pending_forward_delivery.is_some()
             || self.pending_help_authority.is_some()
             || self.pending_namespace_deletion.is_some()
+            || self.pending_approle_tidy.is_some()
             || self.pending_native_remount.is_some()
             || self.pending_acme_authority.is_some()
             || self.pending_local_unseal_completion.is_some()
@@ -2650,6 +2669,7 @@ impl Service {
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
         let namespace_deletion = self.pending_namespace_deletion.take();
+        let approle_tidy = self.pending_approle_tidy.take();
         let native_remount = self.pending_native_remount.take();
         let acme_authority = self.pending_acme_authority.take();
         let local_unseal_completion = self.pending_local_unseal_completion.take();
@@ -2674,6 +2694,7 @@ impl Service {
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
             + usize::from(namespace_deletion.is_some())
+            + usize::from(approle_tidy.is_some())
             + usize::from(native_remount.is_some())
             + usize::from(acme_authority.is_some())
             + usize::from(local_unseal_completion.is_some())
@@ -2736,6 +2757,7 @@ impl Service {
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
         let namespace_deletion_expected = namespace_deletion.is_some();
+        let approle_tidy_expected = approle_tidy.is_some();
         let native_remount_expected = native_remount.is_some();
         let step_down_expected = self.expects_local_ha_step_down(path, &response);
         // Retain the exact moved capsule through terminal-floor publication and
@@ -2750,6 +2772,7 @@ impl Service {
         self.pending_token_api_authority = token_api_authority;
         self.pending_help_authority = help_authority;
         self.pending_namespace_deletion = namespace_deletion;
+        self.pending_approle_tidy = approle_tidy;
         self.pending_native_remount = native_remount;
         let acme_expected = acme_authority.is_some();
         self.pending_acme_authority = acme_authority;
@@ -2791,6 +2814,8 @@ impl Service {
         );
         let response =
             self.complete_native_remount_delivery(native_remount_expected, response, &fingerprint);
+        let response =
+            self.complete_approle_tidy_delivery(approle_tidy_expected, response, &fingerprint);
         let response = self.complete_pending_acme_delivery(acme_expected, response, &fingerprint);
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
@@ -3786,6 +3811,13 @@ impl Service {
                 body: Value::Null,
             };
         }
+        if admitted
+            .auth
+            .approle_tidy_route_mount(namespace, path)
+            .is_some()
+        {
+            return self.stage_approle_tidy(&admitted, principal.take(), &request);
+        }
         if let Some(response) = self.plugin_auth_login(&admitted, &request) {
             return response;
         }
@@ -4667,10 +4699,10 @@ impl Service {
             Err(error) => return Response::error(error.status, &error.message),
             Ok(None) => {}
         }
-        let Some(principal) = principal else {
-            return Response::error(403, "permission denied");
-        };
         if path == "sys/internal/specs/openapi" {
+            let Some(principal) = principal else {
+                return openapi::handle_anonymous(method, body);
+            };
             if let Err(error) = state
                 .auth
                 .authorize_request(principal, namespace, path, "read", now)
@@ -4685,6 +4717,9 @@ impl Service {
                 &state.engines.ui_secret_mounts(namespace),
             );
         }
+        let Some(principal) = principal else {
+            return Response::error(403, "permission denied");
+        };
         if path == "sys/leader" && method == "GET" {
             return Response::error(500, "leader route escaped service HA boundary");
         }

@@ -3,22 +3,33 @@ use super::{RequestClock, Service};
 use serde_json::{Value, json};
 
 #[test]
-fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
+fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (unseal, root_token) = bootstrap(&mut service)?;
 
+    let anonymous = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        "",
+        json!({}),
+    );
+    assert_eq!(anonymous.status, 200);
+    assert_eq!(anonymous.body["paths"], json!({}));
+    assert_eq!(anonymous.body["components"], json!({"schemas": {}}));
+    assert!(anonymous.body.get("security").is_none());
     assert_eq!(
         call(
             &mut service,
-            "GET",
+            "POST",
             "sys/internal/specs/openapi",
             "",
-            json!({})
+            json!({"generic_mount_paths":"true"})
         )
         .status,
-        403
+        400
     );
 
     let bounded = call(
@@ -33,7 +44,10 @@ fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
     assert_eq!(bounded.body["x-heptabao-bounded"], true);
     let paths = bounded.body["paths"].as_object().ok_or("missing paths")?;
     assert!(paths.contains_key("/sys/health"));
-    assert!(paths.contains_key("/sys/internal/specs/openapi"));
+    assert_eq!(
+        paths["/sys/internal/specs/openapi"]["x-vault-unauthenticated"],
+        true
+    );
     let remount_status = &paths["/sys/remount/status/{migration_id}"];
     assert!(remount_status.get("get").is_some());
     assert!(remount_status.get("x-vault-sudo").is_none());

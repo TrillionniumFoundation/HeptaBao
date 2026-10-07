@@ -58,7 +58,7 @@ const FIXED_ROUTES: &[Route] = &[
         methods: &["get"],
         description: "Current HA leader view.",
         sudo: false,
-        unauthenticated: false,
+        unauthenticated: true,
     },
     Route {
         path: "/sys/auth",
@@ -247,7 +247,7 @@ const FIXED_ROUTES: &[Route] = &[
         methods: &["get", "post"],
         description: "Generate the bounded OpenAPI document for implemented HeptaBao routes.",
         sudo: false,
-        unauthenticated: false,
+        unauthenticated: true,
     },
 ];
 
@@ -359,6 +359,73 @@ fn add_list_query(paths: &mut Map<String, Value>, path: &str, scan: bool, read: 
             parameters.push(parameter);
         }
         operation.insert("parameters".into(), Value::Array(parameters));
+    }
+}
+
+fn add_implemented_control_and_identity_routes(paths: &mut Map<String, Value>) {
+    // Canonical OAS methods from actual dispatch; no new execution authority.
+    for (path, methods) in [
+        ("/sys/capabilities", &["post"][..]),
+        ("/sys/capabilities-accessor", &["post"][..]),
+        ("/sys/namespaces", &["get"][..]),
+        (
+            "/sys/namespaces/{path}",
+            &["get", "post", "patch", "delete"][..],
+        ),
+        ("/sys/policy", &["get"][..]),
+        ("/sys/policy/{name}", &["get", "post", "delete"][..]),
+        ("/sys/wrapping/wrap", &["post"][..]),
+        ("/sys/wrapping/rewrap", &["post"][..]),
+        ("/sys/seal", &["post"][..]),
+        ("/sys/step-down", &["post"][..]),
+        ("/identity/entity/merge", &["post"][..]),
+        ("/identity/entity/name", &["get"][..]),
+        (
+            "/identity/entity/name/{name}",
+            &["get", "post", "delete"][..],
+        ),
+        ("/identity/entity-alias/id", &["get"][..]),
+        (
+            "/identity/entity-alias/id/{id}",
+            &["get", "post", "delete"][..],
+        ),
+        ("/identity/group/name", &["get"][..]),
+        (
+            "/identity/group/name/{name}",
+            &["get", "post", "delete"][..],
+        ),
+        ("/identity/group-alias", &["post"][..]),
+        ("/identity/group-alias/id", &["get"][..]),
+        (
+            "/identity/group-alias/id/{id}",
+            &["get", "post", "delete"][..],
+        ),
+        ("/identity/lookup/entity", &["post"][..]),
+        ("/identity/lookup/group", &["post"][..]),
+    ] {
+        add_route_parts(
+            paths,
+            path,
+            methods,
+            "Implemented control or identity operation.",
+            false,
+            false,
+        );
+    }
+    add_list_query(paths, "/identity/entity/name", false, false);
+    add_list_query(paths, "/identity/entity-alias/id", false, false);
+    add_list_query(paths, "/identity/group/name", false, false);
+    add_list_query(paths, "/identity/group-alias/id", false, false);
+    add_list_query(paths, "/sys/policy", false, true);
+    if let Some(item) = paths
+        .get_mut("/sys/namespaces")
+        .and_then(Value::as_object_mut)
+        && let Some(get) = item.get_mut("get").and_then(Value::as_object_mut)
+    {
+        get.insert("parameters".into(), json!([
+            {"name":"list", "in":"query", "required":true, "description":"Must be set to `true` or else `scan` must be set to `true`", "schema":{"type":"string", "enum":["true"]}},
+            {"name":"scan", "in":"query", "required":true, "description":"Must be set to `true` or else `list` must be set to `true`", "schema":{"type":"string", "enum":["true"]}}
+        ]));
     }
 }
 
@@ -725,10 +792,39 @@ fn add_actual_mount_routes(
     }
 }
 
+pub(super) fn handle_anonymous(method: &str, body: &Value) -> Response {
+    handle_with_visibility(
+        method,
+        body,
+        false,
+        true,
+        &BTreeMap::new(),
+        &BTreeMap::new(),
+    )
+}
+
 pub(super) fn handle(
     method: &str,
     body: &Value,
     root_visibility: bool,
+    auth_mounts: &BTreeMap<String, Value>,
+    secret_mounts: &BTreeMap<String, Value>,
+) -> Response {
+    handle_with_visibility(
+        method,
+        body,
+        root_visibility,
+        false,
+        auth_mounts,
+        secret_mounts,
+    )
+}
+
+fn handle_with_visibility(
+    method: &str,
+    body: &Value,
+    root_visibility: bool,
+    anonymous_visibility: bool,
     auth_mounts: &BTreeMap<String, Value>,
     secret_mounts: &BTreeMap<String, Value>,
 ) -> Response {
@@ -748,6 +844,23 @@ pub(super) fn handle(
             return Response::error(400, "generic_mount_paths must be a boolean");
         }
     };
+
+    // An absent token does not grant mount listing or policy visibility. The
+    // native anonymous document contains no paths or schemas, including public
+    // routes; build that projection without reading either mount catalog.
+    if anonymous_visibility {
+        return Response::ok(json!({
+            "openapi": "3.0.2",
+            "info": {
+                "title": "HeptaBao API",
+                "description": "HTTP API for HeptaBao.",
+                "version": "0.1.0",
+                "license": {"name": "Apache License 2.0"}
+            },
+            "paths": {},
+            "components": {"schemas": {}}
+        }));
+    }
 
     let mut paths = Map::new();
     for route in FIXED_ROUTES {
@@ -782,6 +895,7 @@ pub(super) fn handle(
         }));
     }
 
+    add_implemented_control_and_identity_routes(&mut paths);
     add_token_routes(&mut paths);
     add_actual_mount_routes(&mut paths, generic, auth_mounts, secret_mounts);
 

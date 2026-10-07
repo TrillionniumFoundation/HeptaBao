@@ -501,6 +501,18 @@ fn serve_inner(
             return Err(error);
         }
     };
+    // AppRole's once-per-minute cleanup is independent of generic lifecycle settings.
+    let _approle_tidy = match crate::service::start_approle_tidy_worker(&service) {
+        Ok(worker) => worker,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+            }
+            return Err(error);
+        }
+    };
     let _lifecycle = match crate::service::start_lifecycle_worker(
         &service,
         Duration::from_secs(config.lifecycle_interval_seconds),
