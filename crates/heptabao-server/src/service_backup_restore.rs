@@ -335,6 +335,17 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        // Check the authenticated incoming label before any HA writer normalization.
+        // The permanent PKI fact remains after consumption and last-token retirement.
+        if (current.schema >= RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+            || current.auth.has_pki_raw_http_reply_state())
+            && incoming.schema < RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI raw HTTP reply custody",
+            ));
+        }
         if current.schema >= RAW_WRAPPED_REPLY_STATE_SCHEMA
             && incoming.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA
         {
