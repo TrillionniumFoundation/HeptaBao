@@ -76,6 +76,8 @@ pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_renewal.rs"]
 mod approle_renewal;
+#[path = "auth_approle_tidy.rs"]
+pub(crate) mod approle_tidy;
 #[path = "auth_capabilities.rs"]
 mod capabilities;
 #[path = "auth_cert_batch.rs"]
@@ -212,6 +214,9 @@ pub struct AuthState {
     /// RAM-only catalog history for non-recoverable accepted native move tasks.
     #[serde(skip)]
     native_remount_epochs: BTreeMap<(String, String), u64>,
+    /// Tidy backend incarnation excludes mutable tune/revision metadata.
+    #[serde(skip)]
+    approle_tidy_epochs: BTreeMap<(String, String), u64>,
     /// Any decode or reconstructed Auth owner invalidates earlier RAM tasks.
     #[serde(skip)]
     native_remount_control: std::sync::Arc<()>,
@@ -2414,6 +2419,7 @@ impl AuthState {
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
             native_remount_epochs: BTreeMap::new(),
+            approle_tidy_epochs: BTreeMap::new(),
             native_remount_control: std::sync::Arc::new(()),
             recovery_credential: None,
             recovery_attempt: None,
@@ -3477,6 +3483,7 @@ impl AuthState {
             ));
         }
         self.advance_native_remount_epochs(namespace, &[from, to])?;
+        self.advance_approle_tidy_epochs(namespace, &[from, to])?;
         entries.remove(from);
         moved.revision = next_auth_revision(moved.revision)?;
         let revision = moved.revision;
@@ -3932,6 +3939,9 @@ impl AuthState {
                     }
                 }
                 let mutated = existing.as_ref() != Some(&next);
+                if existing.is_none() {
+                    self.advance_approle_tidy_epochs(namespace, &[mount])?;
+                }
                 if mutated {
                     self.advance_native_remount_epochs(namespace, &[mount])?;
                 }
@@ -3959,6 +3969,7 @@ impl AuthState {
                     ));
                 }
                 self.advance_native_remount_epochs(namespace, &[mount])?;
+                self.advance_approle_tidy_epochs(namespace, &[mount])?;
                 entries.remove(mount);
                 self.auth_mounts.insert(namespace.into(), entries);
                 self.disable_auth_mount(AuthScope { namespace, mount });
@@ -6371,31 +6382,12 @@ impl AuthState {
         }
         reject_unknown(body, &[])?;
         self.permission(principal, scope.namespace, path, "update", now)?;
-        let mut removed = 0;
-        for role in self.roles_at_mut(scope).values_mut() {
-            let stale: Vec<String> = role
-                .secret_ids
-                .iter()
-                .filter(|(_, secret)| {
-                    secret.uses_remaining == Some(0)
-                        || secret.expires_at.is_some_and(|expiry| expiry <= now)
-                })
-                .map(|(id, _)| id.clone())
-                .collect();
-            for mut id in stale {
-                if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
-                    stored_id.zeroize();
-                    removed += 1;
-                }
-                id.zeroize();
-            }
-        }
         Ok(AuthResponse {
             status: 202,
             body: json!({
                 "warnings": ["Tidy operation successfully started. Any information from the operation will be printed to OpenBao's server logs."]
             }),
-            ..empty(removed > 0)
+            ..empty(false)
         })
     }
 

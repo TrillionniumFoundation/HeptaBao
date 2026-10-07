@@ -499,6 +499,7 @@ impl Service {
             state,
             plan,
             None::<fn(&AuthState) -> Result<(), Response>>,
+            None,
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             None,
         )
@@ -516,6 +517,26 @@ impl Service {
             state,
             plan,
             Some(before_publish),
+            None,
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            restore_fault,
+        )
+    }
+
+    pub(super) fn commit_record_plan_with_native_role(
+        &mut self,
+        state: &State,
+        plan: RecordPlan,
+        native_role: Option<(u64, u64)>,
+        before_publish: impl FnOnce(&AuthState) -> Result<(), Response>,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
+    ) -> Result<(), Response> {
+        self.commit_record_plan_checked(
+            state,
+            plan,
+            Some(before_publish),
+            native_role,
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             restore_fault,
         )
@@ -526,9 +547,19 @@ impl Service {
         state: &State,
         plan: RecordPlan,
         before_publish: Option<impl FnOnce(&AuthState) -> Result<(), Response>>,
+        native_role: Option<(u64, u64)>,
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         mut restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
+        #[cfg(test)]
+        let mut native_role_hook = if native_role.is_some() {
+            self.native_record_role_hook.take()
+        } else {
+            None
+        };
+        if native_role.is_some() && self.ha.is_none() {
+            return Err(unavailable_at("native_record_role_missing"));
+        }
         plan.namespace_leases.validate()?;
         state.namespace_leases.validate()?;
         state.validate_publication_schema(self.state.as_ref())?;
@@ -609,6 +640,21 @@ impl Service {
             let process = ha
                 .lock_for_request()
                 .map_err(|_| unavailable_at("record_r25_line_572"))?;
+            let check_native_role = || -> Result<(), Response> {
+                if let Some(expected) = native_role {
+                    let role = process
+                        .leader_status()
+                        .map_err(|_| unavailable_at("native_record_role_unavailable"))?;
+                    if !role.local_is_leader
+                        || role.leader != Some(role.local_id)
+                        || (role.local_id, role.term) != expected
+                    {
+                        return Err(unavailable_at("native_record_original_role_changed"));
+                    }
+                }
+                Ok(())
+            };
+            check_native_role()?;
             if activation.is_some() {
                 process
                     .preflight_record_replacement(&operation, &base, &plan.bytes, &plan.objects)
@@ -636,10 +682,18 @@ impl Service {
                     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                     restore_fault.as_mut(),
                     || {
-                        before_publish(live_auth).map_err(|response| {
-                            authority_rejection = Some(response);
-                            "record publication authority rejected before Publish".to_owned()
-                        })
+                        #[cfg(test)]
+                        if let Some(hook) = native_role_hook.take() {
+                            hook(&process);
+                        }
+                        // Under the actual HA lock, after all Stage/root work and
+                        // immediately before Publish, retain the captured native term.
+                        check_native_role()
+                            .and_then(|()| before_publish(live_auth))
+                            .map_err(|response| {
+                                authority_rejection = Some(response);
+                                "record publication authority rejected before Publish".to_owned()
+                            })
                     },
                 )
             } else {

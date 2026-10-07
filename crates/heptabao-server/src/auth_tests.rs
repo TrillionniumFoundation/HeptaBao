@@ -2190,7 +2190,21 @@ fn administrative_tidy_frees_only_inactive_credentials_in_its_namespace() {
         111,
     );
     assert_eq!(result.status, 202);
-    assert!(result.mutated);
+    assert!(!result.mutated);
+    assert!(
+        state.roles["team"]["hepta"]
+            .secret_ids
+            .contains_key(&hash(&expired_secret))
+    );
+    let owner = state
+        .approle_tidy_owner("team", "approle")
+        .unwrap()
+        .unwrap();
+    let batch = state
+        .native_approle_tidy_batch(&owner, None, Timestamp::whole(111).unwrap())
+        .unwrap();
+    assert_eq!(batch.removed, 1);
+    assert!(batch.changed && batch.cursor.is_none());
     assert!(result.body["data"].is_null());
     assert_eq!(
         result.body["warnings"],
@@ -2977,7 +2991,18 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
         101,
     );
     assert_eq!(tidied.status, 202);
-    assert!(tidied.mutated);
+    assert!(!tidied.mutated);
+    assert!(
+        !state.mounted_roles["team"]["build"]["service"]
+            .secret_ids
+            .is_empty()
+    );
+    let owner = state.approle_tidy_owner("team", "build").unwrap().unwrap();
+    let batch = state
+        .native_approle_tidy_batch(&owner, None, Timestamp::whole(101).unwrap())
+        .unwrap();
+    assert_eq!(batch.removed, 1);
+    assert!(batch.changed && batch.cursor.is_none());
     assert!(
         state.mounted_roles["team"]["build"]["service"]
             .secret_ids
