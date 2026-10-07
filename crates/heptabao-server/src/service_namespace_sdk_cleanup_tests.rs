@@ -731,3 +731,278 @@ fn namespace109_original_attempted_authority_rejects_real_handoff_before_setup()
     );
     Ok(())
 }
+
+fn terminal_fixture() -> TestResult<Fixture> {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let mut next = f.service.state.clone().ok_or("pending")?;
+    for key in keys(&next)? {
+        let job = next.namespace_sdk_cleanup_record(&key).map_err(|_| "job")?;
+        match job.kind() {
+            Kind::Logical => {
+                let mut lease = next
+                    .engines
+                    .sdk_lease(NS, job.lease_id())
+                    .ok_or("logical")?;
+                next.engines
+                    .sdk_storage_delete(NS, &lease.mount, &lease.backend, "record")?;
+                lease.revoke();
+                next.engines.store_sdk_lease(lease.clone())?;
+                next.finish_namespace_sdk_logical(&key, &lease)
+                    .map_err(|_| "logical terminal")?;
+            }
+            Kind::Credential => {
+                let mut lease = next
+                    .auth
+                    .sdk_credential_record(NS, job.lease_id())
+                    .ok_or("credential")?;
+                next.auth
+                    .sdk_auth_storage_delete(&lease.backend, "record")?;
+                lease.revoke();
+                next.auth.store_sdk_credential(lease.clone())?;
+                next.finish_namespace_sdk_credential(&key, &lease)
+                    .map_err(|_| "credential terminal")?;
+            }
+        }
+    }
+    publish(&mut f.service, next)?;
+    let original = clock()?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        original.started() + Duration::from_secs(15),
+    );
+    assert!(
+        f.service
+            .maintain_namespace_deletions(original)
+            .map_err(|_| "actual namespace terminal")?
+    );
+    Ok(f)
+}
+fn replace_both_ledgers(state: &mut State, value: Value) -> TestResult {
+    let ledger = serde_json::from_value::<crate::auth::namespace_deletion::Ledger>(value)?;
+    state
+        .auth
+        .namespace_deletion_fixture_replace(ledger.clone());
+    state.namespaces.deletions = Some(ledger);
+    Ok(())
+}
+#[test]
+fn namespace109_both_mirror_orphan_jobs_and_forged_empty_selection_reject_materialized_resources()
+-> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    let original = f.service.state.as_ref().ok_or("pending")?;
+    assert!(original.validate_format().is_ok());
+    let mut ledger = serde_json::to_value(original.namespaces.deletions.as_ref().ok_or("ledger")?)?;
+    ledger["sdk_cleanup"]["records"] = json!({});
+    let mut orphan = original.clone();
+    replace_both_ledgers(&mut orphan, ledger.clone())?;
+    assert!(orphan.validate_format().is_err());
+    assert!(Service::validate_snapshot_protected_floor(original, &orphan).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&orphan, original).is_err());
+    ledger["sdk_cleanup"]["source_selections"][NS]["members"] = json!({});
+    let mut forged_source = original.clone();
+    replace_both_ledgers(&mut forged_source, ledger)?;
+    assert!(
+        forged_source.validate_format().is_err(),
+        "actual Pending resources need exact jobs even with forged mirror agreement"
+    );
+    assert!(Service::validate_snapshot_protected_floor(original, &forged_source).is_err());
+    assert!(original.validate_format().is_ok());
+    Ok(())
+}
+#[test]
+fn namespace109_retired_logical_full_registration_is_not_a_live_lease_or_callback_owner()
+-> TestResult {
+    let mut f = terminal_fixture()?;
+    let state = f.service.state.as_ref().ok_or("terminal")?;
+    assert!(state.validate_format().is_ok());
+    let history = state
+        .engines
+        .sdk_logical_history_records()
+        .next()
+        .ok_or("actual history")?;
+    assert!(history.phase == Phase::Revoked);
+    assert!(history.registration == f.logical.registration);
+    assert!(history.issuer == f.logical.issuer);
+    assert_eq!(history.issued, f.logical.issued);
+    assert!(history.validate(NS).is_ok());
+    assert!(state.engines.sdk_lease(NS, &f.logical.id).is_none());
+    assert!(!state.engines.has_live_sdk_leases());
+    let late = Timestamp::from_wall(
+        SystemTime::now().duration_since(UNIX_EPOCH)? + Duration::from_secs(120),
+    )?;
+    assert!(
+        state
+            .engines
+            .sdk_cleanup_candidate(&state.auth, late, None)?
+            .is_none()
+    );
+    assert!(state.engines.sdk_mount_binding(NS, "logical/").is_none());
+    assert_eq!(
+        call(
+            &mut f.service,
+            "POST",
+            "sys/leases/lookup",
+            &f.token,
+            json!({"lease_id":f.logical.id})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut f.service,
+            "POST",
+            "sys/leases/renew",
+            &f.token,
+            json!({"lease_id":f.logical.id})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        native(&mut f.service, "POST", "sys/namespaces/retire", &f.token).status,
+        200
+    );
+    let recreated = f.service.state.as_ref().ok_or("recreated")?;
+    assert!(
+        recreated
+            .namespaces
+            .incarnation(NS)
+            .is_some_and(|inc| inc > 1)
+    );
+    assert!(recreated.engines.sdk_lease(NS, &f.logical.id).is_none());
+    assert!(
+        recreated
+            .engines
+            .sdk_logical_history_records()
+            .next()
+            .is_some()
+    );
+    assert!(recreated.validate_format().is_ok());
+    Ok(())
+}
+#[test]
+fn namespace109_complete_history_encrypted_reopen_keeps_original_provenance_and_retired_frontier()
+-> TestResult {
+    let f = terminal_fixture()?;
+    let before = f.service.state.as_ref().ok_or("terminal")?;
+    let history = Zeroizing::new(
+        crate::secret_serde::to_vec(
+            &before.engines.sdk_logical_history_projection()?,
+            512 * 1024,
+        )
+        .map_err(|_| "history")?,
+    );
+    let Fixture {
+        directory,
+        service,
+        key,
+        logical,
+        credential,
+        token: _,
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(state.validate_format().is_ok());
+    assert!(!state.namespace_exists(NS));
+    assert!(state.engines.sdk_lease(NS, &logical.id).is_none());
+    assert!(
+        state
+            .auth
+            .sdk_credential_record(NS, &credential.id)
+            .is_some_and(|record| record.phase == Phase::Revoked)
+    );
+    let actual = Zeroizing::new(
+        crate::secret_serde::to_vec(&state.engines.sdk_logical_history_projection()?, 512 * 1024)
+            .map_err(|_| "history")?,
+    );
+    assert_eq!(&*history, &*actual);
+    assert!(state.engines.sdk_logical_history_records().next().is_some());
+    Ok(())
+}
+#[test]
+fn namespace109_complete_history_full_record_mirror_and_sticky_owner_changes_reject() -> TestResult
+{
+    let f = terminal_fixture()?;
+    let state = f.service.state.as_ref().ok_or("terminal")?;
+    assert!(state.validate_format().is_ok());
+    assert!(
+        state
+            .engines
+            .owner_metadata_shared_with(&state.engines.clone())
+    );
+    let mut record_changed = state.clone();
+    record_changed.engines.sdk_history_fixture_damage();
+    assert!(
+        !record_changed
+            .engines
+            .owner_metadata_shared_with(&state.engines)
+    );
+    assert!(record_changed.validate_format().is_err());
+    assert!(
+        record_changed
+            .engines
+            .validate_sdk_lease_clock(Some(&state.engines))
+            .is_err()
+    );
+    let mut mirror_changed =
+        serde_json::to_value(state.namespaces.deletions.as_ref().ok_or("ledger")?)?;
+    let entries = mirror_changed["sdk_cleanup"]["logical_history"]["entries"]
+        .as_object_mut()
+        .ok_or("history entries")?;
+    let entry = entries.values_mut().next().ok_or("history entry")?;
+    entry["lease_digest"] = json!(vec![0u8; 32]);
+    let mut both_bad = state.clone();
+    replace_both_ledgers(&mut both_bad, mirror_changed)?;
+    assert!(both_bad.validate_format().is_err());
+    assert!(Service::validate_snapshot_protected_floor(state, &both_bad).is_err());
+    let mut stripped = serde_json::to_value(state.namespaces.deletions.as_ref().ok_or("ledger")?)?;
+    stripped["sdk_cleanup"]
+        .as_object_mut()
+        .ok_or("sdk registry")?
+        .remove("logical_history");
+    let mut no_history = state.clone();
+    replace_both_ledgers(&mut no_history, stripped)?;
+    assert!(no_history.validate_format().is_err());
+    assert!(Service::validate_snapshot_protected_floor(state, &no_history).is_err());
+    assert!(state.validate_format().is_ok());
+    Ok(())
+}
+#[test]
+fn namespace109_literal_r04_registry_declaration_rejects_refined_history_marker() -> TestResult {
+    // Supplemental strict declaration class only. Actual retained old R04 binary
+    // receiver/backup/encrypted-store tests remain a separate required scope.
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct R04Registry {
+        #[serde(default)]
+        records: std::collections::BTreeMap<String, Value>,
+    }
+    let old: R04Registry = serde_json::from_value(json!({"records":{}}))?;
+    assert!(old.records.is_empty());
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    let state = f.service.state.as_ref().ok_or("pending")?;
+    let registry = state
+        .namespaces
+        .deletions
+        .as_ref()
+        .ok_or("ledger")?
+        .sdk_cleanup()
+        .ok_or("registry")?;
+    let value = serde_json::to_value(registry)?;
+    let rejected = serde_json::from_value::<R04Registry>(value)
+        .err()
+        .ok_or("old declaration accepted new fields")?;
+    let public_class = rejected.to_string();
+    assert!(public_class.contains("unknown field"));
+    assert!(public_class.contains("logical_history") || public_class.contains("source_selections"));
+    Ok(())
+}

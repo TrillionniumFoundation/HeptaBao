@@ -329,6 +329,8 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        current.validate_namespace_deletion_state()?;
+        incoming.validate_namespace_deletion_state()?;
         if current.auth.has_sdk_auth_retirement_state()
             && incoming.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
         {

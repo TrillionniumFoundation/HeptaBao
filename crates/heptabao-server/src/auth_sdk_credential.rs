@@ -279,19 +279,21 @@ impl AuthState {
         };
         // Rotate discovery before preparation; no owned Plan is prepared and discarded.
         let eligible = |record: &Record| -> Result<bool, AuthError> {
-            Ok(!self.sdk_auth_retirement_claims_record(&record.namespace, &record.id)
-                && !self.namespace_is_tainted(&record.namespace)
-                && !self.namespace_sdk_cleanup_blocks(
-                    namespace_sdk_cleanup::Kind::Credential,
-                    &record.namespace,
-                    &record.id,
-                )
-                && record.phase != Phase::Revoked
-                && (record.phase == Phase::PendingRevoke
-                    || at >= record.expires
-                    || record
-                        .parent_cleanup_required(self, at)
-                        .map_err(|e| err(e.status, &e.message))?))
+            Ok(
+                !self.sdk_auth_retirement_claims_record(&record.namespace, &record.id)
+                    && !self.namespace_is_tainted(&record.namespace)
+                    && !self.namespace_sdk_cleanup_blocks(
+                        namespace_sdk_cleanup::Kind::Credential,
+                        &record.namespace,
+                        &record.id,
+                    )
+                    && record.phase != Phase::Revoked
+                    && (record.phase == Phase::PendingRevoke
+                        || at >= record.expires
+                        || record
+                            .parent_cleanup_required(self, at)
+                            .map_err(|e| err(e.status, &e.message))?),
+            )
         };
         for (id, record) in &registry.records {
             if after.is_none_or(|after| id.as_str() > after) && eligible(record)? {
@@ -310,6 +312,26 @@ impl AuthState {
 }
 
 impl AuthState {
+    pub(crate) fn namespace_sdk_saved_credential_records(
+        &self,
+        namespace: &str,
+    ) -> Result<Vec<Record>, AuthError> {
+        let records = self
+            .sdk_credential_leases
+            .as_ref()
+            .map_or_else(Vec::new, |registry| {
+                registry
+                    .records
+                    .values()
+                    .filter(|record| record.namespace == namespace)
+                    .cloned()
+                    .collect::<Vec<_>>()
+            });
+        for record in &records {
+            self.validate_sdk_credential_record(record)?;
+        }
+        Ok(records)
+    }
     pub(crate) fn namespace_sdk_deletion_records(
         &self,
         namespace: &str,

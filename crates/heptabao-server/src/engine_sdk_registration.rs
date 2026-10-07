@@ -164,6 +164,18 @@ impl Registration {
         }
         Ok(())
     }
+    pub(crate) fn validate_retired_namespace(&self, incarnation: u64) -> Result<()> {
+        if self.namespace_incarnation != Some(incarnation) {
+            return Err(error(
+                503,
+                "SDK logical history registration incarnation rejected",
+            ));
+        }
+        Ok(())
+    }
+    pub(crate) fn is_batch(&self) -> bool {
+        matches!(&self.parent, Parent::Batch { .. })
+    }
     pub(crate) fn batch_expiry(&self) -> Result<Option<Timestamp>> {
         let Parent::Batch { expiry, .. } = &self.parent else {
             return Ok(None);
@@ -351,7 +363,12 @@ impl Registration {
 }
 impl EngineState {
     pub(crate) fn has_sdk_batch_registration_state(&self) -> bool {
-        self.namespaces.values().any(|namespace| {
+        self.sdk_logical_history_records().any(|lease| {
+            lease
+                .registration
+                .as_ref()
+                .is_some_and(Registration::is_batch)
+        }) || self.namespaces.values().any(|namespace| {
             namespace.sdk_leases.values().any(|lease| {
                 lease.registration.as_ref().is_some_and(|registration| {
                     matches!(&registration.parent, Parent::Batch { .. })
@@ -360,12 +377,14 @@ impl EngineState {
         })
     }
     pub(crate) fn has_sdk_registration_state(&self) -> bool {
-        self.namespaces.values().any(|namespace| {
-            namespace
-                .sdk_leases
-                .values()
-                .any(|lease| lease.registration.is_some())
-        })
+        self.sdk_logical_history_records()
+            .any(|lease| lease.registration.is_some())
+            || self.namespaces.values().any(|namespace| {
+                namespace
+                    .sdk_leases
+                    .values()
+                    .any(|lease| lease.registration.is_some())
+            })
     }
     pub(crate) fn validate_sdk_registration_namespace(
         &self,
@@ -398,6 +417,7 @@ impl EngineState {
             }
         }
         if let Some(previous) = previous {
+            self.validate_sdk_logical_history_successor(previous)?;
             for (namespace, old_state) in &previous.namespaces {
                 for old in old_state.sdk_leases.values() {
                     if old.registration.is_none() {
@@ -418,6 +438,7 @@ impl EngineState {
                         .namespaces
                         .get(namespace)
                         .and_then(|state| state.sdk_leases.get(&old.id))
+                        .or_else(|| self.sdk_registered_history_successor(old))
                         .ok_or_else(|| error(503, "SDK registration provenance was removed"))?;
                     if current.registration != old.registration
                         || current.issuer != old.issuer

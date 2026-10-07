@@ -274,6 +274,11 @@ impl Record {
             && old.stage == Stage::Attempted
             && matches!(self.stage, Stage::Terminal { .. })
     }
+    fn selection_digest(&self) -> Result<[u8; 32], AuthError> {
+        let mut immutable = self.clone();
+        immutable.stage = Stage::Queued;
+        digest(&immutable)
+    }
     fn same_selected(&self, old: &Self) -> bool {
         self.deletion_owner == old.deletion_owner
             && self.resource == old.resource
@@ -359,11 +364,21 @@ impl Record {
         Ok(())
     }
 }
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Selection {
+    binding: Binding,
+    members: BTreeMap<String, [u8; 32]>,
+}
 #[derive(Clone, Default, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Registry {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     records: BTreeMap<String, Record>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    logical_history: Option<crate::engines::sdk_history::Mirror>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source_selections: Option<BTreeMap<String, Selection>>,
 }
 impl std::fmt::Debug for Registry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -371,6 +386,49 @@ impl std::fmt::Debug for Registry {
     }
 }
 impl Registry {
+    pub(crate) fn logical_history(&self) -> Option<&crate::engines::sdk_history::Mirror> {
+        self.logical_history.as_ref()
+    }
+    pub(crate) fn enable_refinement(
+        &mut self,
+        history: crate::engines::sdk_history::Mirror,
+    ) -> Result<(), AuthError> {
+        if let Some(old) = &self.logical_history {
+            history
+                .validate_successor(old)
+                .map_err(|e| err(e.status, &e.message))?;
+        }
+        self.logical_history = Some(history);
+        self.source_selections.get_or_insert_with(Default::default);
+        Ok(())
+    }
+    pub(crate) fn seal_selection(&mut self, binding: &Binding) -> Result<(), AuthError> {
+        let members = self
+            .records
+            .iter()
+            .filter(|(_, record)| record.binding() == binding)
+            .map(|(key, record)| Ok((key.clone(), record.selection_digest()?)))
+            .collect::<Result<BTreeMap<_, _>, AuthError>>()?;
+        let value = Selection {
+            binding: binding.clone(),
+            members,
+        };
+        let selections = self
+            .source_selections
+            .as_mut()
+            .ok_or_else(|| err(503, "namespace SDK source selection marker missing"))?;
+        if let Some(old) = selections.get(binding.namespace()) {
+            if old != &value {
+                return Err(err(
+                    503,
+                    "namespace SDK original selection cannot be replaced",
+                ));
+            }
+        } else {
+            selections.insert(binding.namespace().to_owned(), value);
+        }
+        Ok(())
+    }
     pub(crate) fn records(&self) -> &BTreeMap<String, Record> {
         &self.records
     }
@@ -459,6 +517,40 @@ impl Registry {
         if self.records.len() > MAX_WORK {
             return Err(err(503, "namespace SDK cleanup registry exceeds bounds"));
         }
+        match (&self.logical_history, &self.source_selections) {
+            (None, None) => {}
+            (Some(history), Some(selections)) => {
+                history
+                    .validate(cluster, pending, retired)
+                    .map_err(|e| err(e.status, &e.message))?;
+                if selections.len() > 4096 || selections.len() != pending.len() {
+                    return Err(err(
+                        503,
+                        "namespace SDK source selection lacks exact pending set",
+                    ));
+                }
+                for (path, binding) in pending {
+                    let selection = selections.get(path).ok_or_else(|| {
+                        err(503, "namespace SDK original source selection absent")
+                    })?;
+                    let actual = self
+                        .records
+                        .iter()
+                        .filter(|(_, record)| record.binding() == binding)
+                        .map(|(key, record)| Ok((key.clone(), record.selection_digest()?)))
+                        .collect::<Result<BTreeMap<_, _>, AuthError>>()?;
+                    if &selection.binding != binding || selection.members != actual {
+                        return Err(err(503, "namespace SDK original source membership changed"));
+                    }
+                }
+            }
+            _ => {
+                return Err(err(
+                    503,
+                    "namespace SDK refined history and selection markers disagree",
+                ));
+            }
+        }
         let mut count = BTreeMap::<&str, usize>::new();
         for (key, record) in &self.records {
             record.validate(cluster)?;
@@ -485,6 +577,40 @@ impl Registry {
         old: &Self,
         retired: &BTreeMap<String, u64>,
     ) -> Result<(), AuthError> {
+        match (&self.logical_history, &old.logical_history) {
+            (None, Some(_)) => {
+                return Err(err(503, "namespace SDK logical history marker disappeared"));
+            }
+            (Some(next), Some(previous)) => next
+                .validate_successor(previous)
+                .map_err(|e| err(e.status, &e.message))?,
+            _ => {}
+        }
+        match (&self.source_selections, &old.source_selections) {
+            (None, Some(_)) => {
+                return Err(err(
+                    503,
+                    "namespace SDK source selection marker disappeared",
+                ));
+            }
+            (Some(next), Some(previous)) => {
+                for (path, selection) in previous {
+                    match next.get(path) {
+                        Some(current) if current == selection => {}
+                        None if retired
+                            .get(path)
+                            .is_some_and(|inc| *inc >= selection.binding.incarnation()) => {}
+                        _ => {
+                            return Err(err(
+                                503,
+                                "namespace SDK original source selection disappeared",
+                            ));
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
         for (key, previous) in &old.records {
             match self.records.get(key) {
                 Some(next) => next.successor(previous)?,
@@ -509,6 +635,18 @@ impl Registry {
             return Err(err(503, "namespace SDK cleanup has unresolved attempts"));
         }
         self.records.retain(|_, record| record.binding() != binding);
+        if let Some(selections) = &mut self.source_selections {
+            if selections
+                .get(binding.namespace())
+                .is_some_and(|selection| selection.binding != *binding)
+            {
+                return Err(err(
+                    503,
+                    "namespace SDK source selection retirement owner changed",
+                ));
+            }
+            selections.remove(binding.namespace());
+        }
         Ok(())
     }
     pub(crate) fn owners(&self) -> Vec<(String, LeaseOwner)> {

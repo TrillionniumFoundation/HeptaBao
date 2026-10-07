@@ -40,6 +40,8 @@ pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
 pub(crate) mod namespace_assets;
 #[path = "engine_sdk.rs"]
 pub(crate) mod sdk;
+#[path = "engine_sdk_history.rs"]
+pub(crate) mod sdk_history;
 #[path = "engine_sdk_lease.rs"]
 pub(crate) mod sdk_lease;
 #[path = "engine_sdk_registration.rs"]
@@ -78,6 +80,8 @@ pub struct EngineState {
     kubernetes_artifact_clock: Option<crate::auth::Timestamp>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_lease_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_retired_logical: Option<CowValue<sdk_history::Registry>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pki_revocation_clock: Option<crate::auth::Timestamp>,
     namespaces: BTreeMap<String, CowNamespace>,

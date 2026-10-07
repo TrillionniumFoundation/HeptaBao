@@ -26,9 +26,33 @@ impl Ledger {
     pub(crate) fn sdk_cleanup(&self) -> Option<&namespace_sdk_cleanup::Registry> {
         self.sdk_cleanup.as_ref()
     }
-    pub(crate) fn ensure_sdk_cleanup(&mut self, cluster: &str) -> Result<(), AuthError> {
-        self.sdk_cleanup.get_or_insert_with(Default::default);
-        self.validate(cluster)
+    pub(crate) fn ensure_sdk_cleanup(
+        &mut self,
+        history: crate::engines::sdk_history::Mirror,
+        cluster: &str,
+    ) -> Result<(), AuthError> {
+        history
+            .validate(cluster, &self.pending, &self.retired)
+            .map_err(|e| err(e.status, &e.message))?;
+        // Private candidate construction; complete selection validation follows queueing.
+        self.sdk_cleanup
+            .get_or_insert_with(Default::default)
+            .enable_refinement(history)
+    }
+    pub(crate) fn seal_sdk_selection(&mut self, binding: &Binding) -> Result<(), AuthError> {
+        self.sdk_cleanup
+            .as_mut()
+            .ok_or_else(|| err(503, "namespace SDK source registry absent"))?
+            .seal_selection(binding)
+    }
+    pub(crate) fn update_sdk_history(
+        &mut self,
+        history: crate::engines::sdk_history::Mirror,
+    ) -> Result<(), AuthError> {
+        self.sdk_cleanup
+            .as_mut()
+            .ok_or_else(|| err(503, "namespace SDK history registry absent"))?
+            .enable_refinement(history)
     }
     pub(crate) fn queue_sdk_cleanup(
         &mut self,
@@ -45,7 +69,8 @@ impl Ledger {
             .sdk_cleanup
             .get_or_insert_with(Default::default)
             .queue(record)?;
-        self.validate(cluster)?;
+        // Full candidate validation occurs after its immutable source selection.
+        let _ = cluster;
         Ok(key)
     }
     pub(crate) fn attempt_sdk_cleanup(
@@ -134,8 +159,12 @@ impl Ledger {
                 "namespace deletion owner conflicts with lifecycle",
             ));
         }
+        binding
+            .validate_cluster_namespace(cluster, &path)
+            .map_err(|_| err(503, "namespace deletion original binding rejected"))?;
         self.pending.insert(path, binding);
-        self.validate(cluster)
+        // The sole Service caller atomically constructs its SDK selection next.
+        Ok(())
     }
     pub(crate) fn complete(&mut self, binding: &Binding, cluster: &str) -> Result<(), AuthError> {
         let path = binding.namespace();
@@ -196,6 +225,10 @@ impl Ledger {
 }
 
 impl AuthState {
+    #[cfg(test)]
+    pub(crate) fn namespace_deletion_fixture_replace(&mut self, ledger: Ledger) {
+        self.namespace_deletions = Some(ledger);
+    }
     pub(crate) fn namespace_deletion_ledger(&self) -> Option<&Ledger> {
         self.namespace_deletions.as_ref()
     }

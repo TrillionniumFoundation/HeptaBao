@@ -394,7 +394,13 @@ impl State {
             .auth
             .namespace_sdk_deletion_records(namespace)
             .map_err(auth_error)?;
-        if !logical.is_empty()
+        let refined = self
+            .namespaces
+            .deletions
+            .as_ref()
+            .is_some_and(|ledger| ledger.sdk_cleanup().is_some());
+        if refined
+            || !logical.is_empty()
             || !credential.is_empty()
             || !self
                 .engines
@@ -407,11 +413,17 @@ impl State {
                 .map_err(auth_error)?
                 .is_empty()
         {
+            self.engines.ensure_sdk_logical_history();
+            let history = self
+                .engines
+                .sdk_logical_history_projection()
+                .map_err(Response::from_engine_error)?
+                .ok_or_else(unavailable)?;
             self.namespaces
                 .deletions
                 .as_mut()
                 .ok_or_else(unavailable)?
-                .ensure_sdk_cleanup(&self.cluster_id)
+                .ensure_sdk_cleanup(history, &self.cluster_id)
                 .map_err(auth_error)?;
         }
         for mut lease in logical {
@@ -449,6 +461,11 @@ impl State {
                 .ok_or_else(unavailable)?
                 .queue_sdk_cleanup(job, &self.cluster_id)
                 .map_err(auth_error)?;
+        }
+        if let Some(ledger) = self.namespaces.deletions.as_mut() {
+            if ledger.sdk_cleanup().is_some() {
+                ledger.seal_sdk_selection(binding).map_err(auth_error)?;
+            }
         }
         self.sync_namespace_deletion_ledger()?;
         self.schema = self.writer_schema();
