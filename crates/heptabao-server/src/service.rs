@@ -210,6 +210,8 @@ mod native_remount;
 pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
 use namespaces::deletion as namespace_deletion;
 pub(crate) use native_remount::start_worker as start_native_remount_worker;
+#[path = "service_approle_lookup.rs"]
+mod approle_lookup;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_openbao_wrapper.rs"]
@@ -2282,6 +2284,10 @@ impl Service {
                 None
             }
         };
+        if let Err(cause) = self.check_pending_approle_lookup_before_audit() {
+            erase_json(&mut response.body);
+            response = cause;
+        }
         if self
             .audit_event("response", fingerprint, now, Some(response.status))
             .is_err()
@@ -3253,6 +3259,9 @@ impl Service {
             ..request
         };
 
+        if let Some(response) = self.immutable_approle_lookup_response(&request) {
+            return response;
+        }
         if let Some(response) = self.immutable_kv_response(&request) {
             self.kv_read_only_dispatches = self.kv_read_only_dispatches.saturating_add(1);
             return response;

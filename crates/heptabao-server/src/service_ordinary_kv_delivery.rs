@@ -1,5 +1,6 @@
-//! Limited ordinary KV delivery authority. Sensitive non-KV routes retain
-//! their separate completion contracts; this module does not qualify them.
+//! Ordinary KV and actual immutable AppRole read admissions share one affine
+//! Actor/Clock, mandatory audit, and final delivery contract. Other non-KV
+//! operations retain their separate completion contracts.
 use super::records::RecordPlan;
 use super::*;
 
@@ -40,6 +41,15 @@ pub(super) struct OrdinaryKvCommitNoticeCapture {
     notice: Option<IndeterminateCommitNotice>,
 }
 
+enum OrdinaryReadOwner {
+    Kv {
+        mount_path: String,
+        mount_incarnation: u64,
+        mount_revision: u64,
+    },
+    AppRole(Box<approle_lookup::AppRoleReadOwner>),
+}
+
 /// One original admission capability; neither this capsule nor Principal is
 /// cloned, serialized or reconstructed from a bearer after dispatch.
 pub(super) struct OrdinaryKvAuthority {
@@ -50,9 +60,7 @@ pub(super) struct OrdinaryKvAuthority {
     // membership. Historical native calls can own an uncataloged namespace,
     // but still bind its actual Auth/Engine and the exact None/Some incarnation.
     namespace_catalog_required: bool,
-    mount_path: String,
-    mount_incarnation: u64,
-    mount_revision: u64,
+    owner: OrdinaryReadOwner,
     cluster_id: String,
     activation_nonce: String,
     path: String,
@@ -91,14 +99,54 @@ impl OrdinaryKvAuthority {
             .engines
             .required_capability(request.namespace, method, request.path)
             .ok_or_else(|| Response::error(503, "ordinary KV capability is unavailable"))?;
+        Self::from_owner(
+            principal,
+            state,
+            request,
+            activation_nonce,
+            method,
+            capability,
+            OrdinaryReadOwner::Kv {
+                mount_path: mount_path.to_owned(),
+                mount_incarnation,
+                mount_revision,
+            },
+        )
+    }
+
+    pub(super) fn new_approle_lookup(
+        principal: Principal,
+        state: &State,
+        request: &RequestView<'_>,
+        activation_nonce: &str,
+        owner: approle_lookup::AppRoleReadOwner,
+    ) -> Result<Self, Response> {
+        Self::from_owner(
+            principal,
+            state,
+            request,
+            activation_nonce,
+            request.method,
+            "update",
+            OrdinaryReadOwner::AppRole(Box::new(owner)),
+        )
+    }
+
+    fn from_owner(
+        principal: Principal,
+        state: &State,
+        request: &RequestView<'_>,
+        activation_nonce: &str,
+        method: &str,
+        capability: &'static str,
+        owner: OrdinaryReadOwner,
+    ) -> Result<Self, Response> {
         let mut authority = Self {
             principal,
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
             namespace_catalog_required: request.enforce_namespace,
-            mount_path: mount_path.to_owned(),
-            mount_incarnation,
-            mount_revision,
+            owner,
             cluster_id: state.cluster_id.clone(),
             activation_nonce: activation_nonce.to_owned(),
             path: request.path.to_owned(),
@@ -116,6 +164,16 @@ impl OrdinaryKvAuthority {
         };
         authority.check(state, &state.auth, activation_nonce)?;
         Ok(authority)
+    }
+
+    pub(super) fn is_approle_lookup(&self) -> bool {
+        matches!(&self.owner, OrdinaryReadOwner::AppRole(_))
+    }
+    pub(super) fn check_private_read_owner(&self, service: &Service) -> Result<(), Response> {
+        match &self.owner {
+            OrdinaryReadOwner::Kv { .. } => Ok(()),
+            OrdinaryReadOwner::AppRole(owner) => owner.check(service),
+        }
     }
 
     pub(super) fn bind_legacy_replica(&mut self, replica: legacy_immutable_kv::LegacyReplicaRead) {
@@ -187,14 +245,19 @@ impl OrdinaryKvAuthority {
             || state.namespace_is_sealed(&self.namespace)
             || state.namespace_is_tainted(&self.namespace)
             || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
-            || state
-                .engines
-                .ordinary_kv_mount_binding(&self.namespace, &self.path)
-                != Some((
-                    self.mount_path.as_str(),
-                    self.mount_incarnation,
-                    self.mount_revision,
-                ))
+            || match &self.owner {
+                OrdinaryReadOwner::Kv {
+                    mount_path,
+                    mount_incarnation,
+                    mount_revision,
+                } => {
+                    state
+                        .engines
+                        .ordinary_kv_mount_binding(&self.namespace, &self.path)
+                        != Some((mount_path.as_str(), *mount_incarnation, *mount_revision))
+                }
+                OrdinaryReadOwner::AppRole(owner) => owner.check_mount(auth).is_err(),
+            }
         {
             return Err(Response::error(
                 503,
@@ -405,6 +468,7 @@ impl Service {
             if authority.deadline_expired() || self.recovery_required || self.state.is_none() {
                 return Err(Response::error(503, "ordinary KV delivery is fenced"));
             }
+            authority.check_private_read_owner(self)?;
             // Install actual HA state, including revocations or namespace/mount
             // retirement committed while audit or publication was blocking.
             if self.ha.is_some() && self.sync_from_ha_with_anchor(false).is_err() {
@@ -418,6 +482,15 @@ impl Service {
             }
             if let Some(replica) = authority.legacy_replica.as_ref() {
                 replica.check(self)?;
+            }
+            authority.check_private_read_owner(self)?;
+            if authority.is_approle_lookup()
+                && authority.audited_fingerprint.as_deref() != Some(fingerprint)
+            {
+                return Err(Response::error(
+                    503,
+                    "AppRole immutable read was not audited",
+                ));
             }
             // All quorum/durable work precedes this final observation of the
             // original affine Actor/Clock and current ACL/namespace/mount owner.

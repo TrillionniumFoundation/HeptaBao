@@ -12,6 +12,58 @@ struct LocalReadIdentity {
     activation_nonce: String,
 }
 
+/// One actually authenticated record-backed local publication. Neither callers
+/// nor wire fields can construct or deserialize this private read identity.
+pub(super) struct RecordReadIdentity {
+    local: LocalReadIdentity,
+}
+impl RecordReadIdentity {
+    pub(super) fn capture(service: &Service) -> Result<Self, Response> {
+        let local = service
+            .local_ha_read_identity()
+            .filter(|value| value.records_v5)
+            .ok_or_else(|| Response::error(503, "AppRole read identity is unavailable"))?;
+        let proof = Self { local };
+        proof.check(service)?;
+        Ok(proof)
+    }
+    pub(super) fn check(&self, service: &Service) -> Result<(), Response> {
+        if service.local_ha_read_identity().as_ref() != Some(&self.local) {
+            return Err(Response::error(503, "AppRole read identity changed"));
+        }
+        let state = service
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "AppRole read state is unavailable"))?;
+        let durable = service
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "AppRole read storage is unavailable"))?;
+        let published = durable
+            .get("system", "state")
+            .map_err(|_| Response::error(503, "AppRole read publication is unavailable"))?
+            .ok_or_else(|| Response::error(503, "AppRole read publication is absent"))?;
+        let root = RecordStateRoot::decode(published.expose())
+            .map_err(|_| Response::error(503, "AppRole read publication is invalid"))?;
+        if root
+            .identity()
+            .map_err(|_| Response::error(503, "AppRole read identity is invalid"))?
+            != StateIdentity::RecordsV5(self.local.digest)
+            || root.state_schema != state.schema
+            || root.cluster_id != state.cluster_id
+            || root.replay_epoch != self.local.replay_epoch
+            || service
+                .record_root
+                .as_ref()
+                .and_then(|value| value.identity().ok())
+                != Some(StateIdentity::RecordsV5(self.local.digest))
+        {
+            return Err(Response::error(503, "AppRole read publication changed"));
+        }
+        Ok(())
+    }
+}
+
 pub(super) struct HaReadCache {
     cursor: ValidatedReadCursor,
     local: LocalReadIdentity,

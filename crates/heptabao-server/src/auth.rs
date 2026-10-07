@@ -74,6 +74,8 @@ mod acl_wrapping;
 mod default_policy;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
+#[path = "auth_approle_lookup.rs"]
+pub(crate) mod approle_lookup;
 #[path = "auth_approle_renewal.rs"]
 mod approle_renewal;
 #[path = "auth_approle_tidy.rs"]
@@ -8061,6 +8063,11 @@ impl AuthState {
         if !valid_name(name) {
             return Err(bad("invalid role name"));
         }
+        if capability == "update"
+            && matches!(operation, "secret-id/lookup" | "secret-id-accessor/lookup")
+        {
+            return self.approle_secret_lookup_response(scope, name, operation, body);
+        }
         let existing = self
             .roles_at(scope)
             .and_then(|roles| roles.get(name))
@@ -8303,10 +8310,7 @@ impl AuthState {
                     true,
                 ))
             }
-            ("secret-id/lookup", "update")
-            | ("secret-id-accessor/lookup", "update")
-            | ("secret-id/destroy", "update")
-            | ("secret-id-accessor/destroy", "update") => {
+            ("secret-id/destroy", "update") | ("secret-id-accessor/destroy", "update") => {
                 let by_accessor = operation.starts_with("secret-id-accessor/");
                 reject_unknown(
                     body,
@@ -8328,31 +8332,13 @@ impl AuthState {
                         .map(|(id, _)| id.clone());
                     match found {
                         Some(id) => id,
-                        None if operation == "secret-id-accessor/lookup" => {
-                            return Ok(approle_renewal::missing_secret_id_accessor(wanted));
-                        }
                         None => return Err(err(404, "secret_id not found")),
                     }
                 } else {
                     hash(string_field(body, "secret_id")?)
                 };
-                let secret = match role.secret_ids.get(&id) {
-                    Some(secret) => secret,
-                    None if operation == "secret-id/lookup" => return Ok(empty(false)),
-                    None => return Err(err(404, "secret_id not found")),
-                };
-                if operation.ends_with("/lookup") {
-                    if secret.uses_remaining == Some(0) {
-                        return if by_accessor {
-                            Ok(approle_renewal::missing_secret_id_accessor(string_field(
-                                body,
-                                "secret_id_accessor",
-                            )?))
-                        } else {
-                            Ok(empty(false))
-                        };
-                    }
-                    return Ok(response(approle_renewal::secret_id_info(secret), false));
+                if !role.secret_ids.contains_key(&id) {
+                    return Err(err(404, "secret_id not found"));
                 }
                 if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
                     stored_id.zeroize();
