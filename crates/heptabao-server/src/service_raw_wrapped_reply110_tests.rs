@@ -1185,3 +1185,127 @@ fn raw112_actual_pki_q7_oldq6_refuses_before_token_consume_and_s5_raw_custody() 
     }
     Ok(())
 }
+
+#[test]
+fn raw112_actual_explicit_csr_is_400_without_engine_publication_and_keeps_pki_sticky() -> TestResult
+{
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    raw110_pki_install(&mut service, &admin, true)?;
+    let bearer = raw110_pki_issue(
+        &mut service,
+        &admin,
+        "GET",
+        "rawpki/ca",
+        json!({}),
+        [0xd1; 16],
+    )?;
+    let _consumed = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "rawpki/roles/raw110",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"ttl":"1h","max_ttl":"1h"})
+        )
+        .status,
+        200
+    );
+    let before = Zeroizing::new(serde_json::to_vec(
+        &service.state.as_ref().ok_or("state")?.engines,
+    )?);
+    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd2; 16]);
+    let mut request = ServiceRequest::new(
+        "POST",
+        "rawpki/sign/raw110",
+        "",
+        &admin,
+        json!({"csr":include_str!("../fixtures/raw112-actual-mac-explicit-p256.csr"),
+               "common_name":"raw110.example","ttl":"1h"}),
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let rejected = service.handle_request_at(request, 100);
+    assert_eq!(rejected.status, 400);
+    assert!(
+        rejected.body["errors"]
+            == json!(["certificate request could not be parsed: x509: invalid ECDSA parameters"]),
+        "fixed public CSR classification"
+    );
+    assert!(rejected.body.get("wrap_info").is_none());
+    let state = service.state.as_ref().ok_or("state")?;
+    let after = Zeroizing::new(serde_json::to_vec(&state.engines)?);
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "rejected CSR must not publish PKI state"
+    );
+    assert_eq!(state.schema, RAW_PKI_HTTP_REPLY_STATE_SCHEMA);
+    assert!(state.auth.has_pki_raw_http_reply_state());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":bearer.as_str()})
+        )
+        .status,
+        400
+    );
+    Ok(())
+}
+
+#[test]
+fn raw112_actual_shared_official_named_curve_csr_signs_its_public_key_and_verifies_issuer()
+-> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    raw110_pki_install(&mut service, &admin, true)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "rawpki/roles/raw110",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"ttl":"1h","max_ttl":"1h"})
+        )
+        .status,
+        200
+    );
+    let csr = include_str!("../fixtures/raw112-actual-official-named-p256.csr");
+    let request = openssl::x509::X509Req::from_pem(csr.as_bytes())?;
+    let subject = request.public_key()?;
+    assert!(request.verify(&subject)?);
+    let signed = call(
+        &mut service,
+        "POST",
+        "rawpki/sign/raw110",
+        &admin,
+        json!({"csr":csr,"common_name":"raw110.example","ttl":"1h"}),
+    );
+    assert_eq!(signed.status, 200);
+    assert!(signed.body["data"].get("private_key").is_none());
+    let certificate = openssl::x509::X509::from_pem(
+        signed.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual signed certificate")?
+            .as_bytes(),
+    )?;
+    assert!(certificate.public_key()?.public_key_to_der()? == subject.public_key_to_der()?);
+    let original = call(&mut service, "GET", "rawpki/ca", &admin, json!({}));
+    assert_eq!(original.status, 200);
+    let ca_der = base64::engine::general_purpose::STANDARD.decode(
+        original.body["__heptabao_pki_certificate"]
+            .as_str()
+            .ok_or("actual issuer DER")?,
+    )?;
+    let ca = openssl::x509::X509::from_der(&ca_der)?;
+    let issuer = ca.public_key()?;
+    assert!(certificate.verify(&issuer)?);
+    let mut tampered = certificate.to_der()?;
+    *tampered.last_mut().ok_or("actual certificate signature")? ^= 1;
+    assert!(!openssl::x509::X509::from_der(&tampered)?.verify(&issuer)?);
+    Ok(())
+}
