@@ -2770,6 +2770,11 @@ fn closed_auth_precise_missing_independent_parent_and_retired_binding_stay_close
         .status,
         200
     );
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut retirement_service,
+        "retired-precise",
+        Duration::new(100, 260_000_000),
+    )?;
     let state = retirement_service.state.as_ref().ok_or("retired state")?;
     assert!(!state.namespaces.contains("retired-precise"));
     let root_key = retirement_service

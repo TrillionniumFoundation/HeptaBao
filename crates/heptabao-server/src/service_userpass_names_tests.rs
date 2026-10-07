@@ -180,18 +180,68 @@ fn new_namespace_has_only_token_default_and_explicit_userpass_requires_owned_cle
     );
     assert_eq!(response.status, 200);
     assert_eq!(response.body["auth"]["metadata"]["username"], "mixed");
-    // Current local owner cleanup fence; this assertion is not a claim that
-    // OpenBao's asynchronous populated-namespace deletion is equivalent.
+    let issued = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("issued native userpass token")?
+        .to_owned();
+    let deleting = call(
+        &mut service,
+        "DELETE",
+        "sys/namespaces/team",
+        &admin,
+        json!({}),
+    );
+    assert_eq!(deleting.status, 200);
+    assert_eq!(deleting.body["data"]["status"], "in-progress");
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("tainted account namespace")?
+            .namespace_is_tainted("team")
+    );
+    assert_eq!(
+        service
+            .handle_at("GET", "sys/auth", "team", &admin, json!({}), 100)
+            .status,
+        404
+    );
+    assert!(matches!(
+        service
+            .handle_at(
+                "GET",
+                "auth/token/lookup-self",
+                "team",
+                &issued,
+                json!({}),
+                100
+            )
+            .status,
+        403 | 404
+    ));
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "team",
+        Duration::from_secs(100),
+    )?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retired account namespace")?
+            .auth
+            .namespace_is_empty("team")
+    );
     assert_eq!(
         call(
             &mut service,
-            "DELETE",
+            "GET",
             "sys/namespaces/team",
             &admin,
             json!({})
         )
         .status,
-        409
+        404
     );
     Ok(())
 }

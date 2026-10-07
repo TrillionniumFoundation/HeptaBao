@@ -254,6 +254,12 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
             .status,
         200
     );
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "closed catalog identity")?;
+    assert!(!service.namespace_runtime.is_loaded("sealed"));
+    // The first lifecycle adoption must open every actual catalog owner.
+    // This independent sibling has no captured key, so refusal precedes taint.
     assert_eq!(
         call(
             &mut service,
@@ -263,7 +269,37 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
             json!({})
         )
         .status,
-        409
+        503
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "rejected catalog identity")?,
+        before
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("rejected catalog state")?
+            .namespace_is_tainted("team")
+    );
+    assert_eq!(
+        service
+            .handle_at("GET", "secret/data/item", "team", &token, json!({}), 100)
+            .body["data"]["data"]["value"],
+        "secret"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/namespaces/sealed/seal-status",
+            &token,
+            json!({})
+        )
+        .body["data"]["sealed"],
+        true
     );
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(
@@ -1224,6 +1260,24 @@ fn local_kv_and_token_delete(independent: bool) -> Result<(), Box<dyn std::error
         service.namespace_runtime.is_loaded("local-delete"),
     );
     assert_eq!(deleted.body["data"]["status"], "in-progress");
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("tainted state")?
+            .namespace_is_tainted("local-delete")
+    );
+    if independent {
+        assert!(
+            stale.namespace_leases.validate().is_ok(),
+            "ACK retains the actual key until the native task retires its owner"
+        );
+    }
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "local-delete",
+        Duration::from_secs(100),
+    )?;
     if independent {
         assert!(
             stale.namespace_leases.validate().is_err(),
@@ -1580,6 +1634,11 @@ fn namespace_delete_does_not_resurrect_orphan_batch_after_path_recreation()
             .status,
             200
         );
+        crate::service::tests::finish_namespace_deletion_fixture(
+            &mut service,
+            "batch-retire",
+            Duration::from_secs(100),
+        )?;
         assert!(
             !service
                 .state

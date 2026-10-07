@@ -1355,6 +1355,11 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 200
     );
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "tenant",
+        Duration::from_secs(100),
+    )?;
     assert!(
         service
             .state
@@ -1389,18 +1394,26 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 200
     );
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "empty",
+        Duration::from_secs(100),
+    )?;
     let retired = service.state.clone().ok_or("state")?;
     assert!(!retired.engines.has_aad_bound_convergent_state());
     assert!(
-        retired.schema == NAMESPACE_BATCH_STATE_SCHEMA
-            && retired.writer_schema() == NAMESPACE_BATCH_STATE_SCHEMA
+        retired.schema == NAMESPACE_DELETION_STATE_SCHEMA
+            && retired.writer_schema() == NAMESPACE_DELETION_STATE_SCHEMA
             && retired.namespaces.has_custody_state()
             && retired.has_namespace_batch_state()
+            && retired.namespaces.deletions.is_some()
     );
     for schema in [
         AAD_BOUND_STATE_SCHEMA,
         NAMESPACE_CUSTODY_STATE_SCHEMA,
         NAMESPACE_BATCH_STATE_SCHEMA - 1,
+        NAMESPACE_BATCH_STATE_SCHEMA,
+        NAMESPACE_DELETION_STATE_SCHEMA - 1,
     ] {
         let mut custody_downgrade = retired.clone();
         custody_downgrade.schema = schema;
@@ -1439,7 +1452,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 204
     );
-    assert!(service.state.as_ref().ok_or("state")?.schema == NAMESPACE_BATCH_STATE_SCHEMA);
+    assert!(service.state.as_ref().ok_or("state")?.schema == NAMESPACE_DELETION_STATE_SCHEMA);
     drop(service);
     let mut reopened = fixture.service()?;
     assert!(
@@ -1454,7 +1467,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 200
     );
-    assert!(reopened.state.as_ref().ok_or("state")?.schema == NAMESPACE_BATCH_STATE_SCHEMA);
+    assert!(reopened.state.as_ref().ok_or("state")?.schema == NAMESPACE_DELETION_STATE_SCHEMA);
     Ok(())
 }
 

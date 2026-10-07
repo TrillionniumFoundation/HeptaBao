@@ -279,6 +279,11 @@ fn pristine_namespace_fence_retains_mount_identity_and_registry_ownership()
         200,
         "the actual local KV owner can retire through owned namespace cleanup"
     );
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "mounted",
+        Duration::from_secs(100),
+    )?;
     assert!(
         service
             .state
@@ -353,7 +358,20 @@ fn pristine_namespace_fence_retains_mount_identity_and_registry_ownership()
             json!({})
         )
         .status,
-        409
+        200
+    );
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        "ident",
+        Duration::from_secs(100),
+    )?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retired identity namespace")?
+            .auth
+            .namespace_is_empty("ident")
     );
     assert_eq!(service.handle_at("POST", "sys/external-keys/configs/remote", "registry", &token,
         json!({"plugin":"transit","address":"https://127.0.0.1:8200","token":"synthetic fixture","mount_path":"transit","verify":false}), 100).status, 204);

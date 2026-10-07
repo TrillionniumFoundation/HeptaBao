@@ -56,6 +56,67 @@ pub(super) fn commit_legacy_state_fixture(
     })
 }
 
+// Unit callers have no HTTP worker. Advance the actual native task once with
+// an explicit affine fixture clock; do not edit State, mint an actor, or retry
+// a failed cleanup effect. Empty namespace deletion may already be terminal.
+pub(super) fn finish_namespace_deletion_fixture(
+    service: &mut Service,
+    namespace: &str,
+    epoch: Duration,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let state = service.state.as_ref().ok_or("namespace cleanup state")?;
+    let binding = state
+        .namespaces
+        .deletions
+        .as_ref()
+        .and_then(|ledger| ledger.pending().get(namespace))
+        .cloned();
+    let Some(binding) = binding else {
+        assert!(!state.namespaces.contains(namespace));
+        assert!(!state.namespace_is_tainted(namespace));
+        return Ok(());
+    };
+    assert!(state.namespaces.contains(namespace));
+    assert!(state.namespace_is_tainted(namespace));
+    assert_eq!(
+        state
+            .namespaces
+            .deletions
+            .as_ref()
+            .and_then(|ledger| ledger.pending().keys().next())
+            .map(String::as_str),
+        Some(namespace),
+        "one original selected namespace task, without a retry loop"
+    );
+    let started = Instant::now();
+    let clock = RequestClock::anchored(epoch, started)?;
+    let _scope =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
+    assert!(
+        service
+            .maintain_namespace_deletions(clock)
+            .map_err(|_| "native namespace cleanup rejected")?,
+        "the real native task must publish terminal owner removal"
+    );
+    let state = service
+        .state
+        .as_ref()
+        .ok_or("namespace cleanup terminal state")?;
+    assert!(!state.namespaces.contains(namespace));
+    assert!(!state.namespace_is_tainted(namespace));
+    assert_eq!(
+        state
+            .namespaces
+            .deletions
+            .as_ref()
+            .and_then(|ledger| ledger.retired().get(namespace))
+            .copied(),
+        Some(binding.incarnation()),
+    );
+    assert!(!service.namespace_runtime.is_loaded(namespace));
+    Ok(())
+}
+
 // These callers intentionally manufacture authenticated malformed old graphs
 // for loader rejection tests. They never install the malformed RAM candidate.
 pub(super) fn prepare_rejected_legacy_graph_fixture(
