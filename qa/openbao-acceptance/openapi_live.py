@@ -202,8 +202,8 @@ def run(binary, output):
             check(
                 "candidate_generic_mount_paths_are_explicit",
                 candidate_generic.body.get("x-heptabao-generic-mount-paths") is True
-                and "/{kv_mount_path}/data/{path}" in generic_paths
-                and "/auth/{userpass_mount_path}/login/{username}" in generic_paths,
+                and "/{openapi_kv_mount_path}/data/{path}" in generic_paths
+                and "/auth/{openapi_userpass_mount_path}/login/{username}" in generic_paths,
             )
 
             invalid = Client(

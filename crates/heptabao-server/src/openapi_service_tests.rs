@@ -33,7 +33,7 @@ fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
     let paths = bounded.body["paths"].as_object().ok_or("missing paths")?;
     assert!(paths.contains_key("/sys/health"));
     assert!(paths.contains_key("/sys/internal/specs/openapi"));
-    assert!(paths.contains_key("/{kv_mount_path}/data/{path}"));
+    assert!(paths.contains_key("/{secret_mount_path}/data/{path}"));
     assert!(!paths.keys().any(|path| {
         path.contains("cert_mount_path")
             || path.contains("radius")

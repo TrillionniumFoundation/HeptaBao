@@ -209,7 +209,16 @@ fn pki_external_intermediate94_all_seven_keys_signed_chain_leaf_crl_restart_and_
             .status,
             200
         );
-        assert_eq!(reopened.state.as_ref().ok_or("restart")?.schema, 94);
+        let revoked_state = reopened.state.as_ref().ok_or("restart")?;
+        assert!(revoked_state.engines.has_ordinary_pki_revocation_state());
+        assert_eq!(revoked_state.schema, PKI_ORDINARY_REVOCATION_STATE_SCHEMA);
+        let mut below_revocation = revoked_state.clone();
+        below_revocation.schema = EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA;
+        assert!(below_revocation.validate_format().is_err());
+        assert_eq!(
+            below_revocation.writer_schema(),
+            PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        );
         let again = call(
             &mut reopened,
             "POST",
@@ -872,6 +881,7 @@ fn pki_external_signed_ca94_seven_parent_certificate_revoke_crl_rotation_restart
             200
         );
         assert_eq!(read_crl(&mut reopened)?.to_der()?, rotated_crl);
+        let before_retirement = remote.calls()?;
         let retired = call(
             &mut reopened,
             "DELETE",
@@ -880,9 +890,20 @@ fn pki_external_signed_ca94_seven_parent_certificate_revoke_crl_rotation_restart
             json!({}),
         );
         assert_eq!(
-            retired.status, 204,
+            retired.status, 200,
             "retirement errors={}",
             retired.body["errors"]
+        );
+        assert!(retired.body["data"].is_null());
+        assert_eq!(remote.calls()?, before_retirement);
+        assert_eq!(
+            retired.body["warnings"],
+            json!([
+                format!(
+                    "Deleted issuer {parent_id} (via issuer_ref {parent_id}); this was configured as the default issuer. Operations without an explicit issuer will not work until a new default is configured."
+                ),
+                "0 roles reference default"
+            ])
         );
         let defaults = call(
             &mut reopened,
@@ -1325,8 +1346,19 @@ fn pki_full_dn98_remote_import_leaf_full_delta_revoke_capture_and_restart() -> T
         );
         let retired = reopened.state.as_ref().ok_or("actual full-DN retirement")?;
         assert!(!retired.engines.has_full_dn_crl_state());
-        assert_eq!(retired.schema, 98);
-        assert_eq!(retired.writer_schema(), 98);
+        assert!(retired.engines.has_ordinary_pki_revocation_state());
+        assert_eq!(retired.schema, PKI_ORDINARY_REVOCATION_STATE_SCHEMA);
+        assert_eq!(
+            retired.writer_schema(),
+            PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        );
+        let mut below_revocation = retired.clone();
+        below_revocation.schema = EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA;
+        assert!(below_revocation.validate_format().is_err());
+        assert_eq!(
+            below_revocation.writer_schema(),
+            PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        );
         assert!(Service::validate_snapshot_protected_floor(retired, &predecessor).is_err());
     }
     Ok(())

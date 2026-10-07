@@ -300,13 +300,63 @@ fn add_route(paths: &mut Map<String, Value>, route: &Route) {
     );
 }
 
+fn openapi_mount_path(mount: &str, generic: bool, auth: bool) -> String {
+    let actual = mount.trim_end_matches('/');
+    if !generic {
+        return actual.to_owned();
+    }
+    let relative = if auth {
+        actual.strip_prefix("auth/").unwrap_or(actual)
+    } else {
+        actual
+    };
+    let name = relative.replace('-', "_");
+    let parameter = format!("{{{name}_mount_path}}");
+    if auth {
+        format!("auth/{parameter}")
+    } else {
+        parameter
+    }
+}
+
 fn add_mount_route(
     paths: &mut Map<String, Value>,
     path: String,
     methods: &[&str],
     description: &str,
+    mount: &str,
+    generic: bool,
+    auth: bool,
 ) {
     add_route_parts(paths, &path, methods, description, false, false);
+    if generic {
+        let actual = mount.trim_end_matches('/');
+        let relative = if auth {
+            actual.strip_prefix("auth/").unwrap_or(actual)
+        } else {
+            actual
+        };
+        let name = format!("{}_mount_path", relative.replace('-', "_"));
+        if let Some(item) = paths.get_mut(&path).and_then(Value::as_object_mut) {
+            let parameters = item
+                .entry("parameters")
+                .or_insert_with(|| Value::Array(Vec::new()));
+            if let Some(parameters) = parameters.as_array_mut() {
+                // Preserve backend path parameters and append the actual mount
+                // parameter, as OpenBao ca305 logical_system.go4408..4446 does.
+                parameters.retain(|parameter| {
+                    parameter.get("name").and_then(Value::as_str) != Some(name.as_str())
+                });
+                parameters.push(json!({
+                    "name": name,
+                    "description": "Path that the backend was mounted at",
+                    "in": "path",
+                    "schema": {"type": "string", "default": relative},
+                    "required": true
+                }));
+            }
+        }
+    }
 }
 
 fn add_actual_mount_routes(
@@ -319,23 +369,25 @@ fn add_actual_mount_routes(
         let kind = descriptor.get("type").and_then(Value::as_str);
         match kind {
             Some("kv") => {
-                let prefix = if generic {
-                    "{kv_mount_path}"
-                } else {
-                    mount.trim_end_matches('/')
-                };
+                let prefix = openapi_mount_path(mount, generic, false);
                 if descriptor["options"]["version"] == "2" {
                     add_mount_route(
                         paths,
                         format!("/{prefix}/data/{{path}}"),
                         &["get", "post", "delete"],
                         "Read, write or soft-delete a KV v2 value.",
+                        mount,
+                        generic,
+                        false,
                     );
                     add_mount_route(
                         paths,
                         format!("/{prefix}/metadata/{{path}}"),
                         &["get", "post", "delete"],
                         "Read, tune or destroy KV v2 metadata.",
+                        mount,
+                        generic,
+                        false,
                     );
                 } else {
                     add_mount_route(
@@ -343,15 +395,14 @@ fn add_actual_mount_routes(
                         format!("/{prefix}/{{path}}"),
                         &["get", "post", "put", "delete"],
                         "Read, write or delete a KV v1 value.",
+                        mount,
+                        generic,
+                        false,
                     );
                 }
             }
             Some("transit") => {
-                let prefix = if generic {
-                    "{transit_mount_path}"
-                } else {
-                    mount.trim_end_matches('/')
-                };
+                let prefix = openapi_mount_path(mount, generic, false);
                 for (suffix, methods, description) in [
                     (
                         "keys/{name}",
@@ -369,7 +420,15 @@ fn add_actual_mount_routes(
                         "Decrypt bounded Transit ciphertext.",
                     ),
                 ] {
-                    add_mount_route(paths, format!("/{prefix}/{suffix}"), methods, description);
+                    add_mount_route(
+                        paths,
+                        format!("/{prefix}/{suffix}"),
+                        methods,
+                        description,
+                        mount,
+                        generic,
+                        false,
+                    );
                 }
             }
             _ => {}
@@ -379,30 +438,28 @@ fn add_actual_mount_routes(
         let kind = descriptor.get("type").and_then(Value::as_str);
         match kind {
             Some("userpass") => {
-                let prefix = if generic {
-                    "auth/{userpass_mount_path}"
-                } else {
-                    mount.trim_end_matches('/')
-                };
+                let prefix = openapi_mount_path(mount, generic, true);
                 add_mount_route(
                     paths,
                     format!("/{prefix}/users/{{username}}"),
                     &["get", "post", "put", "delete"],
                     "Manage a userpass principal.",
+                    mount,
+                    generic,
+                    true,
                 );
                 add_mount_route(
                     paths,
                     format!("/{prefix}/login/{{username}}"),
                     &["post", "put"],
                     "Authenticate a userpass principal.",
+                    mount,
+                    generic,
+                    true,
                 );
             }
             Some("approle") => {
-                let prefix = if generic {
-                    "auth/{approle_mount_path}"
-                } else {
-                    mount.trim_end_matches('/')
-                };
+                let prefix = openapi_mount_path(mount, generic, true);
                 for (suffix, methods, description) in [
                     (
                         "role/{role_name}",
@@ -420,7 +477,15 @@ fn add_actual_mount_routes(
                         "Authenticate with AppRole credentials.",
                     ),
                 ] {
-                    add_mount_route(paths, format!("/{prefix}/{suffix}"), methods, description);
+                    add_mount_route(
+                        paths,
+                        format!("/{prefix}/{suffix}"),
+                        methods,
+                        description,
+                        mount,
+                        generic,
+                        true,
+                    );
                 }
             }
             _ => {}
@@ -543,7 +608,7 @@ mod tests {
             .as_object()
             .ok_or("missing OpenAPI paths")?;
         assert!(paths.contains_key("/sys/health"));
-        assert!(paths.contains_key("/{kv_mount_path}/data/{path}"));
+        assert!(paths.contains_key("/{secret_mount_path}/data/{path}"));
         assert!(paths.contains_key("/auth/{userpass_mount_path}/login/{username}"));
         assert!(paths.contains_key("/auth/{approle_mount_path}/role/{role_name}/custom-secret-id"));
         assert!(paths.contains_key("/sys/plugins/catalog/secret"));
@@ -555,6 +620,78 @@ mod tests {
                 || path.contains("rabbitmq")
                 || path.contains("openldap")
         }));
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_generic_mounts_preserve_distinct_actual_names_and_parameter_defaults()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let auth_mounts = BTreeMap::from([
+            ("auth/team-a/accounts/".into(), json!({"type":"userpass"})),
+            ("auth/team-b/accounts/".into(), json!({"type":"userpass"})),
+        ]);
+        let secret_mounts = BTreeMap::from([
+            (
+                "applications/config-v2/".into(),
+                json!({"type":"kv","options":{"version":"2"}}),
+            ),
+            (
+                "applications/plain-v1/".into(),
+                json!({"type":"kv","options":{"version":"1"}}),
+            ),
+        ]);
+        let document = super::handle(
+            "POST",
+            &json!({"generic_mount_paths":true}),
+            true,
+            &auth_mounts,
+            &secret_mounts,
+        );
+        assert_eq!(document.status, 200);
+        let paths = document.body["paths"].as_object().ok_or("missing paths")?;
+        for (path, name, actual) in [
+            (
+                "/auth/{team_a/accounts_mount_path}/login/{username}",
+                "team_a/accounts_mount_path",
+                "team-a/accounts",
+            ),
+            (
+                "/auth/{team_b/accounts_mount_path}/login/{username}",
+                "team_b/accounts_mount_path",
+                "team-b/accounts",
+            ),
+            (
+                "/{applications/config_v2_mount_path}/data/{path}",
+                "applications/config_v2_mount_path",
+                "applications/config-v2",
+            ),
+            (
+                "/{applications/plain_v1_mount_path}/{path}",
+                "applications/plain_v1_mount_path",
+                "applications/plain-v1",
+            ),
+        ] {
+            let route = paths.get(path).ok_or("mounted route omitted")?;
+            let parameters = route["parameters"].as_array().ok_or("missing parameters")?;
+            assert_eq!(parameters.len(), 2);
+            let backend_parameter = if path.ends_with("/{username}") {
+                "username"
+            } else {
+                "path"
+            };
+            assert_eq!(parameters[0]["name"], backend_parameter);
+            assert_eq!(parameters[0]["in"], "path");
+            assert_eq!(parameters[0]["required"], true);
+            assert_eq!(
+                parameters[1],
+                json!({
+                    "name":name, "description":"Path that the backend was mounted at",
+                    "in":"path", "schema":{"type":"string","default":actual}, "required":true
+                })
+            );
+        }
+        assert!(!paths.contains_key("/auth/{userpass_mount_path}/login/{username}"));
+        assert!(!paths.contains_key("/{kv_mount_path}/data/{path}"));
         Ok(())
     }
 

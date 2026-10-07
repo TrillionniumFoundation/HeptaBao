@@ -32,6 +32,8 @@ from heptabao.agent import AgentConfig
 from heptabao.private_state import StateDirectory
 from native_snapshot_ha_live import SaveCluster
 from consistency_headers_live import encoded, response_index
+from kv_metadata_cas_live import wait_for_empty_backend_response
+from core_isolation import ScenarioFailure
 
 COMMON = frozenset({'initialize','unseal','mount','write','index_not_auth','restart_unseal',
     'restart_read','finite_issue','finite_unchanged','stopped','complete'} |
@@ -68,6 +70,12 @@ class ClientTrace(Trace):
         return response.body,metadata
 
 
+def _empty_kv_response(endpoint, trace, token, remaining):
+    response = trace.invoke(
+        endpoint, 'GET', 'client-consistency/config', token,
+        timeout=min(REQUEST_TIMEOUT, remaining))
+    return response.status, response.body
+
 def common(instance,endpoint,t):
     value,_=t.request('initialize',endpoint,'POST','sys/init',200,
         body={'secret_shares':1,'secret_threshold':1},timeout=INITIALIZATION_TIMEOUT)
@@ -76,6 +84,13 @@ def common(instance,endpoint,t):
     ready(endpoint,200)
     t.request('mount',endpoint,'POST','sys/mounts/client-consistency',204,token,
               {'type':'kv','options':{'version':'2'}})
+    # Activation can complete before the new KV v2 backend finishes its upgrade.
+    # Probe only the original empty config under the existing 2s readiness deadline.
+    try:
+        wait_for_empty_backend_response(
+            lambda remaining: _empty_kv_response(endpoint, t, token, remaining))
+    except ScenarioFailure:
+        raise FixtureError('fixture.kv_readiness') from None
     path='client-consistency/data/retained'
     t.request('write',endpoint,'POST',path,200,token,{'data':{'fixture':'retained'},'options':{'cas':0}})
     for name,headers in VALID_HEADERS:

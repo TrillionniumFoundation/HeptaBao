@@ -17,7 +17,7 @@ import subprocess
 import tempfile
 import time
 
-from bao_http import BaoError, Client, private_read, private_write
+from bao_http import BaoError, Client, private_read, private_write, transport_diagnostic
 from core_isolation import ScenarioFailure
 from official_openbao_launcher import (
     oracle_cli_environment, pinned_artifact, start_oracle, stop_oracle,
@@ -233,21 +233,27 @@ def main():
               "cargo_lock_sha256": file_hash(ROOT / "Cargo.lock"), "runner_sha256": file_hash(__file__),
               "oracle_launcher_sha256": file_hash(ROOT / "qa/openbao-acceptance/official_openbao_launcher.py"),
               "oracle_binary_sha256": pinned["binary_sha256"], "oracle_artifact_sha256": pinned["artifact_sha256"],
-              "started_at_unix": time.time(), "cases": {}, "side_failures": {}, "original_bootstrap_catalogs": {}}
+              "started_at_unix": time.time(), "cases": {}, "side_failures": {}, "original_bootstrap_catalogs": {}, "transport_failures": {}}
+    phase = "candidate_start"
     try:
         native.start()
+        phase = "candidate_initialize"
         status, initialized = native.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
         if status != 200:
             raise ScenarioFailure("candidate.init")
         native.token = initialized["root_token"]
+        phase = "candidate_unseal"
         if native.call("POST", "sys/unseal", {"key": initialized["keys_base64"][0]})[0] != 200:
             raise ScenarioFailure("candidate.unseal")
+        phase = "official_initialize"
         oracle = start_oracle(free_port(), version="2.7.0")
         reference = Client(oracle["address"], oracle["ca_file"], private_read(oracle["token_file"], 8192).decode().strip())
+        phase = "official_identity"
         verify_selected_oracle(oracle, reference.health(), version="2.7.0")
         candidate = Client(native.address, str(native.root / "ca.crt"), native.token)
         candidate_fixture = {"root": native.root, "address": native.address, "ca_file": str(native.root / "ca.crt")}
         for name, client, fixture in (("candidate", candidate, candidate_fixture), ("oracle", reference, oracle)):
+            phase = "candidate_cases" if name == "candidate" else "official_cases"
             result["cases"][name] = []
             try:
                 result["original_bootstrap_catalogs"][name] = run_scenarios(
@@ -255,6 +261,9 @@ def main():
                     Path(os.environ["HB_ORACLE_BINARY"]))
             except (ScenarioFailure, BaoError) as error:
                 result["side_failures"][name] = str(error)
+                diagnostic = transport_diagnostic(error)
+                if diagnostic is not None:
+                    result["transport_failures"][name] = {"fixture_phase": phase, **diagnostic}
             except Exception as error:
                 result["side_failures"][name] = "unexpected_" + type(error).__name__
         candidate_rows, oracle_rows = result["cases"]["candidate"], result["cases"]["oracle"]
@@ -266,6 +275,10 @@ def main():
                                              and not result["side_failures"] and all(row["passed"] for row in candidate_rows)) else "mismatch"
     except (ScenarioFailure, BaoError) as error:
         result["status"], result["safe_failure_code"] = "failed", str(error)
+        result["failure_phase"] = phase
+        diagnostic = transport_diagnostic(error)
+        if diagnostic is not None:
+            result["transport_failures"]["startup"] = {"fixture_phase": phase, **diagnostic}
     except Exception as error:
         result["status"], result["safe_failure_code"] = "failed", "unexpected_" + type(error).__name__
     finally:

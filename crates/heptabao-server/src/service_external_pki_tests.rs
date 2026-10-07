@@ -553,10 +553,17 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
     verify_crl(&public, &full, 3, 1, false)?;
     verify_crl(&public, &delta, 4, 0, true)?;
     let retained_state = service.state.as_ref().ok_or("state")?;
+    let expected_schema = PKI_ORDINARY_REVOCATION_STATE_SCHEMA;
     assert!(
-        retained_state.schema == expected_schema && retained_state.validate_format().is_ok(),
-        "mixed schema real leaf and CRL publication retain authenticated format"
+        retained_state.engines.has_ordinary_pki_revocation_state()
+            && retained_state.schema == expected_schema
+            && retained_state.validate_format().is_ok(),
+        "actual ordinary revocation and signed CRLs carry their105 owner above the earlier role"
     );
+    let mut below_revocation = retained_state.clone();
+    below_revocation.schema = PKI_KEY_POLICY_STATE_SCHEMA;
+    assert!(below_revocation.validate_format().is_err());
+    assert_eq!(below_revocation.writer_schema(), expected_schema);
     if safe_schema {
         let mut downgraded = retained_state.clone();
         downgraded.schema = 65;
