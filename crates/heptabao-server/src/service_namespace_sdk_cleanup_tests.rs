@@ -1996,3 +1996,168 @@ fn namespace109_owned_storage_native_role_stable_publish_and_post_stage_return_v
     }
     Ok(())
 }
+
+#[test]
+fn namespace109_same_original_authorities_recapture_terminal_storage_before_namespace_removal()
+-> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let mut logical = owned_authority(&f.service, Kind::Logical)?;
+    let mut credential = owned_authority(&f.service, Kind::Credential)?;
+    let logical_start = logical.clock.started();
+    let logical_deadline = logical.deadline;
+    let credential_start = credential.clock.started();
+    let credential_deadline = credential.deadline;
+    let logical_role = logical.native_role;
+    let credential_role = credential.native_role;
+    let logical_cut = logical
+        .logical_storage_cut(&f.service, NS, &f.logical.mount, &f.logical.backend)
+        .map_err(|_| "actual original logical cut")?;
+    let credential_cut = credential
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "actual original credential cut")?;
+    let original = f.service.state.as_ref().ok_or("source")?;
+    let mut working_engines = original.engines.clone();
+    let mut working_auth = original.auth.clone();
+    working_engines.sdk_storage_delete(NS, &f.logical.mount, &f.logical.backend, "record")?;
+    working_auth.sdk_auth_storage_delete(&f.credential.backend, "record")?;
+    let mut terminal = f.service.state.clone().ok_or("current")?;
+    logical_cut
+        .merge(
+            &mut terminal.engines,
+            &working_engines,
+            NS,
+            &f.logical.mount,
+            &f.logical.backend,
+        )
+        .map_err(|_| "actual logical cut merge")?;
+    credential_cut
+        .merge(&mut terminal.auth, &working_auth, &f.credential.backend)
+        .map_err(|_| "actual credential cut merge")?;
+    let mut revoked_logical = terminal
+        .engines
+        .sdk_lease(NS, &f.logical.id)
+        .ok_or("same actual logical lease")?;
+    revoked_logical.revoke();
+    terminal.engines.store_sdk_lease(revoked_logical.clone())?;
+    logical
+        .finish_logical(&mut terminal, &revoked_logical)
+        .map_err(|_| "original work logical terminal publication")?;
+    let mut revoked_credential = terminal
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("same actual credential lease")?;
+    revoked_credential.revoke();
+    terminal
+        .auth
+        .store_sdk_credential(revoked_credential.clone())?;
+    credential
+        .finish_credential(&mut terminal, &revoked_credential)
+        .map_err(|_| "original work credential terminal publication")?;
+    publish(&mut f.service, terminal)?;
+    let state = f.service.state.as_ref().ok_or("terminal")?;
+    // These are the actual post-commit ordering and predicates: the selected
+    // terminal records remain present until the later namespace-removal pass.
+    logical
+        .after_publication(&state.auth)
+        .map_err(|_| "logical selected terminal")?;
+    credential
+        .after_publication(&state.auth)
+        .map_err(|_| "credential selected terminal")?;
+    assert!(matches!(logical.selected.stage(), Stage::Terminal { .. }));
+    assert!(matches!(
+        credential.selected.stage(),
+        Stage::Terminal { .. }
+    ));
+    let logical_cut = logical
+        .logical_storage_cut(&f.service, NS, &f.logical.mount, &f.logical.backend)
+        .map_err(|_| "same original logical terminal recapture")?;
+    let credential_cut = credential
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "same original credential terminal recapture")?;
+    assert!(
+        logical_cut
+            .check(&state.engines, NS, &f.logical.mount, &f.logical.backend)
+            .is_ok()
+    );
+    assert!(
+        credential_cut
+            .check(&state.auth, &f.credential.backend)
+            .is_ok()
+    );
+    assert!(state.namespace_exists(NS) && state.namespace_is_tainted(NS));
+    assert!(
+        state
+            .engines
+            .sdk_lease(NS, &f.logical.id)
+            .is_some_and(|r| r.phase == Phase::Revoked)
+    );
+    assert!(
+        state
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .is_some_and(|r| r.phase == Phase::Revoked)
+    );
+    assert!(
+        state
+            .engines
+            .sdk_storage_get(NS, &f.logical.mount, &f.logical.backend, "record")?
+            .is_none()
+    );
+    assert!(
+        state
+            .auth
+            .sdk_auth_storage_get(&f.credential.backend, "record")?
+            .is_none()
+    );
+    assert!(
+        logical.clock.started() == logical_start
+            && logical.deadline == logical_deadline
+            && logical.native_role == logical_role
+    );
+    assert!(
+        credential.clock.started() == credential_start
+            && credential.deadline == credential_deadline
+            && credential.native_role == credential_role
+    );
+    assert!(state.validate_format().is_ok());
+    let Fixture {
+        directory,
+        service,
+        key,
+        logical: lease,
+        credential: record,
+        ..
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened.state.as_ref().ok_or("reopened terminal")?;
+    assert!(state.validate_format().is_ok() && state.namespace_exists(NS));
+    assert!(
+        state
+            .engines
+            .sdk_lease(NS, &lease.id)
+            .is_some_and(|r| r.phase == Phase::Revoked)
+    );
+    assert!(
+        state
+            .auth
+            .sdk_credential_record(NS, &record.id)
+            .is_some_and(|r| r.phase == Phase::Revoked)
+    );
+    for key in keys(state)? {
+        assert!(matches!(
+            state
+                .namespace_sdk_cleanup_record(&key)
+                .map_err(|_| "terminal job")?
+                .stage(),
+            Stage::Terminal { .. }
+        ));
+    }
+    Ok(())
+}
