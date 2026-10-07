@@ -881,6 +881,19 @@ fn pki_external_signed_ca94_seven_parent_certificate_revoke_crl_rotation_restart
             200
         );
         assert_eq!(read_crl(&mut reopened)?.to_der()?, rotated_crl);
+        // This actual fixture has no roles. The native issuer delete helper
+        // adds a roles-reference warning only for a strictly positive count.
+        assert_eq!(
+            call(
+                &mut reopened,
+                "LIST",
+                "external-ca/roles",
+                &admin,
+                json!({})
+            )
+            .status,
+            404
+        );
         let before_retirement = remote.calls()?;
         let retired = call(
             &mut reopened,
@@ -898,12 +911,9 @@ fn pki_external_signed_ca94_seven_parent_certificate_revoke_crl_rotation_restart
         assert_eq!(remote.calls()?, before_retirement);
         assert_eq!(
             retired.body["warnings"],
-            json!([
-                format!(
-                    "Deleted issuer {parent_id} (via issuer_ref {parent_id}); this was configured as the default issuer. Operations without an explicit issuer will not work until a new default is configured."
-                ),
-                "0 roles reference default"
-            ])
+            json!([format!(
+                "Deleted issuer {parent_id} (via issuer_ref {parent_id}); this was configured as the default issuer. Operations without an explicit issuer will not work until a new default is configured."
+            )])
         );
         let defaults = call(
             &mut reopened,

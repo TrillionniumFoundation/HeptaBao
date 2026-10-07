@@ -689,7 +689,7 @@ fn strong_http_failed_durable_creation_returns_no_shares_or_runtime_slot() -> Te
     service.durable = None;
     let response = service.namespace_route(
         state,
-        Some(&principal),
+        Some(principal),
         &RequestView {
             method: "POST",
             path: "sys/namespaces/uncommitted",
