@@ -1,7 +1,7 @@
 //! Private custody of the original admitted logical HTTP envelope (format110).
 //! This carries response data only: no actor, provider authority or new clock.
 use super::*;
-use base64::{Engine as _, engine::general_purpose::STANDARD as RAW_BASE64};
+use base64::engine::general_purpose::STANDARD as RAW_BASE64;
 use std::cell::RefCell;
 
 #[derive(Clone)]
@@ -480,9 +480,8 @@ fn go_float(number: &serde_json::Number) -> Result<String, AuthError> {
 }
 /// A closed projection is validated again after encrypted loading and HA receipt.
 /// This cannot mint an origin: only capture_pki accepts the sealed producer type.
-fn pki_http_projection(
-    logical: &Value,
-) -> Result<(u16, String, bool, Zeroizing<Vec<u8>>), AuthError> {
+type PkiHttpProjection = (u16, String, bool, Zeroizing<Vec<u8>>);
+fn pki_http_projection(logical: &Value) -> Result<PkiHttpProjection, AuthError> {
     let invalid = || bad("invalid stored PKI raw HTTP projection");
     let root = logical.as_object().ok_or_else(invalid)?;
     let data = root
