@@ -1459,7 +1459,7 @@ fn namespace109_owned_storage_rebase_keeps_current_unrelated_publications() -> T
             json!({"value":"current-unrelated-kv"})
         )
         .status,
-        200
+        204
     );
     let minted = owned_body(
         &mut f.service,
