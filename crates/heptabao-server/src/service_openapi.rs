@@ -585,96 +585,113 @@ fn add_mount_route(
     }
 }
 
+fn qualify_kv_openapi(value: &mut Value) {
+    match value {
+        Value::Object(object) => {
+            for (key, value) in object {
+                match (key.as_str(), value) {
+                    ("$ref", Value::String(reference))
+                        if reference.starts_with("#/components/schemas/") =>
+                    {
+                        *reference = format!(
+                            "#/components/schemas/Kv{}",
+                            &reference["#/components/schemas/".len()..]
+                        );
+                    }
+                    ("operationId", Value::String(operation)) => {
+                        *operation = format!("kv-{operation}");
+                    }
+                    (_, nested) => qualify_kv_openapi(nested),
+                }
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                qualify_kv_openapi(item);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn add_kv_help_document(
+    paths: &mut Map<String, Value>,
+    schemas: &mut Map<String, Value>,
+    mount: &str,
+    generic: bool,
+    version_two: bool,
+) -> Result<(), ()> {
+    // Use the same pinned 2.7.0 backend help document as actual HELP requests.
+    // Its empty catch-all path item declares no unsupported operation.
+    let template = if version_two {
+        include_str!("help_templates/kv2-root.json")
+    } else {
+        include_str!("help_templates/kv1-root.json")
+    };
+    let mut help: Value = serde_json::from_str(template).map_err(|_| ())?;
+    let document = help.get_mut("openapi").ok_or(())?;
+    qualify_kv_openapi(document);
+    let backend_paths = document.get("paths").and_then(Value::as_object).ok_or(())?;
+    let prefix = openapi_mount_path(mount, generic, false);
+    for (suffix, item) in backend_paths {
+        let path = format!("/{prefix}{suffix}");
+        let mut item = item.clone();
+        if generic {
+            let parameter_name = format!(
+                "{}_mount_path",
+                mount.trim_end_matches('/').replace('-', "_")
+            );
+            let object = item.as_object_mut().ok_or(())?;
+            let parameters = object
+                .entry("parameters")
+                .or_insert_with(|| Value::Array(Vec::new()))
+                .as_array_mut()
+                .ok_or(())?;
+            parameters.push(json!({
+                "name": parameter_name,
+                "description": "Path that the backend was mounted at",
+                "in": "path",
+                "schema": {"type": "string", "default": mount.trim_end_matches('/')},
+                "required": true
+            }));
+        }
+        paths.insert(path, item);
+    }
+    let backend_schemas = document
+        .get("components")
+        .and_then(|components| components.get("schemas"))
+        .and_then(Value::as_object)
+        .ok_or(())?;
+    for (name, schema) in backend_schemas {
+        let name = format!("Kv{name}");
+        if let Some(previous) = schemas.get(&name)
+            && previous != schema
+        {
+            return Err(());
+        }
+        schemas.insert(name, schema.clone());
+    }
+    Ok(())
+}
+
 fn add_actual_mount_routes(
     paths: &mut Map<String, Value>,
+    schemas: &mut Map<String, Value>,
     generic: bool,
     auth_mounts: &BTreeMap<String, Value>,
     secret_mounts: &BTreeMap<String, Value>,
-) {
+) -> Result<(), ()> {
     for (mount, descriptor) in secret_mounts {
         let kind = descriptor.get("type").and_then(Value::as_str);
         match kind {
             Some("kv") => {
-                let prefix = openapi_mount_path(mount, generic, false);
-                if descriptor["options"]["version"] == "2" {
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/data/{{path}}"),
-                        &["get", "post", "patch", "delete"],
-                        "Read, write or soft-delete a KV v2 value.",
-                        mount,
-                        generic,
-                        false,
-                    );
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/metadata/{{path}}"),
-                        &["get", "post", "patch", "delete"],
-                        "Read, tune or destroy KV v2 metadata.",
-                        mount,
-                        generic,
-                        false,
-                    );
-                    add_list_query(paths, &format!("/{prefix}/metadata/{{path}}"), true, true);
-                    for (suffix, methods, description) in [
-                        (
-                            "config",
-                            &["get", "post"][..],
-                            "Read or configure KV v2 settings.",
-                        ),
-                        (
-                            "delete/{path}",
-                            &["post"][..],
-                            "Soft-delete selected KV v2 versions.",
-                        ),
-                        (
-                            "undelete/{path}",
-                            &["post"][..],
-                            "Restore selected KV v2 versions.",
-                        ),
-                        (
-                            "destroy/{path}",
-                            &["post"][..],
-                            "Permanently destroy selected KV v2 versions.",
-                        ),
-                        (
-                            "subkeys/{path}",
-                            &["get"][..],
-                            "Read a KV v2 structure without stored values.",
-                        ),
-                        (
-                            "detailed-metadata/{path}",
-                            &["get"][..],
-                            "List detailed KV v2 key metadata.",
-                        ),
-                    ] {
-                        add_mount_route(
-                            paths,
-                            format!("/{prefix}/{suffix}"),
-                            methods,
-                            description,
-                            mount,
-                            generic,
-                            false,
-                        );
-                    }
-                    add_list_query(
-                        paths,
-                        &format!("/{prefix}/detailed-metadata/{{path}}"),
-                        true,
-                        false,
-                    );
-                } else {
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/{{path}}"),
-                        &["get", "post", "delete"],
-                        "Read, write or delete a KV v1 value.",
-                        mount,
-                        generic,
-                        false,
-                    );
-                }
+                add_kv_help_document(
+                    paths,
+                    schemas,
+                    mount,
+                    generic,
+                    descriptor["options"]["version"] == "2",
+                )?;
             }
             Some("transit") => {
                 let prefix = openapi_mount_path(mount, generic, false);
@@ -790,6 +807,7 @@ fn add_actual_mount_routes(
             _ => {}
         }
     }
+    Ok(())
 }
 
 pub(super) fn handle_anonymous(
@@ -886,7 +904,18 @@ fn handle_with_visibility(
                 .any(|mount| path == mount.trim_end_matches('/') || path.starts_with(mount))
         });
     }
-    add_actual_mount_routes(&mut paths, generic, auth_mounts, secret_mounts);
+    let mut schemas = Map::new();
+    if add_actual_mount_routes(
+        &mut paths,
+        &mut schemas,
+        generic,
+        auth_mounts,
+        secret_mounts,
+    )
+    .is_err()
+    {
+        return Response::error(503, "OpenAPI backend help template rejected");
+    }
 
     Response::ok(json!({
         "openapi": "3.0.2",
@@ -901,6 +930,7 @@ fn handle_with_visibility(
         "security": [{"VaultToken": []}],
         "paths": paths,
         "components": {
+            "schemas": schemas,
             "securitySchemes": {
                 "VaultToken": {
                     "type": "apiKey",
@@ -1098,6 +1128,80 @@ mod tests {
         assert!(paths.contains_key("/auth/userpass/login/{username}"));
         assert!(!paths.contains_key("/auth/token/create"));
         assert!(!paths.contains_key("/identity/entity"));
+        Ok(())
+    }
+
+    fn kv2_primary_fixture() -> Result<Value, Box<dyn std::error::Error>> {
+        Ok(serde_json::from_str(include_str!(
+            "testdata/openapi-kv2-270-independent-documents.json"
+        ))?)
+    }
+
+    #[test]
+    fn openapi_kv2_routes_and_schemas_match_actual_primary270_complete_document()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = kv2_primary_fixture()?;
+        let mounts = BTreeMap::from([(
+            "diag-visible/".into(),
+            json!({"type":"kv","options":{"version":"2"}}),
+        )]);
+        let response = handle_anonymous("GET", &json!({}), &BTreeMap::new(), &mounts);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["paths"], reference["plain_paths"]);
+        assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
+        assert_eq!(response.body["paths"]["/diag-visible/^.*$"], json!({}));
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_kv2_generic_mount_and_refs_match_actual_primary270_document()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = kv2_primary_fixture()?;
+        let mounts = BTreeMap::from([(
+            "diag-visible/".into(),
+            json!({"type":"kv","options":{"version":"2"}}),
+        )]);
+        let response = handle_anonymous(
+            "GET",
+            &json!({"generic_mount_paths":true}),
+            &BTreeMap::new(),
+            &mounts,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["paths"], reference["generic_paths"]);
+        assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_kv2_two_actual_mounts_share_schemas_and_do_not_retain_old_paths()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = kv2_primary_fixture()?;
+        let mounts = BTreeMap::from([
+            (
+                "new-a/".into(),
+                json!({"type":"kv","options":{"version":"2"}}),
+            ),
+            (
+                "new-b/".into(),
+                json!({"type":"kv","options":{"version":"2"}}),
+            ),
+        ]);
+        let response = handle("GET", &json!({}), false, &BTreeMap::new(), &mounts);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        let expected = reference["plain_paths"]
+            .as_object()
+            .ok_or("reference paths")?;
+        assert_eq!(paths.len(), expected.len() * 2);
+        for mount in ["new-a", "new-b"] {
+            for (path, item) in expected {
+                let suffix = path.strip_prefix("/diag-visible").ok_or("original mount")?;
+                assert_eq!(paths.get(&format!("/{mount}{suffix}")), Some(item));
+            }
+        }
+        assert!(paths.keys().all(|path| !path.contains("diag-visible")));
         Ok(())
     }
 }
