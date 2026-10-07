@@ -134,6 +134,7 @@ impl RoleKeyPolicy {
             ("rsa", 0 | 2048) => Some(LocalKeyKind::Rsa2048),
             ("rsa", 3072) => Some(LocalKeyKind::Rsa3072),
             ("rsa", 4096) => Some(LocalKeyKind::Rsa4096),
+            ("rsa", 8192) => Some(LocalKeyKind::Rsa8192),
             ("ec", 224) => Some(LocalKeyKind::Ec224),
             ("ec", 0 | 256) => Some(LocalKeyKind::Ec256),
             ("ec", 384) => Some(LocalKeyKind::Ec384),

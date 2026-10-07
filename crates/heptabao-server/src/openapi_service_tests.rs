@@ -1,5 +1,6 @@
 use super::tests::{Root, bootstrap, call};
-use serde_json::json;
+use super::{RequestClock, Service};
+use serde_json::{Value, json};
 
 #[test]
 fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
@@ -33,6 +34,10 @@ fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
     let paths = bounded.body["paths"].as_object().ok_or("missing paths")?;
     assert!(paths.contains_key("/sys/health"));
     assert!(paths.contains_key("/sys/internal/specs/openapi"));
+    let remount_status = &paths["/sys/remount/status/{migration_id}"];
+    assert!(remount_status.get("get").is_some());
+    assert!(remount_status.get("x-vault-sudo").is_none());
+    assert_eq!(remount_status["parameters"][0]["name"], "migration_id");
     assert!(paths.contains_key("/{secret_mount_path}/data/{path}"));
     assert!(!paths.keys().any(|path| {
         path.contains("cert_mount_path")
@@ -151,6 +156,19 @@ fn openapi_uses_actual_mounts_after_remount_disable_and_restart()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
+    let fixture_clock =
+        RequestClock::anchored(std::time::Duration::new(100, 1), std::time::Instant::now())?;
+    let call = |service: &mut Service, method: &str, path: &str, token: &str, body: Value| {
+        super::native_remount::tests::call_and_complete(
+            service,
+            fixture_clock,
+            method,
+            path,
+            token,
+            body,
+        )
+    };
+
     let (unseal, token) = bootstrap(&mut service)?;
     let initial = call(
         &mut service,

@@ -280,6 +280,16 @@ impl KubernetesDeliveryReceipt {
     }
 }
 
+/// Typed local native catalog identity. No secret payload or remote grant.
+#[derive(Eq, PartialEq)]
+pub(crate) struct NativeRemountOwner {
+    revision: u64,
+    incarnation: u64,
+    kind: &'static str,
+    description: String,
+    destination_epoch: Option<u64>,
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct MountState {
     #[serde(default = "mount_revision_one")]
@@ -888,6 +898,13 @@ impl EngineState {
     }
     pub(crate) fn has_external_pki_signer_history(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
+    }
+
+    pub(crate) fn has_pki_rsa8192_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_rsa8192_state()))
+        })
     }
 
     pub(crate) fn has_pki_key_policy_state(&self) -> bool {
@@ -2314,6 +2331,47 @@ impl EngineState {
     /// caller's namespace. The backend moves as one value, so old route lookup
     /// cannot observe it after publication. A revision CAS fences stale
     /// operators and path-incarnation tombstones prevent disable/recreate ABA.
+    /// Only local native backends can enter the bounded asynchronous task.
+    pub(crate) fn remount_source_absent(&self, namespace: &str, mount: &str) -> bool {
+        self.namespaces
+            .get(namespace)
+            .is_none_or(|state| !state.mounts.contains_key(mount))
+    }
+    pub(crate) fn native_remount_owner(
+        &self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+    ) -> Result<Option<NativeRemountOwner>> {
+        let from = format!("{}/", canonical_secret_mount(from)?);
+        let to = format!("{}/", canonical_secret_mount(to)?);
+        let Some(state) = self.namespaces.get(namespace) else {
+            return Ok(None);
+        };
+        if state.sdk_owners.contains_key(&from) {
+            return Ok(None);
+        }
+        let Some(mount) = state.mounts.get(&from) else {
+            return Ok(None);
+        };
+        let kind = match &mount.backend {
+            Backend::Kv1(_) | Backend::Kv1Records => "kv1",
+            Backend::Kv2(_) => "kv2",
+            Backend::Transit(_) => "transit",
+            Backend::Pki(_) => "pki",
+            Backend::Ssh(_) => "ssh",
+            Backend::Totp(_) => "totp",
+            _ => return Ok(None),
+        };
+        Ok(Some(NativeRemountOwner {
+            revision: mount.revision,
+            incarnation: mount.incarnation,
+            kind,
+            description: mount.description.clone(),
+            destination_epoch: state.mount_epochs.get(&to).copied(),
+        }))
+    }
+
     pub(crate) fn remount(
         &mut self,
         namespace: &str,

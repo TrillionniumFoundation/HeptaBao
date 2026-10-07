@@ -2165,6 +2165,31 @@ impl Pki {
     }
 }
 
+impl LocalCaChain {
+    pub(super) fn has_rsa8192_state(&self) -> bool {
+        self.parents
+            .iter()
+            .any(|der| super::rsa8192::certificate_owned(der))
+    }
+}
+impl LocalIntermediateState {
+    pub(super) fn has_rsa8192_state(&self) -> bool {
+        self.pending
+            .values()
+            .any(|pending| pending.material.kind() == LocalKeyKind::Rsa8192)
+            || self.public_issuers.values().any(|issuer| {
+                std::iter::once(&issuer.certificate_der)
+                    .chain(issuer.parents.iter())
+                    .any(|der| super::rsa8192::certificate_owned(der))
+            })
+            || self.signed_certificates.values().any(|certificate| {
+                std::iter::once(&certificate.certificate_der)
+                    .chain(certificate.parents.iter())
+                    .any(|der| super::rsa8192::certificate_owned(der))
+            })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::public::PkiPublicRead;

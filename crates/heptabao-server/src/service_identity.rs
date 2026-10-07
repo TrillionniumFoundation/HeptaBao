@@ -29,7 +29,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_ordinary_pki_revocation_state() {
+        let required = if self.engines.has_pki_rsa8192_state() {
+            PKI_RSA8192_STATE_SCHEMA
+        } else if self.engines.has_ordinary_pki_revocation_state() {
             PKI_ORDINARY_REVOCATION_STATE_SCHEMA
         } else if self.engines.has_pki_key_policy_state() {
             PKI_KEY_POLICY_STATE_SCHEMA
@@ -149,6 +151,15 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        if self.schema < PKI_RSA8192_STATE_SCHEMA
+            && (self.engines.has_pki_rsa8192_state()
+                || previous.is_some_and(|state| state.schema >= PKI_RSA8192_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI RSA8192 ownership requires schema 108",
+            ));
+        }
         if self.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             && (self.engines.has_ordinary_pki_revocation_state()
                 || previous
@@ -756,6 +767,12 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_RSA8192_STATE_SCHEMA && self.engines.has_pki_rsa8192_state() {
+            return Err(Response::error(
+                503,
+                "PKI RSA8192 ownership requires schema 108",
             ));
         }
         if self.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
@@ -1675,6 +1692,7 @@ impl State {
             | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
             | PKI_KEY_POLICY_STATE_SCHEMA
             | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            | PKI_RSA8192_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA

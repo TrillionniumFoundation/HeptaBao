@@ -29,6 +29,7 @@ pub(super) enum LocalKeyKind {
     Rsa2048,
     Rsa3072,
     Rsa4096,
+    Rsa8192,
     Ec224,
     Ec256,
     Ec384,
@@ -49,6 +50,7 @@ impl LocalKeyKind {
             ("rsa", 0 | 2048) => Ok(Self::Rsa2048),
             ("rsa", 3072) => Ok(Self::Rsa3072),
             ("rsa", 4096) => Ok(Self::Rsa4096),
+            ("rsa", 8192) => Ok(Self::Rsa8192),
             ("ec", 224) => Ok(Self::Ec224),
             ("ec", 0 | 256) => Ok(Self::Ec256),
             ("ec", 384) => Ok(Self::Ec384),
@@ -64,7 +66,7 @@ impl LocalKeyKind {
     pub(super) fn key_type(self) -> &'static str {
         match self {
             Self::Ed25519 => "ed25519",
-            Self::Rsa2048 | Self::Rsa3072 | Self::Rsa4096 => "rsa",
+            Self::Rsa2048 | Self::Rsa3072 | Self::Rsa4096 | Self::Rsa8192 => "rsa",
             Self::Ec224 | Self::Ec256 | Self::Ec384 | Self::Ec521 => "ec",
             Self::Mldsa44 | Self::Mldsa65 | Self::Mldsa87 => "mldsa",
         }
@@ -76,6 +78,7 @@ impl LocalKeyKind {
             Self::Rsa2048 => 2048,
             Self::Rsa3072 => 3072,
             Self::Rsa4096 => 4096,
+            Self::Rsa8192 => 8192,
             Self::Ec224 => 224,
             Self::Ec256 => 256,
             Self::Ec384 => 384,
@@ -111,7 +114,7 @@ impl LocalKeyKind {
     pub(super) fn signature_algorithm(self) -> Vec<u8> {
         match self {
             Self::Ed25519 => algorithm_ed25519(),
-            Self::Rsa2048 | Self::Rsa3072 | Self::Rsa4096 => seq(&[
+            Self::Rsa2048 | Self::Rsa3072 | Self::Rsa4096 | Self::Rsa8192 => seq(&[
                 oid(&[0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b]),
                 der(0x05, &[]),
             ]),
@@ -405,7 +408,12 @@ impl LocalPrivateMaterial {
         let Self::Pkcs8 { kind, der } = self else {
             return Err(invalid_key());
         };
-        if der.is_empty() || der.len() > MAX_PRIVATE_DER || kind.is_mldsa() {
+        let private_bound = if *kind == LocalKeyKind::Rsa8192 {
+            8192
+        } else {
+            MAX_PRIVATE_DER
+        };
+        if der.is_empty() || der.len() > private_bound || kind.is_mldsa() {
             return Err(invalid_key());
         }
         let key = PKey::private_key_from_der(der).map_err(|_| invalid_key())?;
@@ -636,6 +644,7 @@ impl LocalPublicKey {
                         2048 => LocalKeyKind::Rsa2048,
                         3072 => LocalKeyKind::Rsa3072,
                         4096 => LocalKeyKind::Rsa4096,
+                        8192 => LocalKeyKind::Rsa8192,
                         _ => return Err(invalid_key()),
                     },
                     Id::EC => match key.ec_key().map_err(crypto_failure)?.group().curve_name() {

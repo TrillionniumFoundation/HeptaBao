@@ -320,7 +320,7 @@ fn pki_acme99_eab_delete_cannot_resurrect_key_or_replace_durable_owner() -> Test
     Ok(())
 }
 
-fn operator_delivery_cut(expire: bool) -> TestResult {
+fn operator_delivery_cut(expire: bool, wrapped: bool) -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
     let (_, admin) = bootstrap(&mut service)?;
@@ -387,12 +387,17 @@ fn operator_delivery_cut(expire: bool) -> TestResult {
         token_clock: Some(original),
         allow_forward: true,
         enforce_namespace: false,
-        wrap_ttl_seconds: None,
+        wrap_ttl_seconds: wrapped.then_some(120),
         origin_peer: None,
         client_certificates: None,
     });
     assert_eq!(response.status, 200);
-    assert!(response.body["data"]["key"].as_str().is_some());
+    if wrapped {
+        assert!(response.body["data"].is_null());
+        assert!(response.body["wrap_info"]["token"].as_str().is_some());
+    } else {
+        assert!(response.body["data"]["key"].as_str().is_some());
+    }
     let response = service.audit_completed_response_with_receipt(
         "actual-eab-operator-delivery-cut",
         at,
@@ -428,15 +433,197 @@ fn operator_delivery_cut(expire: bool) -> TestResult {
         service.complete_pending_acme_delivery(true, response, "actual-eab-operator-delivery-cut");
     assert_eq!(delivered.status, 403);
     assert!(delivered.body.get("data").is_none());
+    assert!(delivered.body.get("wrap_info").is_none());
     assert!(delivered.response_headers.is_empty());
+    assert!(delivered.consistency_index.is_none());
     Ok(())
 }
 #[test]
 fn pki_acme99_eab_real_original_operator_revocation_withholds_new_private_key() -> TestResult {
-    operator_delivery_cut(false)
+    operator_delivery_cut(false, false)
 }
 #[test]
 fn pki_acme99_eab_real_original_operator_precise_expiry_after_2100ms_withholds_private_key()
 -> TestResult {
-    operator_delivery_cut(true)
+    operator_delivery_cut(true, false)
+}
+
+#[test]
+fn pki_acme99_eab_wrapping_original_operator_revocation_withholds_wrapper() -> TestResult {
+    operator_delivery_cut(false, true)
+}
+
+#[test]
+fn pki_acme99_eab_wrapping_original_operator_precise_expiry_withholds_wrapper() -> TestResult {
+    operator_delivery_cut(true, true)
+}
+
+#[test]
+fn pki_acme99_eab_wrapping_real_original_creation_clock_reopen_and_one_use() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let state = service.state.as_ref().ok_or("actual EAB state")?;
+    let at = state
+        .auth
+        .terminal_token_clock_floor()
+        .map_or(101, |at| at.seconds() + 1);
+    let wall = Duration::new(at, 250_000_000);
+    let started = std::time::Instant::now();
+    let original = RequestClock::anchored(wall, started)?;
+    let before = original.observed_at()?.duration_since_epoch();
+    let response = {
+        // Match the trusted ingress scope. No body value selects this anchor.
+        let _origin = external_pki::PublicationClockScope::enter(wall, started);
+        let execution = service.begin_at_mode_precise(
+            RequestDispatch {
+                method: "POST",
+                path: "acmeca/acme/new-eab",
+                namespace: "",
+                token: &admin,
+                body: json!({}),
+                now: at,
+                allow_forward: true,
+                enforce_namespace: false,
+                wrap_ttl_seconds: Some(120),
+                origin_peer: None,
+                client_certificates: None,
+            },
+            original,
+        );
+        service.finish_synchronous_request(execution)
+    };
+    let after = original.observed_at()?.duration_since_epoch();
+    assert_eq!(
+        response.status,
+        200,
+        "only static EAB wrapping errors: {:?}",
+        response.body.get("errors")
+    );
+    assert!(response.body["data"].is_null());
+    assert!(response.body["auth"].is_null());
+    assert_eq!(response.body["wrap_info"]["ttl"], 120);
+    assert_eq!(
+        response.body["wrap_info"]["creation_path"],
+        "acmeca/acme/new-eab"
+    );
+    let creation = chrono::DateTime::parse_from_rfc3339(
+        response.body["wrap_info"]["creation_time"]
+            .as_str()
+            .ok_or("actual wrapper creation time")?,
+    )?;
+    let creation = Duration::new(
+        u64::try_from(creation.timestamp())?,
+        creation.timestamp_subsec_nanos(),
+    );
+    assert!(
+        before <= creation && creation <= after,
+        "creation derives from original trusted ingress bounds"
+    );
+    let bearer = zeroize::Zeroizing::new(
+        response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("private EAB wrapper")?
+            .to_owned(),
+    );
+    drop(response);
+    let lookup = call(
+        &mut service,
+        "POST",
+        "sys/wrapping/lookup",
+        &admin,
+        json!({"token":bearer.as_str()}),
+    );
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["creation_ttl"], 120);
+    assert_eq!(lookup.body["data"]["creation_path"], "acmeca/acme/new-eab");
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let mut unwrapped = call(
+        &mut reopened,
+        "POST",
+        "sys/wrapping/unwrap",
+        &admin,
+        json!({"token":bearer.as_str()}),
+    );
+    assert_eq!(unwrapped.status, 200);
+    assert!(unwrapped.body["data"]["key"].as_str().is_some());
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":bearer.as_str()})
+        )
+        .status,
+        400
+    );
+    let (key, jwk) = super::key()?;
+    let proof = binding(&unwrapped.body["data"], &jwk, "HS256")?;
+    assert_eq!(account(&mut reopened, &key, &jwk, Some(proof))?.status, 201);
+    erase_json(&mut unwrapped.body);
+    Ok(())
+}
+
+#[test]
+fn pki_acme99_eab_wrapping_original_clock_expiry_before_delivery_withholds_bearer() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let state = service.state.as_ref().ok_or("actual EAB state")?;
+    let at = state
+        .auth
+        .terminal_token_clock_floor()
+        .map_or(101, |at| at.seconds() + 1);
+    let original =
+        RequestClock::anchored(Duration::new(at, 250_000_000), std::time::Instant::now())?;
+    let body = json!({});
+    let response = service.handle_inner(RequestView {
+        method: "POST",
+        path: "acmeca/acme/new-eab",
+        namespace: "",
+        token: &admin,
+        body: &body,
+        now: at,
+        admission_started: original.started(),
+        token_clock: Some(original),
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: Some(1),
+        origin_peer: None,
+        client_certificates: None,
+    });
+    assert_eq!(response.status, 200);
+    assert!(response.body["wrap_info"]["token"].as_str().is_some());
+    let response = service.audit_completed_response_with_receipt(
+        "actual-eab-wrapper-expiry",
+        at,
+        Some(original),
+        response,
+        || {},
+    );
+    assert_eq!(response.status, 200);
+    std::thread::sleep(Duration::from_millis(1100));
+    let delivered =
+        service.complete_pending_acme_delivery(true, response, "actual-eab-wrapper-expiry");
+    assert_eq!(delivered.status, 403);
+    assert!(delivered.body.get("data").is_none());
+    assert!(delivered.body.get("wrap_info").is_none());
+    assert!(delivered.response_headers.is_empty());
+    assert!(delivered.consistency_index.is_none());
+    Ok(())
 }

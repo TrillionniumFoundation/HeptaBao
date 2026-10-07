@@ -103,10 +103,11 @@ const SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA: u32 = 102;
 const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
 const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
 const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
+const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = NAMESPACE_DELETION_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_RSA8192_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -138,6 +139,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
                 | PKI_KEY_POLICY_STATE_SCHEMA
                 | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+                | PKI_RSA8192_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -200,8 +202,11 @@ mod namespace_config;
 mod namespace_runtime;
 #[path = "service_namespaces.rs"]
 mod namespaces;
+#[path = "service_native_remount.rs"]
+mod native_remount;
 pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
 use namespaces::deletion as namespace_deletion;
+pub(crate) use native_remount::start_worker as start_native_remount_worker;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_openbao_wrapper.rs"]
@@ -1261,6 +1266,9 @@ pub struct Service {
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_namespace_deletion: Option<namespace_deletion::AcceptedDelete>,
+    pending_native_remount: Option<native_remount::AcceptedMove>,
+    native_remount_jobs: std::collections::VecDeque<native_remount::Task>,
+    native_remount_statuses: BTreeMap<String, native_remount::Status>,
     pending_acme_authority: Option<pki_acme::Authority>,
     acme_nonces: pki_acme::Nonces,
     pending_local_unseal_completion: Option<local_unseal::LocalUnsealCompletion>,
@@ -1652,6 +1660,9 @@ impl Service {
             pending_forward_delivery: None,
             pending_help_authority: None,
             pending_namespace_deletion: None,
+            pending_native_remount: None,
+            native_remount_jobs: Default::default(),
+            native_remount_statuses: BTreeMap::new(),
             pending_acme_authority: None,
             acme_nonces: Default::default(),
             pending_local_unseal_completion: None,
@@ -2365,6 +2376,7 @@ impl Service {
             || self.pending_forward_delivery.is_some()
             || self.pending_help_authority.is_some()
             || self.pending_namespace_deletion.is_some()
+            || self.pending_native_remount.is_some()
             || self.pending_acme_authority.is_some()
             || self.pending_local_unseal_completion.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
@@ -2627,6 +2639,7 @@ impl Service {
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
         let namespace_deletion = self.pending_namespace_deletion.take();
+        let native_remount = self.pending_native_remount.take();
         let acme_authority = self.pending_acme_authority.take();
         let local_unseal_completion = self.pending_local_unseal_completion.take();
         let staged = sdk_staged
@@ -2650,6 +2663,7 @@ impl Service {
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
             + usize::from(namespace_deletion.is_some())
+            + usize::from(native_remount.is_some())
             + usize::from(acme_authority.is_some())
             + usize::from(local_unseal_completion.is_some())
             + usize::from(step_down.is_some())
@@ -2711,6 +2725,7 @@ impl Service {
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
         let namespace_deletion_expected = namespace_deletion.is_some();
+        let native_remount_expected = native_remount.is_some();
         let step_down_expected = self.expects_local_ha_step_down(path, &response);
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
@@ -2724,6 +2739,7 @@ impl Service {
         self.pending_token_api_authority = token_api_authority;
         self.pending_help_authority = help_authority;
         self.pending_namespace_deletion = namespace_deletion;
+        self.pending_native_remount = native_remount;
         let acme_expected = acme_authority.is_some();
         self.pending_acme_authority = acme_authority;
         let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
@@ -2762,6 +2778,8 @@ impl Service {
             response,
             &fingerprint,
         );
+        let response =
+            self.complete_native_remount_delivery(native_remount_expected, response, &fingerprint);
         let response = self.complete_pending_acme_delivery(acme_expected, response, &fingerprint);
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
@@ -3549,6 +3567,9 @@ impl Service {
         if self.sdk_auth_handles(&admitted, &request) {
             return self.sdk_auth_route(admitted, principal, &request);
         }
+        if self.native_remount_handles(&admitted, &request) {
+            return self.native_remount_route(admitted, principal, &request);
+        }
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         if self.sdk_control_handles(&admitted, &request) {
             return self.sdk_control_route(admitted, principal, &request);
@@ -4087,6 +4108,7 @@ impl Service {
             || admitted.auth.has_auth_mount_options_state()
             || admitted.engines.has_pki_key_policy_state()
             || admitted.engines.has_ordinary_pki_revocation_state()
+            || admitted.engines.has_pki_rsa8192_state()
         {
             admitted.schema = admitted.writer_schema();
         }

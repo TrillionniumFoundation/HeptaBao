@@ -2918,6 +2918,19 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
+    let fixture_clock =
+        RequestClock::anchored(std::time::Duration::new(100, 1), std::time::Instant::now())?;
+    let call = |service: &mut Service, method: &str, path: &str, token: &str, body: Value| {
+        super::native_remount::tests::call_and_complete(
+            service,
+            fixture_clock,
+            method,
+            path,
+            token,
+            body,
+        )
+    };
+
     let (key, token) = bootstrap(&mut service)?;
     assert_eq!(
         call(
@@ -3139,7 +3152,7 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
             json!({})
         )
         .status,
-        200
+        403
     );
     assert_eq!(
         call(

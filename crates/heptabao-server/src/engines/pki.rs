@@ -26,6 +26,8 @@ mod role_leaf_profile;
 mod role_names;
 #[path = "pki_role_time.rs"]
 mod role_time;
+#[path = "pki_rsa8192.rs"]
+mod rsa8192;
 use role_names::RoleNamePolicy;
 #[path = "pki_role_csr.rs"]
 mod role_csr;
@@ -857,7 +859,7 @@ impl Pki {
             let mut data = json!({
                 "certificate": issuing_ca,
                 "issuing_ca": issuing_ca,
-                "serial_number": serial,
+                "serial_number": external::formatted_serial(&serial),
                 "expiration": not_after,
                 "issuer_id": issuer_id,
                 "issuer_name": fields.metadata.as_ref().map_or("", |meta| meta.issuer_name.as_str()),
@@ -2568,27 +2570,20 @@ fn validate_uri(value: &str, field: &str) -> Result<()> {
 
 fn random_serial() -> Result<String> {
     let mut serial =
-        crate::crypto::random::<16>().map_err(|_| error(503, "PKI serial generation failed"))?;
+        crate::crypto::random::<20>().map_err(|_| error(503, "PKI serial generation failed"))?;
     serial[0] &= 0x7f;
     if serial.iter().all(|v| *v == 0) {
-        serial[15] = 1;
+        serial[19] = 1;
     }
     Ok(canonical_serial_bytes(&serial))
 }
 
 fn random_pki_id() -> Result<String> {
-    let mut bytes = crate::crypto::random::<16>()
+    let bytes = crate::crypto::random::<16>()
         .map_err(|_| error(503, "PKI identifier generation failed"))?;
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    let mut value = String::with_capacity(36);
-    for (index, byte) in bytes.iter().enumerate() {
-        if matches!(index, 4 | 6 | 8 | 10) {
-            value.push('-');
-        }
-        value.push_str(&format!("{byte:02x}"));
-    }
-    Ok(value)
+    // Native PKI genIssuerId/genKeyId use go-uuid.GenerateUUID, which formats
+    // all 128 entropy bits rather than imposing RFC version/variant bits.
+    Ok(crate::crypto::uuid_from_bytes(&bytes))
 }
 
 fn valid_pki_id(value: &str) -> bool {

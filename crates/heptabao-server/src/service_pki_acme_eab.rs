@@ -31,9 +31,6 @@ impl Service {
         let Some(principal) = principal else {
             return Response::error(403, "missing client token");
         };
-        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl != 0) {
-            return Response::error(400, "EAB response wrapping is unsupported");
-        }
         let capability = match request.method {
             "POST" | "PUT" => "update",
             "LIST" => "list",
@@ -111,7 +108,7 @@ impl Service {
             Some(at) => candidate.engines.acme_observed_time(at),
             None => return Response::error(503, "EAB original time unavailable"),
         };
-        let mut payload =
+        let payload =
             match candidate
                 .engines
                 .acme_eab_request(&view, scoped.method, scoped.body, at)
@@ -127,6 +124,41 @@ impl Service {
                 }
                 Err(error) => return Response::from_engine_error(error),
             };
+        let mut response = Response::ok(payload);
+        let mut wrapper = None;
+        if let Some(ttl) = scoped.wrap_ttl_seconds.filter(|ttl| *ttl != 0) {
+            // EAB and its one-use wrapper share this candidate and the original
+            // admitted operator. The wrapper never creates a new caller or clock.
+            let time = match authority.observe_operator(&mut candidate) {
+                Ok(time) => time,
+                Err(error) => {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+            };
+            let mut wrapped = match candidate.auth.wrap_response(
+                scoped.namespace,
+                scoped.path,
+                ttl,
+                &response.body,
+                time.seconds(),
+            ) {
+                Ok(wrapped) => wrapped,
+                Err(error) => {
+                    erase_json(&mut response.body);
+                    return Response::error(error.status, &error.message);
+                }
+            };
+            let Some(bearer) = wrapped.body["wrap_info"]["token"].as_str() else {
+                erase_json(&mut response.body);
+                erase_json(&mut wrapped.body);
+                return Response::error(503, "EAB wrapper did not retain its private bearer");
+            };
+            wrapper = Some(zeroize::Zeroizing::new(bearer.to_owned()));
+            erase_json(&mut response.body);
+            response.status = wrapped.status;
+            response.body = std::mem::take(&mut wrapped.body);
+        }
         let publication = (|| -> Result<(), Response> {
             authority.check(self)?;
             if self.current_state_identity()? != identity {
@@ -151,6 +183,9 @@ impl Service {
                     .into();
             }
             let plan = self.prepare_record_plan(&mut candidate)?;
+            if let Some(bearer) = wrapper.take() {
+                authority.bind_operator_wrapper(bearer);
+            }
             authority.bind_candidate(&candidate)?;
             self.commit_record_plan_with_before_publish(
                 &candidate,
@@ -167,11 +202,11 @@ impl Service {
             Ok(())
         })();
         if let Err(error) = publication {
-            erase_json(&mut payload);
+            erase_json(&mut response.body);
             return error;
         }
         self.state = Some(candidate);
         self.pending_acme_authority = Some(authority);
-        Response::ok(payload)
+        response
     }
 }

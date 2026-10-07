@@ -672,7 +672,7 @@ impl Pki {
         }
         Ok(response)
     }
-    fn local_key_instances(&self) -> impl Iterator<Item = &RootCa> {
+    pub(super) fn local_key_instances(&self) -> impl Iterator<Item = &RootCa> {
         self.local_roots().chain(
             self.local_issuers
                 .iter()
@@ -962,6 +962,26 @@ impl Pki {
             json!({"keys":serials.iter().map(|serial|external::formatted_serial(serial)).collect::<Vec<_>>()}),
             false,
         ))
+    }
+}
+
+impl LocalIssuers {
+    pub(super) fn has_rsa8192_state(&self) -> bool {
+        self.other
+            .values()
+            .chain(self.orphan_keys.values())
+            .any(RootCa::has_rsa8192_state)
+            || self.retired_issuers.values().any(|issuer| {
+                issuer.public.kind() == LocalKeyKind::Rsa8192
+                    || issuer
+                        .chain
+                        .as_ref()
+                        .is_some_and(|chain| chain.has_rsa8192_state())
+            })
+            || self
+                .certificates
+                .values()
+                .any(|der| super::rsa8192::certificate_owned(der))
     }
 }
 

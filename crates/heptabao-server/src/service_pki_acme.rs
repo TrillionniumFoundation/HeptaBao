@@ -94,6 +94,7 @@ pub(super) struct Authority {
     nonce: Option<String>,
     nonce_deadline: Option<(Timestamp, std::time::Instant)>,
     operator: Option<plugin::PluginResponseAuthority>,
+    operator_wrapper: Option<zeroize::Zeroizing<String>>,
     external_delivery: Option<crate::engines::AcmeExternalDelivery>,
     external_provider: Option<super::pki_acme_external::ProviderReceipt>,
 }
@@ -128,6 +129,7 @@ impl Authority {
             nonce,
             nonce_deadline: None,
             operator: None,
+            operator_wrapper: None,
             external_delivery: None,
             external_provider: None,
         }
@@ -135,6 +137,9 @@ impl Authority {
     pub(super) fn with_operator(mut self, operator: plugin::PluginResponseAuthority) -> Self {
         self.operator = Some(operator);
         self
+    }
+    pub(super) fn bind_operator_wrapper(&mut self, bearer: zeroize::Zeroizing<String>) {
+        self.operator_wrapper = Some(bearer);
     }
     pub(super) fn observe_operator(&self, state: &mut State) -> Result<AuthorityTime, Response> {
         self.operator
@@ -220,6 +225,23 @@ impl Authority {
             ));
         }
         let at = self.observed_at()?;
+        if let Some(bearer) = &self.operator_wrapper {
+            state
+                .auth
+                .lookup_wrapping_request(
+                    bearer,
+                    &self.owner.namespace,
+                    "GET",
+                    &json!({}),
+                    at.seconds(),
+                )
+                .map_err(|_| {
+                    Response::error(
+                        403,
+                        "EAB response wrapper expired or was consumed before delivery",
+                    )
+                })?;
+        }
         if let Some(delivery) = &self.external_delivery {
             delivery
                 .validate(&state.engines, at)

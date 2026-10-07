@@ -479,6 +479,17 @@ fn serve_inner(
             return Err("cannot bind configured listener".into());
         }
     };
+    let _native_remount = match crate::service::start_native_remount_worker(&service) {
+        Ok(worker) => worker,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+            }
+            return Err(error);
+        }
+    };
     let _namespace_deletion = match crate::service::start_namespace_deletion_worker(&service) {
         Ok(worker) => worker,
         Err(error) => {

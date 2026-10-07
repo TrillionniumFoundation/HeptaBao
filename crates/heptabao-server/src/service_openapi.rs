@@ -96,6 +96,13 @@ const FIXED_ROUTES: &[Route] = &[
         unauthenticated: false,
     },
     Route {
+        path: "/sys/remount/status/{migration_id}",
+        methods: &["get"],
+        description: "Check the status of a mount move operation.",
+        sudo: false,
+        unauthenticated: false,
+    },
+    Route {
         path: "/sys/plugins/catalog/secret",
         methods: &["get"],
         description: "List deployment-admitted read-only secret plugins.",

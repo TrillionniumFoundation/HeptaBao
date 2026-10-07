@@ -1536,3 +1536,12 @@ impl Pki {
         })
     }
 }
+
+impl Pki {
+    pub(in crate::engines::pki) fn external_leaf_has_rsa8192_state(&self) -> bool {
+        self.external
+            .issued_public
+            .values()
+            .any(|leaf| leaf.public_key.kind() == LocalKeyKind::Rsa8192)
+    }
+}

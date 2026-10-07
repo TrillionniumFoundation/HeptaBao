@@ -935,6 +935,26 @@ fn validate_signed_der_with_scheme(
     Ok(())
 }
 
+impl Pki {
+    pub(in crate::engines::pki) fn external_has_rsa8192_state(&self) -> bool {
+        self.external_leaf_has_rsa8192_state()
+            || self
+                .external
+                .archived_issuers
+                .values()
+                .any(|issuer| issuer.has_rsa8192_state())
+            || self.external_signers().any(|(key, root)| {
+                root.has_rsa8192_state()
+                    || key.intermediate_owner.as_ref().is_some_and(|owner| {
+                        owner
+                            .parents
+                            .iter()
+                            .any(|der| super::rsa8192::certificate_owned(der))
+                    })
+            })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

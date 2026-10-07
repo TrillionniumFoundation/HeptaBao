@@ -409,6 +409,13 @@ impl Service {
             .engines
             .validate_pki_revocation_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_RSA8192_STATE_SCHEMA && incoming.schema < PKI_RSA8192_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI RSA8192 ownership",
+            ));
+        }
         if current.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             && incoming.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
         {

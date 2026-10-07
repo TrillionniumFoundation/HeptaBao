@@ -223,3 +223,11 @@ impl Pki {
         Ok(())
     }
 }
+
+impl ExternalPublicIssuer {
+    pub(super) fn has_rsa8192_state(&self) -> bool {
+        std::iter::once(&self.certificate_der)
+            .chain(self.parents.iter().flatten())
+            .any(|der| super::super::rsa8192::certificate_owned(der))
+    }
+}

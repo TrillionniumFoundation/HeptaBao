@@ -209,6 +209,12 @@ fn is_default_userpass_lockout_counter_reset(value: &u64) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    /// RAM-only catalog history for non-recoverable accepted native move tasks.
+    #[serde(skip)]
+    native_remount_epochs: BTreeMap<(String, String), u64>,
+    /// Any decode or reconstructed Auth owner invalidates earlier RAM tasks.
+    #[serde(skip)]
+    native_remount_control: std::sync::Arc<()>,
     /// Native origin retirement cannot erase its owner floor.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     public_origin_floor: Option<public_origin::Floor>,
@@ -1151,6 +1157,18 @@ impl Drop for JwtMountState {
         }
     }
 }
+
+/// Private native remount owner; never a Principal or serialized grant.
+pub(crate) struct NativeRemountOwner {
+    digest: [u8; 32],
+    control: std::sync::Arc<()>,
+}
+impl PartialEq for NativeRemountOwner {
+    fn eq(&self, other: &Self) -> bool {
+        self.digest == other.digest && std::sync::Arc::ptr_eq(&self.control, &other.control)
+    }
+}
+impl Eq for NativeRemountOwner {}
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
@@ -2395,6 +2413,8 @@ impl AuthState {
 
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
+            native_remount_epochs: BTreeMap::new(),
+            native_remount_control: std::sync::Arc::new(()),
             recovery_credential: None,
             recovery_attempt: None,
             recovery_intent: None,
@@ -3304,6 +3324,120 @@ impl AuthState {
         )
     }
 
+    /// A native catalog owner, independent of mutable users, tokens and ACLs.
+    pub(crate) fn native_remount_owner(
+        &self,
+        namespace: &str,
+        mount: &str,
+        destination: &str,
+    ) -> Result<Option<NativeRemountOwner>, AuthError> {
+        let Some(entry) = self.effective_auth_mounts(namespace).remove(mount) else {
+            return Ok(None);
+        };
+        if !matches!(
+            entry.kind.as_str(),
+            "userpass"
+                | "approle"
+                | "cert"
+                | "jwt"
+                | "oidc"
+                | "ldap"
+                | "radius"
+                | "kerberos"
+                | "kubernetes"
+        ) {
+            return Ok(None);
+        }
+        let bytes = Zeroizing::new(
+            crate::secret_serde::to_vec(
+                &(
+                    &entry,
+                    self.native_remount_destination(namespace, mount, destination),
+                ),
+                512 * 1024,
+            )
+            .map_err(|_| err(503, "native auth remount owner unavailable"))?,
+        );
+        Ok(Some(NativeRemountOwner {
+            digest: crate::crypto::digest(&bytes),
+            control: std::sync::Arc::clone(&self.native_remount_control),
+        }))
+    }
+    fn native_remount_destination(
+        &self,
+        namespace: &str,
+        source: &str,
+        destination: &str,
+    ) -> (BTreeMap<String, AuthMount>, BTreeMap<String, u64>) {
+        let relevant = |path: &str| {
+            path == destination
+                || path.starts_with(&format!("{destination}/"))
+                || destination.starts_with(&format!("{path}/"))
+        };
+        let catalog = self
+            .effective_auth_mounts(namespace)
+            .into_iter()
+            .filter(|(path, _)| path != source && relevant(path))
+            .collect();
+        let epochs = self
+            .native_remount_epochs
+            .iter()
+            .filter(|((ns, path), _)| ns == namespace && relevant(path))
+            .map(|((_, path), epoch)| (path.clone(), *epoch))
+            .collect();
+        (catalog, epochs)
+    }
+    fn advance_native_remount_epochs(
+        &mut self,
+        namespace: &str,
+        mounts: &[&str],
+    ) -> Result<(), AuthError> {
+        let mut changes = Vec::with_capacity(mounts.len());
+        for mount in mounts {
+            let key = (namespace.to_owned(), (*mount).to_owned());
+            let next = self
+                .native_remount_epochs
+                .get(&key)
+                .copied()
+                .unwrap_or(0)
+                .checked_add(1)
+                .ok_or_else(|| err(507, "native remount catalog epoch exhausted"))?;
+            changes.push((key, next));
+        }
+        self.native_remount_epochs.extend(changes);
+        Ok(())
+    }
+    pub(crate) fn remount_source_absent(&self, namespace: &str, mount: &str) -> bool {
+        !self.effective_auth_mounts(namespace).contains_key(mount)
+    }
+    pub(crate) fn remount_native_accepted(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas: Option<u64>,
+        owner: &NativeRemountOwner,
+    ) -> Result<AuthResponse, AuthError> {
+        if self.native_remount_owner(namespace, from, to)?.as_ref() != Some(owner) {
+            return Err(err(503, "native auth remount original owner changed"));
+        }
+        // Revoke original-origin service tokens and their normal descendant tree.
+        // Do this on the same COW candidate as the real mount move.
+        let mut ids: Vec<String> = self
+            .tokens
+            .iter()
+            .filter(|(_, token)| {
+                token.namespace == namespace && token.auth_mount.as_deref() == Some(from)
+            })
+            .map(|(id, _)| id.clone())
+            .collect();
+        for id in &ids {
+            self.revoke(id);
+        }
+        ids.zeroize();
+        self.remount_mount(namespace, from, to, cas)
+    }
+
     pub(super) fn remount_mount(
         &mut self,
         namespace: &str,
@@ -3342,6 +3476,7 @@ impl AuthState {
                 "auth remount destination conflicts with an existing mount",
             ));
         }
+        self.advance_native_remount_epochs(namespace, &[from, to])?;
         entries.remove(from);
         moved.revision = next_auth_revision(moved.revision)?;
         let revision = moved.revision;
@@ -3688,6 +3823,7 @@ impl AuthState {
                         }
                     }
                     if changed {
+                        self.advance_native_remount_epochs(namespace, &[mount])?;
                         entry.revision = next_auth_revision(entry.revision)?;
                         entries.insert(mount.into(), entry);
                         self.auth_mounts.insert(namespace.into(), entries);
@@ -3796,6 +3932,9 @@ impl AuthState {
                     }
                 }
                 let mutated = existing.as_ref() != Some(&next);
+                if mutated {
+                    self.advance_native_remount_epochs(namespace, &[mount])?;
+                }
                 entries.insert(mount.into(), next);
                 self.auth_mounts.insert(namespace.into(), entries);
                 Ok(empty(mutated))
@@ -3819,6 +3958,7 @@ impl AuthState {
                         "SDK credential cleanup is required before auth mount retirement",
                     ));
                 }
+                self.advance_native_remount_epochs(namespace, &[mount])?;
                 entries.remove(mount);
                 self.auth_mounts.insert(namespace.into(), entries);
                 self.disable_auth_mount(AuthScope { namespace, mount });

@@ -549,3 +549,6 @@ fn pki_key_policy104_any_base_zero_native_scalar_bounds_and_no_failed_role_write
     assert_eq!(retained.body["data"]["key_bits"], 4096);
     Ok(())
 }
+
+#[path = "service_pki_rsa8192_tests.rs"]
+mod rsa8192;
