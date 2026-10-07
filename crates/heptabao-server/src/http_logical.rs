@@ -283,7 +283,7 @@ mod tests {
         }
     }
     #[test]
-    fn complete_external_sign_envelope_fills_empty_attempt_id_and_keeps_owned_data()
+    fn complete_external_sign_envelope_uses_current_ingress_id_and_keeps_owned_data()
     -> io::Result<()> {
         let data = json!({"certificate":"public-test-certificate",
             "issuer_id":"actual-issuer-identity","serial_number":"aa:bb",
@@ -292,6 +292,7 @@ mod tests {
             (false, ""),
             (true, ""),
             (false, "11111111-2222-3333-4444-555555555555"),
+            (false, "backend-selected-invalid-attempt-id"),
         ] {
             let wrap = if wrapped {
                 json!({"token":"test-wrap-token","ttl":10})
@@ -312,12 +313,18 @@ mod tests {
             let snapshot::NativeReply::Json(response) = &reply else {
                 unreachable!()
             };
-            let expected = if !wrapped && prior.is_empty() {
-                request_id(&random)
-            } else {
+            // OpenBao 2.7.0 HTTP logical.go assigns httpResp.RequestID = req.ID.
+            // A previous body field cannot mint ordinary HTTP ingress identity.
+            // Actual stored unwrap is privately recognized before this projection.
+            let expected = if wrapped {
                 prior.to_owned()
+            } else {
+                request_id(&random)
             };
             assert_eq!(response.body["request_id"], expected);
+            if !wrapped && !prior.is_empty() {
+                assert_ne!(response.body["request_id"], prior);
+            }
             assert_eq!(response.body["data"], data);
             assert_eq!(response.body["data"]["request_id"], "");
             assert_eq!(response.body["wrap_info"], wrap);
