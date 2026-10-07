@@ -1309,6 +1309,9 @@ struct Token {
     bound_cidrs: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     wrapping: Option<wrapping::WrappedResponse>,
+    /// Private durable original-reply token owner; persists through consume.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    raw_wrapped_reply_custody: Option<wrapping::RawReplyTokenCustody>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     entity_id: Option<String>,
     #[serde(default)]
@@ -2475,6 +2478,7 @@ impl AuthState {
             token_role: None,
             bound_cidrs: Vec::new(),
             wrapping: None,
+            raw_wrapped_reply_custody: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,
@@ -2779,6 +2783,9 @@ impl AuthState {
         if token.uses_remaining == Some(0) {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
             token.wrapping = None;
+            if let Some(custody) = &mut token.raw_wrapped_reply_custody {
+                custody.consume();
+            }
         }
         let finite_use_consumed = request_token.uses_remaining.is_some();
         Ok(Self::request_principal(
@@ -5874,6 +5881,7 @@ impl AuthState {
                     token_role: None,
                     bound_cidrs: Vec::new(),
                     wrapping: None,
+                    raw_wrapped_reply_custody: None,
                     entity_id: None,
                     cubbyhole: cubbyhole::TokenCubbyhole::default(),
                     accessor: random_id("a.")?,
@@ -7251,6 +7259,7 @@ impl AuthState {
                     parent.bound_cidrs.clone()
                 },
                 wrapping: None,
+                raw_wrapped_reply_custody: None,
                 entity_id: if no_parent || entity_alias.is_some() {
                     None
                 } else {
@@ -8662,6 +8671,7 @@ fn login_token(
         token_role: None,
         bound_cidrs: Vec::new(),
         wrapping: None,
+        raw_wrapped_reply_custody: None,
         entity_id: None,
         cubbyhole: cubbyhole::TokenCubbyhole::default(),
         accessor: random_id("a.")?,

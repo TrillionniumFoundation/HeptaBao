@@ -521,24 +521,132 @@ impl StoredWrappedReply {
     }
 }
 
+/// Same token owner remains after exact consumption. No SDK or user body mints it.
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "phase", rename_all = "kebab-case", deny_unknown_fields)]
+pub(in crate::auth) enum RawReplyTokenCustody {
+    Live { owner_digest: [u8; 32] },
+    Consumed { owner_digest: [u8; 32] },
+}
+struct ImmutableTokenOwner<'a>(&'a Token);
+impl Serialize for ImmutableTokenOwner<'_> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeStruct;
+        let token = self.0;
+        let mut owner = serializer.serialize_struct("OriginalWrappedReplyTokenOwnerV1", 24)?;
+        owner.serialize_field("token_api_precision", &token.token_api_precision)?;
+        owner.serialize_field("public_origin", &token.public_origin)?;
+        owner.serialize_field("issue_stamp", &token.issue_stamp)?;
+        owner.serialize_field("token_api_lease_ttl", &token.token_api_lease_ttl)?;
+        owner.serialize_field("token_role", &token.token_role)?;
+        owner.serialize_field("bound_cidrs", &token.bound_cidrs)?;
+        owner.serialize_field("entity_id", &token.entity_id)?;
+        owner.serialize_field("cubbyhole", &token.cubbyhole)?;
+        owner.serialize_field("accessor", &token.accessor)?;
+        owner.serialize_field("namespace", &token.namespace)?;
+        owner.serialize_field("policies", &token.policies)?;
+        owner.serialize_field("root", &token.root)?;
+        owner.serialize_field("parent", &token.parent)?;
+        owner.serialize_field("created_at", &token.created_at)?;
+        owner.serialize_field("expires_at", &token.expires_at)?;
+        owner.serialize_field("max_expires_at", &token.max_expires_at)?;
+        owner.serialize_field("period", &token.period)?;
+        owner.serialize_field("renewable", &token.renewable)?;
+        owner.serialize_field("display_name", &token.display_name)?;
+        owner.serialize_field("auth_mount", &token.auth_mount)?;
+        owner.serialize_field("auth_origin_known", &token.auth_origin_known)?;
+        owner.serialize_field("auth_cert_role", &token.auth_cert_role)?;
+        owner.serialize_field("auth_cert_sha256", &token.auth_cert_sha256)?;
+        owner.serialize_field("auth_provenance", &token.auth_provenance)?;
+        owner.end()
+    }
+}
+impl RawReplyTokenCustody {
+    pub(super) fn live(token: &Token) -> Result<Self, AuthError> {
+        Ok(Self::Live {
+            owner_digest: Self::owner_digest(token)?,
+        })
+    }
+    fn owner_digest(token: &Token) -> Result<[u8; 32], AuthError> {
+        let bytes = Zeroizing::new(
+            serde_json::to_vec(&ImmutableTokenOwner(token))
+                .map_err(|_| bad("stored reply token owner encoding rejected"))?,
+        );
+        Ok(crate::ha_forward_completion::digest(&bytes))
+    }
+    fn digest(&self) -> &[u8; 32] {
+        match self {
+            Self::Live { owner_digest } | Self::Consumed { owner_digest } => owner_digest,
+        }
+    }
+    pub(in crate::auth) fn consume(&mut self) {
+        *self = Self::Consumed {
+            owner_digest: *self.digest(),
+        };
+    }
+    fn validate(&self, token: &Token) -> Result<(), AuthError> {
+        if *self.digest() != Self::owner_digest(token)? {
+            return Err(bad("stored reply immutable token owner differs"));
+        }
+        match self {
+            Self::Live { .. }
+                if token.uses_remaining == Some(1)
+                    && token
+                        .wrapping
+                        .as_ref()
+                        .is_some_and(|w| w.stored_reply.is_some()) =>
+            {
+                Ok(())
+            }
+            Self::Consumed { .. }
+                if token.uses_remaining == Some(0) && token.wrapping.is_none() =>
+            {
+                Ok(())
+            }
+            _ => Err(bad("stored reply token phase is not canonical")),
+        }
+    }
+}
+
 impl AuthState {
     pub(crate) fn has_raw_wrapped_reply_state(&self) -> bool {
         self.raw_wrapped_reply_floor
             || self.tokens.values().any(|t| {
-                t.wrapping
-                    .as_ref()
-                    .is_some_and(|w| w.stored_reply.is_some())
+                t.raw_wrapped_reply_custody.is_some()
+                    || t.wrapping
+                        .as_ref()
+                        .is_some_and(|w| w.stored_reply.is_some())
             })
     }
     pub(crate) fn validate_raw_wrapped_reply_state(&self) -> Result<(), AuthError> {
         for token in self.tokens.values() {
+            // Token API admission forbids assigning this reserved policy. Both
+            // historical and new wrapper producers end at None plus uses0.
+            if token.wrapping.is_none()
+                && token.policies.contains("response-wrapping")
+                && (token.uses_remaining != Some(0)
+                    || token.root
+                    || token.parent.is_some()
+                    || token.entity_id.is_some()
+                    || token.renewable
+                    || token.period != 0
+                    || token.policies != BTreeSet::from(["response-wrapping".into()]))
+            {
+                return Err(bad("consumed wrapping token is not canonical"));
+            }
+            if let Some(custody) = &token.raw_wrapped_reply_custody {
+                if !self.raw_wrapped_reply_floor {
+                    return Err(bad("stored reply token reader floor missing"));
+                }
+                custody.validate(token)?;
+            }
             if let Some(stored) = token
                 .wrapping
                 .as_ref()
                 .and_then(|w| w.stored_reply.as_ref())
             {
-                if !self.raw_wrapped_reply_floor {
-                    return Err(bad("stored reply reader floor missing"));
+                if !self.raw_wrapped_reply_floor || token.raw_wrapped_reply_custody.is_none() {
+                    return Err(bad("stored reply reader or token owner missing"));
                 }
                 let owner = token
                     .wrapping
@@ -558,10 +666,22 @@ impl AuthState {
             return Err(bad("stored reply reader floor cannot retire"));
         }
         for (id, old) in &previous.tokens {
-            if let (Some(old), Some(next)) = (
-                old.wrapping.as_ref(),
-                self.tokens.get(id).and_then(|t| t.wrapping.as_ref()),
-            ) {
+            let Some(next) = self.tokens.get(id) else {
+                continue;
+            }; // Existing revoke can delete the token.
+            if let Some(origin) = &old.raw_wrapped_reply_custody {
+                let next_origin = next
+                    .raw_wrapped_reply_custody
+                    .as_ref()
+                    .ok_or_else(|| bad("retained original reply token owner is stripped"))?;
+                if origin.digest() != next_origin.digest()
+                    || matches!(origin, RawReplyTokenCustody::Consumed { .. })
+                        && !matches!(next_origin, RawReplyTokenCustody::Consumed { .. })
+                {
+                    return Err(bad("retained original reply token owner cannot regress"));
+                }
+            }
+            if let (Some(old), Some(next)) = (old.wrapping.as_ref(), next.wrapping.as_ref()) {
                 if old.stored_reply != next.stored_reply
                     || (old.stored_reply.is_some() && old.response != next.response)
                 {
@@ -570,6 +690,61 @@ impl AuthState {
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+impl AuthState {
+    /// Hostile test-only candidate of an actual retained private token, no issuer.
+    pub(crate) fn raw110_token_countercandidate(&self, case: usize) -> Result<Self, AuthError> {
+        let mut next = self.clone();
+        let token = next
+            .tokens
+            .values_mut()
+            .find(|t| t.raw_wrapped_reply_custody.is_some())
+            .ok_or_else(|| bad("actual raw token absent in countercontrol"))?;
+        match case {
+            0 => token.wrapping = None,
+            1 => {
+                token.wrapping = None;
+                token.uses_remaining = Some(0);
+            }
+            2 => {
+                token.wrapping = None;
+                token
+                    .raw_wrapped_reply_custody
+                    .as_mut()
+                    .ok_or_else(|| bad("custody"))?
+                    .consume();
+            }
+            3 => token.raw_wrapped_reply_custody = None,
+            4 => token.uses_remaining = Some(1),
+            5 => token.raw_wrapped_reply_custody = None,
+            6 => token.accessor.push('x'),
+            7 => token.namespace = "other-owner".into(),
+            8 => {
+                token.policies.insert("root".into());
+            }
+            9 => token.expires_at = token.expires_at.and_then(|n| n.checked_add(1)),
+            10 => token.root = true,
+            11 => {
+                token.accessor.push('x');
+                let owner_digest = RawReplyTokenCustody::owner_digest(token)?;
+                token.raw_wrapped_reply_custody =
+                    Some(match token.raw_wrapped_reply_custody.as_ref() {
+                        Some(RawReplyTokenCustody::Consumed { .. }) => {
+                            RawReplyTokenCustody::Consumed { owner_digest }
+                        }
+                        _ => RawReplyTokenCustody::Live { owner_digest },
+                    });
+            }
+            12 => {
+                token.wrapping = None;
+                token.raw_wrapped_reply_custody = None;
+            }
+            _ => return Err(bad("unknown raw token countercontrol")),
+        }
+        Ok(next)
     }
 }
 
@@ -584,6 +759,8 @@ struct RawAuthProbe {
 struct RawTokenProbe {
     #[serde(default)]
     wrapping: Option<RawWrapperProbe>,
+    #[serde(default)]
+    raw_wrapped_reply_custody: Option<serde::de::IgnoredAny>,
 }
 #[derive(Deserialize)]
 struct RawWrapperProbe {
@@ -594,10 +771,11 @@ impl RawAuthProbe {
     fn requires_raw_floor(&self) -> bool {
         self.raw_wrapped_reply_floor
             || self.tokens.values().any(|token| {
-                token
-                    .wrapping
-                    .as_ref()
-                    .is_some_and(|w| w.stored_reply.is_some())
+                token.raw_wrapped_reply_custody.is_some()
+                    || token
+                        .wrapping
+                        .as_ref()
+                        .is_some_and(|w| w.stored_reply.is_some())
             })
     }
     fn validate_schema(&self, schema: u32) -> Result<(), AuthError> {
@@ -929,6 +1107,69 @@ mod tests {
         let mut decoded: Value = serde_json::from_slice(&stored.bytes)?;
         assert_eq!(decoded["data"], logical["data"]);
         crate::service::erase_json(&mut decoded);
+        Ok(())
+    }
+
+    #[test]
+    fn raw110_same_token_requires_canonical_consume_and_preserves_terminal_owner() -> TestResult {
+        let (mut live, root) = AuthState::bootstrap(100)?;
+        let bearer = issue(
+            &mut live,
+            &json!({"data":{"stable":"terminal"}}),
+            [0x95; 16],
+        )?;
+        for case in [0, 1, 2, 3, 6, 7, 8, 9, 10, 12] {
+            let forged = live.raw110_token_countercandidate(case)?;
+            assert!(forged.validate_raw_wrapped_reply_state().is_err());
+            assert!(forged.validate_raw_wrapped_reply_successor(&live).is_err());
+        }
+        let forged = live.raw110_token_countercandidate(11)?;
+        assert!(forged.validate_raw_wrapped_reply_state().is_ok());
+        assert!(forged.validate_raw_wrapped_reply_successor(&live).is_err());
+        let before = live.clone();
+        let admin = live.authenticate(&root, 100)?;
+        let _ = live.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":bearer}),
+            100,
+        )?;
+        let terminal = &live.tokens[&hash(&bearer)];
+        assert!(terminal.wrapping.is_none() && terminal.uses_remaining == Some(0));
+        assert!(matches!(
+            terminal.raw_wrapped_reply_custody,
+            Some(RawReplyTokenCustody::Consumed { .. })
+        ));
+        assert!(live.validate_raw_wrapped_reply_state().is_ok());
+        assert!(live.validate_raw_wrapped_reply_successor(&before).is_ok());
+        for case in [4, 6, 7, 8, 9, 10] {
+            let forged = live.raw110_token_countercandidate(case)?;
+            assert!(forged.validate_raw_wrapped_reply_state().is_err());
+            assert!(forged.validate_raw_wrapped_reply_successor(&live).is_err());
+        }
+        // Historical None must stay readable, so full marker stripping needs the
+        // actual protected predecessor; it cannot be inferred from a bare Value.
+        for case in [5, 11] {
+            let forged = live.raw110_token_countercandidate(case)?;
+            assert!(forged.validate_raw_wrapped_reply_state().is_ok());
+            assert!(forged.validate_raw_wrapped_reply_successor(&live).is_err());
+        }
+        assert!(before.validate_raw_wrapped_reply_state().is_ok());
+        assert!(before.validate_raw_wrapped_reply_successor(&live).is_err());
+        let mut expiry = before.clone();
+        assert!(expiry.advance_wrapping_clock(160));
+        assert!(expiry.validate_raw_wrapped_reply_state().is_ok());
+        assert!(expiry.validate_raw_wrapped_reply_successor(&before).is_ok());
+        let mut floor_stripped = live.clone();
+        floor_stripped.raw_wrapped_reply_floor = false;
+        let bytes = Zeroizing::new(serde_json::to_vec(&floor_stripped)?);
+        assert!(AuthState::predecode_raw_reply_owner(&bytes, 108).is_err());
+        let mut deleted = live.clone();
+        deleted.tokens.remove(&hash(&bearer));
+        assert!(deleted.validate_raw_wrapped_reply_successor(&live).is_ok());
+        assert!(deleted.raw_wrapped_reply_floor);
         Ok(())
     }
 

@@ -92,6 +92,7 @@ impl AuthState {
             token_role: None,
             bound_cidrs: authority.bound_cidrs,
             wrapping: None,
+            raw_wrapped_reply_custody: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,

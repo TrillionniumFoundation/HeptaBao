@@ -151,3 +151,100 @@ fn raw110_stale_cow_auth_record_plan_cannot_publish_actual_new_custody() -> Test
     assert!(current.auth.has_raw_wrapped_reply_state());
     Ok(())
 }
+
+#[test]
+fn raw110_actual_service_terminal_vetoes_current_publication_snapshot_and_cow() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    let bearer = issue(&mut service, &admin, [0xd4; 16])?;
+    let live = service.state.as_ref().ok_or("live")?.clone();
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for case in [0, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12] {
+        let mut forged = live.clone();
+        forged.auth = live.auth.raw110_token_countercandidate(case)?.into();
+        if case != 11 {
+            assert!(forged.validate_format().is_err());
+        }
+        assert!(forged.validate_publication_schema(Some(&live)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&live, &forged).is_err());
+        assert!(service.prepare_record_plan(&mut forged).is_err());
+        let mut healthy = live.clone();
+        let plan = service.prepare_record_plan(&mut healthy)?;
+        assert!(service.commit_record_plan(&forged, plan).is_err());
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    // The actual listener-style self bearer consumes through Service admission,
+    // retaining only the original affine final-use view for this one reply.
+    let response = call(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(response.status, 200);
+    assert!(
+        response
+            .unwrapped_json
+            .as_ref()
+            .ok_or("origin")?
+            .raw_bytes(&response.body)?
+            .is_some()
+    );
+    let terminal = service.state.as_ref().ok_or("terminal")?.clone();
+    assert!(terminal.validate_publication_schema(Some(&live)).is_ok());
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for case in [4, 5, 6, 7, 8, 9, 10, 11] {
+        let mut forged = terminal.clone();
+        forged.auth = terminal.auth.raw110_token_countercandidate(case)?.into();
+        if ![5, 11].contains(&case) {
+            assert!(forged.validate_format().is_err());
+        }
+        assert!(forged.validate_publication_schema(Some(&terminal)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&terminal, &forged).is_err());
+        assert!(service.prepare_record_plan(&mut forged).is_err());
+        let mut healthy = terminal.clone();
+        let plan = service.prepare_record_plan(&mut healthy)?;
+        assert!(service.commit_record_plan(&forged, plan).is_err());
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    let mut rearmed = terminal.clone();
+    rearmed.auth = live.auth.clone();
+    assert!(rearmed.auth.validate_raw_wrapped_reply_state().is_ok());
+    assert!(
+        rearmed
+            .validate_publication_schema(Some(&terminal))
+            .is_err()
+    );
+    assert!(Service::validate_snapshot_protected_floor(&terminal, &rearmed).is_err());
+    assert!(service.prepare_record_plan(&mut rearmed).is_err());
+    let mut healthy = terminal.clone();
+    let plan = service.prepare_record_plan(&mut healthy)?;
+    assert!(service.commit_record_plan(&rearmed, plan).is_err());
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        identity
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}

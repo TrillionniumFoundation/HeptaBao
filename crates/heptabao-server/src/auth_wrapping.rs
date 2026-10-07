@@ -7,6 +7,7 @@ use super::*;
 /// Neither user JSON, a header, an SDK response nor the URL constructs it.
 #[path = "auth_wrapped_reply110.rs"]
 mod raw_reply;
+pub(super) use raw_reply::RawReplyTokenCustody;
 pub(crate) use raw_reply::{
     IngressReplyContext, IngressReplyScope, StoredWrappedReply, current_ingress,
     encode_http_envelope, logical_envelope,
@@ -139,6 +140,9 @@ impl AuthState {
             if token.wrapping.is_some() && token.expires_at.is_some_and(|expiry| now >= expiry) {
                 token.wrapping = None;
                 token.uses_remaining = Some(0);
+                if let Some(custody) = &mut token.raw_wrapped_reply_custody {
+                    custody.consume();
+                }
             }
         }
         true
@@ -256,7 +260,7 @@ impl AuthState {
             creation_ttl: ttl,
             wrapped_accessor: wrapped_accessor.clone(),
         };
-        let token = Token {
+        let mut token = Token {
             token_api_precision: None,
             public_origin: None,
             issue_stamp: creation_stamp,
@@ -264,6 +268,7 @@ impl AuthState {
             token_role: None,
             bound_cidrs: Vec::new(),
             wrapping: Some(wrapped),
+            raw_wrapped_reply_custody: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: accessor.clone(),
@@ -300,6 +305,13 @@ impl AuthState {
             body: json!({"request_id":"","lease_id":"","lease_duration":0,"renewable":false,
                 "data":null,"auth":null,"warnings":null,"wrap_info":info}),
         };
+        if token
+            .wrapping
+            .as_ref()
+            .is_some_and(|w| w.stored_reply.is_some())
+        {
+            token.raw_wrapped_reply_custody = Some(RawReplyTokenCustody::live(&token)?);
+        }
         self.wrapping_clock = now;
         if token
             .wrapping
@@ -372,6 +384,9 @@ impl AuthState {
             .take()
             .ok_or_else(|| bad("wrapping response unavailable"))?;
         token.uses_remaining = Some(0);
+        if let Some(custody) = &mut token.raw_wrapped_reply_custody {
+            custody.consume();
+        }
         Ok(wrapped)
     }
 

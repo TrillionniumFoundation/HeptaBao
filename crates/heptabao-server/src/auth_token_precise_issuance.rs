@@ -308,6 +308,7 @@ impl AuthState {
                 token_role: issued_role,
                 bound_cidrs: cidrs,
                 wrapping: None,
+                raw_wrapped_reply_custody: None,
                 entity_id,
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor,
