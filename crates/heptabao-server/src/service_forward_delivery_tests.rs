@@ -112,12 +112,22 @@ fn prepare_with_ttl_and_root(
     }
     let id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
     let cluster = crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &id)?;
-    // The actual Raft cluster already exists. A short actor is issued through
-    // the real local Service before its first authenticated Raft publication,
-    // so issuance does not perform repeated HA transactions inside its 1s grant.
-    if ttl != "1s" {
-        service.ha = Some(Arc::clone(&cluster.processes[0]));
-        service.sync_from_ha().map_err(|_| "initial HA state")?;
+    // Publish the actual initial precision/record graph before minting any
+    // short actor. Keep HA attached for its genuine issuance and leader use;
+    // never detach, overwrite a locally minted actor or re-anchor its clock.
+    let before_initial_ha = Instant::now();
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|_| "initial HA state")?;
+    if ttl == "1s" {
+        eprintln!(
+            "[Root-short-actor-initial-HA-before-mint] seed_elapsed_ms={} actual_precision={} actor_not_minted=true HA_attached=true",
+            before_initial_ha.elapsed().as_millis(),
+            service
+                .state
+                .as_ref()
+                .ok_or("seeded state")?
+                .has_token_api_precision_state(),
+        );
     }
     let precise_before_mint = service
         .state
@@ -157,12 +167,7 @@ fn prepare_with_ttl_and_root(
         .ok_or("accessor")?
         .to_owned();
     if ttl == "1s" {
-        observe_short_actor(&service, &accessor, "after_real_local_mint")?;
-        service.ha = Some(Arc::clone(&cluster.processes[0]));
-        service
-            .sync_from_ha()
-            .map_err(|_| "initial short actor HA publication")?;
-        observe_short_actor(&service, &accessor, "after_actual_initial_ha_publication")?;
+        observe_short_actor(&service, &accessor, "after_real_HA_attached_mint")?;
     }
     Ok((service, cluster, actor, accessor, token))
 }
