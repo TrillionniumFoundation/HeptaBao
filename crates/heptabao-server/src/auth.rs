@@ -6370,8 +6370,7 @@ impl AuthState {
             return Err(err(405, "method not allowed"));
         }
         reject_unknown(body, &[])?;
-        let actor = self.permission(principal, scope.namespace, path, "update", now)?;
-        self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
+        self.permission(principal, scope.namespace, path, "update", now)?;
         let mut removed = 0;
         for role in self.roles_at_mut(scope).values_mut() {
             let stale: Vec<String> = role
@@ -6391,10 +6390,13 @@ impl AuthState {
                 id.zeroize();
             }
         }
-        Ok(response(
-            json!({"removed_secret_ids": removed}),
-            removed > 0,
-        ))
+        Ok(AuthResponse {
+            status: 202,
+            body: json!({
+                "warnings": ["Tidy operation successfully started. Any information from the operation will be printed to OpenBao's server logs."]
+            }),
+            ..empty(removed > 0)
+        })
     }
 
     #[allow(clippy::too_many_arguments)]

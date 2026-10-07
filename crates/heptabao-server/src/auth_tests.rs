@@ -2141,16 +2141,63 @@ fn administrative_tidy_frees_only_inactive_credentials_in_its_namespace() {
         .as_str()
         .unwrap()
         .to_owned();
-    let result = call(
+    put_policy(
         &mut state,
         &root,
+        "team",
+        "tidy-updater",
+        json!(r#"path "auth/approle/tidy/secret-id" { capabilities = ["update"] }"#),
+    );
+    let updater_raw = token(
+        &mut state,
+        &root,
+        "team",
+        json!({"policies":["tidy-updater"],"no_default_policy":true}),
+        100,
+    );
+    let updater = state.authenticate(&updater_raw, 111).unwrap();
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/approle/tidy/secret-id",
+                &json!({}),
+                111
+            )
+            .is_err()
+    );
+    assert!(
+        state
+            .handle(
+                Some(&actor),
+                "team",
+                "POST",
+                "auth/approle/tidy/secret-id",
+                &json!({}),
+                111
+            )
+            .is_err()
+    );
+    let result = call(
+        &mut state,
+        &updater,
         "team",
         "POST",
         "auth/approle/tidy/secret-id",
         json!({}),
         111,
     );
-    assert_eq!(result.body["data"]["removed_secret_ids"], 1);
+    assert_eq!(result.status, 202);
+    assert!(result.mutated);
+    assert!(result.body["data"].is_null());
+    assert_eq!(
+        result.body["warnings"],
+        json!([
+            "Tidy operation successfully started. Any information from the operation will be printed to OpenBao's server logs."
+        ])
+    );
     let stored = &state.roles["team"]["hepta"].secret_ids;
     assert!(!stored.contains_key(&hash(&expired_secret)));
     assert!(stored.contains_key(&hash(&active_secret)));
@@ -2929,7 +2976,13 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
         json!({}),
         101,
     );
-    assert_eq!(tidied.body["data"]["removed_secret_ids"], 1);
+    assert_eq!(tidied.status, 202);
+    assert!(tidied.mutated);
+    assert!(
+        state.mounted_roles["team"]["build"]["service"]
+            .secret_ids
+            .is_empty()
+    );
     let mut state: AuthState =
         serde_json::from_slice(&serde_json::to_vec(&state).unwrap()).unwrap();
     assert!(

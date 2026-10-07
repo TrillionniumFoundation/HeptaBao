@@ -4655,10 +4655,10 @@ impl Service {
             Err(error) => return Response::error(error.status, &error.message),
             Ok(None) => {}
         }
-        let Some(principal) = principal else {
-            return Response::error(403, "permission denied");
-        };
         if path == "sys/internal/specs/openapi" {
+            let Some(principal) = principal else {
+                return openapi::handle_anonymous(method, body);
+            };
             if let Err(error) = state
                 .auth
                 .authorize_request(principal, namespace, path, "read", now)
@@ -4673,6 +4673,9 @@ impl Service {
                 &state.engines.ui_secret_mounts(namespace),
             );
         }
+        let Some(principal) = principal else {
+            return Response::error(403, "permission denied");
+        };
         if path == "sys/leader" && method == "GET" {
             return Response::error(500, "leader route escaped service HA boundary");
         }

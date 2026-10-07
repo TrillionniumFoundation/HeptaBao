@@ -792,10 +792,39 @@ fn add_actual_mount_routes(
     }
 }
 
+pub(super) fn handle_anonymous(method: &str, body: &Value) -> Response {
+    handle_with_visibility(
+        method,
+        body,
+        false,
+        true,
+        &BTreeMap::new(),
+        &BTreeMap::new(),
+    )
+}
+
 pub(super) fn handle(
     method: &str,
     body: &Value,
     root_visibility: bool,
+    auth_mounts: &BTreeMap<String, Value>,
+    secret_mounts: &BTreeMap<String, Value>,
+) -> Response {
+    handle_with_visibility(
+        method,
+        body,
+        root_visibility,
+        false,
+        auth_mounts,
+        secret_mounts,
+    )
+}
+
+fn handle_with_visibility(
+    method: &str,
+    body: &Value,
+    root_visibility: bool,
+    anonymous_visibility: bool,
     auth_mounts: &BTreeMap<String, Value>,
     secret_mounts: &BTreeMap<String, Value>,
 ) -> Response {
@@ -815,6 +844,23 @@ pub(super) fn handle(
             return Response::error(400, "generic_mount_paths must be a boolean");
         }
     };
+
+    // An absent token does not grant mount listing or policy visibility. The
+    // native anonymous document contains no paths or schemas, including public
+    // routes; build that projection without reading either mount catalog.
+    if anonymous_visibility {
+        return Response::ok(json!({
+            "openapi": "3.0.2",
+            "info": {
+                "title": "HeptaBao API",
+                "description": "HTTP API for HeptaBao.",
+                "version": "0.1.0",
+                "license": {"name": "Apache License 2.0"}
+            },
+            "paths": {},
+            "components": {"schemas": {}}
+        }));
+    }
 
     let mut paths = Map::new();
     for route in FIXED_ROUTES {

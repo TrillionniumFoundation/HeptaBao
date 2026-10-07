@@ -3,22 +3,33 @@ use super::{RequestClock, Service};
 use serde_json::{Value, json};
 
 #[test]
-fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
+fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (unseal, root_token) = bootstrap(&mut service)?;
 
+    let anonymous = call(
+        &mut service,
+        "GET",
+        "sys/internal/specs/openapi",
+        "",
+        json!({}),
+    );
+    assert_eq!(anonymous.status, 200);
+    assert_eq!(anonymous.body["paths"], json!({}));
+    assert_eq!(anonymous.body["components"], json!({"schemas": {}}));
+    assert!(anonymous.body.get("security").is_none());
     assert_eq!(
         call(
             &mut service,
-            "GET",
+            "POST",
             "sys/internal/specs/openapi",
             "",
-            json!({})
+            json!({"generic_mount_paths":"true"})
         )
         .status,
-        403
+        400
     );
 
     let bounded = call(
