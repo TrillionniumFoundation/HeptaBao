@@ -233,6 +233,9 @@ pub struct AuthState {
     /// Global lifecycle evidence stays with the actual root auth owner.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     namespace_batch_registry: Option<batch_namespace::Registry>,
+    /// Global deletion taint remains with the root authentication owner.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    namespace_deletions: Option<namespace_deletion::Ledger>,
     /// None preserves the historical one-hour inherited default. Fresh state
     /// records native defaults so every namespace and HA peer uses the same policy.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2405,6 +2408,7 @@ impl AuthState {
             sdk_auth_clock: None,
             sdk_credential_leases: None,
             namespace_batch_registry: None,
+            namespace_deletions: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
@@ -2573,6 +2577,7 @@ impl AuthState {
         consume_check: bool,
     ) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
+        self.require_active_namespace(&token.namespace)?;
         let time = self.token_api_observed_time(time);
         self.validate_sdk_auth_token_live(token, time)?;
         let time = if token.wrapping.is_some() {
@@ -2593,6 +2598,7 @@ impl AuthState {
                 return Err(denied());
             }
             let ancestor = self.tokens.get(parent_id).ok_or_else(denied)?;
+            self.require_active_namespace(&ancestor.namespace)?;
             self.validate_sdk_auth_token_live(ancestor, time)?;
             if !time.service_live(ancestor.token_api_precision.as_ref(), ancestor.expires_at)
                 || ancestor.uses_remaining == Some(0)
@@ -2771,6 +2777,7 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<batch_principal::CheckedCredential<'a>, AuthError> {
         validate_namespace(namespace)?;
+        self.require_active_namespace(namespace)?;
         let time = principal.request_authority_time(time)?;
         let view = match &principal.credential {
             batch_principal::VerifiedCredential::Service(snapshot) => {
@@ -9250,6 +9257,7 @@ impl AuthState {
         namespace: &str,
         time: AuthorityTime,
     ) -> Option<LeaseIssuer> {
+        self.require_active_namespace(namespace).ok()?;
         let token = self.active_token_observed(id, time, true).ok()?;
         if !token.root && token.namespace != namespace {
             return None;
@@ -9306,6 +9314,8 @@ mod userpass_bcrypt;
 mod batch;
 #[path = "auth_batch_namespace.rs"]
 pub(crate) mod batch_namespace;
+#[path = "auth_namespace_deletion.rs"]
+pub(crate) mod namespace_deletion;
 #[cfg(test)]
 pub(crate) use batch::{BatchClaims, BatchKeyAuthority};
 #[path = "auth_batch_issuance.rs"]

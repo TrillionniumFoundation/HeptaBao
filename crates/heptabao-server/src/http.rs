@@ -479,6 +479,17 @@ fn serve_inner(
             return Err("cannot bind configured listener".into());
         }
     };
+    let _namespace_deletion = match crate::service::start_namespace_deletion_worker(&service) {
+        Ok(worker) => worker,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+            }
+            return Err(error);
+        }
+    };
     let _lifecycle = match crate::service::start_lifecycle_worker(
         &service,
         Duration::from_secs(config.lifecycle_interval_seconds),
@@ -488,7 +499,9 @@ fn serve_inner(
             #[cfg(target_os = "linux")]
             if let Some(control) = local_control.as_ref() {
                 drop(listener);
-                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
+                    drop(_namespace_deletion);
+                });
             }
             return Err(error);
         }
@@ -503,6 +516,7 @@ fn serve_inner(
             if let Some(control) = local_control.as_ref() {
                 drop(listener);
                 return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
+                    drop(_namespace_deletion);
                     drop(_lifecycle);
                 });
             }
@@ -524,6 +538,7 @@ fn serve_inner(
         if let Err(error) = admission {
             drop(listener);
             return control.shutdown(&service, &connections, Some(error), || {
+                drop(_namespace_deletion);
                 drop(_lifecycle);
                 drop(_ha_activation);
             });
@@ -536,6 +551,7 @@ fn serve_inner(
         {
             drop(listener);
             return control.shutdown(&service, &connections, None, || {
+                drop(_namespace_deletion);
                 drop(_lifecycle);
                 drop(_ha_activation);
             });
@@ -555,6 +571,7 @@ fn serve_inner(
                         &connections,
                         Some("listener accept failed".into()),
                         || {
+                            drop(_namespace_deletion);
                             drop(_lifecycle);
                             drop(_ha_activation);
                         },
@@ -590,6 +607,7 @@ fn serve_inner(
                         &connections,
                         Some("cannot identify accepted peer".into()),
                         || {
+                            drop(_namespace_deletion);
                             drop(_lifecycle);
                             drop(_ha_activation);
                         },
@@ -686,6 +704,7 @@ fn serve_inner(
                     &connections,
                     Some("cannot create bounded request worker".into()),
                     || {
+                        drop(_namespace_deletion);
                         drop(_lifecycle);
                         drop(_ha_activation);
                     },

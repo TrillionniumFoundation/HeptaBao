@@ -185,6 +185,7 @@ impl OrdinaryKvAuthority {
             || state.cluster_id != self.cluster_id
             || self.namespace_catalog_required && !state.namespace_exists(&self.namespace)
             || state.namespace_is_sealed(&self.namespace)
+            || state.namespace_is_tainted(&self.namespace)
             || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
             || state
                 .engines

@@ -83,6 +83,7 @@ const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
+const NAMESPACE_DELETION_STATE_SCHEMA: u32 = 106;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
@@ -105,7 +106,7 @@ const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ORDINARY_REVOCATION_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = NAMESPACE_DELETION_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -122,6 +123,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_TIME_STATE_SCHEMA
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
                 | NAMESPACE_BATCH_STATE_SCHEMA
+                | NAMESPACE_DELETION_STATE_SCHEMA
                 | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
@@ -198,6 +200,8 @@ mod namespace_config;
 mod namespace_runtime;
 #[path = "service_namespaces.rs"]
 mod namespaces;
+pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
+use namespaces::deletion as namespace_deletion;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_openbao_wrapper.rs"]
@@ -1254,6 +1258,7 @@ pub struct Service {
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
+    pending_namespace_deletion: Option<namespace_deletion::AcceptedDelete>,
     pending_acme_authority: Option<pki_acme::Authority>,
     acme_nonces: pki_acme::Nonces,
     pending_local_unseal_completion: Option<local_unseal::LocalUnsealCompletion>,
@@ -1642,6 +1647,7 @@ impl Service {
             pending_ha_step_down: None,
             pending_forward_delivery: None,
             pending_help_authority: None,
+            pending_namespace_deletion: None,
             pending_acme_authority: None,
             acme_nonces: Default::default(),
             pending_local_unseal_completion: None,
@@ -2353,6 +2359,7 @@ impl Service {
             || self.pending_ha_step_down.is_some()
             || self.pending_forward_delivery.is_some()
             || self.pending_help_authority.is_some()
+            || self.pending_namespace_deletion.is_some()
             || self.pending_acme_authority.is_some()
             || self.pending_local_unseal_completion.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
@@ -2614,6 +2621,7 @@ impl Service {
         let token_api_authority = self.pending_token_api_authority.take();
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
+        let namespace_deletion = self.pending_namespace_deletion.take();
         let acme_authority = self.pending_acme_authority.take();
         let local_unseal_completion = self.pending_local_unseal_completion.take();
         let staged = sdk_staged
@@ -2636,6 +2644,7 @@ impl Service {
             + usize::from(external_pki_no_effect.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
+            + usize::from(namespace_deletion.is_some())
             + usize::from(acme_authority.is_some())
             + usize::from(local_unseal_completion.is_some())
             + usize::from(step_down.is_some())
@@ -2696,6 +2705,7 @@ impl Service {
         let external_pki_no_effect_expected = external_pki_no_effect.is_some();
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
+        let namespace_deletion_expected = namespace_deletion.is_some();
         let step_down_expected = self.expects_local_ha_step_down(path, &response);
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
@@ -2708,6 +2718,7 @@ impl Service {
         }
         self.pending_token_api_authority = token_api_authority;
         self.pending_help_authority = help_authority;
+        self.pending_namespace_deletion = namespace_deletion;
         let acme_expected = acme_authority.is_some();
         self.pending_acme_authority = acme_authority;
         let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
@@ -2741,6 +2752,11 @@ impl Service {
             &fingerprint,
         );
         let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
+        let response = self.complete_namespace_deletion_delivery(
+            namespace_deletion_expected,
+            response,
+            &fingerprint,
+        );
         let response = self.complete_pending_acme_delivery(acme_expected, response, &fingerprint);
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
@@ -3044,6 +3060,20 @@ impl Service {
                 .is_some_and(|state| state.namespace_exists(namespace))
         {
             return Response::error(404, "namespace not found");
+        }
+        if self
+            .state
+            .as_ref()
+            .is_some_and(|state| state.namespace_is_tainted(namespace))
+        {
+            return Response::error(
+                if path == "sys/auth" || path.starts_with("sys/auth/") {
+                    404
+                } else {
+                    403
+                },
+                "namespace is tainted",
+            );
         }
         if enforce_namespace
             && !matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
@@ -3486,7 +3516,7 @@ impl Service {
             );
         }
         if namespaces::owns(path) {
-            return self.namespace_route(admitted, principal.as_ref(), &request);
+            return self.namespace_route(admitted, principal, &request);
         }
         if Self::workflows_handles(path) {
             return self.workflow_route(admitted, principal.as_ref(), &request);
@@ -4027,6 +4057,7 @@ impl Service {
             || admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
             || admitted.has_namespace_batch_state()
+            || admitted.has_namespace_deletion_state()
             || admitted.engines.has_pki_url_state()
             || admitted.engines.has_external_pki_signer_history()
             || admitted.engines.has_full_dn_crl_state()

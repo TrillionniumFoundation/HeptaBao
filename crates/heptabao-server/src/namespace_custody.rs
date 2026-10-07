@@ -54,6 +54,18 @@ impl Binding {
         Ok(binding)
     }
 
+    pub(crate) fn validate_cluster_namespace(
+        &self,
+        cluster: &str,
+        namespace: &str,
+    ) -> Result<(), Error> {
+        self.validate()?;
+        if self.cluster_id != cluster || self.namespace != namespace {
+            return Err(Error::InvalidBinding);
+        }
+        Ok(())
+    }
+
     fn validate(&self) -> Result<(), Error> {
         if self.cluster_id.is_empty()
             || self.cluster_id.len() > 128

@@ -519,6 +519,7 @@ impl AuthState {
         namespace: &str,
         time: AuthorityTime,
     ) -> Option<ResolvedLeaseOwner> {
+        self.require_active_namespace(namespace).ok()?;
         let time = self.token_api_observed_time(time);
         if let Some(digest) = owner.service_digest() {
             let issuer = self.lease_issuer_by_digest_observed(digest, namespace, time)?;

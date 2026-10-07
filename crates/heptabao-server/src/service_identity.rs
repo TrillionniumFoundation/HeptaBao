@@ -136,6 +136,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.has_namespace_deletion_state() {
+            required.max(NAMESPACE_DELETION_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -176,6 +181,7 @@ impl State {
             ));
         }
         self.validate_namespace_batch_state()?;
+        self.validate_namespace_deletion_state()?;
         self.engines
             .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
             .map_err(|error| Response::error(503, &error.message))?;
@@ -222,6 +228,17 @@ impl State {
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin protected owner"))?;
         if let Some(previous) = previous {
+            self.auth
+                .validate_namespace_deletion_successor(&previous.auth, &self.cluster_id)
+                .map_err(|e| Response::error(e.status, &e.message))?;
+            if self.schema < NAMESPACE_DELETION_STATE_SCHEMA
+                && previous.has_namespace_deletion_state()
+            {
+                return Err(Response::error(
+                    503,
+                    "namespace deletion writer floor cannot decrease",
+                ));
+            }
             self.protected_state()?
                 .auth
                 .validate_namespace_batch_successor(&previous.protected_state()?.auth)
@@ -624,6 +641,7 @@ impl State {
             ));
         }
         self.validate_namespace_batch_state()?;
+        self.validate_namespace_deletion_state()?;
         self.auth
             .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
                 self.namespaces.incarnation(ns)
@@ -1661,6 +1679,7 @@ impl State {
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
+            | NAMESPACE_DELETION_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),

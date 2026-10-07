@@ -1263,6 +1263,10 @@ fn live(deadline: Option<Instant>) -> Result<(), Response> {
 // its complete target against an actual current ReadIndex identity.
 fn validate_received_transition(state: &State, previous: &State) -> Result<(), Response> {
     state.validate_format()?;
+    state
+        .auth
+        .validate_namespace_deletion_successor(&previous.auth, &state.cluster_id)
+        .map_err(|_| rejected())?;
     if state.cluster_id != previous.cluster_id
         || state.schema < previous.schema
         || state.replay_epoch < previous.replay_epoch

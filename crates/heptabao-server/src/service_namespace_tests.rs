@@ -101,7 +101,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
             json!({})
         )
         .status,
-        409
+        400
     );
 
     drop(service);

@@ -350,6 +350,18 @@ impl Service {
             .namespaces
             .validate_custody_successor(&current.protected_state()?.namespaces)
             .map_err(|_| Response::error(400, "snapshot would regress namespace lifecycle"))?;
+        incoming
+            .auth
+            .validate_namespace_deletion_successor(&current.auth, &incoming.cluster_id)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        if current.has_namespace_deletion_state()
+            && incoming.schema < NAMESPACE_DELETION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                503,
+                "namespace deletion restore floor cannot decrease",
+            ));
+        }
         if current.schema >= NAMESPACE_BATCH_STATE_SCHEMA
             && incoming.schema < NAMESPACE_BATCH_STATE_SCHEMA
         {

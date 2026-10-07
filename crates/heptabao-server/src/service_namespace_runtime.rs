@@ -40,7 +40,10 @@ enum Owner {
 /// Process-local response fencing only. These public owner fields never grant
 /// a key or actor and do not include a generation changed by unrelated writes.
 #[derive(Clone, PartialEq, Eq)]
-pub(super) struct DeliveryBinding(Vec<(Binding, u64, u64, Option<InheritedParent>)>);
+pub(super) struct DeliveryBinding {
+    owners: Vec<(Binding, u64, u64, Option<InheritedParent>)>,
+    taint: Vec<Binding>,
+}
 
 impl DeliveryBinding {
     pub(super) fn capture(state: &State, actual: &str) -> Self {
@@ -60,7 +63,24 @@ impl DeliveryBinding {
                 ));
             }
         }
-        Self(owners)
+        let taint = state
+            .auth
+            .namespace_deletion_ledger()
+            .map(|ledger| {
+                ledger
+                    .pending()
+                    .iter()
+                    .filter(|(path, _)| {
+                        actual == path.as_str()
+                            || actual
+                                .strip_prefix(path.as_str())
+                                .is_some_and(|tail| tail.starts_with('/'))
+                    })
+                    .map(|(_, binding)| binding.clone())
+                    .collect()
+            })
+            .unwrap_or_default();
+        Self { owners, taint }
     }
 }
 
@@ -2207,7 +2227,7 @@ mod tests {
         service.durable = None;
         let response = service.namespace_route(
             state,
-            Some(&principal),
+            Some(principal),
             &RequestView {
                 method: "POST",
                 path: "sys/namespaces/plain/seal",

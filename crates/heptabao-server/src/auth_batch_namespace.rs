@@ -159,6 +159,22 @@ impl Registry {
         Ok(())
     }
 
+    pub(crate) fn current_incarnation(&self, namespace: &str) -> Option<u64> {
+        self.active.get(namespace).copied()
+    }
+
+    pub(crate) fn knows_retired_incarnation(&self, namespace: &str, incarnation: u64) -> bool {
+        self.retired_legacy_paths.contains(namespace)
+            && self
+                .next_incarnation
+                .get(namespace)
+                .is_some_and(|next| *next > incarnation)
+            && self
+                .active
+                .get(namespace)
+                .is_none_or(|active| *active > incarnation)
+    }
+
     pub(crate) fn binding(&self, namespace: &str) -> Result<Binding, AuthError> {
         let incarnation = self.active.get(namespace).copied().ok_or_else(denied)?;
         Ok(Binding {
@@ -311,6 +327,7 @@ impl AuthState {
         binding: Option<&Binding>,
         namespace: &str,
     ) -> Result<(), AuthError> {
+        self.require_active_namespace(namespace)?;
         match &self.namespace_batch_registry {
             Some(registry) => registry.check(binding, namespace),
             None if binding.is_none() => Ok(()),

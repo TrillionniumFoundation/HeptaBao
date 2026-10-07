@@ -2,6 +2,8 @@ use super::*;
 use std::collections::{BTreeMap, BTreeSet};
 #[path = "service_namespace_batch.rs"]
 mod batch_lifecycle;
+#[path = "service_namespace_deletion.rs"]
+pub(super) mod deletion;
 
 const MAX_NAMESPACE_COUNT: usize = 1024;
 const MAX_NAMESPACE_METADATA: usize = 64;
@@ -16,6 +18,8 @@ pub(super) struct NamespaceRegistry {
     /// Sticky actual lifecycle, independent of encrypted catalog hydration.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     batch_lifecycle: Option<crate::auth::batch_namespace::Registry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) deletions: Option<crate::auth::namespace_deletion::Ledger>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     next_incarnation: BTreeMap<String, u64>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -111,7 +115,7 @@ fn relative_path<'a>(base: &str, absolute: &'a str) -> Option<&'a str> {
     }
 }
 
-fn namespace_id(cluster_id: &str, path: &str, incarnation: u64) -> String {
+pub(super) fn namespace_id(cluster_id: &str, path: &str, incarnation: u64) -> String {
     const ALPHABET: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let binding = format!("heptabao-namespace-v1\0{cluster_id}\0{path}\0{incarnation}");
     let digest = crypto::digest(binding.as_bytes());
@@ -124,7 +128,12 @@ fn namespace_id(cluster_id: &str, path: &str, incarnation: u64) -> String {
 
 /// Public UUID is a stable projection of the existing durable incarnation.
 /// It is not an authority token and never rewrites legacy namespace IDs/state.
-fn namespace_metadata(cluster_id: &str, path: &str, entry: &NamespaceEntry) -> Value {
+fn namespace_metadata(
+    cluster_id: &str,
+    path: &str,
+    entry: &NamespaceEntry,
+    tainted: bool,
+) -> Value {
     let binding = format!(
         "heptabao-namespace-uuid-v1\0{cluster_id}\0{path}\0{}",
         entry.incarnation
@@ -144,7 +153,7 @@ fn namespace_metadata(cluster_id: &str, path: &str, entry: &NamespaceEntry) -> V
     );
     json!({
         "id": entry.id, "uuid": uuid, "path": format!("{path}/"),
-        "locked": false, "tainted": false, "custom_metadata": entry.custom_metadata,
+        "locked": false, "tainted": tainted, "custom_metadata": entry.custom_metadata,
     })
 }
 
@@ -517,6 +526,7 @@ impl NamespaceRegistry {
 
     pub(super) fn is_empty(&self) -> bool {
         self.entries.is_empty()
+            && self.deletions.is_none()
             && self.batch_lifecycle.is_none()
             && self.next_incarnation.is_empty()
             && self.retired_custody.is_empty()
@@ -922,7 +932,7 @@ impl NamespaceRegistry {
         relative_path(base, path)
             .ok_or_else(|| Response::error(404, "namespace is outside request scope"))?;
         Ok(Response::ok(
-            json!({"data": namespace_metadata(cluster_id, path, entry)}),
+            json!({"data": namespace_metadata(cluster_id, path, entry, self.deletions.as_ref().is_some_and(|ledger| ledger.is_tainted(path)))}),
         ))
     }
 
@@ -952,7 +962,14 @@ impl NamespaceRegistry {
             if let Some(entry) = self.entries.get(&absolute) {
                 info.insert(
                     key.clone(),
-                    namespace_metadata(cluster_id, &absolute, entry),
+                    namespace_metadata(
+                        cluster_id,
+                        &absolute,
+                        entry,
+                        self.deletions
+                            .as_ref()
+                            .is_some_and(|ledger| ledger.is_tainted(&absolute)),
+                    ),
                 );
             }
         }
@@ -985,13 +1002,6 @@ impl State {
         self.namespaces.adopt_legacy(&self.cluster_id, paths)
     }
 
-    fn namespace_has_only_local_cleanup(&self, path: &str) -> bool {
-        self.auth.namespace_has_only_local_token_owners(path)
-            && self.engines.namespace_has_only_local_kv_owners(path)
-            && self.database.namespace_is_empty(path)
-            && self.namespaces.workflows.namespace_is_empty(path)
-    }
-
     fn namespace_payload_is_empty(&self, path: &str) -> bool {
         self.auth.namespace_is_empty(path)
             && self.engines.namespace_is_empty(path)
@@ -1001,19 +1011,14 @@ impl State {
 }
 
 impl Service {
-    fn namespace_delete_gate(
+    pub(in crate::service) fn namespace_retirement_owner_gate(
         state: &State,
-        principal: &Principal,
-        request: &RequestView<'_>,
-        caller_incarnation: u64,
         binding: &crate::namespace_custody::Binding,
         retired_floor: Option<&crate::namespace_custody::Frontier>,
     ) -> Result<(), Response> {
         namespace_runtime::request_live()?;
         let actual = binding.namespace();
-        if state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
-            || state.namespace_is_sealed(request.namespace)
-            || state.namespaces.contains(actual)
+        if state.namespaces.contains(actual)
             || binding.incarnation().checked_add(1)
                 != state.namespaces.next_incarnation.get(actual).copied()
             || retired_floor.is_some_and(|floor| {
@@ -1029,7 +1034,27 @@ impl Service {
         {
             return Err(Response::error(
                 503,
-                "namespace retirement owner or caller frontier changed",
+                "namespace retirement owner frontier changed",
+            ));
+        }
+        Ok(())
+    }
+
+    fn namespace_delete_gate(
+        state: &State,
+        principal: &Principal,
+        request: &RequestView<'_>,
+        caller_incarnation: u64,
+        binding: &crate::namespace_custody::Binding,
+        retired_floor: Option<&crate::namespace_custody::Frontier>,
+    ) -> Result<(), Response> {
+        Self::namespace_retirement_owner_gate(state, binding, retired_floor)?;
+        if state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
+            || state.namespace_is_sealed(request.namespace)
+        {
+            return Err(Response::error(
+                503,
+                "namespace retirement caller frontier changed",
             ));
         }
         state
@@ -1080,12 +1105,13 @@ impl Service {
     pub(super) fn namespace_route(
         &mut self,
         mut state: State,
-        principal: Option<&Principal>,
+        actor: Option<Principal>,
         request: &RequestView<'_>,
     ) -> Response {
-        let Some(principal) = principal else {
+        let Some(actor) = actor else {
             return Response::error(403, "missing client token");
         };
+        let principal = &actor;
         if !state.namespace_exists(request.namespace) {
             return Response::error(404, "request namespace not found");
         }
@@ -1499,15 +1525,34 @@ impl Service {
                     // Terminal observation of an absent namespace is read-only.
                     return Response::ok(json!({"data": null}));
                 }
+                // Actual authenticated catalog proof includes independently
+                // closed children; a visible map alone cannot prove a leaf.
+                if let Err(error) = state.ensure_namespace_batch_registry() {
+                    return error;
+                }
+                if state
+                    .namespaces
+                    .batch_lifecycle
+                    .as_ref()
+                    .is_some_and(|registry| {
+                        registry.active_paths().any(|child| {
+                            child
+                                .strip_prefix(&target)
+                                .is_some_and(|tail| tail.starts_with('/'))
+                        })
+                    })
+                {
+                    return Response::error(400, "namespace has child namespaces");
+                }
+                if state.namespace_is_tainted(&target) {
+                    return Response::ok(json!({"data":{"status":"in-progress"}}));
+                }
                 let populated = !state.namespace_payload_is_empty(&target);
-                if populated && !state.namespace_has_only_local_cleanup(&target) {
+                if populated && !state.namespace_has_only_native_local_deletion_owners(&target) {
                     return Response::error(
                         409,
                         "namespace contains runtime state; owned cleanup is required before deletion",
                     );
-                }
-                if let Err(error) = state.ensure_namespace_batch_registry() {
-                    return error;
                 }
                 if !state.auth.namespace_batch_retirement_safe() {
                     return Response::error(
@@ -1526,26 +1571,17 @@ impl Service {
                         "sealed namespace requires owned delete-sealed cleanup",
                     );
                 }
+                if populated {
+                    return self.stage_local_namespace_deletion(
+                        state,
+                        actor,
+                        request,
+                        caller_incarnation,
+                        binding,
+                    );
+                }
                 if self.namespace_runtime.has_loaded_within(&target) {
                     state = match self.namespace_runtime.closed_candidate(&state, &target) {
-                        Ok(candidate) => candidate,
-                        Err(error) => return error,
-                    };
-                }
-                if populated
-                    && state.namespaces.custody_owner(&target).is_none()
-                    && state.namespaces.inherited_owner(&target).is_none()
-                {
-                    // An ordinary namespace has no independent runtime slot.
-                    // Close its actual assets using the existing longest owner
-                    // key before retiring any record or catalog entry.
-                    let Some(root_key) = self.barrier_key.as_ref() else {
-                        return Response::error(503, "actual barrier key is unavailable");
-                    };
-                    state = match self
-                        .namespace_runtime
-                        .inherited_closed_candidate(&state, &target, root_key)
-                    {
                         Ok(candidate) => candidate,
                         Err(error) => return error,
                     };
