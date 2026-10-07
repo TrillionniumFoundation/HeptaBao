@@ -53,6 +53,9 @@ pub(super) struct Cleanup {
     namespace_work: Option<namespace_sdk_cleanup::Authority>,
 }
 impl Cleanup {
+    pub(super) fn namespace_work(&self) -> Option<&namespace_sdk_cleanup::Authority> {
+        self.namespace_work.as_ref()
+    }
     pub(super) fn check(&self, call: &Call) -> Result<(), Response> {
         self.clock
             .observed_at()

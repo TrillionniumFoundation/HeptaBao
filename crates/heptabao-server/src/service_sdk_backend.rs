@@ -363,6 +363,7 @@ fn namespace_storage_diagnostic(stage: &'static str, cause: &Response) {
 struct StorageTransaction {
     engines: CowOwner<EngineState>,
     admitted_original: Option<CowOwner<EngineState>>,
+    namespace_original: Option<namespace_sdk_cleanup::LogicalStorageCut>,
     identity: crate::state_record_root::StateIdentity,
     changed: bool,
 }
@@ -1338,11 +1339,27 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| SdkBridgeError::Fenced)?;
+        let namespace_role = authority
+            .namespace_work()
+            .map(|work| work.logical_native_role(self, &plan.namespace, &plan.mount, &plan.owner))
+            .transpose()
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        if plan.namespace_cleanup != namespace_role.is_some() {
+            return Err(SdkBridgeError::Fenced);
+        }
+        match (&transaction.namespace_original, &namespace_role) {
+            (Some(cut), Some(_)) => cut
+                .check(&state.engines, &plan.namespace, &plan.mount, &plan.owner)
+                .map_err(|_| SdkBridgeError::Fenced)?,
+            (None, None) => {}
+            _ => return Err(SdkBridgeError::Fenced),
+        }
         if self
             .current_state_identity()
             .map_err(|_| SdkBridgeError::Fenced)?
             != transaction.identity
             && !authority.admitted_data()
+            && namespace_role.is_none()
         {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             if plan.namespace_cleanup {
@@ -1422,15 +1439,13 @@ impl Service {
         let changed = clock_changed;
         if changed {
             state.schema = state.writer_schema();
-            let publication = self
-                .prepare_record_plan(&mut state)
-                .map_err(|_cause| {
-                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
-                    if plan.namespace_cleanup {
-                        namespace_storage_diagnostic("logical_record_plan", &_cause);
-                    }
-                    SdkBridgeError::Storage
-                })?;
+            let publication = self.prepare_record_plan(&mut state).map_err(|_cause| {
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                if plan.namespace_cleanup {
+                    namespace_storage_diagnostic("logical_record_plan", &_cause);
+                }
+                SdkBridgeError::Storage
+            })?;
             self.validate_sdk_authority(&mut authority)
                 .map_err(|_| SdkBridgeError::Fenced)?;
             self.sdk_binding_gate(plan)?;
@@ -1442,9 +1457,12 @@ impl Service {
                 return Err(SdkBridgeError::Fenced);
             }
             if self
-                .commit_record_plan_with_before_publish(
+                .commit_record_plan_with_native_role(
                     &state,
                     publication,
+                    namespace_role
+                        .as_ref()
+                        .and_then(namespace_sdk_cleanup::NativeRole::captured),
                     |auth| authority.validate_live_auth(auth),
                     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                     None,
@@ -1657,6 +1675,14 @@ impl Service {
         }
         let admitted_original = authority.admitted_data().then(|| state.engines.clone());
         let namespace_cleanup = authority.namespace_cleanup();
+        let namespace_original = match authority
+            .namespace_work()
+            .map(|work| work.logical_storage_cut(self, request.namespace, &mount, &owner))
+            .transpose()
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             mount,
@@ -1673,6 +1699,7 @@ impl Service {
             transaction: Mutex::new(StorageTransaction {
                 engines: state.engines.clone(),
                 admitted_original,
+                namespace_original,
                 identity,
                 changed: false,
             }),

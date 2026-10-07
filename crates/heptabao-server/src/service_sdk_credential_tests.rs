@@ -324,6 +324,7 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         admission: None,
         control,
         transaction: Mutex::new(Transaction {
+            namespace_original: None,
             auth: actual.auth.clone(),
             identity: service.current_state_identity().map_err(|_| "identity")?,
         }),

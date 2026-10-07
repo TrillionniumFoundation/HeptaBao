@@ -1336,3 +1336,663 @@ fn namespace109_tainted_catalog_matches_official_without_allowing_token_or_data(
         .map_err(|_| "actual retained format")?;
     Ok(())
 }
+
+// These controls exercise actual job capture, canonical publication and storage
+// merge on the typed model fixture. Actual plugin Revoke/ACK and fixed native
+// observation budgets remain separate native controls; no plugin is forged here.
+fn owned_body(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+) -> Response {
+    let execution = service.begin_request_before(
+        ServiceRequest {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    service.finish_synchronous_request(execution)
+}
+fn owned_job(service: &Service, kind: Kind) -> TestResult<String> {
+    let state = service.state.as_ref().ok_or("state")?;
+    keys(state)?
+        .into_iter()
+        .find(|key| {
+            state
+                .namespace_sdk_cleanup_record(key)
+                .is_ok_and(|job| job.kind() == kind)
+        })
+        .ok_or_else(|| "selected actual job".into())
+}
+fn owned_authority(service: &Service, kind: Kind) -> TestResult<Authority> {
+    let original = clock()?;
+    Authority::capture(
+        service,
+        owned_job(service, kind)?,
+        original,
+        original.started() + Duration::from_secs(15),
+    )
+    .map_err(|_| "selected actual native authority".into())
+}
+#[test]
+fn namespace109_owned_storage_rebase_keeps_current_unrelated_publications() -> TestResult {
+    let mut f = fixture()?;
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "auth/token/create",
+            &f.token,
+            json!({"ttl":"30s"})
+        )
+        .status,
+        200
+    );
+    assert!(
+        f.service
+            .state
+            .as_ref()
+            .ok_or("precise state")?
+            .has_token_api_precision_state()
+    );
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let logical = owned_authority(&f.service, Kind::Logical)?;
+    let credential = owned_authority(&f.service, Kind::Credential)?;
+    let logical_cut = logical
+        .logical_storage_cut(&f.service, NS, &f.logical.mount, &f.logical.backend)
+        .map_err(|_| "actual logical cut")?;
+    let credential_cut = credential
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "actual credential cut")?;
+    let original_identity = f.service.current_state_identity().map_err(|_| "identity")?;
+    let source = f.service.state.as_ref().ok_or("source")?;
+    let original_jobs = source.namespaces.deletions.clone();
+    let mut working_engines = source.engines.clone();
+    let mut working_auth = source.auth.clone();
+    working_engines.sdk_storage_put(
+        NS,
+        &f.logical.mount,
+        &f.logical.backend,
+        StorageEntry {
+            key: "record".into(),
+            value: Zeroizing::new(b"new-owned-logical".to_vec()),
+            seal_wrap: true,
+        },
+    )?;
+    working_auth.sdk_auth_storage_put(
+        &f.credential.backend,
+        crate::auth::sdk::Entry {
+            key: "record".into(),
+            value: Zeroizing::new(b"new-owned-credential".to_vec()),
+            seal_wrap: true,
+        },
+    )?;
+    // Real normal requests publish other current owners after both SDK cuts.
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "sys/mounts/unrelated",
+            &f.token,
+            json!({"type":"kv"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "unrelated/kept",
+            &f.token,
+            json!({"value":"current-unrelated-kv"})
+        )
+        .status,
+        200
+    );
+    let minted = owned_body(
+        &mut f.service,
+        "POST",
+        "auth/token/create",
+        &f.token,
+        json!({"ttl":"30s"}),
+    );
+    assert_eq!(minted.status, 200);
+    let current_token = Zeroizing::new(
+        minted.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("actual current token")?
+            .to_owned(),
+    );
+    assert_eq!(
+        native(&mut f.service, "GET", "sys/namespaces/retire", &f.token).status,
+        200
+    );
+    assert!(f.service.current_state_identity().map_err(|_| "identity")? != original_identity);
+    logical
+        .logical_native_role(&f.service, NS, &f.logical.mount, &f.logical.backend)
+        .map_err(|_| "original logical authority after unrelated publication")?;
+    credential
+        .credential_native_role(&f.service, &f.credential.backend)
+        .map_err(|_| "original credential authority after unrelated publication")?;
+    let mut candidate = f.service.state.clone().ok_or("current candidate")?;
+    logical_cut
+        .merge(
+            &mut candidate.engines,
+            &working_engines,
+            NS,
+            &f.logical.mount,
+            &f.logical.backend,
+        )
+        .map_err(|_| "owned logical merge")?;
+    credential_cut
+        .merge(&mut candidate.auth, &working_auth, &f.credential.backend)
+        .map_err(|_| "owned credential merge")?;
+    assert!(candidate.namespaces.deletions == original_jobs);
+    publish(&mut f.service, candidate)?;
+    assert_eq!(
+        native(
+            &mut f.service,
+            "GET",
+            "auth/token/lookup-self",
+            &current_token
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        native(&mut f.service, "GET", "unrelated/kept", &f.token).body["data"]["value"],
+        "current-unrelated-kv"
+    );
+    let state = f.service.state.as_ref().ok_or("merged")?;
+    assert!(
+        &*state
+            .engines
+            .sdk_storage_get(NS, &f.logical.mount, &f.logical.backend, "record")?
+            .ok_or("logical value")?
+            .value
+            == b"new-owned-logical"
+    );
+    assert!(
+        &*state
+            .auth
+            .sdk_auth_storage_get(&f.credential.backend, "record")?
+            .ok_or("credential value")?
+            .value
+            == b"new-owned-credential"
+    );
+    assert!(state.validate_format().is_ok());
+    let Fixture {
+        directory,
+        service,
+        key,
+        token,
+        logical,
+        credential,
+        ..
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        native(
+            &mut reopened,
+            "GET",
+            "auth/token/lookup-self",
+            &current_token
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        native(&mut reopened, "GET", "unrelated/kept", &token).body["data"]["value"],
+        "current-unrelated-kv"
+    );
+    let state = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(state.validate_format().is_ok());
+    assert!(state.namespace_is_tainted(NS));
+    assert!(state.engines.sdk_lease(NS, &logical.id).is_some());
+    assert!(
+        state
+            .auth
+            .sdk_credential_record(NS, &credential.id)
+            .is_some()
+    );
+    assert!(
+        &*state
+            .engines
+            .sdk_storage_get(NS, &logical.mount, &logical.backend, "record")?
+            .ok_or("reopened logical value")?
+            .value
+            == b"new-owned-logical"
+    );
+    assert!(
+        &*state
+            .auth
+            .sdk_auth_storage_get(&credential.backend, "record")?
+            .ok_or("reopened credential value")?
+            .value
+            == b"new-owned-credential"
+    );
+    for key in keys(state)? {
+        assert!(
+            state
+                .namespace_sdk_cleanup_record(&key)
+                .map_err(|_| "saved job")?
+                .stage()
+                == &Stage::Attempted
+        );
+    }
+    Ok(())
+}
+#[test]
+fn namespace109_owned_storage_rebase_rejects_actual_owned_cell_changes() -> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let logical = owned_authority(&f.service, Kind::Logical)?;
+    let credential = owned_authority(&f.service, Kind::Credential)?;
+    let logical_cut = logical
+        .logical_storage_cut(&f.service, NS, &f.logical.mount, &f.logical.backend)
+        .map_err(|_| "logical cut")?;
+    let credential_cut = credential
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "credential cut")?;
+    let original = f.service.state.clone().ok_or("original")?;
+    let mut changed = original.clone();
+    changed.engines.sdk_storage_put(
+        NS,
+        &f.logical.mount,
+        &f.logical.backend,
+        StorageEntry {
+            key: "new-member".into(),
+            value: Zeroizing::new(b"conflict".to_vec()),
+            seal_wrap: false,
+        },
+    )?;
+    changed.auth.sdk_auth_storage_put(
+        &f.credential.backend,
+        crate::auth::sdk::Entry {
+            key: "record".into(),
+            value: Zeroizing::new(b"conflict".to_vec()),
+            seal_wrap: false,
+        },
+    )?;
+    publish(&mut f.service, changed)?;
+    // Job metadata remains valid; full key membership / bytes / sealWrap changed.
+    assert!(logical.check(&f.service).is_ok());
+    assert!(credential.check(&f.service).is_ok());
+    let mut current = f.service.state.clone().ok_or("current")?;
+    assert!(
+        logical_cut
+            .check(&current.engines, NS, &f.logical.mount, &f.logical.backend)
+            .is_err()
+    );
+    assert!(
+        credential_cut
+            .check(&current.auth, &f.credential.backend)
+            .is_err()
+    );
+    let engine_before = Zeroizing::new(crate::secret_serde::to_vec(
+        &*current.engines,
+        4 * 1024 * 1024,
+    )?);
+    let auth_before = Zeroizing::new(crate::secret_serde::to_vec(
+        &*current.auth,
+        4 * 1024 * 1024,
+    )?);
+    assert!(
+        logical_cut
+            .merge(
+                &mut current.engines,
+                &original.engines,
+                NS,
+                &f.logical.mount,
+                &f.logical.backend
+            )
+            .is_err()
+    );
+    assert!(
+        credential_cut
+            .merge(&mut current.auth, &original.auth, &f.credential.backend)
+            .is_err()
+    );
+    let engine_after = Zeroizing::new(crate::secret_serde::to_vec(
+        &*current.engines,
+        4 * 1024 * 1024,
+    )?);
+    let auth_after = Zeroizing::new(crate::secret_serde::to_vec(
+        &*current.auth,
+        4 * 1024 * 1024,
+    )?);
+    assert!(&*engine_before == &*engine_after && &*auth_before == &*auth_after);
+    Ok(())
+}
+#[test]
+fn namespace109_owned_storage_cut_rejects_wrong_family_scope_and_namespace_seal() -> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let logical = owned_authority(&f.service, Kind::Logical)?;
+    let credential = owned_authority(&f.service, Kind::Credential)?;
+    assert!(
+        logical
+            .credential_storage_cut(&f.service, &f.credential.backend)
+            .is_err()
+    );
+    assert!(
+        credential
+            .logical_storage_cut(&f.service, NS, &f.logical.mount, &f.logical.backend)
+            .is_err()
+    );
+    assert!(
+        logical
+            .logical_storage_cut(&f.service, "", &f.logical.mount, &f.logical.backend)
+            .is_err()
+    );
+    let credential_cut = credential
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "credential cut")?;
+    let mut wrong = f.credential.backend.clone();
+    wrong.namespace.clear();
+    assert!(
+        credential_cut
+            .check(&f.service.state.as_ref().ok_or("state")?.auth, &wrong)
+            .is_err()
+    );
+    assert!(
+        Authority::capture(
+            &f.service,
+            "absent".into(),
+            clock()?,
+            Instant::now() + Duration::from_secs(15)
+        )
+        .is_err()
+    );
+    // No ordinary caller/token obtains this private cleanup capability.
+    let denied = f.service.begin_request_before(
+        ServiceRequest {
+            method: "GET",
+            path: "logical/record",
+            namespace: NS,
+            token: &f.token,
+            body: json!({}),
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    assert_eq!(f.service.finish_synchronous_request(denied).status, 403);
+    assert_eq!(
+        native(
+            &mut f.service,
+            "GET",
+            "auth/token/lookup-self",
+            "invalid-token"
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "sys/namespaces/retire/seal",
+            &f.token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert!(
+        logical
+            .logical_native_role(&f.service, NS, &f.logical.mount, &f.logical.backend)
+            .is_err()
+    );
+    assert!(
+        credential
+            .credential_native_role(&f.service, &f.credential.backend)
+            .is_err()
+    );
+    assert!(f.service.pending_sdk_request.is_none());
+    assert!(f.service.pending_sdk_auth_request.is_none());
+    Ok(())
+}
+#[test]
+fn namespace109_original_owned_storage_authority_rejects_real_return_in_new_term() -> TestResult {
+    let mut f = fixture()?;
+    let cluster_id = f.service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(
+        &f.directory.path.join("raft"),
+        &cluster_id,
+    )?;
+    f.service.ha = Some(Arc::clone(&cluster.processes[0]));
+    f.service
+        .sync_from_ha()
+        .map_err(|_| "initial actual HA publication")?;
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let logical = owned_authority(&f.service, Kind::Logical)?;
+    let credential = owned_authority(&f.service, Kind::Credential)?;
+    let original_role = credential
+        .credential_native_role(&f.service, &f.credential.backend)
+        .map_err(|_| "actual original role")?
+        .captured()
+        .ok_or("actual HA role")?;
+    let identity = f.service.current_state_identity().map_err(|_| "identity")?;
+    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(credential.deadline);
+    let next = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA mutex")?
+        .step_down()?;
+    assert_ne!(next, 1);
+    let returned = cluster.processes[(next - 1) as usize]
+        .lock()
+        .map_err(|_| "successor mutex")?
+        .step_down()?;
+    assert_eq!(returned, 1);
+    let actual = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA mutex")?
+        .leader_status()?;
+    assert!(actual.local_is_leader && actual.leader == Some(1) && actual.term > original_role.1);
+    assert!(
+        logical
+            .logical_native_role(&f.service, NS, &f.logical.mount, &f.logical.backend)
+            .is_err()
+    );
+    assert!(
+        credential
+            .credential_native_role(&f.service, &f.credential.backend)
+            .is_err()
+    );
+    assert!(credential.sync_before_setup(&mut f.service).is_err());
+    assert!(f.service.current_state_identity().map_err(|_| "identity")? == identity);
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(
+        f.service.pending_sdk_request.is_none() && f.service.pending_sdk_auth_request.is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn namespace109_owned_storage_native_role_stable_publish_and_post_stage_return_veto() -> TestResult
+{
+    let mut f = fixture()?;
+    let cluster_id = f.service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(
+        &f.directory.path.join("raft"),
+        &cluster_id,
+    )?;
+    f.service.ha = Some(Arc::clone(&cluster.processes[0]));
+    f.service
+        .sync_from_ha()
+        .map_err(|_| "initial actual HA publication")?;
+    begin(&mut f)?;
+    attempt_all(&mut f.service)?;
+    let authority = owned_authority(&f.service, Kind::Credential)?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(authority.deadline);
+    let role = authority
+        .credential_native_role(&f.service, &f.credential.backend)
+        .map_err(|_| "actual original role")?
+        .captured()
+        .ok_or("actual HA role")?;
+    let cut = authority
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "actual owned cut")?;
+    let mut working = f.service.state.as_ref().ok_or("state")?.auth.clone();
+    working.sdk_auth_storage_put(
+        &f.credential.backend,
+        crate::auth::sdk::Entry {
+            key: "record".into(),
+            value: Zeroizing::new(b"stable-owned-publish".to_vec()),
+            seal_wrap: true,
+        },
+    )?;
+    let mut current = f.service.state.clone().ok_or("candidate")?;
+    cut.merge(&mut current.auth, &working, &f.credential.backend)
+        .map_err(|_| "actual owned merge")?;
+    current.schema = current.writer_schema();
+    let publication = f
+        .service
+        .prepare_record_plan(&mut current)
+        .map_err(|_| "actual canonical preparation")?;
+    f.service
+        .commit_record_plan_with_native_role(
+            &current,
+            publication,
+            Some(role),
+            |auth| authority.check_auth(auth),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )
+        .map_err(|_| "stable original role publication")?;
+    f.service.state = Some(current);
+    assert!(authority.check(&f.service).is_ok());
+    // Recapture Storage from the same affine job, clock and original HA term.
+    let cut = authority
+        .credential_storage_cut(&f.service, &f.credential.backend)
+        .map_err(|_| "same original authority current owned cut")?;
+    let mut working = f.service.state.as_ref().ok_or("state")?.auth.clone();
+    working.sdk_auth_storage_put(
+        &f.credential.backend,
+        crate::auth::sdk::Entry {
+            key: "record".into(),
+            value: Zeroizing::new(b"must-not-publish".to_vec()),
+            seal_wrap: false,
+        },
+    )?;
+    let mut rejected = f.service.state.clone().ok_or("candidate")?;
+    cut.merge(&mut rejected.auth, &working, &f.credential.backend)
+        .map_err(|_| "actual candidate owned merge")?;
+    rejected.schema = rejected.writer_schema();
+    let publication = f
+        .service
+        .prepare_record_plan(&mut rejected)
+        .map_err(|_| "actual candidate canonical preparation")?;
+    let identity = f.service.current_state_identity().map_err(|_| "identity")?;
+    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
+    let entered = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let observed = Arc::clone(&entered);
+    let processes = cluster.processes.clone();
+    f.service.native_record_role_hook = Some(Box::new(move |process| {
+        let next = process
+            .step_down()
+            .expect("actual post-Stage first handoff");
+        assert_ne!(next, 1);
+        let returned = processes[(next - 1) as usize]
+            .lock()
+            .expect("real successor mutex")
+            .step_down()
+            .expect("actual post-Stage return handoff");
+        assert_eq!(returned, 1);
+        observed.store(true, std::sync::atomic::Ordering::Release);
+    }));
+    let failure = f
+        .service
+        .commit_record_plan_with_native_role(
+            &rejected,
+            publication,
+            Some(role),
+            |auth| authority.check_auth(auth),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )
+        .err()
+        .ok_or("original role must veto actual post-Stage Publish")?;
+    assert_eq!(failure.status, 503);
+    assert!(entered.load(std::sync::atomic::Ordering::Acquire));
+    let actual = cluster.processes[0]
+        .lock()
+        .map_err(|_| "actual leader mutex")?
+        .leader_status()?;
+    assert!(actual.local_is_leader && actual.leader == Some(1) && actual.term > role.1);
+    assert!(f.service.current_state_identity().map_err(|_| "identity")? == identity);
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let state = f.service.state.as_ref().ok_or("current")?;
+    assert!(
+        &*state
+            .auth
+            .sdk_auth_storage_get(&f.credential.backend, "record")?
+            .ok_or("stable value retained")?
+            .value
+            == b"stable-owned-publish"
+    );
+    assert!(authority.check(&f.service).is_err());
+    let Fixture {
+        directory,
+        service,
+        key,
+        credential,
+        ..
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(state.validate_format().is_ok());
+    assert!(
+        &*state
+            .auth
+            .sdk_auth_storage_get(&credential.backend, "record")?
+            .ok_or("durable stable value retained")?
+            .value
+            == b"stable-owned-publish"
+    );
+    for key in keys(state)? {
+        assert!(
+            state
+                .namespace_sdk_cleanup_record(&key)
+                .map_err(|_| "saved job")?
+                .stage()
+                == &Stage::Attempted
+        );
+    }
+    Ok(())
+}

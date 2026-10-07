@@ -104,6 +104,7 @@ impl CredentialList {
 }
 struct Transaction {
     auth: CowOwner<AuthState>,
+    namespace_original: Option<namespace_sdk_cleanup::CredentialStorageCut>,
     identity: crate::state_record_root::StateIdentity,
 }
 pub(in crate::service) struct Plan {
@@ -130,6 +131,42 @@ impl Drop for Plan {
     }
 }
 impl Plan {
+    fn namespace_native_role(
+        &self,
+        service: &Service,
+    ) -> Result<Option<namespace_sdk_cleanup::NativeRole>, Response> {
+        let cleanup = self
+            .cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?;
+        let role = cleanup
+            .as_ref()
+            .and_then(credential::Cleanup::namespace_work)
+            .map(|work| work.credential_native_role(service, &self.binding))
+            .transpose()?;
+        if self.namespace_cleanup != role.is_some() {
+            return Err(Response::error(
+                503,
+                "namespace SDK credential authority scope changed",
+            ));
+        }
+        // The guard is released before any live_auth/sdk_auth_gate publication closure.
+        Ok(role)
+    }
+    fn namespace_storage_cut(
+        &self,
+        service: &Service,
+    ) -> Result<Option<namespace_sdk_cleanup::CredentialStorageCut>, Response> {
+        let cleanup = self
+            .cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?;
+        cleanup
+            .as_ref()
+            .and_then(credential::Cleanup::namespace_work)
+            .map(|work| work.credential_storage_cut(service, &self.binding))
+            .transpose()
+    }
     pub(in crate::service) fn execute(
         &self,
         service: &Arc<Mutex<Service>>,
@@ -1101,6 +1138,13 @@ impl Service {
             } else {
                 None
             };
+        let namespace_original = match namespace_work
+            .map(|work| work.credential_storage_cut(self, &binding))
+            .transpose()
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
         self.pending_sdk_auth_request = Some(Plan {
             context,
             binding,
@@ -1110,6 +1154,7 @@ impl Service {
             control,
             transaction: Mutex::new(Transaction {
                 auth: state.auth.clone(),
+                namespace_original,
                 identity,
             }),
             operation: operation.into(),
@@ -1264,12 +1309,35 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
-        if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
+        let namespace_role = plan.namespace_native_role(self)?;
+        match (&transaction.namespace_original, &namespace_role) {
+            (Some(cut), Some(_)) => cut.check(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK Auth current owner unavailable"))?
+                    .auth,
+                &plan.binding,
+            )?,
+            (None, None) => {}
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK credential Storage cut scope changed",
+                ));
+            }
+        }
+        if plan.admission.is_none()
+            && self.current_state_identity()? != transaction.identity
+            && namespace_role.is_none()
+        {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             if plan.namespace_cleanup {
                 eprintln!(
                     "heptabao-ns-storage-diag: phase=credential_whole_identity status=503 identity_equal=false private_namespace_cleanup=true precise_token={} schema={}",
-                    self.state.as_ref().is_some_and(State::has_token_api_precision_state),
+                    self.state
+                        .as_ref()
+                        .is_some_and(State::has_token_api_precision_state),
                     self.state.as_ref().map_or(0, |state| state.schema)
                 );
             }
@@ -1287,16 +1355,21 @@ impl Service {
         let changed = current.auth.observe_sdk_auth_clock(at);
         if changed {
             current.schema = current.writer_schema();
-            let publication = self.prepare_record_plan(&mut current).inspect_err(|_cause| {
-                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
-                if plan.namespace_cleanup {
-                    namespace_storage_diagnostic("credential_record_plan", _cause);
-                }
-            })?;
+            let publication = self
+                .prepare_record_plan(&mut current)
+                .inspect_err(|_cause| {
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    if plan.namespace_cleanup {
+                        namespace_storage_diagnostic("credential_record_plan", _cause);
+                    }
+                })?;
             self.sdk_auth_gate(plan)?;
-            self.commit_record_plan_with_before_publish(
+            self.commit_record_plan_with_native_role(
                 &current,
                 publication,
+                namespace_role
+                    .as_ref()
+                    .and_then(namespace_sdk_cleanup::NativeRole::captured),
                 |auth| plan.live_auth(auth),
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
@@ -1387,7 +1460,28 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
-        if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
+        let namespace_role = plan.namespace_native_role(self)?;
+        match (&transaction.namespace_original, &namespace_role) {
+            (Some(cut), Some(_)) => cut.check(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK Auth current owner unavailable"))?
+                    .auth,
+                &plan.binding,
+            )?,
+            (None, None) => {}
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK credential Storage cut scope changed",
+                ));
+            }
+        }
+        if plan.admission.is_none()
+            && self.current_state_identity()? != transaction.identity
+            && namespace_role.is_none()
+        {
             return Err(Response::error(
                 503,
                 "SDK Auth original root changed before publication",
@@ -1410,6 +1504,14 @@ impl Service {
             if value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null())) {
                 admitted_terminal = AdmittedTerminal::UnexpectedAuth;
             }
+        } else if namespace_role.is_some() {
+            transaction
+                .namespace_original
+                .as_ref()
+                .ok_or_else(|| {
+                    Response::error(503, "namespace SDK credential Storage cut missing")
+                })?
+                .merge(&mut candidate.auth, &transaction.auth, &plan.binding)?;
         } else {
             candidate.auth = transaction.auth.clone();
         }
@@ -1578,9 +1680,12 @@ impl Service {
                     "SDK Auth root changed before final publish",
                 ));
             }
-            self.commit_record_plan_with_before_publish(
+            self.commit_record_plan_with_native_role(
                 &candidate,
                 publication,
+                namespace_role
+                    .as_ref()
+                    .and_then(namespace_sdk_cleanup::NativeRole::captured),
                 |auth| plan.live_auth(auth),
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
@@ -1627,6 +1732,9 @@ impl Service {
                     })?
                     .auth;
                 admission.published(auth, &plan.binding)?;
+            }
+            if namespace_role.is_some() {
+                transaction.namespace_original = plan.namespace_storage_cut(self)?;
             }
             self.sdk_auth_gate(plan)?;
             Ok(())

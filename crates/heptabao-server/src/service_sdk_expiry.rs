@@ -119,6 +119,12 @@ impl Authority {
         }
         Ok(())
     }
+    pub(super) fn namespace_work(&self) -> Option<&namespace_sdk_cleanup::Authority> {
+        match self {
+            Self::Cleanup(value) => value.namespace_work.as_ref(),
+            _ => None,
+        }
+    }
     pub(super) fn namespace_cleanup(&self) -> bool {
         matches!(self, Self::Cleanup(value) if value.namespace_work.is_some())
     }

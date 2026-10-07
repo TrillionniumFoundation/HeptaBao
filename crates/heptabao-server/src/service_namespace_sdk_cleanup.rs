@@ -15,6 +15,7 @@ pub(in crate::service) struct Authority {
     seal: [u8; 32],
     barrier: [u8; 32],
     ha: Option<Arc<Mutex<HaProcess>>>,
+    native_role: Option<(u64, u64)>,
     delivery: namespace_runtime::DeliveryBinding,
     original_leases: namespace_runtime::Leases,
 }
@@ -31,6 +32,20 @@ impl Authority {
             return Err(unavailable());
         }
         let namespace = selected.binding().namespace();
+        let native_role = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+            match &service.ha {
+                None => None,
+                Some(ha) => {
+                    let node = ha.lock_for_request().map_err(|_| unavailable())?;
+                    let observed = node.leader_status().map_err(|_| unavailable())?;
+                    if !observed.local_is_leader || observed.leader != Some(observed.local_id) {
+                        return Err(unavailable());
+                    }
+                    Some((observed.local_id, observed.term))
+                }
+            }
+        };
         let value = Self {
             key,
             selected: selected.clone(),
@@ -41,6 +56,7 @@ impl Authority {
             seal: namespace_deletion::seal_digest(service)?,
             barrier: namespace_deletion::barrier_digest(service)?,
             ha: service.ha.clone(),
+            native_role,
             delivery: namespace_runtime::DeliveryBinding::capture(state, namespace),
             original_leases: state.namespace_leases.clone(),
         };
@@ -73,7 +89,7 @@ impl Authority {
     }
     fn check_ha_role(&self, service: &Service) -> Result<Option<(u64, u64)>, Response> {
         self.check_deadline()?;
-        match (&self.ha, &service.ha) {
+        let actual = match (&self.ha, &service.ha) {
             (None, None) => Ok(None),
             (Some(original), Some(current)) if Arc::ptr_eq(original, current) => {
                 let _scope = crate::request_deadline::RequestDeadlineScope::enter(self.deadline);
@@ -86,7 +102,11 @@ impl Authority {
                 Ok(Some((observation.local_id, observation.term)))
             }
             _ => Err(unavailable()),
+        }?;
+        if actual != self.native_role {
+            return Err(unavailable());
         }
+        Ok(actual)
     }
     pub(in crate::service) fn sync_before_setup(
         &self,
@@ -164,6 +184,101 @@ impl Authority {
         }
         self.check_deadline()
     }
+    fn logical_owner(
+        &self,
+        service: &Service,
+        namespace: &str,
+        mount: &str,
+        owner: &crate::engines::sdk::MountOwner,
+    ) -> Result<(), Response> {
+        self.check(service)?;
+        let state = service.state.as_ref().ok_or_else(unavailable)?;
+        let lease = state
+            .engines
+            .sdk_lease(namespace, self.selected.lease_id())
+            .ok_or_else(unavailable)?;
+        if self.selected.kind() != Kind::Logical
+            || self.selected.binding().namespace() != namespace
+            || lease.namespace != namespace
+            || lease.mount != mount
+            || !lease.same_backend(owner)
+        {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+    fn credential_owner(
+        &self,
+        service: &Service,
+        binding: &crate::auth::sdk::Binding,
+    ) -> Result<(), Response> {
+        self.check(service)?;
+        let state = service.state.as_ref().ok_or_else(unavailable)?;
+        let lease = state
+            .auth
+            .sdk_credential_record(&binding.namespace, self.selected.lease_id())
+            .ok_or_else(unavailable)?;
+        if self.selected.kind() != Kind::Credential
+            || self.selected.binding().namespace() != binding.namespace
+            || lease.backend != *binding
+        {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+    pub(in crate::service) fn logical_native_role(
+        &self,
+        service: &Service,
+        namespace: &str,
+        mount: &str,
+        owner: &crate::engines::sdk::MountOwner,
+    ) -> Result<NativeRole, Response> {
+        self.logical_owner(service, namespace, mount, owner)?;
+        Ok(NativeRole {
+            role: self.native_role,
+        })
+    }
+    pub(in crate::service) fn credential_native_role(
+        &self,
+        service: &Service,
+        binding: &crate::auth::sdk::Binding,
+    ) -> Result<NativeRole, Response> {
+        self.credential_owner(service, binding)?;
+        Ok(NativeRole {
+            role: self.native_role,
+        })
+    }
+    pub(in crate::service) fn logical_storage_cut(
+        &self,
+        service: &Service,
+        namespace: &str,
+        mount: &str,
+        owner: &crate::engines::sdk::MountOwner,
+    ) -> Result<LogicalStorageCut, Response> {
+        self.logical_owner(service, namespace, mount, owner)?;
+        let state = service.state.as_ref().ok_or_else(unavailable)?;
+        Ok(LogicalStorageCut {
+            original: state.engines.clone(),
+            namespace: namespace.to_owned(),
+            mount: mount.to_owned(),
+            owner: owner.clone(),
+        })
+    }
+    pub(in crate::service) fn credential_storage_cut(
+        &self,
+        service: &Service,
+        binding: &crate::auth::sdk::Binding,
+    ) -> Result<CredentialStorageCut, Response> {
+        self.credential_owner(service, binding)?;
+        let state = service.state.as_ref().ok_or_else(unavailable)?;
+        Ok(CredentialStorageCut {
+            binding: binding.clone(),
+            original: state
+                .auth
+                .sdk_auth_storage_witness(binding)
+                .map_err(auth_error)?,
+        })
+    }
     pub(in crate::service) fn finish_logical(
         &self,
         state: &mut State,
@@ -197,6 +312,83 @@ impl Authority {
         }
         self.selected = current.clone();
         self.check_auth(auth)
+    }
+}
+// These affine receipts have no Clone or bearer/Principal projection. Their
+// only constructors require the actual native job Authority and owned backend.
+pub(in crate::service) struct NativeRole {
+    role: Option<(u64, u64)>,
+}
+impl NativeRole {
+    pub(in crate::service) fn captured(&self) -> Option<(u64, u64)> {
+        self.role
+    }
+}
+pub(in crate::service) struct LogicalStorageCut {
+    original: CowOwner<EngineState>,
+    namespace: String,
+    mount: String,
+    owner: crate::engines::sdk::MountOwner,
+}
+impl LogicalStorageCut {
+    pub(in crate::service) fn check(
+        &self,
+        current: &EngineState,
+        namespace: &str,
+        mount: &str,
+        owner: &crate::engines::sdk::MountOwner,
+    ) -> Result<(), Response> {
+        if self.namespace != namespace
+            || self.mount != mount
+            || self.owner != *owner
+            || !current
+                .sdk_storage_observations_match(&self.original, namespace, mount, owner)
+                .map_err(Response::from_engine_error)?
+        {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+    pub(in crate::service) fn merge(
+        &self,
+        current: &mut EngineState,
+        working: &EngineState,
+        namespace: &str,
+        mount: &str,
+        owner: &crate::engines::sdk::MountOwner,
+    ) -> Result<(), Response> {
+        self.check(current, namespace, mount, owner)?;
+        current
+            .sdk_merge_admitted_storage(&self.original, working, namespace, mount, owner)
+            .map(|_| ())
+            .map_err(Response::from_engine_error)
+    }
+}
+pub(in crate::service) struct CredentialStorageCut {
+    binding: crate::auth::sdk::Binding,
+    original: crate::auth::sdk::StorageWitness,
+}
+impl CredentialStorageCut {
+    pub(in crate::service) fn check(
+        &self,
+        current: &AuthState,
+        binding: &crate::auth::sdk::Binding,
+    ) -> Result<(), Response> {
+        if self.binding != *binding {
+            return Err(unavailable());
+        }
+        self.original.check(current, binding).map_err(auth_error)
+    }
+    pub(in crate::service) fn merge(
+        &self,
+        current: &mut AuthState,
+        working: &AuthState,
+        binding: &crate::auth::sdk::Binding,
+    ) -> Result<(), Response> {
+        self.check(current, binding)?;
+        current
+            .merge_sdk_auth_storage(binding, &self.original, working)
+            .map_err(auth_error)
     }
 }
 fn unavailable() -> Response {

@@ -389,7 +389,32 @@ impl Service {
                     .is_none_or(|value| value.get("secret").is_some_and(Value::is_null));
             let publication_identity = self.current_state_identity()?;
             let identity_changed = publication_identity != transaction.identity;
-            if identity_changed && !readonly_metadata && !authority.admitted_data() {
+            let namespace_role = authority
+                .namespace_work()
+                .map(|work| {
+                    work.logical_native_role(self, &plan.namespace, &plan.mount, &plan.owner)
+                })
+                .transpose()?;
+            if plan.namespace_cleanup != namespace_role.is_some() {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK Storage authority scope changed",
+                ));
+            }
+            match (&transaction.namespace_original, &namespace_role) {
+                (Some(_), Some(_)) | (None, None) => {}
+                _ => {
+                    return Err(Response::error(
+                        503,
+                        "namespace SDK Storage cut scope changed",
+                    ));
+                }
+            }
+            if identity_changed
+                && !readonly_metadata
+                && !authority.admitted_data()
+                && namespace_role.is_none()
+            {
                 return Err(Response::error(
                     503,
                     "SDK transaction snapshot changed before publication",
@@ -414,6 +439,18 @@ impl Service {
                         &plan.owner,
                     )
                     .map_err(Response::from_engine_error)?;
+            } else if namespace_role.is_some() {
+                transaction
+                    .namespace_original
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "namespace SDK Storage cut missing"))?
+                    .merge(
+                        &mut state.engines,
+                        &transaction.engines,
+                        &plan.namespace,
+                        &plan.mount,
+                        &plan.owner,
+                    )?;
             } else if readonly_metadata {
                 if !state
                     .engines
@@ -616,9 +653,12 @@ impl Service {
                         "SDK transaction changed before publication",
                     ));
                 }
-                self.commit_record_plan_with_before_publish(
+                self.commit_record_plan_with_native_role(
                     &state,
                     publication,
+                    namespace_role
+                        .as_ref()
+                        .and_then(namespace_sdk_cleanup::NativeRole::captured),
                     |auth| authority.validate_live_auth(auth),
                     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                     None,
@@ -630,6 +670,14 @@ impl Service {
                         .ok_or_else(|| Response::error(503, "SDK committed state unavailable"))?,
                 )?;
                 transaction.identity = self.current_state_identity()?;
+                if let Some(work) = authority.namespace_work() {
+                    transaction.namespace_original = Some(work.logical_storage_cut(
+                        self,
+                        &plan.namespace,
+                        &plan.mount,
+                        &plan.owner,
+                    )?);
+                }
                 if authority.admitted_data() {
                     transaction.admitted_original = Some(
                         self.state
