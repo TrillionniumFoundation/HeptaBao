@@ -87,7 +87,14 @@ fn listing111_real_enable_reopen_clear_and_sticky_publication_floor()
             .status,
         400
     );
-    for unsupported in [107, 109, 110] {
+    for implemented in [
+        SDK_AUTH_RETIREMENT_STATE_SCHEMA,
+        NAMESPACE_SDK_CLEANUP_STATE_SCHEMA,
+        RAW_WRAPPED_REPLY_STATE_SCHEMA,
+    ] {
+        assert!(supported_reader_schema(implemented));
+    }
+    for unsupported in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         assert!(!supported_reader_schema(unsupported));
     }
     assert!(

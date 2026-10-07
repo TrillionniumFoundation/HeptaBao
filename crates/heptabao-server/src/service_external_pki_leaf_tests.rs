@@ -83,6 +83,20 @@ fn external_pki270_original_one_second_leaf_expiry_before_publication_keeps_stat
     );
     let observed = pending.execute();
     let response = service.finish_external_request(pending, observed);
+    let diagnostic_error = serde_json::to_vec(&response.body.get("errors"))?;
+    let diagnostic_calls = remote.calls()?;
+    eprintln!(
+        "PKI_ONE_SECOND_DIAGNOSTIC_POST_FINISH status={} data_present={} errors_present={} error_bytes={} error_sha256={} calls_before={} calls_after={} identity_unchanged={} elapsed_ms={}",
+        response.status,
+        response.body.get("data").is_some(),
+        response.body.get("errors").is_some(),
+        diagnostic_error.len(),
+        hex(&<sha2::Sha256 as sha2::Digest>::digest(&diagnostic_error)),
+        before,
+        diagnostic_calls,
+        service.current_state_identity().is_ok_and(|current| current == identity),
+        started.elapsed().as_millis(),
+    );
     assert!(response.status == 403 && response.body.get("data").is_none());
     assert!(
         remote.calls()? == before + 2,
