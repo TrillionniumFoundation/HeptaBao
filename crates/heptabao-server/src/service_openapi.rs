@@ -416,7 +416,7 @@ fn add_implemented_control_and_identity_routes(paths: &mut Map<String, Value>) {
     add_list_query(paths, "/identity/entity-alias/id", false, false);
     add_list_query(paths, "/identity/group/name", false, false);
     add_list_query(paths, "/identity/group-alias/id", false, false);
-    add_list_query(paths, "/sys/policy", true, false);
+    add_list_query(paths, "/sys/policy", false, true);
     if let Some(item) = paths
         .get_mut("/sys/namespaces")
         .and_then(Value::as_object_mut)
