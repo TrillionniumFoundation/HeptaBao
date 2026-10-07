@@ -1287,3 +1287,52 @@ fn namespace109_closed_empty_dual_mirrors_cannot_bypass_authenticated_resource_h
     assert!(closed.validate_format().is_ok());
     Ok(())
 }
+
+#[test]
+fn namespace109_tainted_catalog_matches_official_without_allowing_token_or_data() -> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    let before = f.service.current_state_identity().map_err(|_| "identity")?;
+    assert!(
+        f.service
+            .state
+            .as_ref()
+            .ok_or("pending")?
+            .namespace_is_tainted(NS)
+    );
+    for (method, path, expected) in [
+        ("GET", "sys/mounts", 404),
+        ("GET", "sys/auth", 404),
+        ("GET", "auth/token/lookup-self", 403),
+        ("GET", "logical/record", 403),
+        ("POST", "logical/record", 403),
+    ] {
+        let execution = f.service.begin_request_before(
+            ServiceRequest {
+                method,
+                path,
+                namespace: NS,
+                token: &f.token,
+                body: json!({}),
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+            Instant::now() + Duration::from_secs(15),
+            true,
+        );
+        let response = f.service.finish_synchronous_request(execution);
+        assert_eq!(response.status, expected, "tainted request {method} {path}");
+        assert_eq!(
+            f.service.current_state_identity().map_err(|_| "identity")?,
+            before
+        );
+    }
+    let state = f.service.state.as_ref().ok_or("retained pending")?;
+    assert!(state.namespace_is_tainted(NS));
+    assert_eq!(keys(state)?.len(), 2);
+    state
+        .validate_format()
+        .map_err(|_| "actual retained format")?;
+    Ok(())
+}

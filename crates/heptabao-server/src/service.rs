@@ -3140,7 +3140,7 @@ impl Service {
             .is_some_and(|state| state.namespace_is_tainted(namespace))
         {
             return Response::error(
-                if path == "sys/auth" || path.starts_with("sys/auth/") {
+                if matches!(path, "sys/auth" | "sys/mounts") || path.starts_with("sys/auth/") {
                     404
                 } else {
                     403
