@@ -231,6 +231,11 @@ fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Resul
 }
 
 impl NamespaceRegistry {
+    #[cfg(test)]
+    pub(super) fn deletion_fixture_remove_custody_frontier(&mut self, actual: &str) {
+        self.custody_frontiers.remove(actual);
+    }
+
     pub(super) fn capture_closed_auth_routes(
         &mut self,
         binding: &crate::namespace_custody::Binding,

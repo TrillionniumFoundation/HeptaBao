@@ -1184,7 +1184,9 @@ fn namespace109_closed_empty_dual_mirrors_cannot_bypass_authenticated_resource_h
     );
     assert!(!failed_runtime.is_loaded(NS));
     let mut no_floor = closed.clone();
-    no_floor.namespaces.custody_frontiers.remove(NS);
+    no_floor
+        .namespaces
+        .deletion_fixture_remove_custody_frontier(NS);
     assert!(
         no_floor.validate_format().is_err(),
         "opaque ownership requires its exact durable floor"
