@@ -3972,13 +3972,32 @@ impl Service {
                 data.insert("id".into(), json!(bearer));
             }
         }
+        let raw_pki_reply = wrap_ttl_seconds.filter(|ttl| *ttl > 0).and_then(|_| {
+            transaction.engines.wrapping_raw_pki_reply(
+                namespace,
+                method,
+                path,
+                response.status,
+                &response.body,
+            )
+        });
         if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
-            && (200..300).contains(&response.status)
-            && response.status != 204
-            && !response.body.is_null()
+            && (raw_pki_reply.is_some()
+                || ((200..300).contains(&response.status)
+                    && response.status != 204
+                    && !response.body.is_null()))
             && response.body.get("wrap_info").is_none_or(Value::is_null)
         {
-            let wrapped = if transaction
+            let wrapped = if let Some(transport) = &raw_pki_reply {
+                transaction.auth.wrap_pki_raw_response(
+                    namespace,
+                    path,
+                    ttl,
+                    &response.body,
+                    transport,
+                    now,
+                )
+            } else if transaction
                 .engines
                 .wrapping_uses_raw_pki_transport(namespace, method, path)
             {

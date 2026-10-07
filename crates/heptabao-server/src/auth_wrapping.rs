@@ -196,7 +196,7 @@ impl AuthState {
     }
 
     /// Closed JSON producer call sites select this after actual logical dispatch.
-    /// Raw PKI transports remain on the explicit historical producer.
+    /// Raw PKI transports use their sealed actual producer proof below.
     pub(crate) fn wrap_logical_response(
         &mut self,
         namespace: &str,
@@ -209,6 +209,26 @@ impl AuthState {
             .map(|context| StoredWrappedReply::capture(response, &context, path))
             .transpose()?;
         self.wrap_response_with_stored(namespace, path, ttl, response, now, stored_reply)
+    }
+
+    /// A sealed actual PKI producer supplies the HTTP special logical fields.
+    /// The private ingress carrier captures a complete JSON HTTPResponse once;
+    /// historical callers keep their original Value-only representation.
+    pub(crate) fn wrap_pki_raw_response(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        ttl: u64,
+        historical_response: &Value,
+        transport: &crate::engines::PkiWrappedTransport,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let Some(context) = current_ingress() else {
+            return self.wrap_response(namespace, path, ttl, historical_response, now);
+        };
+        let logical = transport.logical_response();
+        let stored = StoredWrappedReply::capture(logical, &context, path)?;
+        self.wrap_response_with_stored(namespace, path, ttl, logical, now, Some(stored))
     }
 
     fn wrap_response_with_stored(

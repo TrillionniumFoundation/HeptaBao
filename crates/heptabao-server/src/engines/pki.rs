@@ -20,6 +20,7 @@ mod local_key;
 #[path = "pki_public.rs"]
 mod public;
 use local_key::{LocalKeyKind, LocalPrivateMaterial, LocalPublicKey};
+pub(crate) use public::PkiWrappedTransport;
 #[path = "pki_role_leaf_profile.rs"]
 mod role_leaf_profile;
 #[path = "pki_role_names.rs"]
