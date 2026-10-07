@@ -1786,17 +1786,36 @@ fn namespace109_owned_storage_cut_rejects_wrong_family_scope_and_namespace_seal(
         .status,
         403
     );
-    assert_eq!(
-        owned_body(
-            &mut f.service,
-            "POST",
-            "sys/namespaces/retire/seal",
-            &f.token,
-            json!({})
-        )
-        .status,
-        204
+    let sealed_response = owned_body(
+        &mut f.service,
+        "POST",
+        "sys/namespaces/retire/seal",
+        &f.token,
+        json!({}),
     );
+    let seal_error_sha: String = crypto::digest(
+        sealed_response.body["errors"][0]
+            .as_str()
+            .unwrap_or("")
+            .as_bytes(),
+    )
+    .iter()
+    .map(|byte| format!("{byte:02x}"))
+    .collect();
+    let actual = f.service.state.as_ref();
+    eprintln!(
+        "NS_OWNED_SEAL namespace_seal status={} first_error_sha={} schema={} target_sealed={} jobs={} precise={}",
+        sealed_response.status,
+        seal_error_sha,
+        actual.map_or(0, |state| state.schema),
+        actual.is_some_and(|state| state.namespace_is_sealed(NS)),
+        actual
+            .and_then(|state| state.namespaces.deletions.as_ref())
+            .and_then(|ledger| ledger.sdk_cleanup())
+            .map_or(0, |jobs| jobs.records().len()),
+        actual.is_some_and(State::has_token_api_precision_state)
+    );
+    assert_eq!(sealed_response.status, 204);
     assert!(
         logical
             .logical_native_role(&f.service, NS, &f.logical.mount, &f.logical.backend)
