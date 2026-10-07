@@ -23,7 +23,7 @@ pub(crate) enum Kind {
 #[serde(tag = "family", deny_unknown_fields)]
 enum Resource {
     Logical { backend: MountOwner },
-    Credential { backend: sdk::Binding },
+    Credential { backend: Box<sdk::Binding> },
 }
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -170,7 +170,7 @@ impl Record {
         Self::capture(
             binding,
             Resource::Credential {
-                backend: record.backend.clone(),
+                backend: Box::new(record.backend.clone()),
             },
             record,
             digest(record)?,
@@ -300,6 +300,70 @@ impl Record {
         }
         Ok(())
     }
+    #[cfg(test)]
+    pub(crate) fn check_unboxed_credential_wire(&self) -> Result<(), AuthError> {
+        // Preserve the original unboxed persisted shape, including field order
+        // and the bytes used by the immutable record digest.
+        #[derive(Serialize, Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct OriginalCredentialResource {
+            family: String,
+            backend: sdk::Binding,
+        }
+        #[derive(Serialize, Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct OriginalCredentialRecord {
+            deletion_owner: Binding,
+            resource: OriginalCredentialResource,
+            metadata: Metadata,
+            pending_digest: [u8; 32],
+            stage: Stage,
+        }
+        let Resource::Credential { backend } = &self.resource else {
+            return Err(err(
+                503,
+                "namespace SDK cleanup wire fixture family rejected",
+            ));
+        };
+        let original = OriginalCredentialRecord {
+            deletion_owner: self.deletion_owner.clone(),
+            resource: OriginalCredentialResource {
+                family: "Credential".into(),
+                backend: backend.as_ref().clone(),
+            },
+            metadata: self.metadata.clone(),
+            pending_digest: self.pending_digest,
+            stage: self.stage.clone(),
+        };
+        let original_bytes = zeroize::Zeroizing::new(
+            crate::secret_serde::to_vec(&original, 512 * 1024)
+                .map_err(|_| err(503, "namespace SDK cleanup wire fixture encoding rejected"))?,
+        );
+        let boxed_bytes = zeroize::Zeroizing::new(
+            crate::secret_serde::to_vec(self, 512 * 1024)
+                .map_err(|_| err(503, "namespace SDK cleanup wire fixture encoding rejected"))?,
+        );
+        assert!(original_bytes.as_slice() == boxed_bytes.as_slice());
+        assert!(crypto::digest(&original_bytes) == digest(self)?);
+        let old_decoded: OriginalCredentialRecord = serde_json::from_slice(&boxed_bytes)
+            .map_err(|_| err(503, "namespace SDK cleanup original wire decoder rejected"))?;
+        assert!(old_decoded.resource.family == "Credential");
+        assert!(old_decoded.resource.backend == *backend.as_ref());
+        let old_reencoded = zeroize::Zeroizing::new(
+            crate::secret_serde::to_vec(&old_decoded, 512 * 1024).map_err(|_| {
+                err(
+                    503,
+                    "namespace SDK cleanup original wire reencoding rejected",
+                )
+            })?,
+        );
+        assert!(old_reencoded.as_slice() == original_bytes.as_slice());
+        let new_decoded: Self = serde_json::from_slice(&original_bytes)
+            .map_err(|_| err(503, "namespace SDK cleanup boxed wire decoder rejected"))?;
+        assert!(new_decoded == *self);
+        assert!(new_decoded.selection_digest()? == self.selection_digest()?);
+        Ok(())
+    }
     pub(crate) fn check_logical(&self, lease: &Lease, terminal: bool) -> Result<(), AuthError> {
         let Resource::Logical { backend } = &self.resource else {
             return Err(err(503, "namespace SDK cleanup family changed"));
@@ -317,7 +381,7 @@ impl Record {
         let Resource::Credential { backend } = &self.resource else {
             return Err(err(503, "namespace SDK cleanup family changed"));
         };
-        if backend != &lease.backend {
+        if backend.as_ref() != &lease.backend {
             return Err(err(503, "namespace SDK cleanup backend changed"));
         }
         self.check_metadata(lease, digest(lease)?, terminal)

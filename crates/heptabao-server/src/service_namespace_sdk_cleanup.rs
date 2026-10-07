@@ -462,10 +462,10 @@ impl State {
                 .queue_sdk_cleanup(job, &self.cluster_id)
                 .map_err(auth_error)?;
         }
-        if let Some(ledger) = self.namespaces.deletions.as_mut() {
-            if ledger.sdk_cleanup().is_some() {
-                ledger.seal_sdk_selection(binding).map_err(auth_error)?;
-            }
+        if let Some(ledger) = self.namespaces.deletions.as_mut()
+            && ledger.sdk_cleanup().is_some()
+        {
+            ledger.seal_sdk_selection(binding).map_err(auth_error)?;
         }
         self.sync_namespace_deletion_ledger()?;
         self.schema = self.writer_schema();

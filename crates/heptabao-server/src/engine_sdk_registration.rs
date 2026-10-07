@@ -328,7 +328,7 @@ impl Registration {
                                 .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
                     })
                     || instance_hex(
-                        &AuthState::sdk_batch_owner_instance(&lease.issuer)
+                        &AuthState::sdk_batch_owner_instance(lease.issuer)
                             .map_err(|_| error(503, "SDK batch registration instance rejected"))?,
                     ) != self.instance
                 {

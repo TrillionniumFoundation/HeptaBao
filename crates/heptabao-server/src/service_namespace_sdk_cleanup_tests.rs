@@ -471,6 +471,9 @@ fn namespace109_credential_terminal_retains_global_registered_owner_and_rejects_
                 .is_ok_and(|job| job.kind() == Kind::Credential)
         })
         .ok_or("credential key")?;
+    next.namespace_sdk_cleanup_record(&key)
+        .map_err(|_| "actual attempted credential wire")?
+        .check_unboxed_credential_wire()?;
     let mut record = next
         .auth
         .sdk_credential_record(NS, &f.credential.id)
@@ -504,6 +507,7 @@ fn namespace109_credential_terminal_retains_global_registered_owner_and_rejects_
         .namespace_sdk_cleanup_record(&key)
         .map_err(|_| "job")?;
     terminal.check_credential(&record, true)?;
+    terminal.check_unboxed_credential_wire()?;
     let mut damaged = record.clone();
     damaged.ttl_ns -= 1;
     assert!(terminal.check_credential(&damaged, true).is_err());
@@ -1043,18 +1047,86 @@ fn namespace109_actual_closed_hydration_keeps_jobs_records_and_terminal_lineage(
         .deletions
         .clone()
         .ok_or("actual closed jobs")?;
-    publish(&mut f.service, closed)?;
+    // A verified ciphertext owner is not a logical publication view: the
+    // current accepted SDK registration must still be checked in full.
+    let before_rejected = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "original logical identity")?;
+    let mut fragment = closed.clone();
+    let rejected = match f.service.commit_state(&mut fragment) {
+        Ok(_) => return Err("closed fragment cannot erase current registered resources".into()),
+        Err(rejected) => rejected,
+    };
+    assert!(
+        rejected.status == 503
+            && rejected.body["errors"][0].as_str()
+                == Some("SDK registration provenance was removed")
+    );
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "unchanged logical identity")?
+            == before_rejected
+    );
+    let logical_to_publish = {
+        let key = f.service.barrier_key.as_ref().ok_or("actual root key")?;
+        f.service
+            .namespace_runtime
+            .restore_root_inherited(&closed, key, |_| Ok(()))
+            .map_err(|_| "real keyed logical publication view")?
+    };
+    assert!(f.service.namespace_runtime.is_loaded(NS));
+    assert!(
+        logical_to_publish
+            .engines
+            .sdk_namespace_records_materialized(NS)
+    );
+    assert!(
+        logical_to_publish
+            .engines
+            .sdk_lease(NS, &f.logical.id)
+            .is_some_and(|lease| lease.registration == f.logical.registration)
+    );
+    assert!(logical_to_publish.namespaces.deletions.as_ref() == Some(&saved));
+    // The original commit path checks the complete logical successor and
+    // publishes its actual keyed canonical encrypted owner and resource cells.
+    publish(&mut f.service, logical_to_publish)?;
     let before = f
         .service
         .current_state_identity()
-        .map_err(|_| "closed identity")?;
-    let closed = f.service.state.clone().ok_or("closed")?;
-    let key = f.service.barrier_key.as_ref().ok_or("actual root key")?;
-    let hydrated = f
+        .map_err(|_| "published physical identity")?;
+    let closed = f
         .service
-        .namespace_runtime
-        .restore_root_inherited(&closed, key, |_| Ok(()))
-        .map_err(|_| "authenticated full resource hydration")?;
+        .state
+        .as_ref()
+        .ok_or("published logical state")?
+        .protected_state()
+        .map_err(|_| "published canonical physical view")?
+        .clone();
+    assert!(closed.namespaces.inherited_owner(NS).is_some());
+    assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
+    assert!(!closed.engines.sdk_namespace_records_materialized(NS));
+    assert!(closed.namespaces.deletions.as_ref() == Some(&saved));
+    assert!(closed.validate_format().is_ok());
+    // Drop the logical continuation, revoke the actual slot, and restore only
+    // the canonical ciphertext graph produced by that real commit.
+    f.service.state = Some(closed.clone());
+    f.service.namespace_runtime.close(NS);
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "canonical physical identity")?
+            == before
+    );
+    let hydrated = {
+        let key = f.service.barrier_key.as_ref().ok_or("actual root key")?;
+        f.service
+            .namespace_runtime
+            .restore_root_inherited(&closed, key, |_| Ok(()))
+            .map_err(|_| "authenticated full resource hydration")?
+    };
     assert!(f.service.namespace_runtime.is_loaded(NS));
     assert!(hydrated.engines.sdk_namespace_records_materialized(NS));
     assert!(hydrated.engines.sdk_lease(NS, &f.logical.id).is_some());
