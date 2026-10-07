@@ -88,7 +88,7 @@ pub(super) fn finish_namespace_deletion_fixture(
         Some(namespace),
         "one original selected namespace task, without a retry loop"
     );
-    let started = Instant::now();
+    let started = std::time::Instant::now();
     let clock = RequestClock::anchored(epoch, started)?;
     let _scope =
         crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
