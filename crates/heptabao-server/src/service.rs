@@ -85,6 +85,7 @@ const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
 const NAMESPACE_DELETION_STATE_SCHEMA: u32 = 106;
 const SDK_AUTH_RETIREMENT_STATE_SCHEMA: u32 = 107;
+const NAMESPACE_SDK_CLEANUP_STATE_SCHEMA: u32 = crate::auth::namespace_sdk_cleanup::STATE_SCHEMA;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
@@ -108,7 +109,7 @@ const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_RSA8192_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = NAMESPACE_SDK_CLEANUP_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -127,6 +128,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | NAMESPACE_BATCH_STATE_SCHEMA
                 | NAMESPACE_DELETION_STATE_SCHEMA
                 | SDK_AUTH_RETIREMENT_STATE_SCHEMA
+                | NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
                 | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
@@ -209,6 +211,9 @@ mod native_remount;
 pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
 use namespaces::deletion as namespace_deletion;
 pub(crate) use native_remount::start_worker as start_native_remount_worker;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_namespace_sdk_cleanup.rs"]
+mod namespace_sdk_cleanup;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_openbao_wrapper.rs"]
@@ -1250,6 +1255,8 @@ pub struct Service {
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_cleanup_cursor: Option<(String, String)>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
+    namespace_sdk_cleanup_cursor: Option<String>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_credential_cleanup_cursor: Option<String>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_credential_preferred: bool,
@@ -1643,6 +1650,8 @@ impl Service {
             sdk_migrations: BTreeMap::new(),
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            namespace_sdk_cleanup_cursor: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_credential_cleanup_cursor: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]

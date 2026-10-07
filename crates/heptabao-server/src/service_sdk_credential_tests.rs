@@ -341,6 +341,7 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
             body: json!({}),
             completed: Some(vec![(record.id.clone(), crypto::digest(&bytes))]),
         })),
+        namespace_cleanup: false,
     };
     Ok((files, service, plan, root, record))
 }

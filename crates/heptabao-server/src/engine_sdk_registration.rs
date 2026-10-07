@@ -73,6 +73,18 @@ pub(crate) struct Registration {
     original_expiry: Expiry,
     parent: Parent,
 }
+/// Read-only immutable registration fields. This does not contain callback
+/// data, a Principal, a current owner observation or an admission clock.
+pub(crate) struct LeaseMetadata<'a> {
+    pub(crate) issuer: &'a LeaseOwner,
+    pub(crate) namespace: &'a str,
+    pub(crate) issued: Timestamp,
+    pub(crate) expires: Timestamp,
+    pub(crate) renewed: Option<Timestamp>,
+    pub(crate) ttl_ns: u64,
+    pub(crate) renewable: bool,
+    pub(crate) phase: Phase,
+}
 impl Registration {
     pub(crate) fn from_entry(
         entry: &AcceptedSdkLeaseIssuer,
@@ -223,6 +235,18 @@ impl Registration {
         &self,
         lease: &Lease<B>,
     ) -> Result<()> {
+        self.validate_metadata(LeaseMetadata {
+            issuer: &lease.issuer,
+            namespace: &lease.namespace,
+            issued: lease.issued,
+            expires: lease.expires,
+            renewed: lease.renewed,
+            ttl_ns: lease.ttl_ns,
+            renewable: lease.renewable,
+            phase: lease.phase,
+        })
+    }
+    pub(crate) fn validate_metadata(&self, lease: LeaseMetadata<'_>) -> Result<()> {
         self.original_expiry.validate()?;
         if self.version != 1
             || self.instance.len() != 64

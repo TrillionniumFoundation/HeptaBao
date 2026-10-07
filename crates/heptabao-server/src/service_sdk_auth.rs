@@ -121,6 +121,7 @@ pub(in crate::service) struct Plan {
     lease: Mutex<Option<credential::Call>>,
     cleanup: Mutex<Option<credential::Cleanup>>,
     retirement: Option<Mutex<retirement::Retirement>>,
+    namespace_cleanup: bool,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -145,11 +146,20 @@ impl Plan {
         deadline: Instant,
     ) -> Result<Option<Value>, Response> {
         let deadline = deadline.min(self.deadline);
-        if self.control.fenced.load(Ordering::Acquire) || Instant::now() >= deadline {
+        if self.control.fenced.load(Ordering::Acquire)
+            || Instant::now() >= deadline
+            || (self.control.retiring.load(Ordering::Acquire)
+                && self.retirement.is_none()
+                && !self.namespace_cleanup)
+        {
             return Err(Response::error(
                 503,
                 "SDK Auth original owner or deadline unavailable",
             ));
+        }
+        if self.namespace_cleanup {
+            let mut writer = writer_before(service, deadline)?;
+            writer.sdk_auth_gate(self)?;
         }
         let auth = self
             .renewal
@@ -179,7 +189,10 @@ impl Plan {
         {
             return Err(Response::error(503, "SDK Auth mount is busy before entry"));
         }
-        if self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none() {
+        if self.control.retiring.load(Ordering::Acquire)
+            && self.retirement.is_none()
+            && !self.namespace_cleanup
+        {
             self.control.busy.store(false, Ordering::Release);
             return Err(Response::error(
                 409,
@@ -327,6 +340,7 @@ impl Plan {
                 .as_ref()
             {
                 cleanup.check(call)?;
+                cleanup.check_auth(auth)?;
             }
         }
         Ok(())
@@ -347,7 +361,10 @@ impl Plan {
 fn auth_error(error: crate::auth::AuthError) -> Response {
     Response::error(error.status, &error.message)
 }
-fn sdk_auth_key(cluster: &str, binding: &Binding) -> Result<String, Response> {
+pub(in crate::service) fn sdk_auth_key(
+    cluster: &str,
+    binding: &Binding,
+) -> Result<String, Response> {
     let data = serde_json::to_vec(&(cluster, binding))
         .map_err(|_| Response::error(503, "SDK Auth host identity encoding failed"))?;
     Ok(format!("AUTH:{}", hex(&crypto::digest(&data))))
@@ -899,6 +916,24 @@ impl Service {
         request: &RequestView<'_>,
         target: StageTarget<'_>,
     ) -> Response {
+        self.stage_owned_sdk_auth(state, request, target, None)
+    }
+    fn stage_owned_sdk_auth(
+        &mut self,
+        state: &State,
+        request: &RequestView<'_>,
+        target: StageTarget<'_>,
+        namespace_work: Option<&namespace_sdk_cleanup::Authority>,
+    ) -> Response {
+        if let Some(work) = namespace_work
+            && let Err(error) = work.sync_before_setup(self)
+        {
+            return error;
+        }
+        // Cleanup's Setup transaction starts from the actual graph admitted
+        // by that original task, never the pre-sync Auth snapshot.
+        let current_state = namespace_work.and_then(|_| self.state.clone());
+        let state = current_state.as_ref().unwrap_or(state);
         let StageTarget {
             binding,
             mut caller,
@@ -968,6 +1003,11 @@ impl Service {
                 default_ttl_seconds: 2_764_800,
                 max_ttl_seconds: 2_764_800,
             };
+            if let Some(work) = namespace_work
+                && let Err(error) = work.check(self)
+            {
+                return error;
+            }
             let control = match start_worker_typed(launch, SdkBackendType::Auth) {
                 Ok(c) => c,
                 Err(e) => return e,
@@ -975,7 +1015,10 @@ impl Service {
             self.sdk_hosts.insert(key, Arc::clone(&control));
             control
         };
-        if control.retiring.load(Ordering::Acquire) && retirement.is_none() {
+        if control.retiring.load(Ordering::Acquire)
+            && retirement.is_none()
+            && namespace_work.is_none()
+        {
             return Response::error(409, "SDK Auth mount retirement is in progress");
         }
         let identity = match self.current_state_identity() {
@@ -1041,6 +1084,7 @@ impl Service {
             lease: Mutex::new(None),
             cleanup: Mutex::new(None),
             retirement: retirement.map(Mutex::new),
+            namespace_cleanup: namespace_work.is_some(),
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
@@ -1152,6 +1196,14 @@ impl Service {
             ));
         }
         plan.check_retirement_control(&state.auth)?;
+        if let Some(cleanup) = plan
+            .cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?
+            .as_ref()
+        {
+            cleanup.check_service(self)?;
+        }
         plan.time(&state.auth)?;
         plan.credential_owner_gate(&state.auth)?;
         plan.live_target(&state.auth)?;

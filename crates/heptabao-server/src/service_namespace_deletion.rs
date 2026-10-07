@@ -33,6 +33,12 @@ impl State {
             .as_ref()
             .ok_or_else(|| Response::error(503, "namespace deletion ledger is unavailable"))?;
         ledger.validate(&self.cluster_id).map_err(auth_error)?;
+        if ledger.sdk_cleanup().is_some() && self.schema < NAMESPACE_SDK_CLEANUP_STATE_SCHEMA {
+            return Err(Response::error(
+                503,
+                "namespace SDK cleanup requires actual format 109",
+            ));
+        }
         let lifecycle = self.namespaces.batch_lifecycle.as_ref().ok_or_else(|| {
             Response::error(503, "namespace deletion lacks actual namespace lifecycle")
         })?;
@@ -98,7 +104,7 @@ impl State {
         self.schema = self.writer_schema();
         self.validate_namespace_deletion_state()
     }
-    fn sync_namespace_deletion_ledger(&mut self) -> Result<(), Response> {
+    pub(in crate::service) fn sync_namespace_deletion_ledger(&mut self) -> Result<(), Response> {
         let ledger = self
             .namespaces
             .deletions
@@ -243,14 +249,14 @@ impl LocalCleanup {
         Ok(())
     }
 }
-fn barrier_digest(service: &Service) -> Result<[u8; 32], Response> {
+pub(in crate::service) fn barrier_digest(service: &Service) -> Result<[u8; 32], Response> {
     service
         .barrier_key
         .as_ref()
         .map(|key| crypto::digest(key.as_ref()))
         .ok_or_else(|| Response::error(503, "namespace cleanup barrier unavailable"))
 }
-fn seal_digest(service: &Service) -> Result<[u8; 32], Response> {
+pub(in crate::service) fn seal_digest(service: &Service) -> Result<[u8; 32], Response> {
     let seal = service
         .seal
         .as_ref()
@@ -328,7 +334,11 @@ impl Service {
     ) -> Response {
         let run = (|| {
             let expected = self.current_state_identity()?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let mut sdk_hosts = self.reserve_namespace_sdk_hosts(&state, binding.namespace())?;
             state.begin_namespace_deletion(binding.clone())?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            state.queue_namespace_sdk_deletion(&binding)?;
             // Every response binding is captured before publication with the
             // original affine admission, never rebuilt from completed state.
             let authority = AcceptedDelete::capture(actor, self, &state, request, binding.clone())?;
@@ -342,6 +352,8 @@ impl Service {
             self.prepare_namespace_deletion_record_root(&mut state)?;
             let publication = self.prepare_record_plan(&mut state)?;
             authority.check_state(self, &state)?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_hosts.check()?;
             if self.current_state_identity()? != expected {
                 return Err(Response::error(503, "namespace deletion source changed"));
             }
@@ -365,12 +377,22 @@ impl Service {
                             "namespace deletion intent changed before publication",
                         ));
                     }
-                    authority.check_actor(auth)
+                    authority.check_actor(auth)?;
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    {
+                        sdk_hosts.check()?;
+                        // All original gates passed at the real Publish boundary.
+                        // An unknown publication outcome must keep these owners
+                        // barred; only earlier definite rejection may release them.
+                        sdk_hosts.publication_entered();
+                    }
+                    Ok(())
                 },
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
             )?;
-            // The durable taint survives a late response veto.
+            // The durable taint survives a late response veto. The host
+            // reservation was already retained before Publish could be submitted.
             self.state = Some(state);
             authority.check(self)?;
             self.pending_namespace_deletion = Some(authority);
@@ -416,6 +438,11 @@ impl Service {
             .ok_or_else(|| Response::error(503, "namespace cleanup state unavailable"))?
             .clone();
         let actual = binding.namespace();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if !source.namespace_sdk_deletion_terminal(actual)? {
+            return Ok(false);
+        }
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         if !source.namespace_has_only_native_local_deletion_owners(actual) {
             return Ok(false);
         }
@@ -509,6 +536,8 @@ impl Service {
             )?;
             self.namespace_runtime.close(actual);
             self.state = Some(next);
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            self.retire_namespace_sdk_hosts(&source, actual)?;
             authority.check_base(self)?;
             authority.check_terminal(
                 self.state
@@ -551,6 +580,7 @@ impl Service {
     }
 }
 impl State {
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
     pub(in crate::service) fn namespace_has_only_native_local_deletion_owners(
         &self,
         namespace: &str,
@@ -611,10 +641,34 @@ pub(crate) fn start_worker(service: &Arc<Mutex<Service>>) -> Result<Worker, Stri
                 let Ok(clock) = RequestClock::anchored(wall, started) else {
                     continue;
                 };
-                let deadline = started + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET;
-                let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
-                if writer.maintain_namespace_deletions(clock).is_err() {
-                    eprintln!("heptabao-namespace: deletion remains pending");
+                {
+                    let deadline = started + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET;
+                    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                    if writer.maintain_namespace_deletions(clock).is_err() {
+                        eprintln!("heptabao-namespace: deletion remains pending");
+                    }
+                }
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                {
+                    let Some(deadline) = writer.namespace_sdk_cleanup_deadline(clock) else {
+                        continue;
+                    };
+                    let pending = {
+                        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                        writer.prepare_namespace_sdk_cleanup(clock)
+                    };
+                    drop(writer);
+                    match pending {
+                        Ok(Some(plan)) => {
+                            if plan.execute(&service).is_err() {
+                                eprintln!("heptabao-namespace: SDK cleanup attempt unresolved");
+                            }
+                        }
+                        Ok(None) => {}
+                        Err(_) => {
+                            eprintln!("heptabao-namespace: SDK cleanup admission unavailable")
+                        }
+                    }
                 }
             }
         })

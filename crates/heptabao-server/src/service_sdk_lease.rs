@@ -263,6 +263,13 @@ impl Service {
                 },
             );
         };
+        if state.auth.namespace_sdk_cleanup_blocks(
+            crate::auth::namespace_sdk_cleanup::Kind::Logical,
+            &record.namespace,
+            &record.id,
+        ) {
+            return Response::error(503, "SDK lease belongs to a namespace cleanup task");
+        }
         if record.cluster != state.cluster_id {
             return Response::error(503, "SDK lease cluster owner rejected");
         }
@@ -540,8 +547,9 @@ impl Service {
                 }
                 state
                     .engines
-                    .store_sdk_lease(lease)
+                    .store_sdk_lease(lease.clone())
                     .map_err(Response::from_engine_error)?;
+                authority.finish_namespace_logical(&mut state, &lease)?;
                 changed = true;
             } else if !secret.is_null() {
                 let at =

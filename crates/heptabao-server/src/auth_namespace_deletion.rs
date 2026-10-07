@@ -12,6 +12,8 @@ pub(crate) struct Ledger {
     pending: BTreeMap<String, Binding>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     retired: BTreeMap<String, u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_cleanup: Option<namespace_sdk_cleanup::Registry>,
 }
 
 impl Ledger {
@@ -20,6 +22,66 @@ impl Ledger {
     }
     pub(crate) fn retired(&self) -> &BTreeMap<String, u64> {
         &self.retired
+    }
+    pub(crate) fn sdk_cleanup(&self) -> Option<&namespace_sdk_cleanup::Registry> {
+        self.sdk_cleanup.as_ref()
+    }
+    pub(crate) fn ensure_sdk_cleanup(&mut self, cluster: &str) -> Result<(), AuthError> {
+        self.sdk_cleanup.get_or_insert_with(Default::default);
+        self.validate(cluster)
+    }
+    pub(crate) fn queue_sdk_cleanup(
+        &mut self,
+        record: namespace_sdk_cleanup::Record,
+        cluster: &str,
+    ) -> Result<String, AuthError> {
+        if self.pending.get(record.binding().namespace()) != Some(record.binding()) {
+            return Err(err(
+                503,
+                "namespace SDK cleanup lacks actual deletion intent",
+            ));
+        }
+        let key = self
+            .sdk_cleanup
+            .get_or_insert_with(Default::default)
+            .queue(record)?;
+        self.validate(cluster)?;
+        Ok(key)
+    }
+    pub(crate) fn attempt_sdk_cleanup(
+        &mut self,
+        key: &str,
+        cluster: &str,
+    ) -> Result<(), AuthError> {
+        self.sdk_cleanup
+            .as_mut()
+            .ok_or_else(|| err(503, "namespace SDK cleanup registry missing"))?
+            .attempted(key)?;
+        self.validate(cluster)
+    }
+    pub(crate) fn finish_logical_sdk_cleanup(
+        &mut self,
+        key: &str,
+        lease: &crate::engines::sdk_lease::Lease,
+        cluster: &str,
+    ) -> Result<(), AuthError> {
+        self.sdk_cleanup
+            .as_mut()
+            .ok_or_else(|| err(503, "namespace SDK cleanup registry missing"))?
+            .terminal_logical(key, lease)?;
+        self.validate(cluster)
+    }
+    pub(crate) fn finish_credential_sdk_cleanup(
+        &mut self,
+        key: &str,
+        lease: &sdk_credential::Record,
+        cluster: &str,
+    ) -> Result<(), AuthError> {
+        self.sdk_cleanup
+            .as_mut()
+            .ok_or_else(|| err(503, "namespace SDK cleanup registry missing"))?
+            .terminal_credential(key, lease)?;
+        self.validate(cluster)
     }
     pub(crate) fn is_tainted(&self, namespace: &str) -> bool {
         self.pending.keys().any(|path| {
@@ -54,6 +116,9 @@ impl Ledger {
                 return Err(err(503, "invalid namespace deletion retirement frontier"));
             }
         }
+        if let Some(work) = &self.sdk_cleanup {
+            work.validate(cluster, &self.pending, &self.retired)?;
+        }
         Ok(())
     }
     pub(crate) fn begin(&mut self, binding: Binding, cluster: &str) -> Result<(), AuthError> {
@@ -80,6 +145,9 @@ impl Ledger {
                 "namespace deletion completion lacks original intent",
             ));
         }
+        if let Some(work) = &mut self.sdk_cleanup {
+            work.retire(binding)?;
+        }
         self.pending.remove(path);
         self.retired
             .entry(path.to_owned())
@@ -90,6 +158,16 @@ impl Ledger {
     pub(crate) fn validate_successor(&self, old: &Self, cluster: &str) -> Result<(), AuthError> {
         self.validate(cluster)?;
         old.validate(cluster)?;
+        match (&self.sdk_cleanup, &old.sdk_cleanup) {
+            (None, Some(_)) => {
+                return Err(err(
+                    503,
+                    "namespace SDK cleanup sticky registry disappeared",
+                ));
+            }
+            (Some(next), Some(previous)) => next.validate_successor(previous, &self.retired)?,
+            _ => {}
+        }
         if old
             .retired
             .iter()
@@ -120,6 +198,28 @@ impl Ledger {
 impl AuthState {
     pub(crate) fn namespace_deletion_ledger(&self) -> Option<&Ledger> {
         self.namespace_deletions.as_ref()
+    }
+    pub(crate) fn has_namespace_sdk_cleanup_state(&self) -> bool {
+        self.namespace_deletions
+            .as_ref()
+            .is_some_and(|ledger| ledger.sdk_cleanup().is_some())
+    }
+    pub(crate) fn namespace_sdk_cleanup_blocks(
+        &self,
+        kind: namespace_sdk_cleanup::Kind,
+        namespace: &str,
+        id: &str,
+    ) -> bool {
+        self.namespace_deletions
+            .as_ref()
+            .and_then(Ledger::sdk_cleanup)
+            .is_some_and(|work| work.blocks_dispatch(kind, namespace, id))
+    }
+    pub(crate) fn namespace_sdk_cleanup_owners(&self) -> Vec<(String, LeaseOwner)> {
+        self.namespace_deletions
+            .as_ref()
+            .and_then(Ledger::sdk_cleanup)
+            .map_or_else(Vec::new, namespace_sdk_cleanup::Registry::owners)
     }
     pub(crate) fn namespace_is_tainted(&self, namespace: &str) -> bool {
         self.namespace_deletions

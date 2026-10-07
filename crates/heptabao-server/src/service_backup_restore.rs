@@ -371,6 +371,14 @@ impl Service {
             .auth
             .validate_namespace_deletion_successor(&current.auth, &incoming.cluster_id)
             .map_err(|error| Response::error(error.status, &error.message))?;
+        if current.auth.has_namespace_sdk_cleanup_state()
+            && incoming.schema < NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                503,
+                "namespace SDK cleanup reader floor cannot decrease",
+            ));
+        }
         if current.has_namespace_deletion_state()
             && incoming.schema < NAMESPACE_DELETION_STATE_SCHEMA
         {

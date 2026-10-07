@@ -749,3 +749,55 @@ fn decode_record(
             .ok_or(RecordError::Corrupt)?,
     ))
 }
+
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
+impl EngineState {
+    /// A predicate projection only. The real namespace is closed and retired
+    /// with its original custody/record graph after all registered jobs finish.
+    pub(crate) fn namespace_sdk_deletion_records(
+        &self,
+        actual: &str,
+    ) -> Result<Vec<sdk_lease::Lease>> {
+        if actual.is_empty() {
+            return Err(error(503, "root SDK deletion scope rejected"));
+        }
+        self.validate_sdk_state()?;
+        self.validate_sdk_leases()?;
+        let Some(ns) = self.namespaces.get(actual) else {
+            return Ok(Vec::new());
+        };
+        for (mount, owner) in &ns.sdk_owners {
+            self.sdk_owner_gate(actual, mount, owner)?;
+        }
+        Ok(ns.sdk_leases.values().cloned().collect())
+    }
+    pub(crate) fn namespace_sdk_native_deletion_projection(&self, actual: &str) -> Result<Self> {
+        self.namespace_sdk_deletion_records(actual)?;
+        let mut candidate = self.clone();
+        if let Some(ns) = candidate.namespaces.get_mut(actual) {
+            let sdk_mounts: Vec<_> = ns.sdk_owners.keys().cloned().collect();
+            for mount in sdk_mounts {
+                ns.mounts.remove(&mount);
+            }
+            ns.sdk_owners.clear();
+            ns.sdk_leases.clear();
+        }
+        Ok(candidate)
+    }
+}
+
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
+impl EngineState {
+    pub(crate) fn namespace_sdk_mount_bindings(
+        &self,
+        namespace: &str,
+    ) -> Result<Vec<(String, sdk::MountOwner)>> {
+        self.namespace_sdk_deletion_records(namespace)?;
+        Ok(self.namespaces.get(namespace).map_or_else(Vec::new, |ns| {
+            ns.sdk_owners
+                .iter()
+                .map(|(mount, owner)| (mount.clone(), owner.clone()))
+                .collect()
+        }))
+    }
+}

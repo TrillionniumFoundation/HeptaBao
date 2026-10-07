@@ -365,6 +365,7 @@ pub(super) struct Plan {
     data: Value,
     lease: Mutex<Option<Box<secret_lease::LeaseCall>>>,
     retirement: Option<Mutex<retirement::Retirement>>,
+    namespace_cleanup: bool,
     transaction: Mutex<StorageTransaction>,
     pub(in crate::service) deadline: Instant,
 }
@@ -397,12 +398,23 @@ impl Plan {
         let deadline = deadline.min(self.deadline);
         if self.control.fenced.load(Ordering::Acquire)
             || Instant::now() >= deadline
-            || (self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none())
+            || (self.control.retiring.load(Ordering::Acquire)
+                && self.retirement.is_none()
+                && !self.namespace_cleanup)
         {
             return Err(Response::error(
                 503,
                 "SDK owner or original deadline unavailable before entry",
             ));
+        }
+        if self.namespace_cleanup {
+            let mut writer = writer_before(service, deadline)?;
+            let mut authority = self
+                .authority
+                .lock()
+                .map_err(|_| Response::error(503, "namespace SDK original attempt unavailable"))?;
+            writer.validate_sdk_authority(&mut authority)?;
+            writer.sdk_binding_gate(self).map_err(bridge_failure)?;
         }
         let call = self
             .lease
@@ -418,7 +430,10 @@ impl Plan {
         {
             return Err(Response::error(503, "SDK mount is busy before entry"));
         }
-        if self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none() {
+        if self.control.retiring.load(Ordering::Acquire)
+            && self.retirement.is_none()
+            && !self.namespace_cleanup
+        {
             self.control.busy.store(false, Ordering::Release);
             return Err(Response::error(
                 503,
@@ -1243,7 +1258,9 @@ impl Service {
         if Instant::now() >= plan.deadline
             || plan.control.fenced.load(Ordering::Acquire)
             || self.recovery_required
-            || (plan.control.retiring.load(Ordering::Acquire) && plan.retirement.is_none())
+            || (plan.control.retiring.load(Ordering::Acquire)
+                && plan.retirement.is_none()
+                && !plan.namespace_cleanup)
         {
             return Err(SdkBridgeError::Fenced);
         }
@@ -1601,6 +1618,7 @@ impl Service {
             };
         }
         let admitted_original = authority.admitted_data().then(|| state.engines.clone());
+        let namespace_cleanup = authority.namespace_cleanup();
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             mount,
@@ -1613,6 +1631,7 @@ impl Service {
             data,
             lease: Mutex::new(lease.map(Box::new)),
             retirement: None,
+            namespace_cleanup,
             transaction: Mutex::new(StorageTransaction {
                 engines: state.engines.clone(),
                 admitted_original,
@@ -1784,3 +1803,94 @@ impl Service {
 #[cfg(test)]
 #[path = "service_sdk_authority_tests.rs"]
 mod authority_tests;
+
+/// This process-local barrier grants no callback or Principal. It prevents
+/// previously captured ordinary Plans from entering after durable deletion.
+pub(in crate::service) struct NamespaceHosts {
+    controls: Vec<Arc<Control>>,
+    publication_entered: bool,
+}
+impl Drop for NamespaceHosts {
+    fn drop(&mut self) {
+        if !self.publication_entered {
+            for control in &self.controls {
+                control.retiring.store(false, Ordering::Release);
+            }
+        }
+    }
+}
+impl NamespaceHosts {
+    pub(in crate::service) fn publication_entered(&mut self) {
+        self.publication_entered = true;
+    }
+    pub(in crate::service) fn check(&self) -> Result<(), Response> {
+        if self.controls.iter().any(|control| {
+            !control.retiring.load(Ordering::Acquire)
+                || control.busy.load(Ordering::Acquire)
+                || control.fenced.load(Ordering::Acquire)
+        }) {
+            return Err(Response::error(
+                409,
+                "namespace SDK owner is busy or unavailable",
+            ));
+        }
+        Ok(())
+    }
+}
+impl Service {
+    fn namespace_sdk_host_keys(
+        &self,
+        state: &State,
+        namespace: &str,
+    ) -> Result<Vec<String>, Response> {
+        let mut keys = Vec::new();
+        for (mount, owner) in state
+            .engines
+            .namespace_sdk_mount_bindings(namespace)
+            .map_err(Response::from_engine_error)?
+        {
+            keys.push(self.sdk_host_key(namespace, &mount, &owner));
+        }
+        for binding in state
+            .auth
+            .namespace_sdk_auth_bindings(namespace)
+            .map_err(|e| Response::error(e.status, &e.message))?
+        {
+            keys.push(auth100::sdk_auth_key(&state.cluster_id, &binding)?);
+        }
+        Ok(keys)
+    }
+    pub(in crate::service) fn reserve_namespace_sdk_hosts(
+        &self,
+        state: &State,
+        namespace: &str,
+    ) -> Result<NamespaceHosts, Response> {
+        let mut reserved = NamespaceHosts {
+            controls: Vec::new(),
+            publication_entered: false,
+        };
+        for key in self.namespace_sdk_host_keys(state, namespace)? {
+            if let Some(control) = self.sdk_hosts.get(&key) {
+                control
+                    .retiring
+                    .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                    .map_err(|_| Response::error(409, "namespace SDK owner is already retiring"))?;
+                reserved.controls.push(Arc::clone(control));
+            }
+        }
+        reserved.check()?;
+        Ok(reserved)
+    }
+    pub(in crate::service) fn retire_namespace_sdk_hosts(
+        &mut self,
+        source: &State,
+        namespace: &str,
+    ) -> Result<(), Response> {
+        for key in self.namespace_sdk_host_keys(source, namespace)? {
+            if let Some(control) = self.sdk_hosts.remove(&key) {
+                control.retire();
+            }
+        }
+        Ok(())
+    }
+}

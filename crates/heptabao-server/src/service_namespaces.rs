@@ -1548,7 +1548,14 @@ impl Service {
                     return Response::ok(json!({"data":{"status":"in-progress"}}));
                 }
                 let populated = !state.namespace_payload_is_empty(&target);
-                if populated && !state.namespace_has_only_native_local_deletion_owners(&target) {
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                let owned_cleanup = match state.namespace_sdk_deletion_eligible(&target) {
+                    Ok(eligible) => eligible,
+                    Err(error) => return error,
+                };
+                #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+                let owned_cleanup = state.namespace_has_only_native_local_deletion_owners(&target);
+                if populated && !owned_cleanup {
                     return Response::error(
                         409,
                         "namespace contains runtime state; owned cleanup is required before deletion",

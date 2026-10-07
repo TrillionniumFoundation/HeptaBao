@@ -15,6 +15,7 @@ impl State {
                 .into_iter()
                 .chain(self.database.all_lease_owners())
                 .chain(self.auth.sdk_credential_owners())
+                .chain(self.auth.namespace_sdk_cleanup_owners())
                 .any(|(_, owner)| {
                     owner
                         .batch_claims()
@@ -145,6 +146,17 @@ impl State {
         };
         let required = if self.auth.has_sdk_auth_retirement_state() {
             required.max(SDK_AUTH_RETIREMENT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_namespace_sdk_cleanup_state()
+            || self
+                .namespaces
+                .deletions
+                .as_ref()
+                .is_some_and(|ledger| ledger.sdk_cleanup().is_some())
+        {
+            required.max(NAMESPACE_SDK_CLEANUP_STATE_SCHEMA)
         } else {
             required
         };
@@ -1308,6 +1320,7 @@ impl State {
             .into_iter()
             .chain(self.database.all_lease_owners())
             .chain(self.auth.sdk_credential_owners())
+            .chain(self.auth.namespace_sdk_cleanup_owners())
         {
             if let Some(claims) = owner.batch_claims() {
                 if self.schema < 41 {
@@ -1733,6 +1746,7 @@ impl State {
             | NAMESPACE_BATCH_STATE_SCHEMA
             | NAMESPACE_DELETION_STATE_SCHEMA
             | SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            | NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),

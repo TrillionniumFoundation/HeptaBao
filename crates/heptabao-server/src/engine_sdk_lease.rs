@@ -366,7 +366,13 @@ impl EngineState {
             let eligible = lease.phase == Phase::PendingRevoke
                 || (lease.phase == Phase::Active
                     && (at >= lease.expires || lease.parent_cleanup_required(auth, at)?));
-            if !eligible {
+            if !eligible
+                || auth.namespace_sdk_cleanup_blocks(
+                    crate::auth::namespace_sdk_cleanup::Kind::Logical,
+                    &lease.namespace,
+                    &lease.id,
+                )
+            {
                 continue;
             }
             if first.is_none() {

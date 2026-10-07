@@ -9462,6 +9462,8 @@ mod batch;
 pub(crate) mod batch_namespace;
 #[path = "auth_namespace_deletion.rs"]
 pub(crate) mod namespace_deletion;
+#[path = "auth_namespace_sdk_cleanup.rs"]
+pub(crate) mod namespace_sdk_cleanup;
 #[cfg(test)]
 pub(crate) use batch::{BatchClaims, BatchKeyAuthority};
 #[path = "auth_batch_issuance.rs"]
