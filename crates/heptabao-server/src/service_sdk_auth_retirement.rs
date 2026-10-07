@@ -4,12 +4,16 @@ use super::*;
 use crate::auth::sdk_credential::Record;
 use crate::engines::sdk_lease::Phase;
 use std::collections::VecDeque;
+#[path = "service_sdk_auth_recovery.rs"]
+mod recovery;
+pub(in crate::service) use recovery::RecoveryWork;
 pub(super) struct Retirement {
     pub(super) remaining: VecDeque<Record>,
     pub(super) job: String,
     pub(super) sent: BTreeSet<String>,
     pub(super) body: Value,
     pub(super) completed: Option<Vec<(String, [u8; 32])>>,
+    pub(super) native: Option<recovery::Authority>,
 }
 impl Drop for Retirement {
     fn drop(&mut self) {
@@ -51,6 +55,64 @@ impl Retirement {
     }
 }
 impl Plan {
+    pub(super) fn has_native_retirement(&self) -> Result<bool, Response> {
+        self.retirement
+            .as_ref()
+            .map(|value| {
+                value
+                    .lock()
+                    .map(|value| value.native.is_some())
+                    .map_err(|_| Response::error(503, "SDK retirement native scope unavailable"))
+            })
+            .transpose()
+            .map(|value| value.unwrap_or(false))
+    }
+    pub(super) fn sync_native_retirement(&self, service: &mut Service) -> Result<(), Response> {
+        if let Some(value) = &self.retirement {
+            let value = value
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement native scope unavailable"))?;
+            if let Some(native) = &value.native {
+                native.sync_before_setup(service)?;
+                if !native.selected.completed() {
+                    let key = sdk_auth_key(&self.context.cluster, &self.binding)?;
+                    if service
+                        .sdk_hosts
+                        .get(&key)
+                        .is_none_or(|host| !Arc::ptr_eq(host, &self.control))
+                    {
+                        return Err(Response::error(
+                            503,
+                            "SDK retirement native Control changed",
+                        ));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+    pub(super) fn retirement_native_after_callback(
+        &self,
+        auth: &AuthState,
+        at: Timestamp,
+    ) -> Result<(), Response> {
+        if let Some(value) = &self.retirement {
+            let mut value = value
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement native scope unavailable"))?;
+            let id = value.remaining.front().map(|record| record.id.clone());
+            if let Some(native) = &mut value.native {
+                native.published_terminal(
+                    auth,
+                    &id.ok_or_else(|| {
+                        Response::error(503, "SDK retirement native callback resource absent")
+                    })?,
+                    at,
+                )?;
+            }
+        }
+        Ok(())
+    }
     pub(super) fn check_retirement_control(&self, auth: &AuthState) -> Result<(), Response> {
         let Some(retirement) = &self.retirement else {
             return Ok(());
@@ -69,6 +131,9 @@ impl Plan {
                 auth.sdk_auth_retirement_namespace_gate(&self.binding, Some(&record.id))
                     .map_err(auth_error)?;
             }
+        }
+        if let Some(native) = &retirement.native {
+            native.check_auth(auth)?;
         }
         if job.binding() != &self.binding || job.completed() != retirement.completed.is_some() {
             return Err(Response::error(
@@ -430,6 +495,7 @@ impl Service {
                         sent: BTreeSet::new(),
                         body: request.body.clone(),
                         completed: None,
+                        native: None,
                     };
                     let response = self.stage_sdk_auth(
                         &state,
@@ -538,15 +604,28 @@ impl Service {
             .attempt_sdk_auth_retirement_resource(&job, id, at)
             .map_err(auth_error)?;
         let expected = self.current_state_identity()?;
-        let mut caller = plan
-            .caller
-            .lock()
-            .map_err(|_| Response::error(503, "SDK retirement caller unavailable"))?;
-        let caller = caller
-            .as_mut()
-            .ok_or_else(|| Response::error(503, "SDK retirement caller absent"))?;
-        self.sdk_auth_commit_control(&mut state, caller, &expected, plan.context.clock)?;
-        self.state = Some(state);
+        {
+            let mut retirement = plan
+                .retirement
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?;
+            if let Some(native) = &mut retirement.native {
+                self.commit_sdk_auth_recovery_state(&mut state, native, &expected)?;
+                native.published_attempt(self, id, at)?;
+            } else {
+                let mut caller = plan
+                    .caller
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK retirement caller unavailable"))?;
+                let caller = caller
+                    .as_mut()
+                    .ok_or_else(|| Response::error(503, "SDK retirement caller absent"))?;
+                self.sdk_auth_commit_control(&mut state, caller, &expected, plan.context.clock)?;
+                self.state = Some(state);
+            }
+        }
         let mut transaction = plan
             .transaction
             .lock()
@@ -597,6 +676,28 @@ impl Service {
             .map(|r| Ok((r.id.clone(), digest(&r)?)))
             .collect::<Result<Vec<_>, Response>>()?;
         let expected = self.current_state_identity()?;
+        if let Some(native) = &mut retirement.native {
+            let at = plan.time(&state.auth)?;
+            state.auth.observe_sdk_auth_clock(at);
+            state
+                .auth
+                .remove_sdk_auth_retirement_mount(&native.selected, at)
+                .map_err(auth_error)?;
+            self.commit_sdk_auth_recovery_state(&mut state, native, &expected)?;
+            native.published_removal(self, at)?;
+            retirement.completed = Some(retired);
+            let key = sdk_auth_key(&plan.context.cluster, &plan.binding)?;
+            if let Some(host) = self.sdk_hosts.remove(&key) {
+                if !Arc::ptr_eq(&host, &plan.control) {
+                    return Err(Response::error(
+                        503,
+                        "SDK retirement native Control changed",
+                    ));
+                }
+                host.retire();
+            }
+            return Ok(empty_response());
+        }
         let mut caller = plan
             .caller
             .lock()

@@ -274,7 +274,7 @@ pub(super) fn after_publication(plan: &Plan, auth: &AuthState) -> Result<(), Res
     }
     Ok(())
 }
-fn context(
+pub(super) fn context(
     service: &Service,
     state: &State,
     request: &RequestView<'_>,
