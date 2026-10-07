@@ -219,6 +219,7 @@ impl Service {
                 state.engines = engines;
             }
             Ok(Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,

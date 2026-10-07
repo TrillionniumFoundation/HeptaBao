@@ -366,6 +366,7 @@ impl AuthState {
         self.observe_sdk_auth_clock(at);
         self.store_token(target.id.to_string(), token);
         Ok(AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,

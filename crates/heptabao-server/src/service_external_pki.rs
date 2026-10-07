@@ -468,6 +468,7 @@ impl Service {
         )
         .with_time_floor(admitted.engines.lease_clock());
         let mut response = Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: result.status,
@@ -752,6 +753,7 @@ impl Service {
                     },
                 ) {
                     Ok(mut response) if !response.mutated => Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: response.status,
@@ -1072,6 +1074,7 @@ impl Service {
         #[cfg(test)]
         delay_after_publication_for_test();
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: response.status,

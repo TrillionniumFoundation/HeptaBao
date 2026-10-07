@@ -386,6 +386,7 @@ impl Service {
         // mandatory response audit, then checks the actual final target again.
         self.pending_token_api_authority = Some(authority);
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
@@ -524,6 +525,7 @@ impl Service {
             self.state = Some(state);
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
@@ -835,6 +837,7 @@ impl Service {
                 self.state = Some(state);
             }
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
@@ -949,6 +952,7 @@ impl Service {
             erase_json(&mut issued.body);
             if callback {
                 return consumed_oidc_error(Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
@@ -964,6 +968,7 @@ impl Service {
         }
         self.state = Some(state);
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: issued.status,

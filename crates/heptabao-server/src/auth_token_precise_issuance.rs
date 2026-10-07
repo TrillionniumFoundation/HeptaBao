@@ -461,6 +461,7 @@ impl AuthState {
         token.token_api_lease_ttl = Some(grant.ttl.ceil_seconds());
         token.token_api_precision = Some(renewed);
         let mut response = AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,

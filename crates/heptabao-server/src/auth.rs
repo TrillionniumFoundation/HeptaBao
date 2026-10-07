@@ -156,6 +156,7 @@ pub(crate) use ldap_renewal::{LdapRenewalObservation, LdapRenewalPlan};
 use provider_renewal::ProviderCredential;
 pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
+pub(crate) use wrapping::UnwrappedJson;
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
@@ -1664,6 +1665,7 @@ struct SecretId {
 }
 
 pub struct AuthResponse {
+    pub(crate) unwrapped_json: Option<UnwrappedJson>,
     pub(super) approle_secret_consumption: Option<Box<approle_batch::AppRoleSecretIdConsumption>>,
     pub(super) pending_batch: Option<batch_issuance::PendingBatchGrant>,
     pub(super) login_identity: Option<LoginIdentity>,
@@ -1715,6 +1717,7 @@ fn lookup_accessor_target_error(error: AuthError) -> AuthError {
 }
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
+        unwrapped_json: None,
         approle_secret_consumption: None,
         pending_batch: None,
         login_identity: None,
@@ -1726,6 +1729,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 }
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
+        unwrapped_json: None,
         approle_secret_consumption: None,
         pending_batch: None,
         login_identity: None,
@@ -3101,6 +3105,7 @@ impl AuthState {
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -6775,6 +6780,7 @@ impl AuthState {
                 }
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
+                    unwrapped_json: None,
                     approle_secret_consumption: None,
                     pending_batch: None,
                     login_identity: None,
@@ -7817,6 +7823,7 @@ impl AuthState {
         }
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -8453,6 +8460,7 @@ impl AuthState {
                 return Ok(AuthResponse {
                     status: error.status,
                     body: json!({"errors":[error.message]}),
+                    unwrapped_json: None,
                     approle_secret_consumption: credential_consumption.map(Box::new),
                     ..empty(false)
                 });

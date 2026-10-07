@@ -144,18 +144,40 @@ impl CompletedForwardReceipt {
 }
 
 pub(crate) fn response_digest(response: &crate::Response) -> Result<[u8; 32], String> {
+    // Ordinary completion digests remain byte-identical to the old version.
+    // A negotiated unwrap origin is additionally bound to the same completion.
     let encoded = zeroize::Zeroizing::new(
-        serde_json::to_vec(&(response.status, &response.body, &response.response_headers))
-            .map_err(|_| "HA response digest is unavailable")?,
+        if response.unwrapped_json.is_some() {
+            serde_json::to_vec(&(
+                response.status,
+                &response.body,
+                &response.response_headers,
+                crate::ha_forward::UnwrapFramingWire::StoredJson,
+            ))
+        } else {
+            serde_json::to_vec(&(response.status, &response.body, &response.response_headers))
+        }
+        .map_err(|_| "HA response digest is unavailable")?,
     );
     Ok(digest(&encoded))
 }
 pub(crate) fn wire_response_digest(
     response: &crate::ha_forward::ForwardResponse,
 ) -> Result<[u8; 32], String> {
+    // Ordinary completion digests remain byte-identical to the old version.
+    // A negotiated unwrap origin is additionally bound to the same completion.
     let encoded = zeroize::Zeroizing::new(
-        serde_json::to_vec(&(response.status, &response.body, &response.response_headers))
-            .map_err(|_| "HA response digest is unavailable")?,
+        if response.unwrapped_json.is_some() {
+            serde_json::to_vec(&(
+                response.status,
+                &response.body,
+                &response.response_headers,
+                crate::ha_forward::UnwrapFramingWire::StoredJson,
+            ))
+        } else {
+            serde_json::to_vec(&(response.status, &response.body, &response.response_headers))
+        }
+        .map_err(|_| "HA response digest is unavailable")?,
     );
     Ok(digest(&encoded))
 }

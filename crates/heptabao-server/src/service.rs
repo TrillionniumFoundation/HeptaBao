@@ -614,6 +614,7 @@ pub(crate) use response_headers::{
 };
 
 pub struct Response {
+    pub(crate) unwrapped_json: Option<crate::auth::UnwrappedJson>,
     pub status: u16,
     pub body: Value,
     pub(crate) response_headers: ResponseHeaders,
@@ -633,6 +634,7 @@ impl Response {
         Self {
             status,
             body: json!({"errors":[message]}),
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         }
@@ -641,6 +643,7 @@ impl Response {
         Self {
             status: 200,
             body,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         }
@@ -2915,6 +2918,7 @@ impl Service {
                 health_codes,
             );
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status,
@@ -3288,6 +3292,7 @@ impl Service {
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 200,
@@ -3307,6 +3312,7 @@ impl Service {
                 .handle_public_pki_read(namespace, method, path, body, now)
             {
                 Ok(Some(mut response)) => Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -3462,6 +3468,7 @@ impl Service {
                         object.insert("id".into(), Value::String(token.to_owned()));
                     }
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
@@ -3668,6 +3675,7 @@ impl Service {
                 ),
             ));
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
@@ -3769,6 +3777,7 @@ impl Service {
                 return Response::error(503, "operating system randomness unavailable");
             }
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
@@ -3847,6 +3856,7 @@ impl Service {
                 .lookup_wrapping_request(token, namespace, method, body, now)
             {
                 Ok(value) => Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: value.status,
@@ -3967,6 +3977,7 @@ impl Service {
             {
                 Ok(wrapped) => {
                     response = Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: wrapped.status,
@@ -4272,6 +4283,7 @@ impl Service {
             time.seconds(),
         ) {
             Ok(mut response) => Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
@@ -4404,6 +4416,7 @@ impl Service {
         {
             Ok(Some(mut response)) => {
                 return Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -4488,6 +4501,7 @@ impl Service {
                 (Some(from), Some(to)) => {
                     return match state.auth.remount_mount(namespace, from, to, cas_revision) {
                         Ok(response) => Response {
+                            unwrapped_json: None,
                             response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
@@ -4511,6 +4525,7 @@ impl Service {
                     }
                     return match state.engines.remount(namespace, from, to, cas_revision) {
                         Ok(mut response) => Response {
+                            unwrapped_json: None,
                             response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
@@ -4646,6 +4661,7 @@ impl Service {
                     state.namespaces = namespaces;
                 }
                 return Response {
+                    unwrapped_json: response.unwrapped_json,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -4748,6 +4764,7 @@ impl Service {
                     state.engines = engines;
                 }
                 Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -6156,6 +6173,7 @@ impl Service {
             );
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: 204,
@@ -6456,6 +6474,7 @@ impl Service {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 503,
@@ -6691,6 +6710,7 @@ impl Service {
                 }
                 self.rekey = None;
                 return Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
@@ -7092,6 +7112,7 @@ impl Service {
                     }
                 })),
                 ReconciliationStatus::Unknown => Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 404,
@@ -7591,6 +7612,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
@@ -8144,6 +8166,7 @@ impl Service {
                     }
                 }
                 Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,

@@ -2,6 +2,21 @@
 //! AuthState transaction, not an in-memory side store or a second secret server.
 use super::*;
 
+/// Private, response-only origin. Local construction occurs only after an
+/// actual wrapper was consumed, including the admitted affine final-use view.
+/// Neither user JSON, a header, an SDK response nor the URL constructs it.
+pub(crate) struct UnwrappedJson(());
+impl UnwrappedJson {
+    pub(crate) fn from_completed_forward(
+        receipt: &crate::ha_forward_completion::CompletedForwardReceipt,
+    ) -> Result<Self, String> {
+        if std::time::Instant::now() >= receipt.deadline {
+            return Err("HA unwrap framing receipt deadline exceeded".into());
+        }
+        Ok(Self(()))
+    }
+}
+
 const MAX_WRAPPED_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_LIVE_WRAPPERS: usize = 256;
 
@@ -209,6 +224,7 @@ impl AuthState {
             info["wrapped_accessor"] = json!(accessor);
         }
         let result = AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -347,6 +363,7 @@ impl AuthState {
             );
         }
         Ok(AuthResponse {
+            unwrapped_json: Some(UnwrappedJson(())),
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,

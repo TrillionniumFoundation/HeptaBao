@@ -378,6 +378,7 @@ pub(super) fn wire(
     Response {
         status,
         body: json!({"__heptabao_acme":body,"media":if problem {"problem"} else if body.is_none() {"empty"} else {"json"}}),
+        unwrapped_json: None,
         response_headers: headers,
         consistency_index: None,
     }
@@ -792,6 +793,7 @@ impl Service {
                         Response {
                             status,
                             body: json!({"__heptabao_acme":body,"media":"certificate"}),
+                            unwrapped_json: None,
                             response_headers: headers,
                             consistency_index: None,
                         }

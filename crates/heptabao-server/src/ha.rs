@@ -818,6 +818,7 @@ impl HaProcess {
                                     }
                                     let legacy_v1 = request.legacy_v1;
                                     let index_response = request.index_response;
+                                    let unwrap_response = request.unwrap_response;
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
                                     let _forward_slot =
@@ -848,6 +849,14 @@ impl HaProcess {
                                             source,
                                             response.status,
                                             &response.body,
+                                        )
+                                    } else if unwrap_response {
+                                        crate::ha_forward::encode_completed_unwrap_response_for_cluster(
+                                            &listener_cluster_id,
+                                            local_id,
+                                            source,
+                                            &response,
+                                            completion,
                                         )
                                     } else if index_response {
                                         crate::ha_forward::encode_completed_index_response_for_cluster(
@@ -1173,6 +1182,10 @@ impl HaProcess {
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
         let legacy_v1 = self.emit_legacy_peer_v1;
+        let unwrap_response = path == "sys/wrapping/unwrap";
+        if unwrap_response && (legacy_v1 || !completed) {
+            return Err("HA unwrap requires negotiated completed-forward authority".into());
+        }
         if completed && legacy_v1 {
             return Err("legacy forwarding has no completion authority".into());
         }
@@ -1220,6 +1233,8 @@ impl HaProcess {
         );
         let mut response = if legacy_v1 {
             decode_legacy_response_for_transition(&response, &self.cluster_id)?
+        } else if unwrap_response {
+            crate::ha_forward::decode_unwrap_response_for_cluster(&response, &self.cluster_id)?
         } else {
             crate::ha_forward::decode_index_response_for_cluster(&response, &self.cluster_id)?
         };
@@ -1255,8 +1270,18 @@ impl HaProcess {
         if let Some(receipt) = &receipt {
             self.wait_forward_applied(receipt)?;
         }
+        let unwrapped_json = if response.unwrapped_json.is_some() {
+            Some(crate::auth::UnwrappedJson::from_completed_forward(
+                receipt
+                    .as_ref()
+                    .ok_or("HA unwrap completed authority is missing")?,
+            )?)
+        } else {
+            None
+        };
         Ok((
             Response {
+                unwrapped_json,
                 response_headers: std::mem::take(&mut response.response_headers),
                 consistency_index: response.consistency_index.and_then(|index| {
                     crate::http::consistency::IndexValue::for_raft(&self.cluster_id, index).wire()

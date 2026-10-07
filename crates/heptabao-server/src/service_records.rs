@@ -775,6 +775,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
@@ -1091,6 +1092,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,

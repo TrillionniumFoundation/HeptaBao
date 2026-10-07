@@ -273,6 +273,7 @@ impl Service {
             status: 503,
             body: json!({"errors":["HA publication outcome unknown; reopen and reconcile; do not blindly retry"],
             "recovery_required":true,"retry_allowed":false}),
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         }
@@ -343,6 +344,7 @@ impl Service {
                 Err(Response {
                     status: 503,
                     body,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                 })
