@@ -161,9 +161,9 @@ impl Task {
     }
     fn check_source(&self, service: &Service, state: &State) -> Result<(), Response> {
         self.check_base(service, state)?;
-        no_callback_owners(state)?;
         match &self.owner {
             Owner::Auth(owner) => {
+                no_callback_owners(state)?;
                 if state
                     .auth
                     .native_remount_owner(&self.namespace, &self.from, &self.to)
@@ -208,10 +208,10 @@ impl Task {
                     .map(Owner::Auth)
                     .ok_or_else(|| Response::error(503, "native move resulting auth owner missing"))
             }
-            Owner::Engine(_) => {
+            Owner::Engine(owner) => {
                 state
                     .engines
-                    .remount(&self.namespace, &self.from, &self.to, self.cas)
+                    .remount_native_accepted(&self.namespace, &self.from, &self.to, self.cas, owner)
                     .map_err(Response::from_engine_error)?;
                 state
                     .engines
@@ -541,7 +541,9 @@ impl Service {
                 ),
                 _ => return Err(Response::error(400, "remount cannot change mount class")),
             };
-            no_callback_owners(current)?;
+            if matches!(owner, Owner::Auth(_)) {
+                no_callback_owners(current)?;
+            }
             if self.native_remount_statuses.len() >= 128 {
                 return Err(Response::error(
                     507,
@@ -659,10 +661,10 @@ impl Service {
                 })
         };
         if let Err(error) = gate {
-            if let Some(task) = &accepted.task {
-                if let Some(status) = self.native_remount_statuses.get_mut(&task.id) {
-                    status.phase = Phase::Failure;
-                }
+            if let Some(task) = &accepted.task
+                && let Some(status) = self.native_remount_statuses.get_mut(&task.id)
+            {
+                status.phase = Phase::Failure;
             }
             erase_json(&mut response.body);
             response.response_headers.clear();

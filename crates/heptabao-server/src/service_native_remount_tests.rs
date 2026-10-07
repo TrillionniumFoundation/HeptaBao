@@ -725,3 +725,235 @@ fn native_auth_remount_auth_decode_after_destination_aba_rejects_original_task()
     );
     Ok(())
 }
+
+fn ssh_lease(service: &mut Service, clock: RequestClock, root: &str) -> TestResult<String> {
+    assert_eq!(
+        request(
+            service,
+            clock,
+            root,
+            "POST",
+            "sys/mounts/lease-source",
+            json!({"type":"ssh","config":{"default_lease_ttl":"60s","max_lease_ttl":"120s"}})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        request(
+            service,
+            clock,
+            root,
+            "POST",
+            "lease-source/roles/test",
+            json!({"key_type":"otp","default_user":"deploy","cidr_list":"127.0.0.0/8"})
+        )
+        .status,
+        204
+    );
+    let response = request(
+        service,
+        clock,
+        root,
+        "POST",
+        "lease-source/creds/test",
+        json!({"ip":"127.0.0.1"}),
+    );
+    assert_eq!(response.status, 200);
+    Ok(response.body["lease_id"]
+        .as_str()
+        .ok_or("actual native lease id")?
+        .into())
+}
+
+#[test]
+fn native_remount_unrelated_live_ssh_lease_does_not_block_kv_or_change_lease() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let clock = clock()?;
+    mount(&mut service, clock, &root);
+    let lease = ssh_lease(&mut service, clock, &root)?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_live_leases()
+    );
+    let before = request(
+        &mut service,
+        clock,
+        &root,
+        "POST",
+        "sys/leases/lookup",
+        json!({"lease_id":lease}),
+    );
+    assert_eq!(before.status, 200);
+    assert_eq!(before.body["data"]["path"], "lease-source/creds/test");
+    let id = migration(&request(
+        &mut service,
+        clock,
+        &root,
+        "POST",
+        "sys/remount",
+        json!({"from":"from-native","to":"to-native"}),
+    ))?;
+    assert!(service.maintain_native_remounts());
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "GET",
+            &format!("sys/remount/status/{id}"),
+            json!({})
+        )
+        .body["data"]["migration_info"]["status"],
+        "success"
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "GET",
+            "to-native/record",
+            json!({})
+        )
+        .body["data"]["value"],
+        "original"
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "GET",
+            "from-native/record",
+            json!({})
+        )
+        .status,
+        404
+    );
+    let after = request(
+        &mut service,
+        clock,
+        &root,
+        "POST",
+        "sys/leases/lookup",
+        json!({"lease_id":lease}),
+    );
+    assert_eq!(after.status, 200);
+    assert_eq!(after.body["data"]["path"], before.body["data"]["path"]);
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_live_leases()
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "PUT",
+            "sys/leases/revoke",
+            json!({"lease_id":lease})
+        )
+        .status,
+        204
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_live_leases()
+    );
+    Ok(())
+}
+
+#[test]
+fn native_remount_source_live_ssh_lease_keeps_callback_fence_until_real_revoke() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let clock = clock()?;
+    let lease = ssh_lease(&mut service, clock, &root)?;
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "POST",
+            "sys/remount",
+            json!({"from":"lease-source","to":"lease-target"})
+        )
+        .status,
+        409
+    );
+    assert!(service.native_remount_jobs.is_empty());
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "POST",
+            "sys/leases/lookup",
+            json!({"lease_id":lease})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "GET",
+            "sys/mounts/lease-target",
+            json!({})
+        )
+        .status,
+        404
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "PUT",
+            "sys/leases/revoke",
+            json!({"lease_id":lease})
+        )
+        .status,
+        204
+    );
+    call_and_complete(
+        &mut service,
+        clock,
+        "POST",
+        "sys/remount",
+        &root,
+        json!({"from":"lease-source","to":"lease-target"}),
+    );
+    assert!(service.native_remount_jobs.is_empty());
+    assert_eq!(
+        request(
+            &mut service,
+            clock,
+            &root,
+            "GET",
+            "lease-target/roles/test",
+            json!({})
+        )
+        .status,
+        200
+    );
+    Ok(())
+}

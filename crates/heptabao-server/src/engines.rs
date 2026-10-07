@@ -2363,6 +2363,17 @@ impl EngineState {
             Backend::Totp(_) => "totp",
             _ => return Ok(None),
         };
+        let pending_cleanup = match &mount.backend {
+            Backend::Pki(engine) => engine.has_live_leases(self.lease_clock),
+            Backend::Ssh(engine) => !engine.leases.is_empty(),
+            _ => false,
+        };
+        if pending_cleanup {
+            return Err(error(
+                409,
+                "native remount source requires completed dynamic cleanup owners",
+            ));
+        }
         Ok(Some(NativeRemountOwner {
             revision: mount.revision,
             incarnation: mount.incarnation,
@@ -2372,6 +2383,22 @@ impl EngineState {
         }))
     }
 
+    pub(crate) fn remount_native_accepted(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+        owner: &NativeRemountOwner,
+    ) -> Result<EngineResponse> {
+        // This internal entry consumes the task's exact native source owner.
+        // SDK/provider moves keep the existing callback fence in remount().
+        if self.native_remount_owner(namespace, from, to)?.as_ref() != Some(owner) {
+            return Err(error(503, "native remount original source owner changed"));
+        }
+        self.remount_inner(namespace, from, to, cas_revision, true)
+    }
+
     pub(crate) fn remount(
         &mut self,
         namespace: &str,
@@ -2379,12 +2406,23 @@ impl EngineState {
         to: &str,
         cas_revision: Option<u64>,
     ) -> Result<EngineResponse> {
+        self.remount_inner(namespace, from, to, cas_revision, false)
+    }
+
+    fn remount_inner(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+        native_accepted: bool,
+    ) -> Result<EngineResponse> {
         let from = canonical_secret_mount(from)?;
         let to = canonical_secret_mount(to)?;
         if from == to {
             return Err(bad("remount source and destination must differ"));
         }
-        if self.has_live_leases() {
+        if !native_accepted && self.has_live_leases() {
             return Err(error(
                 409,
                 "secret-engine remount is fenced while dynamic leases are live",

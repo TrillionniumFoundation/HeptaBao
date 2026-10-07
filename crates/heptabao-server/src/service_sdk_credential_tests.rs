@@ -430,3 +430,61 @@ fn sdk_combined_lease_list_retains_live_owner_and_rejects_revoke_or_removed_moun
     assert!(empty.check(&state.auth).is_err());
     Ok(())
 }
+
+#[test]
+fn sdk_credential102_unrelated_native_kv_remount_preserves_registered_credential() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    let binding = mount(&mut state, &root)?;
+    let record = registered(&mut state, &root, &binding)?;
+    let id = record.id.clone();
+    state.auth.store_sdk_credential(record.clone())?;
+    publish(&mut service, state)?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .sdk_credential_namespace_pending("")
+    );
+    let precise = RequestClock::anchored(Duration::new(100, 400_000_000), Instant::now())?;
+    let create = crate::service::native_remount::tests::call_and_complete(
+        &mut service,
+        precise,
+        "POST",
+        "sys/mounts/unrelated-native",
+        &root,
+        json!({"type":"kv"}),
+    );
+    assert_eq!(create.status, 204);
+    let ack = crate::service::native_remount::tests::call_and_complete(
+        &mut service,
+        precise,
+        "POST",
+        "sys/remount",
+        &root,
+        json!({"from":"unrelated-native","to":"moved-native"}),
+    );
+    assert_eq!(ack.status, 200);
+    let actual = service.state.as_ref().ok_or("state")?;
+    let retained = actual
+        .auth
+        .sdk_credential_record("", &id)
+        .ok_or("actual retained record")?;
+    let before = Zeroizing::new(
+        crate::secret_serde::to_vec(&record, 512 * 1024)
+            .map_err(|_| "registered record encoding")?,
+    );
+    let after = Zeroizing::new(
+        crate::secret_serde::to_vec(&retained, 512 * 1024)
+            .map_err(|_| "retained record encoding")?,
+    );
+    assert!(before.as_slice() == after.as_slice());
+    assert_eq!(retained.backend, binding);
+    assert_eq!(retained.lookup(Timestamp::checked(101, 0)?)?["ttl"], 29);
+    assert!(actual.auth.sdk_credential_namespace_pending(""));
+    Ok(())
+}
