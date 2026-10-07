@@ -372,11 +372,12 @@ fn raw110_pki_issue(
             .to_owned(),
     ))
 }
+type RawPkiUnwrap = (Response, Zeroizing<Vec<u8>>);
 fn raw110_pki_unwrap(
     service: &mut Service,
     admin: &str,
     bearer: &str,
-) -> Result<(Response, Zeroizing<Vec<u8>>), Box<dyn std::error::Error>> {
+) -> Result<RawPkiUnwrap, Box<dyn std::error::Error>> {
     let _later = crate::auth::IngressReplyScope::listener(&[0xfe; 16]);
     let response = call(
         service,
