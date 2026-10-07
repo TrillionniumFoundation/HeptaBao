@@ -327,6 +327,7 @@ impl Service {
         };
         let PendingForwardDelivery::Completed(authority) = pending else {
             erase_json(&mut response.body);
+            response.unwrapped_json = None;
             response.response_headers.clear();
             return unavailable();
         };
@@ -337,6 +338,7 @@ impl Service {
         };
         if let Some(rejection) = rejection {
             erase_json(&mut response.body);
+            response.unwrapped_json = None;
             response.response_headers.clear();
             response.consistency_index = None;
             if self

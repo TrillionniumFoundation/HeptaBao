@@ -160,6 +160,10 @@ pub(crate) use ldap_renewal::{LdapRenewalObservation, LdapRenewalPlan};
 use provider_renewal::ProviderCredential;
 pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
+pub(crate) use wrapping::{
+    IngressReplyContext, IngressReplyScope, StoredWrappedReply, UnwrappedJson, current_ingress,
+    encode_http_envelope, logical_envelope,
+};
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
@@ -257,6 +261,9 @@ pub struct AuthState {
     system_lease_defaults: Option<token_ttl::SystemLeaseDefaults>,
     #[serde(default, skip_serializing_if = "is_zero")]
     wrapping_clock: u64,
+    /// Sticky original-envelope custody, retained after final consume.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    raw_wrapped_reply_floor: bool,
     tokens: BTreeMap<String, Token>,
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -1318,6 +1325,9 @@ struct Token {
     bound_cidrs: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     wrapping: Option<wrapping::WrappedResponse>,
+    /// Private durable original-reply token owner; persists through consume.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    raw_wrapped_reply_custody: Option<wrapping::RawReplyTokenCustody>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     entity_id: Option<String>,
     #[serde(default)]
@@ -1680,6 +1690,7 @@ struct SecretId {
 }
 
 pub struct AuthResponse {
+    pub(crate) unwrapped_json: Option<UnwrappedJson>,
     pub(super) approle_secret_consumption: Option<Box<approle_batch::AppRoleSecretIdConsumption>>,
     pub(super) pending_batch: Option<batch_issuance::PendingBatchGrant>,
     pub(super) login_identity: Option<LoginIdentity>,
@@ -1731,6 +1742,7 @@ fn lookup_accessor_target_error(error: AuthError) -> AuthError {
 }
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
+        unwrapped_json: None,
         approle_secret_consumption: None,
         pending_batch: None,
         login_identity: None,
@@ -1742,6 +1754,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 }
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
+        unwrapped_json: None,
         approle_secret_consumption: None,
         pending_batch: None,
         login_identity: None,
@@ -2450,6 +2463,7 @@ impl AuthState {
             namespace_deletions: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
+            raw_wrapped_reply_floor: false,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
             token_roles: BTreeMap::new(),
@@ -2483,6 +2497,7 @@ impl AuthState {
             token_role: None,
             bound_cidrs: Vec::new(),
             wrapping: None,
+            raw_wrapped_reply_custody: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,
@@ -2787,6 +2802,9 @@ impl AuthState {
         if token.uses_remaining == Some(0) {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
             token.wrapping = None;
+            if let Some(custody) = &mut token.raw_wrapped_reply_custody {
+                custody.consume();
+            }
         }
         let finite_use_consumed = request_token.uses_remaining.is_some();
         Ok(Self::request_principal(
@@ -3120,6 +3138,7 @@ impl AuthState {
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -5929,6 +5948,7 @@ impl AuthState {
                     token_role: None,
                     bound_cidrs: Vec::new(),
                     wrapping: None,
+                    raw_wrapped_reply_custody: None,
                     entity_id: None,
                     cubbyhole: cubbyhole::TokenCubbyhole::default(),
                     accessor: random_id("a.")?,
@@ -6825,6 +6845,7 @@ impl AuthState {
                 }
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
+                    unwrapped_json: None,
                     approle_secret_consumption: None,
                     pending_batch: None,
                     login_identity: None,
@@ -7288,6 +7309,7 @@ impl AuthState {
                     parent.bound_cidrs.clone()
                 },
                 wrapping: None,
+                raw_wrapped_reply_custody: None,
                 entity_id: if no_parent || entity_alias.is_some() {
                     None
                 } else {
@@ -7867,6 +7889,7 @@ impl AuthState {
         }
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -8503,6 +8526,7 @@ impl AuthState {
                 return Ok(AuthResponse {
                     status: error.status,
                     body: json!({"errors":[error.message]}),
+                    unwrapped_json: None,
                     approle_secret_consumption: credential_consumption.map(Box::new),
                     ..empty(false)
                 });
@@ -8697,6 +8721,7 @@ fn login_token(
         token_role: None,
         bound_cidrs: Vec::new(),
         wrapping: None,
+        raw_wrapped_reply_custody: None,
         entity_id: None,
         cubbyhole: cubbyhole::TokenCubbyhole::default(),
         accessor: random_id("a.")?,

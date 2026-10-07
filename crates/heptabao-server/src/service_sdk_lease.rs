@@ -308,6 +308,7 @@ impl Service {
                 return Response {
                     status: 204,
                     body: json!({}),
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                 };
@@ -479,6 +480,7 @@ impl Service {
                     return Ok(Response {
                         status: 400,
                         body: json!({"errors":errors}),
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                     });
@@ -646,6 +648,7 @@ impl Service {
             Ok(Response {
                 status,
                 body: std::mem::take(&mut body.0),
+                unwrapped_json: None,
                 response_headers: headers,
                 consistency_index: None,
             })

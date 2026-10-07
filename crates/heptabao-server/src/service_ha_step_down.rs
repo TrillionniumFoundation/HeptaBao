@@ -72,6 +72,7 @@ impl Service {
             return error;
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: 204,

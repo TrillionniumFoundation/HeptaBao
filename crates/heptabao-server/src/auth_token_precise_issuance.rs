@@ -308,6 +308,7 @@ impl AuthState {
                 token_role: issued_role,
                 bound_cidrs: cidrs,
                 wrapping: None,
+                raw_wrapped_reply_custody: None,
                 entity_id,
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor,
@@ -461,6 +462,7 @@ impl AuthState {
         token.token_api_lease_ttl = Some(grant.ttl.ceil_seconds());
         token.token_api_precision = Some(renewed);
         let mut response = AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,

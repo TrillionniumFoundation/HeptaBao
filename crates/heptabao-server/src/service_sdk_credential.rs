@@ -559,6 +559,7 @@ impl Service {
                 Response {
                     status: 404,
                     body: json!({"errors":[]}),
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                 }

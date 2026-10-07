@@ -487,6 +487,7 @@ fn wrapping_result_audit_failure_withholds_response_and_persists_single_use() ->
     s.audit_capacity = s.audit.metadata()?.len() + next as u64;
     let result = call(&mut s, &token, "sys/wrapping/unwrap", json!({}));
     assert_eq!(result.status, 503);
+    assert!(result.unwrapped_json.is_none());
     assert!(
         !result
             .body

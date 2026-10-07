@@ -311,9 +311,10 @@ impl Service {
             response.body["auth"]["client_token"] = json!(token.as_str());
         }
         if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
-            let wrapped = state
-                .auth
-                .wrap_response(namespace, &path, ttl, &response.body, now);
+            let wrapped =
+                state
+                    .auth
+                    .wrap_logical_response(namespace, &path, ttl, &response.body, now);
             erase_json(&mut response.body);
             response = match wrapped {
                 Ok(response) => response,
@@ -386,6 +387,7 @@ impl Service {
         // mandatory response audit, then checks the actual final target again.
         self.pending_token_api_authority = Some(authority);
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
@@ -503,9 +505,10 @@ impl Service {
             && response.status != 204
             && !response.body.is_null()
         {
-            let wrapped = state
-                .auth
-                .wrap_response(namespace, &path, ttl, &response.body, now);
+            let wrapped =
+                state
+                    .auth
+                    .wrap_logical_response(namespace, &path, ttl, &response.body, now);
             erase_json(&mut response.body);
             response = match wrapped {
                 Ok(response) => response,
@@ -524,6 +527,7 @@ impl Service {
             self.state = Some(state);
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
@@ -835,6 +839,7 @@ impl Service {
                 self.state = Some(state);
             }
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
@@ -934,10 +939,13 @@ impl Service {
             };
         }
         if let Some((path, ttl)) = wrapping {
-            let wrapped =
-                state
-                    .auth
-                    .wrap_response(&request_namespace, &path, ttl, &issued.body, request_now);
+            let wrapped = state.auth.wrap_logical_response(
+                &request_namespace,
+                &path,
+                ttl,
+                &issued.body,
+                request_now,
+            );
             erase_json(&mut issued.body);
             issued = match wrapped {
                 Ok(response) => response,
@@ -949,6 +957,7 @@ impl Service {
             erase_json(&mut issued.body);
             if callback {
                 return consumed_oidc_error(Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
@@ -964,6 +973,7 @@ impl Service {
         }
         self.state = Some(state);
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: issued.status,

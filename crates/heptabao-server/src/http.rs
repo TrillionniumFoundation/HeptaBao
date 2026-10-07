@@ -751,6 +751,7 @@ fn process_parsed_request(
 ) -> (snapshot::NativeReply, bool, String) {
     match parsed {
         Ok(mut request) => {
+            let _raw_reply_ingress = crate::auth::IngressReplyScope::listener(attempt_id);
             request.client_certificates = client_certificates;
             let is_head = request.method == "HEAD"
                 || help::request(&request.method, &request.path, &request.body.0)
@@ -2121,7 +2122,25 @@ fn write_response_with_namespace(
     let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
     let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
 
-    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_acme {
+    let stored_unwrap = if response.status == 200 {
+        response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.raw_bytes(&response.body))
+            .transpose()
+            .map_err(|_| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "stored unwrap representation rejected",
+                )
+            })?
+            .flatten()
+    } else {
+        None
+    };
+    let mut bytes = Zeroizing::new(if let Some(raw) = stored_unwrap {
+        raw.to_vec()
+    } else if let Some((raw, _)) = raw_acme {
         raw
     } else if let Some(raw) = raw_ocsp {
         raw
@@ -2132,9 +2151,40 @@ fn write_response_with_namespace(
     } else if response.status == 204 {
         Vec::new()
     } else {
-        let mut json = serde_json::to_vec(&response.body)?;
-        // OpenBao's JSON encoder terminates each JSON value with a newline.
-        json.push(b'\n');
+        let complete_envelope = response.status == 200
+            && response.body.as_object().is_some_and(|object| {
+                object.len() == 8
+                    && [
+                        "request_id",
+                        "lease_id",
+                        "renewable",
+                        "lease_duration",
+                        "data",
+                        "wrap_info",
+                        "warnings",
+                        "auth",
+                    ]
+                    .iter()
+                    .all(|name| object.contains_key(*name))
+            });
+        let mut json = if complete_envelope {
+            crate::auth::encode_http_envelope(&response.body, MAX_RESPONSE)
+                .map_err(|_| {
+                    io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "logical envelope encoding rejected",
+                    )
+                })?
+                .to_vec()
+        } else {
+            serde_json::to_vec(&response.body)?
+        };
+        // The admitted Auth unwrap producer carries stored JSON. OpenBao writes
+        // those bytes directly. Other JSON, including every error, keeps the
+        // encoder newline. No request URL or body key selects this branch.
+        if response.status != 200 || response.unwrapped_json.is_none() {
+            json.push(b'\n');
+        }
         json
     });
     let status = if bytes.len() > MAX_RESPONSE {
@@ -2266,6 +2316,10 @@ fn write_response_with_namespace(
 }
 
 #[cfg(test)]
+#[path = "http_unwrap_framing_tests.rs"]
+mod unwrap_framing_tests;
+
+#[cfg(test)]
 #[path = "http_response_framing_tests.rs"]
 mod response_framing_tests;
 
@@ -2284,6 +2338,7 @@ mod tests {
             for head in [false, true] {
                 let response = Response {
                     status: 200,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_acme":payload,"media":"json"}),
@@ -2340,6 +2395,7 @@ mod tests {
                 Response {
                     status: 200,
                     body: body.clone(),
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                 },
@@ -2370,6 +2426,7 @@ mod tests {
             Response {
                 status: 400,
                 body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":"actual closed producer"},"media":"problem"}),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             },
@@ -2494,6 +2551,7 @@ mod tests {
                 &mut output,
                 Response {
                     status,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded}),
@@ -2511,6 +2569,7 @@ mod tests {
                 &mut invalid,
                 Response {
                     status,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded,"extra":true}),
@@ -2537,6 +2596,7 @@ mod tests {
         ] {
             let response = || Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_certificate":encoded,"format":format}),
@@ -2571,6 +2631,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 200,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body,
@@ -2594,6 +2655,7 @@ mod tests {
             Response {
                 status: 400,
                 body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":detail},"media":"problem"}),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             },
@@ -2627,6 +2689,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 204,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
@@ -2651,6 +2714,7 @@ mod tests {
         let encoded = base64::engine::general_purpose::STANDARD.encode(der);
         let response = || Response {
             status: 200,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
@@ -2674,6 +2738,7 @@ mod tests {
             &mut rejected,
             Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_crl":encoded,"pem":"text/html"}),
@@ -3254,6 +3319,7 @@ mod service_lock_deadline_tests {
                     assert_eq!(crate::request_deadline::current(), Some(deadline));
                     *value = result + 1;
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
@@ -3317,6 +3383,7 @@ mod service_lock_deadline_tests {
                     worker_finished.store(true, Ordering::Release);
                     *value = observed;
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,

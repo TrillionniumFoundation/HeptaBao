@@ -96,6 +96,7 @@ impl DatabaseRotationMaintenance {
 
 fn rotation_failure(message: &str, operation_id: &str) -> Response {
     Response {
+        unwrapped_json: None,
         response_headers: Default::default(),
         consistency_index: None,
         status: 503,
@@ -1710,6 +1711,7 @@ impl Service {
             );
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: 204,

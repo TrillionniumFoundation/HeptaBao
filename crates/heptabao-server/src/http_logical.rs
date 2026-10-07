@@ -50,8 +50,32 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
     let snapshot::NativeReply::Json(response) = reply else {
         return;
     };
-    if response.status != 200 {
+    if response.status != 200
+        || response
+            .unwrapped_json
+            .as_ref()
+            .is_some_and(crate::auth::UnwrappedJson::has_stored_reply)
+    {
         return;
+    }
+    let Some(original) = response.body.as_object() else {
+        return;
+    };
+    if ["data", "auth", "warnings"]
+        .iter()
+        .any(|key| original.contains_key(*key))
+        && original.get("wrap_info").is_none_or(Value::is_null)
+    {
+        match crate::auth::logical_envelope(&response.body, &request_id(random), path) {
+            Ok(mut envelope) => {
+                crate::service::erase_json(&mut response.body);
+                response.body = std::mem::take(&mut envelope);
+            }
+            Err(_) => {
+                *response = Response::error(503, "logical envelope projection rejected");
+                return;
+            }
+        }
     }
     let Some(body) = response.body.as_object_mut() else {
         return;
@@ -101,45 +125,6 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
             }
         }
     }
-    if matches!(
-        path,
-        "auth/token/lookup" | "auth/token/lookup-self" | "auth/token/lookup-accessor"
-    ) && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
-    {
-        // These values come from the admitted credential owner. This wire
-        // projection cannot add a token, namespace capability or lease.
-        data.remove("namespace");
-        data.remove("expire_time_unix");
-        data.entry("meta").or_insert(Value::Null);
-        if !data.contains_key("issue_time")
-            && let Some(created) = data.get("creation_time").and_then(Value::as_u64)
-        {
-            data.insert(
-                "issue_time".into(),
-                json!(crate::engines::timestamp(created)),
-            );
-        }
-        if data.contains_key("identity_policies") {
-            data.entry("external_namespace_policies")
-                .or_insert_with(|| json!({}));
-        }
-    }
-    if path.ends_with("/tune")
-        && (path.starts_with("sys/mounts/") || path.starts_with("sys/auth/"))
-        && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
-    {
-        for field in ["revision", "incarnation", "accessor"] {
-            data.remove(field);
-        }
-    }
-    if path == "sys/mounts"
-        && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
-    {
-        for mount in data.values_mut().filter_map(Value::as_object_mut) {
-            mount.remove("revision");
-            mount.remove("incarnation");
-        }
-    }
     if inject_system_data(path)
         && let Some(data) = body.get("data").and_then(Value::as_object).cloned()
     {
@@ -161,6 +146,7 @@ mod tests {
         for path in ["sys/mounts/probe/tune", "sys/auth/token/tune"] {
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"data":data}),
@@ -178,6 +164,7 @@ mod tests {
         }
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             body: json!({"data":data}),
@@ -192,6 +179,7 @@ mod tests {
     fn logical_wire_projection_keeps_grants_and_raw_transport_distinct() -> io::Result<()> {
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             body: json!({"auth":{"client_token":"test-token","policies":["p"],
@@ -216,6 +204,7 @@ mod tests {
         let raw = json!({"initialized":true,"sealed":false});
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             body: raw.clone(),
@@ -234,6 +223,7 @@ mod tests {
             "nonce":"actual-runtime-progress", "sealed":true});
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             body: json!({"data":data}),
@@ -260,6 +250,7 @@ mod tests {
         ] {
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"auth":{"metadata":metadata,"policies":["reader"],
@@ -278,6 +269,7 @@ mod tests {
             let body = json!({"data":{"auth":{"metadata":{},"policies":["userdata"]}}});
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: body.clone(),
@@ -291,7 +283,7 @@ mod tests {
         }
     }
     #[test]
-    fn complete_external_sign_envelope_fills_empty_attempt_id_and_keeps_owned_data()
+    fn complete_external_sign_envelope_uses_current_ingress_id_and_keeps_owned_data()
     -> io::Result<()> {
         let data = json!({"certificate":"public-test-certificate",
             "issuer_id":"actual-issuer-identity","serial_number":"aa:bb",
@@ -300,6 +292,7 @@ mod tests {
             (false, ""),
             (true, ""),
             (false, "11111111-2222-3333-4444-555555555555"),
+            (false, "backend-selected-invalid-attempt-id"),
         ] {
             let wrap = if wrapped {
                 json!({"token":"test-wrap-token","ttl":10})
@@ -308,6 +301,7 @@ mod tests {
             };
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"request_id":prior,"lease_id":"","lease_duration":0,
@@ -319,12 +313,18 @@ mod tests {
             let snapshot::NativeReply::Json(response) = &reply else {
                 unreachable!()
             };
-            let expected = if !wrapped && prior.is_empty() {
-                request_id(&random)
-            } else {
+            // OpenBao 2.7.0 HTTP logical.go assigns httpResp.RequestID = req.ID.
+            // A previous body field cannot mint ordinary HTTP ingress identity.
+            // Actual stored unwrap is privately recognized before this projection.
+            let expected = if wrapped {
                 prior.to_owned()
+            } else {
+                request_id(&random)
             };
             assert_eq!(response.body["request_id"], expected);
+            if !wrapped && !prior.is_empty() {
+                assert_ne!(response.body["request_id"], prior);
+            }
             assert_eq!(response.body["data"], data);
             assert_eq!(response.body["data"]["request_id"], "");
             assert_eq!(response.body["wrap_info"], wrap);

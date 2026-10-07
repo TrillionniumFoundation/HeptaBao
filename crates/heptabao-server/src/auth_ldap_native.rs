@@ -751,6 +751,7 @@ impl AuthState {
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expiry);
         let mut response = AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,

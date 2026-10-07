@@ -383,6 +383,7 @@ fn empty_response() -> Response {
     Response {
         status: 204,
         body: json!({}),
+        unwrapped_json: None,
         response_headers: Default::default(),
         consistency_index: None,
     }
@@ -1460,6 +1461,7 @@ impl Service {
             Response {
                 status: renewed.status,
                 body: std::mem::take(&mut renewed.body),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             }
@@ -1508,6 +1510,7 @@ impl Service {
             Response {
                 status: issued.status,
                 body: std::mem::take(&mut issued.body),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             }
@@ -1528,6 +1531,7 @@ impl Service {
                 Response {
                     status: 400,
                     body: json!({"errors":[error]}),
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                 }
@@ -1539,6 +1543,7 @@ impl Service {
             Response {
                 status: 404,
                 body: json!({"errors": []}),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             }

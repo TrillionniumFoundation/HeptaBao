@@ -3,6 +3,7 @@ use super::*;
 fn json_response(body: Value) -> Response {
     Response {
         status: 200,
+        unwrapped_json: None,
         response_headers: Default::default(),
         consistency_index: None,
         body,
@@ -79,6 +80,7 @@ fn no_content_has_neither_length_nor_entity_and_retains_standard_headers() -> io
             &mut wire,
             Response {
                 status: 204,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"not_a_wire_entity": true}),
@@ -151,6 +153,7 @@ fn custom_health_statuses_keep_go_status_lines_and_json_entities() -> io::Result
             &mut wire,
             Response {
                 status,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: body.clone(),

@@ -287,6 +287,7 @@ impl Service {
         Response {
             status: 202,
             body: json!({}),
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         }
@@ -360,6 +361,7 @@ impl Service {
                     Response {
                         status: 204,
                         body: json!({}),
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                     }

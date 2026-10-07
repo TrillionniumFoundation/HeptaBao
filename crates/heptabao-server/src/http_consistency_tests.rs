@@ -233,6 +233,7 @@ fn consistency270_http_response_projects_only_server_encoded_index()
         Response {
             status: 200,
             body: json!({"data":{"synthetic":true}}),
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: Some(index),
         },
@@ -247,6 +248,7 @@ fn consistency270_http_response_projects_only_server_encoded_index()
         Response {
             status: 429,
             body: json!({"errors":[]}),
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         },

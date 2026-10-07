@@ -130,6 +130,7 @@ impl PendingBatchGrant {
             "token_type":"batch", "orphan":claims.parent.is_none(), "num_uses":0
         }});
         AuthResponse {
+            unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: Some(Self {
                 claims,
