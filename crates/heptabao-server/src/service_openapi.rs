@@ -1187,7 +1187,7 @@ mod tests {
                 json!({"type":"kv","options":{"version":"2"}}),
             ),
         ]);
-        let response = handle("GET", &json!({}), false, &BTreeMap::new(), &mounts);
+        let response = handle_anonymous("GET", &json!({}), &BTreeMap::new(), &mounts);
         assert_eq!(response.status, 200);
         assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
         let paths = response.body["paths"].as_object().ok_or("paths")?;

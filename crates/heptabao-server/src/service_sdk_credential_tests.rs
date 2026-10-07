@@ -914,13 +914,13 @@ fn sdk_auth_retirement107_native_terminal_selection_removes_actual_storage_and_r
             .sdk_auth_retirement_recovery_selections()?
             .is_empty()
     );
-    assert_eq!(
+    assert!(
         state
             .auth
             .sdk_credential_record("", &record.id)
             .ok_or("retained102")?
-            .phase,
-        Phase::Revoked
+            .phase
+            == Phase::Revoked
     );
     Ok(())
 }
@@ -1083,13 +1083,13 @@ fn sdk_auth_retirement107_native_service_terminal_reopen_executes_final_without_
         assert!(service.sdk_hosts.is_empty());
         assert!(service.pending_sdk_auth_request.is_none());
         for record in &records {
-            assert_eq!(
+            assert!(
                 state
                     .auth
                     .sdk_credential_record("", &record.id)
                     .ok_or("retained102")?
-                    .phase,
-                Phase::Revoked
+                    .phase
+                    == Phase::Revoked
             );
         }
     }
@@ -1126,22 +1126,20 @@ fn sdk_auth_retirement107_native_service_missing_transport_retains_attempt_befor
     );
     let actual = service.state.as_ref().ok_or("actual attempted")?;
     let saved = actual.auth.sdk_auth_retirement_job(&job).ok_or("job")?;
-    assert_eq!(
-        saved.phase(&records[0].id),
-        Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+    assert!(
+        saved.phase(&records[0].id) == Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
     );
-    assert_eq!(
-        saved.phase(&records[1].id),
-        Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+    assert!(
+        saved.phase(&records[1].id) == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
     );
     assert!(!saved.completed());
-    assert_eq!(
+    assert!(
         actual
             .auth
             .sdk_credential_record("", &records[0].id)
             .ok_or("retained")?
-            .phase,
-        Phase::PendingRevoke
+            .phase
+            == Phase::PendingRevoke
     );
     assert!(
         actual
@@ -1218,9 +1216,8 @@ fn sdk_auth_retirement107_native_service_busy_owner_dispatches_no_setup_or_phase
         .sdk_auth_retirement_job(&job)
         .ok_or("job")?;
     for record in &records {
-        assert_eq!(
-            saved.phase(&record.id),
-            Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+        assert!(
+            saved.phase(&record.id) == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
         );
     }
     assert!(service.pending_sdk_auth_request.is_none());
@@ -1253,13 +1250,13 @@ fn sdk_auth_retirement107_native_service_live_sdk_issued_owner_vetoes_removal_an
             .auth
             .sdk_auth_retirement_has_live_issuer(&binding, Timestamp::checked(101, 0)?)
     );
-    assert_eq!(
+    assert!(
         state
             .auth
             .sdk_auth_retirement_job(&job)
             .ok_or("job")?
-            .phase(&records[0].id),
-        Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+            .phase(&records[0].id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
     );
     assert!(service.sdk_hosts.is_empty());
     assert!(service.pending_sdk_auth_request.is_none());
@@ -1292,7 +1289,7 @@ fn sdk_auth_retirement107_native_service_expired_original_clock_never_restarts_b
         service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
-    assert_eq!(
+    assert!(
         service
             .state
             .as_ref()
@@ -1300,8 +1297,8 @@ fn sdk_auth_retirement107_native_service_expired_original_clock_never_restarts_b
             .auth
             .sdk_auth_retirement_job(&job)
             .ok_or("job")?
-            .phase(&records[0].id),
-        Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+            .phase(&records[0].id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
     );
     assert!(service.sdk_hosts.is_empty());
     assert!(service.pending_sdk_auth_request.is_none());
