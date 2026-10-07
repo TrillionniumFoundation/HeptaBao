@@ -1233,6 +1233,8 @@ pub struct Service {
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     pending_sdk_control_authority: Option<plugin::PluginResponseAuthority>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_credential_list: Option<sdk_backend::auth100::CredentialList>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_configuration: Option<sdk_backend::SdkBackendConfig>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_hosts: BTreeMap<String, Arc<sdk_backend::Control>>,
@@ -1621,6 +1623,8 @@ impl Service {
             pending_sdk_auth_request: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             pending_sdk_control_authority: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_credential_list: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_configuration: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -2334,7 +2338,8 @@ impl Service {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         let sdk_pending = self.pending_sdk_request.is_some()
             || self.pending_sdk_auth_request.is_some()
-            || self.pending_sdk_control_authority.is_some();
+            || self.pending_sdk_control_authority.is_some()
+            || self.pending_sdk_credential_list.is_some();
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_pending = false;
         if sdk_pending

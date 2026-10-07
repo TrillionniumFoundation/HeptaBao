@@ -1666,14 +1666,23 @@ impl Service {
         response: Response,
         fingerprint: &str,
     ) -> Response {
+        let listing = self.pending_sdk_credential_list.take();
         match (expected, self.pending_sdk_control_authority.take()) {
             (true, Some(mut authority)) => {
-                if let Err(error) = self.validate_plugin_response(&mut authority) {
+                let gate = self
+                    .validate_plugin_response(&mut authority)
+                    .and_then(|()| {
+                        if let Some(listing) = listing {
+                            self.check_sdk_credential_list(&listing)?;
+                        }
+                        Ok(())
+                    });
+                if let Err(error) = gate {
                     return self.sdk_delivery_veto(response, error, fingerprint, authority.now());
                 }
                 response
             }
-            (false, None) => response,
+            (false, None) if listing.is_none() => response,
             _ => self.sdk_delivery_capsule_lost(response),
         }
     }

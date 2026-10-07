@@ -6,6 +6,8 @@ use crate::auth::sdk::{Binding, Entry, Paths, RenewalTarget, StorageWitness};
 use heptabao_plugin_host::sdk_backend::SdkBackendType;
 #[path = "service_sdk_credential.rs"]
 mod credential;
+#[path = "service_sdk_auth_retirement.rs"]
+mod retirement;
 
 struct Context {
     namespace: String,
@@ -77,6 +79,27 @@ enum AdmittedTerminal {
     Data,
     UnexpectedAuth,
 }
+// Paired with the same moved control authority through mandatory audit. This
+// projection never contains a Secret or a new Principal.
+pub(in crate::service) struct CredentialList {
+    binding: Binding,
+    prefix: String,
+    keys: BTreeSet<String>,
+}
+impl CredentialList {
+    fn check(&self, auth: &AuthState) -> Result<(), Response> {
+        let actual = auth
+            .sdk_credential_lease_keys(&self.binding, &self.prefix)
+            .map_err(auth_error)?;
+        if actual != self.keys {
+            return Err(Response::error(
+                503,
+                "SDK credential lease list owner changed",
+            ));
+        }
+        Ok(())
+    }
+}
 struct Transaction {
     auth: CowOwner<AuthState>,
     identity: crate::state_record_root::StateIdentity,
@@ -96,6 +119,7 @@ pub(in crate::service) struct Plan {
     renewal: Mutex<Option<Box<RenewalTarget>>>,
     lease: Mutex<Option<credential::Call>>,
     cleanup: Mutex<Option<credential::Cleanup>>,
+    retirement: Option<Mutex<retirement::Retirement>>,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -104,6 +128,17 @@ impl Drop for Plan {
 }
 impl Plan {
     pub(in crate::service) fn execute(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        deadline: Instant,
+    ) -> Result<Option<Value>, Response> {
+        let deadline = deadline.min(self.deadline);
+        if self.retirement.is_some() {
+            return self.execute_retirement(service, deadline);
+        }
+        self.execute_once(service, deadline)
+    }
+    fn execute_once(
         &self,
         service: &Arc<Mutex<Service>>,
         deadline: Instant,
@@ -144,9 +179,25 @@ impl Plan {
             return Err(Response::error(503, "SDK Auth mount is busy before entry"));
         }
         let (events, received) = mpsc::channel();
+        let path = if self.retirement.is_some() {
+            let lease = self
+                .lease
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement callback unavailable"))?;
+            let call = lease
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK retirement callback absent"))?;
+            call.record
+                .path
+                .strip_prefix(&call.record.mount)
+                .ok_or_else(|| Response::error(503, "SDK retirement callback path owner changed"))?
+                .to_owned()
+        } else {
+            self.path.clone()
+        };
         let job = WorkerJob {
             operation: self.operation.clone(),
-            path: self.path.clone(),
+            path,
             data: self.data.clone(),
             lease: self
                 .lease
@@ -638,9 +689,11 @@ impl Service {
                     Err(e) => return auth_error(e),
                 };
                 if state.auth.sdk_credential_mount_pending(&binding) {
-                    return Response::error(
-                        409,
-                        "SDK credential leases require cleanup before mount retirement",
+                    let Some(authority) = caller.take() else {
+                        return Response::error(503, "SDK retirement original caller absent");
+                    };
+                    return self.stage_sdk_auth_retirement(
+                        state, authority, request, binding, context, deadline,
                     );
                 }
                 let key = match sdk_auth_key(&state.cluster_id, &binding) {
@@ -947,6 +1000,9 @@ impl Service {
             self.sdk_hosts.insert(key, Arc::clone(&control));
             control
         };
+        if control.retiring.load(Ordering::Acquire) {
+            return Response::error(409, "SDK Auth mount retirement is in progress");
+        }
         let identity = match self.current_state_identity() {
             Ok(id) => id,
             Err(e) => return e,
@@ -1009,12 +1065,14 @@ impl Service {
             renewal: Mutex::new(renewal.map(Box::new)),
             lease: Mutex::new(None),
             cleanup: Mutex::new(None),
+            retirement: None,
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
     fn sdk_auth_gate(&mut self, plan: &Plan) -> Result<(), Response> {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
-        if plan.operation != "_mount" {
+        let completed_retirement = plan.retirement_completed()?;
+        if plan.operation != "_mount" && !completed_retirement {
             let Some(state) = self.state.as_ref() else {
                 return Err(Response::error(503, "SDK metadata owner unavailable"));
             };
@@ -1030,7 +1088,9 @@ impl Service {
                 ));
             }
         }
-        if Instant::now() >= plan.deadline || plan.control.fenced.load(Ordering::Acquire) {
+        if Instant::now() >= plan.deadline
+            || (!completed_retirement && plan.control.fenced.load(Ordering::Acquire))
+        {
             return Err(Response::error(
                 503,
                 "SDK Auth original owner or deadline fenced",
@@ -1102,10 +1162,14 @@ impl Service {
                 "SDK Auth original namespace or host owner changed",
             ));
         }
-        state
-            .auth
-            .sdk_auth_owner_gate(&plan.binding)
-            .map_err(auth_error)?;
+        if completed_retirement {
+            plan.retirement_delivery_gate(&state.auth)?;
+        } else {
+            state
+                .auth
+                .sdk_auth_owner_gate(&plan.binding)
+                .map_err(auth_error)?;
+        }
         plan.time(&state.auth)?;
         plan.credential_owner_gate(&state.auth)?;
         plan.live_target(&state.auth)?;
@@ -1208,7 +1272,11 @@ impl Service {
             Ok(v) => v,
             Err(e) => return e,
         };
-        let result = self.finish_sdk_auth_candidate(plan, value.as_ref());
+        let result = if plan.retirement.is_some() {
+            self.finalize_sdk_auth_retirement(plan)
+        } else {
+            self.finish_sdk_auth_candidate(plan, value.as_ref())
+        };
         if let Some(value) = value.as_mut() {
             erase_json(value)
         }
@@ -1260,31 +1328,43 @@ impl Service {
         candidate.auth.observe_sdk_auth_clock(at);
         let has_secret =
             value.is_some_and(|value| value.get("secret").is_some_and(|v| !v.is_null()));
-        if has_secret && value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null()))
+        let has_auth = value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null()));
+        let is_callback = plan
+            .lease
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential callback unavailable"))?
+            .is_some();
+        // This successor covers ordinary admitted operations and public login.
+        // Dedicated renewal, Setup, and lease callbacks keep their prior rules.
+        if has_secret
+            && has_auth
+            && (is_callback || matches!(plan.operation.as_str(), "renew" | "_mount"))
         {
             return Err(Response::error(
                 501,
                 "SDK combined Auth and Secret response unsupported",
             ));
         }
-        let mut response = if plan
-            .lease
-            .lock()
-            .map_err(|_| Response::error(503, "SDK credential callback unavailable"))?
-            .is_some()
-        {
+        let mut response = if is_callback {
             credential::finish_callback(plan, &mut candidate, value, at)?
         } else if has_secret && plan.admission.is_some() {
-            credential::issue(
+            let issued = credential::issue(
                 plan,
                 &mut candidate,
                 value.ok_or_else(|| Response::error(502, "SDK Secret missing"))?,
                 at,
-            )?
+            )?;
+            if has_auth && issued.status != 400 {
+                // OpenBao registers the ordinary Secret before rejecting Auth.
+                // Keep the real lease and Storage; disclose neither authority.
+                Response::error(500, "1 error occurred:\n\t* internal error\n\n")
+            } else {
+                issued
+            }
         } else if has_secret {
-            // Actual public-path callback Storage is published, but its Secret
-            // has no accepted client issuer and cannot register a credential.
-            Response::error(500, "1 error occurred:\n\t* internal error\n\n")
+            // Login rejects Secret before token issuance or lease registration,
+            // while preserving the backend's already executed Storage writes.
+            Response::error(500, "internal error")
         } else if plan.operation == "renew" {
             let renewal = plan
                 .renewal
@@ -1384,6 +1464,14 @@ impl Service {
             } else {
                 Response::ok(json!({"data":data}))
             }
+        } else if plan.operation == "read" {
+            // A real SDK nil Read is not found. Nil Update remains 204.
+            Response {
+                status: 404,
+                body: json!({"errors": []}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            }
         } else {
             empty_response()
         };
@@ -1446,6 +1534,16 @@ impl Service {
             return Err(error);
         }
         Ok(response)
+    }
+    pub(in crate::service) fn check_sdk_credential_list(
+        &self,
+        listing: &CredentialList,
+    ) -> Result<(), Response> {
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK credential list state absent"))?;
+        listing.check(&state.auth)
     }
     pub(in crate::service) fn complete_sdk_auth_delivery(
         &mut self,

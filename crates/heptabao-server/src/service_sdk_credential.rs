@@ -6,9 +6,9 @@ use crate::engines::sdk_lease::{Binding as LeaseBinding, Lease, Phase};
 use crate::engines::sdk_registration::Registration;
 #[derive(Clone)]
 pub(super) struct Call {
-    record: Record,
-    action: &'static str,
-    increment: u64,
+    pub(super) record: Record,
+    pub(super) action: &'static str,
+    pub(super) increment: u64,
 }
 impl Call {
     pub(super) fn callback(&self) -> Result<SdkLeaseCallback, Response> {
@@ -268,6 +268,15 @@ impl Service {
         state: &State,
         request: &RequestView<'_>,
     ) -> bool {
+        if request.method == "LIST"
+            && let Some(prefix) = request.path.strip_prefix("sys/leases/lookup/")
+            && prefix.starts_with("auth/")
+        {
+            return matches!(
+                state.auth.sdk_auth_binding(request.namespace, prefix),
+                Ok(Some(_)) | Err(_)
+            );
+        }
         super::super::secret_lease::body_action(request).is_some_and(|(_, id)| {
             state
                 .auth
@@ -284,6 +293,11 @@ impl Service {
         let Some(principal) = principal else {
             return Response::error(403, "permission denied");
         };
+        if request.method == "LIST"
+            && let Some(prefix) = request.path.strip_prefix("sys/leases/lookup/")
+        {
+            return self.sdk_credential_list(state, principal, request, prefix);
+        }
         let Some((action, id)) = super::super::secret_lease::body_action(request) else {
             return Response::error(400, "lease_id is required");
         };
@@ -433,6 +447,97 @@ impl Service {
             }
         }
         response
+    }
+    fn sdk_credential_list(
+        &mut self,
+        mut state: State,
+        principal: Principal,
+        request: &RequestView<'_>,
+        prefix: &str,
+    ) -> Response {
+        if request.body.as_object().is_none_or(|body| !body.is_empty()) {
+            return Response::error(400, "invalid SDK lease list fields");
+        }
+        if request.token_clock.is_none() {
+            return Response::error(503, "SDK credential original clock required");
+        }
+        let binding = match state.auth.sdk_auth_binding(request.namespace, prefix) {
+            Ok(Some(binding)) => binding,
+            Ok(None) => return Response::error(404, "SDK Auth mount not found"),
+            Err(error) => return auth_error(error),
+        };
+        let mut authority = plugin::PluginResponseAuthority::new(
+            principal,
+            &state,
+            request,
+            "list",
+            true,
+            &self.unseal_nonce,
+        )
+        .with_sdk_clock();
+        let result = (|| {
+            let expected = self.current_state_identity()?;
+            self.validate_plugin_response(&mut authority)?;
+            if self.current_state_identity()? != expected {
+                return Err(Response::error(503, "SDK lease list original root changed"));
+            }
+            authority.apply_sdk_auth_clock_floor(&state.auth)?;
+            let at = authority.token_time().and_then(|time| {
+                state
+                    .auth
+                    .token_api_observed_time(time)
+                    .exact()
+                    .ok_or_else(|| {
+                        Response::error(503, "SDK credential original precise clock absent")
+                    })
+            })?;
+            let keys = state
+                .auth
+                .sdk_credential_lease_keys(&binding, prefix)
+                .map_err(auth_error)?;
+            let listing = CredentialList {
+                binding,
+                prefix: prefix.into(),
+                keys,
+            };
+            state.auth.observe_sdk_auth_clock(at);
+            state.schema = state.writer_schema();
+            let publication = self.prepare_record_plan(&mut state)?;
+            self.validate_plugin_response(&mut authority)?;
+            if self.current_state_identity()? != expected {
+                return Err(Response::error(503, "SDK lease list original root changed"));
+            }
+            self.commit_record_plan_with_before_publish(
+                &state,
+                publication,
+                |auth| {
+                    authority.validate_live_auth(auth)?;
+                    listing.check(auth)
+                },
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                None,
+            )?;
+            self.state = Some(state);
+            let response = if listing.keys.is_empty() {
+                Response {
+                    status: 404,
+                    body: json!({"errors":[]}),
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                }
+            } else {
+                Response::ok(json!({"data":{"keys":&listing.keys}}))
+            };
+            self.pending_sdk_credential_list = Some(listing);
+            Ok(response)
+        })();
+        match result {
+            Ok(response) => {
+                self.pending_sdk_control_authority = Some(authority);
+                response
+            }
+            Err(error) => error,
+        }
     }
     pub(in crate::service) fn prepare_sdk_credential_expiry(
         &mut self,

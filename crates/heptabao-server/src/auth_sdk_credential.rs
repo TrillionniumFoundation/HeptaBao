@@ -71,6 +71,63 @@ impl AuthState {
                 .any(|record| record.namespace == namespace && record.phase != Phase::Revoked)
         })
     }
+    pub(crate) fn sdk_credential_mount_records(
+        &self,
+        binding: &sdk::Binding,
+    ) -> Result<Vec<Record>, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        let Some(registry) = &self.sdk_credential_leases else {
+            return Ok(Vec::new());
+        };
+        let mut records = Vec::new();
+        for record in registry.records.values().filter(|record| {
+            record.namespace == binding.namespace
+                && record.backend.mount == binding.mount
+                && record.phase != Phase::Revoked
+        }) {
+            if record.backend != *binding {
+                return Err(err(503, "SDK credential mount owner changed"));
+            }
+            self.validate_sdk_credential_record(record)?;
+            records.push(record.clone());
+        }
+        Ok(records)
+    }
+    pub(crate) fn sdk_credential_lease_keys(
+        &self,
+        binding: &sdk::Binding,
+        prefix: &str,
+    ) -> Result<BTreeSet<String>, AuthError> {
+        let boundary = format!("{}/", prefix.trim_end_matches('/'));
+        let mut keys = BTreeSet::new();
+        for record in self.sdk_credential_mount_records(binding)? {
+            if let Some(tail) = record.id.strip_prefix(&boundary) {
+                keys.insert(
+                    tail.split_once('/')
+                        .map(|(first, _)| format!("{first}/"))
+                        .unwrap_or_else(|| tail.into()),
+                );
+            }
+        }
+        Ok(keys)
+    }
+    pub(crate) fn sdk_credential_retired_mount_records(
+        &self,
+        binding: &sdk::Binding,
+    ) -> Result<Vec<Record>, AuthError> {
+        self.sdk_auth_owner_gate(binding)?;
+        Ok(self
+            .sdk_credential_leases
+            .as_ref()
+            .map_or_else(Vec::new, |registry| {
+                registry
+                    .records
+                    .values()
+                    .filter(|record| record.backend == *binding && record.phase == Phase::Revoked)
+                    .cloned()
+                    .collect()
+            }))
+    }
     pub(crate) fn sdk_credential_mount_pending(&self, binding: &sdk::Binding) -> bool {
         self.sdk_credential_leases.as_ref().is_some_and(|registry| {
             registry
