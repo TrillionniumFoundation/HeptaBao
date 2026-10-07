@@ -158,7 +158,8 @@ impl Plan {
                 "SDK Auth original owner or deadline unavailable",
             ));
         }
-        if self.namespace_cleanup || self.has_native_retirement()? {
+        let native_retirement = self.has_native_retirement()?;
+        if self.namespace_cleanup || native_retirement {
             let mut writer = writer_before(service, deadline)?;
             writer.sdk_auth_gate(self)?;
         }
@@ -200,7 +201,7 @@ impl Plan {
                 "SDK Auth retirement blocks an old invocation",
             ));
         }
-        if self.has_native_retirement()? {
+        if native_retirement {
             let result =
                 writer_before(service, deadline).and_then(|mut writer| writer.sdk_auth_gate(self));
             if let Err(error) = result {
