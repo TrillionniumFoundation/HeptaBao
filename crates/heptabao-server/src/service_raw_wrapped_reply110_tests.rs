@@ -171,7 +171,9 @@ fn raw110_actual_service_terminal_vetoes_current_publication_snapshot_and_cow() 
         assert!(Service::validate_snapshot_protected_floor(&live, &forged).is_err());
         assert!(service.prepare_record_plan(&mut forged).is_err());
         let mut healthy = live.clone();
-        let plan = service.prepare_record_plan(&mut healthy)?;
+        let plan = service
+            .prepare_record_plan(&mut healthy)
+            .map_err(|_| "healthy COW plan")?;
         assert!(service.commit_record_plan(&forged, plan).is_err());
         assert_eq!(
             service.current_state_identity().map_err(|_| "identity")?,
@@ -214,7 +216,9 @@ fn raw110_actual_service_terminal_vetoes_current_publication_snapshot_and_cow() 
         assert!(Service::validate_snapshot_protected_floor(&terminal, &forged).is_err());
         assert!(service.prepare_record_plan(&mut forged).is_err());
         let mut healthy = terminal.clone();
-        let plan = service.prepare_record_plan(&mut healthy)?;
+        let plan = service
+            .prepare_record_plan(&mut healthy)
+            .map_err(|_| "healthy COW plan")?;
         assert!(service.commit_record_plan(&forged, plan).is_err());
         assert_eq!(
             service.current_state_identity().map_err(|_| "identity")?,
@@ -236,7 +240,9 @@ fn raw110_actual_service_terminal_vetoes_current_publication_snapshot_and_cow() 
     assert!(Service::validate_snapshot_protected_floor(&terminal, &rearmed).is_err());
     assert!(service.prepare_record_plan(&mut rearmed).is_err());
     let mut healthy = terminal.clone();
-    let plan = service.prepare_record_plan(&mut healthy)?;
+    let plan = service
+        .prepare_record_plan(&mut healthy)
+        .map_err(|_| "healthy COW plan")?;
     assert!(service.commit_record_plan(&rearmed, plan).is_err());
     assert_eq!(
         service.current_state_identity().map_err(|_| "identity")?,
@@ -307,7 +313,9 @@ fn raw110_actual_service_historical_consume_promotion_vetoes_publication_snapsho
         assert!(Service::validate_snapshot_protected_floor(&current, &candidate).is_err());
         assert!(service.prepare_record_plan(&mut candidate).is_err());
         let mut healthy = current.clone();
-        let plan = service.prepare_record_plan(&mut healthy)?;
+        let plan = service
+            .prepare_record_plan(&mut healthy)
+            .map_err(|_| "healthy COW plan")?;
         assert!(service.commit_record_plan(&candidate, plan).is_err());
         assert_eq!(
             service.current_state_identity().map_err(|_| "identity")?,
