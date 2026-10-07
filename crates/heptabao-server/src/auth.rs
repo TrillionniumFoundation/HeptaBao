@@ -3964,14 +3964,26 @@ impl AuthState {
                         "SDK credential cleanup is required before auth mount retirement",
                     ));
                 }
-                self.advance_native_remount_epochs(namespace, &[mount])?;
-                entries.remove(mount);
-                self.auth_mounts.insert(namespace.into(), entries);
-                self.disable_auth_mount(AuthScope { namespace, mount });
+                self.remove_auth_mount_current(namespace, mount)?;
                 Ok(empty(true))
             }
             _ => Err(err(405, "method not allowed")),
         }
+    }
+
+    // The public route checks Principal, sudo, body, revision and pending
+    // credentials first. The only cleanup caller supplies a selected durable
+    // SDK job and verifies its terminal resources and exact SDK mount Binding.
+    fn remove_auth_mount_current(&mut self, namespace: &str, mount: &str) -> Result<(), AuthError> {
+        let mut entries = self.effective_auth_mounts(namespace);
+        if !entries.contains_key(mount) || mount == "token" {
+            return Err(err(503, "auth mount removal owner absent"));
+        }
+        self.advance_native_remount_epochs(namespace, &[mount])?;
+        entries.remove(mount);
+        self.auth_mounts.insert(namespace.into(), entries);
+        self.disable_auth_mount(AuthScope { namespace, mount });
+        Ok(())
     }
 
     /// Login credentials, not an unrelated bearer header, authenticate these

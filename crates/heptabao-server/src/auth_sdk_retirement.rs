@@ -539,6 +539,238 @@ impl AuthState {
     }
 }
 
+/// An affine native cleanup selection from an actual retained Job. No
+/// serialization, caller Principal, bearer or issuer grant can construct it.
+pub(crate) struct RecoverySelection {
+    selected: Job,
+}
+impl RecoverySelection {
+    pub(crate) fn id(&self) -> &str {
+        &self.selected.id
+    }
+    pub(crate) fn binding(&self) -> &sdk::Binding {
+        &self.selected.binding
+    }
+    pub(crate) fn correlation(&self) -> &str {
+        &self.selected.request
+    }
+    pub(crate) fn completed(&self) -> bool {
+        self.selected.completed()
+    }
+    pub(crate) fn check(&self, auth: &AuthState) -> Result<(), AuthError> {
+        if auth.sdk_auth_retirement_job(self.id()) != Some(&self.selected) {
+            return Err(err(503, "SDK retirement selected durable intent changed"));
+        }
+        let registry = auth
+            .sdk_auth_retirements
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK retirement selected registry absent"))?;
+        let expected = Mirror {
+            digest: hash(registry)?,
+        };
+        if auth
+            .sdk_auth_catalog
+            .as_ref()
+            .and_then(|catalog| catalog.auth_retirement_mirror())
+            != Some(&expected)
+        {
+            return Err(err(503, "SDK retirement selected strict mirror differs"));
+        }
+        let binding = self.binding();
+        if !self.completed() {
+            auth.sdk_auth_retirement_namespace_gate(binding, None)?;
+            auth.sdk_auth_owner_gate(binding)?;
+            auth.check_batch_namespace_binding(
+                self.selected.namespace_owner.as_ref(),
+                &binding.namespace,
+            )?;
+        }
+        for (id, resource) in &self.selected.resources {
+            if !self.completed() {
+                auth.sdk_auth_retirement_namespace_gate(binding, Some(id))?;
+            }
+            let record = auth
+                .sdk_credential_record(&binding.namespace, id)
+                .ok_or_else(|| err(503, "SDK retirement selected record absent"))?;
+            if record.backend != *binding
+                || anchor(&record)? != resource.original
+                || record_digest(&record)? != resource.record
+            {
+                return Err(err(503, "SDK retirement selected original record differs"));
+            }
+        }
+        Ok(())
+    }
+    pub(crate) fn queued_records(&self, auth: &AuthState) -> Result<Vec<Record>, AuthError> {
+        self.check(auth)?;
+        if self.completed()
+            || self
+                .selected
+                .resources
+                .values()
+                .any(|resource| resource.phase == ResourcePhase::Attempted)
+        {
+            return Err(err(
+                503,
+                "SDK retirement unknown attempt cannot be recovered automatically",
+            ));
+        }
+        self.selected
+            .resources
+            .iter()
+            .filter(|(_, resource)| resource.phase == ResourcePhase::Queued)
+            .map(|(id, _)| {
+                auth.sdk_credential_record(&self.binding().namespace, id)
+                    .ok_or_else(|| err(503, "SDK retirement queued original record absent"))
+            })
+            .collect()
+    }
+    /// Called only after the exact candidate has physically committed and been
+    /// installed into Service.state. A failed writer cannot adopt another Job.
+    pub(crate) fn published_attempt(
+        &mut self,
+        auth: &AuthState,
+        id: &str,
+        at: Timestamp,
+    ) -> Result<(), AuthError> {
+        let mut expected = self.selected.clone();
+        let resource = expected
+            .resources
+            .get_mut(id)
+            .ok_or_else(|| err(503, "SDK retirement selected queued resource absent"))?;
+        if expected.completion.is_some()
+            || resource.phase != ResourcePhase::Queued
+            || at < expected.accepted_at
+        {
+            return Err(err(
+                503,
+                "SDK retirement selected attempt successor rejected",
+            ));
+        }
+        resource.phase = ResourcePhase::Attempted;
+        resource.attempted_at = Some(at);
+        if auth.sdk_auth_retirement_job(self.id()) != Some(&expected) {
+            return Err(err(503, "SDK retirement committed attempt differs"));
+        }
+        self.selected = expected;
+        self.check(auth)
+    }
+    pub(crate) fn published_terminal(
+        &mut self,
+        auth: &AuthState,
+        id: &str,
+        at: Timestamp,
+    ) -> Result<(), AuthError> {
+        let record = auth
+            .sdk_credential_record(&self.binding().namespace, id)
+            .ok_or_else(|| err(503, "SDK retirement committed terminal record absent"))?;
+        let mut expected = self.selected.clone();
+        let resource = expected
+            .resources
+            .get_mut(id)
+            .ok_or_else(|| err(503, "SDK retirement selected attempted resource absent"))?;
+        if expected.completion.is_some()
+            || resource.phase != ResourcePhase::Attempted
+            || resource.attempted_at.is_none_or(|before| at < before)
+            || record.phase != LeasePhase::Revoked
+            || anchor(&record)? != resource.original
+        {
+            return Err(err(
+                503,
+                "SDK retirement selected terminal successor rejected",
+            ));
+        }
+        resource.phase = ResourcePhase::Terminal;
+        resource.terminal_at = Some(at);
+        resource.record = record_digest(&record)?;
+        if auth.sdk_auth_retirement_job(self.id()) != Some(&expected) {
+            return Err(err(503, "SDK retirement committed terminal differs"));
+        }
+        self.selected = expected;
+        self.check(auth)
+    }
+    pub(crate) fn published_removal(
+        &mut self,
+        auth: &AuthState,
+        at: Timestamp,
+    ) -> Result<(), AuthError> {
+        let mut expected = self.selected.clone();
+        if expected.completion.is_some()
+            || at < expected.accepted_at
+            || expected.resources.values().any(|resource| {
+                resource.phase != ResourcePhase::Terminal
+                    || resource.terminal_at.is_none_or(|before| at < before)
+            })
+            || auth.sdk_auth_owned_mount(&expected.binding.namespace, &expected.binding.mount)
+        {
+            return Err(err(
+                503,
+                "SDK retirement selected removal successor rejected",
+            ));
+        }
+        expected.completion = Some(Completion {
+            at,
+            records: expected.terminal_projection()?,
+        });
+        if auth.sdk_auth_retirement_job(self.id()) != Some(&expected) {
+            return Err(err(503, "SDK retirement committed mount removal differs"));
+        }
+        self.selected = expected;
+        self.check(auth)
+    }
+}
+impl AuthState {
+    /// Discovery alone never publishes, stages Setup or changes a resource.
+    /// Skip the entire unknown Job, including all of its Queued siblings.
+    pub(crate) fn sdk_auth_retirement_recovery_selections(
+        &self,
+    ) -> Result<Vec<RecoverySelection>, AuthError> {
+        let Some(registry) = &self.sdk_auth_retirements else {
+            return Ok(Vec::new());
+        };
+        let mut selected = Vec::new();
+        for job in registry.jobs.values() {
+            if !job.completed()
+                && !job
+                    .resources
+                    .values()
+                    .any(|resource| resource.phase == ResourcePhase::Attempted)
+            {
+                let value = RecoverySelection {
+                    selected: job.clone(),
+                };
+                value.check(self)?;
+                selected.push(value);
+            }
+        }
+        Ok(selected)
+    }
+    /// The accepted native task can remove only this terminal SDK owner.
+    /// Storage/catalog removal and Completion belong to the same real candidate.
+    pub(crate) fn remove_sdk_auth_retirement_mount(
+        &mut self,
+        selected: &RecoverySelection,
+        at: Timestamp,
+    ) -> Result<(), AuthError> {
+        selected.check(self)?;
+        let job = &selected.selected;
+        if job.completed()
+            || at < job.accepted_at
+            || job
+                .resources
+                .values()
+                .any(|resource| resource.phase != ResourcePhase::Terminal)
+            || !self.sdk_credential_mount_records(&job.binding)?.is_empty()
+            || self.sdk_auth_retirement_has_live_issuer(&job.binding, at)
+        {
+            return Err(err(503, "SDK retirement selected mount is not terminal"));
+        }
+        self.sdk_auth_owner_gate(&job.binding)?;
+        self.remove_auth_mount_current(&job.binding.namespace, &job.binding.mount)?;
+        self.complete_sdk_auth_retirement_mount(&job.id, at)
+    }
+}
+
 #[cfg(test)]
 impl AuthState {
     pub(crate) fn sdk_auth_retirement_tamper_for_test(
