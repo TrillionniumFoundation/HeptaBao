@@ -1,0 +1,269 @@
+import contextlib
+import http.client
+import io
+import json
+import os
+from pathlib import Path
+import sys
+import subprocess
+import socket
+import urllib.error
+import tempfile
+import unittest
+from unittest.mock import MagicMock, patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from heptabao import cli
+from heptabao.transport import BaoError, Client, Response, decode_json, transport_diagnostic
+
+
+class ClientBoundaryTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.token = self.root / "token"
+        self.token.write_text("synthetic-secret-bearer")
+        self.token.chmod(0o600)
+        self.payload = self.root / "input.json"
+        self.payload.write_text('{"v":"synthetic-private-payload"}')
+        self.payload.chmod(0o600)
+        self.base = ["--address", "https://localhost:8200", "--ca-file", "unused.crt",
+                     "--token-file", str(self.token), "--output", str(self.root / "result.json")]
+
+    def execute(self, arguments, response=None):
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with patch.object(cli, "Client") as factory, contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            factory.return_value.request.return_value = response or Response(200, {"data":{"v":"synthetic-secret-output"}})
+            code = cli.main(arguments)
+        return code, stdout.getvalue(), stderr.getvalue(), factory
+
+    def test_write_requires_explicit_admission_before_constructing_transport(self):
+        code, _, err, factory = self.execute(self.base + ["write", "secret/data/a", "--input", str(self.payload)])
+        self.assertEqual(code, 2); factory.assert_not_called()
+        self.assertIn("explicit_write_admission_required", err)
+
+    def test_response_is_private_and_diagnostics_are_redacted(self):
+        code, out, err, factory = self.execute(self.base + ["read", "secret/data/a"])
+        self.assertEqual(code, 0)
+        self.assertEqual(factory.return_value.request.call_count, 1)
+        for secret in ("synthetic-secret-output", "synthetic-secret-bearer", str(self.root)):
+            self.assertNotIn(secret, out + err)
+        self.assertEqual((self.root / "result.json").stat().st_mode & 0o777, 0o600)
+        self.assertEqual(json.loads((self.root / "result.json").read_text()), {"data":{"v":"synthetic-secret-output"}})
+
+    def test_existing_output_prevents_request(self):
+        (self.root / "result.json").write_text("untouched")
+        code, _, _, factory = self.execute(self.base + ["read", "secret/data/a"])
+        self.assertEqual(code, 2); factory.assert_not_called()
+        self.assertEqual((self.root / "result.json").read_text(), "untouched")
+
+    def test_symlink_output_prevents_request(self):
+        (self.root / "result.json").symlink_to(self.payload)
+        code, _, _, factory = self.execute(self.base + ["read", "secret/data/a"])
+        self.assertEqual(code, 2); factory.assert_not_called()
+
+    def test_public_output_directory_prevents_request(self):
+        self.root.chmod(0o755)
+        code, _, _, factory = self.execute(self.base + ["read", "secret/data/a"])
+        self.assertEqual(code, 2); factory.assert_not_called()
+        self.root.chmod(0o700)
+
+    def test_public_or_symlink_token_file_prevents_request(self):
+        self.token.chmod(0o644)
+        code, _, _, factory = self.execute(self.base + ["read", "secret/data/a"])
+        self.assertEqual(code, 2); factory.assert_not_called()
+        self.token.unlink(); self.token.symlink_to(self.payload)
+        code, _, _, factory = self.execute(self.base + ["read", "secret/data/a"])
+        self.assertEqual(code, 2); factory.assert_not_called()
+
+    def test_mutation_failure_is_not_retried_or_echoed(self):
+        stderr = io.StringIO()
+        with patch.object(cli, "Client") as factory, contextlib.redirect_stderr(stderr):
+            factory.return_value.request.side_effect = BaoError("transport_outcome_unknown")
+            code = cli.main(self.base + ["--allow-write", "write", "secret/data/a", "--input", str(self.payload)])
+        self.assertEqual(code, 2);self.assertEqual(factory.return_value.request.call_count, 1)
+        self.assertIn('"automatic_retry": false', stderr.getvalue())
+        self.assertNotIn("synthetic-private-payload", stderr.getvalue())
+
+    def test_server_error_is_not_printed_as_a_secret(self):
+        code, out, err, _ = self.execute(self.base + ["read", "a"], Response(403,{"errors":["sentinel-do-not-print"]}))
+        self.assertEqual(code,1);self.assertNotIn("sentinel-do-not-print",out+err)
+
+    def test_rejected_argv_is_not_echoed(self):
+        stderr=io.StringIO()
+        with contextlib.redirect_stderr(stderr),self.assertRaises(SystemExit):
+            cli.main(self.base+["--token","secret-on-argv","read","a"])
+        self.assertNotIn("secret-on-argv",stderr.getvalue())
+
+    def test_duplicate_or_nonfinite_json_rejected(self):
+        for data in (b'{"v":1,"v":2}',b'{"x":{"v":1,"v":2}}',b'{"v":NaN}'):
+            with self.subTest(data=data),self.assertRaises(BaoError):decode_json(data)
+
+    def test_timeout_bounds_checked_before_tls_configuration(self):
+        for timeout in (0,-1,61,float("inf"),float("nan"),True):
+            with self.subTest(timeout=timeout),self.assertRaisesRegex(BaoError,"invalid_timeout"):
+                Client("https://localhost","not-used","synthetic",timeout=timeout)
+
+    def test_capability_target_is_file_only_and_path_bounded(self):
+        code,_,_,factory=self.execute(self.base+["capabilities","secret/data/a","--target-token-file",str(self.token)])
+        self.assertEqual(code,0)
+        self.assertEqual(factory.return_value.request.call_args.args[1],"/v1/sys/capabilities")
+        (self.root/"result.json").unlink()
+        code,_,_,factory=self.execute(self.base+["capabilities","../escape"])
+        self.assertEqual(code,2);factory.assert_not_called()
+
+    def test_unwrap_does_not_mix_two_authentication_tokens(self):
+        code,_,_,factory=self.execute(self.base+["--allow-write","unwrap","--wrapping-token-file",str(self.token)])
+        self.assertEqual(code,2);factory.assert_not_called()
+
+    def test_fifo_token_file_is_rejected_without_waiting_for_a_writer(self):
+        if not hasattr(os,"mkfifo"):
+            self.skipTest("POSIX FIFO is required")
+        path=self.root/"fifo"
+        os.mkfifo(path,0o600)
+        code="""from heptabao.transport import private_read, BaoError
+import sys
+try:
+    private_read(sys.argv[1])
+except BaoError as error:
+    sys.exit(0 if error.code == 'file_requires_owner_only_regular_file' else 2)
+sys.exit(1)
+"""
+        environment=os.environ.copy()
+        environment["PYTHONPATH"]=str(Path(__file__).resolve().parents[1])
+        result=subprocess.run([sys.executable,"-c",code,str(path)],env=environment,
+                              capture_output=True,timeout=3,check=False)
+        self.assertEqual(result.returncode,0)
+        self.assertEqual(result.stdout,b"")
+        self.assertEqual(result.stderr,b"")
+
+    def test_ambiguous_namespace_is_not_silently_normalized(self):
+        for namespace in ("/", "/team", "team//", "team//child"):
+            with self.subTest(namespace=namespace),self.assertRaisesRegex(BaoError,"invalid_namespace"):
+                Client("https://localhost","not-used","synthetic",namespace=namespace)
+
+    def test_http_protocol_failures_are_private_and_never_retried(self):
+        sentinel = "synthetic-private-peer-response"
+        for method in ("GET", "LIST", "HEAD", "POST", "PUT", "PATCH", "DELETE"):
+            for stage in ("open", "read"):
+                with self.subTest(method=method, stage=stage):
+                    client = object.__new__(Client)
+                    client.address, client.namespace = "https://localhost:8200", ""
+                    client._token, client.timeout = "synthetic-private-bearer", 15
+                    client._opener = MagicMock()
+                    failure = (http.client.BadStatusLine(sentinel) if stage == "open"
+                               else http.client.IncompleteRead(sentinel.encode(), 128))
+                    if stage == "open":
+                        client._opener.open.side_effect = failure
+                    else:
+                        response = MagicMock()
+                        response.code, response.headers = 200, http.client.HTTPMessage()
+                        response.__enter__.return_value = response
+                        response.read.side_effect = failure
+                        client._opener.open.return_value = response
+                    with self.assertRaises(BaoError) as caught:
+                        client.request(method, "/v1/synthetic-fixture", {})
+                    expected = ("transport_read_failed" if method in ("GET", "LIST", "HEAD")
+                                else "transport_outcome_unknown")
+                    self.assertEqual(caught.exception.code, expected)
+                    self.assertNotIn(sentinel, str(caught.exception))
+                    self.assertTrue(caught.exception.__suppress_context__)
+                    self.assertEqual(client._opener.open.call_count, 1)
+
+    def test_header_injection_rejected_before_network(self):
+        client=object.__new__(Client)
+        client._token="synthetic"
+        client.namespace=""
+        for ttl in ("1s\r\nX-Secret: value", "", "x"*65):
+            with self.subTest(ttl=ttl),self.assertRaises(BaoError):
+                client.request("POST","/v1/sys/wrapping/wrap",{},wrap_ttl=ttl)
+
+
+class TransportDiagnosticTests(unittest.TestCase):
+    def client(self, opener):
+        client = object.__new__(Client)
+        client.address, client.namespace = "https://localhost:8200", ""
+        client._token, client.timeout = "synthetic-private-bearer", 15
+        client._opener = opener
+        return client
+
+    def test_actual_stdlib_stream_failures_project_only_class_and_phase(self):
+        sentinel = b"synthetic-private-peer-response"
+        for stage in ("open", "read"):
+            with self.subTest(stage=stage), contextlib.ExitStack() as stack:
+                left, right = socket.socketpair()
+                stack.enter_context(left); stack.enter_context(right)
+                if stage == "open":
+                    right.sendall(sentinel + b"\r\n")
+                else:
+                    right.sendall(b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n80\r\n" + sentinel)
+                right.shutdown(socket.SHUT_WR)
+                response = http.client.HTTPResponse(left)
+                opener = MagicMock()
+                def opened(*args, **kwargs):
+                    response.begin()
+                    return response
+                opener.open.side_effect = opened
+                with self.assertRaises(BaoError) as caught:
+                    self.client(opener).request("POST", "/v1/synthetic-fixture", {})
+                diagnostic = transport_diagnostic(caught.exception)
+                self.assertEqual(caught.exception.code, "transport_outcome_unknown")
+                self.assertEqual(str(caught.exception), "transport_outcome_unknown")
+                self.assertEqual(diagnostic, {
+                    "phase": "open_response" if stage == "open" else "read_response",
+                    "exception_class": "http.client.BadStatusLine" if stage == "open" else "http.client.IncompleteRead",
+                })
+                self.assertNotIn(sentinel.decode(), json.dumps(diagnostic))
+                self.assertTrue(caught.exception.__suppress_context__)
+                self.assertEqual(opener.open.call_count, 1)
+                self.assertEqual(opener.open.call_args.kwargs["timeout"], 15)
+                response.close()
+
+    def test_urlerror_reason_and_bounded_errno_do_not_read_exception_text(self):
+        error = urllib.error.URLError(ConnectionResetError(104, "synthetic-private-reset"))
+        opener = MagicMock(); opener.open.side_effect = error
+        with self.assertRaises(BaoError) as caught:
+            self.client(opener).request("GET", "/v1/synthetic-fixture")
+        self.assertEqual(caught.exception.code, "transport_read_failed")
+        self.assertEqual(transport_diagnostic(caught.exception), {
+            "phase": "open_response", "exception_class": "urllib.error.URLError",
+            "reason_exception_class": "ConnectionResetError", "reason_errno": 104,
+        })
+        self.assertNotIn("synthetic-private", json.dumps(transport_diagnostic(caught.exception)))
+        self.assertEqual(opener.open.call_count, 1)
+        for number in (-1, 65536, True):
+            error = OSError(number, "synthetic-private-message")
+            error.errno = number
+            self.assertNotIn("errno", transport_diagnostic(error))
+
+    def test_untrusted_exception_subclass_name_message_and_errno_are_not_projected(self):
+        class PrivatePeerException(OSError):
+            def __str__(self):
+                raise AssertionError("exception text was inspected")
+        error = PrivatePeerException(13, "synthetic-private-args")
+        self.assertEqual(transport_diagnostic(error), {"phase": "fixture_call", "exception_class": "other"})
+        self.assertNotIn("PrivatePeerException", json.dumps(transport_diagnostic(error)))
+        self.assertIsNone(transport_diagnostic(RuntimeError("synthetic-private-error")))
+        self.assertIsNone(transport_diagnostic(BaoError("invalid_json")))
+        self.assertIsNone(transport_diagnostic(BaoError("transport_outcome_unknown", _diagnostic={"url": "private"})))
+
+    def test_real_remote_disconnect_keeps_read_code_and_suppresses_context(self):
+        with contextlib.ExitStack() as stack:
+            left, right = socket.socketpair()
+            stack.enter_context(left); stack.enter_context(right)
+            right.shutdown(socket.SHUT_WR)
+            response = http.client.HTTPResponse(left)
+            opener = MagicMock();opener.open.side_effect=lambda *a,**kw:response.begin()
+            with self.assertRaises(BaoError) as caught:
+                self.client(opener).request("HEAD", "/v1/synthetic-fixture")
+            self.assertEqual(caught.exception.code, "transport_read_failed")
+            self.assertEqual(transport_diagnostic(caught.exception), {
+                "phase": "open_response", "exception_class": "http.client.RemoteDisconnected",
+            })
+            self.assertEqual(opener.open.call_count, 1)
+            response.close()
+
+
+if __name__ == "__main__":
+    unittest.main()

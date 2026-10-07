@@ -146,6 +146,16 @@
       "path": "${{ runner.temp }}/v1.3.1-${{ matrix.source_kind }}/"
     },
     {
+      "file": "v2-1-main-exact-and-merge.yml",
+      "location": "workflow.jobs.exact-head.steps[6]",
+      "path": "${{ runner.temp }}/heptabao-v2.1-exact-head-receipt.json"
+    },
+    {
+      "file": "v2-1-main-exact-and-merge.yml",
+      "location": "workflow.jobs.prospective-main-merge.steps[6]",
+      "path": "${{ runner.temp }}/heptabao-v2.1-prospective-main-merge-receipt.json"
+    },
+    {
       "file": "workflow-trust-boundary.yml",
       "location": "workflow.jobs.verify.steps[3]",
       "path": "${{ runner.temp }}/heptabao-exact-source.bundle\n${{ runner.temp }}/heptabao-exact-source.bundle.sha256\n${{ runner.temp }}/source-binding.txt\n"

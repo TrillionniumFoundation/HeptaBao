@@ -105,7 +105,7 @@ def build_evidence(
             "profile_id": "HB-H02-BLOCKER-CLOSURE-OPENRAFT-0_10_0_ALPHA_33",
         },
         "source": {
-            "repository": "ProfHepta/HeptaBao",
+            "repository": "TrillionniumFoundation/HeptaBao",
             "branch": branch,
             "commit": source_commit,
             "tree": source_tree,

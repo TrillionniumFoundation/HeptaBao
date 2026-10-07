@@ -1,0 +1,139 @@
+{
+  "help": "Request:        data/ocsp/plainkey\nMatching Route: ^data/(?P<path>.*)$\n\nWrite, Patch, Read, and Delete data in the Key-Value Store.\n\n## PARAMETERS\n\n    data (map)\n\n        The contents of the data map will be stored and returned on read.\n\n    options (map)\n\n        Options for writing a KV entry.\n        \n        Set the \"cas\" value to use a Check-And-Set operation. If not set the write will\n        be allowed. If set to 0 a write will only be allowed if the key doesn’t exist.\n        If the index is non-zero the write will only be allowed if the key’s current\n        version matches the version specified in the cas parameter.\n\n    path (string)\n\n        Location of the secret.\n\n    version (int)\n\n        If provided during a read, the value at the version number will be returned\n\n## DESCRIPTION\n\nThis path takes a key name and based on the operation stores, retrieves or\ndeletes versions of data.\n\nIf a write operation is used the endpoint takes an options object and a data\nobject. The options object is used to pass some options to the write command and\nthe data object is encrypted and stored in the storage backend. Each write\noperation for a key creates a new version and does not overwrite the previous\ndata.\n\nA patch operation must be performed on an existing secret. The secret must neither\nbe deleted nor destroyed. Like a write operation, patch operations accept an\noptions object and data object. The options object is used to pass some options to\nthe patch command and the data object is used to perform a partial update on the\ncurrent version of the secret and store the encrypted result in the storage backend.\n\nA read operation will return the latest version for a key unless the \"version\"\nparameter is set, then it returns the version at that number.\n\nDelete operations are a soft delete. They will mark the latest version as\ndeleted, but the underlying data will not be fully removed. Delete operations\ncan be undone.",
+  "openapi": {
+    "components": {
+      "schemas": {
+        "PatchDataPathRequest": {
+          "properties": {
+            "data": {
+              "description": "The contents of the data map will be stored and returned on read.",
+              "format": "map",
+              "type": "object"
+            },
+            "options": {
+              "description": "Options for writing a KV entry. Set the \"cas\" value to use a Check-And-Set operation. If not set the write will be allowed. If set to 0 a write will only be allowed if the key doesn’t exist. If the index is non-zero the write will only be allowed if the key’s current version matches the version specified in the cas parameter.",
+              "format": "map",
+              "type": "object"
+            },
+            "version": {
+              "description": "If provided during a read, the value at the version number will be returned",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "WriteDataPathRequest": {
+          "properties": {
+            "data": {
+              "description": "The contents of the data map will be stored and returned on read.",
+              "format": "map",
+              "type": "object"
+            },
+            "options": {
+              "description": "Options for writing a KV entry. Set the \"cas\" value to use a Check-And-Set operation. If not set the write will be allowed. If set to 0 a write will only be allowed if the key doesn’t exist. If the index is non-zero the write will only be allowed if the key’s current version matches the version specified in the cas parameter.",
+              "format": "map",
+              "type": "object"
+            },
+            "version": {
+              "description": "If provided during a read, the value at the version number will be returned",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/data/{path}": {
+        "delete": {
+          "operationId": "delete-data-path",
+          "responses": {
+            "204": {
+              "description": "empty body"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "description": "Write, Patch, Read, and Delete data in the Key-Value Store.",
+        "get": {
+          "operationId": "read-data-path",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "patch": {
+          "operationId": "patch-data-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchDataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "post": {
+          "operationId": "write-data-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteDataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      }
+    }
+  },
+  "see_also": null
+}

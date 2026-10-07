@@ -52,7 +52,7 @@ modules:
   source: crates/heptabao-durable-core/src/lib.rs
   guide: docs/modules/heptabao-durable-core.md
 - crate: heptabao-durable-service
-  domain: restart-safe sealed durable mutation runtime
+  domain: restart-safe sealed durable mutation runtime with bounded capacity and replay-preserving journal compaction
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-durable-service/src/lib.rs
@@ -76,13 +76,13 @@ modules:
   source: crates/heptabao-ha-contracts/src/lib.rs
   guide: docs/modules/heptabao-ha-contracts.md
 - crate: heptabao-ha-service
-  domain: authenticated HA service routing, peer transport and replay fencing
+  domain: authenticated HA service routing, peer transport with portable bounded accepted-socket I/O and replay fencing
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-ha-service/src/lib.rs
   guide: docs/modules/heptabao-ha-service.md
 - crate: heptabao-raft-runtime
-  domain: durable three-voter consensus, ReadIndex and restart recovery
+  domain: durable Raft replication with deadline-adaptive contiguous replay prefixes, applied-frontier recovery and bounded snapshots, passive true-term and actual-role observation
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-raft-runtime/src/lib.rs
@@ -147,6 +147,12 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-namespace/src/lib.rs
   guide: docs/modules/heptabao-namespace.md
+- crate: heptabao-openbao-grpc
+  domain: owned OpenBao Wrapper RPC and AutoMTLS transport
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-openbao-grpc/src/lib.rs
+  guide: docs/modules/heptabao-openbao-grpc.md
 - crate: heptabao-operation-ledger
   domain: operation reconciliation ledger
   state: INHERITED_IMPLEMENTED
@@ -189,6 +195,12 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-plugin-contracts/src/lib.rs
   guide: docs/modules/heptabao-plugin-contracts.md
+- crate: heptabao-linux-parent-death
+  domain: fixed Linux provider owner-thread death binding and owned terminal wait
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V2
+  source: crates/heptabao-linux-parent-death/src/lib.rs
+  guide: docs/modules/heptabao-linux-parent-death.md
 - crate: heptabao-plugin-host
   domain: durable sandbox-wrapper invocation and dynamic lease lifecycle
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -274,7 +286,7 @@ modules:
   source: crates/heptabao-token/src/lib.rs
   guide: docs/modules/heptabao-token.md
 - crate: heptabao-server
-  domain: runnable TLS single-node encrypted secrets service
+  domain: runnable TLS encrypted secrets service with bounded online Kubernetes/OIDC identity, root-only capacity observation, recovery-safe journal compaction and explicit native leader cluster-address diagnosis, term-bound application activation lifecycle, schema-fenced remote Transit reference consumption through enrolled TLS and staged authority, bounded typed-SPKI external EC/RSA PKI consumption with schema-67 active and retired writer fences, bounded JWT literal top-level string user_claim identity binding with conditional schema-68 active and retired reader fences, bounded JWT SPKI PEM same-algorithm keyset verification with conditional schema-69 active and retired reader fences, bounded native Transit parameter verification and shared enrolled CA/SNI assertions, bounded internal PKI root PEM/DER/certificate-only bundle response encoding
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-server/src/lib.rs
@@ -287,7 +299,7 @@ planned_modules:
 - networked-raft-ha-service-integration
 - interruption-safe-format-migration
 - qualified-sandbox-provider-and-durable-plugin-service-integration
-- remaining-compatibility-fixtures-and-independent-exact-head-observation
+- independent-exact-head-compatibility-observation
 - destructive-platform-qualification
 claims:
   qualification: false
@@ -296,3 +308,7 @@ claims:
   migration_authority: false
   release_authority: false
   authority_effect: NONE
+
+# OpenBao 2.7 continuation: Transit pure ML-DSA and signing-only external-mu
+# share the existing encrypted key owner. Refer to the exact continuation and
+# executable tests; HashML-DSA, key import and full replacement remain open.

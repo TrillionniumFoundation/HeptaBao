@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import importlib.util
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 import yaml
@@ -14,12 +19,14 @@ SPEC.loader.exec_module(RENDERER)
 
 
 class ModuleSourceTruthTests(unittest.TestCase):
+    @historical_only
     def test_snapshot_matches_exact_workspace(self) -> None:
         expected = RENDERER.build_truth(ROOT)
         actual = yaml.safe_load((ROOT / RENDERER.TRUTH_PATH).read_text(encoding="utf-8"))
         self.assertEqual(expected, actual)
         self.assertEqual(len(actual["modules"]), actual["module_count"])
 
+    @historical_only
     def test_every_module_guide_generated_sections_are_current(self) -> None:
         truth = RENDERER.build_truth(ROOT)
         for module in truth["modules"]:

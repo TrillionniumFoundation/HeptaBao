@@ -1,11 +1,7 @@
 name: export-exact-audit-source-macos
 
 on:
-  push:
-    branches:
-      - "codex/plan-v1.2-canonical-gap-closure-v1"
-    paths:
-      - ".github/workflows/export-exact-audit-source-macos.yml"
+  # macOS source export is an audit artifact and is intentionally manual.
   workflow_dispatch:
 
 permissions:

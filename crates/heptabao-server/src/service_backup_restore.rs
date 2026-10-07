@@ -1,0 +1,961 @@
+//! Validate one authenticated backup before consuming its durable restore plan.
+use super::*;
+#[path = "service_ha_restore.rs"]
+mod ha_restore;
+use heptabao_durable_service::PreparedRestore;
+
+// Live durable reads own Secret; prepared reads borrow the decoded snapshot.
+// This shares the exact startup/schema/owner/record validation without a
+// second BTreeMap containing copies of every system resource.
+pub(super) enum StateResource<'a> {
+    Owned(Secret),
+    Borrowed(&'a [u8]),
+}
+impl StateResource<'_> {
+    fn expose(&self) -> &[u8] {
+        match self {
+            Self::Owned(value) => value.expose(),
+            Self::Borrowed(value) => value,
+        }
+    }
+}
+pub(super) trait StateResources {
+    fn get(&self, resource: &str) -> Result<Option<StateResource<'_>>, ServiceError>;
+    fn replay_epoch(&self) -> u64;
+}
+impl StateResources for DurableService<AeadBarrier> {
+    fn get(&self, resource: &str) -> Result<Option<StateResource<'_>>, ServiceError> {
+        DurableService::get(self, "system", resource).map(|value| value.map(StateResource::Owned))
+    }
+    fn replay_epoch(&self) -> u64 {
+        DurableService::replay_epoch(self)
+    }
+}
+impl StateResources for PreparedRestore {
+    fn get(&self, resource: &str) -> Result<Option<StateResource<'_>>, ServiceError> {
+        PreparedRestore::get(self, "system", resource)
+            .map(|value| value.map(StateResource::Borrowed))
+    }
+    fn replay_epoch(&self) -> u64 {
+        self.metadata().replay_epoch
+    }
+}
+struct ResourceRecordReader<'a, R>(&'a R);
+impl<R: StateResources> crate::state_records::RecordReader for ResourceRecordReader<'_, R> {
+    fn read_object(
+        &self,
+        reference: &crate::state_records::ObjectRef,
+    ) -> Result<Zeroizing<Vec<u8>>, crate::state_records::RecordError> {
+        let resource = self
+            .0
+            .get(&reference.resource())
+            .map_err(|_| crate::state_records::RecordError::Corrupt)?
+            .ok_or(crate::state_records::RecordError::Missing)?;
+        // The core reader requires an owned, zeroizing object. Only this
+        // selected object is copied; no extra full resource map is built.
+        Ok(Zeroizing::new(resource.expose().to_vec()))
+    }
+}
+
+pub(super) struct PreparedSnapshotRestore {
+    durable: PreparedRestore,
+    state: State,
+    root: Option<crate::state_record_root::RecordStateRoot>,
+    digest: [u8; 32],
+    activation: String,
+    base: crate::state_record_root::StateIdentity,
+}
+
+impl PreparedSnapshotRestore {
+    // Internal cfg(test) fault injection isolates the last floor gate while
+    // preserving all other affine restore fields. No production constructor
+    // or caller can replace the original captured identity.
+    #[cfg(test)]
+    pub(super) fn fixture_rebind_base_for_protected_floor(
+        &mut self,
+        base: crate::state_record_root::StateIdentity,
+    ) {
+        self.base = base;
+    }
+
+    pub(super) fn generation(&self) -> u64 {
+        self.durable.metadata().generation
+    }
+}
+
+impl Service {
+    fn load_owner_bytes(
+        resources: &impl StateResources,
+        manifest: &owner_store::OwnerStateManifest,
+        owner: &str,
+    ) -> Result<Zeroizing<Vec<u8>>, Response> {
+        let count = manifest
+            .chunk_count(owner)
+            .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
+        let mut values = Vec::with_capacity(count);
+        for index in 0..count {
+            let resource = manifest
+                .chunk_resource(owner, index)
+                .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
+            let chunk = resources
+                .get(&resource)
+                .map_err(|_| Response::error(503, "owner-state chunk is unavailable"))?
+                .ok_or_else(|| Response::error(503, "owner-state chunk is absent"))?;
+            values.push(chunk);
+        }
+        let refs = values.iter().map(StateResource::expose).collect::<Vec<_>>();
+        let bytes = manifest
+            .assemble_owner(owner, &refs)
+            .map_err(|_| Response::error(503, "owner-state chunk set is invalid"))?;
+        Ok(bytes)
+    }
+
+    pub(super) fn load_state_from_resources(
+        resources: &impl StateResources,
+    ) -> Result<(State, Zeroizing<Vec<u8>>, bool), Response> {
+        let record = resources
+            .get("state")
+            .map_err(|_| Response::error(503, "server state is unavailable"))?
+            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
+
+        if let Some(mut root) = records::decode_root(record.expose())? {
+            let mut state =
+                Self::materialize_record_state(&root, &ResourceRecordReader(resources))?;
+            if state.replay_epoch > resources.replay_epoch() {
+                return Err(Response::error(
+                    503,
+                    "record replay epoch is ahead of durable authority",
+                ));
+            }
+            let rewrite = state.replay_epoch < resources.replay_epoch();
+            if rewrite {
+                state.replay_epoch = resources.replay_epoch();
+                root.replay_epoch = state.replay_epoch;
+                state.schema = state.writer_schema();
+                root.state_schema = state.schema;
+            }
+            let bytes = root
+                .encode()
+                .map_err(|_| Response::error(503, "record root encoding failed"))?;
+            return Ok((state, bytes, rewrite));
+        }
+        let owner_manifest = owner_store::decode_manifest(record.expose())
+            .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
+        let (mut state, mut bytes, mut needs_rewrite) = if let Some(manifest) = owner_manifest {
+            let namespaces = Self::load_owner_bytes(resources, &manifest, "namespaces")?;
+            let auth = Self::load_owner_bytes(resources, &manifest, "auth")?;
+            let engines = Self::load_owner_bytes(resources, &manifest, "engines")?;
+            let database = Self::load_owner_bytes(resources, &manifest, "database")?;
+            let raft_admin = Self::load_owner_bytes(resources, &manifest, "raft_admin")?;
+            let state = State {
+                namespace_protected: None,
+                namespace_leases: namespace_runtime::Leases::default(),
+                schema: manifest.state_schema(),
+                cluster_id: manifest.cluster_id().to_owned(),
+                replay_epoch: manifest.replay_epoch(),
+                namespaces: serde_json::from_slice::<namespaces::NamespaceRegistry>(&namespaces)
+                    .map(CowOwner::from)
+                    .map_err(|_| Response::error(503, "namespace owner state is invalid"))?,
+                auth: serde_json::from_slice(&auth)
+                    .map_err(|_| Response::error(503, "auth owner state is invalid"))?,
+                engines: serde_json::from_slice(&engines)
+                    .map_err(|_| Response::error(503, "engine owner state is invalid"))?,
+                database: serde_json::from_slice(&database)
+                    .map_err(|_| Response::error(503, "database owner state is invalid"))?,
+                raft_admin: serde_json::from_slice(&raft_admin)
+                    .map_err(|_| Response::error(503, "raft-admin owner state is invalid"))?,
+            };
+            state.validate_format()?;
+            let bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
+            manifest
+                .verify_logical(&bytes)
+                .map_err(|_| Response::error(503, "owner-state logical digest is invalid"))?;
+            (state, bytes, false)
+        } else {
+            let manifest = state_store::decode_manifest(record.expose())
+                .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
+            let (bytes, needs_rewrite) = if let Some(manifest) = manifest.as_ref() {
+                let mut chunk_values = Vec::with_capacity(manifest.chunk_count());
+                for index in 0..manifest.chunk_count() {
+                    let resource = manifest
+                        .chunk_resource(index)
+                        .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
+                    let chunk = resources
+                        .get(&resource)
+                        .map_err(|_| Response::error(503, "server state chunk is unavailable"))?
+                        .ok_or_else(|| Response::error(503, "server state chunk is absent"))?;
+                    chunk_values.push(chunk);
+                }
+                let chunk_refs = chunk_values
+                    .iter()
+                    .map(StateResource::expose)
+                    .collect::<Vec<_>>();
+                let assembled = state_store::assemble_state(manifest, &chunk_refs)
+                    .map_err(|_| Response::error(503, "server state chunk set is invalid"))?;
+                (assembled, false)
+            } else {
+                if record.expose().len() > MAX_STATE_BYTES {
+                    return Err(Response::error(
+                        507,
+                        "legacy server state exceeds migration bound",
+                    ));
+                }
+                (Zeroizing::new(record.expose().to_vec()), true)
+            };
+            let state: State = serde_json::from_slice(&bytes)
+                .map_err(|_| Response::error(503, "server state schema is invalid"))?;
+            state.validate_format()?;
+            if let Some(manifest) = manifest
+                && manifest.state_schema() != state.schema
+            {
+                return Err(Response::error(
+                    503,
+                    "server state manifest schema binding is inconsistent",
+                ));
+            }
+            (state, bytes, needs_rewrite)
+        };
+
+        let durable_epoch = resources.replay_epoch();
+        if state.replay_epoch > durable_epoch {
+            return Err(Response::error(
+                503,
+                "server state replay epoch is ahead of durable replay authority",
+            ));
+        }
+        let mut logical_rewrite = false;
+        if state.replay_epoch < durable_epoch {
+            state.replay_epoch = durable_epoch;
+            logical_rewrite = true;
+        }
+        if state.adopt_legacy_namespaces()? {
+            logical_rewrite = true;
+        }
+        if logical_rewrite {
+            state.schema = state.writer_schema();
+            state.validate_format()?;
+        }
+        if logical_rewrite || needs_rewrite {
+            // Raw legacy bytes can use another serializer's field order or
+            // omitted defaults. The new owner chunks serialize the typed State;
+            // their local logical digest must bind that same representation.
+            // Already-published owner manifests are verified above, never
+            // repaired by accepting a mismatched digest.
+            bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
+            needs_rewrite = true;
+        }
+        Ok((state, bytes, needs_rewrite))
+    }
+
+    pub(super) fn prepare_snapshot_restore(
+        &self,
+        backup: &[u8],
+    ) -> Result<PreparedSnapshotRestore, Response> {
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let prepared = durable
+            .prepare_restore(backup)
+            .map_err(|error| match error {
+                ServiceError::CorruptState | ServiceError::BarrierFailure => {
+                    Response::error(400, "snapshot authentication or structure failed")
+                }
+                _ => Response::error(503, "snapshot preparation is unavailable"),
+            })?;
+        self.validate_prepared_snapshot_restore(prepared)
+    }
+
+    pub(super) fn prepare_snapshot_restore_from_reader(
+        &self,
+        reader: &mut impl Read,
+        length: u64,
+    ) -> Result<PreparedSnapshotRestore, Response> {
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let prepared = durable
+            .prepare_restore_from_reader(reader, length)
+            .map_err(|error| match error {
+                ServiceError::CorruptState | ServiceError::BarrierFailure => {
+                    Response::error(400, "snapshot authentication or structure failed")
+                }
+                _ => Response::error(503, "snapshot preparation is unavailable"),
+            })?;
+        self.validate_prepared_snapshot_restore(prepared)
+    }
+
+    fn validate_prepared_snapshot_restore(
+        &self,
+        prepared: heptabao_durable_service::PreparedRestore,
+    ) -> Result<PreparedSnapshotRestore, Response> {
+        let (state, bytes, _) = Self::load_state_from_resources(&prepared)
+            .map_err(|_| Response::error(400, "snapshot application state is invalid"))?;
+        if let Some(current) = &self.state {
+            Self::validate_snapshot_protected_floor(current, &state)?;
+        }
+        if state.engines.has_openldap_mount() || !state.database.is_empty() {
+            return Err(Response::error(
+                409,
+                "snapshot contains external provider identities; reconcile them before restore",
+            ));
+        }
+        let root = records::decode_root(&bytes)
+            .map_err(|_| Response::error(400, "snapshot publication is invalid"))?;
+        self.validate_loaded_capacity(&state, root.as_ref())?;
+        let digest = match &root {
+            Some(root) => root
+                .identity()
+                .map_err(|_| Response::error(400, "snapshot record identity is invalid"))?
+                .digest(),
+            None => crypto::digest(&bytes),
+        };
+        Ok(PreparedSnapshotRestore {
+            durable: prepared,
+            state,
+            root,
+            digest,
+            activation: self.unseal_nonce.clone(),
+            base: self.current_state_identity()?,
+        })
+    }
+
+    // Ordinary historical <=65 restores retain their existing policy. Once
+    // protected material or custom JWT roles have raised the reader requirement,
+    // retirement cannot authorize restoring an earlier image. Check the
+    // authenticated incoming label before HA can normalize its writer schema.
+    pub(super) fn validate_snapshot_protected_floor(
+        current: &State,
+        incoming: &State,
+    ) -> Result<(), Response> {
+        if current.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            && incoming.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade batch or credential SDK Secret ownership",
+            ));
+        }
+        incoming
+            .validate_namespace_batch_state()
+            .map_err(|_| Response::error(400, "invalid snapshot namespace batch lifecycle"))?;
+        incoming
+            .protected_state()?
+            .auth
+            .validate_namespace_batch_successor(&current.protected_state()?.auth)
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .protected_state()?
+            .namespaces
+            .validate_custody_successor(&current.protected_state()?.namespaces)
+            .map_err(|_| Response::error(400, "snapshot would regress namespace lifecycle"))?;
+        incoming
+            .auth
+            .validate_namespace_deletion_successor(&current.auth, &incoming.cluster_id)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        if current.has_namespace_deletion_state()
+            && incoming.schema < NAMESPACE_DELETION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                503,
+                "namespace deletion restore floor cannot decrease",
+            ));
+        }
+        if current.schema >= NAMESPACE_BATCH_STATE_SCHEMA
+            && incoming.schema < NAMESPACE_BATCH_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade namespace batch lifecycle",
+            ));
+        }
+        incoming
+            .auth
+            .validate_sdk_auth_clock(Some(&current.auth))
+            .map_err(|e| Response::error(400, &e.message))?;
+        let sdk_auth_floor = current.auth.sdk_auth_epoch_floor();
+        incoming
+            .auth
+            .validate_sdk_auth_epoch_floor(sdk_auth_floor.as_ref())
+            .map_err(|e| Response::error(400, &e.message))?;
+        if current.schema >= SDK_AUTH_STATE_SCHEMA && incoming.schema < SDK_AUTH_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK Auth ownership",
+            ));
+        }
+        incoming
+            .engines
+            .validate_acme_successor(Some(&current.engines), |namespace| {
+                incoming
+                    .namespaces
+                    .retires_namespace_incarnation(&current.namespaces, namespace)
+            })
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_ACME_ACCOUNT_STATE_SCHEMA
+            && incoming.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade ACME account ownership",
+            ));
+        }
+        incoming
+            .engines
+            .validate_sdk_lease_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .engines
+            .validate_pki_revocation_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_RSA8192_STATE_SCHEMA && incoming.schema < PKI_RSA8192_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI RSA8192 ownership",
+            ));
+        }
+        if current.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            && incoming.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI ordinary revocation ownership",
+            ));
+        }
+        incoming
+            .engines
+            .validate_kubernetes_artifact_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .auth
+            .validate_token_api_clock_floor(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_URLS_STATE_SCHEMA && incoming.schema < PKI_URLS_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI URL ownership",
+            ));
+        }
+        if current.schema >= PKI_KEY_POLICY_STATE_SCHEMA
+            && incoming.schema < PKI_KEY_POLICY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI subject key policy",
+            ));
+        }
+        if current.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+            && incoming.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade auth mount options",
+            ));
+        }
+        if current.schema >= SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            && incoming.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade accepted SDK Secret registration",
+            ));
+        }
+        if current.schema >= SDK_SECRET_LEASE_STATE_SCHEMA
+            && incoming.schema < SDK_SECRET_LEASE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK secret lease ownership",
+            ));
+        }
+        if current.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            && incoming.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK response header ownership",
+            ));
+        }
+        if current.schema >= EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+            && incoming.schema < EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot restore cannot retire external full-DN CRL semantics",
+            ));
+        }
+        if current.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && incoming.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade external PKI signer history",
+            ));
+        }
+        if current.schema >= PKI_ROLE_NAMES_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_NAMES_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role name ownership",
+            ));
+        }
+        if current.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && incoming.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade opaque Kubernetes artifact ownership",
+            ));
+        }
+        if current.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
+            && incoming.schema < TOKEN_API_PRECISION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Token API precise ownership",
+            ));
+        }
+        if current.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && incoming.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI signed role time ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_TIME_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_TIME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role time ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role leaf profiles",
+            ));
+        }
+        if current.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI wildcard ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI base-domain ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI allow_any_name ownership",
+            ));
+        }
+        if current.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && incoming.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade public origin ownership",
+            ));
+        }
+        incoming
+            .protected_state()?
+            .auth
+            .validate_public_origin_successor(&current.protected_state()?.auth)
+            .map_err(|_| Response::error(400, "snapshot would retire public origin ownership"))?;
+        if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Token API role ownership",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI intermediate ownership",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_CRL_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_CRL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI CRL state",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI issuer ownership",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI root fields",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI identifiers",
+            ));
+        }
+        if current.schema >= INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+            && incoming.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade indexed recovery wire reader",
+            ));
+        }
+        if current.schema >= RECOVERY_CREDENTIAL_STATE_SCHEMA
+            && incoming.schema < RECOVERY_CREDENTIAL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade protected recovery state",
+            ));
+        }
+        if !current.auth.same_recovery_control(&incoming.auth) {
+            return Err(Response::error(
+                409,
+                "snapshot cannot replace recovery credentials, challenges or private delivery; reconcile separately",
+            ));
+        }
+        if current.schema >= LOCAL_TYPED_PKI_STATE_SCHEMA
+            && incoming.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade typed local PKI keys",
+            ));
+        }
+        if current.schema >= PKI_ISSUER_PATH_STATE_SCHEMA
+            && incoming.schema < PKI_ISSUER_PATH_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI issuer-path leases",
+            ));
+        }
+        if current.schema >= TRANSIT_BYOK_STATE_SCHEMA
+            && incoming.schema < TRANSIT_BYOK_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Transit imported key state",
+            ));
+        }
+        if current.schema >= JWT_PEM_KEYSET_STATE_SCHEMA
+            && incoming.schema < JWT_PEM_KEYSET_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade JWT PEM keysets",
+            ));
+        }
+        if current.schema >= JWT_USER_CLAIM_STATE_SCHEMA
+            && incoming.schema < JWT_USER_CLAIM_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade custom JWT identity claims",
+            ));
+        }
+        if current.schema >= TYPED_PKI_STATE_SCHEMA && incoming.schema < TYPED_PKI_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade typed external PKI state",
+            ));
+        }
+        if current.schema >= AAD_BOUND_STATE_SCHEMA && incoming.schema < AAD_BOUND_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade AAD-bound convergent encryption",
+            ));
+        }
+        current
+            .engines
+            .validate_aad_bound_convergent_restore(&incoming.engines)
+            .map_err(|_| {
+                Response::error(
+                    400,
+                    "snapshot would downgrade AAD-bound convergent encryption",
+                )
+            })?;
+        Ok(())
+    }
+
+    pub(super) fn commit_snapshot_restore(
+        &mut self,
+        prepared: PreparedSnapshotRestore,
+        principal: &Principal,
+        request: &RequestView<'_>,
+    ) -> Response {
+        self.commit_snapshot_restore_with_rollback(
+            prepared,
+            principal,
+            request,
+            request.path == "sys/storage/raft/snapshot-force",
+        )
+    }
+
+    pub(super) fn commit_native_snapshot_restore(
+        &mut self,
+        verified: snapshot_transfer::VerifiedNativeRestore,
+        principal: &Principal,
+        request: &RequestView<'_>,
+    ) -> Response {
+        if self.ha.is_some() {
+            let clock = verified.clock();
+            return self.commit_ha_native_snapshot_restore(
+                verified.into_prepared(),
+                principal,
+                request,
+                clock,
+            );
+        }
+        // Native ordinary restore, like OpenBao, restores older data after
+        // proving the archive belongs to the live seal. JSON retains its
+        // explicit legacy generation/force policy above.
+        self.commit_snapshot_restore_with_rollback(
+            verified.into_prepared(),
+            principal,
+            request,
+            true,
+        )
+    }
+
+    fn commit_snapshot_restore_with_rollback(
+        &mut self,
+        prepared: PreparedSnapshotRestore,
+        principal: &Principal,
+        request: &RequestView<'_>,
+        allow_rollback: bool,
+    ) -> Response {
+        // This route is synchronous under the Service writer. Keep the
+        // authority checks explicit before consuming the plan; future callers
+        // must not turn this into an unfenced split-phase commit.
+        if self.ha.is_some() {
+            return Response::error(
+                409,
+                "direct local snapshot restore is forbidden while HA is enabled",
+            );
+        }
+        if self.recovery_required
+            || self.audit_failed
+            || self.barrier_key.is_none()
+            || self.unseal_nonce != prepared.activation
+            || self.current_state_identity().ok() != Some(prepared.base)
+        {
+            return Response::error(503, "snapshot restore authority changed; prepare again");
+        }
+        let Some(current) = self.state.as_ref() else {
+            return Response::error(503, "server is sealed");
+        };
+        if !principal.is_root() {
+            return Response::error(403, "permission denied");
+        }
+        if let Err(error) = current.auth.authorize_request(
+            principal,
+            request.namespace,
+            request.path,
+            "update",
+            request.now,
+        ) {
+            return Response::error(error.status, &error.message);
+        }
+        if !current.database.is_empty() || current.engines.has_openldap_mount() {
+            return Response::error(
+                409,
+                "external provider state cannot be rolled back with a local snapshot",
+            );
+        }
+        if let Err(error) = self.validate_loaded_capacity(&prepared.state, prepared.root.as_ref()) {
+            return error;
+        }
+        if let Err(error) = Self::validate_snapshot_protected_floor(current, &prepared.state) {
+            return error;
+        }
+        let Some(durable) = self.durable.as_mut() else {
+            return Response::error(503, "server is sealed");
+        };
+        // Restoring identical auth configuration is still a new activation:
+        // provider observations admitted before rollback must not survive it.
+        // Prepare randomness before publication, and change the live nonce
+        // only after the durable restore succeeds.
+        let next_activation = match crypto::random::<16>() {
+            Ok(value) => hex(&value),
+            Err(error) => return Response::error(503, error),
+        };
+        let outcome = match durable.restore_prepared(prepared.durable, allow_rollback) {
+            Ok(outcome) => outcome,
+            Err(ServiceError::BackupRollbackRejected) => {
+                return Response::error(
+                    400,
+                    "snapshot is older than live state; use snapshot-force only after review",
+                );
+            }
+            Err(ServiceError::RequestBindingConflict) => {
+                return Response::error(409, "snapshot restore state changed; prepare again");
+            }
+            Err(_) => {
+                if durable.recovery_required() {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                    self.recovery_required = true;
+                    self.ha_activation = None;
+                }
+                return Response::error(
+                    503,
+                    "snapshot restore failed; authoritative recovery required",
+                );
+            }
+        };
+        // All parsing/graph/owner checks happened before publication. Install
+        // that exact candidate rather than decrypt or materialize it again.
+        self.state = Some(prepared.state);
+        self.record_root = prepared.root;
+        self.state_digest = Some(prepared.digest);
+        self.unseal_nonce = next_activation;
+        self.record_writes_since_gc = 64;
+        self.ha_read_cache = None;
+        self.recovery_required = false;
+        Response::ok(json!({"data": {
+            "previous_generation": outcome.previous_generation,
+            "restored_generation": outcome.restored_generation,
+            "retained_requests": outcome.retained_requests,
+            "rollback": outcome.restored_generation < outcome.previous_generation,
+        }}))
+    }
+}
+
+#[cfg(test)]
+#[path = "service_backup_restore_tests.rs"]
+mod tests;
+
+// Insert after the production impl Service in service_backup_restore.rs.
+// Requires the real native parser's affine VerifiedNativeRestore. The final
+// share is submitted through the ordinary recovery HTTP dispatch on Service.
+// No JSON backup is relabeled as a native archive and no state is overwritten.
+#[cfg(all(test, target_os = "linux"))]
+impl Service {
+    #[allow(clippy::too_many_arguments)] // Keep the fixture's real restore and recovery inputs explicit.
+    pub(super) fn fixture_native_restore_after_real_recovery_commit(
+        &mut self,
+        verified: snapshot_transfer::VerifiedNativeRestore,
+        principal: &Principal,
+        restore_request: &RequestView<'_>,
+        recovery_token: &str,
+        final_verification_body: Value,
+        now: u64,
+        isolate_last_protected_floor: bool,
+    ) -> Result<Response, Response> {
+        self.fixture_require_live_recovery_wrapper()?;
+        let mut prepared = verified.into_prepared();
+        let initial = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        if prepared.state.schema != initial.schema
+            || !initial.auth.same_recovery_control(&prepared.state.auth)
+            || self.current_state_identity().ok() != Some(prepared.base)
+        {
+            return Err(Response::error(
+                409,
+                "fixture requires genuine same-schema pre-rotation native preparation",
+            ));
+        }
+        let response = self.handle_at(
+            "POST",
+            "sys/rotate/recovery/verify",
+            "",
+            recovery_token,
+            final_verification_body,
+            now,
+        );
+        if response.status != 200 || response.body["complete"] != true {
+            return Err(response);
+        }
+        self.fixture_require_live_recovery_wrapper()?;
+        let current = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let live_identity = self
+            .current_state_identity()
+            .map_err(|_| Response::error(503, "fixture post-writer identity unavailable"))?;
+        if current.schema != prepared.state.schema
+            || current.auth.same_recovery_control(&prepared.state.auth)
+            || live_identity == prepared.base
+        {
+            return Err(Response::error(
+                409,
+                "fixture writer did not commit genuine same-schema new recovery authority",
+            ));
+        }
+        let live_auth =
+            owner_store::serialize_owner(&current.auth).map_err(state_serialization_error)?;
+        let live_seal = self.seal.clone();
+        if isolate_last_protected_floor {
+            // Existing private cfg(test) seam alters ONLY captured base. It
+            // leaves authenticated native data, archive owners, seal admission,
+            // candidate auth, digest, root and affine durable plan untouched.
+            prepared.fixture_rebind_base_for_protected_floor(live_identity);
+        }
+        let expected_status = if isolate_last_protected_floor {
+            409
+        } else {
+            503
+        };
+        let expected_message = if isolate_last_protected_floor {
+            "snapshot cannot replace recovery credentials, challenges or private delivery; reconcile separately"
+        } else {
+            "snapshot restore authority changed; prepare again"
+        };
+        let restore =
+            self.commit_snapshot_restore_with_rollback(prepared, principal, restore_request, true);
+        let after = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "fixture live state lost"))?;
+        let after_auth =
+            owner_store::serialize_owner(&after.auth).map_err(state_serialization_error)?;
+        if restore.status != expected_status
+            || restore.body["errors"][0] != expected_message
+            || self.current_state_identity().ok() != Some(live_identity)
+            || after_auth.as_slice() != live_auth.as_slice()
+            || self.seal != live_seal
+        {
+            return Err(Response::error(
+                503,
+                "fixture rejected restore changed current authority or missed the exact final gate",
+            ));
+        }
+        Ok(restore)
+    }
+}

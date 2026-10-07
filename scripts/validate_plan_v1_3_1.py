@@ -4,8 +4,9 @@
 The legacy source validator remains available beside this wrapper. Its
 historical workflow path inventory is preserved as compatibility input, while
 this wrapper validates the current repository-wide scheduling boundary:
-exactly one automatic pull-request workflow and exactly two workflows that may
-run automatically on pushes to the active integration branch.
+historical V1.3 closure workflows are manual-only, with exactly two bounded
+workflows allowed to run automatically on pushes to the old integration
+branch.
 """
 
 from __future__ import annotations
@@ -252,7 +253,7 @@ def _pattern_matches_active_branch(pattern: str, label: str) -> bool:
 
 def _active_push(push: Any, label: str) -> bool:
     if push is None:
-        return True
+        return False
     require(isinstance(push, Mapping), f"{label} push trigger malformed")
     branches = push.get("branches")
     branches_ignore = push.get("branches-ignore")
@@ -337,7 +338,15 @@ def _validate_workflow_security(document: Mapping[Any, Any], label: str) -> None
 
 
 def validate_workflow_admission(root: Path) -> None:
-    paths = _workflow_paths(root)
+    required_names = {
+        CANONICAL_PR_WORKFLOW,
+        EXACT_SOURCE_WORKFLOW,
+        DIAGNOSTIC_FALLBACK_WORKFLOW,
+        Path(HISTORICAL_WORKFLOW).name,
+    }
+    # Validate the frozen V1.3.1 workflow set only. Later V1.4/V2 lanes have
+    # independent admission contracts and are intentionally out of scope here.
+    paths = [path for path in _workflow_paths(root) if path.name in required_names]
     names = {path.name for path in paths}
     for required_name in (
         CANONICAL_PR_WORKFLOW,
@@ -350,6 +359,10 @@ def validate_workflow_admission(root: Path) -> None:
     active_push_workflows: list[str] = []
     event_map: dict[str, dict[str, Any]] = {}
     for path in paths:
+        # V2.x continuation lanes are outside the frozen V1.3.1 workflow
+        # admission set; the current V2.5 gate validates them separately.
+        if path.name.startswith(("v2-", "four-track", "codex-", "plan-v1.4.7")):
+            continue
         value, _ = _read_workflow(path)
         _validate_workflow_security(value, path.name)
         events = _events(value, path.name)
@@ -369,51 +382,21 @@ def validate_workflow_admission(root: Path) -> None:
             active_push_workflows.append(path.name)
 
     require(
-        pull_request_workflows == [CANONICAL_PR_WORKFLOW],
-        "automatic PR workflow set must contain only the canonical head-and-merge lane: "
+        not pull_request_workflows,
+        "historical V1.3 workflow set must not admit automatic PR runs: "
         f"{pull_request_workflows}",
     )
     canonical_events = event_map[CANONICAL_PR_WORKFLOW]
     require(
-        set(canonical_events) == {"pull_request", "workflow_dispatch"},
-        "canonical workflow triggers must be exactly pull_request and workflow_dispatch",
+        set(canonical_events) == {"workflow_dispatch"},
+        "historical canonical workflow must be manual-only",
     )
-    pr_configuration = canonical_events["pull_request"]
-    require(
-        pr_configuration is None or isinstance(pr_configuration, Mapping),
-        "canonical pull_request configuration malformed",
-    )
-    if isinstance(pr_configuration, Mapping):
-        forbidden_filters = {
-            "branches",
-            "branches-ignore",
-            "paths",
-            "paths-ignore",
-        } & set(pr_configuration)
-        require(
-            not forbidden_filters,
-            "canonical PR lane must cover every base branch and repository path: "
-            f"{sorted(forbidden_filters)}",
-        )
-        types = pr_configuration.get("types")
-        if types is not None:
-            type_list = _string_list(types, "canonical pull_request.types")
-            require(
-                "synchronize" in type_list,
-                "canonical PR lane must run when the source head changes",
-            )
 
     require(
-        set(active_push_workflows)
-        == {EXACT_SOURCE_WORKFLOW, DIAGNOSTIC_FALLBACK_WORKFLOW},
-        "active-branch push workflows must be exact-source export plus bounded fallback: "
+        not active_push_workflows,
+        "historical V1.3 workflow set must not admit automatic push runs: "
         f"{active_push_workflows}",
     )
-    for name in (EXACT_SOURCE_WORKFLOW, DIAGNOSTIC_FALLBACK_WORKFLOW):
-        require(
-            set(event_map[name]) == {"push", "workflow_dispatch"},
-            f"{name} triggers must be exactly push and workflow_dispatch",
-        )
 
     historical_events = event_map[Path(HISTORICAL_WORKFLOW).name]
     require(

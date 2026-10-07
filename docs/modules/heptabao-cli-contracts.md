@@ -4,6 +4,17 @@ Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_
 
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
+Current runtime distinction: The actual bounded CLI now lives in `clients/python`;
+this Rust crate remains a standalone invocation model, not full OpenBao CLI
+compatibility. The Python `kv` entry point performs actual KV v1/v2 commands,
+mount discovery, CAS-protected updates and requested-value output through the
+shared HTTPS Client. The older nine private-output commands retain their grammar
+and publication boundary. The [runtime capability matrix](../compatibility/HEPTABAO_PYTHON_KV_CLI_270.md)
+names the implemented scope, output/credential differences and open commands.
+`clients/python/tests/test_kv_cli.py` covers command/authority/uncertainty guards;
+`test_kv_cli_tls.py` runs original synthetic HTTPS subprocess regressions. Those
+tests do not substitute for an exact binary's official/native black-box receipt.
+
 ## Purpose and non-goals
 
 This package owns a bounded command-line invocation grammar that rejects secret material in process arguments and makes indirect secret input explicit. It does not implement network transport, interactive prompting, shell completion, configuration-file loading or command execution.
@@ -103,3 +114,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-cli-contracts.md).

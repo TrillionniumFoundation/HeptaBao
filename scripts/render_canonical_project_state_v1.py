@@ -242,9 +242,11 @@ def resolve(args: argparse.Namespace) -> dict[str, Any]:
     source_path, state_rel = repository_file(
         root, getattr(args, "state_input", None), DEFAULT_STATE_INPUT, "state input"
     )
-    expected_repository = (
-        CURRENT_REPOSITORY if state_rel == ACTIVE_STATE_INPUT else HISTORICAL_REPOSITORY
-    )
+    # V1.x state inputs remain historical schemas, but rendering always binds
+    # the checked-out source to the current repository identity.  Historical
+    # owner names are retained only in frozen evidence and must never be
+    # accepted as the provenance of a current render.
+    expected_repository = CURRENT_REPOSITORY
     repository = getattr(args, "repository", expected_repository)
     if repository != expected_repository:
         raise Failure("repository identity drift")

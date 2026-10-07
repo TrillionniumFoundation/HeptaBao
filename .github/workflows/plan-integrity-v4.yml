@@ -1,12 +1,8 @@
 name: plan-integrity-v4
 
 on:
-  push:
-    branches:
-      - "codex/plan-v1.2-execution-contracts-gap-closure-v1"
-      - "codex/plan-v1.2.2-unified-gap-closure-v1"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 
@@ -16,7 +12,6 @@ concurrency:
 
 jobs:
   plan-and-python:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -98,7 +93,6 @@ jobs:
           retention-days: 30
 
   root-rust:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -120,7 +114,6 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
   openraft-exact-graph-and-runtime:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
@@ -293,7 +286,7 @@ jobs:
 
   authority-sentinel:
     needs: [plan-and-python, root-rust, openraft-exact-graph-and-runtime]
-    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (always()) }}
+    if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

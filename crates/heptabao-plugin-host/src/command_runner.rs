@@ -233,6 +233,33 @@ impl Drop for ProcessGuard {
     }
 }
 
+/// An immutable checked executable image shared by owned persistent launches.
+/// This is executable admission, not containment of a plugin or its descendants.
+pub struct OwnedExecutableImage(SealedExecutable);
+
+impl std::fmt::Debug for OwnedExecutableImage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("OwnedExecutableImage([REDACTED])")
+    }
+}
+
+impl OwnedExecutableImage {
+    pub fn open(path: &Path, expected: [u8; 32]) -> Result<Self, SandboxFailure> {
+        SealedExecutable::open(path, expected).map(Self)
+    }
+    pub fn command(&self) -> Command {
+        Command::new(self.0.descriptor_path())
+    }
+    /// A parent-owned, immutable image path retained through the child lifetime.
+    pub fn descriptor_path(&self) -> &Path {
+        self.0.descriptor_path()
+    }
+    pub fn identity(&self) -> io::Result<(u64, u64)> {
+        let metadata = self.0._image.metadata()?;
+        Ok((metadata.dev(), metadata.ino()))
+    }
+}
+
 struct SealedExecutable {
     _image: File,
     descriptor_path: PathBuf,

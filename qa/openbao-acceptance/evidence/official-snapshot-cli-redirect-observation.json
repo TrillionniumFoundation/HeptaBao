@@ -1,0 +1,107 @@
+{
+  "qualification": "official_cli_transport_observation_only",
+  "server_restore_verified": false,
+  "archive_authenticity_verified": false,
+  "candidate_tested": false,
+  "rows": [
+    {
+      "case": "direct_save",
+      "exit_code": 0,
+      "elapsed_ms": 160.249,
+      "events": [
+        {
+          "endpoint": "leader",
+          "method": "GET",
+          "body_bytes": 0,
+          "body_sha256": null,
+          "complete": true
+        }
+      ],
+      "saved_bytes": 175,
+      "saved_matches": true,
+      "incomplete_snapshot_diagnostic": false,
+      "closed_file_diagnostic": false,
+      "stderr_nonempty": false
+    },
+    {
+      "case": "redirect_save",
+      "exit_code": 2,
+      "elapsed_ms": 160.226,
+      "events": [
+        {
+          "endpoint": "standby",
+          "method": "GET",
+          "body_bytes": 0,
+          "body_sha256": null,
+          "complete": true
+        },
+        {
+          "endpoint": "leader",
+          "method": "GET",
+          "body_bytes": 0,
+          "body_sha256": null,
+          "complete": true
+        }
+      ],
+      "saved_bytes": null,
+      "saved_matches": false,
+      "incomplete_snapshot_diagnostic": true,
+      "closed_file_diagnostic": false,
+      "stderr_nonempty": true
+    },
+    {
+      "case": "direct_restore",
+      "exit_code": 0,
+      "elapsed_ms": 156.558,
+      "events": [
+        {
+          "endpoint": "leader",
+          "method": "POST",
+          "body_bytes": 175,
+          "body_sha256": "57f3be899b3099bd6bee5b4508ab7b8a6d0822251ef49064deae7222bca629ff",
+          "complete": true
+        }
+      ],
+      "saved_bytes": null,
+      "saved_matches": false,
+      "incomplete_snapshot_diagnostic": false,
+      "closed_file_diagnostic": true,
+      "stderr_nonempty": true
+    },
+    {
+      "case": "redirect_restore",
+      "exit_code": 2,
+      "elapsed_ms": 2205.012,
+      "events": [
+        {
+          "endpoint": "standby",
+          "method": "POST",
+          "body_bytes": 0,
+          "body_sha256": null,
+          "complete": false,
+          "body_intentionally_unread": true
+        },
+        {
+          "endpoint": "leader",
+          "method": "POST",
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": false
+        }
+      ],
+      "saved_bytes": null,
+      "saved_matches": false,
+      "incomplete_snapshot_diagnostic": false,
+      "closed_file_diagnostic": true,
+      "stderr_nonempty": true
+    }
+  ],
+  "owned_threads_remaining": 0,
+  "official_binary_sha256": "1c3f62018046ec72be8720b576a55105b64b4cbd634d98483a93c642e69dc153",
+  "official_binary_unchanged": true,
+  "runner_sha256": "c16b3ef12b98acc6cf6e3a6627b93868842d97894f0ef0307829449f6bcb074b",
+  "runner_unchanged": true,
+  "fixture_archive_bytes": 175,
+  "fixture_archive_sha256": "57f3be899b3099bd6bee5b4508ab7b8a6d0822251ef49064deae7222bca629ff",
+  "official_streaming_cli_full_redirect_compatibility": false
+}

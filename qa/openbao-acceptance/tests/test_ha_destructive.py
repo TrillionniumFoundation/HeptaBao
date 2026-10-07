@@ -84,6 +84,22 @@ class DestructiveFixtureGuards(unittest.TestCase):
             expected = hashlib.sha256(path.read_bytes()).hexdigest()
             self.assertEqual(expected, HA.checked_binary(path, expected))
 
+    def test_exact_startup_rejection_requires_one_terminal_diagnostic(self):
+        expected = HA.MISBOUND_BOOTSTRAP_ERROR
+        self.assertTrue(HA.exact_startup_rejection(
+            1, ("listener ready\n" + expected + "\n").encode(), expected))
+        for returncode, payload in [
+            (None, expected.encode()),
+            (0, expected.encode()),
+            (-9, expected.encode()),
+            (1, b"different failure\n"),
+            (1, (expected + "\ntrailing output\n").encode()),
+            (1, b"\xff"),
+        ]:
+            with self.subTest(returncode=returncode, payload=payload):
+                self.assertFalse(HA.exact_startup_rejection(
+                    returncode, payload, expected))
+
     def test_failed_scenario_is_not_recorded_as_success(self):
         cluster = self.cluster()
         with self.assertRaises(HA.FixtureError):

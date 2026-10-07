@@ -6,6 +6,9 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+base64 = "=0.22.1"
+crc32fast = "=1.5.2"
+sha2 = "=0.10.9"
 futures = "=0.3.34"
 openraft = { version = "=0.10.0-alpha.34", default-features = false, features = ["serde", "tokio-rt", "type-alias"] }
 openraft-memstore = { version = "=0.10.0-alpha.34" }

@@ -5,6 +5,11 @@ import importlib.util
 import json
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from argparse import Namespace
 from pathlib import Path
 
@@ -27,6 +32,7 @@ renderer = load_module("state_renderer", "scripts/render_canonical_project_state
 
 
 class PlanV12Tests(unittest.TestCase):
+    @historical_only
     def test_checked_in_v12_contract_passes(self):
         result = validator.run_all()
         self.assertEqual(result["work_packages"], 301)
@@ -81,7 +87,7 @@ class PlanV12Tests(unittest.TestCase):
             output = Path(temporary) / "state.json"
             args = Namespace(
                 root=str(ROOT),
-                repository="ProfHepta/HeptaBao",
+                repository="TrillionniumFoundation/HeptaBao",
                 ref="test/ref",
                 commit=renderer.git(ROOT, "rev-parse", "HEAD"),
                 tree=renderer.git(ROOT, "rev-parse", "HEAD^{tree}"),

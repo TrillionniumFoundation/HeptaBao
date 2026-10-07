@@ -1,54 +1,45 @@
 #![forbid(unsafe_code)]
 #![deny(missing_debug_implementations)]
 
-//! Linux directory-handle anchoring and exclusive writer fencing.
+//! Unix directory-handle anchoring and exclusive writer fencing.
 //!
-//! The guard opens one existing absolute directory without following its final
-//! component, verifies the same device/inode before and after open, binds all
-//! later access through `/proc/self/fd/<fd>`, and holds an exclusive
-//! process-scoped file lock on the directory handle. Consumers must use
-//! `access_path()` for every filesystem operation and keep the guard alive for
-//! the complete store or journal lifetime.
+//! One owner holds the directory descriptor and its inter-process writer lock.
+//! Descriptor-relative operations retain that authority after rename/replacement
+//! of the original pathname. Linux legacy path consumers may request a verified
+//! `/proc/self/fd` path; that compatibility API fails closed on other platforms.
+//! No original-path fallback is used for subsequent filesystem operations.
 //!
-//! Writer acquisition is fail-closed but tolerates one bounded transient Linux
-//! `fork` to `exec` descriptor-inheritance window. `O_CLOEXEC` closes inherited
-//! descriptors at `exec`, not at `fork`; a just-released owner can therefore
-//! remain visible for a few scheduler ticks. Acquisition retries for at most
-//! 64 ms and still returns `WriterBusy` for a live or otherwise persistent
-//! competing writer.
-//!
-//! This is a Linux-only implementation profile. It intentionally returns
-//! `UnsupportedPlatform` elsewhere rather than silently falling back to
-//! path-relative operations.
+//! Acquisition retains the bounded 64 ms fork-to-exec inheritance retry window.
+//! A live competing writer is still refused; no second lock owner is introduced.
 
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
-#[cfg(target_os = "linux")]
-use std::fs::{self, OpenOptions, TryLockError};
+#[cfg(unix)]
+use std::fs::{self, TryLockError};
 use std::io;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use std::path::Component;
 use std::path::{Path, PathBuf};
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use std::thread;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use std::time::Duration;
 
 #[cfg(target_os = "linux")]
 use std::os::fd::AsRawFd;
-#[cfg(target_os = "linux")]
-use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+
+mod relative;
+pub use relative::FileAccess;
 
 pub const MAX_GUARDED_LEAF_BYTES: usize = 240;
 
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 const WRITER_LOCK_RETRY_ATTEMPTS: usize = 32;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 const WRITER_LOCK_RETRY_DELAY_MILLIS: u64 = 2;
-
-// Linux values from asm-generic/fcntl.h. They are used only on the Linux
-// implementation selected by this crate's explicit runtime profile.
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct DirectoryIdentity {
@@ -72,6 +63,7 @@ impl DirectoryIdentity {
 /// It is intentionally not `Clone`: one owner must control the lifetime.
 pub struct ExclusiveDirectory {
     original_path: PathBuf,
+    #[cfg(target_os = "linux")]
     access_path: PathBuf,
     handle: File,
     identity: DirectoryIdentity,
@@ -96,12 +88,12 @@ impl ExclusiveDirectory {
             return Err(DirectoryGuardError::RootMustBeAbsolute);
         }
 
-        #[cfg(target_os = "linux")]
+        #[cfg(unix)]
         {
-            Self::open_linux(original_path)
+            Self::open_unix(original_path)
         }
 
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(unix))]
         {
             let _ = original_path;
             Err(DirectoryGuardError::UnsupportedPlatform)
@@ -112,8 +104,23 @@ impl ExclusiveDirectory {
         &self.original_path
     }
 
-    pub fn access_path(&self) -> &Path {
-        &self.access_path
+    /// Linux-only compatibility for consumers not yet using relative operations.
+    /// Returning a checked result prevents accidental pathname fallback on Unix.
+    pub fn access_path(&self) -> Result<&Path, DirectoryGuardError> {
+        self.verify()?;
+        #[cfg(target_os = "linux")]
+        {
+            let metadata = fs::metadata(&self.access_path)
+                .map_err(|_| DirectoryGuardError::DescriptorPathUnavailable)?;
+            if !metadata.is_dir() || identity(&metadata) != self.identity {
+                return Err(DirectoryGuardError::DescriptorPathUnavailable);
+            }
+            Ok(&self.access_path)
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            Err(DirectoryGuardError::UnsupportedPlatform)
+        }
     }
 
     pub const fn identity(&self) -> DirectoryIdentity {
@@ -122,31 +129,19 @@ impl ExclusiveDirectory {
 
     pub fn leaf_path(&self, name: &str) -> Result<PathBuf, DirectoryGuardError> {
         validate_leaf(name)?;
-        Ok(self.access_path.join(name))
+        Ok(self.access_path()?.join(name))
     }
 
     pub fn verify(&self) -> Result<(), DirectoryGuardError> {
-        #[cfg(target_os = "linux")]
+        #[cfg(unix)]
         {
-            let handle_metadata = self.handle.metadata().map_err(DirectoryGuardError::Io)?;
-            let access_metadata = fs::metadata(&self.access_path).map_err(|error| {
-                if error.kind() == io::ErrorKind::NotFound {
-                    DirectoryGuardError::DescriptorPathUnavailable
-                } else {
-                    DirectoryGuardError::Io(error)
-                }
-            })?;
-            if !handle_metadata.is_dir()
-                || !access_metadata.is_dir()
-                || identity(&handle_metadata) != self.identity
-                || identity(&access_metadata) != self.identity
-            {
+            let metadata = self.handle.metadata().map_err(DirectoryGuardError::Io)?;
+            if !metadata.is_dir() || identity(&metadata) != self.identity {
                 return Err(DirectoryGuardError::RootIdentityChanged);
             }
             Ok(())
         }
-
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(unix))]
         {
             Err(DirectoryGuardError::UnsupportedPlatform)
         }
@@ -158,8 +153,8 @@ impl ExclusiveDirectory {
         self.verify()
     }
 
-    #[cfg(target_os = "linux")]
-    fn open_linux(original_path: PathBuf) -> Result<Self, DirectoryGuardError> {
+    #[cfg(unix)]
+    fn open_unix(original_path: PathBuf) -> Result<Self, DirectoryGuardError> {
         let before = fs::symlink_metadata(&original_path).map_err(DirectoryGuardError::Io)?;
         if before.file_type().is_symlink() || !before.is_dir() {
             return Err(DirectoryGuardError::UnsafeRoot);
@@ -178,17 +173,9 @@ impl ExclusiveDirectory {
             return Err(DirectoryGuardError::RootIdentityChanged);
         }
 
+        // This value is returned only by the explicitly Linux-gated legacy API.
+        #[cfg(target_os = "linux")]
         let access_path = PathBuf::from(format!("/proc/self/fd/{}", handle.as_raw_fd()));
-        let access_metadata = fs::metadata(&access_path).map_err(|error| {
-            if error.kind() == io::ErrorKind::NotFound {
-                DirectoryGuardError::DescriptorPathUnavailable
-            } else {
-                DirectoryGuardError::Io(error)
-            }
-        })?;
-        if !access_metadata.is_dir() || identity(&access_metadata) != before_identity {
-            return Err(DirectoryGuardError::DescriptorPathUnavailable);
-        }
 
         let mut retries_remaining = WRITER_LOCK_RETRY_ATTEMPTS;
         loop {
@@ -205,6 +192,7 @@ impl ExclusiveDirectory {
 
         let guard = Self {
             original_path,
+            #[cfg(target_os = "linux")]
             access_path,
             handle,
             identity: before_identity,
@@ -280,65 +268,96 @@ fn validate_leaf(name: &str) -> Result<(), DirectoryGuardError> {
     Ok(())
 }
 
-#[cfg(target_os = "linux")]
-fn open_absolute_directory_no_symlinks(path: &Path) -> Result<File, DirectoryGuardError> {
+/// Normalize only the fixed root-owned macOS compatibility aliases.
+///
+/// Every other path is returned unchanged, and every later component remains
+/// subject to the caller's no-symlink descriptor walk.
+#[cfg(target_os = "macos")]
+pub fn normalize_root_owned_system_alias(path: &Path) -> Result<PathBuf, DirectoryGuardError> {
     let mut components = path.components();
     if components.next() != Some(Component::RootDir) {
         return Err(DirectoryGuardError::RootMustBeAbsolute);
     }
+    let Some(Component::Normal(first)) = components.next() else {
+        return Ok(path.to_path_buf());
+    };
+    let target = match first.to_str() {
+        Some("var") => Path::new("private/var"),
+        Some("tmp") => Path::new("private/tmp"),
+        Some("etc") => Path::new("private/etc"),
+        _ => return Ok(path.to_path_buf()),
+    };
 
-    let mut options = OpenOptions::new();
-    options
-        .read(true)
-        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
-    let mut current = options.open("/").map_err(DirectoryGuardError::Io)?;
+    // macOS exposes these three fixed compatibility aliases at the filesystem
+    // root. They are not user-selected path redirections: require the root and
+    // alias to remain root-owned, the root to be non-writable by group/other,
+    // and the link text to match the platform contract exactly. The subsequent
+    // descriptor walk starts at /private and still refuses every later symlink.
+    let root_metadata = fs::symlink_metadata("/").map_err(DirectoryGuardError::Io)?;
+    if !root_metadata.is_dir() || root_metadata.uid() != 0 || root_metadata.mode() & 0o022 != 0 {
+        return Err(DirectoryGuardError::UnsafeRoot);
+    }
+    let alias = Path::new("/").join(first);
+    let alias_metadata = fs::symlink_metadata(&alias).map_err(DirectoryGuardError::Io)?;
+    if alias_metadata.uid() != 0 || !alias_metadata.file_type().is_symlink() {
+        return Err(DirectoryGuardError::UnsafeRoot);
+    }
+    let observed = fs::read_link(&alias).map_err(DirectoryGuardError::Io)?;
+    let absolute_target = Path::new("/").join(target);
+    if observed != target && observed != absolute_target {
+        return Err(DirectoryGuardError::UnsafeRoot);
+    }
 
+    let mut normalized = absolute_target;
     for component in components {
         let Component::Normal(name) = component else {
             return Err(DirectoryGuardError::UnsafeRoot);
         };
-        let current_identity = identity(&current.metadata().map_err(DirectoryGuardError::Io)?);
-        let current_access = PathBuf::from(format!("/proc/self/fd/{}", current.as_raw_fd()));
-        let access_metadata = fs::metadata(&current_access).map_err(|error| {
-            if error.kind() == io::ErrorKind::NotFound {
-                DirectoryGuardError::DescriptorPathUnavailable
-            } else {
-                DirectoryGuardError::Io(error)
-            }
-        })?;
-        if !access_metadata.is_dir() || identity(&access_metadata) != current_identity {
-            return Err(DirectoryGuardError::DescriptorPathUnavailable);
-        }
-
-        let candidate = current_access.join(name);
-        let before = fs::symlink_metadata(&candidate).map_err(DirectoryGuardError::Io)?;
-        if before.file_type().is_symlink() || !before.is_dir() {
-            return Err(DirectoryGuardError::UnsafeRoot);
-        }
-        let before_identity = identity(&before);
-        let next = options.open(&candidate).map_err(|error| {
-            if error.raw_os_error() == Some(40) {
-                DirectoryGuardError::UnsafeRoot
-            } else {
-                DirectoryGuardError::Io(error)
-            }
-        })?;
-        let opened = next.metadata().map_err(DirectoryGuardError::Io)?;
-        let after = fs::symlink_metadata(&candidate).map_err(DirectoryGuardError::Io)?;
-        if !opened.is_dir()
-            || after.file_type().is_symlink()
-            || !after.is_dir()
-            || identity(&opened) != before_identity
-            || identity(&after) != before_identity
-        {
-            return Err(DirectoryGuardError::RootIdentityChanged);
-        }
-        current = next;
+        normalized.push(name);
     }
-    Ok(current)
+    Ok(normalized)
 }
 
-#[cfg(target_os = "linux")]
+/// Return an absolute path unchanged on platforms without macOS root aliases.
+#[cfg(not(target_os = "macos"))]
+pub fn normalize_root_owned_system_alias(path: &Path) -> Result<PathBuf, DirectoryGuardError> {
+    Ok(path.to_path_buf())
+}
+
+/// Open a read-only Unix directory handle with no symlink traversal.
+///
+/// This primitive does not acquire a writer lock. It supports read-only parent
+/// custody for a separately fenced snapshot spool; it must not replace the
+/// `ExclusiveDirectory` owner for durable-state writes. On macOS, only the
+/// fixed root-owned `/var`, `/tmp`, and `/etc` compatibility aliases are
+/// normalized before the descriptor walk.
+#[cfg(unix)]
+pub fn open_absolute_directory_no_symlinks(path: &Path) -> Result<File, DirectoryGuardError> {
+    use rustix::fs::{Mode, OFlags, open, openat};
+    let walk_path = normalize_root_owned_system_alias(path)?;
+    let mut components = walk_path.components();
+    if components.next() != Some(Component::RootDir) {
+        return Err(DirectoryGuardError::RootMustBeAbsolute);
+    }
+    let flags = OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+    let mut current =
+        open("/", flags, Mode::empty()).map_err(|e| DirectoryGuardError::Io(e.into()))?;
+    for component in components {
+        let Component::Normal(name) = component else {
+            return Err(DirectoryGuardError::UnsafeRoot);
+        };
+        current = openat(&current, name, flags, Mode::empty()).map_err(|e| {
+            if e == rustix::io::Errno::LOOP || e == rustix::io::Errno::NOTDIR {
+                DirectoryGuardError::UnsafeRoot
+            } else {
+                DirectoryGuardError::Io(e.into())
+            }
+        })?;
+    }
+    Ok(File::from(current))
+}
+
+#[cfg(unix)]
 fn identity(metadata: &fs::Metadata) -> DirectoryIdentity {
     DirectoryIdentity {
         device: metadata.dev(),
@@ -571,3 +590,6 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(all(test, unix))]
+mod relative_tests;

@@ -8,7 +8,7 @@
   "work_status": "SAFE_PUBLIC_AND_SYNTHETIC_FOUNDATION_ACTIVE",
   "delivered": {
     "frozen_oracle_baseline": "HB-ORACLE-OPENBAO-V2_6_2",
-    "surface_catalog_items": 60,
+    "surface_catalog_items": 59,
     "endpoint_seed_items": 51,
     "config_seed_items": 52,
     "cli_seed_items": 30,
@@ -40,6 +40,15 @@
       "from": 50,
       "to": 51,
       "canonical_rewrite_pending": true
+    },
+    {
+      "correction_id": "HB-ORACLE-CORRECTION-TEST-ONLY-PKIEXT-001",
+      "field": "delivered.surface_catalog_items",
+      "from": 60,
+      "to": 59,
+      "canonical_rewrite_pending": false,
+      "basis": "bcc6a8f499b72486a0ef178a8a1736283585172a excludes test-only pkiext; behavioral scope remains under HB-SURFACE-SECRET-PKI",
+      "evidence_effect": "Metadata reconciliation only; no historical execution, capture, review or qualification is newly asserted."
     }
   ],
   "capture_evidence": {

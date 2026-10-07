@@ -1,27 +1,7 @@
 name: plan-v1.4-durable-single-node
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - codex/plan-v1.3-gap-closure-v2
-    paths:
-      - Cargo.toml
-      - Cargo.lock
-      - crates/heptabao-storage-api/**
-      - crates/heptabao-barrier-api/**
-      - crates/heptabao-single-node-store/**
-      - crates/heptabao-durable-core/**
-      - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V1_4.md
-      - docs/storage/HEPTABAO_SINGLE_NODE_DURABLE_STORE_V1.md
-      - planning/HEPTABAO_BLOCKER_REGISTER_V1_4.yaml
-      - planning/HEPTABAO_V1_4_DURABLE_FOUNDATION_STATUS.yaml
-      - planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4.yaml
-      - schemas/heptabao_normative_document_manifest_v1_4.schema.json
-      - scripts/validate_plan_v1_4.py
-      - scripts/validate_v1_4_inherited_surface.py
-      - tests/plan/test_plan_v1_4.py
-      - .github/workflows/plan-v1.4-durable-single-node.yml
+  # Historical V1.4 gate; the current replacement qualification owns PRs.
   workflow_dispatch:
 
 permissions:

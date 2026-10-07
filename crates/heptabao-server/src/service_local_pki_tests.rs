@@ -1,0 +1,1567 @@
+//! Actual local issuer/subject signatures, durable restart and reader-floor
+//! gates. Assertions contain fixed messages and never format private responses.
+use super::*;
+use crate::service::tests::bootstrap_unmounted;
+use ml_dsa::{
+    MlDsa44, MlDsa65, MlDsa87, MlDsaParams, Signature, VerifyingKey,
+    pkcs8::{
+        DecodePrivateKey, DecodePublicKey, EncodePublicKey, der::AnyRef,
+        spki::AssociatedAlgorithmIdentifier,
+    },
+};
+use openssl::{
+    hash::MessageDigest,
+    nid::Nid,
+    pkey::{Id, PKey},
+    rsa::Padding,
+    sign::Verifier,
+};
+
+#[test]
+fn pending_local_csr_has_encrypted_namespace_reopen_and_sticky_schema79() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "CSR namespace"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "CSR mount"
+    );
+    let previous = service.state.clone().ok_or("previous state")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let generated = service.handle_at(
+        "POST",
+        "ca/intermediate/generate/internal",
+        "team",
+        &admin,
+        json!({"common_name":"intermediate.example.test","key_type":"ec","key_bits":256}),
+        100,
+    );
+    assert!(generated.status == 200, "actual pending owned CSR");
+    assert!(
+        generated.body["data"].get("private_key").is_none(),
+        "internal CSR does not export key"
+    );
+    let csr = generated.body["data"]["csr"]
+        .as_str()
+        .ok_or("CSR")?
+        .to_owned();
+    let request = openssl::x509::X509Req::from_pem(csr.as_bytes()).map_err(|_| "CSR PEM")?;
+    let public = request.public_key().map_err(|_| "CSR SPKI")?;
+    assert!(
+        request.verify(&public).map_err(|_| "CSR signature")?,
+        "actual owned CSR signature"
+    );
+    let active = service.state.clone().ok_or("pending state")?;
+    assert!(
+        active.schema == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && active.engines.has_local_pki_intermediate_state()
+            && active.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA,
+        "namespace pending key requires schema79 without a signed issuer"
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "pending identity")?;
+    for schema in [
+        CURRENT_STATE_SCHEMA,
+        LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+        LOCAL_PKI_CRL_STATE_SCHEMA,
+    ] {
+        let mut older = active.clone();
+        older.schema = schema;
+        assert!(
+            older.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+                && older.validate_format().is_err()
+                && service.commit_state(&mut older).is_err()
+                && Service::validate_snapshot_protected_floor(&active, &older).is_err(),
+            "older labels cannot omit a pending owned key"
+        );
+    }
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unchanged pending identity")?
+            == identity,
+        "reader refusals preserve actual durable identity"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "older authenticated snapshot denied"
+    );
+    let keys = service.handle_at("LIST", "ca/keys", "team", &admin, json!({}), 100);
+    assert!(
+        keys.status == 200
+            && keys.body["data"]["keys"]
+                .as_array()
+                .is_some_and(|v| v.len() == 1),
+        "pending owned key published without an issuer"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/issuers", "team", &admin, json!({}), 100)
+            .status
+            == 404,
+        "CSR is not relabeled as a signed issuer"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual encrypted pending-key reopen"
+    );
+    assert!(
+        service.state.as_ref().ok_or("reopened")?.schema == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA,
+        "reopen preserves schema79"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/keys", "team", &admin, json!({}), 100)
+            .body
+            == keys.body,
+        "reopen retains exact owned pending-key identity"
+    );
+    assert!(
+        service
+            .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)
+            .status
+            == 204,
+        "pending-key mount retirement"
+    );
+    let retired = service.state.as_ref().ok_or("retired")?;
+    assert!(
+        !retired.engines.has_local_pki_intermediate_state()
+            && retired.schema == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA,
+        "retirement preserves intermediate reader floor"
+    );
+    let mut older = retired.clone();
+    older.schema = LOCAL_PKI_CRL_STATE_SCHEMA;
+    assert!(
+        older.validate_format().is_ok()
+            && older.validate_publication_schema(Some(retired)).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &older).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &previous).is_err(),
+        "retired material cannot authorize schema78 publication or restore"
+    );
+    Ok(())
+}
+
+fn key_choices() -> [(&'static str, u32); 11] {
+    [
+        ("rsa", 2048),
+        ("rsa", 3072),
+        ("rsa", 4096),
+        ("ec", 224),
+        ("ec", 256),
+        ("ec", 384),
+        ("ec", 521),
+        ("ed25519", 0),
+        ("mldsa", 44),
+        ("mldsa", 65),
+        ("mldsa", 87),
+    ]
+}
+
+fn ml_verify<P>(spki: &[u8], tbs: &[u8], signature: &[u8]) -> TestResult
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    let public = VerifyingKey::<P>::from_public_key_der(spki).map_err(|_| "MLDSA public decode")?;
+    let signature = Signature::<P>::try_from(signature).map_err(|_| "MLDSA signature decode")?;
+    assert!(
+        public.verify_with_context(tbs, b"", &signature),
+        "actual maintained MLDSA issuer signature"
+    );
+    Ok(())
+}
+
+fn verify_signature(spki: &[u8], tbs: &[u8], signature: &[u8]) -> TestResult {
+    let (rest, public) = SubjectPublicKeyInfo::from_der(spki).map_err(|_| "issuer SPKI")?;
+    assert!(rest.is_empty(), "canonical issuer SPKI");
+    match public.algorithm.algorithm.to_id_string().as_str() {
+        "1.3.101.112" => ring::signature::UnparsedPublicKey::new(
+            &ring::signature::ED25519,
+            public.subject_public_key.data.as_ref(),
+        )
+        .verify(tbs, signature)
+        .map_err(|_| "actual Ed issuer signature".into()),
+        "2.16.840.1.101.3.4.3.17" => ml_verify::<MlDsa44>(spki, tbs, signature),
+        "2.16.840.1.101.3.4.3.18" => ml_verify::<MlDsa65>(spki, tbs, signature),
+        "2.16.840.1.101.3.4.3.19" => ml_verify::<MlDsa87>(spki, tbs, signature),
+        _ => {
+            let public = PKey::public_key_from_der(spki).map_err(|_| "classic issuer SPKI")?;
+            let digest = if public.id() == Id::EC {
+                match public
+                    .ec_key()
+                    .map_err(|_| "issuer curve")?
+                    .group()
+                    .curve_name()
+                {
+                    Some(Nid::SECP384R1) => MessageDigest::sha384(),
+                    Some(Nid::SECP521R1) => MessageDigest::sha512(),
+                    _ => MessageDigest::sha256(),
+                }
+            } else {
+                MessageDigest::sha256()
+            };
+            let mut verifier = Verifier::new(digest, &public).map_err(|_| "classic verifier")?;
+            if public.id() == Id::RSA {
+                verifier
+                    .set_rsa_padding(Padding::PKCS1)
+                    .map_err(|_| "RSA padding")?;
+            }
+            verifier.update(tbs).map_err(|_| "classic verifier input")?;
+            assert!(
+                verifier
+                    .verify(signature)
+                    .map_err(|_| "classic verifier finish")?,
+                "actual maintained classic issuer signature"
+            );
+            Ok(())
+        }
+    }
+}
+
+fn verify_key_identifiers(cert: &X509Certificate<'_>, issuer: &X509Certificate<'_>) -> TestResult {
+    use x509_parser::extensions::ParsedExtension;
+    let subject_id = cert
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let ParsedExtension::SubjectKeyIdentifier(key) = extension.parsed_extension() {
+                Some((extension.critical, key.0.to_vec()))
+            } else {
+                None
+            }
+        })
+        .ok_or("actual certificate subject key identifier")?;
+    let digest = ring::digest::digest(
+        &ring::digest::SHA1_FOR_LEGACY_USE_ONLY,
+        cert.public_key().subject_public_key.data.as_ref(),
+    );
+    assert!(
+        !subject_id.0 && subject_id.1.as_slice() == digest.as_ref(),
+        "RFC key identifier binds the actual subject public bits"
+    );
+    let issuer_id = issuer
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let ParsedExtension::SubjectKeyIdentifier(key) = extension.parsed_extension() {
+                Some(key.0.to_vec())
+            } else {
+                None
+            }
+        })
+        .ok_or("actual issuer subject key identifier")?;
+    let authority = cert
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let ParsedExtension::AuthorityKeyIdentifier(key) = extension.parsed_extension() {
+                key.key_identifier
+                    .as_ref()
+                    .map(|id| (extension.critical, id.0.to_vec()))
+            } else {
+                None
+            }
+        })
+        .ok_or("actual certificate authority key identifier")?;
+    assert!(
+        !authority.0 && authority.1 == issuer_id,
+        "authority identifier is the actual selected issuer key identifier"
+    );
+    Ok(())
+}
+
+fn private_public<P>(private: &[u8]) -> TestResult<Vec<u8>>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    use ml_dsa::Keypair as _;
+    let key = ml_dsa::SigningKey::<P>::from_pkcs8_der(private)
+        .map_err(|_| "standard MLDSA leaf PKCS8")?;
+    Ok(key
+        .verifying_key()
+        .to_public_key_der()
+        .map_err(|_| "leaf public encode")?
+        .as_bytes()
+        .to_vec())
+}
+
+fn leaf_binding(response: &Response, external: bool) -> TestResult<Vec<u8>> {
+    assert!(response.status == 200, "leaf response success");
+    let certificate = decode_pem(
+        response.body["data"]["certificate"]
+            .as_str()
+            .ok_or("leaf certificate")?,
+    )?;
+    let (tail, parsed) = X509Certificate::from_der(&certificate).map_err(|_| "leaf DER")?;
+    assert!(tail.is_empty(), "canonical leaf DER");
+    let text = response.body["data"]["private_key"]
+        .as_str()
+        .ok_or("leaf private response")?;
+    let label = if external {
+        "PRIVATE KEY"
+    } else {
+        match response.body["data"]["private_key_type"].as_str() {
+            Some("rsa") => "RSA PRIVATE KEY",
+            Some("ec") => "EC PRIVATE KEY",
+            _ => "PRIVATE KEY",
+        }
+    };
+    assert!(
+        text.starts_with(&format!("-----BEGIN {label}-----\n")),
+        "private encoding matches the actual subject and issuer path"
+    );
+    let encoded = Zeroizing::new(
+        text.lines()
+            .filter(|line| !line.starts_with("-----"))
+            .collect::<String>(),
+    );
+    let private = Zeroizing::new(
+        BASE64
+            .decode(encoded.as_bytes())
+            .map_err(|_| "leaf private decode")?,
+    );
+    let public = match parsed
+        .public_key()
+        .algorithm
+        .algorithm
+        .to_id_string()
+        .as_str()
+    {
+        "2.16.840.1.101.3.4.3.17" => private_public::<MlDsa44>(&private)?,
+        "2.16.840.1.101.3.4.3.18" => private_public::<MlDsa65>(&private)?,
+        "2.16.840.1.101.3.4.3.19" => private_public::<MlDsa87>(&private)?,
+        _ => PKey::private_key_from_der(&private)
+            .map_err(|_| "standard classic private encoding")?
+            .public_key_to_der()
+            .map_err(|_| "classic leaf public")?,
+    };
+    assert!(
+        parsed.public_key().raw == public,
+        "actual private leaf key matches certificate SPKI"
+    );
+    Ok(certificate)
+}
+
+fn current_crl(service: &mut Service, token: &str) -> TestResult<Vec<u8>> {
+    let response = call(service, "GET", "local-ca/cert/crl", token, json!({}));
+    assert!(response.status == 200, "local CRL read");
+    decode_pem(
+        response.body["data"]["certificate"]
+            .as_str()
+            .ok_or("local CRL response")?,
+    )
+}
+
+fn verify_local_crl(root_spki: &[u8], bytes: &[u8], revoked: usize) -> TestResult {
+    let (tail, crl) = CertificateRevocationList::from_der(bytes).map_err(|_| "CRL parse")?;
+    assert!(
+        tail.is_empty() && crl.iter_revoked_certificates().count() == revoked,
+        "actual revoked projection"
+    );
+    verify_signature(
+        root_spki,
+        crl.tbs_cert_list.as_ref(),
+        crl.signature_value.data.as_ref(),
+    )
+}
+
+#[test]
+fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_out_of_audit()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/exported-ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status
+            == 204,
+        "exported root mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary state")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let response = call(
+        &mut service,
+        "POST",
+        "exported-ca/root/generate/exported",
+        &admin,
+        json!({"common_name":"exported-ca.example.test", "key_type":"ed25519", "format":"pem_bundle", "private_key_format":"pkcs8"}),
+    );
+    assert!(response.status == 200, "actual exported Ed root success");
+    let private = Zeroizing::new(
+        response.body["data"]["private_key"]
+            .as_str()
+            .ok_or("exported private field")?
+            .to_owned(),
+    );
+    let active = service
+        .state
+        .clone()
+        .ok_or("committed exported root state")?;
+    assert!(
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && active.engines.has_local_pki_identifier_state()
+            && !active.engines.has_local_typed_pki_state(),
+        "Ed identifiers activate independent reader floor"
+    );
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    assert!(
+        !audit
+            .windows(private.len())
+            .any(|part| part == private.as_bytes())
+            && !audit
+                .windows(b"PRIVATE KEY".len())
+                .any(|part| part == b"PRIVATE KEY"),
+        "private exported key and bundle are absent from real audit records"
+    );
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "committed identity")?;
+    let mut lower = active.clone();
+    lower.schema = INDEXED_RECOVERY_WIRE_STATE_SCHEMA;
+    assert!(
+        lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
+            && lower.validate_format().is_err()
+            && service.commit_state(&mut lower).is_err(),
+        "actual older writer label cannot publish exported identifiers"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "actual old snapshot cannot remove identifier reader floor"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "identity after refused downgrade")?
+            == before,
+        "failed downgrade and restore leave committed state unchanged"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual exported key encrypted restart"
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("reopened state")?
+            .engines
+            .has_local_pki_identifier_state(),
+        "identifiers survived encrypted reopen"
+    );
+    assert!(
+        call(
+            &mut reopened,
+            "DELETE",
+            "sys/mounts/exported-ca",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204,
+        "exported root retirement"
+    );
+    let retired = reopened.state.as_ref().ok_or("retired state")?;
+    assert!(
+        !retired.engines.has_local_pki_identifier_state()
+            && retired.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "identifier floor survives root retirement"
+    );
+    let mut retired_lower = retired.clone();
+    retired_lower.schema = INDEXED_RECOVERY_WIRE_STATE_SCHEMA;
+    assert!(
+        retired_lower
+            .validate_publication_schema(Some(retired))
+            .is_err()
+            && Service::validate_snapshot_protected_floor(retired, &ordinary).is_err(),
+        "retired identifiers cannot authorize earlier writer or restore"
+    );
+    Ok(())
+}
+
+#[test]
+fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() -> TestResult {
+    for (key_type, key_bits) in key_choices() {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/local-ca",
+                &admin,
+                json!({"type":"pki"})
+            )
+            .status
+                == 204,
+            "local mount"
+        );
+        let generated = call(
+            &mut service,
+            "POST",
+            "local-ca/root/generate/internal",
+            &admin,
+            json!({"common_name":"local-ca.example.test","ttl":"1h","key_type":key_type,"key_bits":key_bits}),
+        );
+        assert!(
+            generated.status == 200 && generated.body["data"].get("private_key").is_none(),
+            "root internal does not export key"
+        );
+        let root_bytes = decode_pem(
+            generated.body["data"]["certificate"]
+                .as_str()
+                .ok_or("root certificate")?,
+        )?;
+        let (tail, root_certificate) =
+            X509Certificate::from_der(&root_bytes).map_err(|_| "root parse")?;
+        assert!(tail.is_empty(), "canonical root");
+        verify_key_identifiers(&root_certificate, &root_certificate)?;
+        let root_spki = root_certificate.public_key().raw.to_vec();
+        verify_signature(
+            &root_spki,
+            root_certificate.tbs_certificate.as_ref(),
+            root_certificate.signature_value.data.as_ref(),
+        )?;
+        assert!(
+            service.state.as_ref().ok_or("pre-role state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
+            "actual local CRL ownership precedes new role permissions"
+        );
+        assert!(call(&mut service,"POST","local-ca/roles/leaf",&admin,json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":key_type,"key_bits":key_bits})).status==200,"typed leaf role");
+        let issued = call(
+            &mut service,
+            "POST",
+            "local-ca/issue/leaf",
+            &admin,
+            json!({"common_name":"leaf.example.test","ttl":"10m"}),
+        );
+        assert!(
+            issued.body["data"]["private_key_type"] == key_type,
+            "private response type matches actual subject"
+        );
+        let leaf = leaf_binding(&issued, false)?;
+        let (_, leaf_certificate) = X509Certificate::from_der(&leaf).map_err(|_| "leaf parse")?;
+        verify_key_identifiers(&leaf_certificate, &root_certificate)?;
+        verify_signature(
+            &root_spki,
+            leaf_certificate.tbs_certificate.as_ref(),
+            leaf_certificate.signature_value.data.as_ref(),
+        )?;
+        let serial = issued.body["data"]["serial_number"]
+            .as_str()
+            .ok_or("leaf serial")?
+            .to_owned();
+        verify_local_crl(&root_spki, &current_crl(&mut service, &admin)?, 0)?;
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "local-ca/revoke",
+                &admin,
+                json!({"serial_number":serial})
+            )
+            .status
+                == 200,
+            "durable certificate revoke"
+        );
+        let crl = current_crl(&mut service, &admin)?;
+        verify_local_crl(&root_spki, &crl, 1)?;
+        assert!(
+            service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_NAMES_STATE_SCHEMA
+                && service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .engines
+                    .has_pki_role_bare_domain_state(),
+            "new role permission retains its higher floor alongside local CRL ownership"
+        );
+        drop(service);
+        let mut reopened = root.service()?;
+        assert!(
+            call(
+                &mut reopened,
+                "PUT",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status
+                == 200,
+            "actual encrypted restart unseal"
+        );
+        assert!(
+            reopened.state.as_ref().ok_or("reopened state")?.schema == PKI_ROLE_NAMES_STATE_SCHEMA,
+            "encrypted reopen retains the actual new role permission floor"
+        );
+        verify_local_crl(&root_spki, &current_crl(&mut reopened, &admin)?, 1)?;
+        let next = call(
+            &mut reopened,
+            "POST",
+            "local-ca/issue/leaf",
+            &admin,
+            json!({"common_name":"next.example.test","ttl":"10m"}),
+        );
+        let next = leaf_binding(&next, false)?;
+        let (_, next) = X509Certificate::from_der(&next).map_err(|_| "reopened leaf parse")?;
+        verify_signature(
+            &root_spki,
+            next.tbs_certificate.as_ref(),
+            next.signature_value.data.as_ref(),
+        )?;
+    }
+    Ok(())
+}
+
+#[test]
+fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "extended root namespace"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "extended root mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary state")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let response = service.handle_at("POST","ca/root/generate/exported","team",&admin,
+        json!({"common_name":"ca.example.test","key_type":"ed25519","organization":["Test Organization"],
+            "issuer_name":"team-issuer","key_name":"team-key","not_before_duration":"90s"}),100);
+    assert!(
+        response.status == 200,
+        "actual extended root encrypted publication"
+    );
+    let private = Zeroizing::new(
+        response.body["data"]["private_key"]
+            .as_str()
+            .ok_or("exported private field")?
+            .to_owned(),
+    );
+    let active = service.state.clone().ok_or("active extended root")?;
+    assert!(
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && active.engines.has_local_pki_root_fields_state()
+            && !active.engines.has_local_typed_pki_state(),
+        "independent all-namespace extended Ed reader requirement"
+    );
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "committed identity")?;
+    let mut lower = active.clone();
+    lower.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(
+        lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
+            && lower.validate_format().is_err()
+            && service.commit_state(&mut lower).is_err(),
+        "old identifier-only reader cannot publish extended root fields"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "old snapshot cannot remove root fields"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unchanged identity")?
+            == before,
+        "failed downgrade leaves durable state unchanged"
+    );
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    assert!(
+        !audit
+            .windows(private.len())
+            .any(|v| v == private.as_bytes())
+            && !audit
+                .windows(b"PRIVATE KEY".len())
+                .any(|v| v == b"PRIVATE KEY"),
+        "actual extended private delivery absent from audit"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual extended root encrypted reopen"
+    );
+    let issuer = reopened.handle_at(
+        "GET",
+        "ca/issuer/team-issuer/json",
+        "team",
+        &admin,
+        json!({}),
+        100,
+    );
+    assert!(
+        issuer.status == 200 && issuer.body["data"]["issuer_name"] == "team-issuer",
+        "persisted local alias resolves after restart"
+    );
+    assert!(
+        reopened
+            .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)
+            .status
+            == 204,
+        "extended root retirement"
+    );
+    let retired = reopened.state.as_ref().ok_or("retired state")?;
+    assert!(
+        !retired.engines.has_local_pki_root_fields_state()
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "extended reader requirement remains after retirement"
+    );
+    let mut lower = retired.clone();
+    lower.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(
+        lower.validate_publication_schema(Some(retired)).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &ordinary).is_err(),
+        "retirement does not permit writer or snapshot downgrade"
+    );
+    Ok(())
+}
+
+#[test]
+fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restore_gates()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "namespace creation"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/local-ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "isolated PKI mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary state")?;
+    assert!(
+        ordinary.schema == CURRENT_STATE_SCHEMA,
+        "ordinary writer remains65"
+    );
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let mut prepared = service
+        .prepare_snapshot_restore(&backup)
+        .map_err(|_| "ordinary prepared restore")?;
+    assert!(service.handle_at("POST","local-ca/root/generate/internal","team",&admin,json!({"common_name":"local-ca.example.test","ttl":"1h","key_type":"ec","key_bits":224}),100).status==200,"typed root in nonroot namespace");
+    let active = service.state.clone().ok_or("active state")?;
+    assert!(
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && active.engines.has_local_typed_pki_state()
+            && active.engines.has_local_pki_identifier_state(),
+        "all-namespace typed material and identifier floor"
+    );
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "current identity")?;
+    let mut downgraded = active.clone();
+    downgraded.schema = 71;
+    assert!(
+        downgraded.validate_format().is_err(),
+        "active typed material admission under71 denied"
+    );
+    assert!(
+        service.commit_state(&mut downgraded).is_err(),
+        "active publication downgrade denied"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "actual prepared restore78-to65 denied"
+    );
+    prepared.fixture_rebind_base_for_protected_floor(
+        service
+            .current_state_identity()
+            .map_err(|_| "final test base")?,
+    );
+    let principal = service
+        .state
+        .as_mut()
+        .ok_or("actor state")?
+        .auth
+        .authenticate_from(&admin, 100, None)
+        .map_err(|_| "root actor")?;
+    let body = json!({});
+    let request = RequestView {
+        method: "POST",
+        path: "sys/storage/raft/snapshot-force",
+        namespace: "",
+        token: &admin,
+        body: &body,
+        now: 100,
+        admission_started: std::time::Instant::now(),
+        token_clock: None,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    assert!(
+        service
+            .commit_snapshot_restore(prepared, &principal, &request)
+            .status
+            == 400,
+        "independent final restore floor denies prior snapshot"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "after rejection identity")?
+            == before,
+        "rejected floor operations do not publish"
+    );
+    assert!(
+        service
+            .handle_at(
+                "DELETE",
+                "sys/mounts/local-ca",
+                "team",
+                &admin,
+                json!({}),
+                100
+            )
+            .status
+            == 204,
+        "typed mount retirement"
+    );
+    let retired = service.state.clone().ok_or("retired state")?;
+    assert!(
+        !retired.engines.has_local_typed_pki_state()
+            && retired.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "retired CRL reader floor remains78"
+    );
+    let mut lower = retired.clone();
+    lower.schema = 71;
+    assert!(
+        lower.validate_publication_schema(Some(&retired)).is_err(),
+        "retired publication downgrade denied"
+    );
+    assert!(
+        Service::validate_snapshot_protected_floor(&retired, &ordinary).is_err(),
+        "retired restore downgrade denied"
+    );
+    let mut future = retired.clone();
+    future.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
+    assert!(
+        future.writer_schema() == MAX_SUPPORTED_STATE_SCHEMA + 1
+            && future.validate_format().is_err(),
+        "unknown future schema is not normalized"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "retired encrypted restart"
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("retired reopened state")?
+            .schema
+            == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "sticky identifier floor survives restart"
+    );
+    Ok(())
+}
+
+#[test]
+fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/generate/kms",
+            &admin,
+            body()
+        )
+        .status
+            == 200,
+        "remote issuer"
+    );
+    let descriptor = call(
+        &mut *remote.service.lock().map_err(|_| "remote lock")?,
+        "GET",
+        "transit/keys/remote",
+        &remote.admin,
+        json!({}),
+    );
+    let issuer = BASE64.decode(
+        descriptor.body["data"]["keys"]["2"]["public_key"]
+            .as_str()
+            .ok_or("remote public key")?,
+    )?;
+    for (ordinal, kind, bits) in [
+        (0, "rsa", 2048),
+        (1, "ec", 224),
+        (2, "mldsa", 44),
+        (3, "mldsa", 65),
+        (4, "mldsa", 87),
+    ] {
+        let mut request = json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true});
+        if ordinal != 0 {
+            request["key_type"] = json!(kind);
+            request["key_bits"] = json!(bits);
+        }
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/roles/leaf",
+                &admin,
+                request
+            )
+            .status
+                == 200,
+            "external typed subject role"
+        );
+        let response = call(
+            &mut service,
+            "POST",
+            "external-ca/issue/leaf",
+            &admin,
+            json!({"common_name":"subject.example.test","ttl":"10m"}),
+        );
+        assert!(
+            response.body["data"]["private_key_type"] == kind,
+            "external leaf has selected subject type"
+        );
+        let bytes = leaf_binding(&response, true)?;
+        let (_, leaf) = X509Certificate::from_der(&bytes).map_err(|_| "external leaf DER")?;
+        ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, &issuer)
+            .verify(
+                leaf.tbs_certificate.as_ref(),
+                leaf.signature_value.data.as_ref(),
+            )
+            .map_err(|_| "real remote signature over independently selected subject")?;
+    }
+    assert!(
+        service.state.as_ref().ok_or("external typed state")?.schema == PKI_ROLE_NAMES_STATE_SCHEMA
+            && service
+                .state
+                .as_ref()
+                .ok_or("external typed state")?
+                .engines
+                .has_local_typed_pki_state()
+            && service
+                .state
+                .as_ref()
+                .ok_or("external typed state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual external typed subjects and new role permissions retain the highest owner floor"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "typed external subjects encrypted restart"
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("external reopened state")?
+            .schema
+            == PKI_ROLE_NAMES_STATE_SCHEMA,
+        "encrypted reopen retains actual typed subjects and their new role permission floor"
+    );
+    Ok(())
+}
+
+#[test]
+fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_restart()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/local-ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status
+            == 204,
+        "local CRL mount"
+    );
+    let generated = call(
+        &mut service,
+        "POST",
+        "local-ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"local-ca.example.test","ttl":"3h","key_type":"ed25519"}),
+    );
+    assert!(generated.status == 200, "actual local signing root");
+    let der = decode_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("root")?,
+    )?;
+    let (_, certificate) = X509Certificate::from_der(&der).map_err(|_| "root DER")?;
+    let spki = certificate.public_key().raw.to_vec();
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "local-ca/config/crl",
+            &admin,
+            json!({"auto_rebuild":true,"enable_delta":true,"expiry":"2h",
+            "auto_rebuild_grace_period":"5m","delta_rebuild_interval":"1m"})
+        )
+        .status
+            == 200,
+        "actual automatic CRL policy"
+    );
+    assert!(
+        service.state.as_ref().ok_or("pre-role CRL state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "actual cached CRL owner has its original floor before role creation"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "local-ca/roles/leaf",
+            &admin,
+            json!({"allowed_domains":["example.test"],"allow_subdomains":true,
+            "key_type":"ed25519","max_ttl":"30m","generate_lease":true})
+        )
+        .status
+            == 200,
+        "owned leased leaf role"
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "local-ca/issue/leaf",
+        &admin,
+        json!({"common_name":"leaf.example.test","ttl":"10m"}),
+    );
+    assert!(issued.status == 200, "actual owned leaf issuance");
+    let lease = issued.body["lease_id"].as_str().ok_or("lease")?.to_owned();
+    assert!(
+        service
+            .handle_at(
+                "PUT",
+                "sys/leases/revoke",
+                "",
+                &admin,
+                json!({"lease_id":lease}),
+                101
+            )
+            .status
+            == 204,
+        "actual lease revocation"
+    );
+    let old_delta = service.handle_at("GET", "local-ca/cert/delta-crl", "", "", json!({}), 101);
+    assert!(old_delta.status == 200, "anonymous cached delta read");
+    let old_der = decode_pem(
+        old_delta.body["data"]["certificate"]
+            .as_str()
+            .ok_or("old delta")?,
+    )?;
+    verify_local_crl(&spki, &old_der, 0)?;
+    assert!(
+        service
+            .maintain_lifetimes_at(160)
+            .map_err(|_| "idle CRL maintenance")?,
+        "idle worker commits due signed delta"
+    );
+    let updated = service.handle_at("GET", "local-ca/cert/delta-crl", "", "", json!({}), 160);
+    assert!(updated.status == 200, "anonymous committed delta");
+    let delta = decode_pem(
+        updated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("new delta")?,
+    )?;
+    assert!(delta != old_der, "actual cached DER advanced");
+    verify_local_crl(&spki, &delta, 1)?;
+    assert!(
+        !service
+            .maintain_lifetimes_at(180)
+            .map_err(|_| "idle unchanged CRL")?,
+        "unchanged revocations allocate no new CRL"
+    );
+    assert!(
+        service.state.as_ref().ok_or("committed state")?.schema == PKI_ROLE_NAMES_STATE_SCHEMA
+            && service
+                .state
+                .as_ref()
+                .ok_or("committed state")?
+                .engines
+                .has_local_pki_crl_state()
+            && service
+                .state
+                .as_ref()
+                .ok_or("committed state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "idle signed cache retains both actual CRL and new role permission owners"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual encrypted cache reopen"
+    );
+    let rolled_back = call(
+        &mut reopened,
+        "GET",
+        "local-ca/cert/delta-crl",
+        "",
+        json!({}),
+    );
+    assert!(
+        rolled_back.status == 200,
+        "anonymous rollback-clock projection"
+    );
+    let recovered = decode_pem(
+        rolled_back.body["data"]["certificate"]
+            .as_str()
+            .ok_or("reopened delta")?,
+    )?;
+    assert!(
+        recovered == delta,
+        "restart and clock rollback retain exact signed delta"
+    );
+    verify_local_crl(&spki, &recovered, 1)?;
+    assert!(
+        reopened
+            .maintain_lifetimes_at(7000)
+            .map_err(|_| "idle full rebuild")?,
+        "idle worker commits due full CRL"
+    );
+    verify_local_crl(&spki, &current_crl(&mut reopened, "")?, 1)?;
+    Ok(())
+}
+
+#[test]
+fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "namespace"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "PKI mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    for name in ["root-a", "root-b"] {
+        assert!(service.handle_at("POST","ca/root/generate/internal","team",&admin,
+            json!({"common_name":format!("{name}.example.test"),"key_type":"ec","issuer_name":name,"key_name":format!("key-{name}"),"ttl":"1h"}),100).status==200,"actual owned root publication");
+    }
+    let active = service.state.clone().ok_or("active")?;
+    assert!(
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && active.engines.has_local_pki_multi_issuer_state(),
+        "independent namespace issuer reader floor"
+    );
+    assert!(
+        active.engines.has_local_pki_crl_state(),
+        "namespace owns durable CRL state"
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "CRL identity")?;
+    for schema in [
+        LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+    ] {
+        let mut older = active.clone();
+        older.schema = schema;
+        assert!(
+            older.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
+                && older.validate_format().is_err()
+                && service.commit_state(&mut older).is_err()
+                && Service::validate_snapshot_protected_floor(&active, &older).is_err(),
+            "all older local PKI readers reject cached CRL ownership"
+        );
+    }
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "CRL identity after refusal")?
+            == identity,
+        "rejected CRL downgrades preserve durable identity"
+    );
+    let mut lower = active.clone();
+    lower.schema = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
+    assert!(
+        lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
+            && lower.validate_format().is_err()
+            && service.commit_state(&mut lower).is_err(),
+        "old fields-only reader cannot drop issuer ownership"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "actual old backup rejected"
+    );
+    assert!(service.handle_at("POST","ca/roles/web","team",&admin,json!({"allowed_domains":["example.test"],"allow_subdomains":true,"issuer_ref":"root-a","max_ttl":"5m"}),100).status==200,"role authority");
+    let issued = service.handle_at(
+        "POST",
+        "ca/issuer/root-b/issue/web",
+        "team",
+        &admin,
+        json!({"common_name":"web.example.test"}),
+        100,
+    );
+    assert!(
+        issued.status == 200,
+        "actual Service explicit issuer issuance"
+    );
+    let issuer = service.handle_at(
+        "GET",
+        "ca/issuer/root-b/json",
+        "team",
+        &admin,
+        json!({}),
+        100,
+    );
+    assert!(
+        !issued.body["data"]["issuing_ca"]
+            .as_str()
+            .ok_or("issuance CA PEM")?
+            .ends_with('\n')
+            && issuer.body["data"]["certificate"]
+                .as_str()
+                .ok_or("issuer GET PEM")?
+                .ends_with('\n')
+            && decode_pem(
+                issued.body["data"]["issuing_ca"]
+                    .as_str()
+                    .ok_or("issuance CA PEM")?
+            )? == decode_pem(
+                issuer.body["data"]["certificate"]
+                    .as_str()
+                    .ok_or("issuer GET PEM")?
+            )?,
+        "actual selected issuer DER with distinct native issuance and issuer-GET PEM formatting"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":unseal})).status == 200,
+        "encrypted reopen"
+    );
+    let listed = service.handle_at("LIST", "ca/issuers", "team", &admin, json!({}), 100);
+    assert!(
+        listed.status == 200
+            && listed.body["data"]["keys"]
+                .as_array()
+                .ok_or("issuers")?
+                .len()
+                == 2,
+        "all issuers survive reopen"
+    );
+    let keys = service.handle_at("LIST", "ca/keys", "team", &admin, json!({}), 100);
+    let key_info = keys.body["data"]["key_info"]
+        .as_object()
+        .ok_or("key owners")?;
+    let default_key = key_info
+        .iter()
+        .find(|(_, value)| value["is_default"] == true)
+        .map(|(id, _)| id.clone())
+        .ok_or("default key")?;
+    assert!(
+        key_info
+            .values()
+            .filter(|value| value["is_default"] == true)
+            .count()
+            == 1,
+        "one durable independent key default"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "ca/config/issuers",
+                "team",
+                &admin,
+                json!({"default":"root-b"}),
+                101
+            )
+            .status
+            == 200,
+        "change selected issuer"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/keys", "team", &admin, json!({}), 101)
+            .body["data"]["key_info"][&default_key]["is_default"]
+            == true,
+        "key default survives issuer selection"
+    );
+    let serial = issued.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("leaf serial")?;
+    let revoked = service.handle_at(
+        "POST",
+        "ca/revoke",
+        "team",
+        &admin,
+        json!({"serial_number":serial}),
+        110,
+    );
+    assert!(
+        revoked.status == 200
+            && revoked.body["data"]["revocation_time"] == 110
+            && revoked.body["data"]["state"] == "revoked"
+            && revoked.body["data"]["revocation_time_rfc3339"] == "1970-01-01T00:01:50Z",
+        "later nonleased revoke commits with the monotonic clock and public fields"
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("revoked state")?
+            .engines
+            .lease_clock()
+            == 110,
+        "revoke retains its actual publication clock"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":unseal})).status == 200,
+        "encrypted revoked state reopens"
+    );
+    assert!(
+        service
+            .handle_at(
+                "GET",
+                &format!("ca/cert/{serial}"),
+                "team",
+                &admin,
+                json!({}),
+                100
+            )
+            .body["data"]["revocation_time"]
+            == 110,
+        "reopened revocation survives a lower request clock"
+    );
+    let certs = service
+        .handle_at("LIST", "ca/certs", "team", &admin, json!({}), 110)
+        .body
+        .clone();
+    assert!(
+        service
+            .handle_at("DELETE", "ca/root", "team", &admin, json!({}), 111)
+            .status
+            == 200,
+        "official root DELETE path commits"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/keys", "team", &admin, json!({}), 111)
+            .status
+            == 404
+            && service
+                .handle_at("LIST", "ca/issuers", "team", &admin, json!({}), 111)
+                .status
+                == 404
+            && service
+                .handle_at("LIST", "ca/certs", "team", &admin, json!({}), 111)
+                .body
+                == certs,
+        "root deletion removes keys and issuers while preserving certificate history"
+    );
+    for path in ["ca/keys", "ca/issuers"] {
+        let empty = service.handle_at("LIST", path, "team", &admin, json!({}), 111);
+        assert!(
+            empty.status == 404 && empty.body["errors"] == json!([]),
+            "empty issuer and key lists retain the official empty error array"
+        );
+    }
+    assert!(
+        service
+            .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)
+            .status
+            == 204,
+        "retirement"
+    );
+    let retired = service.state.as_ref().ok_or("retired")?;
+    assert!(
+        !retired.engines.has_local_pki_multi_issuer_state()
+            && !retired.engines.has_pki_role_bare_domain_state()
+            && !retired.engines.has_pki_role_wildcard_state()
+            && retired.writer_schema() == PKI_ROLE_NAMES_STATE_SCHEMA,
+        "retirement retains the highest actual role permission floor"
+    );
+    assert!(
+        !retired.engines.has_local_pki_crl_state(),
+        "CRL owner retired with mount"
+    );
+    for schema in [
+        LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+        LOCAL_PKI_CRL_STATE_SCHEMA,
+        PKI_ROLE_ANY_NAME_STATE_SCHEMA,
+        PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+    ] {
+        let mut older = retired.clone();
+        older.schema = schema;
+        assert!(
+            older.validate_publication_schema(Some(retired)).is_err()
+                && Service::validate_snapshot_protected_floor(retired, &older).is_err(),
+            "retired CRL floor rejects every older PKI reader and restore"
+        );
+    }
+    let mut lower = retired.clone();
+    lower.schema = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
+    assert!(
+        lower.validate_publication_schema(Some(retired)).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &ordinary).is_err(),
+        "retired issuer floor protects publication and snapshot"
+    );
+    Ok(())
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.openldap-live.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "mount",
+      "passed": true
+    },
+    {
+      "case": "configure_real_openldap",
+      "passed": true
+    },
+    {
+      "case": "local_policy_mapping",
+      "passed": true
+    },
+    {
+      "case": "group_policy_exists",
+      "passed": true
+    },
+    {
+      "case": "group_policy_mapping",
+      "passed": true
+    },
+    {
+      "case": "real_openldap_bind_mints_token",
+      "passed": true
+    },
+    {
+      "case": "live_directory_group_grants_policy",
+      "passed": true
+    },
+    {
+      "case": "issued_token_usable",
+      "passed": true
+    },
+    {
+      "case": "wrong_directory_password_denied",
+      "passed": true
+    },
+    {
+      "case": "provider_outage_fails_closed",
+      "passed": true
+    },
+    {
+      "case": "provider_restart_recovers",
+      "passed": true
+    },
+    {
+      "case": "live_group_revocation_removes_policy_on_next_login",
+      "passed": true
+    },
+    {
+      "case": "service_restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "group_mapping_survives_restart",
+      "passed": true
+    },
+    {
+      "case": "remove_local_authority",
+      "passed": true
+    },
+    {
+      "case": "provider_success_cannot_bypass_local_revocation",
+      "passed": true
+    }
+  ],
+  "actual_slapd_distribution": true,
+  "tls_simple_bind": true,
+  "search_and_group_mapping": true,
+  "live_group_revocation": true,
+  "independent_qualification": false,
+  "candidate_binary_sha256": "3ad419f50bcd8a47284100e00ab53c01d9bc5c9893eca953e3bfc31233a8b7d8",
+  "candidate_binary_source_head": "d5aebd4",
+  "execution_platform": "Linux aarch64 guest (Ubuntu Noble)",
+  "openldap_distribution": "slapd 2.6.10+dfsg-0ubuntu0.24.04.1 arm64",
+  "fixture_command": "python3 qa/openbao-acceptance/ldap_openldap_live.py --binary <linux-guest>/target-linux-guest/release/heptabao-server --output <linux-guest>/ldap-openldap-live-d3a419.json",
+  "tls_verification": "CA pinning with loopback IP SAN; LDAPTLS_REQCERT=demand",
+  "apparmor_isolation": "The short-lived test slapd runs under aa-exec unconfined in the dedicated SSD Lima guest only; production OpenLDAP remains confined."
+}

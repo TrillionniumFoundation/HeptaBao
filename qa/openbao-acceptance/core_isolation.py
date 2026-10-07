@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""Compare a bounded candidate behavior profile on new local TLS instances only.
+
+No live endpoint/credential option exists. The official pinned binary/archive
+must be supplied through HB_ORACLE_BINARY and HB_ORACLE_ARCHIVE. The result is a
+selected-behavior observation, not full-surface or independent qualification.
+"""
+from __future__ import annotations
+
+import hashlib
+import importlib.util
+import json
+import os
+import re
+from pathlib import Path
+import shutil
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+
+from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write, transport_diagnostic
+from official_openbao_launcher import (
+    BINARY_SHA256, SUPPORTED_VERSIONS, VERSION, pinned_artifact,
+    restart_oracle, start_oracle, stop_oracle,
+)
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+class ScenarioFailure(Exception):
+    """Carries only a fixed scenario ID, never request/response secrets."""
+
+
+def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dict]:
+    results = [] if results is None else results
+
+    def call(method, path, body=None, token=None):
+        return client.request(method, "/v1/" + path, body, token=token)
+
+    def check(name, response, status, expected_data=None):
+        result = {"case": name, "status": response.status,
+                  "passed": response.status == status}
+        if expected_data is not None:
+            result["data_matches"] = response.body.get("data") == expected_data
+            result["passed"] &= result["data_matches"]
+        results.append(result)
+        if not result["passed"]:
+            raise ScenarioFailure(name)
+        return response.body
+
+    def token(name, **options):
+        body = check(name, call("POST", "auth/token/create", options), 200)
+        return body["auth"]["client_token"]
+
+    alice = token("token.alice", policies=["default"], ttl="1h")
+    bob = token("token.bob", policies=["default"], ttl="1h")
+    check("cubbyhole.empty", call("GET", "cubbyhole/item", token=alice), 404)
+    check("cubbyhole.write", call("POST", "cubbyhole/item", {"value": "synthetic-a"}, alice), 204)
+    check("cubbyhole.read", call("GET", "cubbyhole/item", token=alice), 200, {"value": "synthetic-a"})
+    check("cubbyhole.peer_denied_view", call("GET", "cubbyhole/item", token=bob), 404)
+    check("cubbyhole.root_has_distinct_view", call("GET", "cubbyhole/item"), 404)
+    check("cubbyhole.replace", call("PUT", "cubbyhole/item", {"new": 1}, alice), 204)
+    check("cubbyhole.replace_readback", call("GET", "cubbyhole/item", token=alice), 200, {"new": 1})
+    check("cubbyhole.child_write", call("POST", "cubbyhole/folder/a", {"v": 2}, alice), 204)
+    check("cubbyhole.nested_write", call("POST", "cubbyhole/folder/deep/b", {"v": 3}, alice), 204)
+    check("cubbyhole.list_root", call("LIST", "cubbyhole/", token=alice), 200, {"keys": ["folder/", "item"]})
+    check("cubbyhole.list_folder", call("LIST", "cubbyhole/folder", token=alice), 200, {"keys": ["a", "deep/"]})
+    check("cubbyhole.list_query", call("GET", "cubbyhole/folder?list=true", token=alice), 200, {"keys": ["a", "deep/"]})
+    check("cubbyhole.list_file_empty", call("LIST", "cubbyhole/item", token=alice), 404)
+    check("cubbyhole.delete", call("DELETE", "cubbyhole/item", token=alice), 204)
+    check("cubbyhole.deleted_read", call("GET", "cubbyhole/item", token=alice), 404)
+    check("cubbyhole.delete_idempotent", call("DELETE", "cubbyhole/item", token=alice), 204)
+    # Three uses: successful write, successful read, final-use successful read.
+    finite = token("token.finite", policies=["default"], ttl="1h", num_uses=3)
+    check("cubbyhole.finite_write", call("POST", "cubbyhole/once", {"v": "finite"}, finite), 204)
+    check("cubbyhole.finite_read", call("GET", "cubbyhole/once", token=finite), 200, {"v": "finite"})
+    check("cubbyhole.final_read", call("GET", "cubbyhole/once", token=finite), 200, {"v": "finite"})
+    check("cubbyhole.final_replay_denied", call("GET", "cubbyhole/once", token=finite), 403)
+    check("cubbyhole.revoke", call("POST", "auth/token/revoke", {"token": alice}), 204)
+    check("cubbyhole.revoked_denied", call("GET", "cubbyhole/folder/a", token=alice), 403)
+
+    mount = "core-isolation"
+    check("acl.mount", call("POST", "sys/mounts/" + mount, {"type": "kv", "options": {"version": "2"}}), 204)
+    item = mount + "/data/locked"
+    check("acl.seed", call("POST", item, {"data": {"v": "before"}}), 200)
+    policy = (f'path "{mount}/*" {{ capabilities = ["read", "create", "update", "delete"] }}\n'
+              f'path "{item}" {{ capabilities = ["read"] }}')
+    check("acl.policy", call("PUT", "sys/policies/acl/core-specific", {"policy": policy}), 204)
+    reader = token("acl.reader", policies=["core-specific"], no_default_policy=True, ttl="1h")
+    check("acl.exact_read", call("GET", item, token=reader), 200)
+    check("acl.narrow_write_denied", call("POST", item, {"data": {"v": "forbidden"}}, reader), 403)
+    check("acl.narrow_delete_denied", call("DELETE", item, token=reader), 403)
+    unchanged = call("GET", item)
+    check("acl.unchanged_version", unchanged, 200)
+    if (unchanged.body.get("data", {}).get("data") != {"v": "before"}
+            or unchanged.body.get("data", {}).get("metadata", {}).get("version") != 1):
+        raise ScenarioFailure("acl.denials_no_effect")
+    results.append({"case": "acl.denials_no_effect", "passed": True})
+    check("acl.no_default_cubbyhole", call("POST", "cubbyhole/item", {"v": 1}, reader), 403)
+
+    # Identical paths across policies union; a deny at that same path dominates.
+    for name, cap in [("core-extra", "update"), ("core-deny", "deny")]:
+        policy = f'path "{item}" {{ capabilities = ["{cap}"] }}'
+        check("acl." + name, call("PUT", "sys/policies/acl/" + name, {"policy": policy}), 204)
+    union = token("acl.union_token", policies=["core-specific", "core-extra"], no_default_policy=True, ttl="1h")
+    check("acl.same_pattern_union", call("POST", item, {"data": {"v": "union"}}, union), 200)
+    deny = token("acl.deny_token", policies=["core-specific", "core-extra", "core-deny"], no_default_policy=True, ttl="1h")
+    check("acl.same_pattern_deny", call("GET", item, token=deny), 403)
+
+    # Default policy override can authorize only create, not overwrite/update.
+    path = "cubbyhole/create-only"
+    check("acl.create_policy", call("PUT", "sys/policies/acl/core-create", {
+        "policy": f'path "{path}" {{ capabilities = ["create", "read"] }}'}), 204)
+    creator = token("acl.creator", policies=["core-create"], no_default_policy=True, ttl="1h")
+    check("acl.create_allowed", call("POST", path, {"v": 1}, creator), 204)
+    check("acl.update_not_create", call("POST", path, {"v": 2}, creator), 403)
+    check("acl.create_unchanged", call("GET", path, token=creator), 200, {"v": 1})
+    return results
+
+
+def file_hash(path: Path) -> str:
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+
+
+def bounded_response_write_observations(path: Path) -> dict:
+    """Read only the server's closed diagnostic shape from a bounded log tail."""
+    maximum_bytes, maximum_rows = 128 * 1024, 64
+    try:
+        with path.open("rb") as stream:
+            size = stream.seek(0, os.SEEK_END)
+            stream.seek(max(0, size - maximum_bytes))
+            tail = stream.read(maximum_bytes)
+    except OSError:
+        return {"read_failed": True, "rows": []}
+    pattern = re.compile(
+        rb"HBHTTP-RESPONSE-WRITE-FAILURE io_kind=(timed_out|would_block|broken_pipe|connection_reset|connection_aborted|write_zero|interrupted|unexpected_eof|invalid_input|invalid_data|other) "
+        rb"accepted_plaintext_bytes=([0-9]{1,20}) flush_attempted=(true|false) "
+        rb"original_deadline_expired=(true|false)"
+    )
+    matches = [pattern.fullmatch(line) for line in tail.splitlines()]
+    matches = [match for match in matches if match is not None]
+    return {
+        "read_failed": False, "examined_bytes": len(tail),
+        "tail_only": size > maximum_bytes, "rows_truncated": len(matches) > maximum_rows,
+        "rows": [
+            {"io_kind": match[1].decode("ascii"),
+             "accepted_plaintext_bytes": int(match[2]),
+             "flush_attempted": match[3] == b"true",
+             "original_deadline_expired": match[4] == b"true"}
+            for match in matches[:maximum_rows]
+        ],
+    }
+
+def retain_transport_failure(result, context, phase, error):
+    """Retain only static fixture context and the client's closed projection."""
+    if (context not in ("candidate", "oracle", "top_level")
+            or phase not in ("candidate_startup", "candidate_init", "candidate_unseal", "oracle_startup",
+                             "scenario", "candidate_restart_startup", "candidate_restart_unseal",
+                             "oracle_restart_startup", "restart_scenario")):
+        return
+    detail = transport_diagnostic(error)
+    if detail is not None:
+        result.setdefault("transport_failures", {})[context] = {"fixture_phase": phase, **detail}
+
+
+def successful_comparison(cases: dict, side_failures: dict) -> bool:
+    """Never admit matching failed/empty prefixes or mismatched observations."""
+    if side_failures or set(cases) != {"candidate", "oracle"}:
+        return False
+    candidate, oracle = cases["candidate"], cases["oracle"]
+    if not isinstance(candidate, list) or not isinstance(oracle, list):
+        return False
+    if not candidate or len(candidate) > 4096 or candidate != oracle:
+        return False
+    for observations in (candidate, oracle):
+        seen = set()
+        for row in observations:
+            if not isinstance(row, dict) or row.get("passed") is not True:
+                return False
+            name = row.get("case")
+            if not isinstance(name, str) or not name or name in seen:
+                return False
+            seen.add(name)
+    return True
+
+def select_scenario_runner(default_runner, version, versioned_runners=None):
+    """Select one exact release contract; never union status codes across minors."""
+    if version not in SUPPORTED_VERSIONS or not callable(default_runner):
+        raise ValueError("unknown comparison release contract")
+    if versioned_runners is None:
+        return default_runner
+    if (not isinstance(versioned_runners, dict)
+            or any(key not in SUPPORTED_VERSIONS or not callable(value)
+                   for key, value in versioned_runners.items())):
+        raise ValueError("invalid versioned comparison contracts")
+    return versioned_runners.get(version, default_runner)
+
+
+def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
+         oracle_scenario_runner=None, oracle_restart_runner=None,
+         scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None,
+         versioned_scenario_runners=None, required_oracle_version=None,
+         contract_divergences=()) -> int:
+    if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
+                        "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
+                        "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live", "wrapping-self-revoke270", "token-revoke-orphan270", "transit-mldsa270", "transit-asymmetric270", "transit-derived270", "transit-byok270", "external-keys270"):
+        raise ValueError("unknown local comparison profile")
+    runner_path = Path(__file__) if runner_path is None else Path(runner_path)
+    parser = SafeArgumentParser(description=__doc__)
+    parser.add_argument("--binary", required=True)
+    parser.add_argument("--output", required=True)
+    if oracle_scenario_runner is not None and not callable(oracle_scenario_runner):
+        raise ValueError("oracle scenario runner must be callable")
+    if oracle_restart_runner is not None and not callable(oracle_restart_runner):
+        raise ValueError("oracle restart runner must be callable")
+    if oracle_restart_runner is not None and restart_runner is None:
+        raise ValueError("oracle restart runner requires a candidate restart runner")
+    if not isinstance(contract_divergences, (tuple, list)) or any(
+        not isinstance(value, str)
+        or not value
+        or len(value) > 512
+        or any(ord(character) < 0x20 or ord(character) > 0x7e for character in value)
+        for value in contract_divergences
+    ):
+        raise ValueError("contract divergences must be bounded printable strings")
+    if required_oracle_version is not None and required_oracle_version not in SUPPORTED_VERSIONS:
+        raise ValueError("unknown required oracle version")
+    versions = (required_oracle_version,) if required_oracle_version else SUPPORTED_VERSIONS
+    parser.add_argument("--oracle-version", choices=versions, default=required_oracle_version or VERSION,
+                        help="Exact official release; historical default remains 2.6.2")
+    args = parser.parse_args()
+    expected_oracle = pinned_artifact(version=args.oracle_version)
+    scenario_runner = select_scenario_runner(scenario_runner, args.oracle_version, versioned_scenario_runners)
+    binary = Path(args.binary).resolve(strict=True)
+    output = Path(args.output).resolve()
+    if output.exists():
+        parser.error("output already exists")
+    output_dir = output.parent.stat()
+    if output_dir.st_uid != os.geteuid() or output_dir.st_mode & 0o077:
+        parser.error("output directory must be owned by the caller with mode 0700")
+    private_root = Path(tempfile.mkdtemp(prefix="heptabao-core-isolation-"))
+    private_root.chmod(0o700)
+    spec = importlib.util.spec_from_file_location("core_smoke", ROOT / "qa/single-node/smoke.py")
+    smoke = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(smoke)
+    instance = smoke.Instance(binary, private_root / "candidate")
+    oracle = None
+    candidate_unseal_key = None
+    result = {"schema": "heptabao." + profile + "-comparison.v1", "synthetic_only": True,
+              "target_version": args.oracle_version, "full_openbao_compatibility": False,
+              "independent_qualification": False, "production_authority": False,
+              "candidate_binary_sha256": file_hash(binary),
+              "oracle_binary_sha256": expected_oracle["binary_sha256"],
+              "oracle_artifact_sha256": expected_oracle["artifact_sha256"],
+              "oracle_launcher_source_sha256": file_hash(ROOT / "qa/openbao-acceptance/official_openbao_launcher.py"),
+              "cargo_lock_sha256": file_hash(ROOT / "Cargo.lock"),
+              "runner_sha256": file_hash(runner_path),
+              "launcher_harness_sha256": file_hash(Path(__file__)),
+              "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(),
+              "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
+              "started_at_unix": time.time(), "cases": {}, "scope": scope,
+              "contract_divergences": list(contract_divergences)}
+    if profile == "audit-file-management":
+        result["audit_api_profile"] = "deployment_owned_file_v2"
+        result["supersedes_candidate_only_idempotent_enable_profile"] = True
+    try:
+        phase = "candidate_startup"
+        instance.start()
+        phase = "candidate_init"
+        status, init = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
+        if status != 200:
+            raise ScenarioFailure("candidate.init")
+        instance.token = init["root_token"]
+        candidate_unseal_key = init["keys_base64"][0]
+        phase = "candidate_unseal"
+        if instance.call("POST", "sys/unseal", {"key": candidate_unseal_key})[0] != 200:
+            raise ScenarioFailure("candidate.unseal")
+        candidate = Client(instance.address, str(instance.root / "ca.crt"), instance.token)
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            port = sock.getsockname()[1]
+        phase = "oracle_startup"
+        oracle = start_oracle(port, audit_file=profile == "audit-file-management",
+                              version=args.oracle_version)
+        result["oracle_storage_backend"] = oracle["storage_backend"]
+        reference = Client(oracle["address"], oracle["ca_file"], private_read(oracle["token_file"], 8192).decode().strip())
+        # Same ordered requests run independently; no protected operation proxies.
+        # Preserve both sides even if one rejects early. Equality of two empty
+        # traces or matching failure prefixes can never qualify a profile.
+        result["side_failures"] = {}
+        for name, client in (("candidate", candidate), ("oracle", reference)):
+            result["cases"][name] = []
+            try:
+                phase = "scenario"
+                side_runner = scenario_runner
+                if name == "oracle" and oracle_scenario_runner is not None:
+                    side_runner = oracle_scenario_runner
+                side_runner(client, result["cases"][name])
+            except (ScenarioFailure, BaoError) as error:
+                result["side_failures"][name] = str(error)
+                retain_transport_failure(result, name, phase, error)
+            except Exception as error:
+                result["side_failures"][name] = "unexpected_" + type(error).__name__
+                retain_transport_failure(result, name, phase, error)
+        if restart_runner is not None and not result["side_failures"]:
+            for name in ("candidate", "oracle"):
+                try:
+                    if name == "candidate":
+                        instance.stop()
+                        phase = "candidate_restart_startup"
+                        instance.start()
+                        phase = "candidate_restart_unseal"
+                        if instance.call("POST", "sys/unseal", {"key": candidate_unseal_key})[0] != 200:
+                            raise ScenarioFailure("candidate.restart_unseal")
+                        restarted = Client(instance.address, str(instance.root / "ca.crt"), instance.token)
+                    else:
+                        stop_oracle(oracle)
+                        phase = "oracle_restart_startup"
+                        restart_oracle(oracle)
+                        restarted = Client(
+                            oracle["address"],
+                            oracle["ca_file"],
+                            private_read(oracle["token_file"], 8192).decode().strip(),
+                        )
+                    phase = "restart_scenario"
+                    side_restart = restart_runner
+                    if name == "oracle" and oracle_restart_runner is not None:
+                        side_restart = oracle_restart_runner
+                    side_restart(restarted, result["cases"][name])
+                except (ScenarioFailure, BaoError) as error:
+                    result["side_failures"][name] = str(error)
+                    retain_transport_failure(result, name, phase, error)
+                except Exception as error:
+                    result["side_failures"][name] = "unexpected_" + type(error).__name__
+                    retain_transport_failure(result, name, phase, error)
+        result["cases_match"] = result["cases"]["candidate"] == result["cases"]["oracle"]
+        result["case_count_per_side"] = len(result["cases"]["candidate"])
+        complete = successful_comparison(result["cases"], result["side_failures"])
+        result["status"] = "passed" if complete else "mismatch"
+    except (ScenarioFailure, BaoError) as error:
+        result["status"] = "failed"
+        result["safe_failure_code"] = str(error)
+        retain_transport_failure(result, "top_level", phase, error)
+    except Exception as error:
+        result["status"] = "failed"
+        result["safe_failure_code"] = "unexpected_" + type(error).__name__
+        retain_transport_failure(result, "top_level", phase, error)
+    finally:
+        instance.stop()
+        result["candidate_response_write_observations"] = bounded_response_write_observations(
+            instance.root / "server.log")
+        if oracle is not None:
+            stop_oracle(oracle)
+            shutil.rmtree(oracle["root"])
+        shutil.rmtree(private_root)
+        result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
+        result["finished_at_unix"] = time.time()
+        private_write(output, result)
+    # These are fixed synthetic scenario labels already retained in the safe
+    # report, never a request body, HTTP parser line, or server error text.
+    last_cases = {}
+    for side, observations in result["cases"].items():
+        case = observations[-1].get("case") if observations else None
+        if (isinstance(case, str) and 0 < len(case) <= 256
+                and all(character.isascii() and (character.isalnum() or character in "._-") for character in case)):
+            last_cases[side] = case
+    print(json.dumps({"status": result["status"], "cases_per_side": result.get("case_count_per_side", 0),
+                      "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}),
+                      "last_completed_case": last_cases,
+                      "candidate_response_write_observations": result.get("candidate_response_write_observations"),
+                      "transport_failures": result.get("transport_failures", {}),
+                      "full_openbao_compatibility": False}))
+    return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

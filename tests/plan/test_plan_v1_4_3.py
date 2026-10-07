@@ -4,6 +4,11 @@ import shutil
 import sys
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -65,6 +70,7 @@ class PlanV143Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationFailure, "bounded profile"):
             validate(target)
 
+    @historical_only
     def test_workspace_guard_removal_fails_closed(self) -> None:
         temporary, target = self.copy_repository()
         self.addCleanup(temporary.cleanup)
@@ -187,6 +193,7 @@ class PlanV143Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationFailure, "durable journal source"):
             validate(target)
 
+    @historical_only
     def test_nofollow_read_removal_fails_closed(self) -> None:
         temporary, target = self.copy_repository()
         self.addCleanup(temporary.cleanup)

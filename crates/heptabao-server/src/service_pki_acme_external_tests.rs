@@ -1,0 +1,1434 @@
+//! Real TLS Transit signs ACME CSR leaves; public accounts never become token owners.
+use super::*;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+use openssl::x509::{X509, X509NameBuilder, X509Req, extension::SubjectAlternativeName};
+use openssl::{
+    bn::BigNumContext,
+    ec::{EcGroup, EcKey},
+    ecdsa::EcdsaSig,
+    hash::MessageDigest,
+    nid::Nid,
+    pkey::{PKey, Private},
+    sign::Signer,
+};
+
+fn key() -> TestResult<(PKey<Private>, Value)> {
+    let group = EcGroup::from_curve_name(Nid::X9_62_PRIME256V1)?;
+    let ec = EcKey::generate(&group)?;
+    let mut x = openssl::bn::BigNum::new()?;
+    let mut y = openssl::bn::BigNum::new()?;
+    let mut context = BigNumContext::new()?;
+    ec.public_key()
+        .affine_coordinates_gfp(&group, &mut x, &mut y, &mut context)?;
+    let jwk = json!({"kty":"EC","crv":"P-256","x":URL_SAFE_NO_PAD.encode(x.to_vec_padded(32)?),"y":URL_SAFE_NO_PAD.encode(y.to_vec_padded(32)?)});
+    Ok((PKey::from_ec_key(ec)?, jwk))
+}
+fn signed(
+    key: &PKey<Private>,
+    jwk: &Value,
+    nonce: &str,
+    url: &str,
+    kid: Option<&str>,
+    payload: Option<Value>,
+) -> TestResult<Value> {
+    let mut header = json!({"alg":"ES256","nonce":nonce,"url":url});
+    match kid {
+        Some(kid) => header["kid"] = json!(kid),
+        None => header["jwk"] = jwk.clone(),
+    }
+    let protected = URL_SAFE_NO_PAD.encode(serde_json::to_vec(&header)?);
+    let payload = payload
+        .map(|v| serde_json::to_vec(&v))
+        .transpose()?
+        .unwrap_or_default();
+    let payload = URL_SAFE_NO_PAD.encode(payload);
+    let message = format!("{protected}.{payload}");
+    let mut signer = Signer::new(MessageDigest::sha256(), key)?;
+    signer.update(message.as_bytes())?;
+    let signature = EcdsaSig::from_der(&signer.sign_to_vec()?)?;
+    let mut raw = signature.r().to_vec_padded(32)?;
+    raw.extend(signature.s().to_vec_padded(32)?);
+    Ok(json!({"protected":protected,"payload":payload,"signature":URL_SAFE_NO_PAD.encode(raw)}))
+}
+fn header(response: &Response, name: &str) -> TestResult<String> {
+    let h = serde_json::to_value(&response.response_headers)?;
+    Ok(h[name][0]
+        .as_str()
+        .ok_or("actual filtered ACME header")?
+        .to_owned())
+}
+
+fn nonce(service: &mut Service) -> TestResult<String> {
+    let response = call(service, "HEAD", "external-ca/acme/new-nonce", "", json!({}));
+    assert_eq!(response.status, 200);
+    header(&response, "Replay-Nonce")
+}
+
+fn order_post(
+    service: &mut Service,
+    key: &PKey<Private>,
+    jwk: &Value,
+    kid: &str,
+    endpoint: &str,
+    payload: Option<Value>,
+) -> TestResult<Response> {
+    let n = nonce(service)?;
+    let base = "https://acme.example.test/v1/external-ca/acme/";
+    let request = signed(
+        key,
+        jwk,
+        &n,
+        &format!("{base}{endpoint}"),
+        Some(kid),
+        payload,
+    )?;
+    Ok(call(
+        service,
+        "POST",
+        &format!("external-ca/acme/{endpoint}"),
+        "",
+        request,
+    ))
+}
+fn order_account(service: &mut Service, key: &PKey<Private>, jwk: &Value) -> TestResult<String> {
+    let n = nonce(service)?;
+    let created = call(
+        service,
+        "POST",
+        "external-ca/acme/new-account",
+        "",
+        signed(
+            key,
+            jwk,
+            &n,
+            "https://acme.example.test/v1/external-ca/acme/new-account",
+            None,
+            Some(json!({"termsOfServiceAgreed":true})),
+        )?,
+    );
+    assert_eq!(created.status, 201);
+    header(&created, "Location")
+}
+
+fn maintenance_clock(at: u64) -> TestResult<RequestClock> {
+    Ok(RequestClock::anchored(
+        Duration::from_secs(at),
+        std::time::Instant::now(),
+    )?)
+}
+
+fn csr(domain: &str) -> TestResult<(PKey<Private>, Vec<u8>)> {
+    let (private, _) = key()?;
+    let request = csr_with_key(domain, &private)?;
+    Ok((private, request))
+}
+fn csr_with_key(domain: &str, private: &PKey<Private>) -> TestResult<Vec<u8>> {
+    let mut request = X509Req::builder()?;
+    let mut name = X509NameBuilder::new()?;
+    name.append_entry_by_nid(Nid::COMMONNAME, domain)?;
+    name.append_entry_by_nid(Nid::ORGANIZATIONNAME, "UntrustedSubjectMustBeIgnored")?;
+    request.set_subject_name(&name.build())?;
+    request.set_pubkey(private)?;
+    let mut extensions = openssl::stack::Stack::new()?;
+    extensions.push(
+        SubjectAlternativeName::new()
+            .dns(domain)
+            .build(&request.x509v3_context(None))?,
+    )?;
+    request.add_extensions(&extensions)?;
+    request.sign(private, MessageDigest::sha256())?;
+    let request = request.build();
+    assert!(request.verify(private)?);
+    Ok(request.to_der()?)
+}
+fn ready(
+    service: &mut Service,
+    admin: &str,
+    key: &PKey<Private>,
+    jwk: &Value,
+    kid: &str,
+    domain: &str,
+) -> TestResult<String> {
+    let socket = std::net::UdpSocket::bind("127.0.0.1:0")?;
+    socket.set_read_timeout(Some(Duration::from_secs(3)))?;
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "external-ca/config/acme",
+            admin,
+            json!({"dns_resolver":socket.local_addr()?.to_string()})
+        )
+        .status,
+        200
+    );
+    let created = order_post(
+        service,
+        key,
+        jwk,
+        kid,
+        "new-order",
+        Some(json!({"identifiers":[{"type":"dns","value":domain}]})),
+    )?;
+    assert_eq!(created.status, 201);
+    let order = header(&created, "Location")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("order route")?
+        .to_owned();
+    let auth = created.body["__heptabao_acme"]["authorizations"][0]
+        .as_str()
+        .ok_or("auth")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("auth route")?
+        .to_owned();
+    let fetched = order_post(service, key, jwk, kid, &auth, None)?;
+    let challenge = fetched.body["__heptabao_acme"]["challenges"]
+        .as_array()
+        .ok_or("challenges")?
+        .iter()
+        .find(|c| c["type"] == "dns-01")
+        .ok_or("DNS challenge")?["url"]
+        .as_str()
+        .ok_or("challenge URL")?
+        .split("/acme/")
+        .nth(1)
+        .ok_or("challenge route")?
+        .to_owned();
+    assert_eq!(
+        order_post(service, key, jwk, kid, &challenge, Some(json!({})))?.status,
+        200
+    );
+    let plan = service
+        .prepare_acme_maintenance(maintenance_clock(101)?)
+        .map_err(|_| "proof plan")?
+        .ok_or("queued proof")?;
+    let token = fetched.body["__heptabao_acme"]["challenges"]
+        .as_array()
+        .ok_or("public challenges")?
+        .iter()
+        .find(|challenge| challenge["type"] == "dns-01")
+        .ok_or("public DNS challenge")?["token"]
+        .as_str()
+        .ok_or("public DNS token")?;
+    let thumbprint = URL_SAFE_NO_PAD.encode(crate::crypto::digest(&serde_json::to_vec(jwk)?));
+    let proof = URL_SAFE_NO_PAD.encode(crate::crypto::digest(
+        format!("{token}.{thumbprint}").as_bytes(),
+    ));
+    let thread = std::thread::spawn(move || -> std::io::Result<()> {
+        let mut query = vec![0; 2048];
+        let (n, peer) = socket.recv_from(&mut query)?;
+        query.truncate(n);
+        let mut response = query[..2].to_vec();
+        response.extend_from_slice(&[0x81, 0x80, 0, 1, 0, 1, 0, 0, 0, 0]);
+        response.extend_from_slice(&query[12..]);
+        response.extend_from_slice(&[0xc0, 0x0c, 0, 16, 0, 1, 0, 0, 0, 30]);
+        response.extend_from_slice(&((proof.len() + 1) as u16).to_be_bytes());
+        response.push(proof.len() as u8);
+        response.extend_from_slice(proof.as_bytes());
+        socket.send_to(&response, peer)?;
+        Ok(())
+    });
+    let result = plan.execute_fixture_public_proof(service);
+    thread.join().map_err(|_| "DNS responder")??;
+    assert!(result.is_ok(), "{result:?}");
+    service
+        .finish_acme_maintenance(plan, result)
+        .map_err(|_| "proof publication")?;
+    assert_eq!(
+        order_post(service, key, jwk, kid, &order, None)?.body["__heptabao_acme"]["status"],
+        "ready"
+    );
+    Ok(order)
+}
+
+fn setup_remote(service: &mut Service, admin: &str) -> TestResult {
+    for (path, body, status) in [
+        (
+            "external-ca/config/cluster",
+            json!({"path":"https://acme.example.test/v1/external-ca"}),
+            200,
+        ),
+        (
+            "external-ca/config/acme",
+            json!({"enabled":true,"eab_policy":"not-required"}),
+            200,
+        ),
+        (
+            "sys/mounts/external-ca/tune",
+            json!({"allowed_response_headers":["Replay-Nonce","Link","Location"]}),
+            204,
+        ),
+    ] {
+        assert_eq!(call(service, "POST", path, admin, body).status, status);
+    }
+    Ok(())
+}
+fn prepare_signed_finalize(
+    service: &mut Service,
+    account: &PKey<Private>,
+    jwk: &Value,
+    kid: &str,
+    order: &str,
+    raw: &[u8],
+) -> TestResult<PendingExternalRequest> {
+    let n = nonce(service)?;
+    let endpoint = format!("{order}/finalize");
+    let request = signed(
+        account,
+        jwk,
+        &n,
+        &format!("https://acme.example.test/v1/external-ca/acme/{endpoint}"),
+        Some(kid),
+        Some(json!({"csr":URL_SAFE_NO_PAD.encode(raw)})),
+    )?;
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: &format!("external-ca/acme/{endpoint}"),
+        namespace: "",
+        token: "",
+        body: request,
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => Ok(*pending),
+        RequestExecution::Complete(response) => Err(format!(
+            "actual ACME TLS signer not staged: status {}",
+            response.status
+        )
+        .into()),
+    }
+}
+fn assert_no_completed_order(service: &Service, order: &str) -> TestResult {
+    let mut state = serde_json::to_value(&service.state.as_ref().ok_or("current state")?.engines)?;
+    let id = order.strip_prefix("order/").ok_or("order id")?;
+    assert!(state["namespaces"][""]["mounts"]["external-ca/"]["backend"]["Pki"]["acme_protocol"]["orders"][id]["certificate"].is_null());
+    erase_json(&mut state);
+    Ok(())
+}
+
+fn wrapped_no_effect_revocation(
+    service: &mut Service,
+    admin: &str,
+    serial: &str,
+    expected_data: &Value,
+    remote: &RemoteTransit,
+) -> TestResult {
+    let before = remote.calls()?;
+    let execution = service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "external-ca/revoke",
+        namespace: "",
+        token: admin,
+        body: json!({"serial_number":serial}),
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: None,
+        client_certificates: None,
+    });
+    let RequestExecution::Complete(wrapped) = execution else {
+        return Err("idempotent revocation entered a new provider effect".into());
+    };
+    assert_eq!(wrapped.status, 200);
+    assert_eq!(wrapped.body["lease_duration"], 0);
+    assert_eq!(
+        wrapped.body["wrap_info"]["creation_path"],
+        "external-ca/revoke"
+    );
+    let bearer = zeroize::Zeroizing::new(
+        wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("private no-effect wrapping credential")?
+            .to_owned(),
+    );
+    drop(wrapped);
+    let response = call(service, "POST", "sys/wrapping/unwrap", &bearer, json!({}));
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        &response.body["data"], expected_data,
+        "the original revocation is immutable"
+    );
+    assert_eq!(
+        call(service, "POST", "sys/wrapping/unwrap", &bearer, json!({})).status,
+        400
+    );
+    assert_eq!(
+        remote.calls()?,
+        before,
+        "no-effect wrapping and unwrap never fetch metadata or sign"
+    );
+    Ok(())
+}
+#[test]
+fn pki_acme_external_real_seven_tls_signers_csr_public_binding_encrypted_reopen() -> TestResult {
+    for kind in [
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+        setup_remote(&mut service, &admin)?;
+        let (account, jwk) = key()?;
+        let kid = order_account(&mut service, &account, &jwk)?;
+        let domain = "managed.acme.example.test";
+        let order = ready(&mut service, &admin, &account, &jwk, &kid, domain)?;
+        let (leaf, raw) = csr(domain)?;
+        let before = remote.calls()?;
+        let finalized = order_post(
+            &mut service,
+            &account,
+            &jwk,
+            &kid,
+            &format!("{order}/finalize"),
+            Some(json!({"csr":URL_SAFE_NO_PAD.encode(&raw)})),
+        )?;
+        assert_eq!(
+            finalized.status,
+            200,
+            "remote kind {kind} static errors {:?} {:?}",
+            finalized.body["__heptabao_acme"].get("detail"),
+            finalized.body.get("errors")
+        );
+        assert_eq!(finalized.body["__heptabao_acme"]["status"], "valid");
+        assert_eq!(
+            remote.calls()?,
+            before + 2,
+            "one metadata and one remote signature"
+        );
+        let cert = finalized.body["__heptabao_acme"]["certificate"]
+            .as_str()
+            .ok_or("certificate URL")?
+            .split("/acme/")
+            .nth(1)
+            .ok_or("certificate route")?
+            .to_owned();
+        let fetched = order_post(&mut service, &account, &jwk, &kid, &cert, None)?;
+        assert_eq!(fetched.status, 200);
+        let pem = fetched.body["__heptabao_acme"]
+            .as_str()
+            .ok_or("public signed certificate chain")?
+            .to_owned();
+        let chain = X509::stack_from_pem(pem.as_bytes())?;
+        assert_eq!(chain.len(), 2);
+        let issuer = chain[1].public_key()?;
+        assert!(chain[0].verify(&issuer)? && chain[1].verify(&issuer)?);
+        assert_eq!(
+            chain[0].public_key()?.public_key_to_der()?,
+            leaf.public_key_to_der()?
+        );
+        let wrong = match issuer.id() {
+            openssl::pkey::Id::ED25519 => PKey::generate_ed25519()?,
+            openssl::pkey::Id::EC => PKey::from_ec_key(EcKey::generate(issuer.ec_key()?.group())?)?,
+            openssl::pkey::Id::RSA => {
+                PKey::from_rsa(openssl::rsa::Rsa::generate(issuer.rsa()?.size() * 8)?)?
+            }
+            _ => return Err("unexpected actual issuer algorithm".into()),
+        };
+        assert_eq!(wrong.id(), issuer.id());
+        assert!(!chain[0].verify(&wrong).unwrap_or(false));
+        let current = service.state.as_ref().ok_or("current typed owner")?;
+        assert_eq!(current.schema, 99);
+        assert!(current.validate_format().is_ok());
+        let mut graph = serde_json::to_value(&current.engines)?;
+        let actual = &graph["namespaces"][""]["mounts"]["external-ca/"]["backend"]["Pki"];
+        assert_eq!(
+            actual["issued"]
+                .as_object()
+                .ok_or("native lease-owned issuance")?
+                .len(),
+            0,
+            "public ACME account never creates a token lease"
+        );
+        erase_json(&mut graph);
+        let calls = remote.calls()?;
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            order_post(&mut reopened, &account, &jwk, &kid, &cert, None)?.body["__heptabao_acme"],
+            pem
+        );
+        assert_eq!(
+            remote.calls()?,
+            calls,
+            "encrypted certificate recovery uses stored signed DER"
+        );
+        let repeated = order_post(
+            &mut reopened,
+            &account,
+            &jwk,
+            &kid,
+            &format!("{order}/finalize"),
+            Some(json!({"csr":URL_SAFE_NO_PAD.encode(&raw)})),
+        )?;
+        assert_eq!(
+            repeated.status, 403,
+            "immutable completed order cannot sign twice"
+        );
+        assert_eq!(remote.calls()?, calls);
+    }
+    Ok(())
+}
+#[test]
+fn pki_acme_external_account_retirement_during_real_sign_vetoes_publication() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
+    setup_remote(&mut service, &admin)?;
+    let (account, jwk) = key()?;
+    let kid = order_account(&mut service, &account, &jwk)?;
+    let order = ready(
+        &mut service,
+        &admin,
+        &account,
+        &jwk,
+        &kid,
+        "retired.acme.example.test",
+    )?;
+    let (_, raw) = csr("retired.acme.example.test")?;
+    let pending = prepare_signed_finalize(&mut service, &account, &jwk, &kid, &order, &raw)?;
+    let result = pending.execute();
+    let endpoint = kid.split("/acme/").nth(1).ok_or("account route")?;
+    let retired = order_post(
+        &mut service,
+        &account,
+        &jwk,
+        &kid,
+        endpoint,
+        Some(json!({"status":"deactivated"})),
+    )?;
+    assert_eq!(retired.status, 200);
+    let response = service.finish_external_request(pending, result);
+    assert_eq!(
+        response.status, 503,
+        "original public owner cannot publish after account retirement"
+    );
+    assert!(response.response_headers.is_empty());
+    assert_no_completed_order(&service, &order)?;
+    Ok(())
+}
+#[test]
+fn pki_acme_external_sign_grant_retirement_during_effect_vetoes_publication() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
+    setup_remote(&mut service, &admin)?;
+    let (account, jwk) = key()?;
+    let kid = order_account(&mut service, &account, &jwk)?;
+    let order = ready(
+        &mut service,
+        &admin,
+        &account,
+        &jwk,
+        &kid,
+        "grant.acme.example.test",
+    )?;
+    let (_, raw) = csr("grant.acme.example.test")?;
+    let pending = prepare_signed_finalize(&mut service, &account, &jwk, &kid, &order, &raw)?;
+    let result = pending.execute();
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let response = service.finish_external_request(pending, result);
+    assert_eq!(
+        response.status, 503,
+        "actual current mount sign grant remains required"
+    );
+    assert!(response.response_headers.is_empty());
+    assert_no_completed_order(&service, &order)?;
+    Ok(())
+}
+
+// Only this fixture uses the Linux native KMS host shim; the remote signature
+// itself is produced and verified over the real TLS Transit boundary.
+#[cfg(target_os = "linux")]
+#[test]
+fn pki_acme_external_postaudit_host_revoke_and_enrollment_replace_withhold_delivery() -> TestResult
+{
+    for scenario in ["host-revoke", "enrollment-replace", "concurrent-revoker"] {
+        let remote = RemoteTransit::new_kind("ed25519")?;
+        let (_root, mut service, _unseal, admin) = remote.fixture_kms_capabilities(
+            Some(true),
+            Some(vec!["wrap".into(), "unwrap".into(), "sign".into()]),
+        )?;
+        for (path, body, status) in [
+            ("sys/mounts/external-ca", json!({"type":"pki"}), 204),
+            (
+                "sys/external-keys/configs/remote/keys/v2",
+                json!({"verify":false,"name":"remote","version":2}),
+                204,
+            ),
+            (
+                "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+                json!({}),
+                204,
+            ),
+            ("external-ca/root/generate/kms", body(), 200),
+        ] {
+            assert_eq!(
+                call(&mut service, "POST", path, &admin, body).status,
+                status
+            );
+        }
+        setup_remote(&mut service, &admin)?;
+        let (account, jwk) = key()?;
+        let kid = order_account(&mut service, &account, &jwk)?;
+        let domain = "postaudit.acme.example.test";
+        let order = ready(&mut service, &admin, &account, &jwk, &kid, domain)?;
+        let (_, raw) = csr(domain)?;
+        let pending = prepare_signed_finalize(&mut service, &account, &jwk, &kid, &order, &raw)?;
+        let result = pending.execute();
+        let ExternalEffectPlan::AcmeExternal(mut plan) = pending.effect else {
+            return Err("actual managed signing plan".into());
+        };
+        let ExternalEffectResult::AcmeExternal(result) = result else {
+            return Err("actual managed signing result".into());
+        };
+        let response = service.finalize_acme_external(&mut plan, result);
+        assert_eq!(
+            response.status,
+            200,
+            "actual signed publication before audit static errors {:?}",
+            response.body.get("errors")
+        );
+        let issued_nonce = header(&response, "Replay-Nonce")?;
+        service.pending_acme_authority = plan.authority.take();
+        let host = std::sync::Arc::clone(service.kms_plugins.get("transit").ok_or("host")?);
+        let mut audit_host_error = None;
+        let response = service.audit_completed_response_with_receipt(
+            &pending.fingerprint,
+            pending.now,
+            pending.token_clock,
+            response,
+            || {
+                if scenario == "host-revoke" {
+                    match host.lock() {
+                        Ok(mut host) => host.revoke(),
+                        Err(_) => audit_host_error = Some("owned audit host lock"),
+                    }
+                }
+            },
+        );
+        if let Some(error) = audit_host_error {
+            return Err(error.into());
+        }
+        assert_eq!(
+            response.status, 200,
+            "mandatory audit completed before delivery gate"
+        );
+        if scenario == "concurrent-revoker" {
+            let (ready_tx, ready_rx) = std::sync::mpsc::channel();
+            let (done_tx, done_rx) = std::sync::mpsc::channel();
+            let mut revoker = None;
+            let mut hold_observation: TestResult = Ok(());
+            let delivered = service.complete_pending_acme_delivery_with_held_receipt(
+                true,
+                response,
+                &pending.fingerprint,
+                || {
+                    revoker = Some(std::thread::spawn(move || -> Result<(), &'static str> {
+                        let blocked =
+                            matches!(host.try_lock(), Err(std::sync::TryLockError::WouldBlock));
+                        ready_tx.send(blocked).map_err(|_| "owned revoker ready")?;
+                        host.lock()
+                            .map_err(|_| "owned revoker actual host")?
+                            .revoke();
+                        done_tx.send(()).map_err(|_| "owned revoker completed")?;
+                        Ok(())
+                    }));
+                    hold_observation = (|| -> TestResult {
+                        assert!(ready_rx.recv_timeout(Duration::from_secs(1))?);
+                        assert!(matches!(
+                            done_rx.try_recv(),
+                            Err(std::sync::mpsc::TryRecvError::Empty)
+                        ));
+                        Ok(())
+                    })();
+                },
+            );
+            assert_eq!(
+                delivered.status, 200,
+                "held actual host linearizes delivery before revoke"
+            );
+            hold_observation?;
+            done_rx.recv_timeout(Duration::from_secs(1))?;
+            revoker
+                .ok_or("actual revoker handle")?
+                .join()
+                .map_err(|_| "actual revoker panicked")??;
+            assert_eq!(
+                service
+                    .kms_plugins
+                    .get("transit")
+                    .ok_or("actual host")?
+                    .lock()
+                    .map_err(|_| "host lock")?
+                    .state(),
+                heptabao_plugin_host::PluginHostState::Revoked
+            );
+            continue;
+        }
+        if scenario == "enrollment-replace" {
+            // Installation remains immutable while unsealed. This test seam
+            // changes the actual enrollment after audit, without minting a grant.
+            service.outbound =
+                crate::outbound::Outbound::new(Vec::new()).map_err(|_| "replacement enrollment")?;
+        }
+        let veto = service.complete_pending_acme_delivery(true, response, &pending.fingerprint);
+        assert_eq!(
+            veto.status, 503,
+            "{scenario} must veto the original capsule"
+        );
+        assert!(veto.response_headers.is_empty());
+        assert!(veto.consistency_index.is_none());
+        assert!(veto.body.get("__heptabao_acme").is_none());
+        let replay = call(
+            &mut service,
+            "POST",
+            &format!("external-ca/acme/{order}"),
+            "",
+            signed(
+                &account,
+                &jwk,
+                &issued_nonce,
+                &format!("https://acme.example.test/v1/external-ca/acme/{order}"),
+                Some(&kid),
+                None,
+            )?,
+        );
+        assert_eq!(replay.status, 400);
+        assert_eq!(
+            replay.body["__heptabao_acme"]["type"],
+            "urn:ietf:params:acme:error:badNonce"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_acme_external_public_account_and_possession_revoke_seven_real_crl_signers_and_reopen()
+-> TestResult {
+    for kind in [
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+        setup_remote(&mut service, &admin)?;
+        let (account, jwk) = key()?;
+        let kid = order_account(&mut service, &account, &jwk)?;
+        let mut last_crl = Vec::new();
+        for possession in [false, true] {
+            let domain = if possession {
+                "pop.revoke.acme.example.test"
+            } else {
+                "account.revoke.acme.example.test"
+            };
+            let order = ready(&mut service, &admin, &account, &jwk, &kid, domain)?;
+            let (leaf, leaf_jwk) = key()?;
+            let raw = csr_with_key(domain, &leaf)?;
+            let finalized = order_post(
+                &mut service,
+                &account,
+                &jwk,
+                &kid,
+                &format!("{order}/finalize"),
+                Some(json!({"csr":URL_SAFE_NO_PAD.encode(&raw)})),
+            )?;
+            assert_eq!(finalized.status, 200);
+            let route = format!("{order}/cert");
+            let fetched = order_post(&mut service, &account, &jwk, &kid, &route, None)?;
+            let chain = X509::stack_from_pem(
+                fetched.body["__heptabao_acme"]
+                    .as_str()
+                    .ok_or("chain")?
+                    .as_bytes(),
+            )?;
+            let der = chain[0].to_der()?;
+            let payload = json!({"certificate":URL_SAFE_NO_PAD.encode(&der)});
+            let n = nonce(&mut service)?;
+            let request = signed(
+                if possession { &leaf } else { &account },
+                if possession { &leaf_jwk } else { &jwk },
+                &n,
+                "https://acme.example.test/v1/external-ca/acme/revoke-cert",
+                if possession { None } else { Some(&kid) },
+                Some(payload.clone()),
+            )?;
+            let before = remote.calls()?;
+            let revoked = call(
+                &mut service,
+                "POST",
+                "external-ca/acme/revoke-cert",
+                "",
+                request,
+            );
+            assert_eq!(
+                revoked.status,
+                200,
+                "actual remote CRL kind {kind} static errors {:?}",
+                revoked.body.get("errors")
+            );
+            assert_eq!(
+                remote.calls()?,
+                before + 3,
+                "one original metadata read and full/delta signatures"
+            );
+            let fetched = call(&mut service, "GET", "external-ca/crl", "", json!({}));
+            assert_eq!(fetched.status, 200);
+            last_crl = BASE64.decode(
+                fetched.body["__heptabao_pki_crl"]
+                    .as_str()
+                    .ok_or("signed CRL bytes")?,
+            )?;
+            let crl = openssl::x509::X509Crl::from_der(&last_crl)?;
+            let issuer = chain[1].public_key()?;
+            assert!(crl.verify(&issuer)?);
+            let wrong = match issuer.id() {
+                openssl::pkey::Id::ED25519 => PKey::generate_ed25519()?,
+                openssl::pkey::Id::EC => {
+                    PKey::from_ec_key(EcKey::generate(issuer.ec_key()?.group())?)?
+                }
+                openssl::pkey::Id::RSA => {
+                    PKey::from_rsa(openssl::rsa::Rsa::generate(issuer.rsa()?.size() * 8)?)?
+                }
+                _ => return Err("unexpected issuer kind".into()),
+            };
+            assert!(!crl.verify(&wrong).unwrap_or(false));
+            assert!(
+                crl.get_revoked()
+                    .ok_or("signed revoked list")?
+                    .iter()
+                    .any(
+                        |entry| entry.serial_number().to_bn().is_ok_and(|serial| chain[0]
+                            .serial_number()
+                            .to_bn()
+                            .is_ok_and(|actual| serial == actual))
+                    )
+            );
+            let repeated = order_post(
+                &mut service,
+                &account,
+                &jwk,
+                &kid,
+                "revoke-cert",
+                Some(payload),
+            )?;
+            assert_eq!(repeated.status, 400);
+            assert_eq!(
+                remote.calls()?,
+                before + 3,
+                "duplicate revocation never re-signs"
+            );
+            assert!(
+                service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .validate_format()
+                    .is_ok()
+            );
+        }
+        let calls = remote.calls()?;
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        let fetched = call(&mut reopened, "GET", "external-ca/crl", "", json!({}));
+        assert_eq!(fetched.status, 200);
+        assert_eq!(
+            BASE64.decode(
+                fetched.body["__heptabao_pki_crl"]
+                    .as_str()
+                    .ok_or("persisted CRL")?
+            )?,
+            last_crl
+        );
+        assert_eq!(
+            remote.calls()?,
+            calls,
+            "encrypted revocation reopen uses actual stored signed CRL"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+    setup_remote(&mut service, &admin)?;
+    let (account, jwk) = key()?;
+    let kid = order_account(&mut service, &account, &jwk)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/possession",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"max_ttl":"30m"})
+        )
+        .status,
+        200
+    );
+    let (leaf, leaf_jwk) = key()?;
+    let raw = csr_with_key("global.acme.example.test", &leaf)?;
+    let request = X509Req::from_der(&raw)?.to_pem()?;
+    let issued = call(
+        &mut service,
+        "POST",
+        "external-ca/sign/possession",
+        &admin,
+        json!({"csr":String::from_utf8(request)?,"ttl":"10m"}),
+    );
+    assert_eq!(issued.status, 200);
+    let der = X509::from_pem(
+        issued.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual certificate")?
+            .as_bytes(),
+    )?
+    .to_der()?;
+    let delivered_serial = issued.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("actual serial")?
+        .to_owned();
+    let serial_bytes = X509::from_der(&der)?.serial_number().to_bn()?.to_vec();
+    let serial = serial_bytes
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<Vec<_>>()
+        .join(":");
+    assert_eq!(
+        delivered_serial, serial,
+        "public response retains actual signed INTEGER"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            &format!("external-ca/cert/{}", serial.to_ascii_uppercase()),
+            "",
+            json!({})
+        )
+        .status,
+        200
+    );
+    let absent = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/00:{serial}"),
+        "",
+        json!({}),
+    );
+    assert_eq!(absent.status, 404);
+    assert_eq!(absent.body, json!({"errors":[]}));
+    let payload = json!({"certificate":URL_SAFE_NO_PAD.encode(&der)});
+    let calls = remote.calls()?;
+    let denied = order_post(
+        &mut service,
+        &account,
+        &jwk,
+        &kid,
+        "revoke-cert",
+        Some(payload.clone()),
+    )?;
+    assert_eq!(denied.status, 400);
+    assert_eq!(
+        remote.calls()?,
+        calls,
+        "account not issued this global token-owned certificate"
+    );
+    let n = nonce(&mut service)?;
+    let signed = signed(
+        &leaf,
+        &leaf_jwk,
+        &n,
+        "https://acme.example.test/v1/external-ca/acme/revoke-cert",
+        None,
+        Some(payload),
+    )?;
+    let revoked = call(
+        &mut service,
+        "POST",
+        "external-ca/acme/revoke-cert",
+        "",
+        signed,
+    );
+    assert_eq!(
+        revoked.status,
+        200,
+        "static errors {:?}",
+        revoked.body.get("errors")
+    );
+    assert_eq!(remote.calls()?, calls + 3);
+    let public = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        "",
+        json!({}),
+    );
+    assert_eq!(public.status, 200);
+    assert!(
+        public.body["data"]["revocation_time"]
+            .as_u64()
+            .is_some_and(|at| at > 0)
+    );
+    assert!(
+        public.body["data"]["issuer_id"]
+            .as_str()
+            .is_some_and(|id| !id.is_empty())
+    );
+    wrapped_no_effect_revocation(
+        &mut service,
+        &admin,
+        &serial,
+        &json!({"revocation_time":public.body["data"]["revocation_time"],
+            "revocation_time_rfc3339":public.body["data"]["revocation_time_rfc3339"],"state":"revoked"}),
+        &remote,
+    )?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .validate_format()
+            .is_ok()
+    );
+    let crl = call(&mut service, "GET", "external-ca/crl", "", json!({}));
+    let original = BASE64.decode(
+        crl.body["__heptabao_pki_crl"]
+            .as_str()
+            .ok_or("original CRL")?,
+    )?;
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let reread = call(&mut reopened, "GET", "external-ca/crl", "", json!({}));
+    assert_eq!(
+        BASE64.decode(
+            reread.body["__heptabao_pki_crl"]
+                .as_str()
+                .ok_or("reopened CRL")?
+        )?,
+        original
+    );
+    assert_eq!(remote.calls()?, calls + 3);
+    Ok(())
+}
+
+#[test]
+fn pki_acme_external_wrapped_real_sign_encrypted_reopen_and_single_use_unwrap() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+    setup_remote(&mut service, &admin)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/wrapped",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"max_ttl":"30m"})
+        )
+        .status,
+        200
+    );
+    let (private, raw) = csr("wrapped.sign.acme.example.test")?;
+    let pem = String::from_utf8(X509Req::from_der(&raw)?.to_pem()?)?;
+    let calls = remote.calls()?;
+    let started = std::time::Instant::now();
+    let wall = Duration::from_millis(100_500);
+    let original_clock = RequestClock::anchored(wall, started)?;
+    let origin = external_pki::PublicationClockScope::enter(wall, started);
+    let pending = match service.begin_at_mode_precise(
+        RequestDispatch {
+            method: "POST",
+            path: "external-ca/sign/wrapped",
+            namespace: "",
+            token: &admin,
+            body: json!({"csr":pem,"ttl":"10m"}),
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds: Some(60),
+            origin_peer: None,
+            client_certificates: None,
+        },
+        original_clock,
+    ) {
+        RequestExecution::External(pending) => *pending,
+        RequestExecution::Complete(response) => {
+            return Err(format!("wrapped real sign not staged: status {}", response.status).into());
+        }
+    };
+    drop(origin);
+    let actual = pending.execute();
+    let before = wall + started.elapsed();
+    let wrapped = service.finish_external_request(pending, actual);
+    let after = wall + started.elapsed();
+    assert_eq!(wrapped.status, 200);
+    assert!(wrapped.body["data"].is_null() && wrapped.body["auth"].is_null());
+    assert_eq!(wrapped.body["lease_duration"], 0);
+    assert_eq!(wrapped.body["wrap_info"]["ttl"], 60);
+    assert_eq!(
+        wrapped.body["wrap_info"]["creation_path"],
+        "external-ca/sign/wrapped"
+    );
+    let stamp = chrono::DateTime::parse_from_rfc3339(
+        wrapped.body["wrap_info"]["creation_time"]
+            .as_str()
+            .ok_or("actual precise wrapper creation stamp")?,
+    )?;
+    let actual_stamp = Duration::new(
+        u64::try_from(stamp.timestamp())?,
+        stamp.timestamp_subsec_nanos(),
+    );
+    assert!(before <= actual_stamp && actual_stamp <= after);
+    assert_ne!(stamp.timestamp_subsec_nanos(), 0);
+    let bearer = zeroize::Zeroizing::new(
+        wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("private wrapping credential")?
+            .to_owned(),
+    );
+    assert_eq!(remote.calls()?, calls + 2, "one metadata and one signature");
+    drop(wrapped);
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let restored = call(
+        &mut reopened,
+        "POST",
+        "sys/wrapping/unwrap",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(restored.status, 200);
+    assert!(restored.body["wrap_info"].is_null());
+    let certificate = X509::from_pem(
+        restored.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual public wrapped certificate")?
+            .as_bytes(),
+    )?;
+    let issuer = X509::from_pem(
+        restored.body["data"]["issuing_ca"]
+            .as_str()
+            .ok_or("actual public wrapped issuer")?
+            .as_bytes(),
+    )?;
+    let issuer_key = issuer.public_key()?;
+    let wrong = PKey::generate_ed25519()?;
+    assert!(certificate.verify(&issuer_key)?);
+    assert!(!certificate.verify(&wrong)?);
+    assert_eq!(
+        certificate.public_key()?.public_key_to_der()?,
+        private.public_key_to_der()?
+    );
+    assert_eq!(
+        remote.calls()?,
+        calls + 2,
+        "unwrap only reads the stored public response"
+    );
+    let repeated = call(
+        &mut reopened,
+        "POST",
+        "sys/wrapping/unwrap",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(repeated.status, 400);
+    assert_eq!(
+        repeated.body,
+        json!({"errors":["wrapping token is not valid or does not exist"]})
+    );
+    assert_eq!(
+        remote.calls()?,
+        calls + 2,
+        "single-use failure never signs again"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reopen() -> TestResult {
+    for kind in [
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+        setup_remote(&mut service, &admin)?;
+        let (account, jwk) = key()?;
+        let kid = order_account(&mut service, &account, &jwk)?;
+        let domain = "operator.revoke.acme.example.test";
+        let order = ready(&mut service, &admin, &account, &jwk, &kid, domain)?;
+        let (_, raw) = csr(domain)?;
+        assert_eq!(
+            order_post(
+                &mut service,
+                &account,
+                &jwk,
+                &kid,
+                &format!("{order}/finalize"),
+                Some(json!({"csr":URL_SAFE_NO_PAD.encode(&raw)}))
+            )?
+            .status,
+            200
+        );
+        let fetched = order_post(
+            &mut service,
+            &account,
+            &jwk,
+            &kid,
+            &format!("{order}/cert"),
+            None,
+        )?;
+        let chain = X509::stack_from_pem(
+            fetched.body["__heptabao_acme"]
+                .as_str()
+                .ok_or("real chain")?
+                .as_bytes(),
+        )?;
+        let bytes = chain[0].serial_number().to_bn()?.to_vec();
+        let serial = bytes
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<Vec<_>>()
+            .join(":");
+        let before = remote.calls()?;
+        let denied = call(
+            &mut service,
+            "POST",
+            "external-ca/revoke",
+            "",
+            json!({"serial_number":serial}),
+        );
+        assert_eq!(denied.status, 403);
+        assert_eq!(denied.body, json!({"errors":["permission denied"]}));
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "unauthenticated caller cannot enter a signing effect"
+        );
+        let before_acme = service
+            .state
+            .as_ref()
+            .ok_or("actual state")?
+            .engines
+            .acme_observed_time(crate::auth::Timestamp::whole(100)?);
+        // The real provider and encrypted fixture can already advance its
+        // durable frontier past 101. This request starts after that actual
+        // predecessor; no actor expiry or existing request budget is changed.
+        let revoke_at = before_acme
+            .ceil_seconds()?
+            .checked_add(1)
+            .ok_or("actual request timestamp overflow")?;
+        let revoked = service.handle_at(
+            "POST",
+            "external-ca/revoke",
+            "",
+            &admin,
+            json!({"serial_number":serial}),
+            revoke_at,
+        );
+        assert_eq!(
+            revoked.status,
+            200,
+            "actual admin remote CRL kind {kind} errors {:?}",
+            revoked.body.get("errors")
+        );
+        assert_eq!(
+            remote.calls()?,
+            before + 3,
+            "one original metadata and full/delta signatures"
+        );
+        let after_acme = service
+            .state
+            .as_ref()
+            .ok_or("published actual state")?
+            .engines
+            .acme_observed_time(crate::auth::Timestamp::whole(100)?);
+        assert!(after_acme >= crate::auth::Timestamp::whole(revoke_at)?);
+        assert!(after_acme > before_acme);
+
+        let repeated = call(
+            &mut service,
+            "POST",
+            "external-ca/revoke",
+            &admin,
+            json!({"serial_number":serial}),
+        );
+        assert_eq!(repeated.status, 200);
+        assert_eq!(
+            repeated.body, revoked.body,
+            "idempotent native revocation keeps the original timestamp"
+        );
+        assert_eq!(
+            remote.calls()?,
+            before + 3,
+            "idempotent revocation must not re-sign"
+        );
+        wrapped_no_effect_revocation(
+            &mut service,
+            &admin,
+            &serial,
+            &revoked.body["data"],
+            &remote,
+        )?;
+        let fetched = call(&mut service, "GET", "external-ca/crl", "", json!({}));
+        assert_eq!(fetched.status, 200);
+        let crl_der = BASE64.decode(
+            fetched.body["__heptabao_pki_crl"]
+                .as_str()
+                .ok_or("real CRL")?,
+        )?;
+        let crl = openssl::x509::X509Crl::from_der(&crl_der)?;
+        let issuer = chain[1].public_key()?;
+        assert!(crl.verify(&issuer)?);
+        let wrong = match issuer.id() {
+            openssl::pkey::Id::ED25519 => PKey::generate_ed25519()?,
+            openssl::pkey::Id::EC => PKey::from_ec_key(EcKey::generate(issuer.ec_key()?.group())?)?,
+            openssl::pkey::Id::RSA => {
+                PKey::from_rsa(openssl::rsa::Rsa::generate(issuer.rsa()?.size() * 8)?)?
+            }
+            _ => return Err("actual issuer kind".into()),
+        };
+        assert!(!crl.verify(&wrong).unwrap_or(false));
+        assert!(
+            crl.get_revoked()
+                .ok_or("actual revoked entries")?
+                .iter()
+                .any(|entry| entry
+                    .serial_number()
+                    .to_bn()
+                    .is_ok_and(|value| value.to_vec() == bytes))
+        );
+        let published = call(
+            &mut service,
+            "GET",
+            &format!("external-ca/cert/{serial}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(published.status, 200);
+        assert!(published.body["data"]["issuer_id"].is_string());
+        assert!(
+            published.body["data"]["revocation_time"]
+                .as_u64()
+                .ok_or("real revocation time")?
+                > 0
+        );
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("actual state")?
+                .validate_format()
+                .is_ok()
+        );
+        let before = remote.calls()?;
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        let fetched = call(&mut reopened, "GET", "external-ca/crl", "", json!({}));
+        assert_eq!(fetched.status, 200);
+        assert_eq!(
+            BASE64.decode(
+                fetched.body["__heptabao_pki_crl"]
+                    .as_str()
+                    .ok_or("reopened signed CRL")?
+            )?,
+            crl_der
+        );
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "encrypted original operator proof reopens without signing"
+        );
+    }
+    Ok(())
+}

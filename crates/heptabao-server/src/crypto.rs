@@ -51,6 +51,11 @@ impl Barrier for AeadBarrier {
         Ok(protected)
     }
 
+    fn sealed_len_bound(&self, plaintext_len: usize) -> Option<usize> {
+        // HBA1 magic + 96-bit nonce + AES-GCM tag.
+        plaintext_len.checked_add(32)
+    }
+
     fn open(&self, context: &[u8], protected: &[u8]) -> Result<Vec<u8>, BarrierError> {
         if protected.len() < 32 || &protected[..4] != b"HBA1" {
             return Err(BarrierError);
@@ -144,6 +149,50 @@ impl SecretShare {
         }
         let mut value = [0u8; SHARE_SECRET_BYTES];
         value.copy_from_slice(&encoded[7..7 + SHARE_SECRET_BYTES]);
+        Ok(Self {
+            total,
+            threshold,
+            index,
+            value,
+        })
+    }
+}
+
+/// Recovery-only second codec. HBS1 encode/decode and local seal storage stay unchanged.
+/// The public layout is a candidate for pinned wire qualification, not binary evidence.
+impl SecretShare {
+    pub(crate) fn encode_indexed(&self) -> Vec<u8> {
+        if self.threshold == 1 {
+            return self.value.to_vec();
+        }
+        let mut encoded = self.value.to_vec();
+        encoded.push(self.index);
+        encoded
+    }
+    pub(crate) fn decode_indexed(
+        encoded: &[u8],
+        total: u8,
+        threshold: u8,
+    ) -> Result<Self, &'static str> {
+        validate_share_parameters(total, threshold)?;
+        let index = if threshold == 1 {
+            if encoded.len() != SHARE_SECRET_BYTES {
+                return Err("invalid single-threshold recovery share length");
+            }
+            1
+        } else {
+            if encoded.len() != SHARE_SECRET_BYTES + 1 {
+                return Err("invalid indexed recovery share length");
+            }
+            let index = encoded[SHARE_SECRET_BYTES];
+            if index == 0 {
+                return Err("zero recovery polynomial coordinate");
+            }
+            // Coordinates are nonzero GF256 elements, not positions in an output array.
+            index
+        };
+        let mut value = [0; SHARE_SECRET_BYTES];
+        value.copy_from_slice(&encoded[..SHARE_SECRET_BYTES]);
         Ok(Self {
             total,
             threshold,
@@ -417,4 +466,74 @@ mod tests {
         assert!(unwrap_barrier_key(&seal_key, b"seal-generation-2", &wrapped).is_err());
         Ok(())
     }
+}
+
+#[cfg(test)]
+mod recovery_wire_tests {
+    use super::*;
+    #[test]
+    fn indexed_wire_supports_full_byte_coordinate_domain_and_rejects_wrong_shapes()
+    -> Result<(), &'static str> {
+        let secret = [7; 32];
+        let fragments = split_secret(&secret, 255, 2)?;
+        assert_eq!(fragments.len(), 255);
+        let one = SecretShare::decode_indexed(&fragments[0].encode_indexed(), 255, 2)?;
+        let last = SecretShare::decode_indexed(&fragments[254].encode_indexed(), 255, 2)?;
+        assert_eq!(combine_shares(&[one, last])?, secret);
+        assert!(SecretShare::decode_indexed(&fragments[0].encode(), 255, 2).is_err());
+        assert!(SecretShare::decode(&fragments[0].encode_indexed()).is_err());
+        assert!(SecretShare::decode_indexed(&[0; 33], 255, 2).is_err());
+        assert!(SecretShare::decode_indexed(&[0; 32], 255, 2).is_err());
+        assert!(SecretShare::decode_indexed(&[0; 33], 255, 1).is_err());
+        Ok(())
+    }
+    #[test]
+    fn hand_constructed_polynomial_accepts_coordinate_above_output_count()
+    -> Result<(), &'static str> {
+        let secret = [0x73; 32];
+        let slope = 0x29;
+        let wire = |x| {
+            let mut bytes = vec![0x73 ^ gf_mul(slope, x); 32];
+            bytes.push(x);
+            bytes
+        };
+        let a = SecretShare::decode_indexed(&wire(1), 3, 2)?;
+        let b = SecretShare::decode_indexed(&wire(255), 3, 2)?;
+        assert_eq!(combine_shares(&[a, b])?, secret);
+        Ok(())
+    }
+    #[test]
+    fn legacy_hbs1_roundtrip_bytes_remain_distinct_and_threshold_one_is_raw()
+    -> Result<(), &'static str> {
+        let secret = [0x41; 32];
+        let fragments = split_secret(&secret, 5, 1)?;
+        for fragment in fragments {
+            let hbs = fragment.encode();
+            assert_eq!(&hbs[..4], b"HBS1");
+            assert_eq!(SecretShare::decode(&hbs)?.encode(), hbs);
+            let bare = fragment.encode_indexed();
+            assert_eq!(bare, secret);
+            assert_eq!(
+                combine_shares(&[SecretShare::decode_indexed(&bare, 5, 1)?])?,
+                secret
+            );
+        }
+        Ok(())
+    }
+}
+
+// OpenBao uses go-uuid FormatUUID: retain all 128 random bits, including
+// the version and variant positions, in the native 8-4-4-4-12 form.
+pub(crate) fn uuid_from_bytes(random: &[u8; 16]) -> String {
+    let bytes = *random;
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut id = String::with_capacity(36);
+    for (index, byte) in bytes.into_iter().enumerate() {
+        if matches!(index, 4 | 6 | 8 | 10) {
+            id.push('-');
+        }
+        id.push(char::from(HEX[usize::from(byte >> 4)]));
+        id.push(char::from(HEX[usize::from(byte & 0x0f)]));
+    }
+    id
 }

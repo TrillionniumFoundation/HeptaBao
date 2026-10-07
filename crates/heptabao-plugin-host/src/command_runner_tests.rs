@@ -136,7 +136,7 @@ fn descendant_fixture(parent_tail: &str, escape: &str) -> Result<Fixture, Box<dy
         &format!(
             "#!/usr/bin/python3\nimport os, sys, time\n\
          sys.stdin.buffer.read()\npid = os.fork()\n\
-         if pid == 0:\n    {escape}\n    with open(os.environ['DESCENDANT_PID_FILE'], 'w') as f: f.write(str(os.getpid()) + ' ' + os.readlink('/proc/self'))\n    time.sleep(30)\n    os._exit(0)\n\
+         if pid == 0:\n    {escape}\n    target = os.environ['DESCENDANT_PID_FILE']\n    temporary = target + '.pending'\n    with open(temporary, 'x') as f: f.write(str(os.getpid()) + ' ' + os.readlink('/proc/self'))\n    os.replace(temporary, target)\n    time.sleep(30)\n    os._exit(0)\n\
          {parent_tail}\n",
         ),
         NOOP_PLUGIN,

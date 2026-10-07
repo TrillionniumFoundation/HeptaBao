@@ -83,6 +83,8 @@ step is not a passing network-partition observation. Each result belongs only
 to its source commit/tree, executable digest and actual execution environment.
 Commands in this guide do not assert that a particular candidate passed.
 
+The current SSD Linux receipt is [`qa/openbao-acceptance/evidence/ha-partition-e57f045.json`](../../qa/openbao-acceptance/evidence/ha-partition-e57f045.json): 67 scenarios passed for binary digest `e57f04533c3beaf9560b0d5dd1af66355231df6bf8ddc09ace03598e338579b3`. It remains a loopback repository fixture and keeps the limitations below in force.
+
 ## Regression tests and remaining evidence
 
 `qa/openbao-acceptance/tests/test_ha_network_partition.py` checks destination

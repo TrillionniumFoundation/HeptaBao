@@ -1,0 +1,215 @@
+//! Read-only inspection is not an execution Principal and cannot be dispatched.
+//! The permission evaluator is shared with real request authorization.
+use super::*;
+
+pub(crate) struct InspectionTarget {
+    pub(crate) entity_id: Option<String>,
+    root: bool,
+    wrapping: bool,
+    policies: BTreeSet<String>,
+}
+
+impl InspectionTarget {
+    fn from_checked(token: &batch_principal::CheckedCredential<'_>) -> Self {
+        Self {
+            entity_id: token.entity_id().map(str::to_owned),
+            root: token.is_root(),
+            wrapping: token.is_wrapping(),
+            policies: token.policies().clone(),
+        }
+    }
+    fn from_token(token: &Token) -> Self {
+        Self {
+            entity_id: token.entity_id.clone(),
+            root: token.root,
+            wrapping: token.wrapping.is_some(),
+            policies: token.policies.clone(),
+        }
+    }
+}
+
+impl AuthState {
+    pub(crate) fn inspection_target(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        route: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<InspectionTarget, AuthError> {
+        let time = actor.request_authority_time(AuthorityTime::Coarse(now))?;
+        if route == "sys/capabilities-self" {
+            // The authenticated request owns its final-use view. Inspecting it
+            // neither mints a second Principal nor consumes a second token use.
+            let token = self.check_principal(actor, namespace, now)?;
+            return Ok(InspectionTarget::from_checked(&token));
+        }
+        let id = if route == "sys/capabilities" {
+            let raw = string_field(body, "token")?;
+            if raw.starts_with("hvb.") {
+                let target = self
+                    .inspect_raw_target_observed(raw, namespace, time)
+                    .map_err(|_| bad("invalid inspection target"))?;
+                return Ok(InspectionTarget::from_checked(
+                    &target.view_observed(self, time)?,
+                ));
+            }
+            if raw.len() > 256 || !raw.starts_with("hvs.") {
+                return Err(bad("invalid token"));
+            }
+            hash(raw)
+        } else {
+            let accessor = string_field(body, "accessor")?;
+            if accessor.is_empty() || accessor.len() > 256 {
+                return Err(bad("invalid accessor"));
+            }
+            let mut matches = self.tokens.iter().filter(|(_, token)| {
+                token.accessor == accessor && (token.root || token.namespace == namespace)
+            });
+            let id = matches
+                .next()
+                .map(|(id, _)| id.clone())
+                .ok_or_else(|| bad("invalid accessor"))?;
+            if matches.next().is_some() {
+                return Err(bad("ambiguous accessor"));
+            }
+            id
+        };
+        // Metadata inspection never decrements the target's finite-use count.
+        let token = self
+            .active_token_observed(&id, time, true)
+            .map_err(|_| bad("invalid inspection target"))?;
+        if !token.root && token.namespace != namespace {
+            return Err(bad("invalid inspection target"));
+        }
+        Ok(InspectionTarget::from_token(token))
+    }
+
+    pub(crate) fn inspection_template_selectors(
+        &self,
+        namespace: &str,
+        target: &InspectionTarget,
+        policies: &BTreeSet<String>,
+    ) -> Result<BTreeSet<String>, AuthError> {
+        self.policy_template_selectors(namespace, &target.policies, policies)
+    }
+
+    fn inspection_acl_path<'p>(
+        &self,
+        namespace: &str,
+        path: &'p str,
+        target: &InspectionTarget,
+        identity_policies: &BTreeSet<String>,
+        templates: &IdentityTemplateValues,
+    ) -> Result<&'p str, AuthError> {
+        // OpenBao ACL.Capabilities uses ListOperation. Leading separators are
+        // removed from the full namespace-prefixed path, and an exact rule for
+        // a single trailing-slash trim wins only when the original has no exact
+        // rule. This adjusts metadata evaluation, never an execution route.
+        let path = if namespace.is_empty() {
+            path.trim_start_matches('/')
+        } else {
+            path
+        };
+        let Some(trimmed) = path.strip_suffix('/') else {
+            return Ok(path);
+        };
+        let mut original_exact = false;
+        let mut trimmed_exact = false;
+        let mut inspect = |rules: &[Rule]| -> Result<(), AuthError> {
+            for rule in rules {
+                if let Some(rendered) = acl_template::render(&rule.path, templates)?
+                    && !rendered.ends_with('*')
+                    && !rendered.split('/').any(|part| part == "+")
+                {
+                    original_exact |= rendered == path;
+                    trimmed_exact |= rendered == trimmed;
+                }
+            }
+            Ok(())
+        };
+        for name in target.policies.iter().chain(identity_policies) {
+            if let Some(policy) = self
+                .policies
+                .get(namespace)
+                .and_then(|entries| entries.get(name))
+            {
+                inspect(&policy.rules)?;
+            } else if name == "default" {
+                inspect(&default_policy::compiled()?.rules)?;
+            }
+        }
+        Ok(if !original_exact && trimmed_exact {
+            trimmed
+        } else {
+            path
+        })
+    }
+
+    pub(crate) fn inspect_capabilities(
+        &self,
+        namespace: &str,
+        path: &str,
+        target: &InspectionTarget,
+        identity_policies: &BTreeSet<String>,
+        identity_disabled: bool,
+        identity_templates: &IdentityTemplateValues,
+    ) -> Result<Vec<&'static str>, AuthError> {
+        validate_namespace(namespace)?;
+        // Introspection accepts literal query strings even when they are not
+        // admissible execution routes. It produces capabilities, never a grant.
+        if path.is_empty() {
+            return Err(bad("1 error occurred:\n\t* missing path\n\n"));
+        }
+        if identity_disabled {
+            return Ok(vec!["deny"]);
+        }
+        if target.root {
+            return Ok(vec!["root"]);
+        }
+        if target.wrapping {
+            return Ok(if wrapping::allows_token_operation(path, "update") {
+                vec!["update"]
+            } else {
+                vec!["deny"]
+            });
+        }
+        let path = self
+            .inspection_acl_path(
+                namespace,
+                path,
+                target,
+                identity_policies,
+                identity_templates,
+            )
+            .map_err(|_| denied())?;
+        let mut capabilities = Vec::new();
+        for capability in CAPABILITIES
+            .iter()
+            .copied()
+            .filter(|capability| *capability != "deny")
+        {
+            if self
+                .policy_allows(
+                    namespace,
+                    path,
+                    capability,
+                    &target.policies,
+                    identity_policies,
+                    identity_templates,
+                )
+                // Inspecting an invalid target ACL is a denied introspection,
+                // distinct from that target's own malformed request (HTTP 400).
+                // Do not return a partial capability list or Identity contents.
+                .map_err(|_| denied())?
+            {
+                capabilities.push(capability);
+            }
+        }
+        capabilities.sort_unstable();
+        if capabilities.is_empty() {
+            capabilities.push("deny");
+        }
+        Ok(capabilities)
+    }
+}

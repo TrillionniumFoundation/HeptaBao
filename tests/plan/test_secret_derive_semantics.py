@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import re
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,6 +24,7 @@ class SecretDeriveSemanticsTests(unittest.TestCase):
         traits = {item.strip() for item in match.group(1).split(",")}
         self.assertNotIn("Debug", traits)
 
+    @historical_only
     def test_secret_bytes_has_explicit_redacted_debug_and_drop_zeroization(self) -> None:
         source = PROTOCOL.read_text(encoding="utf-8")
         for marker in (

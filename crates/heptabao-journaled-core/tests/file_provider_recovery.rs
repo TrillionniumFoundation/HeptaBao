@@ -401,7 +401,7 @@ struct TempTree {
 impl TempTree {
     fn new() -> Result<Self, std::io::Error> {
         let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
-        let root = std::env::temp_dir().join(format!(
+        let root = std::env::temp_dir().canonicalize()?.join(format!(
             "heptabao-journaled-file-recovery-{}-{sequence}",
             std::process::id()
         ));

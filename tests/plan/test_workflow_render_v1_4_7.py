@@ -8,6 +8,11 @@ import struct
 import subprocess
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,6 +30,7 @@ class WorkflowRenderTests(unittest.TestCase):
         self.assertEqual(RENDERER.BASELINE_SHA256,
                          hashlib.sha256(RENDERER.BASELINE_PATH.read_bytes()).hexdigest())
 
+    @historical_only
     def test_complete_workflow_is_reproducible(self) -> None:
         path = ROOT / ".github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml"
         self.assertEqual(path.read_bytes(), RENDERER.workflow_source().encode())

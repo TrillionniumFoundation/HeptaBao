@@ -193,7 +193,7 @@ class ExternalCompletionVerifierTests(unittest.TestCase):
             _evidence, _trust, digest = fixture.build()
             result = fixture.verify(digest)
             self.assertTrue(result["admitted"])
-            self.assertEqual(result["gate_count"], 8)
+            self.assertEqual(result["gate_count"], 9)
             self.assertEqual(result["authority_effect"], "NONE_UNTIL_SEPARATE_GRANT")
 
     def test_missing_denominator_case_fails_closed(self) -> None:

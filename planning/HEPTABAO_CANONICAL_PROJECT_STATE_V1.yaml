@@ -4,7 +4,7 @@ revision: '1.2'
 status: IMPLEMENTATION_ACTIVE_NOT_QUALIFIED
 binding:
   mode: SELF_RESOLVED_AT_VERIFICATION
-  repository: ProfHepta/HeptaBao
+  repository: TrillionniumFoundation/HeptaBao
   ref: SELF
   commit: SELF
   tree: SELF

@@ -43,6 +43,31 @@ class FailClosedTests(unittest.TestCase):
             with self.assertRaises(BaoError):
                 private_read(link)
 
+    def test_private_token_file_requires_owner_only_parent_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "token"
+            path.write_text("synthetic-only-token")
+            path.chmod(0o600)
+            root.chmod(0o755)
+            with self.assertRaisesRegex(BaoError, "private_parent_directory_required"):
+                private_read(path)
+            root.chmod(0o700)
+            self.assertEqual(private_read(path), b"synthetic-only-token")
+
+    def test_private_token_file_rejects_symlinked_parent_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            real = root / "real"
+            real.mkdir(mode=0o700)
+            path = real / "token"
+            path.write_text("synthetic-only-token")
+            path.chmod(0o600)
+            link = root / "link"
+            link.symlink_to(real, target_is_directory=True)
+            with self.assertRaises(BaoError):
+                private_read(link / "token")
+
     def test_private_publication_is_0600_and_cannot_overwrite_symlink(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "checkpoint.json"

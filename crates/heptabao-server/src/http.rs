@@ -1,7 +1,14 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service, crypto, ha::HaProcess, service::WireRejection};
-use rustls::{ServerConfig, ServerConnection, StreamOwned};
+use crate::request_deadline::{LockWaitError, RequestDeadlineScope, lock_until};
+use crate::{
+    Response, Service, ServiceRequest, crypto,
+    ha::HaProcess,
+    service::{RequestExecution, WireRejection},
+};
+use rustls::pki_types::CertificateRevocationListDer;
+use rustls::server::WebPkiClientVerifier;
+use rustls::{RootCertStore, ServerConfig, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::{
@@ -16,16 +23,50 @@ use std::{
     },
     time::{Duration, Instant},
 };
+
+#[path = "http_h2.rs"]
+mod h2_transport;
+#[path = "http_logical.rs"]
+mod logical;
 use zeroize::{Zeroize, Zeroizing};
+
+#[path = "http_help.rs"]
+pub(crate) mod help;
+#[path = "http_ocsp.rs"]
+pub(crate) mod ocsp;
+#[path = "http_pki_role_fields.rs"]
+pub(crate) mod pki_role_fields;
+#[path = "http_snapshot.rs"]
+mod snapshot;
+#[path = "http_token_fields.rs"]
+pub(crate) mod token_fields;
+
+#[path = "http_consistency.rs"]
+pub(crate) mod consistency;
+#[path = "http_leader.rs"]
+mod leader;
+#[cfg(target_os = "linux")]
+#[path = "http_local_control.rs"]
+mod local_control;
+#[cfg(target_os = "linux")]
+pub use local_control::LocalControlConfig;
 
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
+fn default_disable_unauthed_rekey_endpoints() -> bool {
+    true
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
+    /// Listener-only opt-in for deprecated unauthenticated recovery rekey.
+    /// Root-key legacy rekey still requires its separate root-key consumer.
+    #[serde(default = "default_disable_unauthed_rekey_endpoints")]
+    pub disable_unauthed_rekey_endpoints: bool,
     pub listen: SocketAddr,
     pub data_dir: PathBuf,
     pub audit_file: PathBuf,
@@ -33,16 +74,83 @@ pub struct Config {
     pub audit: crate::AuditConfig,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
+    /// Deployment-owned client trust roots. A configured bundle requires a
+    /// valid client certificate unless optional client authentication is set.
+    #[serde(default)]
+    pub tls_client_ca_file: Option<PathBuf>,
+    /// Allow connections without a certificate while still verifying every
+    /// presented chain. Requires explicit trust roots; defaults to mandatory.
+    #[serde(default)]
+    pub tls_client_auth_optional: bool,
+    /// Optional CRL bundle applied to the client certificate chain. A CRL is
+    /// never accepted without an explicit client CA bundle.
+    #[serde(default)]
+    pub tls_client_crl_file: Option<PathBuf>,
     #[serde(default = "default_connections")]
     pub max_connections: usize,
     #[serde(default = "default_timeout")]
     pub timeout_seconds: u64,
+    #[serde(default)]
+    pub consistency_max_index_wait: Option<String>,
+    #[serde(default)]
+    pub consistency_fallback_behavior: Option<String>,
+    #[serde(default)]
+    pub consistency_missing_header_forward: bool,
     #[serde(default = "default_rate_limit_per_second")]
     pub rate_limit_per_second: u32,
     #[serde(default = "default_rate_limit_burst")]
     pub rate_limit_burst: u32,
     #[serde(default = "default_rate_limit_entries")]
     pub rate_limit_entries: usize,
+    /// Zero explicitly disables idle maintenance. Active request checks remain mandatory.
+    #[serde(default = "default_lifecycle_interval")]
+    pub lifecycle_interval_seconds: u64,
+    /// Deployment-owned egress allowlist; API configuration cannot widen it.
+    #[serde(default)]
+    pub outbound_endpoints: Vec<crate::outbound::EndpointConfig>,
+    /// Optional mandatory HTTPS audit collector. The URL must resolve only
+    /// through `outbound_endpoints`; API requests cannot replace it.
+    #[serde(default)]
+    pub audit_http_url: Option<String>,
+    /// Optional deployment-owned TCP socket audit collector. The mandatory
+    /// authenticated file sink remains enabled even if this collector fails.
+    #[serde(default)]
+    pub audit_socket: Option<crate::AuditSocketConfig>,
+    /// Optional deployment-owned local Unix syslog audit device.
+    #[serde(default)]
+    pub audit_syslog: Option<crate::AuditSyslogConfig>,
+    /// Optional deployment-owned PostgreSQL durable backend. The password is
+    /// process configuration and is never accepted from an HTTP request.
+    #[serde(default)]
+    pub postgres_durable: Option<crate::postgres_storage::PgStorageConfig>,
+    #[serde(default)]
+    pub plugin_auth: Vec<crate::PluginAuthConfig>,
+    #[serde(default)]
+    pub plugin_database: Vec<crate::PluginDatabaseConfig>,
+    #[serde(default)]
+    pub plugin_kms: Vec<crate::PluginKmsConfig>,
+    #[serde(default)]
+    pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[serde(default)]
+    pub openbao_sdk: Option<crate::SdkBackendConfig>,
+    /// Optional, deployment-owned SDK Wrapper runtime with per-launch AutoMTLS.
+    /// This does not select a KMS/barrier consumer or the HBP1 transport.
+    #[serde(default)]
+    pub openbao_wrapper: Option<crate::OpenBaoWrapperConfig>,
+    /// Explicit local deployment authority. No HTTP route creates this control.
+    #[cfg(target_os = "linux")]
+    #[serde(default)]
+    pub local_control: Option<LocalControlConfig>,
+    /// Qualification-only lower bound seam. Ordinary binaries reject this
+    /// field because the feature is absent; feature builds may only reduce the
+    /// canonical 16 MiB opaque-owner ceiling, never raise it.
+    #[cfg(feature = "fixture-capacity-limit")]
+    #[serde(default)]
+    pub fixture_opaque_owner_limit_bytes: Option<usize>,
+}
+fn default_lifecycle_interval() -> u64 {
+    5
 }
 fn default_connections() -> usize {
     16
@@ -126,17 +234,72 @@ impl RateLimiter {
 }
 
 pub fn serve(config: Config) -> Result<(), String> {
-    serve_inner(config, None)
+    serve_inner(
+        config,
+        None,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
 pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), String> {
-    serve_inner(config, Some(ha))
+    serve_inner(
+        config,
+        Some(ha),
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
-fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), String> {
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+pub fn serve_with_ha_fixture(
+    config: Config,
+    ha: Arc<Mutex<HaProcess>>,
+    fixture: crate::fixture_native_restore::NativeRestoreFaultGate,
+) -> Result<(), String> {
+    serve_inner(config, Some(ha), Some(fixture))
+}
+
+fn serve_inner(
+    config: Config,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))] fixture: Option<
+        crate::fixture_native_restore::NativeRestoreFaultGate,
+    >,
+) -> Result<(), String> {
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
+    if config.lifecycle_interval_seconds > 60 {
+        return Err("lifecycle interval must be zero or 1..=60 seconds".into());
+    }
+    if config.tls_client_auth_optional && config.tls_client_ca_file.is_none() {
+        return Err("optional TLS client authentication requires a client CA bundle".into());
+    }
+    #[cfg(target_os = "linux")]
+    let mut local_control = if let Some(control) = config.local_control.as_ref() {
+        if ha.is_some()
+            || config.postgres_durable.is_some()
+            || !config.plugin_auth.is_empty()
+            || !config.plugin_database.is_empty()
+            || !config.plugin_kms.is_empty()
+            || !config.plugin_secrets.is_empty()
+            || !config
+                .openbao_wrapper
+                .as_ref()
+                .is_some_and(|wrapper| wrapper.seal_barrier)
+        {
+            return Err("local control requires the standalone Wrapper seal profile".into());
+        }
+        Some(local_control::Control::open(control)?)
+    } else {
+        None
+    };
+    let consistency_settings = consistency::Settings::checked(
+        config.consistency_max_index_wait.as_deref(),
+        config.consistency_fallback_behavior.as_deref(),
+        config.consistency_missing_header_forward,
+    )?;
     let limiter = Arc::new(Mutex::new(RateLimiter::new(
         config.rate_limit_per_second,
         config.rate_limit_burst,
@@ -163,14 +326,36 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         .map_err(|_| "invalid TLS key")?
         .ok_or("missing TLS private key")?;
     let provider = Arc::new(rustls::crypto::ring::default_provider());
-    let mut tls = ServerConfig::builder_with_provider(provider)
+    if config.tls_client_crl_file.is_some() && config.tls_client_ca_file.is_none() {
+        return Err("TLS client CRL requires a client CA bundle".into());
+    }
+    let verifier = match config.tls_client_ca_file.as_ref() {
+        Some(path) => Some(load_client_verifier(
+            path,
+            config.tls_client_crl_file.as_ref(),
+            config.tls_client_auth_optional,
+            &config.data_dir,
+            Arc::clone(&provider),
+        )?),
+        None => None,
+    };
+    let builder = ServerConfig::builder_with_provider(provider)
         .with_safe_default_protocol_versions()
-        .map_err(|_| "TLS versions unavailable")?
-        .with_no_client_auth()
-        .with_single_cert(certificates, key)
-        .map_err(|_| "TLS key and certificate do not match")?;
-    tls.alpn_protocols = vec![b"http/1.1".to_vec()];
+        .map_err(|_| "TLS versions unavailable")?;
+    let mut tls = match verifier {
+        Some(verifier) => builder
+            .with_client_cert_verifier(verifier)
+            .with_single_cert(certificates, key)
+            .map_err(|_| "TLS key and certificate do not match")?,
+        None => builder
+            .with_no_client_auth()
+            .with_single_cert(certificates, key)
+            .map_err(|_| "TLS key and certificate do not match")?,
+    };
+    tls.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
+    #[cfg(feature = "fixture-capacity-limit")]
+    let fixture_opaque_owner_limit_bytes = config.fixture_opaque_owner_limit_bytes;
     let ha_enabled = ha.is_some();
     let forwarding_ha = ha.clone();
     let service = Arc::new(Mutex::new(
@@ -187,22 +372,91 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
+    let wrapper_launch = {
+        let mut service = service.lock().map_err(|_| "service lock unavailable")?;
+        service.install_recovery_listener_policy(config.disable_unauthed_rekey_endpoints)?;
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        {
+            service.native_restore_fault = fixture;
+        }
+        #[cfg(feature = "fixture-capacity-limit")]
+        service.install_fixture_opaque_owner_limit(fixture_opaque_owner_limit_bytes)?;
+        service.install_outbound_endpoints(config.outbound_endpoints)?;
+        service.install_auth_plugins(config.plugin_auth)?;
+        service.install_database_plugins(config.plugin_database)?;
+        service.install_kms_plugins(config.plugin_kms)?;
+        service.install_secret_plugins(config.plugin_secrets)?;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        service.install_sdk_backend(config.openbao_sdk)?;
+        service.install_audit_http_endpoint(config.audit_http_url)?;
+        service.install_audit_socket(config.audit_socket)?;
+        service.install_audit_syslog(config.audit_syslog)?;
+        if let Some(postgres) = config.postgres_durable {
+            service.install_postgres_durable_storage(postgres)?;
+        }
+        service.install_openbao_wrapper(config.openbao_wrapper)?
+    };
+    // Startup process work is outside the Service writer; no API can install or
+    // reattach an endpoint. Failed admission aborts listener startup explicitly.
+    let startup: Result<(), String> = (|| {
+        if let Some(plan) = wrapper_launch {
+            plan.execute().map_err(|error| error.to_string())?;
+        }
+        #[cfg(target_os = "linux")]
+        {
+            let activation = service
+                .lock()
+                .map_err(|_| "service lock unavailable")?
+                .prepare_wrapper_barrier_activation()?;
+            if let Some(plan) = activation {
+                let completion = plan.execute();
+                service
+                    .lock()
+                    .map_err(|_| "service lock unavailable")?
+                    .finish_wrapper_barrier_activation(completion)?;
+            }
+        }
+        Ok(())
+    })();
+    #[cfg(target_os = "linux")]
+    if let Err(error) = startup {
+        #[cfg(target_os = "linux")]
+        if let Some(control) = local_control.as_ref() {
+            return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+        }
+        return Err(error);
+    }
+    #[cfg(not(target_os = "linux"))]
+    startup?;
     if let Some(ha) = forwarding_ha {
+        let forward_timeout = ha
+            .lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .forward_timeout()
+            .min(Duration::from_secs(config.timeout_seconds));
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match service.lock() {
-                Ok(mut service) => service.handle_forwarded(
-                    &request.method,
-                    &request.path,
-                    &request.namespace,
-                    &request.token,
-                    std::mem::take(&mut request.body),
+            let response = execute_service_request(
+                &service,
+                ServiceRequest {
+                    method: &request.method,
+                    path: &request.path,
+                    namespace: &request.namespace,
+                    token: &request.token,
+                    body: std::mem::take(&mut request.body),
+                    wrap_ttl_seconds: request.wrap_ttl_seconds,
+                    origin_peer: request.origin_peer,
+                    client_certificates: request.client_certificates.take(),
+                },
+                crate::ha_forward_completion::CompletionScope::deadline().map_or_else(
+                    || Instant::now() + forward_timeout,
+                    |original| original.min(Instant::now() + forward_timeout),
                 ),
-                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
-            };
+                true,
+            );
             request.token.zeroize();
             response
         });
@@ -210,16 +464,137 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             .map_err(|_| "HA process lock is unavailable".to_owned())?
             .register_forward_handler(handler)?;
     }
-    let listener =
-        TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
+    let listener = match TcpListener::bind(config.listen) {
+        Ok(value) => value,
+        Err(_) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                return control.shutdown(
+                    &service,
+                    &AtomicUsize::new(0),
+                    Some("cannot bind configured listener".into()),
+                    || {},
+                );
+            }
+            return Err("cannot bind configured listener".into());
+        }
+    };
+    let _native_remount = match crate::service::start_native_remount_worker(&service) {
+        Ok(worker) => worker,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+            }
+            return Err(error);
+        }
+    };
+    let _namespace_deletion = match crate::service::start_namespace_deletion_worker(&service) {
+        Ok(worker) => worker,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+            }
+            return Err(error);
+        }
+    };
+    let _lifecycle = match crate::service::start_lifecycle_worker(
+        &service,
+        Duration::from_secs(config.lifecycle_interval_seconds),
+    ) {
+        Ok(value) => value,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
+                    drop(_namespace_deletion);
+                });
+            }
+            return Err(error);
+        }
+    };
+    let _ha_activation = match crate::service::start_ha_activation_worker_with_budget(
+        &service,
+        Duration::from_secs(config.timeout_seconds),
+    ) {
+        Ok(value) => value,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
+                    drop(_namespace_deletion);
+                    drop(_lifecycle);
+                });
+            }
+            return Err(error);
+        }
+    };
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",
         if ha_enabled { "HA" } else { "single-node" },
         config.listen
     );
-    for stream in listener.incoming() {
-        let stream = stream.map_err(|_| "listener accept failed")?;
+    #[cfg(target_os = "linux")]
+    if let Some(control) = local_control.as_ref() {
+        let admission = listener
+            .set_nonblocking(true)
+            .map_err(|_| "cannot bound private control accept polling".to_owned())
+            .and_then(|()| control.ready(&service));
+        if let Err(error) = admission {
+            drop(listener);
+            return control.shutdown(&service, &connections, Some(error), || {
+                drop(_namespace_deletion);
+                drop(_lifecycle);
+                drop(_ha_activation);
+            });
+        }
+    }
+    loop {
+        #[cfg(target_os = "linux")]
+        if let Some(control) = local_control.as_mut()
+            && control.poll(&service)
+        {
+            drop(listener);
+            return control.shutdown(&service, &connections, None, || {
+                drop(_namespace_deletion);
+                drop(_lifecycle);
+                drop(_ha_activation);
+            });
+        }
+        let stream = match listener.accept() {
+            Ok((stream, _)) => stream,
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                std::thread::sleep(Duration::from_millis(2));
+                continue;
+            }
+            Err(_) => {
+                #[cfg(target_os = "linux")]
+                if let Some(control) = local_control.as_ref() {
+                    drop(listener);
+                    return control.shutdown(
+                        &service,
+                        &connections,
+                        Some("listener accept failed".into()),
+                        || {
+                            drop(_namespace_deletion);
+                            drop(_lifecycle);
+                            drop(_ha_activation);
+                        },
+                    );
+                }
+                return Err("listener accept failed".into());
+            }
+        };
+        let timeout = Duration::from_secs(config.timeout_seconds);
+        // One budget from accept, including worker scheduling, TLS/body reads,
+        // service lock waiting, forwarding, provider work, and response writes.
+        let deadline = Instant::now() + timeout;
         if connections
             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 (value < config.max_connections).then_some(value + 1)
@@ -230,35 +605,57 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             continue;
         }
         let guard = ConnectionGuard(Arc::clone(&connections));
-        let peer = stream
-            .peer_addr()
-            .map_err(|_| "cannot identify accepted peer")?
-            .ip();
+        let peer = match stream.peer_addr() {
+            Ok(peer) => peer.ip(),
+            Err(_) => {
+                drop(guard);
+                drop(stream);
+                #[cfg(target_os = "linux")]
+                if let Some(control) = local_control.as_ref() {
+                    drop(listener);
+                    return control.shutdown(
+                        &service,
+                        &connections,
+                        Some("cannot identify accepted peer".into()),
+                        || {
+                            drop(_namespace_deletion);
+                            drop(_lifecycle);
+                            drop(_ha_activation);
+                        },
+                    );
+                }
+                return Err("cannot identify accepted peer".into());
+            }
+        };
         let rate_limited = limiter
             .lock()
             .map_or(true, |mut limiter| !limiter.allow(peer));
-        let service = Arc::clone(&service);
+        let request_service = Arc::clone(&service);
+        let rate_limiter = Arc::clone(&limiter);
         let tls = Arc::clone(&tls);
-        let timeout = Duration::from_secs(config.timeout_seconds);
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
             .spawn(move || {
+                let service = request_service;
                 let _guard = guard;
                 if stream.set_read_timeout(Some(timeout)).is_err()
                     || stream.set_write_timeout(Some(timeout)).is_err()
                 {
                     return;
                 }
-                let Ok(connection) = ServerConnection::new(tls) else {
+                let Some(mut stream) = h2_transport::negotiate(
+                    stream,
+                    tls,
+                    deadline,
+                    timeout,
+                    Arc::clone(&service),
+                    rate_limiter,
+                    peer,
+                    consistency_settings,
+                    rate_limited,
+                ) else {
                     return;
                 };
-                let mut stream = StreamOwned::new(
-                    connection,
-                    DeadlineStream {
-                        stream,
-                        deadline: Instant::now() + timeout,
-                    },
-                );
                 let attempt_id = match crypto::random::<16>() {
                     Ok(value) => value,
                     Err(_) => return,
@@ -270,44 +667,268 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         WireRejection::RateLimited,
                         429,
                         "request rate limit exceeded",
+                        deadline,
                     );
-                    let _ = write_response(&mut stream, response, false);
+                    write_http1_reply(
+                        &mut stream,
+                        snapshot::NativeReply::Json(response),
+                        false,
+                        "",
+                        deadline,
+                    );
                     return;
                 }
-                let parsed = read_request(&mut stream, timeout);
-                let (response, head) = match parsed {
-                    Ok(mut request) => {
-                        let is_head = request.method == "HEAD";
-                        let response = match service.lock() {
-                            Ok(mut service) => service.handle(
-                                if is_head { "GET" } else { &request.method },
-                                &request.path,
-                                &request.namespace,
-                                &request.token,
-                                std::mem::take(&mut request.body.0),
-                            ),
-                            Err(_) => Response::error(503, "service state is unavailable"),
-                        };
-                        (response, is_head)
-                    }
-                    Err(error) => (
-                        audited_wire_rejection(
-                            &service,
-                            &attempt_id,
-                            WireRejection::ParseRejected,
-                            error.status,
-                            error.message,
-                        ),
-                        false,
-                    ),
-                };
-                let _ = write_response(&mut stream, response, head);
+                // Parsing and a bounded rejected-body discard must leave time for
+                // the negative response inside the original accepted connection.
+                stream.sock.deadline =
+                    execution_deadline_with_response_reserve(Instant::now(), deadline);
+                let read_budget = stream
+                    .sock
+                    .deadline
+                    .saturating_duration_since(Instant::now());
+                let parsed = read_request_mode(&mut stream, read_budget, true);
+                stream.sock.deadline = deadline;
+                let client_certificates = stream.conn.peer_certificates().map(|certificates| {
+                    certificates
+                        .iter()
+                        .map(|certificate| certificate.as_ref().to_vec())
+                        .collect()
+                });
+                let (reply, head, namespace) = process_parsed_request(
+                    &service,
+                    parsed,
+                    &mut stream,
+                    client_certificates,
+                    peer,
+                    &attempt_id,
+                    consistency_settings,
+                    deadline,
+                );
+                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
             });
         if spawn.is_err() {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(
+                    &service,
+                    &connections,
+                    Some("cannot create bounded request worker".into()),
+                    || {
+                        drop(_namespace_deletion);
+                        drop(_lifecycle);
+                        drop(_ha_activation);
+                    },
+                );
+            }
             return Err("cannot create bounded request worker".into());
         }
     }
-    Ok(())
+}
+
+#[allow(clippy::too_many_arguments)]
+fn process_parsed_request(
+    service: &Arc<Mutex<Service>>,
+    parsed: Result<Request, ParseError>,
+    source: &mut impl Read,
+    client_certificates: Option<Vec<Vec<u8>>>,
+    peer: IpAddr,
+    attempt_id: &[u8; 16],
+    consistency_settings: consistency::Settings,
+    deadline: Instant,
+) -> (snapshot::NativeReply, bool, String) {
+    match parsed {
+        Ok(mut request) => {
+            request.client_certificates = client_certificates;
+            let is_head = request.method == "HEAD"
+                || help::request(&request.method, &request.path, &request.body.0)
+                    .is_some_and(|(method, _, _)| method == "HEAD");
+            let native_snapshot = request.native_snapshot.take();
+            // Index admission precedes logical dispatch and any snapshot body I/O.
+            // It never authenticates the caller or creates permission to retry.
+            let consistency = consistency::admit(
+                service,
+                &request.consistency,
+                consistency_settings,
+                deadline,
+            );
+            let mut service_request = ServiceRequest {
+                method: if request.method == "HEAD"
+                    && request.path != "sys/leader"
+                    && request.path != "sys/internal/ui/mounts"
+                    && !request.path.starts_with("sys/internal/ui/mounts/")
+                    && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                    && ocsp::query_request("HEAD", &request.path, &request.body.0).is_none()
+                {
+                    "GET"
+                } else {
+                    &request.method
+                },
+                path: &request.path,
+                namespace: &request.namespace,
+                token: &request.token,
+                body: std::mem::take(&mut request.body.0),
+                wrap_ttl_seconds: request.wrap_ttl_seconds,
+                origin_peer: Some(peer),
+                client_certificates: request.client_certificates.take(),
+            };
+            let mut reply = if let Err(response) = &consistency {
+                let mut rejected = audited_wire_rejection(
+                    service,
+                    attempt_id,
+                    WireRejection::ParseRejected,
+                    response.status,
+                    "consistency prerequisite was not satisfied",
+                    execution_deadline_with_response_reserve(Instant::now(), deadline),
+                );
+                if rejected.status == response.status {
+                    rejected.body = response.body.clone();
+                }
+                crate::service::erase_json(&mut service_request.body);
+                snapshot::NativeReply::Json(rejected)
+            } else if let Some(native) = native_snapshot {
+                snapshot::execute(service, service_request, native, source, deadline)
+            } else if matches!(consistency, Ok(true)) {
+                snapshot::NativeReply::Json(consistency::forward(
+                    service,
+                    service_request,
+                    deadline,
+                ))
+            } else {
+                snapshot::NativeReply::Json(execute_service_request(
+                    service,
+                    service_request,
+                    deadline,
+                    false,
+                ))
+            };
+            logical::project(&mut reply, attempt_id, &request.path);
+            (reply, is_head, request.namespace)
+        }
+        Err(error) => {
+            let mut response = if error.health_head.is_some() {
+                Response::error(error.status, error.message)
+            } else {
+                audited_wire_rejection(
+                    service,
+                    attempt_id,
+                    WireRejection::ParseRejected,
+                    error.status,
+                    error.message,
+                    execution_deadline_with_response_reserve(Instant::now(), deadline),
+                )
+            };
+            if error.empty_errors && response.status == error.status {
+                response.body = json!({"errors": []});
+            }
+            let reply = if error.outer_bad_request && response.status == 400 {
+                snapshot::NativeReply::HttpBadRequest
+            } else {
+                snapshot::NativeReply::Json(response)
+            };
+            (reply, error.health_head == Some(true), String::new())
+        }
+    }
+}
+
+fn execute_external_without_writer<T, P, R, E, F>(
+    state: &Arc<Mutex<T>>,
+    pending: P,
+    deadline: Instant,
+    execute: E,
+    finish: F,
+) -> Response
+where
+    E: FnOnce(&P) -> R,
+    F: FnOnce(&mut T, P, R) -> Response,
+{
+    let _scope = RequestDeadlineScope::enter(deadline);
+    // Deliberately execute before acquiring the state writer. This helper is the
+    // production boundary that prevents slow enrolled providers from monopolizing
+    // unrelated service state while their external effect/readback is in flight.
+    let result = execute(&pending);
+    match lock_until(state, deadline) {
+        Ok(mut writer) => finish(&mut writer, pending, result),
+        Err(LockWaitError::Busy) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service finalize deadline exceeded",
+        ),
+        Err(LockWaitError::Poisoned) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service state unavailable",
+        ),
+    }
+}
+
+/// Leave a bounded part of the existing transport budget for the JSON reply.
+/// This shortens execution; it never resets or extends the connection deadline,
+/// grants read authority, or cancels an already-started durable/provider effect.
+fn execution_deadline_with_response_reserve(now: Instant, transport_deadline: Instant) -> Instant {
+    let Some(remaining) = transport_deadline.checked_duration_since(now) else {
+        return transport_deadline;
+    };
+    let reserve = (remaining / 4).min(Duration::from_millis(250));
+    transport_deadline - reserve
+}
+
+fn execute_service_request(
+    service: &Arc<Mutex<Service>>,
+    mut request: ServiceRequest<'_>,
+    deadline: Instant,
+    forwarded: bool,
+) -> Response {
+    // The caller retains the original deadline for TLS/frame response writes.
+    // A negative execution result must not consume the last response byte's time.
+    let deadline = execution_deadline_with_response_reserve(Instant::now(), deadline);
+    let health_probe = request.path == "sys/health" && matches!(request.method, "GET" | "HEAD");
+    let deadline = if health_probe {
+        deadline.min(Instant::now() + crate::request_deadline::HEALTH_PROBE_BUDGET)
+    } else {
+        deadline
+    };
+    let unavailable = |message| {
+        let mut response = Response::error(503, message);
+        if health_probe {
+            // Only a negative readiness result is known without the owner.
+            // Do not invent initialization, seal state, role or cluster identity.
+            response.body["ha_active"] = json!(false);
+            response.body["ha_application_ready"] = json!(false);
+        }
+        response
+    };
+    let execution = match lock_until(service, deadline) {
+        Ok(mut writer) => {
+            let execution = writer.begin_request_before(request, deadline, forwarded);
+            if let RequestExecution::Complete(response) = &execution {
+                let _original_deadline =
+                    crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                writer.seal_forward_completion(response);
+            }
+            execution
+        }
+        Err(LockWaitError::Busy) => {
+            crate::service::erase_json(&mut request.body);
+            return unavailable("service state lock deadline exceeded");
+        }
+        Err(LockWaitError::Poisoned) => {
+            crate::service::erase_json(&mut request.body);
+            return unavailable("service state is unavailable");
+        }
+    };
+    match execution {
+        RequestExecution::Complete(response) => response,
+        RequestExecution::External(pending) => execute_external_without_writer(
+            service,
+            pending,
+            deadline,
+            |pending| pending.execute_with_service_before(service, deadline),
+            |writer, pending, result| {
+                let response = writer.finish_external_request(*pending, result);
+                writer.seal_forward_completion(&response);
+                response
+            },
+        ),
+    }
 }
 
 fn audited_wire_rejection(
@@ -316,10 +937,12 @@ fn audited_wire_rejection(
     rejection: WireRejection,
     status: u16,
     message: &'static str,
+    deadline: Instant,
 ) -> Response {
-    match service.lock() {
+    match lock_until(service, deadline) {
         Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),
-        Err(_) => Response::error(503, "service state is unavailable"),
+        Err(LockWaitError::Busy) => Response::error(503, "service state lock deadline exceeded"),
+        Err(LockWaitError::Poisoned) => Response::error(503, "service state is unavailable"),
     }
 }
 
@@ -327,6 +950,62 @@ struct ConnectionGuard(Arc<AtomicUsize>);
 impl Drop for ConnectionGuard {
     fn drop(&mut self) {
         self.0.fetch_sub(1, Ordering::Release);
+    }
+}
+
+struct ResponseWriteObservation<'a, W> {
+    writer: &'a mut W,
+    accepted_plaintext_bytes: usize,
+    flush_attempted: bool,
+}
+impl<W: Write> Write for ResponseWriteObservation<'_, W> {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        let count = self.writer.write(bytes)?;
+        self.accepted_plaintext_bytes = self.accepted_plaintext_bytes.saturating_add(count);
+        Ok(count)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.flush_attempted = true;
+        self.writer.flush()
+    }
+}
+
+// Diagnostic observations do not acknowledge network delivery or grant retry.
+// Preserve the original deadline and each underlying write/flush exactly.
+fn write_http1_reply(
+    writer: &mut impl Write,
+    reply: snapshot::NativeReply,
+    head: bool,
+    namespace: &str,
+    deadline: Instant,
+) {
+    let mut observation = ResponseWriteObservation {
+        writer,
+        accepted_plaintext_bytes: 0,
+        flush_attempted: false,
+    };
+    if let Err(error) = reply.write_with_namespace(&mut observation, head, namespace) {
+        // Error text can carry peer/provider bytes. Only closed error kinds and
+        // counters are emitted; no path, token, headers, body or parser line.
+        eprintln!(
+            "HBHTTP-RESPONSE-WRITE-FAILURE io_kind={} accepted_plaintext_bytes={} flush_attempted={} original_deadline_expired={}",
+            match error.kind() {
+                io::ErrorKind::TimedOut => "timed_out",
+                io::ErrorKind::WouldBlock => "would_block",
+                io::ErrorKind::BrokenPipe => "broken_pipe",
+                io::ErrorKind::ConnectionReset => "connection_reset",
+                io::ErrorKind::ConnectionAborted => "connection_aborted",
+                io::ErrorKind::WriteZero => "write_zero",
+                io::ErrorKind::Interrupted => "interrupted",
+                io::ErrorKind::UnexpectedEof => "unexpected_eof",
+                io::ErrorKind::InvalidInput => "invalid_input",
+                io::ErrorKind::InvalidData => "invalid_data",
+                _ => "other",
+            },
+            observation.accepted_plaintext_bytes,
+            observation.flush_attempted,
+            Instant::now() >= deadline
+        );
     }
 }
 
@@ -365,7 +1044,7 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = options.open(path).map_err(|_| "cannot open TLS file")?;
     let meta = file.metadata().map_err(|_| "cannot inspect TLS file")?;
@@ -389,6 +1068,54 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
     Ok(data)
 }
 
+fn load_client_verifier(
+    ca_path: &PathBuf,
+    crl_path: Option<&PathBuf>,
+    optional: bool,
+    data_dir: &PathBuf,
+    provider: Arc<rustls::crypto::CryptoProvider>,
+) -> Result<Arc<dyn rustls::server::danger::ClientCertVerifier>, String> {
+    if !ca_path.is_absolute() || ca_path.starts_with(data_dir) {
+        return Err("TLS client CA path must be absolute and outside the data directory".into());
+    }
+    if crl_path.is_some_and(|path| !path.is_absolute() || path.starts_with(data_dir)) {
+        return Err("TLS client CRL path must be absolute and outside the data directory".into());
+    }
+    let ca_bytes = bounded_file(ca_path, false)?;
+    let mut roots = RootCertStore::empty();
+    let certificates = rustls_pemfile::certs(&mut BufReader::new(ca_bytes.as_slice()))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|_| "invalid TLS client CA bundle")?;
+    if certificates.is_empty() {
+        return Err("TLS client CA bundle is empty".into());
+    }
+    for certificate in certificates {
+        roots
+            .add(certificate)
+            .map_err(|_| "invalid TLS client CA certificate")?;
+    }
+    let mut builder = WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider);
+    if optional {
+        builder = builder.allow_unauthenticated();
+    }
+    if let Some(crl_path) = crl_path {
+        let crl_bytes = bounded_file(crl_path, false)?;
+        let crls = rustls_pemfile::crls(&mut BufReader::new(crl_bytes.as_slice()))
+            .collect::<Result<Vec<CertificateRevocationListDer<'static>>, _>>()
+            .map_err(|_| "invalid TLS client CRL bundle")?;
+        if crls.is_empty() {
+            return Err("TLS client CRL bundle is empty".into());
+        }
+        builder = builder
+            .with_crls(crls)
+            .only_check_end_entity_revocation()
+            .enforce_revocation_expiration();
+    }
+    builder
+        .build()
+        .map_err(|_| "invalid TLS client certificate verifier".to_owned())
+}
+
 struct SecretJson(Value);
 impl Drop for SecretJson {
     fn drop(&mut self) {
@@ -396,21 +1123,44 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
+    consistency: consistency::Headers,
+    native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
     path: String,
     namespace: String,
     token: Zeroizing<String>,
     body: SecretJson,
+    wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<Vec<Vec<u8>>>,
 }
 struct ParseError {
     status: u16,
     message: &'static str,
+    // The dedicated leader handler's global selector rejection has no logical
+    // error message. Do not replace an audit failure with this empty shape.
+    empty_errors: bool,
+    // A semantic rejection after valid method/route/header admission can still
+    // belong to the public health diagnostic. None retains mandatory wire audit.
+    health_head: Option<bool>,
+    // Go rejects malformed URI paths and conflicting lengths before logical dispatch.
+    outer_bad_request: bool,
+}
+impl ParseError {
+    fn with_health_context(mut self, method: &str, route: &str) -> Self {
+        if route == "sys/health" && matches!(method, "GET" | "HEAD") {
+            self.health_head = Some(method == "HEAD");
+        }
+        self
+    }
 }
 impl From<io::Error> for ParseError {
     fn from(_: io::Error) -> Self {
         Self {
             status: 400,
             message: "incomplete or timed out HTTP request",
+            empty_errors: false,
+            health_head: None,
+            outer_bad_request: false,
         }
     }
 }
@@ -418,10 +1168,73 @@ fn bad(message: &'static str) -> ParseError {
     ParseError {
         status: 400,
         message,
+        empty_errors: false,
+        health_head: None,
+        outer_bad_request: false,
     }
 }
 
+fn outer_bad(message: &'static str) -> ParseError {
+    ParseError {
+        outer_bad_request: true,
+        ..bad(message)
+    }
+}
+
+fn valid_uri_path_escapes(path: &str) -> bool {
+    let mut bytes = path.bytes();
+    while let Some(byte) = bytes.next() {
+        if byte == b'%'
+            && (!bytes.next().is_some_and(|byte| byte.is_ascii_hexdigit())
+                || !bytes.next().is_some_and(|byte| byte.is_ascii_hexdigit()))
+        {
+            return false;
+        }
+    }
+    true
+}
+
+#[cfg(test)]
 fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, ParseError> {
+    read_request_mode(reader, timeout, false)
+}
+
+// Only discard an unambiguous, already bounded ordinary body. This operation
+// has no JSON decoding, credentials, storage owner or authority to execute.
+fn discard_rejected_consistency_body(
+    reader: &mut impl Read,
+    headers: &BTreeMap<String, Zeroizing<String>>,
+    already_received: usize,
+    started: Instant,
+    timeout: Duration,
+) {
+    if headers.contains_key("transfer-encoding") || headers.contains_key("expect") {
+        return;
+    }
+    let Some(length) = headers
+        .get("content-length")
+        .filter(|value| !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit()))
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|length| *length <= MAX_BODY && already_received <= *length)
+    else {
+        return;
+    };
+    let mut remaining = length - already_received;
+    let mut discard = Zeroizing::new([0_u8; 4096]);
+    while remaining != 0 && started.elapsed() < timeout {
+        let bound = remaining.min(discard.len());
+        match reader.read(&mut discard[..bound]) {
+            Ok(0) | Err(_) => return,
+            Ok(count) => remaining -= count,
+        }
+    }
+}
+
+fn read_request_mode(
+    reader: &mut impl Read,
+    timeout: Duration,
+    native_wire: bool,
+) -> Result<Request, ParseError> {
     let start = Instant::now();
     let mut bytes = Zeroizing::new(Vec::new());
     let mut buffer = Zeroizing::new([0; 4096]);
@@ -452,13 +1265,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     let mut lines = headers[..headers.len() - 4].split("\r\n");
     let request_line = lines.next().ok_or_else(|| bad("missing request line"))?;
     let parts: Vec<_> = request_line.split(' ').collect();
-    if parts.len() != 3
-        || parts[2] != "HTTP/1.1"
-        || !matches!(
-            parts[0],
-            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
-        )
-    {
+    if parts.len() != 3 || parts[2] != "HTTP/1.1" {
         return Err(bad("unsupported HTTP method or version"));
     }
     let method = parts[0].to_owned();
@@ -466,7 +1273,19 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     if target.len() > 8192 || !target.starts_with("/v1/") {
         return Err(bad("request must use /v1/ API"));
     }
+    if !valid_uri_path_escapes(target[4..].split('?').next().unwrap_or_default()) {
+        return Err(outer_bad("invalid URI path escape"));
+    }
+    let leader_route = target[4..].split('?').next() == Some("sys/leader");
+    if !matches!(
+        method.as_str(),
+        "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD" | "HELP"
+    ) && !(leader_route && leader::valid_method(&method))
+    {
+        return Err(bad("unsupported HTTP method or version"));
+    }
     let mut map = BTreeMap::new();
+    let mut consistency_headers = consistency::RawHeaders::default();
     for (count, line) in lines.enumerate() {
         if count >= 100 || line.starts_with([' ', '\t']) {
             return Err(bad("invalid header framing"));
@@ -479,6 +1298,16 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             return Err(bad("invalid header bytes"));
         }
         let name = name.to_ascii_lowercase();
+        if consistency_headers.push(&name, value.trim())? {
+            continue;
+        }
+        if name == "content-length"
+            && map
+                .get(&name)
+                .is_some_and(|previous: &Zeroizing<String>| previous.as_str() != value.trim())
+        {
+            return Err(outer_bad("conflicting content length"));
+        }
         if map
             .insert(name, Zeroizing::new(value.trim().to_owned()))
             .is_some()
@@ -486,23 +1315,110 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             return Err(bad("duplicate headers are not supported"));
         }
     }
+    let consistency = match consistency_headers.finish() {
+        Ok(value) => value,
+        Err(error) => {
+            // An ordinary request body can arrive in a separate TLS record.
+            // Closing with those bytes unread can truncate the 400 response.
+            // Never enter logical parsing/authentication, inspect the body, or
+            // read a native snapshot upload before its own admission boundary.
+            let native_upload = native_wire
+                && matches!(
+                    target[4..].split('?').next(),
+                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
+                );
+            if !native_upload {
+                discard_rejected_consistency_body(
+                    reader,
+                    &map,
+                    bytes.len().saturating_sub(header_end),
+                    start,
+                    timeout,
+                );
+            }
+            return Err(error);
+        }
+    };
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
     }
-    if map.keys().any(|name| {
-        (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
-            && !matches!(
-                name.as_str(),
-                "x-vault-token" | "x-vault-namespace" | "x-vault-request"
-            )
-    }) {
+    let route = target[4..].split('?').next().unwrap_or_default();
+    if !leader_route
+        && map.keys().any(|name| {
+            (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
+                && !matches!(
+                    name.as_str(),
+                    "x-vault-token"
+                        | "x-vault-namespace"
+                        | "x-vault-request"
+                        | "x-vault-wrap-ttl"
+                        | "x-vault-wrap-format"
+                )
+        })
+    {
         return Err(ParseError {
             status: 501,
             message: "requested OpenBao header semantics are not implemented",
+            empty_errors: false,
+            health_head: None,
+            outer_bad_request: false,
         });
     }
-    if map.contains_key("transfer-encoding") || map.contains_key("expect") {
-        return Err(bad("streamed request bodies are not supported"));
+    if !leader_route
+        && map
+            .get("x-vault-wrap-format")
+            .is_some_and(|value| value.as_str() != "uuid")
+    {
+        return Err(ParseError {
+            status: 501,
+            message: "only opaque response wrapping tokens are supported",
+            empty_errors: false,
+            health_head: None,
+            outer_bad_request: false,
+        });
+    }
+    let raw_query = target[4..].split_once('?').map_or("", |(_, query)| query);
+    let help_selected = !leader_route && help::requested(&method, raw_query);
+    let health_probe = route == "sys/health" && matches!(method.as_str(), "GET" | "HEAD");
+    let wrap_ttl_seconds = if leader_route || health_probe || help_selected {
+        None
+    } else {
+        map.get("x-vault-wrap-ttl")
+            .map(|value| parse_wrap_ttl(value))
+            .transpose()?
+            .flatten()
+    };
+    let snapshot_route = matches!(
+        route,
+        "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+    );
+    let download =
+        matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";
+    let json_body = map
+        .get("content-type")
+        .is_some_and(|value| value.split(';').next() == Some("application/json"));
+    let native_snapshot = native_wire
+        && !help_selected
+        && snapshot_route
+        && ((download
+            && !map
+                .get("accept")
+                .is_some_and(|value| value.as_str() == "application/json"))
+            || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
+    let chunked = match map.get("transfer-encoding") {
+        Some(value)
+            if native_snapshot
+                && !download
+                && value.eq_ignore_ascii_case("chunked")
+                && !map.contains_key("content-length") =>
+        {
+            true
+        }
+        Some(_) => return Err(bad("unsupported or ambiguous transfer framing")),
+        None => false,
+    };
+    if map.contains_key("expect") {
+        return Err(bad("Expect framing is not supported"));
     }
     let length = match map.get("content-length") {
         Some(v) if !v.is_empty() && v.bytes().all(|b| b.is_ascii_digit()) => v
@@ -511,7 +1427,17 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         None => 0,
         _ => return Err(bad("invalid content length")),
     };
-    let maximum_body = if target.starts_with("/v1/sys/storage/raft/snapshot") {
+    let ocsp_get = ocsp::get_carrier(&method, route)?;
+    let ocsp_post = ocsp::raw_post(
+        &method,
+        route,
+        map.get("content-type").map(|media| media.as_str()),
+    );
+    let ocsp_form_media = ocsp::post_route(&method, route)
+        && ocsp::form_media(map.get("content-type").map(|media| media.as_str()));
+    let maximum_body = if native_snapshot {
+        crate::snapshot_file::MAX_NATIVE_ARCHIVE as usize
+    } else if snapshot_route {
         MAX_SNAPSHOT_BODY
     } else {
         MAX_BODY
@@ -520,21 +1446,48 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         return Err(ParseError {
             status: 413,
             message: "request body exceeds limit",
+            empty_errors: false,
+            health_head: None,
+            outer_bad_request: false,
         });
     }
-    let raw_namespace = map.get("x-vault-namespace").map_or("", |s| s.as_str());
+    let raw_namespace = if leader_route {
+        ""
+    } else {
+        map.get("x-vault-namespace").map_or("", |s| s.as_str())
+    };
     if raw_namespace == "/" || raw_namespace.contains("//") {
-        return Err(bad("ambiguous namespace segments"));
+        return Err(bad("ambiguous namespace segments").with_health_context(&method, route));
     }
     let namespace = raw_namespace
         .strip_suffix('/')
         .unwrap_or(raw_namespace)
         .to_owned();
-    let token = map.remove("x-vault-token").unwrap_or_default();
+    let token = if leader_route {
+        Zeroizing::new(String::new())
+    } else {
+        map.remove("x-vault-token").unwrap_or_default()
+    };
     if token.len() > 16 * 1024 {
         return Err(bad("token header exceeds limit"));
     }
+    let query_only = matches!(method.as_str(), "GET" | "HEAD" | "DELETE" | "LIST" | "SCAN");
+    // A media type is only a body codec. The Service still resolves the actual
+    // PKI mount and verifies its durable public JWS account owner.
+    let jose_acme = method == "POST"
+        && route.split('/').any(|part| part == "acme")
+        && map
+            .get("content-type")
+            .is_some_and(|media| media.split(';').next() == Some("application/jose+json"));
     if length > 0
+        && !leader_route
+        && !native_snapshot
+        && !ocsp_post
+        && !ocsp_form_media
+        && !ocsp::post_route(&method, route)
+        && !query_only
+        && !help_selected
+        && !jose_acme
         && map.get("content-type").is_some_and(|v| {
             !matches!(
                 v.split(';').next(),
@@ -544,7 +1497,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     {
         return Err(bad("JSON content type required"));
     }
-    while bytes.len() < header_end + length {
+    while !native_snapshot && bytes.len() < header_end + length {
         if start.elapsed() > timeout {
             return Err(bad("request deadline exceeded"));
         }
@@ -555,70 +1508,377 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         }
         bytes.extend_from_slice(&buffer[..count]);
     }
-    if bytes.len() != header_end + length {
+    if !native_snapshot && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
-    let mut body = SecretJson(if length == 0 {
+    // Help ignores logical body bytes after ordinary framing and body bounds.
+    if help_selected {
+        let body = help::carrier(&method, route, raw_query)?;
+        if (route.contains('%') || route.contains('#'))
+            && !help::opaque_request("HELP", route, &body)
+        {
+            return Err(bad("ambiguous encoded paths are not supported"));
+        }
+        return Ok(Request {
+            consistency,
+            native_snapshot: None,
+            method: "HELP".to_owned(),
+            path: route.to_owned(),
+            namespace,
+            token,
+            body: SecretJson(body),
+            wrap_ttl_seconds,
+            client_certificates: None,
+        });
+    }
+    // Public UI preflight has no PATCH operation. Its JSON media boundary is
+    // still evaluated before dispatch, after ordinary framing/size fences.
+    if method == "PATCH"
+        && (route == "sys/internal/ui/mounts" || route.starts_with("sys/internal/ui/mounts/"))
+    {
+        if length == 0 {
+            return Err(bad("PATCH requires a JSON body"));
+        }
+        if !map
+            .get("content-type")
+            .is_some_and(|value| value.split(';').next() == Some("application/merge-patch+json"))
+        {
+            return Err(ParseError {
+                status: 415,
+                message: "PATCH requires merge-patch JSON",
+                empty_errors: false,
+                health_head: None,
+                outer_bad_request: false,
+            });
+        }
+    }
+    if leader_route {
+        leader::validate_selectors(&method, &target)?;
+        return Ok(Request {
+            consistency,
+            native_snapshot: None,
+            method,
+            path: "sys/leader".to_owned(),
+            namespace: String::new(),
+            token,
+            body: SecretJson(json!({})),
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+        });
+    }
+    // OpenBao reads fields for these operations from the query string only.
+    // Still consume and bound the complete body above so ignored bytes cannot
+    // become a second request or evade the framing and deadline checks.
+    let query = target[4..].split_once('?').map_or("", |(_, query)| query);
+    let ocsp_form = ocsp_form_media
+        && ocsp::form_request(
+            map.get("content-type").map(|media| media.as_str()),
+            &bytes[header_end..],
+        );
+    if ocsp_form {
+        ocsp::validate_form(&bytes[header_end..])?;
+        ocsp::validate_form(query.as_bytes())?;
+    }
+    let carrier = ocsp::carrier_body(
+        ocsp_get.as_ref(),
+        ocsp_post || ocsp_form,
+        route,
+        map.get("content-type").map(|media| media.as_str()),
+        &bytes[header_end..],
+        query,
+    );
+    let mut body = SecretJson(if let Some(carrier) = carrier {
+        carrier
+    } else if native_snapshot || length == 0 || query_only {
         json!({})
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
             .map_err(|_| bad("invalid JSON object"))?
     });
+    if !body.0.is_object() {
+        return Err(bad("JSON object required"));
+    }
     let Some(object) = body.0.as_object_mut() else {
         return Err(bad("JSON object required"));
     };
-    let (path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
-    if path.contains('%') || path.contains('#') {
+    let (raw_path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
+    let decoded_path = if ocsp_get.is_some() || ocsp::head_candidate(&method, raw_path) {
+        std::borrow::Cow::Borrowed(raw_path)
+    } else {
+        decode_native_logical_path(raw_path)?
+    };
+    let path = decoded_path.as_ref();
+    if (path.contains('%') || path.contains('#'))
+        && ocsp_get.is_none()
+        && !ocsp::head_candidate(&method, path)
+    {
         return Err(bad("ambiguous encoded paths are not supported"));
     }
-    for pair in query.split('&').filter(|v| !v.is_empty()) {
-        let (key, value) = pair
-            .split_once('=')
-            .ok_or_else(|| bad("query parameters require values"))?;
-        let key = decode_query(key)?;
-        let value = Zeroizing::new(decode_query(value)?);
-        if !matches!(
-            key.as_str(),
-            "version" | "depth" | "limit" | "list" | "after" | "exclude_deleted"
-        ) {
-            return Err(bad(
-                "unsupported query parameter; request fields belong in JSON body",
-            ));
+    // Kerberos uses the standard HTTP Negotiate carrier rather than a JSON
+    // credential. Keep the provider token request-local and let the auth
+    // route's strict body schema reject it everywhere else.
+    if path.starts_with("auth/")
+        && path.ends_with("/login")
+        && let Some(authorization) = map.remove("authorization")
+    {
+        if !authorization.starts_with("Negotiate ")
+            || authorization.len() > crate::outbound::MAX_KERBEROS_TOKEN * 2 + 16
+            || !authorization.is_ascii()
+        {
+            return Err(bad("invalid Kerberos authorization header"));
         }
-        if object.contains_key(&key) {
-            return Err(bad("duplicate body/query parameter"));
+        if object.contains_key("kerberos_authorization") {
+            return Err(bad("duplicate Kerberos authorization"));
         }
-        let parsed = if matches!(key.as_str(), "version" | "depth" | "limit") {
-            json!(
-                value
-                    .parse::<u64>()
-                    .map_err(|_| bad("invalid numeric query"))?
-            )
-        } else if value.as_str() == "true" {
-            Value::Bool(true)
-        } else if value.as_str() == "false" {
-            Value::Bool(false)
+        object.insert(
+            "kerberos_authorization".into(),
+            Value::String(authorization.to_string()),
+        );
+    }
+    let invalid_query = |message| bad(message).with_health_context(&method, path);
+    let private_query = if ocsp_get.is_none() {
+        ocsp::query_carrier_body(&method, path, query)
+    } else {
+        None
+    };
+    let has_private_query = private_query.is_some();
+    if let Some(carrier) = private_query {
+        crate::service::erase_json(&mut body.0);
+        body.0 = carrier;
+    } else if ocsp_get.is_none() && !ocsp::post_route(&method, route) {
+        merge_query_fields(&method, path, query, &mut body.0)?;
+    }
+    let Some(object) = body.0.as_object_mut() else {
+        return Err(bad("JSON object required"));
+    };
+    let method = if ocsp_get.is_some() || (has_private_query && method == "GET") {
+        ocsp::get_query_method(query)?.to_owned()
+    } else if method == "GET" {
+        let list = object.get("list") == Some(&Value::Bool(true));
+        let scan = object.get("scan") == Some(&Value::Bool(true));
+        if list && scan {
+            return Err(invalid_query("list and scan are mutually exclusive"));
+        }
+        if list {
+            object.remove("list");
+            "LIST".to_owned()
+        } else if scan {
+            object.remove("scan");
+            "SCAN".to_owned()
         } else {
-            Value::String(value.to_string())
-        };
-        object.insert(key, parsed);
-    }
-    if method == "GET" && object.get("list").is_some_and(|v| !v.is_boolean()) {
-        return Err(bad("list parameter must be boolean"));
-    }
-    let method = if method == "GET" && object.get("list") == Some(&Value::Bool(true)) {
-        object.remove("list");
-        "LIST".to_owned()
+            method
+        }
     } else {
         method
     };
+    if ocsp::post_route(&method, route) && !ocsp_post && !ocsp_form {
+        body.0 = ocsp::normal_json_post(
+            route,
+            std::mem::take(&mut body.0),
+            map.get("content-type").map(|media| media.as_str()),
+            length != 0,
+            query,
+        );
+    }
+    token_fields::transport_body(&method, path, &mut body.0, &bytes[header_end..]).map_err(bad)?;
+    if method == "PATCH" && pki_role_fields::eligible(&method, path) {
+        if length == 0 {
+            return Err(bad("PATCH requires a JSON body"));
+        }
+        if !map
+            .get("content-type")
+            .is_some_and(|value| value.split(';').next() == Some("application/merge-patch+json"))
+        {
+            return Err(ParseError {
+                status: 415,
+                message: "PATCH requires merge-patch JSON",
+                empty_errors: false,
+                health_head: None,
+                outer_bad_request: false,
+            });
+        }
+    }
+    pki_role_fields::transport_body(&method, path, &mut body.0, &bytes[header_end..])
+        .map_err(bad)?;
+    let native_snapshot = if native_snapshot {
+        if download && (length != 0 || bytes.len() != header_end) {
+            return Err(bad("snapshot download does not accept a body"));
+        }
+        Some(snapshot::NativeRequest {
+            target: snapshot::NativeTarget::checked(&target)?,
+            body: snapshot::NativeBody {
+                framing: if download {
+                    snapshot::Framing::Download
+                } else if chunked {
+                    snapshot::Framing::Chunked
+                } else {
+                    snapshot::Framing::Length(length as u64)
+                },
+                prefix: Zeroizing::new(bytes[header_end..].to_vec()),
+            },
+        })
+    } else {
+        None
+    };
     Ok(Request {
+        consistency,
+        native_snapshot,
         method,
         path: path.to_owned(),
         namespace,
         token,
         body,
+        wrap_ttl_seconds,
+        client_certificates: None,
     })
+}
+
+fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
+    let invalid = || bad("invalid or unsupported wrapping TTL");
+    if value.is_empty() || value.len() > 64 || !value.is_ascii() {
+        return Err(invalid());
+    }
+    let mut total = 0u64;
+    let mut number = 0u64;
+    let mut digits = false;
+    for byte in value.bytes() {
+        if byte.is_ascii_digit() {
+            number = number
+                .checked_mul(10)
+                .and_then(|v| v.checked_add(u64::from(byte - b'0')))
+                .ok_or_else(invalid)?;
+            digits = true;
+        } else {
+            if !digits {
+                return Err(invalid());
+            }
+            let unit = match byte {
+                b'h' => 3600,
+                b'm' => 60,
+                b's' => 1,
+                _ => return Err(invalid()),
+            };
+            total = total
+                .checked_add(number.checked_mul(unit).ok_or_else(invalid)?)
+                .ok_or_else(invalid)?;
+            number = 0;
+            digits = false;
+        }
+    }
+    if digits {
+        if !value.bytes().all(|b| b.is_ascii_digit()) {
+            return Err(invalid());
+        }
+        total = number;
+    }
+    if total > 32 * 24 * 3600 {
+        return Err(invalid());
+    }
+    Ok(Some(total))
+}
+
+fn merge_query_fields(
+    method: &str,
+    path: &str,
+    query: &str,
+    body: &mut Value,
+) -> Result<(), ParseError> {
+    let Some(object) = body.as_object_mut() else {
+        return Err(bad("JSON object required"));
+    };
+    let invalid_query = |message| bad(message).with_health_context(method, path);
+    for pair in query.split('&').filter(|v| !v.is_empty()) {
+        let (key, value) = pair
+            .split_once('=')
+            .ok_or_else(|| invalid_query("query parameters require values"))?;
+        let key = decode_query(key).map_err(|error| error.with_health_context(method, path))?;
+        let value = Zeroizing::new(
+            decode_query(value).map_err(|error| error.with_health_context(method, path))?,
+        );
+        // OpenBao's health handler consumes these five query fields. Its Go
+        // client also sends compatibility fields (including "haunhealhty")
+        // which that handler ignores; they do not select an unimplemented mode.
+        if path == "sys/health"
+            && !matches!(
+                key.as_str(),
+                "standbyok" | "uninitcode" | "sealedcode" | "standbycode" | "activecode"
+            )
+        {
+            continue;
+        }
+        if !matches!(
+            key.as_str(),
+            "version"
+                | "depth"
+                | "limit"
+                | "list"
+                | "scan"
+                | "after"
+                | "exclude_deleted"
+                | "standbyok"
+                | "perfstandbyok"
+                | "uninitcode"
+                | "sealedcode"
+                | "standbycode"
+                | "activecode"
+        ) {
+            return Err(invalid_query(
+                "unsupported query parameter; request fields belong in JSON body",
+            ));
+        }
+        if object.contains_key(&key) {
+            return Err(invalid_query("duplicate body/query parameter"));
+        }
+        let parsed = if key == "limit" {
+            // Endpoints that declare this field validate its type. KV v1
+            // ignores it entirely, including values outside the signed range.
+            value
+                .parse::<i64>()
+                .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
+        } else if key == "version" && path.starts_with("sys/plugins/catalog/") {
+            Value::String(value.to_string())
+        } else if matches!(key.as_str(), "version" | "depth") {
+            json!(
+                value
+                    .parse::<u64>()
+                    .map_err(|_| invalid_query("invalid numeric query"))?
+            )
+        } else if matches!(
+            key.as_str(),
+            "uninitcode" | "sealedcode" | "standbycode" | "activecode"
+        ) {
+            let status = value
+                .parse::<u16>()
+                .ok()
+                .filter(|status| (100..=999).contains(status))
+                .ok_or_else(|| invalid_query("invalid health status code"))?;
+            json!(status)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "true" | "1")
+        {
+            Value::Bool(true)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "false" | "0")
+        {
+            Value::Bool(false)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
+            return Err(invalid_query("invalid health boolean query"));
+        } else if method == "GET" && matches!(key.as_str(), "list" | "scan") {
+            Value::Bool(match value.as_str() {
+                "true" | "True" | "TRUE" | "t" | "T" | "1" => true,
+                "" | "false" | "False" | "FALSE" | "f" | "F" | "0" => false,
+                _ => return Err(invalid_query("invalid list or scan query")),
+            })
+        } else if key == "after" {
+            Value::String(value.to_string())
+        } else if matches!(value.as_str(), "true" | "false") {
+            Value::Bool(value.as_str() == "true")
+        } else {
+            Value::String(value.to_string())
+        };
+        object.insert(key, parsed);
+    }
+    Ok(())
 }
 
 fn decode_query(value: &str) -> Result<String, ParseError> {
@@ -645,51 +1905,841 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
         .map_err(|_| bad("invalid query text"))
 }
 
+#[cfg(test)]
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
-    let mut bytes = Zeroizing::new(if response.status == 204 {
+    write_response_with_namespace(writer, response, head, "")
+}
+
+// Reflect the parsed namespace even when the logical service rejects it. This
+// transport field does not establish namespace membership or caller authority.
+fn write_standard_headers(writer: &mut impl Write, namespace: &str) -> io::Result<()> {
+    write_standard_headers_with_date(writer, namespace, false)
+}
+
+fn write_standard_headers_with_date(
+    writer: &mut impl Write,
+    namespace: &str,
+    custom_date: bool,
+) -> io::Result<()> {
+    if !namespace.is_ascii() || namespace.bytes().any(|byte| byte < 32 || byte == 127) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "invalid response namespace",
+        ));
+    }
+    write!(
+        writer,
+        "Cache-Control: no-store\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\n",
+    )?;
+    if !custom_date {
+        write!(
+            writer,
+            "Date: {}\r\n",
+            chrono::Utc::now().format("%a, %d %b %Y %H:%M:%S GMT")
+        )?;
+    }
+    writer.write_all(b"Connection: close\r\n")?;
+    if !namespace.is_empty() {
+        write!(writer, "X-Vault-Namespace: {namespace}\r\n")?;
+    }
+    Ok(())
+}
+
+fn write_response_with_namespace(
+    writer: &mut impl Write,
+    response: Response,
+    head: bool,
+    namespace: &str,
+) -> io::Result<()> {
+    // Only the engine's closed certificate envelope selects these constants.
+    // Neither caller data nor provider JSON supplies an arbitrary MIME type.
+    let raw_certificate = if response.status == 200
+        && response
+            .body
+            .as_object()
+            .is_some_and(|body| body.len() == 2)
+    {
+        let media = match response.body["format"].as_str() {
+            Some("der" | "chain") => Some("application/pkix-cert"),
+            Some("pem") => Some("application/pem-certificate-chain"),
+            _ => None,
+        };
+        media.and_then(|media| {
+            response.body["__heptabao_pki_certificate"]
+                .as_str()
+                .and_then(|text| {
+                    use base64::Engine as _;
+                    let base64 = base64::engine::general_purpose::STANDARD;
+                    if text.len() > 256 * 1024 {
+                        return None;
+                    }
+                    let bytes = base64.decode(text).ok()?;
+                    (bytes.len() <= 128 * 1024 && base64.encode(&bytes) == text)
+                        .then_some((bytes, media))
+                })
+        })
+    } else {
+        None
+    };
+    // Only this closed, bounded CRL transport envelope can select a raw public
+    // body. The content types are constants and never come from provider JSON.
+    let raw_crl = if matches!(response.status, 200 | 204)
+        && response
+            .body
+            .as_object()
+            .is_some_and(|body| body.len() == 2)
+        && response.body["pem"].is_boolean()
+    {
+        response.body["__heptabao_pki_crl"]
+            .as_str()
+            .and_then(|text| {
+                use base64::Engine as _;
+                let base64 = base64::engine::general_purpose::STANDARD;
+                if text.len() > 1024 * 1024 {
+                    return None;
+                }
+                let bytes = base64.decode(text).ok()?;
+                (bytes.len() <= 512 * 1024
+                    && base64.encode(&bytes) == text
+                    && (response.status == 200 || bytes.is_empty()))
+                .then_some(bytes)
+            })
+    } else {
+        None
+    };
+    let raw_acme = if response
+        .body
+        .as_object()
+        .is_some_and(|body| body.len() == 2 && body.contains_key("__heptabao_acme"))
+    {
+        match response.body["media"].as_str() {
+            Some("empty") if response.body["__heptabao_acme"].is_null() => {
+                Some((Vec::new(), "application/json"))
+            }
+            Some("certificate") if response.status == 200 => response.body["__heptabao_acme"]
+                .as_str()
+                .filter(|pem| {
+                    pem.len() <= 512 * 1024
+                        && pem.starts_with("-----BEGIN CERTIFICATE-----\n")
+                        && pem.ends_with("-----END CERTIFICATE-----\n")
+                })
+                .map(|pem| (pem.as_bytes().to_vec(), "application/pem-certificate-chain")),
+            Some("json" | "problem") if response.body["__heptabao_acme"].is_object() => {
+                let payload = &response.body["__heptabao_acme"];
+                #[derive(serde::Serialize)]
+                struct AcmeProblem<'a> {
+                    #[serde(rename = "type")]
+                    kind: &'a str,
+                    detail: &'a str,
+                }
+                let mut bytes = if response.body["media"] == "problem" {
+                    let map = payload
+                        .as_object()
+                        .filter(|map| map.len() == 2)
+                        .ok_or_else(|| io::Error::other("invalid ACME problem transport"))?;
+                    let kind = map
+                        .get("type")
+                        .and_then(Value::as_str)
+                        .ok_or_else(|| io::Error::other("invalid ACME problem type"))?;
+                    let detail = map
+                        .get("detail")
+                        .and_then(Value::as_str)
+                        .ok_or_else(|| io::Error::other("invalid ACME problem detail"))?;
+                    serde_json::to_vec(&AcmeProblem { kind, detail })?
+                } else {
+                    serde_json::to_vec(payload)?
+                };
+                // Go's JSON encoder escapes HTML and JavaScript separators even
+                // in these closed logical raw responses. Bound the final bytes
+                // before HTTP computes Content-Length or chooses chunked framing.
+                bytes = String::from_utf8(bytes)
+                    .map_err(io::Error::other)?
+                    .replace('&', "\\u0026")
+                    .replace('<', "\\u003c")
+                    .replace('>', "\\u003e")
+                    .replace('\u{2028}', "\\u2028")
+                    .replace('\u{2029}', "\\u2029")
+                    .into_bytes();
+                if bytes.len() <= 128 * 1024 {
+                    Some((
+                        std::mem::take(&mut bytes),
+                        if response.body["media"] == "problem" {
+                            "application/problem+json"
+                        } else {
+                            "application/json"
+                        },
+                    ))
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        }
+    } else {
+        None
+    };
+    let raw_ocsp = crate::engines::raw_ocsp_response(response.status, &response.body);
+    let content_type = if let Some((_, media)) = &raw_acme {
+        *media
+    } else if raw_ocsp.is_some() {
+        "application/ocsp-response"
+    } else if let Some((_, media)) = &raw_certificate {
+        *media
+    } else if raw_crl.is_some() {
+        if response.body["pem"] == true {
+            "application/x-pem-file"
+        } else {
+            "application/pkix-crl"
+        }
+    } else {
+        "application/json"
+    };
+    // ACME's closed logical JSON carries no explicit native Content-Length.
+    // Certificate/CRL/OCSP producers retain their admitted fixed-length framing.
+    let fixed_raw_body = raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
+    let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
+    let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
+
+    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_acme {
+        raw
+    } else if let Some(raw) = raw_ocsp {
+        raw
+    } else if let Some((raw, _)) = raw_certificate {
+        raw
+    } else if let Some(raw) = raw_crl {
+        raw
+    } else if response.status == 204 {
         Vec::new()
     } else {
-        serde_json::to_vec(&response.body)?
+        let mut json = serde_json::to_vec(&response.body)?;
+        // OpenBao's JSON encoder terminates each JSON value with a newline.
+        json.push(b'\n');
+        json
     });
     let status = if bytes.len() > MAX_RESPONSE {
-        bytes = Zeroizing::new(br#"{"errors":["response exceeds limit"]}"#.to_vec());
+        bytes = Zeroizing::new(b"{\"errors\":[\"response exceeds limit\"]}\n".to_vec());
         500
     } else {
         response.status
     };
+    // Use Go HTTP status text, including its custom health-code fallback.
     let reason = match status {
+        100 => "Continue",
+        101 => "Switching Protocols",
+        102 => "Processing",
+        103 => "Early Hints",
         200 => "OK",
+        201 => "Created",
+        202 => "Accepted",
+        203 => "Non-Authoritative Information",
         204 => "No Content",
+        205 => "Reset Content",
+        206 => "Partial Content",
+        207 => "Multi-Status",
+        208 => "Already Reported",
+        226 => "IM Used",
+        300 => "Multiple Choices",
+        301 => "Moved Permanently",
+        302 => "Found",
+        303 => "See Other",
+        304 => "Not Modified",
+        305 => "Use Proxy",
+        307 => "Temporary Redirect",
+        308 => "Permanent Redirect",
         400 => "Bad Request",
+        401 => "Unauthorized",
+        402 => "Payment Required",
         403 => "Forbidden",
         404 => "Not Found",
+        405 => "Method Not Allowed",
+        406 => "Not Acceptable",
+        407 => "Proxy Authentication Required",
+        408 => "Request Timeout",
         409 => "Conflict",
-        413 => "Payload Too Large",
+        410 => "Gone",
+        411 => "Length Required",
+        412 => "Precondition Failed",
+        413 => "Request Entity Too Large",
+        414 => "Request URI Too Long",
+        415 => "Unsupported Media Type",
+        416 => "Requested Range Not Satisfiable",
+        417 => "Expectation Failed",
+        418 => "I'm a teapot",
+        421 => "Misdirected Request",
+        422 => "Unprocessable Entity",
+        423 => "Locked",
+        424 => "Failed Dependency",
+        425 => "Too Early",
+        426 => "Upgrade Required",
+        428 => "Precondition Required",
         429 => "Too Many Requests",
+        431 => "Request Header Fields Too Large",
+        451 => "Unavailable For Legal Reasons",
+        500 => "Internal Server Error",
         501 => "Not Implemented",
+        502 => "Bad Gateway",
         503 => "Service Unavailable",
+        504 => "Gateway Timeout",
+        505 => "HTTP Version Not Supported",
+        506 => "Variant Also Negotiates",
         507 => "Insufficient Storage",
-        _ => "Error",
+        508 => "Loop Detected",
+        510 => "Not Extended",
+        511 => "Network Authentication Required",
+        _ => "",
+    };
+    let reason = if reason.is_empty() {
+        format!("status code {status}")
+    } else {
+        reason.to_owned()
     };
     let retry_after = if status == 429 {
         "Retry-After: 1\r\n"
     } else {
         ""
     };
-    write!(
+    let index = if status == response.status {
+        response
+            .consistency_index
+            .as_ref()
+            .map(|index| format!("X-Vault-Index: {}\r\n", index.as_str()))
+            .unwrap_or_default()
+    } else {
+        String::new()
+    };
+    // Go net/http buffers 2048 bytes before choosing framing. A completed
+    // small response gets Content-Length; a larger HTTP/1.1 response uses
+    // chunked encoding. HEAD has the same small-body length, with no chunks.
+    // https://github.com/golang/go/blob/go1.25.1/src/net/http/server.go
+    let no_body = status == 204 || status == 304 || (100..200).contains(&status);
+    let chunked = !no_body && !head && !fixed_raw_body && bytes.len() > 2048;
+    write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
+    if !acme_no_media {
+        write!(writer, "Content-Type: {content_type}\r\n")?;
+    }
+    if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
+        write!(writer, "Content-Length: {}\r\n", bytes.len())?;
+    } else if chunked {
+        writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
+    }
+    write!(writer, "{retry_after}{index}")?;
+    write_standard_headers_with_date(
         writer,
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n{retry_after}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
-        bytes.len()
+        namespace,
+        status == response.status && response.response_headers.has_date(),
     )?;
-    if !head {
-        writer.write_all(&bytes)?;
+    if status == response.status {
+        response.response_headers.write(writer)?;
+    }
+    writer.write_all(b"\r\n")?;
+    if !head && !no_body {
+        if chunked {
+            write!(writer, "{:x}\r\n", bytes.len())?;
+            writer.write_all(&bytes)?;
+            writer.write_all(b"\r\n0\r\n\r\n")?;
+        } else {
+            writer.write_all(&bytes)?;
+        }
     }
     writer.flush()
 }
 
 #[cfg(test)]
+#[path = "http_response_framing_tests.rs"]
+mod response_framing_tests;
+
+#[cfg(test)]
+#[path = "http_ocsp_service_tests.rs"]
+mod ocsp_service_tests;
+
+#[cfg(test)]
 mod tests {
+    #[test]
+    fn pki_acme99_owned_raw_json_native_chunk_boundary_retains_exact_body() -> io::Result<()> {
+        for length in [2048, 2049] {
+            let payload = json!({"text":"x".repeat(length-11)});
+            let bytes = serde_json::to_vec(&payload)?;
+            assert_eq!(bytes.len(), length);
+            for head in [false, true] {
+                let response = Response {
+                    status: 200,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    body: json!({"__heptabao_acme":payload,"media":"json"}),
+                };
+                let mut output = Vec::new();
+                write_response(&mut output, response, head)?;
+                let marker = output
+                    .windows(4)
+                    .position(|w| w == b"\r\n\r\n")
+                    .ok_or_else(|| io::Error::other("missing response framing"))?;
+                let headers = std::str::from_utf8(&output[..marker]).map_err(io::Error::other)?;
+                let body = &output[marker + 4..];
+                assert!(headers.contains("Content-Type: application/json\r\n"));
+                if length == 2048 {
+                    assert!(headers.contains("Content-Length: 2048\r\n"));
+                    assert!(!headers.contains("Transfer-Encoding"));
+                    assert_eq!(body, if head { &[][..] } else { bytes.as_slice() });
+                } else if head {
+                    assert!(
+                        !headers.contains("Content-Length")
+                            && !headers.contains("Transfer-Encoding")
+                    );
+                    assert!(body.is_empty());
+                } else {
+                    assert!(
+                        headers.contains("Transfer-Encoding: chunked\r\n")
+                            && !headers.contains("Content-Length")
+                    );
+                    let mut framed = format!("{:x}\r\n", bytes.len()).into_bytes();
+                    framed.extend_from_slice(&bytes);
+                    framed.extend_from_slice(b"\r\n0\r\n\r\n");
+                    assert_eq!(body, framed);
+                }
+            }
+        }
+        Ok(())
+    }
+    #[test]
+    fn pki_acme99_untrusted_sdk_data_cannot_select_raw_media_or_empty_body()
+    -> Result<(), Box<dyn std::error::Error>> {
+        // finalize_sdk_transaction places plugin-controlled Data under this
+        // server-owned data key. Test the actual transport writer with both
+        // valid raw marker shapes nested exactly at that untrusted boundary.
+        for data in [
+            json!({"__heptabao_acme":{"type":"urn:untrusted:problem","detail":"plugin-controlled"},"media":"problem"}),
+            json!({"__heptabao_acme":null,"media":"empty"}),
+            json!({"__heptabao_acme":{"nested":"plugin-controlled"},"media":"json"}),
+            json!({"__heptabao_acme":"-----BEGIN CERTIFICATE-----\nplugin controlled\n-----END CERTIFICATE-----\n","media":"certificate"}),
+        ] {
+            let body = json!({"data":data});
+            let mut wire = Vec::new();
+            write_response(
+                &mut wire,
+                Response {
+                    status: 200,
+                    body: body.clone(),
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                },
+                false,
+            )?;
+            let separator = wire
+                .windows(4)
+                .position(|v| v == b"\r\n\r\n")
+                .ok_or("HTTP separator")?;
+            let headers = std::str::from_utf8(&wire[..separator])?;
+            assert!(
+                headers.contains("Content-Type: application/json\r\n")
+                    || headers.ends_with("Content-Type: application/json")
+            );
+            assert!(!headers.contains("application/problem+json"));
+            let actual = &wire[separator + 4..];
+            assert_eq!(serde_json::from_slice::<Value>(actual)?, body);
+            assert!(
+                actual.ends_with(b"\n"),
+                "ordinary logical JSON keeps its framing"
+            );
+        }
+        // The real closed producer marker still selects the exact compact
+        // Problem encoding, so the negative cases exercise an active branch.
+        let mut wire = Vec::new();
+        write_response(
+            &mut wire,
+            Response {
+                status: 400,
+                body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":"actual closed producer"},"media":"problem"}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            },
+            false,
+        )?;
+        assert!(
+            wire.windows(b"Content-Type: application/problem+json".len())
+                .any(|v| v == b"Content-Type: application/problem+json")
+        );
+        assert!(wire.ends_with(
+            br#"{"type":"urn:ietf:params:acme:error:malformed","detail":"actual closed producer"}"#
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn pki_acme99_jose_json_codec_keeps_framing_namespace_and_actual_route() -> io::Result<()> {
+        let body = r#"{"protected":"actual","payload":"","signature":"actual"}"#;
+        let wire = format!(
+            "POST /v1/nested/pki/acme/new-account HTTP/1.1\r\nHost: localhost\r\nX-Vault-Namespace: team/\r\nContent-Type: application/jose+json\r\nContent-Length: {}\r\n\r\n{body}",
+            body.len()
+        );
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("ACME JWS body codec"))?;
+        assert_eq!(request.path, "nested/pki/acme/new-account");
+        assert_eq!(request.namespace, "team");
+        assert!(request.token.is_empty());
+        assert_eq!(request.body.0, serde_json::from_str::<Value>(body)?);
+        let trailing = format!("{wire}extra");
+        assert!(read_request(&mut trailing.as_bytes(), Duration::from_secs(1)).is_err());
+        let ordinary = wire.replace("nested/pki/acme/new-account", "secret/item");
+        assert!(read_request(&mut ordinary.as_bytes(), Duration::from_secs(1)).is_err());
+        Ok(())
+    }
+    #[test]
+    fn head_operation_keeps_original_query_values_and_does_not_select_list() -> io::Result<()> {
+        let wire = "HEAD /v1/secret/ocsp/plainkey?list=true&unknown=one&unknown=two&help= HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n";
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("bounded HEAD query"))?;
+        assert_eq!(request.method, "HEAD");
+        let carrier = ocsp::query_request("HEAD", &request.path, &request.body.0)
+            .ok_or_else(|| io::Error::other("request-local header carrier"))?;
+        let (method, body) = carrier
+            .resolve(true)
+            .map_err(|_| io::Error::other("Go query values"))?;
+        assert_eq!(method, "HEAD");
+        assert_eq!(body.0["unknown"], json!(["one", "two"]));
+        assert_eq!(body.0["list"], "true");
+        assert!(body.0.get("help").is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn invalid_uri_path_and_conflicting_lengths_remain_outer_failures() -> io::Result<()> {
+        for method in ["GET", "HEAD", "HELP"] {
+            let wire = format!(
+                "{method} /v1/pki/ocsp/%GG HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n"
+            );
+            let error = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .err()
+                .ok_or_else(|| io::Error::other("bad URI admitted"))?;
+            assert_eq!(error.status, 400);
+            assert!(error.outer_bad_request);
+        }
+        let wire = "HEAD /v1/secret/a?help=true HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nContent-Length: 1\r\n\r\n";
+        let error = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .err()
+            .ok_or_else(|| io::Error::other("conflicting framing admitted"))?;
+        assert!(error.outer_bad_request);
+        let mut raw = Vec::new();
+        snapshot::NativeReply::HttpBadRequest.write(&mut raw, true)?;
+        assert!(raw.ends_with(b"\r\n\r\n400 Bad Request"));
+        Ok(())
+    }
+
+    #[test]
+    fn ocsp_raw_transport_retains_framing_mount_namespace_and_closed_output() -> io::Result<()> {
+        use base64::Engine as _;
+        for suffix in ["AA+/=", "AA%2B%2F%3D"] {
+            let wire = format!(
+                "GET /v1/nested/pki/ocsp/{suffix} HTTP/1.1\r\nHost: localhost\r\nX-Vault-Namespace: team/\r\nContent-Length: 2\r\n\r\n{{}}"
+            );
+            let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("bounded OCSP GET"))?;
+            assert_eq!(request.path, format!("nested/pki/ocsp/{suffix}"));
+            assert_eq!(request.namespace, "team");
+            assert_eq!(
+                request.body.0["__heptabao_pki_ocsp_get_path"]["path"],
+                request.path
+            );
+            assert_eq!(request.body.0["__heptabao_pki_ocsp_get_path"]["query"], "");
+        }
+        for size in [0, 4, 2047, 2048, 4096] {
+            let mut wire=format!("POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: {size}\r\n\r\n").into_bytes();
+            wire.extend(vec![7; size]);
+            let request = read_request(&mut wire.as_slice(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("bounded OCSP POST"))?;
+            assert_eq!(request.path, "pki/ocsp");
+            let encoded = request.body.0["__heptabao_pki_ocsp_raw_post"]["encoded"]
+                .as_str()
+                .ok_or_else(|| io::Error::other("OCSP marker"))?;
+            assert_eq!(
+                base64::engine::general_purpose::STANDARD
+                    .decode(encoded)
+                    .ok(),
+                Some(vec![7; size])
+            );
+        }
+        for wire in [
+            "POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: 4\r\nContent-Length: 4\r\n\r\nDER!",
+            "POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: 4\r\n\r\nDER!tail",
+            "GET /v1/pki/ocsp/AA== HTTP/1.1\r\nHost: localhost\r\nX-Vault-Namespace: team//other\r\n\r\n",
+            "GET /v1/p%6bi/ocsp/AA== HTTP/1.1\r\nHost: localhost\r\n\r\n",
+        ] {
+            assert!(read_request(&mut wire.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+        for (status, byte) in [(400, 1u8), (401, 6), (500, 2)] {
+            let payload = [0x30, 3, 0x0a, 1, byte];
+            let encoded = base64::engine::general_purpose::STANDARD.encode(payload);
+            let mut output = Vec::new();
+            write_response(
+                &mut output,
+                Response {
+                    status,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    body: json!({"__heptabao_pki_ocsp_response":encoded}),
+                },
+                false,
+            )?;
+            assert!(
+                output
+                    .windows(b"Content-Type: application/ocsp-response".len())
+                    .any(|v| v == b"Content-Type: application/ocsp-response")
+            );
+            assert!(output.ends_with(&payload));
+            let mut invalid = Vec::new();
+            write_response(
+                &mut invalid,
+                Response {
+                    status,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    body: json!({"__heptabao_pki_ocsp_response":encoded,"extra":true}),
+                },
+                false,
+            )?;
+            assert!(
+                invalid
+                    .windows(b"Content-Type: application/json".len())
+                    .any(|v| v == b"Content-Type: application/json")
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn pki_public_certificate_transport_has_closed_mime_and_canonical_bounds() -> io::Result<()> {
+        use base64::Engine as _;
+        let payload = [0x30, 0x00];
+        let encoded = base64::engine::general_purpose::STANDARD.encode(payload);
+        for (format, media) in [
+            ("der", "application/pkix-cert"),
+            ("pem", "application/pem-certificate-chain"),
+            ("chain", "application/pkix-cert"),
+        ] {
+            let response = || Response {
+                status: 200,
+                response_headers: Default::default(),
+                consistency_index: None,
+                body: json!({"__heptabao_pki_certificate":encoded,"format":format}),
+            };
+            let mut wire = Vec::new();
+            write_response(&mut wire, response(), false)?;
+            let header = format!("Content-Type: {media}\r\n");
+            assert!(
+                wire.windows(header.len())
+                    .any(|bytes| bytes == header.as_bytes()),
+                "closed public certificate MIME"
+            );
+            assert!(
+                wire.ends_with(&payload),
+                "public certificate transport preserves exact bytes"
+            );
+            let mut head = Vec::new();
+            write_response(&mut head, response(), true)?;
+            assert!(
+                head.ends_with(b"\r\n\r\n"),
+                "HEAD withholds all public certificate payload"
+            );
+        }
+        for body in [
+            json!({"__heptabao_pki_certificate":encoded,"format":"text/html"}),
+            json!({"__heptabao_pki_certificate":"MAA","format":"der"}),
+            json!({"__heptabao_pki_certificate":encoded,"format":"der","extra":true}),
+            json!({"__heptabao_pki_certificate":base64::engine::general_purpose::STANDARD.encode(vec![0;128*1024+1]),"format":"der"}),
+        ] {
+            let mut wire = Vec::new();
+            write_response(
+                &mut wire,
+                Response {
+                    status: 200,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    body,
+                },
+                false,
+            )?;
+            assert!(
+                wire.windows(b"Content-Type: application/json".len())
+                    .any(|bytes| bytes == b"Content-Type: application/json"),
+                "unknown/noncanonical/oversize envelope remains JSON"
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn raw_acme_problem_uses_go_html_escape_and_final_content_length() -> io::Result<()> {
+        let detail = "actual <nil> & > \u{2028} \u{2029}";
+        let mut wire = Vec::new();
+        write_response(
+            &mut wire,
+            Response {
+                status: 400,
+                body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":detail},"media":"problem"}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            },
+            false,
+        )?;
+        let boundary = wire
+            .windows(4)
+            .position(|b| b == b"\r\n\r\n")
+            .ok_or_else(|| io::Error::other("missing actual HTTP response boundary"))?
+            + 4;
+        let headers = String::from_utf8_lossy(&wire[..boundary]);
+        let body = &wire[boundary..];
+        assert!(headers.contains(&format!("Content-Length: {}\r\n", body.len())));
+        assert!(
+            body.windows(b"\\u003cnil\\u003e".len())
+                .any(|v| v == b"\\u003cnil\\u003e")
+        );
+        for escaped in [b"\\u0026", b"\\u2028", b"\\u2029"] {
+            assert!(body.windows(escaped.len()).any(|v| v == escaped));
+        }
+        let decoded: Value = serde_json::from_slice(body)?;
+        assert_eq!(decoded["detail"], detail);
+        Ok(())
+    }
+
+    #[test]
+    fn deleted_pki_root_empty_crl_retains_only_closed_raw_content_type() -> io::Result<()> {
+        for (encoded, expected) in [("", "application/pkix-crl"), ("MAA=", "application/json")] {
+            let mut wire = Vec::new();
+            write_response(
+                &mut wire,
+                Response {
+                    status: 204,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
+                },
+                false,
+            )?;
+            let head = wire.split(|byte| *byte == b'\n').collect::<Vec<_>>();
+            assert!(
+                head.iter()
+                    .any(|line| line.starts_with(format!("Content-Type: {expected}").as_bytes())),
+                "204 can select CRL MIME only for the canonical empty envelope"
+            );
+            assert!(wire.ends_with(b"\r\n\r\n"), "204 emits no public body");
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn external_pki_crl_transport_is_bounded_and_has_a_closed_content_type() -> io::Result<()> {
+        use base64::Engine as _;
+        let der = [0x30, 0x00];
+        let encoded = base64::engine::general_purpose::STANDARD.encode(der);
+        let response = || Response {
+            status: 200,
+            response_headers: Default::default(),
+            consistency_index: None,
+            body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
+        };
+        let mut wire = Vec::new();
+        write_response(&mut wire, response(), false)?;
+        assert!(
+            wire.windows(b"Content-Type: application/pkix-crl".len())
+                .any(|bytes| bytes == b"Content-Type: application/pkix-crl"),
+            "closed CRL MIME type"
+        );
+        assert!(wire.ends_with(&der), "raw CRL bytes are preserved");
+        let mut head = Vec::new();
+        write_response(&mut head, response(), true)?;
+        assert!(
+            head.ends_with(b"\r\n\r\n") && !head.ends_with(&der),
+            "HEAD has no raw CRL payload"
+        );
+        let mut rejected = Vec::new();
+        write_response(
+            &mut rejected,
+            Response {
+                status: 200,
+                response_headers: Default::default(),
+                consistency_index: None,
+                body: json!({"__heptabao_pki_crl":encoded,"pem":"text/html"}),
+            },
+            false,
+        )?;
+        assert!(
+            rejected
+                .windows(b"Content-Type: application/json".len())
+                .any(|bytes| bytes == b"Content-Type: application/json"),
+            "untrusted content type stays JSON"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn capacity_guard_config_requires_explicit_fixture_feature() {
+        let value = json!({
+            "listen":"127.0.0.1:8200", "data_dir":"/synthetic/data",
+            "audit_file":"/synthetic/audit.jsonl",
+            "tls_cert_file":"/synthetic/cert.pem", "tls_key_file":"/synthetic/key.pem",
+            "fixture_opaque_owner_limit_bytes": 2 * 1024 * 1024
+        });
+        #[cfg(not(feature = "fixture-capacity-limit"))]
+        assert!(serde_json::from_value::<Config>(value).is_err());
+        #[cfg(feature = "fixture-capacity-limit")]
+        assert_eq!(
+            serde_json::from_value::<Config>(value)
+                .ok()
+                .and_then(|config| config.fixture_opaque_owner_limit_bytes),
+            Some(2 * 1024 * 1024)
+        );
+    }
     use super::*;
+
+    #[test]
+    fn optional_client_auth_requires_explicit_roots_and_keeps_mandatory_default()
+    -> Result<(), String> {
+        let mut value = json!({
+            "listen":"127.0.0.1:0", "data_dir":"/unused-data", "audit_file":"/unused-audit",
+            "tls_cert_file":"/unused-cert", "tls_key_file":"/unused-key"
+        });
+        let config: Config = serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+        assert!(!config.tls_client_auth_optional);
+        value["tls_client_auth_optional"] = json!(true);
+        let config: Config = serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+        assert_eq!(
+            serve(config),
+            Err("optional TLS client authentication requires a client CA bundle".into())
+        );
+        value["tls_client_auth_optional"] = Value::Null;
+        assert!(serde_json::from_value::<Config>(value).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn optional_client_verifier_still_requests_and_checks_presented_certificates()
+    -> Result<(), String> {
+        use rustls::pki_types::{CertificateDer, UnixTime};
+        let ca =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/testdata/kubernetes-api-ca.pem");
+        let data = PathBuf::from("/unused-data");
+        for optional in [false, true] {
+            let verifier = load_client_verifier(
+                &ca,
+                None,
+                optional,
+                &data,
+                Arc::new(rustls::crypto::ring::default_provider()),
+            )?;
+            assert!(verifier.offer_client_auth());
+            assert_eq!(verifier.client_auth_mandatory(), !optional);
+            assert!(!verifier.root_hint_subjects().is_empty());
+            // Optional authentication must never turn a supplied invalid chain
+            // into an anonymous connection. Real chain/EKU cases run over TLS.
+            assert!(
+                verifier
+                    .verify_client_cert(
+                        &CertificateDer::from(vec![0_u8; 32]),
+                        &[],
+                        UnixTime::since_unix_epoch(Duration::from_secs(1_790_000_000))
+                    )
+                    .is_err()
+            );
+        }
+        Ok(())
+    }
 
     #[test]
     fn rate_limiter_enforces_burst_refill_and_bounded_peer_table() -> Result<(), String> {
@@ -737,7 +2787,12 @@ mod tests {
         let r = read_request(&mut text.as_bytes(), Duration::from_secs(1))
             .map_err(|e| e.message.to_owned())?;
         assert_eq!(r.path, "secret/data/a");
-        assert_eq!(r.body.0, json!({"version":2}));
+        let carrier =
+            ocsp::query_request(&r.method, &r.path, &r.body.0).ok_or("private query carrier")?;
+        let (method, strict) = carrier.resolve(false).map_err(|_| "strict owner query")?;
+        assert_eq!(method, "GET");
+        assert_eq!(strict.0, json!({"version":2}));
+        assert_eq!(r.body.0["__heptabao_kv_read_query"]["query"], "version=2");
         Ok(())
     }
 
@@ -755,12 +2810,7 @@ mod tests {
             payload.len()
         );
         assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
-        for header in [
-            "X-Vault-Wrap-TTL",
-            "X-Vault-MFA",
-            "X-Vault-Policy-Override",
-            "X-Vault-Index",
-        ] {
+        for header in ["X-Vault-MFA", "X-Vault-Policy-Override"] {
             let request = format!(
                 "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}: synthetic\r\n\r\n"
             );
@@ -771,7 +2821,12 @@ mod tests {
             );
         }
         let request = "GET /v1/secret/data/a?token=synthetic HTTP/1.1\r\nHost: localhost\r\n\r\n";
-        assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        let parsed = read_request(&mut request.as_bytes(), Duration::from_secs(1));
+        assert!(parsed.is_ok_and(|request| {
+            request.token.is_empty()
+                && ocsp::query_request(&request.method, &request.path, &request.body.0)
+                    .is_some_and(|carrier| carrier.resolve(false).is_err())
+        }));
     }
 
     #[test]
@@ -805,5 +2860,857 @@ mod tests {
             .join()
             .map_err(|_| io::Error::other("sender thread failed"))?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod service_lock_deadline_tests {
+    use super::*;
+
+    #[test]
+    fn slow_body_and_writer_wait_share_budget_before_mutating_dispatch()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-http-deadline-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        let (stream, _) = listener.accept()?;
+        let deadline = Instant::now() + Duration::from_millis(250);
+        let mut stream = DeadlineStream { stream, deadline };
+        let sender = std::thread::spawn(move || -> io::Result<()> {
+            let body = br#"{"secret_shares":1,"secret_threshold":1}"#;
+            write!(
+                client,
+                "POST /v1/sys/init HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n",
+                body.len()
+            )?;
+            std::thread::sleep(Duration::from_millis(40));
+            client.write_all(body)
+        });
+        let mut parsed = read_request(&mut stream, Duration::from_secs(1))
+            .map_err(|_| "synthetic slow request failed parsing")?;
+        sender.join().map_err(|_| "synthetic sender panicked")??;
+        // The body has consumed part of the accepted connection's budget.
+        // Keep the writer busy beyond the remaining budget; no dispatch may run.
+        let held = service.lock().map_err(|_| "test service poisoned")?;
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new(
+                &parsed.method,
+                &parsed.path,
+                &parsed.namespace,
+                &parsed.token,
+                std::mem::take(&mut parsed.body.0),
+            ),
+            deadline,
+            false,
+        );
+        assert_eq!(response.status, 503);
+        drop(held);
+        let read = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", Value::Null),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["initialized"], false);
+        // A new connection is allowed a new budget: the same valid mutation
+        // succeeds, proving the timed-out request was not a rejected test input.
+        let mut initialized = execute_service_request(
+            &service,
+            ServiceRequest::new(
+                "POST",
+                "sys/init",
+                "",
+                "",
+                json!({"secret_shares":1,"secret_threshold":1}),
+            ),
+            Instant::now() + Duration::from_secs(5),
+            false,
+        );
+        assert_eq!(initialized.status, 200);
+        crate::service::erase_json(&mut initialized.body);
+        Ok(())
+    }
+
+    #[test]
+    fn health_busy_writer_returns_negative_readiness_without_inventing_owner_state()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-health-writer-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let held = service.lock().map_err(|_| "service lock")?;
+        let start = Instant::now();
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/health", "", "", json!({})),
+            start + Duration::from_secs(5),
+            false,
+        );
+        assert!(start.elapsed() < Duration::from_secs(2));
+        assert_eq!(response.status, 503);
+        assert_eq!(response.body["ha_active"], false);
+        assert_eq!(response.body["ha_application_ready"], false);
+        for unknown in [
+            "initialized",
+            "sealed",
+            "standby",
+            "cluster_id",
+            "ha_enabled",
+            "data",
+            "auth",
+        ] {
+            assert!(response.body.get(unknown).is_none());
+        }
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("POST", "sys/init", "", "", json!({})),
+            Instant::now() + Duration::from_millis(10),
+            false,
+        );
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("ha_active").is_none());
+        drop(held);
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", json!({})),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["initialized"], false);
+        Ok(())
+    }
+
+    #[test]
+    fn response_reserve_only_shortens_one_existing_absolute_budget() {
+        let now = Instant::now();
+        for (remaining, reserved) in [
+            (Duration::ZERO, Duration::ZERO),
+            (Duration::from_millis(4), Duration::from_millis(1)),
+            (Duration::from_millis(200), Duration::from_millis(50)),
+            (Duration::from_secs(1), Duration::from_millis(250)),
+            (Duration::from_secs(60), Duration::from_millis(250)),
+        ] {
+            let original = now + remaining;
+            let execute = execution_deadline_with_response_reserve(now, original);
+            assert_eq!(original.duration_since(execute), reserved);
+            assert!(execute >= now && execute <= original);
+        }
+        let past = now - Duration::from_millis(1);
+        assert_eq!(execution_deadline_with_response_reserve(now, past), past);
+        let original = now + Duration::from_secs(1);
+        let late = now + Duration::from_millis(960);
+        assert_eq!(
+            execution_deadline_with_response_reserve(late, original),
+            original - Duration::from_millis(10)
+        );
+    }
+
+    #[test]
+    fn ordinary_expired_execution_still_delivers_503_inside_original_transport_budget()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-response-reserve-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let held = service.lock().map_err(|_| "service lock")?;
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        client.set_read_timeout(Some(Duration::from_secs(2)))?;
+        let (socket, _) = listener.accept()?;
+        let deadline = Instant::now() + Duration::from_millis(200);
+        let mut transport = DeadlineStream {
+            stream: socket,
+            deadline,
+        };
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "secret/data/synthetic", "", "", json!({})),
+            deadline,
+            false,
+        );
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("data").is_none());
+        // This is the actual production response writer and bounded TCP stream,
+        // not an in-memory renderer that would ignore the transport deadline.
+        write_response(&mut transport, response, false)?;
+        assert!(Instant::now() < deadline);
+        drop(transport);
+        let mut bytes = Vec::new();
+        client.read_to_end(&mut bytes)?;
+        assert!(bytes.starts_with(b"HTTP/1.1 503 "));
+        assert!(
+            bytes
+                .windows(b"service state lock deadline exceeded".len())
+                .any(|window| window == b"service state lock deadline exceeded")
+        );
+        drop(held);
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", json!({})),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["initialized"], false);
+        Ok(())
+    }
+
+    #[test]
+    fn quorum_read_deadline_retains_time_for_mandatory_audit_and_tcp_rejection()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-quorum-reply-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let mut service = Service::new(root.0.join("data"), &root.0.join("audit.jsonl"))?;
+        let cluster = crate::ha::snapshot_test_support::Cluster::new(
+            &root.0.join("raft"),
+            "quorum-reply-audit",
+        )?;
+        let process = cluster.processes[0].lock().map_err(|_| "HA lock")?;
+        process.ensure_linearizable()?;
+        cluster.isolate_all_peers(true);
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        client.set_read_timeout(Some(Duration::from_secs(2)))?;
+        let (socket, _) = listener.accept()?;
+        let started = Instant::now();
+        let deadline = started + Duration::from_secs(5);
+        let execution = execution_deadline_with_response_reserve(started, deadline);
+        let _scope = RequestDeadlineScope::enter(execution);
+        let error = process
+            .ensure_linearizable()
+            .err()
+            .ok_or("quorum read succeeded")?;
+        assert!(error.contains("linearizable read deadline exceeded"));
+        assert!(cluster.blocked_probes() > 0);
+        assert!(started.elapsed() >= Duration::from_secs(3));
+        assert_eq!(crate::request_deadline::current(), Some(execution));
+        eprintln!(
+            "quorum-reply: stage=read_index elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+        // The live failure completed mandatory response fsync after its read
+        // deadline and exhausted the 5s transport. Model that completion latency
+        // here, then use actual signed audit fsyncs and the production TCP writer.
+        std::thread::sleep(Duration::from_millis(350));
+        let response = service.handle_wire_rejection(
+            &[42; 16],
+            WireRejection::ParseRejected,
+            503,
+            "synthetic quorum read rejected",
+        );
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("data").is_none());
+        let audit = std::fs::read_to_string(root.0.join("audit.jsonl"))?;
+        assert_eq!(audit.lines().count(), 2);
+        eprintln!(
+            "quorum-reply: stage=audit_complete elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+        let mut transport = DeadlineStream {
+            stream: socket,
+            deadline,
+        };
+        write_response(&mut transport, response, false)?;
+        assert!(Instant::now() < deadline);
+        drop(transport);
+        let mut bytes = Vec::new();
+        client.read_to_end(&mut bytes)?;
+        assert!(bytes.starts_with(b"HTTP/1.1 503 "));
+        assert!(
+            bytes
+                .windows(b"synthetic quorum read rejected".len())
+                .any(|window| window == b"synthetic quorum read rejected")
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let lock = Mutex::new(());
+        let _held = lock.lock().map_err(|_| "test mutex poisoned")?;
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_millis(5)),
+            Err(LockWaitError::Busy)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn external_effect_phase_does_not_hold_the_shared_state_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let deadline = Instant::now() + Duration::from_secs(2);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                deadline,
+                |_| {
+                    assert_eq!(crate::request_deadline::current(), Some(deadline));
+                    worker_entered.wait();
+                    worker_release.wait();
+                    41_u64
+                },
+                |value, (), result| {
+                    assert_eq!(crate::request_deadline::current(), Some(deadline));
+                    *value = result + 1;
+                    Response {
+                        response_headers: Default::default(),
+                        consistency_index: None,
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
+                },
+            )
+        });
+        entered.wait();
+        let observed = state
+            .try_lock()
+            .map(|guard| *guard)
+            .map_err(|_| "external effect held the shared writer");
+        release.wait();
+        let response = worker
+            .join()
+            .map_err(|_| "external effect worker panicked")?;
+        assert_eq!(observed?, 0);
+        assert_eq!(response.status, 200);
+        assert_eq!(
+            *state
+                .lock()
+                .map_err(|_| "state poisoned after external effect")?,
+            42
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn expired_deadline_rejects_an_uncontended_writer() {
+        let lock = Mutex::new(());
+        let deadline = Instant::now() - Duration::from_millis(1);
+        assert!(matches!(
+            lock_until(&lock, deadline),
+            Err(LockWaitError::Busy)
+        ));
+    }
+
+    #[test]
+    fn gated_external_result_after_deadline_never_calls_finish_even_when_writer_is_free()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let finished = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let worker_finished = Arc::clone(&finished);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                Instant::now() + Duration::from_millis(40),
+                |_| {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    99_u64
+                },
+                |value, (), observed| {
+                    worker_finished.store(true, Ordering::Release);
+                    *value = observed;
+                    Response {
+                        response_headers: Default::default(),
+                        consistency_index: None,
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
+                },
+            )
+        });
+        entered.wait();
+        let concurrent = state
+            .try_lock()
+            .map(|mut value| {
+                *value = 7;
+            })
+            .map_err(|_| "external effect held writer");
+        // The provider gate opens after the original request budget. The
+        // writer remains free, which exposed the old try_lock-before-deadline bug.
+        std::thread::sleep(Duration::from_millis(60));
+        release.wait();
+        let response = worker.join().map_err(|_| "external worker panicked")?;
+        concurrent?;
+        assert_eq!(response.status, 503);
+        assert!(!finished.load(Ordering::Acquire));
+        assert_eq!(*state.lock().map_err(|_| "state poisoned")?, 7);
+        Ok(())
+    }
+
+    #[test]
+    fn poisoned_service_lock_fails_without_waiting_for_the_deadline() {
+        let lock = Arc::new(Mutex::new(()));
+        let worker = Arc::clone(&lock);
+        let poisoned = std::thread::spawn(move || {
+            if let Ok(_held) = worker.lock() {
+                // Deliberately unwind while holding the lock: this is the fault
+                // being tested, not an assertion failure or production panic.
+                std::panic::resume_unwind(Box::new("poison test mutex"));
+            }
+        })
+        .join();
+        assert!(poisoned.is_err());
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_secs(1)),
+            Err(LockWaitError::Poisoned)
+        ));
+    }
+}
+
+#[cfg(test)]
+mod wrapping_header_tests {
+    use super::*;
+    #[test]
+    fn wrapping_duration_is_bounded_and_rejects_silent_rounding() {
+        for (input, expected) in [
+            ("60", Some(60)),
+            ("1h30m5s", Some(5405)),
+            ("0s", Some(0)),
+            ("0", Some(0)),
+        ] {
+            assert!(parse_wrap_ttl(input).is_ok_and(|actual| actual == expected));
+        }
+        for input in [
+            "",
+            "-1",
+            "1.5s",
+            "1ms",
+            "1d",
+            "1s5",
+            "s",
+            " 60",
+            "18446744073709551616",
+            "768h1s",
+        ] {
+            assert!(parse_wrap_ttl(input).is_err());
+        }
+    }
+    #[test]
+    fn wrapping_zero_header_keeps_acl_presence_without_requesting_a_wrapper() {
+        for header in ["0", "0s", "0m0s"] {
+            let request = format!(
+                "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: {header}\r\n\r\n"
+            );
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|request| request.wrap_ttl_seconds == Some(0))
+            );
+        }
+        let absent = b"GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(
+            read_request(&mut absent.as_slice(), Duration::from_secs(1))
+                .is_ok_and(|request| request.wrap_ttl_seconds.is_none())
+        );
+    }
+
+    #[test]
+    fn wrapping_headers_are_retained_and_duplicates_or_jwt_reject() {
+        let valid =
+            b"GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: 60s\r\n\r\n";
+        assert!(
+            read_request(&mut valid.as_slice(), Duration::from_secs(1))
+                .is_ok_and(|r| r.wrap_ttl_seconds == Some(60))
+        );
+        for header in [
+            "X-Vault-Wrap-TTL: 60s\r\nx-vault-wrap-ttl: 1s",
+            "X-Vault-Wrap-TTL: invalid",
+            "X-Vault-Wrap-Format: jwt",
+        ] {
+            let request =
+                format!("GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn health_probe_query_flags_are_parsed_as_booleans() {
+        for query in ["standbyok=1", "standbyok=true"] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0["standbyok"] == Value::Bool(true))
+            );
+        }
+        for query in ["perfstandbyok=true", "perfstandbyok=maybe"] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0 == json!({}))
+            );
+        }
+        let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn ordinary_boolean_queries_keep_their_boolean_shape() {
+        for (method, query, key) in [
+            ("POST", "list=true", "list"),
+            ("GET", "exclude_deleted=false", "exclude_deleted"),
+        ] {
+            let request = format!(
+                "{method} /v1/secret/metadata/a?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| {
+                    if let Some(carrier) = ocsp::query_request(&r.method, &r.path, &r.body.0) {
+                        carrier
+                            .resolve(false)
+                            .is_ok_and(|(_, body)| body.0[key].is_boolean())
+                    } else {
+                        r.body.0[key].is_boolean()
+                    }
+                })
+            );
+        }
+    }
+
+    #[test]
+    fn list_queries_preserve_signed_limits_and_literal_cursors() {
+        for (query, expected) in [
+            ("limit=-1", json!({"limit": -1})),
+            ("limit=0", json!({"limit": 0})),
+            ("limit=9223372036854775807", json!({"limit": i64::MAX})),
+            ("limit=-9223372036854775808", json!({"limit": i64::MIN})),
+            ("after=true", json!({"after": "true"})),
+            ("after=false", json!({"after": "false"})),
+            ("limit=", json!({"limit": ""})),
+            (
+                "limit=9223372036854775808",
+                json!({"limit": "9223372036854775808"}),
+            ),
+            (
+                "limit=-9223372036854775809",
+                json!({"limit": "-9223372036854775809"}),
+            ),
+            ("limit=1.5", json!({"limit": "1.5"})),
+        ] {
+            let request =
+                format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| {
+                    ocsp::query_request(&r.method, &r.path, &r.body.0).is_some_and(|carrier| {
+                        carrier
+                            .resolve(false)
+                            .is_ok_and(|(_, body)| body.0 == expected)
+                    })
+                })
+            );
+        }
+        for query in ["version=-1", "depth=-1"] {
+            let request =
+                format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| ocsp::query_request(&r.method, &r.path, &r.body.0)
+                        .is_some_and(|carrier| carrier.resolve(false).is_err()))
+            );
+        }
+    }
+
+    #[test]
+    fn query_operations_ignore_framed_bodies_and_get_selects_list_or_scan() {
+        for (method, query, selected) in [
+            ("GET", "list=1", "LIST"),
+            ("GET", "scan=True", "SCAN"),
+            ("GET", "scan=", "GET"),
+            ("LIST", "limit=-2", "LIST"),
+            ("SCAN", "limit=-2", "SCAN"),
+            ("HEAD", "limit=-2", "HEAD"),
+            ("DELETE", "limit=-2", "DELETE"),
+        ] {
+            for payload in [r#"{"limit":3,"after":"body","list":true}"#, "not JSON"] {
+                let request = format!(
+                    "{method} /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{payload}",
+                    payload.len()
+                );
+                assert!(
+                    read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| r
+                        .method
+                        == selected
+                        && r.body.0.get("after").is_none()
+                        && r.body.0.get("list").is_none())
+                );
+            }
+        }
+        for query in ["list=true&scan=true", "scan=invalid", "list=invalid"] {
+            let request =
+                format!("GET /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn health_status_code_queries_are_bounded_integers() {
+        let request = b"GET /v1/sys/health?uninitcode=204&sealedcode=499&standbycode=430&activecode=201 HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1));
+        assert!(parsed.is_ok());
+        let parsed = match parsed {
+            Ok(request) => request,
+            Err(_) => return,
+        };
+        assert_eq!(parsed.body.0["uninitcode"], json!(204));
+        assert_eq!(parsed.body.0["sealedcode"], json!(499));
+        assert_eq!(parsed.body.0["standbycode"], json!(430));
+        assert_eq!(parsed.body.0["activecode"], json!(201));
+        for query in ["activecode=99", "sealedcode=1000", "standbycode=nope"] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn official_go_api_health_compatibility_queries_keep_only_consumed_fields() -> io::Result<()> {
+        let query = "drsecondarycode=299&haunhealhty=299&performancestandbycode=299&removedcode=299&sealedcode=299&standbycode=299&uninitcode=299";
+        let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: local\r\n\r\n");
+        let parsed = read_request(&mut request.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("official Go API health request rejected"))?;
+        assert_eq!(
+            parsed.body.0,
+            json!({"sealedcode":299,"standbycode":299,"uninitcode":299})
+        );
+        let request = b"GET /v1/sys/health?haunhealhty=not-a-code&removedcode=ignored&standbyok=true HTTP/1.1\r\nHost: local\r\n\r\n";
+        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("unused health options incorrectly rejected"))?;
+        assert_eq!(parsed.body.0, json!({"standbyok":true}));
+        let request = b"GET /v1/sys/init?haunhealhty=299 HTTP/1.1\r\nHost: local\r\n\r\n";
+        assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn only_health_semantic_rejections_skip_wire_audit_and_retain_head() {
+        for method in ["GET", "HEAD"] {
+            for (target, headers, status) in [
+                ("sys/health?standbyok=maybe", "", 400),
+                ("sys/health?activecode=99", "", 400),
+                ("sys/health?sealedcode=1000", "", 400),
+                ("sys/health", "X-Vault-Namespace: a//b\r\n", 400),
+            ] {
+                let wire =
+                    format!("{method} /v1/{target} HTTP/1.1\r\nHost: localhost\r\n{headers}\r\n");
+                assert!(
+                    read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                        .is_err_and(|error| error.status == status
+                            && error.health_head == Some(method == "HEAD"))
+                );
+            }
+        }
+        for method in ["GET", "HEAD"] {
+            for ttl in ["invalid", "60", "0", "999999999999999999999999999999"] {
+                let wire = format!(
+                    "{method} /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: {ttl}\r\n\r\n"
+                );
+                assert!(
+                    read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                        .is_ok_and(|request| request.wrap_ttl_seconds.is_none())
+                );
+            }
+        }
+        // Other methods/routes and malformed framing retain mandatory wire
+        // rejection audit; an untrusted request line alone does not exempt it.
+        for wire in [
+            "POST /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            "GET /v1/sys/healthy?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            "GET /v1/secret/data/private HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: invalid\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-Format: jwt\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Index: malformed\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nContent-Length: 262145\r\n\r\n",
+            "POST /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: invalid\r\n\r\n",
+            "GET /v1/sys/health?activecode=99 HTTP/1.1\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: a\r\nHost: b\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nTransfer-Encoding: chunked\r\n\r\n",
+        ] {
+            assert!(
+                read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                    .is_err_and(|error| error.health_head.is_none())
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "http_consistency_tests.rs"]
+mod consistency_tests;
+
+#[cfg(test)]
+#[path = "http_ui_mounts_tests.rs"]
+mod ui_mounts_tests;
+
+#[cfg(test)]
+mod recovery_listener_policy_tests {
+    use super::*;
+    #[test]
+    fn legacy_recovery_requires_explicit_listener_false_and_rejects_non_boolean()
+    -> Result<(), serde_json::Error> {
+        let mut body = serde_json::json!({"listen": "127.0.0.1:8200", "data_dir": "/synthetic/data",
+            "audit_file": "/synthetic/audit", "tls_cert_file": "/synthetic/cert", "tls_key_file": "/synthetic/key"});
+        let default: Config = serde_json::from_value(body.clone())?;
+        assert!(default.disable_unauthed_rekey_endpoints);
+        body["disable_unauthed_rekey_endpoints"] = serde_json::json!(false);
+        let enabled: Config = serde_json::from_value(body.clone())?;
+        assert!(!enabled.disable_unauthed_rekey_endpoints);
+        body["disable_unauthed_rekey_endpoints"] = serde_json::json!("false");
+        assert!(serde_json::from_value::<Config>(body).is_err());
+        Ok(())
+    }
+}
+
+// Go's official API encodes literal stars and UTF-8 path characters. Decode
+// that carrier once before admission; encoded separators and traversal bytes
+// retain the existing rejection boundary and never become another route.
+fn decode_native_logical_path(path: &str) -> Result<std::borrow::Cow<'_, str>, ParseError> {
+    if !path.contains('%') {
+        return Ok(std::borrow::Cow::Borrowed(path));
+    }
+    if path.len() > 12 * 1024 {
+        return Err(bad("encoded logical path exceeds limit"));
+    }
+    let mut decoded = Vec::with_capacity(path.len());
+    let mut bytes = path.as_bytes().iter().copied();
+    while let Some(byte) = bytes.next() {
+        if byte != b'%' {
+            decoded.push(byte);
+            continue;
+        }
+        let high = bytes.next().and_then(|b| (b as char).to_digit(16));
+        let low = bytes.next().and_then(|b| (b as char).to_digit(16));
+        let byte = high
+            .zip(low)
+            .map(|(h, l)| (h * 16 + l) as u8)
+            .ok_or_else(|| bad("invalid encoded logical path"))?;
+        if byte != b'*' && byte < 0x80 {
+            return Err(bad("ambiguous encoded paths are not supported"));
+        }
+        decoded.push(byte);
+    }
+    let decoded = String::from_utf8(decoded).map_err(|_| bad("invalid UTF-8 logical path"))?;
+    if decoded
+        .chars()
+        .any(|c| !c.is_ascii() && !c.is_alphanumeric())
+    {
+        return Err(bad("unsupported encoded logical path character"));
+    }
+    Ok(std::borrow::Cow::Owned(decoded))
+}
+
+#[cfg(test)]
+mod encoded_sdk_path_tests {
+    use super::*;
+    #[test]
+    fn sdk_auth100_encoded_native_characters_do_not_decode_separators_or_traversal() {
+        assert_eq!(
+            decode_native_logical_path("auth/sdk/root%2Aliteral")
+                .map(|v| v.into_owned())
+                .ok()
+                .as_deref(),
+            Some("auth/sdk/root*literal")
+        );
+        assert_eq!(
+            decode_native_logical_path("auth/sdk/root/%E7%94%A8%E6%88%B7")
+                .map(|v| v.into_owned())
+                .ok()
+                .as_deref(),
+            Some("auth/sdk/root/用户")
+        );
+        for path in [
+            "auth/sdk/%2Fprivate",
+            "auth/sdk/%2E%2E/private",
+            "auth/sdk/%5Cprivate",
+            "auth/sdk/%25private",
+            "auth/sdk/%00private",
+            "auth/sdk/%FF",
+            "auth/sdk/%E7%94",
+            "auth/sdk/%2",
+            "auth/sdk/%20private",
+        ] {
+            assert!(decode_native_logical_path(path).is_err());
+        }
     }
 }

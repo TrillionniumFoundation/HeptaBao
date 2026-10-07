@@ -1,0 +1,30 @@
+[package]
+name = "heptabao-openbao-grpc"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+prost = "=0.14.4"
+tonic = { version = "=0.14.6", default-features = false, features = ["channel", "codegen", "tls-ring"] }
+tokio = { version = "=1.53.1", features = ["rt", "time", "sync", "net", "io-util"] }
+zeroize = "=1.8.1"
+ring = "=0.17.14"
+base64 = "=0.22.1"
+openssl = { version = "=0.10.81", default-features = false, features = ["aws-lc"] }
+hyper-util = { version = "=0.1.20", features = ["tokio"] }
+tower = { version = "=0.5.3", features = ["util"] }
+tokio-openssl = "=0.6.5"
+
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "=1.1.4", features = ["fs"] }
+
+[dev-dependencies]
+rcgen = { version = "=0.14.10", default-features = false, features = ["crypto", "pem", "ring"] }
+tonic = { version = "=0.14.6", default-features = false, features = ["server", "router", "codegen", "tls-ring"] }
+tokio-stream = { version = "=0.1.19", features = ["net"] }
+tokio = { version = "=1.53.1", features = ["macros", "rt-multi-thread", "test-util", "net"] }
+
+[lints]
+workspace = true

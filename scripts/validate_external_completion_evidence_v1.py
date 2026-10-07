@@ -10,7 +10,7 @@ from typing import Any
 
 REPOSITORY_ID = 1349115072
 REPOSITORY_FULL_NAME = "TrillionniumFoundation/HeptaBao"
-ALLOWED_BLOCKERS = {"HB-BLK-CTRL-001", *{f"HB-BLK-EXT-{i:03d}" for i in range(1, 8)}}
+ALLOWED_BLOCKERS = {"HB-BLK-CTRL-001", *{f"HB-BLK-EXT-{i:03d}" for i in range(1, 9)}}
 REQUIRED_ROLES = {
     "HB-BLK-CTRL-001": {"repository_administrator", "independent_control_reviewer"},
     "HB-BLK-EXT-001": {"program_reviewer", "security_reviewer", "storage_reviewer"},
@@ -20,6 +20,7 @@ REQUIRED_ROLES = {
     "HB-BLK-EXT-005": {"oracle_operator", "sanitization_operator", "transfer_custodian", "compatibility_reviewer"},
     "HB-BLK-EXT-006": {"storage_lab_operator", "storage_reviewer"},
     "HB-BLK-EXT-007": {"independent_reproduction_operator", "independent_reproduction_reviewer"},
+    "HB-BLK-EXT-008": {"plugin_qualifier", "provider_reviewer"},
 }
 SEPARATION_KEYS = {
     "HB-BLK-EXT-007": {
@@ -28,6 +29,7 @@ SEPARATION_KEYS = {
     "HB-BLK-EXT-006": {"runner_admin", "artifact_custody", "signing_root", "power_cut_control"},
     "HB-BLK-EXT-005": {"raw_capture_acl", "implementation_acl", "artifact_custody", "signing_root"},
     "HB-BLK-EXT-004": {"root_custody", "delegated_custody", "observer_custody", "transparency_custody"},
+    "HB-BLK-EXT-008": {"sandbox_custody", "provider_custody", "artifact_custody", "signing_root"},
 }
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")

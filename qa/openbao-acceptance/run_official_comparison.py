@@ -8,8 +8,9 @@ from pathlib import Path
 import subprocess
 
 import acceptance
-from bao_http import BaoError, SafeArgumentParser, private_json, private_write
-from official_openbao_launcher import file_digest, private_text, start_oracle, stop_oracle
+from bao_http import BaoError, Client, SafeArgumentParser, private_json, private_read, private_write
+from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, file_digest, private_text,
+                                      start_oracle, stop_oracle, verify_selected_oracle)
 
 
 def main(argv=None):
@@ -18,7 +19,13 @@ def main(argv=None):
     parser.add_argument("--candidate-source", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--build-log", type=Path, help="Operator-supplied build log to bind by digest")
+    parser.add_argument(
+        "--modules",
+        default="core,kv,token,transit,pki,totp,userpass,approle,wrapping,edge_tls,system,operations",
+        help="Comma-separated acceptance modules; default preserves the bounded baseline",
+    )
     parser.add_argument("--oracle-port", type=int, default=28262)
+    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     root = args.work_dir.resolve()
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -31,7 +38,10 @@ def main(argv=None):
     oracle = instance = None
     old_mask = os.umask(0o077)
     try:
-        oracle = start_oracle(args.oracle_port)
+        oracle = start_oracle(args.oracle_port, version=args.oracle_version)
+        reference = Client(oracle["address"], oracle["ca_file"],
+                           private_read(oracle["token_file"]).decode("ascii").strip())
+        oracle_identity = verify_selected_oracle(oracle, reference.health(), version=args.oracle_version)
         instance = smoke.Instance(args.binary.resolve(), root / "candidate")
         instance.start()
         status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -47,8 +57,20 @@ def main(argv=None):
                           HB_ORACLE_CACERT=oracle["ca_file"], HB_ORACLE_TOKEN_FILE=oracle["token_file"])
         for key in ("HB_CANDIDATE_TOKEN", "HB_CANDIDATE_NAMESPACE", "HB_ORACLE_TOKEN", "HB_ORACLE_NAMESPACE"):
             os.environ.pop(key, None)
-        code = acceptance.main(["--compare", "--allow-test-writes", "--oracle-identity-file", oracle["identity_file"],
-                                "--output", str(root / "comparison.json")])
+        code = acceptance.main(
+            [
+                "--compare",
+                "--allow-test-writes",
+                "--modules",
+                args.modules,
+                "--oracle-identity-file",
+                oracle["identity_file"],
+                "--oracle-version",
+                args.oracle_version,
+                "--output",
+                str(root / "comparison.json"),
+            ]
+        )
         report = private_json(root / "comparison.json")
         report["execution_binding"] = {
             "candidate_binary_sha256": file_digest(args.binary), "candidate_source_sha": source_sha,
@@ -56,12 +78,14 @@ def main(argv=None):
             "candidate_source_binding_basis": "operator_supplied_build_source_checkout",
             "runner_source_sha256": file_digest(__file__),
             "build_log_sha256": file_digest(args.build_log) if args.build_log else None,
-            "official_oracle": private_json(oracle["identity_file"]),
+            "official_oracle": oracle_identity,
         }
         private_write(root / "comparison-bound.json", report)
         print(json.dumps({"status": report["status"], "cases_match": report["cases_match"],
                           "mismatched_cases": report.get("mismatched_cases", []),
                           "output": str(root / "comparison-bound.json"),
+                          "oracle_version": args.oracle_version,
+                          "oracle_storage_backend": oracle_identity["storage"],
                           "candidate_source_sha": source_sha, "candidate_source_dirty": dirty}))
         return code
     finally:

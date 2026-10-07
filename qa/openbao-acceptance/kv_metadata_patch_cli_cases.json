@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.kv_metadata_patch_cli_checkset_proposal.v1",
+  "status": "fixed_proposal_not_live_proof",
+  "profile": "kv-metadata-patch-cli270",
+  "required_oracle_version": "2.7.0",
+  "interfaces": [
+    "candidate_python",
+    "candidate_bao",
+    "oracle_python",
+    "oracle_bao"
+  ],
+  "checks_per_interface": 16,
+  "total_required_checks": 64,
+  "budgets_seconds": {
+    "all_http": 2,
+    "command": 10,
+    "outer": 120
+  },
+  "mutation_attempts": 1,
+  "business_read_attempts": 1,
+  "cases": [
+    "merge_exit",
+    "merge_safe_errors",
+    "merge_delta_applied_and_unmentioned_custom_key_preserved",
+    "merge_data_version_and_history_unchanged",
+    "remove_exit",
+    "remove_safe_errors",
+    "remove_key_absent_and_other_custom_keys_preserved",
+    "remove_data_version_and_history_unchanged",
+    "patch_only_acl_exit",
+    "patch_only_acl_safe_errors",
+    "patch_only_acl_delta_applied",
+    "update_only_acl_refusal_exit",
+    "update_only_acl_safe_errors",
+    "update_only_acl_refusal_has_no_effect",
+    "missing_entry_refusal_exit_and_safe_errors",
+    "missing_entry_remains_absent"
+  ],
+  "setup": {
+    "state": "fresh KV v2 mount and separate synthetic key per interface, with one data version and two custom metadata entries",
+    "credentials": "root setup plus per-interface patch-only and update-only principals, private owner-only files",
+    "output_custody": "consume command stdout and response values only in memory; save closed case IDs, booleans, public status/exit and identity only"
+  },
+  "not_covered": [
+    "set/remove collision precedence",
+    "metadata CAS command flags",
+    "exact success message bytes",
+    "all namespaces and CLI flags",
+    "prior full272 or KV conversion qualification"
+  ]
+}

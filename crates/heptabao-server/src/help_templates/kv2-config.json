@@ -1,0 +1,82 @@
+{
+  "help": "Request:        config\nMatching Route: ^config$\n\nConfigures settings for the KV store\n\n## PARAMETERS\n\n    cas_required (bool)\n\n        If true, the backend will require the cas parameter to be set for each write\n\n    delete_version_after (duration (sec))\n\n        If set, the length of time before a version is deleted. A negative duration\n        disables the use of delete_version_after on all keys. A zero duration\n        clears the current setting. Accepts a Go duration format string.\n\n    max_versions (int)\n\n        The number of versions to keep for each key. Defaults to 10\n\n    metadata_cas_required (bool)\n\n        If true, the backend will require the metadata_cas parameter to be set for each metadata update\n\n## DESCRIPTION\n\nThis path configures backend level settings that are applied to every key in the\nkey-value store. This parameter accetps:\n\n\t* max_versions (int) - The number of versions to keep for each key. Defaults\n\t  to 10\n\n\t* cas_required (bool) - If true, the backend will require the cas parameter\n\t  to be set for each write\n\n\t* delete_version_after (duration) - If set, the length of time before a\n\t  version is deleted. A negative duration disables the use of\n\t  delete_version_after on all keys. A zero duration clears the current\n\t  setting. Accepts a Go duration format string.",
+  "openapi": {
+    "components": {
+      "schemas": {
+        "WriteConfigRequest": {
+          "properties": {
+            "cas_required": {
+              "description": "If true, the backend will require the cas parameter to be set for each write",
+              "type": "boolean"
+            },
+            "delete_version_after": {
+              "description": "If set, the length of time before a version is deleted. A negative duration disables the use of delete_version_after on all keys. A zero duration clears the current setting. Accepts a Go duration format string.",
+              "format": "seconds",
+              "type": "integer"
+            },
+            "max_versions": {
+              "description": "The number of versions to keep for each key. Defaults to 10",
+              "type": "integer"
+            },
+            "metadata_cas_required": {
+              "description": "If true, the backend will require the metadata_cas parameter to be set for each metadata update",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/config": {
+        "description": "Configures settings for the KV store",
+        "get": {
+          "operationId": "read-config",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "summary": "Read the backend level settings.",
+          "tags": [
+            "secrets"
+          ]
+        },
+        "post": {
+          "operationId": "write-config",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteConfigRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "summary": "Configure backend level settings that are applied to every key in the key-value store.",
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      }
+    }
+  },
+  "see_also": null
+}
