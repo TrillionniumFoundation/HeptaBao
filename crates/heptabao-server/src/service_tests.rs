@@ -2921,14 +2921,17 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
     let fixture_clock =
         RequestClock::anchored(std::time::Duration::new(100, 1), std::time::Instant::now())?;
     let call = |service: &mut Service, method: &str, path: &str, token: &str, body: Value| {
-        super::native_remount::tests::call_and_complete(
-            service,
-            fixture_clock,
-            method,
-            path,
-            token,
-            body,
-        )
+        // These are independent requests, each with its own original entrance.
+        // Sample continuous fixture time without rearming any admitted move.
+        let started = std::time::Instant::now();
+        let precise = match fixture_clock
+            .observed_at()
+            .and_then(|observed| RequestClock::anchored(observed.duration_since_epoch(), started))
+        {
+            Ok(clock) => clock,
+            Err(_) => return Response::error(503, "fixture request clock unavailable"),
+        };
+        super::native_remount::tests::call_and_complete(service, precise, method, path, token, body)
     };
 
     let (key, token) = bootstrap(&mut service)?;
