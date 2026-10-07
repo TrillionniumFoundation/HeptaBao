@@ -1309,3 +1309,254 @@ fn raw112_actual_shared_official_named_curve_csr_signs_its_public_key_and_verifi
     assert!(!openssl::x509::X509::from_der(&tampered)?.verify(&issuer)?);
     Ok(())
 }
+
+fn raw112_assert_chain_rewrap_reopen_terminal(
+    directory: &Root,
+    mut service: Service,
+    key: &str,
+    admin: &str,
+    expected: &[u8],
+) -> TestResult {
+    assert!(!expected.ends_with(b"\n"));
+    let plain = call(&mut service, "GET", "rawpki/ca_chain", admin, json!({}));
+    assert_eq!(plain.status, 200);
+    let actual = base64::engine::general_purpose::STANDARD.decode(
+        plain.body["__heptabao_pki_certificate"]
+            .as_str()
+            .ok_or("chain bytes")?,
+    )?;
+    assert_eq!(actual.as_slice(), expected);
+    let ordinary = call(
+        &mut service,
+        "GET",
+        "rawpki/cert/ca_chain",
+        admin,
+        json!({}),
+    );
+    assert_eq!(ordinary.status, 200);
+    let text = std::str::from_utf8(expected)?;
+    assert_eq!(ordinary.body["data"]["certificate"].as_str(), Some(text));
+    assert_eq!(ordinary.body["data"]["ca_chain"].as_str(), Some(text));
+    let first = raw110_pki_issue(
+        &mut service,
+        admin,
+        "GET",
+        "rawpki/ca_chain",
+        json!({}),
+        [0xa4; 16],
+    )?;
+    let (response, bytes) = raw110_pki_unwrap(&mut service, admin, &first)?;
+    assert_eq!(bytes.as_slice(), expected);
+    raw110_assert_http_terminal(response, 200, "application/pkix-cert", expected)?;
+    let second = raw110_pki_issue(
+        &mut service,
+        admin,
+        "GET",
+        "rawpki/ca_chain",
+        json!({}),
+        [0xa5; 16],
+    )?;
+    let rewrapped = {
+        let _ingress = crate::auth::IngressReplyScope::listener(&[0xa6; 16]);
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/rewrap",
+            admin,
+            json!({"token":second.as_str()}),
+        )
+    };
+    assert_eq!(rewrapped.status, 200);
+    let next = Zeroizing::new(
+        rewrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("rewrapped chain")?
+            .to_owned(),
+    );
+    assert_ne!(next.as_str(), second.as_str());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            admin,
+            json!({"token":second.as_str()})
+        )
+        .status,
+        400
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let (response, bytes) = raw110_pki_unwrap(&mut service, admin, &next)?;
+    assert_eq!(bytes.as_slice(), expected);
+    let origin = response
+        .unwrapped_json
+        .as_ref()
+        .ok_or("reopened chain origin")?;
+    let mut stored = serde_json::to_value(origin.stored_reply().ok_or("stored chain")?)?;
+    assert_eq!(
+        stored["request_id"],
+        crate::crypto::uuid_from_bytes(&[0xa5; 16])
+    );
+    assert_eq!(stored["kind"]["pki-raw-http-v1"]["status"], 200);
+    erase_json(&mut stored);
+    raw110_assert_http_terminal(response, 200, "application/pkix-cert", expected)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            admin,
+            json!({"token":next.as_str()})
+        )
+        .status,
+        400
+    );
+    let state = service.state.as_ref().ok_or("retired chain state")?;
+    assert!(state.auth.has_pki_raw_http_reply_state());
+    assert_eq!(state.writer_schema(), RAW_PKI_HTTP_REPLY_STATE_SCHEMA);
+    Ok(())
+}
+
+#[test]
+fn raw112_actual_imported_single_ca_chain_has_no_terminal_lf_through_rewrap_reopen() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/chainparent",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let mut generated = call(
+        &mut service,
+        "POST",
+        "chainparent/root/generate/exported",
+        &admin,
+        json!({"common_name":"chainparent.example.test","key_type":"ed25519","ttl":"48h","format":"pem"}),
+    );
+    assert_eq!(generated.status, 200);
+    let certificate = generated.body["data"]["certificate"]
+        .as_str()
+        .ok_or("actual public parent")?
+        .to_owned();
+    let private = Zeroizing::new(
+        generated.body["data"]["private_key"]
+            .as_str()
+            .ok_or("actual transient key")?
+            .to_owned(),
+    );
+    erase_json(&mut generated.body);
+    let parsed = openssl::x509::X509::from_pem(certificate.as_bytes())?;
+    let public_key = parsed.public_key()?;
+    assert!(parsed.verify(&public_key)?);
+    let canonical = parsed.to_pem()?;
+    let expected = canonical.strip_suffix(b"\n").ok_or("OpenSSL PEM LF")?;
+    raw110_pki_install(&mut service, &admin, false)?;
+    let imported = call(
+        &mut service,
+        "POST",
+        "rawpki/keys/import",
+        &admin,
+        json!({"pem_bundle":&*private,"key_name":"chain-parent-key"}),
+    );
+    assert_eq!(imported.status, 200);
+    drop(private);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "rawpki/intermediate/set-signed",
+            &admin,
+            json!({"certificate":format!("\r\n\t{certificate}\n ")}),
+        )
+        .status,
+        200
+    );
+    raw112_assert_chain_rewrap_reopen_terminal(&directory, service, &key, &admin, expected)
+}
+
+#[test]
+fn raw112_actual_two_certificate_ca_chain_has_one_separator_and_no_terminal_lf() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/chainparent",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let parent = call(
+        &mut service,
+        "POST",
+        "chainparent/root/generate/internal",
+        &admin,
+        json!({"common_name":"chainparent.example.test","key_type":"ed25519","ttl":"48h"}),
+    );
+    assert_eq!(parent.status, 200);
+    let parent_pem = parent.body["data"]["certificate"]
+        .as_str()
+        .ok_or("parent certificate")?;
+    let parent_cert = openssl::x509::X509::from_pem(parent_pem.as_bytes())?;
+    raw110_pki_install(&mut service, &admin, false)?;
+    let csr = call(
+        &mut service,
+        "POST",
+        "rawpki/intermediate/generate/internal",
+        &admin,
+        json!({"common_name":"child.example.test","key_type":"ec","key_bits":256}),
+    );
+    assert_eq!(csr.status, 200);
+    let signed = call(
+        &mut service,
+        "POST",
+        "chainparent/root/sign-intermediate",
+        &admin,
+        json!({"csr":csr.body["data"]["csr"],"use_csr_values":true,"ttl":"24h","max_path_length":0}),
+    );
+    assert_eq!(signed.status, 200);
+    let child_pem = signed.body["data"]["certificate"]
+        .as_str()
+        .ok_or("child certificate")?;
+    let child_cert = openssl::x509::X509::from_pem(child_pem.as_bytes())?;
+    let parent_key = parent_cert.public_key()?;
+    assert!(child_cert.verify(&parent_key)?);
+    assert!(parent_cert.verify(&parent_key)?);
+    let child_bytes = child_cert.to_pem()?;
+    let parent_bytes = parent_cert.to_pem()?;
+    let mut expected = child_bytes
+        .strip_suffix(b"\n")
+        .ok_or("child PEM LF")?
+        .to_vec();
+    expected.push(b'\n');
+    expected.extend_from_slice(parent_bytes.strip_suffix(b"\n").ok_or("parent PEM LF")?);
+    assert_eq!(openssl::x509::X509::stack_from_pem(&expected)?.len(), 2);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "rawpki/intermediate/set-signed",
+            &admin,
+            json!({"certificate":format!(" \r\n{child_pem}\r\n\n{parent_pem}\n\t")}),
+        )
+        .status,
+        200
+    );
+    raw112_assert_chain_rewrap_reopen_terminal(&directory, service, &key, &admin, &expected)
+}

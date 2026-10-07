@@ -39,6 +39,19 @@ pub(super) fn stored_pem(label: &str, der: &[u8]) -> String {
     encoded
 }
 
+// The primary public full-chain projection trims each generated PEM before
+// joining, then trims the complete chain. Stored issuer PEM arrays keep their
+// original representation; this is only the public full-chain presentation.
+fn public_chain_pem(chain: &[String]) -> String {
+    chain
+        .iter()
+        .map(|certificate| certificate.trim())
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim()
+        .to_owned()
+}
+
 fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineResponse> {
     if der.len() > 64 * 1024 {
         return Err(error(503, "public certificate exceeds bounds"));
@@ -383,7 +396,7 @@ impl Pki {
                     if matches!(format, CertificateFormat::Chain) {
                         return Ok(EngineResponse {
                             status: 200,
-                            body: json!({"__heptabao_pki_certificate":BASE64.encode(chain.join("\n").as_bytes()),"format":"chain"}),
+                            body: json!({"__heptabao_pki_certificate":BASE64.encode(public_chain_pem(&chain).as_bytes()),"format":"chain"}),
                             mutated: false,
                         });
                     }
@@ -396,7 +409,7 @@ impl Pki {
                 if matches!(format, CertificateFormat::Chain)
                     && (root.local_chain.is_some() || root.is_external())
                 {
-                    let bytes = self.external_ca_chain_pem(root)?.join("\n").into_bytes();
+                    let bytes = public_chain_pem(&self.external_ca_chain_pem(root)?).into_bytes();
                     return Ok(EngineResponse {
                         status: 200,
                         body: json!({"__heptabao_pki_certificate":BASE64.encode(bytes),"format":"chain"}),
@@ -447,7 +460,7 @@ impl Pki {
             }
             PkiPublicRead::Chain => {
                 if let Some((_, chain)) = self.public_imported_ca("default") {
-                    let certificate = chain.join("\n").trim_end().to_owned();
+                    let certificate = public_chain_pem(&chain);
                     return Ok(ok(
                         json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                         false,
@@ -457,11 +470,7 @@ impl Pki {
                     return Err(not_found());
                 }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                let certificate = self
-                    .external_ca_chain_pem(root)?
-                    .join("\n")
-                    .trim_end()
-                    .to_owned();
+                let certificate = public_chain_pem(&self.external_ca_chain_pem(root)?);
                 Ok(ok(
                     json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                     false,
@@ -620,5 +629,26 @@ impl Pki {
                 ))
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod public_chain_framing_tests {
+    use super::public_chain_pem;
+
+    #[test]
+    fn raw112_public_full_chain_trims_each_boundary_and_keeps_internal_pem_lines() {
+        let first = "-----BEGIN CERTIFICATE-----\nQQ==\n-----END CERTIFICATE-----";
+        let second = "-----BEGIN CERTIFICATE-----\nQg==\n-----END CERTIFICATE-----";
+        assert_eq!(public_chain_pem(&[format!("\r\n\t {first} \r\n")]), first);
+        assert_eq!(
+            public_chain_pem(&[format!("\r\n {first}\r\n"), format!("\t{second} \n\n"),]),
+            format!("{first}\n{second}")
+        );
+        assert_eq!(public_chain_pem(&[]), "");
+        assert_eq!(public_chain_pem(&[" \t\r\n".to_owned()]), "");
+        assert_eq!(public_chain_pem(&[format!("{first}\n"), "".into()]), first);
+        let interior = "-----BEGIN CERTIFICATE-----\r\nQQ==\r\n-----END CERTIFICATE-----";
+        assert_eq!(public_chain_pem(&[format!(" \n{interior}\n ")]), interior);
     }
 }
