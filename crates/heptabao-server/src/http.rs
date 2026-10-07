@@ -1806,6 +1806,15 @@ fn merge_query_fields(
         {
             continue;
         }
+        // Preserve the actual URL field for the OpenAPI backend's weak bool
+        // parser. Discovery does not turn this field into a global query grant.
+        if path == "sys/internal/specs/openapi" && key == "generic_mount_paths" {
+            if object.contains_key(&key) {
+                return Err(invalid_query("duplicate body/query parameter"));
+            }
+            object.insert(key, Value::String(value.to_string()));
+            continue;
+        }
         if !matches!(
             key.as_str(),
             "version"
@@ -3426,6 +3435,35 @@ mod wrapping_header_tests {
         }
         let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
         assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn openapi_query_ingress_preserves_actual_weak_bool_values_and_route_scope() {
+        for value in ["true", "True", "1", "false", "0", "", "yes"] {
+            let request = format!(
+                "GET /v1/sys/internal/specs/openapi?generic_mount_paths={value} HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0["generic_mount_paths"] == Value::String(value.into()))
+            );
+        }
+        for path in ["sys/health", "secret/data/item"] {
+            let request = format!(
+                "GET /v1/{path}?generic_mount_paths=true HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
+            if path == "sys/health" {
+                // Health's existing ignore-unknown contract remains unchanged.
+                assert!(
+                    read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                        .is_ok_and(|r| r.body.0 == json!({}))
+                );
+            } else {
+                assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+            }
+        }
+        let duplicate = b"GET /v1/sys/internal/specs/openapi?generic_mount_paths=true&generic_mount_paths=false HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(read_request(&mut duplicate.as_slice(), Duration::from_secs(1)).is_err());
     }
 
     #[test]
