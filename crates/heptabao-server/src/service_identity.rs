@@ -23,9 +23,13 @@ impl State {
                 })
     }
 
-    /// Preserve unknown schemas for admission to reject; never normalize them
-    /// into an older supported format. The all-namespace scan also finds safe
-    /// material introduced by the current candidate before its first commit.
+    /// Scan persisted mount metadata in every namespace.
+    pub(super) fn has_mount_listing_visibility_state(&self) -> bool {
+        self.auth.has_mount_listing_visibility_state()
+            || self.engines.has_mount_listing_visibility_state()
+    }
+
+    /// Keep unknown schemas for admission to reject and preserve sticky floors.
     pub(super) fn writer_schema(&self) -> u32 {
         if !supported_reader_schema(self.schema) {
             return self.schema;
@@ -160,6 +164,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.has_mount_listing_visibility_state() {
+            required.max(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -168,6 +177,16 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && (self.has_mount_listing_visibility_state()
+                || previous
+                    .is_some_and(|state| state.schema >= MOUNT_LISTING_VISIBILITY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "mount listing visibility requires schema 111",
+            ));
+        }
         if self.schema < PKI_RSA8192_STATE_SCHEMA
             && (self.engines.has_pki_rsa8192_state()
                 || previous.is_some_and(|state| state.schema >= PKI_RSA8192_STATE_SCHEMA))
@@ -674,6 +693,14 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && self.has_mount_listing_visibility_state()
+        {
+            return Err(Response::error(
+                503,
+                "mount listing visibility requires schema 111",
+            ));
+        }
         self.auth
             .validate_sdk_auth_retirement_state(None, &self.cluster_id, |ns| {
                 self.namespaces.incarnation(ns)
@@ -1740,6 +1767,7 @@ impl State {
             | PKI_KEY_POLICY_STATE_SCHEMA
             | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             | PKI_RSA8192_STATE_SCHEMA
+            | MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA

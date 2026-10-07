@@ -1182,6 +1182,8 @@ impl Eq for NativeRemountOwner {}
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    listing_visibility: Option<crate::mount_listing_visibility::ListingVisibility>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     options: Option<mount_options::Options>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_type: Option<batch_issuance::MountTokenType>,
@@ -1232,6 +1234,7 @@ const fn auth_mount_revision_one() -> u64 {
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            listing_visibility: None,
             options: None,
             token_type: None,
             userpass_name_mode: None,
@@ -1249,7 +1252,7 @@ impl AuthMount {
     }
 
     fn descriptor(&self) -> Value {
-        json!({
+        let mut descriptor = json!({
             "type": self.kind,
             "accessor": self.accessor.as_deref().unwrap_or(""),
             "revision": self.revision,
@@ -1262,7 +1265,11 @@ impl AuthMount {
                 "max_lease_ttl": self.max_lease_ttl,
                 "force_no_cache": false
             }
-        })
+        });
+        if let Some(visibility) = self.listing_visibility {
+            descriptor["config"]["listing_visibility"] = json!(visibility.name());
+        }
+        descriptor
     }
 }
 
@@ -3712,6 +3719,9 @@ impl AuthState {
                         "revision":entry.revision,
                         "accessor":entry.accessor.as_deref().unwrap_or("")
                     });
+                    if let Some(visibility) = entry.listing_visibility {
+                        data["listing_visibility"] = json!(visibility.name());
+                    }
                     if entry.kind == "userpass" {
                         data["user_lockout_disable"] = json!(entry.user_lockout_disable);
                         data["user_lockout_threshold"] = json!(entry.user_lockout_threshold);
@@ -3732,6 +3742,7 @@ impl AuthState {
                             "max_lease_ttl",
                             "cas_revision",
                             "token_type",
+                            "listing_visibility",
                             "user_lockout_disable",
                             "user_lockout_threshold",
                             "user_lockout_duration",
@@ -3745,6 +3756,13 @@ impl AuthState {
                         .ok_or_else(|| err(404, "auth mount not found"))?;
                     require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
                     let mut changed = false;
+                    if let Some(value) = body.get("listing_visibility") {
+                        let visibility =
+                            crate::mount_listing_visibility::ListingVisibility::parse(value)
+                                .map_err(bad)?;
+                        changed |= entry.listing_visibility != visibility;
+                        entry.listing_visibility = visibility;
+                    }
                     if let Some(value) = body.get("token_type") {
                         if !matches!(entry.kind.as_str(), "userpass" | "approle" | "jwt" | "cert") {
                             return Err(bad(
@@ -3860,7 +3878,20 @@ impl AuthState {
             "POST" | "PUT" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &["type", "description", "options", "cas_revision"])?;
+                reject_unknown(
+                    body,
+                    &["type", "description", "options", "config", "cas_revision"],
+                )?;
+                let visibility = if let Some(config) = body.get("config") {
+                    reject_unknown(config, &["listing_visibility"])?;
+                    config
+                        .get("listing_visibility")
+                        .map(crate::mount_listing_visibility::ListingVisibility::parse)
+                        .transpose()
+                        .map_err(bad)?
+                } else {
+                    None
+                };
                 let kind = body
                     .get("type")
                     .and_then(Value::as_str)
@@ -3921,7 +3952,11 @@ impl AuthState {
                 }
                 let mut next = AuthMount::new(kind, description);
                 next.options = options;
+                next.listing_visibility = visibility.flatten();
                 if let Some(old) = existing.as_ref() {
+                    if visibility.is_none() {
+                        next.listing_visibility = old.listing_visibility;
+                    }
                     next.token_type = old.token_type;
                     next.userpass_name_mode = old.userpass_name_mode;
                     next.accessor = old.accessor.clone();
@@ -3934,7 +3969,10 @@ impl AuthState {
                     if body.get("options").is_none() {
                         next.options = old.options.clone();
                     }
-                    if old.description != description || old.options != next.options {
+                    if old.description != description
+                        || old.options != next.options
+                        || old.listing_visibility != next.listing_visibility
+                    {
                         next.revision = next_auth_revision(old.revision)?;
                     }
                 } else {

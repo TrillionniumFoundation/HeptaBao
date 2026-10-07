@@ -1818,6 +1818,15 @@ fn merge_query_fields(
         {
             continue;
         }
+        // Preserve the actual URL field for the OpenAPI backend's weak bool
+        // parser. Discovery does not turn this field into a global query grant.
+        if path == "sys/internal/specs/openapi" && key == "generic_mount_paths" {
+            if object.contains_key(&key) {
+                return Err(invalid_query("duplicate body/query parameter"));
+            }
+            object.insert(key, Value::String(value.to_string()));
+            continue;
+        }
         if !matches!(
             key.as_str(),
             "version"
@@ -3438,6 +3447,45 @@ mod wrapping_header_tests {
         }
         let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
         assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn openapi_query_ingress_preserves_actual_weak_bool_values_and_route_scope()
+    -> Result<(), &'static str> {
+        for value in ["true", "True", "1", "false", "0", "", "yes"] {
+            let request = format!(
+                "GET /v1/sys/internal/specs/openapi?generic_mount_paths={value} HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0["generic_mount_paths"] == Value::String(value.into()))
+            );
+        }
+        for path in ["sys/health", "sys/mounts"] {
+            let request = format!(
+                "GET /v1/{path}?generic_mount_paths=true HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
+            if path == "sys/health" {
+                // Health's existing ignore-unknown contract remains unchanged.
+                assert!(
+                    read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                        .is_ok_and(|r| r.body.0 == json!({}))
+                );
+            } else {
+                assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+            }
+        }
+        // Ordinary secret routes retain the existing private URL carrier. Its
+        // actual backend decides whether unknown fields are ignored or rejected.
+        let ordinary = b"GET /v1/secret/data/item?generic_mount_paths=true HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        let ordinary = read_request(&mut ordinary.as_slice(), Duration::from_secs(1))
+            .map_err(|_| "actual existing secret query carrier")?;
+        let carrier = ocsp::query_request(&ordinary.method, &ordinary.path, &ordinary.body.0)
+            .ok_or("private query remains bound to its original route")?;
+        assert!(carrier.resolve(false).is_err());
+        let duplicate = b"GET /v1/sys/internal/specs/openapi?generic_mount_paths=true&generic_mount_paths=false HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(read_request(&mut duplicate.as_slice(), Duration::from_secs(1)).is_err());
+        Ok(())
     }
 
     #[test]

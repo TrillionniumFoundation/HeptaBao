@@ -29,7 +29,7 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
             json!({"generic_mount_paths":"true"})
         )
         .status,
-        400
+        200
     );
 
     let bounded = call(
@@ -95,7 +95,7 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
     assert_eq!(restricted.status, 200);
     assert_eq!(
         restricted.body["x-heptabao-policy-filtering"],
-        "fail_closed_non_root_subset"
+        "current_mount_acl_or_unauth_listing"
     );
     let restricted_paths = restricted.body["paths"]
         .as_object()
@@ -127,6 +127,64 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
         403
     );
 
+    assert!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/unrelated-reader",
+            &root_token,
+            json!({"policy":r#"path "secret/unrelated" { capabilities = ["read"] }"#}),
+        )
+        .status
+            < 300
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root_token,
+        json!({"policies":["unrelated-reader"],"no_default_policy":true}),
+    );
+    assert_eq!(issued.status, 200);
+    let no_acl = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("missing no-ACL token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/specs/openapi",
+            &no_acl,
+            json!({})
+        )
+        .status,
+        200
+    );
+    // Public discovery does not grant operations covered by another policy.
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ungranted",
+            &no_acl,
+            json!({"type":"kv"})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/specs/openapi",
+            "invalid-fixture-token",
+            json!({})
+        )
+        .status,
+        403
+    );
+
     let expected = bounded.body.clone();
     drop(service);
     let mut service = root.service()?;
@@ -150,6 +208,39 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
     );
     assert_eq!(reopened.status, 200);
     assert_eq!(reopened.body, expected);
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/specs/openapi",
+            &no_acl,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &root_token,
+            json!({"token":no_acl.clone()})
+        )
+        .status
+            < 300
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/specs/openapi",
+            &no_acl,
+            json!({})
+        )
+        .status,
+        403
+    );
 
     assert_eq!(
         call(
@@ -160,7 +251,7 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
             json!({"generic_mount_paths":"true"})
         )
         .status,
-        400
+        200
     );
     Ok(())
 }

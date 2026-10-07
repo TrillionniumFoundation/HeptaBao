@@ -792,15 +792,13 @@ fn add_actual_mount_routes(
     }
 }
 
-pub(super) fn handle_anonymous(method: &str, body: &Value) -> Response {
-    handle_with_visibility(
-        method,
-        body,
-        false,
-        true,
-        &BTreeMap::new(),
-        &BTreeMap::new(),
-    )
+pub(super) fn handle_anonymous(
+    method: &str,
+    body: &Value,
+    auth_mounts: &BTreeMap<String, Value>,
+    secret_mounts: &BTreeMap<String, Value>,
+) -> Response {
+    handle_with_visibility(method, body, false, true, auth_mounts, secret_mounts)
 }
 
 pub(super) fn handle(
@@ -838,17 +836,28 @@ fn handle_with_visibility(
         return Response::error(400, "unsupported OpenAPI parameter");
     }
     let generic = match object.get("generic_mount_paths") {
-        None => false,
+        None | Some(Value::Null) => false,
         Some(Value::Bool(value)) => *value,
+        Some(Value::String(value)) => match value.as_str() {
+            "1" | "t" | "T" | "TRUE" | "true" | "True" => true,
+            "" | "0" | "f" | "F" | "FALSE" | "false" | "False" => false,
+            _ => return Response::error(400, "generic_mount_paths must be a boolean"),
+        },
+        // The native HTTP decoder uses json.Number. Weak bool conversion
+        // therefore parses its lexical integer 0/1 rather than numeric truth.
+        Some(Value::Number(value)) => match value.to_string().as_str() {
+            "0" => false,
+            "1" => true,
+            _ => return Response::error(400, "generic_mount_paths must be a boolean"),
+        },
         Some(_) => {
             return Response::error(400, "generic_mount_paths must be a boolean");
         }
     };
 
-    // An absent token does not grant mount listing or policy visibility. The
-    // native anonymous document contains no paths or schemas, including public
-    // routes; build that projection without reading either mount catalog.
-    if anonymous_visibility {
+    // Default anonymous discovery remains empty. Only actual mounts explicitly
+    // configured for unauthenticated listing can enter this projection.
+    if anonymous_visibility && auth_mounts.is_empty() && secret_mounts.is_empty() {
         return Response::ok(json!({
             "openapi": "3.0.2",
             "info": {
@@ -864,39 +873,19 @@ fn handle_with_visibility(
 
     let mut paths = Map::new();
     for route in FIXED_ROUTES {
-        if root_visibility || route.unauthenticated || route.path == "/sys/internal/specs/openapi" {
-            add_route(&mut paths, route);
-        }
+        add_route(&mut paths, route);
     }
-
-    if !root_visibility {
-        return Response::ok(json!({
-            "openapi": "3.0.2",
-            "info": {
-                "title": "HeptaBao API",
-                "description": "Fail-closed OpenAPI view for a non-root caller. HeptaBao currently emits only unauthenticated routes plus the spec endpoint instead of over-advertising policy-visible paths it cannot yet derive exactly.",
-                "version": "0.1.0",
-                "license": {"name": "Apache License 2.0"}
-            },
-            "security": [{"VaultToken": []}],
-            "paths": paths,
-            "components": {
-                "securitySchemes": {
-                    "VaultToken": {
-                        "type": "apiKey",
-                        "in": "header",
-                        "name": "X-Vault-Token"
-                    }
-                }
-            },
-            "x-heptabao-bounded": true,
-            "x-heptabao-policy-filtering": "fail_closed_non_root_subset",
-            "x-heptabao-generic-mount-paths": generic
-        }));
-    }
-
     add_implemented_control_and_identity_routes(&mut paths);
     add_token_routes(&mut paths);
+    if !root_visibility {
+        paths.retain(|path, _| {
+            let path = path.trim_start_matches('/');
+            auth_mounts
+                .keys()
+                .chain(secret_mounts.keys())
+                .any(|mount| path == mount.trim_end_matches('/') || path.starts_with(mount))
+        });
+    }
     add_actual_mount_routes(&mut paths, generic, auth_mounts, secret_mounts);
 
     Response::ok(json!({
@@ -921,6 +910,7 @@ fn handle_with_visibility(
             }
         },
         "x-heptabao-bounded": true,
+        "x-heptabao-policy-filtering": "current_mount_acl_or_unauth_listing",
         "x-heptabao-generic-mount-paths": generic
     }))
 }
@@ -1046,26 +1036,66 @@ mod tests {
     fn invalid_parameters_and_methods_fail_closed() {
         assert_eq!(handle("DELETE", &json!({}), true).status, 405);
         assert_eq!(
-            handle("POST", &json!({"generic_mount_paths":"true"}), true).status,
+            handle("POST", &json!({"generic_mount_paths":"yes"}), true).status,
             400
         );
         assert_eq!(handle("POST", &json!({"unknown":true}), true).status, 400);
     }
 
     #[test]
-    fn non_root_document_fails_closed_instead_of_over_advertising()
+    fn generic_mount_paths_weak_boolean_matches_actual_native_fields()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for (value, expected) in [
+            (Value::Null, false),
+            (json!(true), true),
+            (json!(false), false),
+            (json!("true"), true),
+            (json!("True"), true),
+            (json!("t"), true),
+            (json!("1"), true),
+            (json!("false"), false),
+            (json!("0"), false),
+            (json!(""), false),
+            (json!(0), false),
+            (json!(1), true),
+        ] {
+            let response = handle("POST", &json!({"generic_mount_paths":value}), true);
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["x-heptabao-generic-mount-paths"], expected);
+        }
+        for value in [
+            json!("yes"),
+            json!("2"),
+            json!(2),
+            json!(-1),
+            json!(0.5),
+            json!([]),
+            json!({}),
+        ] {
+            assert_eq!(
+                handle("POST", &json!({"generic_mount_paths":value}), true).status,
+                400
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn non_root_document_contains_only_actual_projected_mounts()
     -> Result<(), Box<dyn std::error::Error>> {
         let response = handle("GET", &json!({}), false);
         assert_eq!(response.status, 200);
         assert_eq!(
             response.body["x-heptabao-policy-filtering"],
-            "fail_closed_non_root_subset"
+            "current_mount_acl_or_unauth_listing"
         );
         let paths = response.body["paths"]
             .as_object()
             .ok_or("missing OpenAPI paths")?;
-        assert!(paths.contains_key("/sys/health"));
-        assert!(paths.contains_key("/sys/internal/specs/openapi"));
+        assert!(!paths.contains_key("/sys/health"));
+        assert!(!paths.contains_key("/sys/internal/specs/openapi"));
+        assert!(paths.contains_key("/secret/data/{path}"));
+        assert!(paths.contains_key("/auth/userpass/login/{username}"));
         assert!(!paths.contains_key("/auth/token/create"));
         assert!(!paths.contains_key("/identity/entity"));
         Ok(())

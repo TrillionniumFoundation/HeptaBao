@@ -52,6 +52,14 @@ impl AuthState {
         ))
     }
 
+    pub(crate) fn has_mount_listing_visibility_state(&self) -> bool {
+        self.auth_mounts.values().any(|mounts| {
+            mounts
+                .values()
+                .any(|mount| mount.listing_visibility.is_some())
+        })
+    }
+
     pub(crate) fn ui_auth_mounts(&self, namespace: &str) -> BTreeMap<String, Value> {
         self.effective_auth_mounts(namespace)
             .into_iter()
