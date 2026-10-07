@@ -409,6 +409,14 @@ impl Service {
             .engines
             .validate_pki_revocation_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && incoming.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade mount listing visibility",
+            ));
+        }
         if current.schema >= PKI_RSA8192_STATE_SCHEMA && incoming.schema < PKI_RSA8192_STATE_SCHEMA
         {
             return Err(Response::error(

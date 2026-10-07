@@ -95,7 +95,7 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
     assert_eq!(restricted.status, 200);
     assert_eq!(
         restricted.body["x-heptabao-policy-filtering"],
-        "fail_closed_non_root_subset"
+        "current_mount_acl_or_unauth_listing"
     );
     let restricted_paths = restricted.body["paths"]
         .as_object()

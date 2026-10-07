@@ -104,10 +104,12 @@ const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
 const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
 const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
+// Persisted anonymous mount discovery configuration survives clearing and retirement.
+const MOUNT_LISTING_VISIBILITY_STATE_SCHEMA: u32 = 111;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_RSA8192_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = MOUNT_LISTING_VISIBILITY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -140,6 +142,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_KEY_POLICY_STATE_SCHEMA
                 | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
                 | PKI_RSA8192_STATE_SCHEMA
+                | MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -4109,6 +4112,7 @@ impl Service {
             || admitted.engines.has_pki_key_policy_state()
             || admitted.engines.has_ordinary_pki_revocation_state()
             || admitted.engines.has_pki_rsa8192_state()
+            || admitted.has_mount_listing_visibility_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -4656,17 +4660,24 @@ impl Service {
             Ok(None) => {}
         }
         if path == "sys/internal/specs/openapi" {
-            let Some(principal) = principal else {
-                return openapi::handle_anonymous(method, body);
+            let mounts = match Self::listed_mount_catalog(state, principal, namespace, now) {
+                Ok(mounts) => mounts,
+                Err(response) => return response,
             };
-            // This public discovery endpoint accepts every live token. Its
-            // document visibility remains a separate projection of that actor.
+            let (auth_mounts, secret_mounts) = mounts
+                .into_iter()
+                .partition(|(path, _)| path.starts_with("auth/"));
+            let Some(principal) = principal else {
+                return openapi::handle_anonymous(method, body, &auth_mounts, &secret_mounts);
+            };
+            // A valid token discovers each mount allowed by its actual ACL or
+            // public listing configuration. This grants no backend capability.
             return openapi::handle(
                 method,
                 body,
                 principal.is_root(),
-                &state.auth.ui_auth_mounts(namespace),
-                &state.engines.ui_secret_mounts(namespace),
+                &auth_mounts,
+                &secret_mounts,
             );
         }
         let Some(principal) = principal else {
@@ -9474,6 +9485,9 @@ mod ssh_service_tests;
 #[path = "pki_service_tests.rs"]
 mod pki_service_tests;
 
+#[cfg(test)]
+#[path = "service_mount_listing_visibility_tests.rs"]
+mod mount_listing_visibility_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "openapi_service_tests.rs"]
 mod openapi_service_tests;

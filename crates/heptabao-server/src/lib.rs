@@ -29,6 +29,7 @@ mod ha_forward_completion;
 mod ha_observation;
 pub mod ha_state;
 pub mod http;
+mod mount_listing_visibility;
 pub mod namespace_custody;
 mod namespace_record_graph;
 pub mod outbound;
