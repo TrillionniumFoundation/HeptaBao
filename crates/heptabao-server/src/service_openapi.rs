@@ -247,7 +247,7 @@ const FIXED_ROUTES: &[Route] = &[
         methods: &["get", "post"],
         description: "Generate the bounded OpenAPI document for implemented HeptaBao routes.",
         sudo: false,
-        unauthenticated: false,
+        unauthenticated: true,
     },
 ];
 

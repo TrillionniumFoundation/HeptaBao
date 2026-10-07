@@ -44,7 +44,10 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
     assert_eq!(bounded.body["x-heptabao-bounded"], true);
     let paths = bounded.body["paths"].as_object().ok_or("missing paths")?;
     assert!(paths.contains_key("/sys/health"));
-    assert!(paths.contains_key("/sys/internal/specs/openapi"));
+    assert_eq!(
+        paths["/sys/internal/specs/openapi"]["x-vault-unauthenticated"],
+        true
+    );
     let remount_status = &paths["/sys/remount/status/{migration_id}"];
     assert!(remount_status.get("get").is_some());
     assert!(remount_status.get("x-vault-sudo").is_none());
