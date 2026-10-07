@@ -4136,6 +4136,7 @@ impl Service {
             || admitted.engines.has_pki_key_policy_state()
             || admitted.engines.has_ordinary_pki_revocation_state()
             || admitted.engines.has_pki_rsa8192_state()
+            || admitted.auth.has_raw_wrapped_reply_state()
         {
             admitted.schema = admitted.writer_schema();
         }
