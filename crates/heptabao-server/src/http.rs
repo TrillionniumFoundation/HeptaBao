@@ -3466,6 +3466,7 @@ mod wrapping_header_tests {
         // actual backend decides whether unknown fields are ignored or rejected.
         let ordinary = b"GET /v1/secret/data/item?generic_mount_paths=true HTTP/1.1\r\nHost: localhost\r\n\r\n";
         let ordinary = read_request(&mut ordinary.as_slice(), Duration::from_secs(1))
+            .ok()
             .expect("actual existing secret query carrier");
         let carrier = ocsp::query_request(&ordinary.method, &ordinary.path, &ordinary.body.0)
             .expect("private query remains bound to its original route");
