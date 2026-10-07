@@ -27,6 +27,7 @@ struct StageTarget<'a> {
     path: &'a str,
     deadline: Instant,
     renewal: Option<RenewalTarget>,
+    retirement: Option<retirement::Retirement>,
 }
 /// Minted only by stage_sdk_auth after the actual entrance authentication,
 /// consumed use, parameter ACL and SpecialPaths authorization. The moved
@@ -178,6 +179,13 @@ impl Plan {
         {
             return Err(Response::error(503, "SDK Auth mount is busy before entry"));
         }
+        if self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none() {
+            self.control.busy.store(false, Ordering::Release);
+            return Err(Response::error(
+                409,
+                "SDK Auth retirement blocks an old invocation",
+            ));
+        }
         let (events, received) = mpsc::channel();
         let path = if self.retirement.is_some() {
             let lease = self
@@ -293,6 +301,13 @@ impl Plan {
             caller.apply_sdk_auth_clock_floor(auth)?;
             caller.validate_live_auth(auth)?;
         }
+        if self.retirement.is_none() && auth.sdk_auth_retirement_tainted(&self.binding) {
+            return Err(Response::error(
+                409,
+                "SDK Auth durable retirement blocks delivery",
+            ));
+        }
+        self.check_retirement_control(auth)?;
         self.time(auth)?;
         self.credential_owner_gate(auth)?;
         self.live_target(auth)?;
@@ -688,7 +703,7 @@ impl Service {
                     Ok(None) => return Response::error(404, "SDK Auth mount not found"),
                     Err(e) => return auth_error(e),
                 };
-                if state.auth.sdk_credential_mount_pending(&binding) {
+                {
                     let Some(authority) = caller.take() else {
                         return Response::error(503, "SDK retirement original caller absent");
                     };
@@ -696,57 +711,6 @@ impl Service {
                         state, authority, request, binding, context, deadline,
                     );
                 }
-                let key = match sdk_auth_key(&state.cluster_id, &binding) {
-                    Ok(k) => k,
-                    Err(e) => return e,
-                };
-                if self
-                    .sdk_hosts
-                    .get(&key)
-                    .is_some_and(|c| c.busy.load(Ordering::Acquire))
-                {
-                    return Response::error(503, "SDK Auth mount is busy before retirement");
-                }
-                let response = state.auth.handle_with_connection_clock(
-                    caller.as_ref().map(|a| a.principal()),
-                    request.namespace,
-                    request.method,
-                    request.path,
-                    request.body,
-                    request
-                        .token_time()
-                        .unwrap_or(AuthorityTime::Coarse(request.now)),
-                    Some(clock),
-                    request.client_certificates,
-                    request.origin_peer,
-                );
-                match response {
-                    Ok(Some(r)) if r.status == 204 => {}
-                    Ok(_) => return Response::error(503, "SDK Auth retirement returned no owner"),
-                    Err(e) => return auth_error(e),
-                }
-                if let Err(e) = self.sdk_auth_commit_control(
-                    &mut state,
-                    match caller.as_mut() {
-                        Some(authority) => authority,
-                        None => {
-                            return Response::error(
-                                503,
-                                "SDK Auth original control capsule absent",
-                            );
-                        }
-                    },
-                    &expected,
-                    clock,
-                ) {
-                    return e;
-                }
-                self.state = Some(state);
-                if let Some(host) = self.sdk_hosts.remove(&key) {
-                    host.retire()
-                }
-                self.pending_sdk_control_authority = caller;
-                return empty_response();
             }
             if !matches!(request.method, "POST" | "PUT") {
                 return Response::error(405, "SDK Auth mount requires POST, PUT or DELETE");
@@ -865,6 +829,7 @@ impl Service {
                     path: "",
                     deadline,
                     renewal: None,
+                    retirement: None,
                 },
             );
         }
@@ -887,6 +852,7 @@ impl Service {
                     path: &path,
                     deadline,
                     renewal: Some(renewal),
+                    retirement: None,
                 },
             );
         }
@@ -910,6 +876,7 @@ impl Service {
                 path,
                 deadline,
                 renewal: None,
+                retirement: None,
             },
         )
     }
@@ -940,7 +907,15 @@ impl Service {
             path,
             deadline,
             renewal,
+            retirement,
         } = target;
+        if let Some(retirement) = &retirement {
+            if let Err(error) = retirement.check_attempt(&state.auth, &binding) {
+                return error;
+            }
+        } else if state.auth.sdk_auth_retirement_tainted(&binding) {
+            return Response::error(409, "SDK Auth durable retirement is in progress");
+        }
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK Auth runtime absent");
         };
@@ -1000,7 +975,7 @@ impl Service {
             self.sdk_hosts.insert(key, Arc::clone(&control));
             control
         };
-        if control.retiring.load(Ordering::Acquire) {
+        if control.retiring.load(Ordering::Acquire) && retirement.is_none() {
             return Response::error(409, "SDK Auth mount retirement is in progress");
         }
         let identity = match self.current_state_identity() {
@@ -1065,7 +1040,7 @@ impl Service {
             renewal: Mutex::new(renewal.map(Box::new)),
             lease: Mutex::new(None),
             cleanup: Mutex::new(None),
-            retirement: None,
+            retirement: retirement.map(Mutex::new),
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
@@ -1170,6 +1145,13 @@ impl Service {
                 .sdk_auth_owner_gate(&plan.binding)
                 .map_err(auth_error)?;
         }
+        if plan.retirement.is_none() && state.auth.sdk_auth_retirement_tainted(&plan.binding) {
+            return Err(Response::error(
+                409,
+                "SDK Auth durable retirement blocks delivery",
+            ));
+        }
+        plan.check_retirement_control(&state.auth)?;
         plan.time(&state.auth)?;
         plan.credential_owner_gate(&state.auth)?;
         plan.live_target(&state.auth)?;

@@ -215,8 +215,9 @@ pub(super) fn finish_callback(
     candidate.auth.observe_sdk_auth_clock(at);
     candidate
         .auth
-        .store_sdk_credential(record)
+        .store_sdk_credential(record.clone())
         .map_err(auth_error)?;
+    plan.retirement_resource_completed(&mut candidate.auth, &record.id, at)?;
     Ok(response)
 }
 pub(super) fn after_publication(plan: &Plan, auth: &AuthState) -> Result<(), Response> {
@@ -432,6 +433,7 @@ impl Service {
                 path: &path,
                 deadline,
                 renewal: None,
+                retirement: None,
             },
         );
         if let Some(plan) = self.pending_sdk_auth_request.as_mut() {
@@ -697,6 +699,7 @@ impl Service {
                 path: &path,
                 deadline,
                 renewal: None,
+                retirement: None,
             },
         );
         let Some(plan) = self.pending_sdk_auth_request.take() else {

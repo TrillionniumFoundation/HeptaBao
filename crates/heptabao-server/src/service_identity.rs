@@ -143,6 +143,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_sdk_auth_retirement_state() {
+            required.max(SDK_AUTH_RETIREMENT_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -220,6 +225,22 @@ impl State {
                 |ns| self.namespaces.incarnation(ns),
             )
             .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
+            .validate_sdk_auth_retirement_state(
+                previous.map(|state| &*state.auth),
+                &self.cluster_id,
+                |ns| self.namespaces.incarnation(ns),
+            )
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            && (self.auth.has_sdk_auth_retirement_state()
+                || previous.is_some_and(|old| old.auth.has_sdk_auth_retirement_state()))
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth retirement ownership requires format 107",
+            ));
+        }
         let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
         self.auth
             .validate_sdk_auth_epoch_floor(floor.as_ref())
@@ -641,6 +662,19 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.auth
+            .validate_sdk_auth_retirement_state(None, &self.cluster_id, |ns| {
+                self.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            && self.auth.has_sdk_auth_retirement_state()
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth retirement ownership requires format 107",
+            ));
+        }
         self.auth
             .validate_auth_mount_options_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
@@ -1698,6 +1732,7 @@ impl State {
             | PKI_ACME_ACCOUNT_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
             | NAMESPACE_DELETION_STATE_SCHEMA
+            | SDK_AUTH_RETIREMENT_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),

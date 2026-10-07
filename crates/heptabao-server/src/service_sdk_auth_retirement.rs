@@ -1,11 +1,13 @@
 //! An actual sudo caller owns synchronous Credential Revoke before Auth removal.
-//! This private completion receipt is neither a Principal nor a durable taint.
+//! Durable control is paired with this process-local single-invocation receipt.
 use super::*;
 use crate::auth::sdk_credential::Record;
 use crate::engines::sdk_lease::Phase;
 use std::collections::VecDeque;
 pub(super) struct Retirement {
     pub(super) remaining: VecDeque<Record>,
+    pub(super) job: String,
+    pub(super) sent: BTreeSet<String>,
     pub(super) body: Value,
     pub(super) completed: Option<Vec<(String, [u8; 32])>>,
 }
@@ -21,7 +23,66 @@ fn digest(record: &Record) -> Result<[u8; 32], Response> {
     );
     Ok(crypto::digest(&bytes))
 }
+impl Retirement {
+    pub(super) fn check_attempt(
+        &self,
+        auth: &AuthState,
+        binding: &Binding,
+    ) -> Result<(), Response> {
+        let job = auth
+            .sdk_auth_retirement_job(&self.job)
+            .ok_or_else(|| Response::error(503, "SDK retirement durable job absent"))?;
+        let first = self
+            .remaining
+            .front()
+            .ok_or_else(|| Response::error(503, "SDK retirement attempted resource absent"))?;
+        if job.binding() != binding
+            || job.completed()
+            || job.phase(&first.id) != Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+        {
+            return Err(Response::error(
+                503,
+                "SDK retirement Setup lacks durable Attempted",
+            ));
+        }
+        Ok(())
+    }
+}
 impl Plan {
+    pub(super) fn check_retirement_control(&self, auth: &AuthState) -> Result<(), Response> {
+        let Some(retirement) = &self.retirement else {
+            return Ok(());
+        };
+        let retirement = retirement
+            .lock()
+            .map_err(|_| Response::error(503, "SDK retirement control unavailable"))?;
+        let job = auth
+            .sdk_auth_retirement_job(&retirement.job)
+            .ok_or_else(|| Response::error(503, "SDK retirement durable job absent"))?;
+        if job.binding() != &self.binding || job.completed() != retirement.completed.is_some() {
+            return Err(Response::error(
+                503,
+                "SDK retirement durable control changed",
+            ));
+        }
+        Ok(())
+    }
+    pub(super) fn retirement_resource_completed(
+        &self,
+        auth: &mut AuthState,
+        id: &str,
+        at: Timestamp,
+    ) -> Result<(), Response> {
+        if let Some(retirement) = &self.retirement {
+            let retirement = retirement
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement control unavailable"))?;
+            auth.complete_sdk_auth_retirement_resource(&retirement.job, id, at)
+                .map_err(auth_error)?;
+        }
+        Ok(())
+    }
+
     pub(super) fn retirement_completed(&self) -> Result<bool, Response> {
         self.retirement
             .as_ref()
@@ -109,6 +170,27 @@ impl Plan {
                     ));
                 }
                 std::thread::park_timeout(Duration::from_millis(1));
+            }
+            {
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                let mut writer = writer_before(service, deadline).map_err(|_| {
+                    Response::error(503, "SDK retirement attempt writer unavailable")
+                })?;
+                writer.prepare_sdk_auth_retirement_attempt(self, &record.id)?;
+            }
+            {
+                let mut retirement = self
+                    .retirement
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?;
+                if !retirement.sent.insert(record.id.clone()) {
+                    return Err(Response::error(
+                        503,
+                        "SDK retirement callback cannot be resent",
+                    ));
+                }
             }
             let result = self.execute_once(service, deadline);
             let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
@@ -203,7 +285,7 @@ impl Service {
     pub(super) fn stage_sdk_auth_retirement(
         &mut self,
         mut state: State,
-        caller: plugin::PluginResponseAuthority,
+        mut caller: plugin::PluginResponseAuthority,
         request: &RequestView<'_>,
         binding: Binding,
         context: Context,
@@ -214,10 +296,6 @@ impl Service {
                 .auth
                 .sdk_credential_mount_records(&binding)
                 .map_err(auth_error)?;
-            let first = records
-                .first()
-                .ok_or_else(|| Response::error(503, "SDK retirement has no registered record"))?
-                .clone();
             let mut preview = state.clone();
             for record in &records {
                 let mut retired = record.clone();
@@ -243,53 +321,44 @@ impl Service {
                     request.origin_peer,
                 )
                 .map_err(auth_error)?;
-            if response.is_none_or(|r| r.status != 204) {
+            if response.is_none_or(|response| response.status != 204) {
                 return Err(Response::error(
                     503,
                     "SDK retirement native preflight unavailable",
                 ));
             }
-            let path = first
-                .path
-                .strip_prefix(&first.mount)
-                .ok_or_else(|| Response::error(503, "SDK retirement path owner changed"))?
-                .to_owned();
-            let response = self.stage_sdk_auth(
-                &state,
-                request,
-                StageTarget {
-                    binding,
-                    caller: Some(caller),
-                    context,
-                    operation: "revoke",
-                    path: &path,
-                    deadline,
-                    renewal: None,
-                },
-            );
-            let mut plan = self.pending_sdk_auth_request.take().ok_or(response)?;
-            if plan.control.busy.load(Ordering::Acquire)
-                || plan
-                    .control
-                    .retiring
-                    .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
-                    .is_err()
-            {
-                return Err(Response::error(
-                    409,
-                    "SDK Auth mount is busy before retirement",
-                ));
+            let key = sdk_auth_key(&state.cluster_id, &binding)?;
+            let reservation = self.sdk_hosts.get(&key).cloned();
+            if let Some(control) = &reservation {
+                if control.busy.load(Ordering::Acquire)
+                    || control
+                        .retiring
+                        .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                        .is_err()
+                {
+                    return Err(Response::error(
+                        409,
+                        "SDK Auth mount is busy before retirement",
+                    ));
+                }
+                if control.busy.load(Ordering::Acquire) {
+                    control.retiring.store(false, Ordering::Release);
+                    return Err(Response::error(
+                        409,
+                        "SDK Auth mount is busy before retirement",
+                    ));
+                }
             }
-            let pending = (|| {
+            let publish = (|| {
                 let expected = self.current_state_identity()?;
-                let mut authority = plan.caller.lock().map_err(|_| {
-                    Response::error(503, "SDK retirement actual caller unavailable")
+                self.validate_plugin_response(&mut caller)?;
+                let at = context.clock.observed_at().map_err(|_| {
+                    Response::error(503, "SDK retirement original clock unavailable")
                 })?;
-                let authority = authority
-                    .as_mut()
-                    .ok_or_else(|| Response::error(503, "SDK retirement actual caller absent"))?;
-                self.validate_plugin_response(authority)?;
-                let at = plan.time(&state.auth)?;
+                let at = state
+                    .auth
+                    .sdk_auth_clock_floor()
+                    .map_or(at, |floor| at.max(floor));
                 state.auth.observe_sdk_auth_clock(at);
                 let mut remaining = VecDeque::new();
                 for mut record in records {
@@ -300,38 +369,185 @@ impl Service {
                         .map_err(auth_error)?;
                     remaining.push_back(record);
                 }
-                self.sdk_auth_commit_control(&mut state, authority, &expected, plan.context.clock)?;
-                self.state = Some(state);
-                let mut transaction = plan
-                    .transaction
-                    .lock()
-                    .map_err(|_| Response::error(503, "SDK retirement transaction unavailable"))?;
-                transaction.auth = self
-                    .state
-                    .as_ref()
-                    .ok_or_else(|| Response::error(503, "SDK retirement publication absent"))?
+                if !binding.namespace.is_empty() {
+                    state.ensure_namespace_batch_registry()?;
+                }
+                let job = hex(&crypto::random::<16>()
+                    .map_err(|_| Response::error(503, "SDK retirement entropy unavailable"))?);
+                let fingerprint = self.request_fingerprint(
+                    request.method,
+                    request.path,
+                    request.namespace,
+                    request.token,
+                );
+                state
                     .auth
-                    .clone();
-                transaction.identity = self.current_state_identity()?;
-                Ok(remaining)
-            })();
-            match pending {
-                Ok(remaining) => {
-                    plan.retirement = Some(Mutex::new(Retirement {
+                    .begin_sdk_auth_retirement(
+                        job.clone(),
+                        &state.cluster_id,
+                        binding.clone(),
+                        at,
+                        fingerprint,
+                    )
+                    .map_err(auth_error)?;
+                self.sdk_auth_commit_control(&mut state, &mut caller, &expected, context.clock)?;
+                self.state = Some(state.clone());
+                if let Some(first) = remaining.front() {
+                    // start_worker_typed may call external Setup. Attempted is durable first.
+                    let expected = self.current_state_identity()?;
+                    state
+                        .auth
+                        .attempt_sdk_auth_retirement_resource(&job, &first.id, at)
+                        .map_err(auth_error)?;
+                    self.sdk_auth_commit_control(
+                        &mut state,
+                        &mut caller,
+                        &expected,
+                        context.clock,
+                    )?;
+                    self.state = Some(state.clone());
+                    let path = first
+                        .path
+                        .strip_prefix(&first.mount)
+                        .ok_or_else(|| {
+                            Response::error(503, "SDK retirement callback path owner changed")
+                        })?
+                        .to_owned();
+                    let retirement = Retirement {
                         remaining,
+                        job,
+                        sent: BTreeSet::new(),
                         body: request.body.clone(),
                         completed: None,
-                    }));
-                    self.pending_sdk_auth_request = Some(plan);
+                    };
+                    let response = self.stage_sdk_auth(
+                        &state,
+                        request,
+                        StageTarget {
+                            binding,
+                            caller: Some(caller),
+                            context,
+                            operation: "revoke",
+                            path: &path,
+                            deadline,
+                            renewal: None,
+                            retirement: Some(retirement),
+                        },
+                    );
+                    if self.pending_sdk_auth_request.is_none() {
+                        return Err(response);
+                    }
+                    Ok(empty_response())
+                } else {
+                    // No Setup or callback is necessary for an empty genuine fixed set.
+                    let expected = self.current_state_identity()?;
+                    let response = state
+                        .auth
+                        .handle_with_connection_clock(
+                            Some(caller.principal()),
+                            request.namespace,
+                            request.method,
+                            request.path,
+                            request.body,
+                            caller.token_time()?,
+                            Some(context.clock),
+                            request.client_certificates,
+                            request.origin_peer,
+                        )
+                        .map_err(auth_error)?;
+                    if response.is_none_or(|response| response.status != 204) {
+                        return Err(Response::error(
+                            503,
+                            "SDK retirement empty mount removal failed",
+                        ));
+                    }
+                    state
+                        .auth
+                        .complete_sdk_auth_retirement_mount(&job, at)
+                        .map_err(auth_error)?;
+                    self.sdk_auth_commit_control(
+                        &mut state,
+                        &mut caller,
+                        &expected,
+                        context.clock,
+                    )?;
+                    self.state = Some(state);
+                    self.pending_sdk_control_authority = Some(caller);
+                    if let Some(host) = self.sdk_hosts.remove(&key) {
+                        host.retire();
+                    }
                     Ok(empty_response())
                 }
-                Err(error) => {
-                    plan.control.retire();
-                    Err(error)
-                }
+            })();
+            if publish.is_err()
+                && let Some(control) = reservation
+            {
+                control.retire();
             }
+            publish
         })();
         result.unwrap_or_else(|error| error)
+    }
+    fn prepare_sdk_auth_retirement_attempt(
+        &mut self,
+        plan: &Plan,
+        id: &str,
+    ) -> Result<(), Response> {
+        self.sdk_auth_gate(plan)?;
+        let job = plan
+            .retirement
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+            .lock()
+            .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?
+            .job
+            .clone();
+        let mut state = self
+            .state
+            .clone()
+            .ok_or_else(|| Response::error(503, "SDK retirement state unavailable"))?;
+        let current = state
+            .auth
+            .sdk_auth_retirement_job(&job)
+            .ok_or_else(|| Response::error(503, "SDK retirement job absent"))?;
+        match current.phase(id) {
+            Some(crate::auth::sdk_retirement::ResourcePhase::Attempted) => return Ok(()),
+            Some(crate::auth::sdk_retirement::ResourcePhase::Queued) => {}
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "SDK retirement callback was already terminal",
+                ));
+            }
+        }
+        let at = plan.time(&state.auth)?;
+        state.auth.observe_sdk_auth_clock(at);
+        state
+            .auth
+            .attempt_sdk_auth_retirement_resource(&job, id, at)
+            .map_err(auth_error)?;
+        let expected = self.current_state_identity()?;
+        let mut caller = plan
+            .caller
+            .lock()
+            .map_err(|_| Response::error(503, "SDK retirement caller unavailable"))?;
+        let caller = caller
+            .as_mut()
+            .ok_or_else(|| Response::error(503, "SDK retirement caller absent"))?;
+        self.sdk_auth_commit_control(&mut state, caller, &expected, plan.context.clock)?;
+        self.state = Some(state);
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| Response::error(503, "SDK retirement transaction unavailable"))?;
+        transaction.auth = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK retirement publication absent"))?
+            .auth
+            .clone();
+        transaction.identity = self.current_state_identity()?;
+        Ok(())
     }
     pub(super) fn finalize_sdk_auth_retirement(
         &mut self,
@@ -397,6 +613,12 @@ impl Service {
                 "SDK retirement native removal unavailable",
             ));
         }
+        let at = plan.time(&state.auth)?;
+        state.auth.observe_sdk_auth_clock(at);
+        state
+            .auth
+            .complete_sdk_auth_retirement_mount(&retirement.job, at)
+            .map_err(auth_error)?;
         self.sdk_auth_commit_control(&mut state, caller, &expected, plan.context.clock)?;
         self.state = Some(state);
         retirement.completed = Some(retired);

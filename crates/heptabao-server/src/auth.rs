@@ -30,6 +30,8 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) mod sdk;
 #[path = "auth_sdk_credential.rs"]
 pub(crate) mod sdk_credential;
+#[path = "auth_sdk_retirement.rs"]
+pub(crate) mod sdk_retirement;
 
 #[path = "auth_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
@@ -224,6 +226,8 @@ pub struct AuthState {
     sdk_auth_clock: Option<Timestamp>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_credential_leases: Option<sdk_credential::Registry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_auth_retirements: Option<sdk_retirement::Registry>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2330,6 +2334,7 @@ impl AuthState {
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
         !self.sdk_credential_namespace_pending(namespace)
+            && !self.sdk_auth_retirement_namespace_pending(namespace)
             && !self
                 .tokens
                 .values()
@@ -2427,6 +2432,7 @@ impl AuthState {
             sdk_auth_catalog: None,
             sdk_auth_clock: None,
             sdk_credential_leases: None,
+            sdk_auth_retirements: None,
             namespace_batch_registry: None,
             namespace_deletions: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),

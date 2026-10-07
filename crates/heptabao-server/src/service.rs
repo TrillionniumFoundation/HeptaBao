@@ -84,6 +84,7 @@ const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
 const NAMESPACE_DELETION_STATE_SCHEMA: u32 = 106;
+const SDK_AUTH_RETIREMENT_STATE_SCHEMA: u32 = 107;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
@@ -125,6 +126,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
                 | NAMESPACE_BATCH_STATE_SCHEMA
                 | NAMESPACE_DELETION_STATE_SCHEMA
+                | SDK_AUTH_RETIREMENT_STATE_SCHEMA
                 | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
@@ -4106,6 +4108,7 @@ impl Service {
             || admitted.auth.has_jwt_user_claim_state()
             || admitted.auth.has_jwt_pem_keyset_state()
             || admitted.auth.has_auth_mount_options_state()
+            || admitted.auth.has_sdk_auth_retirement_state()
             || admitted.engines.has_pki_key_policy_state()
             || admitted.engines.has_ordinary_pki_revocation_state()
             || admitted.engines.has_pki_rsa8192_state()

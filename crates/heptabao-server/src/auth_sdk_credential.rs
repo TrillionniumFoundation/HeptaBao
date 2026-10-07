@@ -279,12 +279,16 @@ impl AuthState {
         };
         // Rotate discovery before preparation; no owned Plan is prepared and discarded.
         let eligible = |record: &Record| -> Result<bool, AuthError> {
-            Ok(record.phase != Phase::Revoked
-                && (record.phase == Phase::PendingRevoke
-                    || at >= record.expires
-                    || record
-                        .parent_cleanup_required(self, at)
-                        .map_err(|e| err(e.status, &e.message))?))
+            Ok(
+                !self.sdk_auth_retirement_claims_record(&record.namespace, &record.id)
+                    && !self.namespace_is_tainted(&record.namespace)
+                    && record.phase != Phase::Revoked
+                    && (record.phase == Phase::PendingRevoke
+                        || at >= record.expires
+                        || record
+                            .parent_cleanup_required(self, at)
+                            .map_err(|e| err(e.status, &e.message))?),
+            )
         };
         for (id, record) in &registry.records {
             if after.is_none_or(|after| id.as_str() > after) && eligible(record)? {

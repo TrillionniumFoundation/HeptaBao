@@ -329,6 +329,23 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.auth.has_sdk_auth_retirement_state()
+            && incoming.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK Auth retirement ownership",
+            ));
+        }
+        incoming
+            .protected_state()?
+            .auth
+            .validate_sdk_auth_retirement_state(
+                Some(&current.protected_state()?.auth),
+                &incoming.cluster_id,
+                |ns| incoming.namespaces.incarnation(ns),
+            )
+            .map_err(|e| Response::error(400, &e.message))?;
         if current.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
             && incoming.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
         {

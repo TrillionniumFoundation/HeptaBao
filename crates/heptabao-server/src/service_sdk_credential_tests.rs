@@ -214,8 +214,29 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
     let mut state = service.state.clone().ok_or("state")?;
     let binding = mount(&mut state, &root)?;
     let mut record = registered(&mut state, &root, &binding)?;
+    record.phase = Phase::PendingRevoke;
+    state.auth.store_sdk_credential(record.clone())?;
+    let job = "11111111111111111111111111111111".to_owned();
+    let at = Timestamp::checked(100, 300_000_000)?;
+    state.auth.begin_sdk_auth_retirement(
+        job.clone(),
+        &state.cluster_id,
+        binding.clone(),
+        at,
+        service.request_fingerprint("DELETE", "sys/auth/credential", "", &root),
+    )?;
+    publish(&mut service, state)?;
+    let mut state = service.state.clone().ok_or("queued state")?;
+    state
+        .auth
+        .attempt_sdk_auth_retirement_resource(&job, &record.id, at)?;
+    publish(&mut service, state)?;
+    let mut state = service.state.clone().ok_or("attempted state")?;
     record.revoke();
     state.auth.store_sdk_credential(record.clone())?;
+    state
+        .auth
+        .complete_sdk_auth_retirement_resource(&job, &record.id, at)?;
     publish(&mut service, state)?;
     let clock = RequestClock::anchored(Duration::new(100, 400_000_000), Instant::now())?;
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(
@@ -280,6 +301,9 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         )?
         .ok_or("native removal")?;
     assert_eq!(response.status, 204);
+    let at = clock.observed_at()?;
+    removed.auth.observe_sdk_auth_clock(at);
+    removed.auth.complete_sdk_auth_retirement_mount(&job, at)?;
     publish(&mut service, removed)?;
     let actual = service.state.as_ref().ok_or("removed state")?;
     let (sender, _receiver) = mpsc::sync_channel(1);
@@ -312,6 +336,8 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         cleanup: Mutex::new(None),
         retirement: Some(Mutex::new(super::super::retirement::Retirement {
             remaining: VecDeque::new(),
+            job,
+            sent: BTreeSet::new(),
             body: json!({}),
             completed: Some(vec![(record.id.clone(), crypto::digest(&bytes))]),
         })),
@@ -330,8 +356,8 @@ fn sdk_auth_retirement_native_completed_gate_rejects_remount_and_changed_retaine
     let mut altered_record = record.clone();
     altered_record.max_ttl_ns -= 1;
     altered.auth.store_sdk_credential(altered_record)?;
-    publish(&mut service, altered)?;
-    assert!(service.sdk_auth_gate(&plan).is_err());
+    // The new durable receipt rejects altered terminal bytes at publication.
+    assert!(publish(&mut service, altered).is_err());
     // New independent native mount instance also cannot borrow the old removal.
     let (_files, mut service, plan, root, _) = retirement_terminal_fixture()?;
     let mut changed = service.state.clone().ok_or("removed")?;
@@ -428,6 +454,239 @@ fn sdk_combined_lease_list_retains_live_owner_and_rejects_revoke_or_removed_moun
         .ok_or("native delete")?;
     assert_eq!(response.status, 204);
     assert!(empty.check(&state.auth).is_err());
+    Ok(())
+}
+
+type QueuedFixture = (Root, Service, String, Binding, Record, String);
+fn retirement_queued_fixture() -> Result<QueuedFixture, Box<dyn std::error::Error>> {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (key, root) = bootstrap(&mut service)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    let binding = mount(&mut state, &root)?;
+    let mut record = registered(&mut state, &root, &binding)?;
+    record.phase = Phase::PendingRevoke;
+    state.auth.store_sdk_credential(record.clone())?;
+    let job = "77777777777777777777777777777777".to_owned();
+    state.auth.begin_sdk_auth_retirement(
+        job.clone(),
+        &state.cluster_id,
+        binding.clone(),
+        Timestamp::checked(100, 300_000_000)?,
+        service.request_fingerprint("DELETE", "sys/auth/credential", "", &root),
+    )?;
+    publish(&mut service, state)?;
+    Ok((files, service, job, binding, record, key))
+}
+#[test]
+fn sdk_auth_retirement107_none_preserves_legacy_bytes() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    mount(&mut state, &root)?;
+    let before = Zeroizing::new(
+        crate::secret_serde::to_vec(&state.auth, 4 * 1024 * 1024)
+            .map_err(|_| "fixture encoding")?,
+    );
+    state
+        .auth
+        .validate_sdk_auth_retirement_state(None, &state.cluster_id, |ns| {
+            state.namespaces.incarnation(ns)
+        })?;
+    let after = Zeroizing::new(
+        crate::secret_serde::to_vec(&state.auth, 4 * 1024 * 1024)
+            .map_err(|_| "fixture encoding")?,
+    );
+    assert!(before.as_slice() == after.as_slice());
+    assert!(!state.auth.has_sdk_auth_retirement_state());
+    Ok(())
+}
+#[test]
+fn sdk_auth_retirement107_queued_encrypted_reopen_and_protected_restore() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (key, root) = bootstrap(&mut service)?;
+    let previous = service.state.clone().ok_or("previous")?;
+    let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let mut state = previous.clone();
+    let binding = mount(&mut state, &root)?;
+    let mut record = registered(&mut state, &root, &binding)?;
+    record.phase = Phase::PendingRevoke;
+    state.auth.store_sdk_credential(record.clone())?;
+    let job = "88888888888888888888888888888888".to_owned();
+    state.auth.begin_sdk_auth_retirement(
+        job.clone(),
+        &state.cluster_id,
+        binding.clone(),
+        Timestamp::checked(100, 300_000_000)?,
+        service.request_fingerprint("DELETE", "sys/auth/credential", "", &root),
+    )?;
+    publish(&mut service, state)?;
+    let actual = service.state.as_ref().ok_or("actual")?;
+    assert_eq!(actual.schema, SDK_AUTH_RETIREMENT_STATE_SCHEMA);
+    assert!(actual.auth.sdk_auth_retirement_tainted(&binding));
+    assert!(
+        actual
+            .auth
+            .next_sdk_credential_cleanup(Timestamp::checked(200, 0)?, None)?
+            .is_none()
+    );
+    assert!(Service::validate_snapshot_protected_floor(actual, &previous).is_err());
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    drop(service);
+    let mut reopened = files.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(state.auth.sdk_auth_retirement_tainted(&binding));
+    assert!(
+        state
+            .auth
+            .sdk_auth_retirement_job(&job)
+            .ok_or("retained queued job")?
+            .phase(&record.id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+    );
+    assert_eq!(state.auth.sdk_credential_owners().len(), 1);
+    Ok(())
+}
+#[test]
+fn sdk_auth_retirement107_attempted_reopen_cannot_rearm() -> TestResult {
+    let (files, mut service, job, binding, record, key) = retirement_queued_fixture()?;
+    let mut state = service.state.clone().ok_or("queued")?;
+    let at = Timestamp::checked(100, 400_000_000)?;
+    state.auth.observe_sdk_auth_clock(at);
+    state
+        .auth
+        .attempt_sdk_auth_retirement_resource(&job, &record.id, at)?;
+    publish(&mut service, state)?;
+    let attempted = service.state.clone().ok_or("attempted")?;
+    let mut bad = attempted.clone();
+    assert!(
+        bad.auth
+            .attempt_sdk_auth_retirement_resource(&job, &record.id, at)
+            .is_err()
+    );
+    bad.auth
+        .sdk_auth_retirement_tamper_for_test(&job, "rollback")?;
+    assert!(bad.validate_publication_schema(Some(&attempted)).is_err());
+    // Drop/reopen retains the exact durable Attempted value; no caller is serialized.
+    drop(service);
+    let mut reopened = files.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(
+        state
+            .auth
+            .sdk_auth_retirement_job(&job)
+            .ok_or("job")?
+            .phase(&record.id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+    );
+    assert!(state.auth.sdk_auth_retirement_tainted(&binding));
+    assert!(
+        state
+            .auth
+            .next_sdk_credential_cleanup(Timestamp::checked(200, 0)?, None)?
+            .is_none()
+    );
+    Ok(())
+}
+#[test]
+fn sdk_auth_retirement107_successor_and_catalog_mirror_loss_rejected() -> TestResult {
+    let (_files, service, job, _binding, _record, _key) = retirement_queued_fixture()?;
+    let current = service.state.clone().ok_or("current")?;
+    for mode in ["remove", "mirror", "accepted", "resource", "request"] {
+        let mut bad = current.clone();
+        bad.auth.sdk_auth_retirement_tamper_for_test(&job, mode)?;
+        assert!(
+            bad.validate_publication_schema(Some(&current)).is_err(),
+            "closed mutation kind {mode}"
+        );
+    }
+    let mut downgraded = current.clone();
+    downgraded.schema = SDK_AUTH_RETIREMENT_STATE_SCHEMA - 1;
+    assert!(
+        downgraded
+            .validate_publication_schema(Some(&current))
+            .is_err()
+    );
+    Ok(())
+}
+#[test]
+fn sdk_auth_retirement107_terminal_resources_do_not_clear_mount_taint() -> TestResult {
+    let (_files, mut service, job, binding, mut record, _key) = retirement_queued_fixture()?;
+    let mut state = service.state.clone().ok_or("queued")?;
+    let at = Timestamp::checked(100, 400_000_000)?;
+    state.auth.observe_sdk_auth_clock(at);
+    state
+        .auth
+        .attempt_sdk_auth_retirement_resource(&job, &record.id, at)?;
+    publish(&mut service, state)?;
+    let mut state = service.state.clone().ok_or("attempted")?;
+    record.revoke();
+    state.auth.store_sdk_credential(record.clone())?;
+    state
+        .auth
+        .complete_sdk_auth_retirement_resource(&job, &record.id, at)?;
+    publish(&mut service, state)?;
+    let state = service.state.as_ref().ok_or("terminal resources")?;
+    assert!(state.auth.sdk_auth_retirement_tainted(&binding));
+    assert!(
+        !state
+            .auth
+            .sdk_auth_retirement_job(&job)
+            .ok_or("job")?
+            .completed()
+    );
+    let mut bad = state.clone();
+    assert!(
+        bad.auth
+            .complete_sdk_auth_retirement_mount(&job, at)
+            .is_err()
+    );
+    Ok(())
+}
+#[test]
+fn sdk_auth_retirement107_empty_job_requires_real_mount_removal() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    let binding = mount(&mut state, &root)?;
+    let at = Timestamp::checked(100, 300_000_000)?;
+    state.auth.observe_sdk_auth_clock(at);
+    let job = "99999999999999999999999999999999".to_owned();
+    state.auth.begin_sdk_auth_retirement(
+        job.clone(),
+        &state.cluster_id,
+        binding.clone(),
+        at,
+        service.request_fingerprint("DELETE", "sys/auth/credential", "", &root),
+    )?;
+    publish(&mut service, state)?;
+    let state = service.state.as_ref().ok_or("published empty job")?;
+    assert!(state.auth.sdk_auth_retirement_tainted(&binding));
+    assert!(
+        !state
+            .auth
+            .sdk_auth_retirement_job(&job)
+            .ok_or("job")?
+            .completed()
+    );
+    let mut bad = state.clone();
+    assert!(
+        bad.auth
+            .complete_sdk_auth_retirement_mount(&job, at)
+            .is_err()
+    );
+    assert!(state.auth.sdk_credential_owners().is_empty());
     Ok(())
 }
 

@@ -76,8 +76,19 @@ pub(crate) struct Catalog {
     entries: BTreeMap<String, Descriptor>,
     /// Registration incarnation survives deregistration of its descriptor.
     epochs: BTreeMap<String, u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    auth_retirement107: Option<crate::auth::sdk_retirement::Mirror>,
 }
 impl Catalog {
+    pub(crate) fn auth_retirement_mirror(&self) -> Option<&crate::auth::sdk_retirement::Mirror> {
+        self.auth_retirement107.as_ref()
+    }
+    pub(crate) fn set_auth_retirement_mirror(
+        &mut self,
+        mirror: Option<crate::auth::sdk_retirement::Mirror>,
+    ) {
+        self.auth_retirement107 = mirror;
+    }
     pub(crate) fn is_empty(&self) -> bool {
         self.entries.is_empty() && self.epochs.is_empty()
     }
@@ -323,6 +334,12 @@ impl EngineState {
     }
     pub(crate) fn validate_sdk_state(&self) -> Result<()> {
         self.sdk_catalog.validate()?;
+        if self.sdk_catalog.auth_retirement_mirror().is_some() {
+            return Err(error(
+                503,
+                "Auth retirement mirror cannot be a Logical catalog",
+            ));
+        }
         for ns in self.namespaces.values() {
             for (mount, owner) in &ns.sdk_owners {
                 let valid = ns.mounts.get(mount).is_some_and(|m| {
