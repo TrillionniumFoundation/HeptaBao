@@ -3438,7 +3438,8 @@ mod wrapping_header_tests {
     }
 
     #[test]
-    fn openapi_query_ingress_preserves_actual_weak_bool_values_and_route_scope() {
+    fn openapi_query_ingress_preserves_actual_weak_bool_values_and_route_scope()
+    -> Result<(), &'static str> {
         for value in ["true", "True", "1", "false", "0", "", "yes"] {
             let request = format!(
                 "GET /v1/sys/internal/specs/openapi?generic_mount_paths={value} HTTP/1.1\r\nHost: localhost\r\n\r\n"
@@ -3466,13 +3467,13 @@ mod wrapping_header_tests {
         // actual backend decides whether unknown fields are ignored or rejected.
         let ordinary = b"GET /v1/secret/data/item?generic_mount_paths=true HTTP/1.1\r\nHost: localhost\r\n\r\n";
         let ordinary = read_request(&mut ordinary.as_slice(), Duration::from_secs(1))
-            .ok()
-            .expect("actual existing secret query carrier");
+            .map_err(|_| "actual existing secret query carrier")?;
         let carrier = ocsp::query_request(&ordinary.method, &ordinary.path, &ordinary.body.0)
-            .expect("private query remains bound to its original route");
+            .ok_or("private query remains bound to its original route")?;
         assert!(carrier.resolve(false).is_err());
         let duplicate = b"GET /v1/sys/internal/specs/openapi?generic_mount_paths=true&generic_mount_paths=false HTTP/1.1\r\nHost: localhost\r\n\r\n";
         assert!(read_request(&mut duplicate.as_slice(), Duration::from_secs(1)).is_err());
+        Ok(())
     }
 
     #[test]
