@@ -31,7 +31,7 @@ pub(super) fn request_live() -> Result<(), Response> {
     Ok(())
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 enum Owner {
     Independent(Descriptor),
     Inherited(InheritedDescriptor),
@@ -219,6 +219,189 @@ impl Lease {
         // be dropped on closure instead of waiting for the last stale Arc.
         let mut slot = self.0.lock().unwrap_or_else(|error| error.into_inner());
         slot.key.take();
+    }
+}
+
+enum SealKey {
+    Original { lease: Lease, owner: Owner },
+    FreshInherited(Key),
+}
+
+/// One actual final ciphertext owner and the original exclusive key access.
+/// It cannot become a loaded slot or authorize a plugin request.
+struct SealCut {
+    actual: String,
+    owner: Owner,
+    key: SealKey,
+}
+impl SealCut {
+    fn with_key<T>(&self, apply: impl FnOnce(&Key) -> Result<T, Response>) -> Result<T, Response> {
+        match &self.key {
+            SealKey::Original { lease, owner } => {
+                if owner.binding() != self.owner.binding()
+                    || owner.key_epoch() != self.owner.key_epoch()
+                    || owner.parent() != self.owner.parent()
+                    || owner.seal_frontier().checked_add(1) != Some(self.owner.seal_frontier())
+                {
+                    return Err(unavailable());
+                }
+                lease.with_key(owner, apply)
+            }
+            SealKey::FreshInherited(key) => {
+                if !key.matches_binding(self.owner.binding())
+                    || (!matches!(&self.owner, Owner::Inherited(_))
+                        || self.owner.seal_frontier() != 1)
+                {
+                    return Err(unavailable());
+                }
+                apply(key)
+            }
+        }
+    }
+    fn restore(&self, state: &State) -> Result<State, Response> {
+        if Owner::actual(state, &self.actual)? != self.owner
+            || state
+                .namespaces
+                .custody_binding(&state.cluster_id, &self.actual)?
+                != *self.owner.binding()
+        {
+            return Err(unavailable());
+        }
+        self.with_key(|key| {
+            let bytes = self
+                .owner
+                .open_assets(self.owner.binding(), key)
+                .map_err(|_| unavailable())?;
+            let assets: namespace_assets::NamespaceAssets =
+                serde_json::from_slice(&bytes).map_err(|_| unavailable())?;
+            let cells = state
+                .engines
+                .namespace_record_cells(self.owner.binding())
+                .map_err(|_| unavailable())?;
+            let mut restored = state.restore_namespace_assets(&self.actual, key, assets, &cells)?;
+            restored.namespaces.set_sealed(&self.actual, false)?;
+            Ok(restored)
+        })
+    }
+}
+
+/// An affine publication proof, never a State flag, logical route grant or
+/// serializable key owner. Only actual namespace closure constructs this value.
+pub(super) struct SealPublication {
+    closed: State,
+    cuts: Vec<SealCut>,
+    base: crate::state_record_root::StateIdentity,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    native_role: Option<(u64, u64)>,
+    deadline: Option<std::time::Instant>,
+}
+impl SealPublication {
+    fn logical_validation(&self) -> Result<State, Response> {
+        self.check_original_custody()?;
+        let mut logical = self.closed.clone();
+        // This exclusive view is only for full validation. Original real
+        // leases are checked separately and no new runtime slot is installed.
+        logical.namespace_leases = Leases::default();
+        for cut in &self.cuts {
+            logical = cut.restore(&logical)?;
+        }
+        logical.namespace_leases = Leases::default();
+        logical.namespace_protected = None;
+        logical.validate_format()?;
+        Ok(logical)
+    }
+    pub(super) fn check_original_custody(&self) -> Result<(), Response> {
+        request_live()?;
+        if self
+            .deadline
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        {
+            return Err(unavailable());
+        }
+        self.closed.namespace_leases.validate()?;
+        for cut in &self.cuts {
+            cut.with_key(|_| request_live())?;
+        }
+        Ok(())
+    }
+    pub(super) fn validate(
+        &self,
+        previous: Option<&State>,
+        current: crate::state_record_root::StateIdentity,
+        ha: &Option<Arc<Mutex<HaProcess>>>,
+    ) -> Result<(), Response> {
+        if self.base != current
+            || match (&self.ha, ha) {
+                (None, None) => false,
+                (Some(original), Some(actual)) => !Arc::ptr_eq(original, actual),
+                _ => true,
+            }
+        {
+            return Err(unavailable());
+        }
+        let logical = self.logical_validation()?;
+        logical.validate_publication_schema(previous)?;
+        let physical = self.closed.protected_state()?;
+        physical.validate_format()?;
+        if let Some(previous) = previous {
+            physical
+                .namespaces
+                .validate_custody_successor(&previous.protected_state()?.namespaces)?;
+        }
+        self.check_original_custody()
+    }
+    pub(super) fn closed_state(&self) -> &State {
+        &self.closed
+    }
+    pub(super) fn native_role(&self) -> Option<(u64, u64)> {
+        self.native_role
+    }
+
+    #[cfg(test)]
+    pub(super) fn corrupt_physical_owner_for_test(&mut self, cells: bool) -> Result<(), Response> {
+        let cut = self.cuts.first().ok_or_else(unavailable)?;
+        let binding = cut.owner.binding().clone();
+        if cells {
+            let mut actual = self
+                .closed
+                .engines
+                .namespace_record_cells(&binding)
+                .map_err(|_| unavailable())?;
+            let (_, first) = actual.iter_mut().next().ok_or_else(unavailable)?;
+            let byte = first.first_mut().ok_or_else(unavailable)?;
+            *byte ^= 1;
+            self.closed
+                .engines
+                .publish_namespace_record_cells(&binding, &actual)
+                .map_err(|_| unavailable())?;
+        } else {
+            let Owner::Inherited(owner) = &cut.owner else {
+                return Err(unavailable());
+            };
+            let mut encoded = serde_json::to_value(owner).map_err(|_| unavailable())?;
+            let ciphertext = encoded
+                .get_mut("protected_assets")
+                .and_then(|value| value.as_str())
+                .ok_or_else(unavailable)?
+                .to_owned();
+            let mut bytes = ciphertext.into_bytes();
+            let first = bytes.first_mut().ok_or_else(unavailable)?;
+            *first = if *first == b'A' { b'B' } else { b'A' };
+            encoded["protected_assets"] =
+                Value::String(String::from_utf8(bytes).map_err(|_| unavailable())?);
+            let owner = serde_json::from_value(encoded).map_err(|_| unavailable())?;
+            self.closed.namespaces.install_inherited_owner(
+                &self.closed.cluster_id,
+                binding.namespace(),
+                owner,
+            )?;
+        }
+        self.closed.namespace_protected = None;
+        Ok(())
+    }
+
+    pub(super) fn into_closed(self) -> State {
+        self.closed
     }
 }
 
@@ -667,6 +850,16 @@ impl Runtime {
         actual: &str,
         root_key: &[u8; 32],
     ) -> Result<State, Response> {
+        self.inherited_closed_candidate_with_key(state, actual, root_key)
+            .map(|(closed, _)| closed)
+    }
+
+    fn inherited_closed_candidate_with_key(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+    ) -> Result<(State, Option<Key>), Response> {
         request_live()?;
         let mut candidate = state.clone();
         Self::retire_pending_delivery(&mut candidate, actual)?;
@@ -677,8 +870,9 @@ impl Runtime {
         if candidate.namespaces.inherited_owner(actual).is_some() {
             return if self.has_loaded_within(actual) {
                 self.closed_candidate(&candidate, actual)
+                    .map(|closed| (closed, None))
             } else {
-                Ok(candidate)
+                Ok((candidate, None))
             };
         }
         if self.has_loaded_within(actual) {
@@ -723,7 +917,83 @@ impl Runtime {
                 Ok(())
             })?;
         request_live()?;
-        Ok(closed)
+        Ok((closed, Some(key)))
+    }
+
+    /// Construct the private full-graph evidence for one real seal transition.
+    /// Final physical owners are authenticated again in parent-before-child
+    /// order without exposing the verification graph or installing a key slot.
+    fn seal_publication(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+        base: crate::state_record_root::StateIdentity,
+        ha: Option<Arc<Mutex<HaProcess>>>,
+        native_role: Option<(u64, u64)>,
+    ) -> Result<SealPublication, Response> {
+        request_live()?;
+        state.validate_format()?;
+        let (mut closed, fresh) = if state.namespaces.custody_owner(actual).is_some() {
+            (self.closed_candidate(state, actual)?, None)
+        } else {
+            self.inherited_closed_candidate_with_key(state, actual, root_key)?
+        };
+        self.prepare(&mut closed)?;
+        let prefix = format!("{actual}/");
+        let mut paths = self
+            .loaded
+            .keys()
+            .filter(|path| path.as_str() == actual || path.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        paths.sort_by_key(|path| (path.split('/').count(), path.clone()));
+        let mut proof = SealPublication {
+            closed,
+            cuts: Vec::new(),
+            base,
+            ha,
+            native_role,
+            deadline: crate::request_deadline::current(),
+        };
+        let mut restored = proof.closed.clone();
+        restored.namespace_leases = Leases::default();
+        if let Some(key) = fresh {
+            let owner = Owner::actual(&restored, actual)?;
+            let cut = SealCut {
+                actual: actual.to_owned(),
+                owner,
+                key: SealKey::FreshInherited(key),
+            };
+            restored = cut.restore(&restored)?;
+            proof.cuts.push(cut);
+        }
+        for path in paths {
+            if proof.cuts.iter().any(|cut| cut.actual == path) {
+                return Err(unavailable());
+            }
+            let original = Owner::actual(state, &path)?;
+            let lease = self.loaded.get(&path).cloned().ok_or_else(unavailable)?;
+            let owner = Owner::actual(&restored, &path)?;
+            let cut = SealCut {
+                actual: path,
+                owner,
+                key: SealKey::Original {
+                    lease,
+                    owner: original,
+                },
+            };
+            restored = cut.restore(&restored)?;
+            proof.cuts.push(cut);
+        }
+        if proof.cuts.is_empty() {
+            return Err(unavailable());
+        }
+        // No hydrated State leaves this scope. Recreate the complete graph at
+        // each validation boundary from the final authenticated descriptors.
+        proof.logical_validation()?;
+        proof.closed.protected_state()?.validate_format()?;
+        Ok(proof)
     }
 
     fn retire_pending_delivery(state: &mut State, actual: &str) -> Result<(), Response> {
@@ -1345,6 +1615,39 @@ impl Service {
         let continuation = committed.clone();
         self.state = Some(committed);
         continuation
+    }
+
+    pub(super) fn prepare_namespace_seal_publication(
+        &self,
+        state: &State,
+        actual: &str,
+    ) -> Result<SealPublication, Response> {
+        let base = self.current_state_identity()?;
+        let native_role = match &self.ha {
+            None => None,
+            Some(ha) => {
+                let process = ha.lock_for_request().map_err(|_| unavailable())?;
+                process
+                    .ensure_application_identity(base)
+                    .map_err(|_| unavailable())?;
+                let role = process.leader_status().map_err(|_| unavailable())?;
+                if !role.local_is_leader || role.leader != Some(role.local_id) {
+                    return Err(unavailable());
+                }
+                Some((role.local_id, role.term))
+            }
+        };
+        let root_key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
+        let proof = self.namespace_runtime.seal_publication(
+            state,
+            actual,
+            root_key,
+            base,
+            self.ha.clone(),
+            native_role,
+        )?;
+        proof.validate(self.state.as_ref(), base, &self.ha)?;
+        Ok(proof)
     }
 
     pub(super) fn prepare_namespace_publication(&self, state: &mut State) -> Result<(), Response> {

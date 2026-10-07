@@ -18,6 +18,38 @@ pub(super) struct RecordPlan {
     pub namespace_leases: namespace_runtime::Leases,
 }
 
+enum RecordPublication<'a> {
+    Ordinary(&'a State),
+    NamespaceSeal(&'a namespace_runtime::SealPublication),
+}
+impl RecordPublication<'_> {
+    fn state(&self) -> &State {
+        match self {
+            Self::Ordinary(state) => state,
+            Self::NamespaceSeal(proof) => proof.closed_state(),
+        }
+    }
+    fn validate(&self, service: &Service) -> Result<(), Response> {
+        match self {
+            Self::Ordinary(state) => {
+                state.validate_publication_schema(service.state.as_ref())?;
+                state.validate_format()
+            }
+            Self::NamespaceSeal(proof) => proof.validate(
+                service.state.as_ref(),
+                service.current_state_identity()?,
+                &service.ha,
+            ),
+        }
+    }
+    fn check_private_custody(&self) -> Result<(), Response> {
+        match self {
+            Self::Ordinary(_) => Ok(()),
+            Self::NamespaceSeal(proof) => proof.check_original_custody(),
+        }
+    }
+}
+
 impl RecordPlan {
     fn validate_kubernetes_artifact_owner(&self, state: &State) -> Result<(), Response> {
         if state.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
@@ -328,6 +360,15 @@ impl Service {
     pub(super) fn prepare_record_plan(&self, state: &mut State) -> Result<RecordPlan, Response> {
         self.prepare_namespace_publication(state)?;
         state.validate_publication_schema(self.state.as_ref())?;
+        self.prepare_record_plan_from_validated_owner(state)
+    }
+
+    // Shared physical object construction. This private helper is reachable
+    // only after ordinary State validation or the affine seal proof validation.
+    fn prepare_record_plan_from_validated_owner(
+        &self,
+        state: &State,
+    ) -> Result<RecordPlan, Response> {
         let namespace_leases = state.namespace_leases.clone();
         let state = state.protected_state()?;
         let key = state
@@ -498,6 +539,36 @@ impl Service {
         Ok(plan)
     }
 
+    /// The private proof validates the complete MAC-opened logical successor;
+    /// the common planner/publisher receives only its canonical physical owner.
+    pub(super) fn commit_namespace_seal_publication(
+        &mut self,
+        proof: namespace_runtime::SealPublication,
+        before_publish: impl FnOnce(&AuthState, &State) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        proof.validate(
+            self.state.as_ref(),
+            self.current_state_identity()?,
+            &self.ha,
+        )?;
+        if proof.closed_state().engines.record_root().is_none() {
+            return Err(unavailable_at(
+                "namespace_seal_requires_authenticated_record_root",
+            ));
+        }
+        let state = proof.closed_state();
+        let plan = self.prepare_record_plan_from_validated_owner(state)?;
+        self.commit_record_publication_checked(
+            RecordPublication::NamespaceSeal(&proof),
+            plan,
+            Some(|auth: &AuthState| before_publish(auth, state)),
+            proof.native_role(),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )?;
+        Ok(proof.into_closed())
+    }
+
     pub(super) fn commit_record_plan(
         &mut self,
         state: &State,
@@ -557,8 +628,28 @@ impl Service {
         before_publish: Option<impl FnOnce(&AuthState) -> Result<(), Response>>,
         native_role: Option<(u64, u64)>,
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
+    ) -> Result<(), Response> {
+        self.commit_record_publication_checked(
+            RecordPublication::Ordinary(state),
+            plan,
+            before_publish,
+            native_role,
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            restore_fault,
+        )
+    }
+
+    fn commit_record_publication_checked(
+        &mut self,
+        publication: RecordPublication<'_>,
+        plan: RecordPlan,
+        before_publish: Option<impl FnOnce(&AuthState) -> Result<(), Response>>,
+        native_role: Option<(u64, u64)>,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         mut restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
+        let state = publication.state();
         #[cfg(test)]
         let mut native_role_hook = if native_role.is_some() {
             self.native_record_role_hook.take()
@@ -570,8 +661,7 @@ impl Service {
         }
         plan.namespace_leases.validate()?;
         state.namespace_leases.validate()?;
-        state.validate_publication_schema(self.state.as_ref())?;
-        state.validate_format()?;
+        publication.validate(self)?;
         plan.validate_precise_auth_owner(state)?;
         if state.schema != plan.root.state_schema
             || state.cluster_id != plan.root.cluster_id
@@ -697,6 +787,7 @@ impl Service {
                         // Under the actual HA lock, after all Stage/root work and
                         // immediately before Publish, retain the captured native term.
                         check_native_role()
+                            .and_then(|()| publication.check_private_custody())
                             .and_then(|()| before_publish(live_auth))
                             .map_err(|response| {
                                 authority_rejection = Some(response);
@@ -766,6 +857,7 @@ impl Service {
                 }
             }
         } else if let Some(before_publish) = before_publish {
+            publication.check_private_custody()?;
             before_publish(
                 &self
                     .state

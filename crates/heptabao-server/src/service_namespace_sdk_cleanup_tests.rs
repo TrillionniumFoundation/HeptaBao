@@ -48,6 +48,9 @@ struct Fixture {
     credential: crate::auth::sdk_credential::Record,
 }
 fn fixture() -> TestResult<Fixture> {
+    fixture_with_owner(false).map(|(fixture, _)| fixture)
+}
+fn fixture_with_owner(independent: bool) -> TestResult<(Fixture, Option<Zeroizing<Vec<u8>>>)> {
     let directory = Root::new();
     let mut service = directory.service()?;
     let (key, token) = bootstrap_unmounted(&mut service)?;
@@ -55,6 +58,11 @@ fn fixture() -> TestResult<Fixture> {
         native(&mut service, "POST", "sys/namespaces/retire", &token).status,
         200
     );
+    let namespace_share = if independent {
+        Some(install_test_independent_owner(&mut service, NS)?)
+    } else {
+        None
+    };
     let mut state = service.state.clone().ok_or("state")?;
     state
         .ensure_namespace_batch_registry()
@@ -193,14 +201,17 @@ fn fixture() -> TestResult<Fixture> {
         },
     )?;
     publish(&mut service, state)?;
-    Ok(Fixture {
-        directory,
-        service,
-        key,
-        token,
-        logical,
-        credential,
-    })
+    Ok((
+        Fixture {
+            directory,
+            service,
+            key,
+            token,
+            logical,
+            credential,
+        },
+        namespace_share,
+    ))
 }
 fn begin(f: &mut Fixture) -> TestResult {
     let response = native(&mut f.service, "DELETE", "sys/namespaces/retire", &f.token);
@@ -2214,6 +2225,558 @@ fn namespace109_same_original_authorities_recapture_terminal_storage_before_name
                 .stage(),
             Stage::Terminal { .. }
         ));
+    }
+    Ok(())
+}
+
+fn install_test_independent_owner(
+    service: &mut Service,
+    actual: &str,
+) -> TestResult<Zeroizing<Vec<u8>>> {
+    let original = service.state.as_ref().ok_or("actual predecessor")?;
+    let fresh = namespace_runtime::Runtime::fresh_candidate(original, actual, 1, 1)
+        .map_err(|_| "actual fresh independent owner")?;
+    let share = fresh
+        .shares
+        .into_iter()
+        .next()
+        .ok_or("actual original share")?;
+    publish(service, fresh.candidate)?;
+    let closed = service.state.clone().ok_or("actual closed independent")?;
+    let restored = service
+        .namespace_runtime
+        .submit(&closed, actual, &share, |_| Ok(()))
+        .map_err(|_| "actual independent share restore")?
+        .ok_or("actual complete independent share")?;
+    service.state = Some(restored);
+    assert!(service.namespace_runtime.is_loaded(actual));
+    Ok(share)
+}
+fn owned_namespace_body(
+    service: &mut Service,
+    namespace: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+) -> Response {
+    let execution = service.begin_request_before(
+        ServiceRequest {
+            method: "POST",
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    service.finish_synchronous_request(execution)
+}
+fn assert_original_sdk_and_storage(
+    state: &State,
+    logical: &Lease,
+    credential: &crate::auth::sdk_credential::Record,
+) -> TestResult {
+    assert!(
+        state
+            .engines
+            .sdk_lease(NS, &logical.id)
+            .is_some_and(|actual| actual.registration == logical.registration
+                && actual.issued == logical.issued
+                && actual.backend == logical.backend)
+    );
+    assert!(
+        state
+            .auth
+            .sdk_credential_record(NS, &credential.id)
+            .is_some_and(|actual| actual.registration == credential.registration
+                && actual.issued == credential.issued
+                && actual.backend == credential.backend)
+    );
+    assert!(
+        state
+            .engines
+            .sdk_storage_get(NS, &logical.mount, &logical.backend, "record")?
+            .is_some_and(|entry| entry.value.as_slice() == b"finite-logical-owned")
+    );
+    assert!(
+        state
+            .auth
+            .sdk_auth_storage_get(&credential.backend, "record")?
+            .is_some_and(|entry| entry.value.as_slice() == b"finite-credential-owned")
+    );
+    Ok(())
+}
+
+#[test]
+fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen() -> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    let before = f.service.state.as_ref().ok_or("actual original graph")?;
+    let jobs = before.namespaces.deletions.clone();
+    let logical = before
+        .engines
+        .sdk_lease(NS, &f.logical.id)
+        .ok_or("actual original logical")?
+        .clone();
+    let credential = before
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("actual original credential")?
+        .clone();
+    assert!(logical.phase == Phase::PendingRevoke && credential.phase == Phase::PendingRevoke);
+    let sealed = owned_body(
+        &mut f.service,
+        "POST",
+        "sys/namespaces/retire/seal",
+        &f.token,
+        json!({}),
+    );
+    assert_eq!(sealed.status, 204);
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
+    let closed = f.service.state.as_ref().ok_or("actual installed closed")?;
+    assert!(closed.namespace_is_sealed(NS));
+    assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
+    assert!(
+        closed
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .is_none()
+    );
+    assert!(closed.namespaces.deletions == jobs);
+    let bytes = owner_store::serialize_owner(closed)?;
+    for marker in [
+        b"finite-logical-owned".as_slice(),
+        b"finite-credential-owned".as_slice(),
+    ] {
+        assert!(!bytes.windows(marker.len()).any(|window| window == marker));
+    }
+    let Fixture {
+        directory,
+        service,
+        key,
+        token: _,
+        logical: _,
+        credential: _,
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        owned_body(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened.state.as_ref().ok_or("actual reopened graph")?;
+    assert!(state.namespaces.deletions == jobs);
+    assert_original_sdk_and_storage(state, &logical, &credential)?;
+    assert!(
+        state
+            .engines
+            .sdk_lease(NS, &logical.id)
+            .is_some_and(|record| record.phase == Phase::PendingRevoke)
+    );
+    assert!(
+        state
+            .auth
+            .sdk_credential_record(NS, &credential.id)
+            .is_some_and(|record| record.phase == Phase::PendingRevoke)
+    );
+    state
+        .validate_format()
+        .map_err(|_| "reopened full typed graph")?;
+    Ok(())
+}
+#[test]
+fn namespace109_authenticated_independent_seal_preserves_two_original_descendant_frontiers()
+-> TestResult {
+    let (mut f, parent_share) = fixture_with_owner(true)?;
+    let parent_share = parent_share.ok_or("actual parent share")?;
+    assert_eq!(
+        owned_namespace_body(
+            &mut f.service,
+            NS,
+            "sys/namespaces/child",
+            &f.token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let child = "retire/child";
+    let child_share = install_test_independent_owner(&mut f.service, child)?;
+    assert_eq!(
+        owned_namespace_body(
+            &mut f.service,
+            child,
+            "sys/mounts/records",
+            &f.token,
+            json!({"type":"kv","options":{"version":"1"}})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        owned_namespace_body(
+            &mut f.service,
+            child,
+            "records/value",
+            &f.token,
+            json!({"marker":"actual-two-owner-child-record"})
+        )
+        .status,
+        204
+    );
+    let original = f.service.state.as_ref().ok_or("actual two loaded owners")?;
+    let parent = original
+        .namespaces
+        .custody_owner(NS)
+        .ok_or("actual parent owner")?
+        .clone();
+    let descendant = original
+        .namespaces
+        .custody_owner(child)
+        .ok_or("actual child owner")?
+        .clone();
+    assert!(
+        f.service.namespace_runtime.is_loaded(NS) && f.service.namespace_runtime.is_loaded(child)
+    );
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "sys/namespaces/retire/seal",
+            &f.token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert!(
+        !f.service.namespace_runtime.is_loaded(NS) && !f.service.namespace_runtime.is_loaded(child)
+    );
+    let closed = f.service.state.as_ref().ok_or("closed two owners")?;
+    let parent_closed = closed
+        .namespaces
+        .custody_owner(NS)
+        .ok_or("actual closed parent")?;
+    assert!(
+        parent_closed.key_epoch() == parent.key_epoch()
+            && parent_closed.seal_frontier() == parent.seal_frontier() + 1
+    );
+    assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
+    assert!(
+        closed
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .is_none()
+    );
+    let Fixture {
+        directory,
+        service,
+        key,
+        token,
+        logical,
+        credential,
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        owned_body(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert!(
+        !reopened.namespace_runtime.is_loaded(NS) && !reopened.namespace_runtime.is_loaded(child)
+    );
+    assert_eq!(
+        owned_body(
+            &mut reopened,
+            "POST",
+            "sys/namespaces/retire/unseal",
+            &token,
+            json!({"key":hex(&parent_share)})
+        )
+        .status,
+        200
+    );
+    let parent_open = reopened.state.as_ref().ok_or("actual parent unseal")?;
+    assert_original_sdk_and_storage(parent_open, &logical, &credential)?;
+    let child_closed = parent_open
+        .namespaces
+        .custody_owner(child)
+        .ok_or("actual contained child")?;
+    assert!(
+        child_closed.key_epoch() == descendant.key_epoch()
+            && child_closed.seal_frontier() == descendant.seal_frontier() + 1
+    );
+    assert!(!reopened.namespace_runtime.is_loaded(child));
+    assert_eq!(
+        owned_namespace_body(
+            &mut reopened,
+            NS,
+            "sys/namespaces/child/unseal",
+            &token,
+            json!({"key":hex(&child_share)})
+        )
+        .status,
+        200
+    );
+    let actual = reopened.state.as_ref().ok_or("actual child unseal")?;
+    assert_original_sdk_and_storage(actual, &logical, &credential)?;
+    let read = reopened.begin_request_before(
+        ServiceRequest {
+            method: "GET",
+            path: "records/value",
+            namespace: child,
+            token: &token,
+            body: json!({}),
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    let response = reopened.finish_synchronous_request(read);
+    assert_eq!(response.status, 200);
+    assert!(response.body["data"]["marker"] == "actual-two-owner-child-record");
+    Ok(())
+}
+#[test]
+fn namespace109_authenticated_seal_rejects_erased_registration_and_changed_current_base()
+-> TestResult {
+    let mut f = fixture()?;
+    let original = f.service.state.clone().ok_or("actual current graph")?;
+    let mut absent = original.clone();
+    absent
+        .engines
+        .sdk_history_fixture_clear_materialized_leases(NS);
+    assert!(
+        f.service
+            .prepare_namespace_seal_publication(&absent, NS)
+            .is_err()
+    );
+    let proof = f
+        .service
+        .prepare_namespace_seal_publication(&original, NS)
+        .map_err(|_| "actual full seal evidence")?;
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "sys/mounts/unrelated",
+            &f.token,
+            json!({"type":"kv","options":{"version":"1"}})
+        )
+        .status,
+        204
+    );
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "changed actual base")?;
+    let generation = f
+        .service
+        .durable
+        .as_ref()
+        .ok_or("actual durable")?
+        .generation();
+    assert!(
+        f.service
+            .commit_namespace_seal_publication(proof, |_, _| Ok(()))
+            .is_err()
+    );
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "unchanged changed-base")?
+            == identity
+    );
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let actual = f.service.state.as_ref().ok_or("preserved current graph")?;
+    assert_original_sdk_and_storage(actual, &f.logical, &f.credential)?;
+    assert!(!actual.namespace_is_sealed(NS));
+    Ok(())
+}
+#[test]
+fn namespace109_authenticated_seal_rejects_retired_original_slot_and_expired_request() -> TestResult
+{
+    let (mut f, _) = fixture_with_owner(true)?;
+    let source = f.service.state.clone().ok_or("actual loaded independent")?;
+    let proof = f
+        .service
+        .prepare_namespace_seal_publication(&source, NS)
+        .map_err(|_| "actual original slot seal evidence")?;
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "original base")?;
+    let generation = f
+        .service
+        .durable
+        .as_ref()
+        .ok_or("actual durable")?
+        .generation();
+    f.service.namespace_runtime.close(NS);
+    assert!(
+        f.service
+            .commit_namespace_seal_publication(proof, |_, _| Ok(()))
+            .is_err()
+    );
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "still original base")?
+            == identity
+    );
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
+    let other = fixture()?;
+    let expired = Instant::now()
+        .checked_sub(Duration::from_millis(1))
+        .ok_or("past deadline")?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(expired);
+    assert!(
+        other
+            .service
+            .prepare_namespace_seal_publication(
+                other
+                    .service
+                    .state
+                    .as_ref()
+                    .ok_or("actual expired source")?,
+                NS,
+            )
+            .is_err()
+    );
+    assert!(!other.service.namespace_runtime.is_loaded(NS));
+    Ok(())
+}
+#[test]
+fn namespace109_authenticated_seal_rejects_real_same_node_new_ha_term() -> TestResult {
+    let mut f = fixture()?;
+    let cluster_id = f.service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(
+        &f.directory.path.join("seal-raft"),
+        &cluster_id,
+    )?;
+    f.service.ha = Some(Arc::clone(&cluster.processes[0]));
+    f.service
+        .sync_from_ha()
+        .map_err(|_| "actual initial HA publication")?;
+    let source = f.service.state.clone().ok_or("actual HA source")?;
+    let proof = f
+        .service
+        .prepare_namespace_seal_publication(&source, NS)
+        .map_err(|_| "actual ReadIndex seal evidence")?;
+    let original = cluster.processes[0]
+        .lock()
+        .map_err(|_| "original leader")?
+        .leader_status()
+        .map_err(|_| "original role")?;
+    let successor = cluster.processes[0]
+        .lock()
+        .map_err(|_| "original process")?
+        .step_down()
+        .map_err(|_| "actual first handoff")?;
+    {
+        let process = cluster.processes[(successor - 1) as usize]
+            .lock()
+            .map_err(|_| "actual successor")?;
+        assert_eq!(process.step_down().map_err(|_| "actual second handoff")?, 1);
+    }
+    let returned = cluster.processes[0]
+        .lock()
+        .map_err(|_| "actual returned process")?
+        .leader_status()
+        .map_err(|_| "actual returned role")?;
+    assert!(
+        returned.local_is_leader
+            && returned.local_id == original.local_id
+            && returned.term > original.term
+    );
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "actual base")?;
+    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
+    assert!(
+        f.service
+            .commit_namespace_seal_publication(proof, |_, _| Ok(()))
+            .is_err()
+    );
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "unchanged base")?
+            == identity
+    );
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_original_sdk_and_storage(
+        f.service.state.as_ref().ok_or("preserved SDK")?,
+        &f.logical,
+        &f.credential,
+    )?;
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
+    Ok(())
+}
+
+#[test]
+fn namespace109_authenticated_seal_rejects_changed_ciphertext_and_resource_cells() -> TestResult {
+    for cells in [false, true] {
+        let mut f = fixture()?;
+        let original = f.service.state.clone().ok_or("actual original graph")?;
+        let mut proof = f
+            .service
+            .prepare_namespace_seal_publication(&original, NS)
+            .map_err(|_| "genuine authenticated seal proof")?;
+        proof
+            .check_original_custody()
+            .map_err(|_| "genuine live proof")?;
+        proof
+            .corrupt_physical_owner_for_test(cells)
+            .map_err(|_| "actual ciphertext or cell changed")?;
+        let identity = f
+            .service
+            .current_state_identity()
+            .map_err(|_| "original identity")?;
+        let generation = f
+            .service
+            .durable
+            .as_ref()
+            .ok_or("actual durable")?
+            .generation();
+        assert!(
+            f.service
+                .commit_namespace_seal_publication(proof, |_, _| Ok(()))
+                .is_err()
+        );
+        assert!(
+            f.service
+                .current_state_identity()
+                .map_err(|_| "same original identity")?
+                == identity
+        );
+        assert_eq!(
+            f.service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_original_sdk_and_storage(
+            f.service.state.as_ref().ok_or("original SDK")?,
+            &f.logical,
+            &f.credential,
+        )?;
+        assert!(!f.service.namespace_runtime.is_loaded(NS));
     }
     Ok(())
 }
