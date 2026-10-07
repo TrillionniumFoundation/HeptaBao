@@ -21,6 +21,7 @@ import tempfile
 import time
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write, transport_diagnostic
+from fixture_transport_case import pending_case
 from official_openbao_launcher import (
     BINARY_SHA256, SUPPORTED_VERSIONS, VERSION, pinned_artifact,
     restart_oracle, start_oracle, stop_oracle,
@@ -156,7 +157,7 @@ def bounded_response_write_observations(path: Path) -> dict:
         ],
     }
 
-def retain_transport_failure(result, context, phase, error):
+def retain_transport_failure(result, context, phase, error, *, client=None):
     """Retain only static fixture context and the client's closed projection."""
     if (context not in ("candidate", "oracle", "top_level")
             or phase not in ("candidate_startup", "candidate_init", "candidate_unseal", "oracle_startup",
@@ -166,6 +167,9 @@ def retain_transport_failure(result, context, phase, error):
     detail = transport_diagnostic(error)
     if detail is not None:
         result.setdefault("transport_failures", {})[context] = {"fixture_phase": phase, **detail}
+        pending = pending_case(client)
+        if pending is not None:
+            result["transport_failures"][context]["pending_request_case"] = pending
 
 
 def successful_comparison(cases: dict, side_failures: dict) -> bool:
@@ -304,12 +308,13 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
                 side_runner(client, result["cases"][name])
             except (ScenarioFailure, BaoError) as error:
                 result["side_failures"][name] = str(error)
-                retain_transport_failure(result, name, phase, error)
+                retain_transport_failure(result, name, phase, error, client=client)
             except Exception as error:
                 result["side_failures"][name] = "unexpected_" + type(error).__name__
-                retain_transport_failure(result, name, phase, error)
+                retain_transport_failure(result, name, phase, error, client=client)
         if restart_runner is not None and not result["side_failures"]:
             for name in ("candidate", "oracle"):
+                restarted = None
                 try:
                     if name == "candidate":
                         instance.stop()
@@ -335,10 +340,10 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
                     side_restart(restarted, result["cases"][name])
                 except (ScenarioFailure, BaoError) as error:
                     result["side_failures"][name] = str(error)
-                    retain_transport_failure(result, name, phase, error)
+                    retain_transport_failure(result, name, phase, error, client=restarted)
                 except Exception as error:
                     result["side_failures"][name] = "unexpected_" + type(error).__name__
-                    retain_transport_failure(result, name, phase, error)
+                    retain_transport_failure(result, name, phase, error, client=restarted)
         result["cases_match"] = result["cases"]["candidate"] == result["cases"]["oracle"]
         result["case_count_per_side"] = len(result["cases"]["candidate"])
         complete = successful_comparison(result["cases"], result["side_failures"])
