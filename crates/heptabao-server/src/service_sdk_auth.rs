@@ -8,6 +8,7 @@ use heptabao_plugin_host::sdk_backend::SdkBackendType;
 mod credential;
 #[path = "service_sdk_auth_retirement.rs"]
 mod retirement;
+pub(in crate::service) use retirement::RecoveryWork;
 
 struct Context {
     namespace: String,
@@ -157,7 +158,7 @@ impl Plan {
                 "SDK Auth original owner or deadline unavailable",
             ));
         }
-        if self.namespace_cleanup {
+        if self.namespace_cleanup || self.has_native_retirement()? {
             let mut writer = writer_before(service, deadline)?;
             writer.sdk_auth_gate(self)?;
         }
@@ -198,6 +199,14 @@ impl Plan {
                 409,
                 "SDK Auth retirement blocks an old invocation",
             ));
+        }
+        if self.has_native_retirement()? {
+            let result =
+                writer_before(service, deadline).and_then(|mut writer| writer.sdk_auth_gate(self));
+            if let Err(error) = result {
+                self.control.busy.store(false, Ordering::Release);
+                return Err(error);
+            }
         }
         let (events, received) = mpsc::channel();
         let path = if self.retirement.is_some() {
@@ -935,7 +944,24 @@ impl Service {
         }
         // Cleanup's Setup transaction starts from the actual graph admitted
         // by that original task, never the pre-sync Auth snapshot.
-        let current_state = namespace_work.and_then(|_| self.state.clone());
+        if let Some(native) = target
+            .retirement
+            .as_ref()
+            .and_then(|value| value.native.as_ref())
+            && let Err(error) = native.sync_before_setup(self)
+        {
+            return error;
+        }
+        let current_state = if namespace_work.is_some()
+            || target
+                .retirement
+                .as_ref()
+                .is_some_and(|value| value.native.is_some())
+        {
+            self.state.clone()
+        } else {
+            None
+        };
         let state = current_state.as_ref().unwrap_or(state);
         let StageTarget {
             binding,
@@ -1008,6 +1034,11 @@ impl Service {
             };
             if let Some(work) = namespace_work
                 && let Err(error) = work.check(self)
+            {
+                return error;
+            }
+            if let Some(native) = retirement.as_ref().and_then(|value| value.native.as_ref())
+                && let Err(error) = native.check(self)
             {
                 return error;
             }
@@ -1093,6 +1124,7 @@ impl Service {
     }
     fn sdk_auth_gate(&mut self, plan: &Plan) -> Result<(), Response> {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        plan.sync_native_retirement(self)?;
         let completed_retirement = plan.retirement_completed()?;
         if plan.operation != "_mount" && !completed_retirement {
             let Some(state) = self.state.as_ref() else {
@@ -1148,7 +1180,7 @@ impl Service {
                 caller.apply_sdk_auth_clock_floor(&state.auth)?;
                 caller.validate_live_auth(&state.auth)?;
             }
-        } else {
+        } else if !plan.has_native_retirement()? {
             self.revalidate_online_authority_with_sync(
                 &plan.context.namespace,
                 &plan.context.activation,
@@ -1551,6 +1583,16 @@ impl Service {
                     .as_ref()
                     .ok_or_else(|| Response::error(503, "SDK credential publication absent"))?
                     .auth,
+            )?;
+            plan.retirement_native_after_callback(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Response::error(503, "SDK retirement actual publication absent")
+                    })?
+                    .auth,
+                at,
             )?;
             if let Some(admission) = &plan.admission {
                 let auth = &self

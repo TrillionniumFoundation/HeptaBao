@@ -340,6 +340,7 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
             sent: BTreeSet::new(),
             body: json!({}),
             completed: Some(vec![(record.id.clone(), crypto::digest(&bytes))]),
+            native: None,
         })),
         namespace_cleanup: false,
     };

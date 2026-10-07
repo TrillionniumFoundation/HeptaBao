@@ -3952,7 +3952,7 @@ impl AuthState {
                 if mount == "token" {
                     return Err(bad("the built-in token auth method cannot be disabled"));
                 }
-                let mut entries = self.effective_auth_mounts(namespace);
+                let entries = self.effective_auth_mounts(namespace);
                 let current = entries
                     .get(mount)
                     .cloned()
