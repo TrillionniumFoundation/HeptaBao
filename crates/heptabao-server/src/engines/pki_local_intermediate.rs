@@ -7,6 +7,7 @@ use openssl::{
     x509::{X509, X509Req},
 };
 use x509_parser::{
+    asn1_rs::{Class, Tag},
     certification_request::X509CertificationRequest,
     extensions::{GeneralName, ParsedExtension},
     prelude::{FromDer, X509Certificate},
@@ -241,6 +242,11 @@ pub(super) fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
             .algorithm
             .parameters
             .as_ref()
+            .filter(|parameters| {
+                parameters.class() == Class::Universal
+                    && parameters.tag() == Tag::Oid
+                    && !parameters.header.constructed()
+            })
             .and_then(|parameters| parameters.as_oid().ok())
             .ok_or_else(|| {
                 bad("certificate request could not be parsed: x509: invalid ECDSA parameters")
@@ -3688,6 +3694,45 @@ mod tests {
         let mut truncated = original.clone();
         truncated.pop();
         assert!(matches!(parse_csr(&truncated), Err(error) if error.status == 400));
+        Ok(())
+    }
+
+    #[test]
+    fn raw112_csr_parameter_header_tag_class_and_primitive_are_required_before_oid_decode()
+    -> TestResult {
+        let named = include_str!("../../fixtures/raw112-actual-official-named-p256.csr");
+        let der = pem_blocks(named, "CERTIFICATE REQUEST")?.remove(0);
+        let parsed = parse_csr(&der)?;
+        let parameters = parsed
+            .certification_request_info
+            .subject_pki
+            .algorithm
+            .parameters
+            .as_ref()
+            .ok_or("named curve parameters")?;
+        assert_eq!(parameters.class(), Class::Universal);
+        assert_eq!(parameters.tag(), Tag::Oid);
+        assert!(!parameters.header.constructed());
+        let original_oid = [0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07];
+        let locations: Vec<_> = der
+            .windows(original_oid.len())
+            .enumerate()
+            .filter_map(|(index, bytes)| (bytes == original_oid).then_some(index))
+            .collect();
+        assert_eq!(locations.len(), 1);
+        for tag in [0x86, 0x26, 0x16] {
+            let mut changed = der.clone();
+            changed[locations[0]] = tag;
+            let error = parse_csr(&changed)
+                .err()
+                .ok_or("non-OID parameter accepted")?;
+            assert_eq!(error.status, 400);
+            assert!(
+                error.message
+                    == "certificate request could not be parsed: x509: invalid ECDSA parameters",
+                "wrong class, constructed OID or wrong tag must not be decoded as a named curve"
+            );
+        }
         Ok(())
     }
 
