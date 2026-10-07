@@ -14,7 +14,9 @@ pub(crate) use raw_reply::{
 };
 
 pub(crate) struct UnwrappedJson {
-    stored_reply: Option<StoredWrappedReply>,
+    // Keep the secret-bearing owner affine without inflating every Response result.
+    // Box destruction still runs StoredWrappedReply's zeroizing destructor.
+    stored_reply: Option<Box<StoredWrappedReply>>,
 }
 impl UnwrappedJson {
     pub(crate) fn from_completed_raw_forward(
@@ -31,14 +33,14 @@ impl UnwrappedJson {
                 .map_err(|_| "HA stored reply projection rejected")?;
         }
         Ok(Self {
-            stored_reply: response.raw_wrapped_reply.clone(),
+            stored_reply: response.raw_wrapped_reply.clone().map(Box::new),
         })
     }
     pub(crate) fn has_stored_reply(&self) -> bool {
         self.stored_reply.is_some()
     }
     pub(crate) fn stored_reply(&self) -> Option<&StoredWrappedReply> {
-        self.stored_reply.as_ref()
+        self.stored_reply.as_deref()
     }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
         self.stored_reply
@@ -453,7 +455,7 @@ impl AuthState {
         }
         Ok(AuthResponse {
             unwrapped_json: Some(UnwrappedJson {
-                stored_reply: wrapped.stored_reply.clone(),
+                stored_reply: wrapped.stored_reply.clone().map(Box::new),
             }),
             approle_secret_consumption: None,
             pending_batch: None,

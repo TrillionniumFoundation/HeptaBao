@@ -686,12 +686,11 @@ impl AuthState {
                     return Err(bad("retained original reply token owner cannot regress"));
                 }
             }
-            if let (Some(old), Some(next)) = (old.wrapping.as_ref(), next.wrapping.as_ref()) {
-                if old.stored_reply != next.stored_reply
-                    || (old.stored_reply.is_some() && old.response != next.response)
-                {
-                    return Err(bad("retained stored wrapped reply is immutable"));
-                }
+            if let (Some(old), Some(next)) = (old.wrapping.as_ref(), next.wrapping.as_ref())
+                && (old.stored_reply != next.stored_reply
+                    || (old.stored_reply.is_some() && old.response != next.response))
+            {
+                return Err(bad("retained stored wrapped reply is immutable"));
             }
         }
         Ok(())
