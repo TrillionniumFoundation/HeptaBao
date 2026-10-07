@@ -12,6 +12,20 @@ struct Route {
 
 const FIXED_ROUTES: &[Route] = &[
     Route {
+        path: "/sys/mounts/{path}/tune",
+        methods: &["get", "post"],
+        description: "Read or tune a secret-engine mount.",
+        sudo: false,
+        unauthenticated: false,
+    },
+    Route {
+        path: "/sys/auth/{path}/tune",
+        methods: &["get", "post"],
+        description: "Read or tune an authentication mount.",
+        sudo: true,
+        unauthenticated: false,
+    },
+    Route {
         path: "/sys/health",
         methods: &["get"],
         description: "Bounded server health status.",
@@ -20,14 +34,14 @@ const FIXED_ROUTES: &[Route] = &[
     },
     Route {
         path: "/sys/init",
-        methods: &["get", "post", "put"],
+        methods: &["get", "post"],
         description: "Initialization status and one-time initialization.",
         sudo: false,
         unauthenticated: true,
     },
     Route {
         path: "/sys/unseal",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Submit one unseal share.",
         sudo: false,
         unauthenticated: true,
@@ -55,7 +69,7 @@ const FIXED_ROUTES: &[Route] = &[
     },
     Route {
         path: "/sys/auth/{path}",
-        methods: &["get", "post", "put", "delete"],
+        methods: &["get", "post", "delete"],
         description: "Read, enable, tune or disable an authentication mount.",
         sudo: true,
         unauthenticated: false,
@@ -69,14 +83,14 @@ const FIXED_ROUTES: &[Route] = &[
     },
     Route {
         path: "/sys/mounts/{path}",
-        methods: &["post", "put", "delete"],
-        description: "Enable or disable a secret-engine mount.",
-        sudo: true,
+        methods: &["get", "post", "delete"],
+        description: "Read, enable or disable a secret-engine mount.",
+        sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/sys/remount",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Move an authentication or secret-engine mount.",
         sudo: true,
         unauthenticated: false,
@@ -104,77 +118,77 @@ const FIXED_ROUTES: &[Route] = &[
     },
     Route {
         path: "/sys/policies/acl/{name}",
-        methods: &["get", "post", "put", "delete"],
+        methods: &["get", "post", "delete"],
         description: "Read or mutate one ACL policy.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/sys/capabilities-self",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Evaluate capabilities for the calling token.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/sys/leases/lookup",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Look up a durable lease.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/sys/leases/renew",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Renew a durable lease.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/sys/leases/revoke",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Revoke a durable lease.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/sys/wrapping/lookup",
-        methods: &["post", "put"],
+        methods: &["get", "post"],
         description: "Inspect response-wrapping metadata.",
         sudo: false,
-        unauthenticated: false,
+        unauthenticated: true,
     },
     Route {
         path: "/sys/wrapping/unwrap",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Consume a response-wrapping token.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/auth/token/create",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Create a service token.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/auth/token/lookup-self",
-        methods: &["get"],
+        methods: &["get", "post"],
         description: "Read the calling token.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/auth/token/revoke",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Revoke a token and its descendants according to token semantics.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/identity/entity",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Create an identity entity.",
         sudo: false,
         unauthenticated: false,
@@ -188,21 +202,21 @@ const FIXED_ROUTES: &[Route] = &[
     },
     Route {
         path: "/identity/entity/id/{id}",
-        methods: &["get", "post", "put", "patch", "delete"],
+        methods: &["get", "post", "delete"],
         description: "Read or mutate an identity entity.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/identity/entity-alias",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Create an identity alias bound to an auth accessor.",
         sudo: false,
         unauthenticated: false,
     },
     Route {
         path: "/identity/group",
-        methods: &["post", "put"],
+        methods: &["post"],
         description: "Create an identity group.",
         sudo: false,
         unauthenticated: false,
@@ -216,7 +230,7 @@ const FIXED_ROUTES: &[Route] = &[
     },
     Route {
         path: "/identity/group/id/{id}",
-        methods: &["get", "post", "put", "patch", "delete"],
+        methods: &["get", "post", "delete"],
         description: "Read or mutate an identity group.",
         sudo: false,
         unauthenticated: false,
@@ -264,6 +278,13 @@ fn add_route_parts(
         item.insert("parameters".into(), Value::Array(parameters));
     }
     item.insert("description".into(), Value::String(description.into()));
+    // ca305 framework.OASPathItem stores these flags on the path item.
+    if sudo {
+        item.insert("x-vault-sudo".into(), Value::Bool(true));
+    }
+    if unauthenticated {
+        item.insert("x-vault-unauthenticated".into(), Value::Bool(true));
+    }
     for method in methods {
         let mut operation = Map::new();
         operation.insert("summary".into(), Value::String(description.into()));
@@ -277,11 +298,7 @@ fn add_route_parts(
                 "404":{"description":"Not found"}
             }),
         );
-        if sudo {
-            operation.insert("x-vault-sudo".into(), Value::Bool(true));
-        }
         if unauthenticated {
-            operation.insert("x-vault-unauthenticated".into(), Value::Bool(true));
             operation.insert("security".into(), Value::Array(Vec::new()));
         }
         item.insert((*method).into(), Value::Object(operation));
@@ -298,6 +315,137 @@ fn add_route(paths: &mut Map<String, Value>, route: &Route) {
         route.sudo,
         route.unauthenticated,
     );
+}
+
+fn add_list_query(paths: &mut Map<String, Value>, path: &str, scan: bool, read: bool) {
+    if let Some(operation) = paths
+        .get_mut(path)
+        .and_then(|item| item.get_mut("get"))
+        .and_then(Value::as_object_mut)
+    {
+        let mut parameters = Vec::new();
+        for name in if scan {
+            &["list", "scan"][..]
+        } else {
+            &["list"][..]
+        } {
+            let description = if read {
+                if *name == "scan" {
+                    "Return a recursive list if `true`"
+                } else {
+                    "Return a list if `true`"
+                }
+            } else if scan {
+                if *name == "scan" {
+                    "Must be set to `true` or else `list` must be set to `true`"
+                } else {
+                    "Must be set to `true` or else `scan` must be set to `true`"
+                }
+            } else {
+                "Must be set to `true`"
+            };
+            let mut parameter = json!({"name":name,"in":"query","description":description,"schema":{"type":"string"}});
+            if !read {
+                parameter["required"] = Value::Bool(true);
+                parameter["schema"]["enum"] = json!(["true"]);
+            }
+            parameters.push(parameter);
+        }
+        operation.insert("parameters".into(), Value::Array(parameters));
+    }
+}
+
+fn add_token_routes(paths: &mut Map<String, Value>) {
+    for (suffix, methods, description, sudo) in [
+        ("accessors", &["get"][..], "List token accessors.", true),
+        (
+            "create-orphan",
+            &["post"][..],
+            "Create an orphan service token.",
+            false,
+        ),
+        (
+            "create/{role_name}",
+            &["post"][..],
+            "Create a token from one stored token role.",
+            false,
+        ),
+        (
+            "lookup",
+            &["get", "post"][..],
+            "Read a selected token.",
+            false,
+        ),
+        (
+            "lookup-accessor",
+            &["post"][..],
+            "Read a token through its accessor.",
+            false,
+        ),
+        ("renew", &["post"][..], "Renew a selected token.", false),
+        (
+            "renew-accessor",
+            &["post"][..],
+            "Renew a token through its accessor.",
+            false,
+        ),
+        (
+            "renew-self",
+            &["post"][..],
+            "Renew the calling token.",
+            false,
+        ),
+        (
+            "revoke-accessor",
+            &["post"][..],
+            "Revoke a token through its accessor.",
+            false,
+        ),
+        (
+            "revoke-orphan",
+            &["post"][..],
+            "Revoke a token while preserving its orphaned children.",
+            false,
+        ),
+        (
+            "revoke-self",
+            &["post"][..],
+            "Revoke the calling service token.",
+            false,
+        ),
+        ("roles", &["get"][..], "List token roles.", false),
+        (
+            "roles/{role_name}",
+            &["get", "post", "delete"][..],
+            "Read, configure or remove a token role.",
+            false,
+        ),
+        ("tidy", &["post"][..], "Retire stale token records.", false),
+    ] {
+        add_route_parts(
+            paths,
+            &format!("/auth/token/{suffix}"),
+            methods,
+            description,
+            sudo,
+            false,
+        );
+    }
+    for path in [
+        "/auth/token/accessors",
+        "/auth/token/roles",
+        "/identity/entity/id",
+        "/identity/group/id",
+        "/sys/policies/acl",
+    ] {
+        add_list_query(paths, path, false, false);
+    }
+    if let Some(route) = paths
+        .get_mut("/auth/token/roles/{role_name}")
+        .and_then(Value::as_object_mut)
+    {
+        route.insert("x-vault-createSupported".into(), Value::Bool(true));
+    }
 }
 
 fn openapi_mount_path(mount: &str, generic: bool, auth: bool) -> String {
@@ -328,7 +476,11 @@ fn add_mount_route(
     generic: bool,
     auth: bool,
 ) {
-    add_route_parts(paths, &path, methods, description, false, false);
+    // Test the backend-relative suffix; a mount named login/... is ordinary.
+    let prefix = format!("/{}/", openapi_mount_path(mount, generic, auth));
+    let relative = path.strip_prefix(&prefix).unwrap_or("");
+    let anonymous = auth && (relative == "login" || relative.starts_with("login/"));
+    add_route_parts(paths, &path, methods, description, false, anonymous);
     if generic {
         let actual = mount.trim_end_matches('/');
         let relative = if auth {
@@ -374,7 +526,7 @@ fn add_actual_mount_routes(
                     add_mount_route(
                         paths,
                         format!("/{prefix}/data/{{path}}"),
-                        &["get", "post", "delete"],
+                        &["get", "post", "patch", "delete"],
                         "Read, write or soft-delete a KV v2 value.",
                         mount,
                         generic,
@@ -383,17 +535,66 @@ fn add_actual_mount_routes(
                     add_mount_route(
                         paths,
                         format!("/{prefix}/metadata/{{path}}"),
-                        &["get", "post", "delete"],
+                        &["get", "post", "patch", "delete"],
                         "Read, tune or destroy KV v2 metadata.",
                         mount,
                         generic,
+                        false,
+                    );
+                    add_list_query(paths, &format!("/{prefix}/metadata/{{path}}"), true, true);
+                    for (suffix, methods, description) in [
+                        (
+                            "config",
+                            &["get", "post"][..],
+                            "Read or configure KV v2 settings.",
+                        ),
+                        (
+                            "delete/{path}",
+                            &["post"][..],
+                            "Soft-delete selected KV v2 versions.",
+                        ),
+                        (
+                            "undelete/{path}",
+                            &["post"][..],
+                            "Restore selected KV v2 versions.",
+                        ),
+                        (
+                            "destroy/{path}",
+                            &["post"][..],
+                            "Permanently destroy selected KV v2 versions.",
+                        ),
+                        (
+                            "subkeys/{path}",
+                            &["get"][..],
+                            "Read a KV v2 structure without stored values.",
+                        ),
+                        (
+                            "detailed-metadata/{path}",
+                            &["get"][..],
+                            "List detailed KV v2 key metadata.",
+                        ),
+                    ] {
+                        add_mount_route(
+                            paths,
+                            format!("/{prefix}/{suffix}"),
+                            methods,
+                            description,
+                            mount,
+                            generic,
+                            false,
+                        );
+                    }
+                    add_list_query(
+                        paths,
+                        &format!("/{prefix}/detailed-metadata/{{path}}"),
+                        true,
                         false,
                     );
                 } else {
                     add_mount_route(
                         paths,
                         format!("/{prefix}/{{path}}"),
-                        &["get", "post", "put", "delete"],
+                        &["get", "post", "delete"],
                         "Read, write or delete a KV v1 value.",
                         mount,
                         generic,
@@ -411,12 +612,12 @@ fn add_actual_mount_routes(
                     ),
                     (
                         "encrypt/{name}",
-                        &["post", "put"][..],
+                        &["post"][..],
                         "Encrypt bounded plaintext with a Transit key.",
                     ),
                     (
                         "decrypt/{name}",
-                        &["post", "put"][..],
+                        &["post"][..],
                         "Decrypt bounded Transit ciphertext.",
                     ),
                 ] {
@@ -442,7 +643,7 @@ fn add_actual_mount_routes(
                 add_mount_route(
                     paths,
                     format!("/{prefix}/users/{{username}}"),
-                    &["get", "post", "put", "delete"],
+                    &["get", "post", "delete"],
                     "Manage a userpass principal.",
                     mount,
                     generic,
@@ -451,29 +652,53 @@ fn add_actual_mount_routes(
                 add_mount_route(
                     paths,
                     format!("/{prefix}/login/{{username}}"),
-                    &["post", "put"],
+                    &["post"],
                     "Authenticate a userpass principal.",
                     mount,
                     generic,
                     true,
                 );
+                for (suffix, methods, description) in [
+                    ("users", &["get"][..], "List userpass principals."),
+                    (
+                        "users/{username}/password",
+                        &["post"][..],
+                        "Change one userpass password.",
+                    ),
+                    (
+                        "users/{username}/policies",
+                        &["post"][..],
+                        "Change one userpass policy set.",
+                    ),
+                ] {
+                    add_mount_route(
+                        paths,
+                        format!("/{prefix}/{suffix}"),
+                        methods,
+                        description,
+                        mount,
+                        generic,
+                        true,
+                    );
+                }
+                add_list_query(paths, &format!("/{prefix}/users"), false, false);
             }
             Some("approle") => {
                 let prefix = openapi_mount_path(mount, generic, true);
                 for (suffix, methods, description) in [
                     (
                         "role/{role_name}",
-                        &["get", "post", "put", "delete"][..],
+                        &["get", "post", "delete"][..],
                         "Manage an AppRole role.",
                     ),
                     (
                         "role/{role_name}/custom-secret-id",
-                        &["post", "put"][..],
+                        &["post"][..],
                         "Issue a bounded operator-supplied AppRole SecretID.",
                     ),
                     (
                         "login",
-                        &["post", "put"][..],
+                        &["post"][..],
                         "Authenticate with AppRole credentials.",
                     ),
                 ] {
@@ -550,6 +775,7 @@ pub(super) fn handle(
         }));
     }
 
+    add_token_routes(&mut paths);
     add_actual_mount_routes(&mut paths, generic, auth_mounts, secret_mounts);
 
     Response::ok(json!({
