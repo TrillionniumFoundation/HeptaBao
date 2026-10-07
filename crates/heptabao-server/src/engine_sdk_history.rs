@@ -193,10 +193,16 @@ impl EngineState {
             .map(|registry| registry.projection())
             .transpose()
     }
-    pub(crate) fn sdk_namespace_metadata_materialized(&self, namespace: &str) -> bool {
+    /// Mount-owner metadata survives protected record views. Only actual lease
+    /// records or an authenticated, attached namespace graph prove materialization.
+    pub(crate) fn sdk_namespace_records_materialized(&self, namespace: &str) -> bool {
         self.namespaces
             .get(namespace)
-            .is_some_and(|state| !state.sdk_owners.is_empty() || !state.sdk_leases.is_empty())
+            .is_some_and(|state| !state.sdk_leases.is_empty())
+            || self
+                .records
+                .as_ref()
+                .is_some_and(|records| records.loaded_namespaces.contains(namespace))
     }
     pub(crate) fn sdk_materialized_namespace_records(
         &self,
@@ -304,6 +310,12 @@ impl EngineState {
             && let Some(entry) = registry.entries.values_mut().next()
         {
             entry.lease.registration = None;
+        }
+    }
+    #[cfg(test)]
+    pub(crate) fn sdk_history_fixture_clear_materialized_leases(&mut self, namespace: &str) {
+        if let Some(state) = self.namespaces.get_mut(namespace) {
+            state.sdk_leases.clear();
         }
     }
     pub(crate) fn sdk_history_contains_id(&self, namespace: &str, id: &str) -> bool {

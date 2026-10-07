@@ -774,7 +774,19 @@ fn terminal_fixture() -> TestResult<Fixture> {
     assert!(
         f.service
             .maintain_namespace_deletions(original)
-            .map_err(|_| "actual namespace terminal")?
+            .map_err(|error| {
+                format!(
+                    "actual namespace terminal status={} first_error={}",
+                    error.status,
+                    error
+                        .body
+                        .get("errors")
+                        .and_then(Value::as_array)
+                        .and_then(|errors| errors.first())
+                        .and_then(Value::as_str)
+                        .unwrap_or("non-string-error")
+                )
+            })?
     );
     Ok(f)
 }
@@ -1004,5 +1016,200 @@ fn namespace109_literal_r04_registry_declaration_rejects_refined_history_marker(
     let public_class = rejected.to_string();
     assert!(public_class.contains("unknown field"));
     assert!(public_class.contains("logical_history") || public_class.contains("source_selections"));
+    Ok(())
+}
+
+fn close_selected_namespace(f: &Fixture) -> TestResult<State> {
+    let source = f.service.state.as_ref().ok_or("selected source")?;
+    let key = f.service.barrier_key.as_ref().ok_or("actual root key")?;
+    let closed = f
+        .service
+        .namespace_runtime
+        .inherited_closed_candidate(source, NS, key)
+        .map_err(|_| "actual selected namespace closure")?;
+    assert!(closed.namespaces.inherited_owner(NS).is_some());
+    assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
+    assert!(!closed.engines.sdk_namespace_records_materialized(NS));
+    assert!(closed.validate_format().is_ok());
+    Ok(closed)
+}
+#[test]
+fn namespace109_actual_closed_hydration_keeps_jobs_records_and_terminal_lineage() -> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    let closed = close_selected_namespace(&f)?;
+    let saved = closed
+        .namespaces
+        .deletions
+        .clone()
+        .ok_or("actual closed jobs")?;
+    publish(&mut f.service, closed)?;
+    let before = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "closed identity")?;
+    let closed = f.service.state.clone().ok_or("closed")?;
+    let key = f.service.barrier_key.as_ref().ok_or("actual root key")?;
+    let hydrated = f
+        .service
+        .namespace_runtime
+        .restore_root_inherited(&closed, key, |_| Ok(()))
+        .map_err(|_| "authenticated full resource hydration")?;
+    assert!(f.service.namespace_runtime.is_loaded(NS));
+    assert!(hydrated.engines.sdk_namespace_records_materialized(NS));
+    assert!(hydrated.engines.sdk_lease(NS, &f.logical.id).is_some());
+    assert!(hydrated.namespaces.deletions.as_ref() == Some(&saved));
+    assert!(hydrated.validate_format().is_ok());
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "hydrated identity")?
+            == before
+    );
+    let mut absent = hydrated.clone();
+    absent
+        .engines
+        .sdk_history_fixture_clear_materialized_leases(NS);
+    assert!(absent.engines.sdk_namespace_records_materialized(NS));
+    assert!(
+        absent.validate_format().is_err(),
+        "a loaded graph cannot disguise selected record removal"
+    );
+    assert!(hydrated.engines.sdk_lease(NS, &f.logical.id).is_some());
+    f.service.state = Some(hydrated);
+    attempt_all(&mut f.service)?;
+    let mut next = f.service.state.clone().ok_or("hydrated Attempted")?;
+    for selected in keys(&next)? {
+        let job = next
+            .namespace_sdk_cleanup_record(&selected)
+            .map_err(|_| "selected job")?;
+        match job.kind() {
+            Kind::Logical => {
+                let mut lease = next
+                    .engines
+                    .sdk_lease(NS, job.lease_id())
+                    .ok_or("hydrated logical")?;
+                next.engines
+                    .sdk_storage_delete(NS, &lease.mount, &lease.backend, "record")?;
+                lease.revoke();
+                next.engines.store_sdk_lease(lease.clone())?;
+                next.finish_namespace_sdk_logical(&selected, &lease)
+                    .map_err(|_| "hydrated logical terminal")?;
+            }
+            Kind::Credential => {
+                let mut record = next
+                    .auth
+                    .sdk_credential_record(NS, job.lease_id())
+                    .ok_or("saved credential")?;
+                next.auth
+                    .sdk_auth_storage_delete(&record.backend, "record")?;
+                record.revoke();
+                next.auth.store_sdk_credential(record.clone())?;
+                next.finish_namespace_sdk_credential(&selected, &record)
+                    .map_err(|_| "credential terminal")?;
+            }
+        }
+    }
+    publish(&mut f.service, next)?;
+    let original = clock()?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        original.started() + Duration::from_secs(15),
+    );
+    assert!(
+        f.service
+            .maintain_namespace_deletions(original)
+            .map_err(|_| "hydrated namespace terminal")?
+    );
+    let terminal = f.service.state.as_ref().ok_or("terminal")?;
+    assert!(!terminal.namespace_exists(NS));
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
+    assert!(terminal.validate_format().is_ok());
+    let history = terminal
+        .engines
+        .sdk_logical_history_records()
+        .next()
+        .ok_or("real retained history")?;
+    assert!(history.phase == Phase::Revoked && history.registration == f.logical.registration);
+    assert!(history.issuer == f.logical.issuer && history.issued == f.logical.issued);
+    assert!(
+        terminal
+            .namespaces
+            .deletions
+            .as_ref()
+            .ok_or("sticky ledger")?
+            .sdk_cleanup()
+            .ok_or("sticky work")?
+            .records()
+            .is_empty()
+    );
+    Ok(())
+}
+#[test]
+fn namespace109_closed_empty_dual_mirrors_cannot_bypass_authenticated_resource_hydration()
+-> TestResult {
+    let mut f = fixture()?;
+    let mut source = f.service.state.clone().ok_or("source")?;
+    let mut credential = source
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("credential")?;
+    source
+        .auth
+        .sdk_auth_storage_delete(&credential.backend, "record")?;
+    credential.revoke();
+    source.auth.store_sdk_credential(credential)?;
+    publish(&mut f.service, source)?;
+    begin(&mut f)?;
+    assert_eq!(keys(f.service.state.as_ref().ok_or("selected")?)?.len(), 1);
+    let closed = close_selected_namespace(&f)?;
+    let key = f.service.barrier_key.as_ref().ok_or("actual root key")?;
+    let mut ledger = serde_json::to_value(closed.namespaces.deletions.as_ref().ok_or("ledger")?)?;
+    ledger["sdk_cleanup"]["records"] = json!({});
+    let mut orphan = closed.clone();
+    replace_both_ledgers(&mut orphan, ledger.clone())?;
+    assert!(
+        orphan.validate_format().is_err(),
+        "closed source selection rejects erased jobs"
+    );
+    ledger["sdk_cleanup"]["source_selections"][NS]["members"] = json!({});
+    let mut forged = closed.clone();
+    replace_both_ledgers(&mut forged, ledger)?;
+    assert!(Service::validate_snapshot_protected_floor(&closed, &forged).is_err());
+    let mut failed_runtime = namespace_runtime::Runtime::default();
+    assert!(
+        failed_runtime
+            .restore_root_inherited(&forged, key, |_| Ok(()))
+            .is_err(),
+        "actual authenticated graph reveals the unselected Pending logical resource"
+    );
+    assert!(!failed_runtime.is_loaded(NS));
+    let mut no_floor = closed.clone();
+    no_floor.namespaces.custody_frontiers.remove(NS);
+    assert!(
+        no_floor.validate_format().is_err(),
+        "opaque ownership requires its exact durable floor"
+    );
+    let binding = closed
+        .namespaces
+        .custody_binding(&closed.cluster_id, NS)
+        .map_err(|_| "closed Binding")?;
+    let mut missing_cells = closed.clone();
+    missing_cells
+        .engines
+        .retire_namespace_record_cells(&binding)?;
+    assert!(
+        failed_runtime
+            .restore_root_inherited(&missing_cells, key, |_| Ok(()))
+            .is_err()
+    );
+    assert!(!failed_runtime.is_loaded(NS));
+    let mut genuine_runtime = namespace_runtime::Runtime::default();
+    let hydrated = genuine_runtime
+        .restore_root_inherited(&closed, key, |_| Ok(()))
+        .map_err(|_| "genuine complete hydration")?;
+    assert!(genuine_runtime.is_loaded(NS));
+    assert!(hydrated.engines.sdk_lease(NS, &f.logical.id).is_some());
+    assert!(hydrated.validate_format().is_ok());
+    assert!(closed.validate_format().is_ok());
     Ok(())
 }

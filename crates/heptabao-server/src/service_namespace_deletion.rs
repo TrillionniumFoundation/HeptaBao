@@ -125,10 +125,13 @@ impl State {
             }
         }
         if let Some(work) = ledger.sdk_cleanup() {
+            // An opaque owner is a deferred authenticated hydration obligation,
+            // only after its exact Binding, descriptor and durable floor validate.
+            self.namespaces.validate(&self.cluster_id)?;
             for (path, binding) in ledger.pending() {
                 // Closed ciphertext remains subject to actual authenticated hydration.
                 // Membership is immutable; it never claims an opaque payload is empty.
-                let materialized = self.engines.sdk_namespace_metadata_materialized(path)
+                let materialized = self.engines.sdk_namespace_records_materialized(path)
                     || (self.namespaces.custody_owner(path).is_none()
                         && self.namespaces.inherited_owner(path).is_none());
                 if materialized {
