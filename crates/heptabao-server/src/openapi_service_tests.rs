@@ -127,12 +127,23 @@ fn openapi_anonymous_empty_view_and_authenticated_revocation_survive_restart()
         403
     );
 
+    assert!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/unrelated-reader",
+            &root_token,
+            json!({"policy":r#"path "secret/unrelated" { capabilities = ["read"] }"#}),
+        )
+        .status
+            < 300
+    );
     let issued = call(
         &mut service,
         "POST",
         "auth/token/create",
         &root_token,
-        json!({"policies":[],"no_default_policy":true}),
+        json!({"policies":["unrelated-reader"],"no_default_policy":true}),
     );
     assert_eq!(issued.status, 200);
     let no_acl = issued.body["auth"]["client_token"]
