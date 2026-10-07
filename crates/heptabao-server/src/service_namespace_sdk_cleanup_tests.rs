@@ -1543,9 +1543,46 @@ fn namespace109_owned_storage_rebase_keeps_current_unrelated_publications() -> T
         ..
     } = f;
     drop(service);
+    // The legacy fixture entry has no trusted incoming RequestClock. Retain
+    // its actual completion veto before reopening with a real bounded request.
+    let mut without_clock = directory.service()?;
+    let rejected = call(
+        &mut without_clock,
+        "POST",
+        "sys/unseal",
+        "",
+        json!({"key":key}),
+    );
+    let first_error = rejected.body["errors"][0].as_str().unwrap_or("");
+    let error_sha: String = crypto::digest(first_error.as_bytes())
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    eprintln!(
+        "NS_OWNED_REOPEN missing_trusted_clock status={} first_error_sha={} loaded={} precise={}",
+        rejected.status,
+        error_sha,
+        without_clock.state.is_some(),
+        without_clock
+            .state
+            .as_ref()
+            .is_some_and(State::has_token_api_precision_state)
+    );
+    assert_eq!(rejected.status, 503);
+    assert_eq!(
+        error_sha,
+        "453d8eec647abc2cf768e59e9a1cf605ac543ab23ef765abe5356b1b6192419f"
+    );
+    assert!(
+        without_clock
+            .state
+            .as_ref()
+            .is_some_and(State::has_token_api_precision_state)
+    );
+    drop(without_clock);
     let mut reopened = directory.service()?;
     assert_eq!(
-        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        owned_body(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
         200
     );
     assert_eq!(
