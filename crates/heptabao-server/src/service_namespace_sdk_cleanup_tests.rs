@@ -1647,14 +1647,14 @@ fn namespace109_owned_storage_rebase_rejects_actual_owned_cell_changes() -> Test
             .check(&current.auth, &f.credential.backend)
             .is_err()
     );
-    let engine_before = Zeroizing::new(crate::secret_serde::to_vec(
-        &*current.engines,
-        4 * 1024 * 1024,
-    )?);
-    let auth_before = Zeroizing::new(crate::secret_serde::to_vec(
-        &*current.auth,
-        4 * 1024 * 1024,
-    )?);
+    let engine_before = Zeroizing::new(
+        crate::secret_serde::to_vec(&*current.engines, 4 * 1024 * 1024)
+            .map_err(|_| "original Engine snapshot rejected")?,
+    );
+    let auth_before = Zeroizing::new(
+        crate::secret_serde::to_vec(&*current.auth, 4 * 1024 * 1024)
+            .map_err(|_| "original Auth snapshot rejected")?,
+    );
     assert!(
         logical_cut
             .merge(
@@ -1671,14 +1671,14 @@ fn namespace109_owned_storage_rebase_rejects_actual_owned_cell_changes() -> Test
             .merge(&mut current.auth, &original.auth, &f.credential.backend)
             .is_err()
     );
-    let engine_after = Zeroizing::new(crate::secret_serde::to_vec(
-        &*current.engines,
-        4 * 1024 * 1024,
-    )?);
-    let auth_after = Zeroizing::new(crate::secret_serde::to_vec(
-        &*current.auth,
-        4 * 1024 * 1024,
-    )?);
+    let engine_after = Zeroizing::new(
+        crate::secret_serde::to_vec(&*current.engines, 4 * 1024 * 1024)
+            .map_err(|_| "current Engine snapshot rejected")?,
+    );
+    let auth_after = Zeroizing::new(
+        crate::secret_serde::to_vec(&*current.auth, 4 * 1024 * 1024)
+            .map_err(|_| "current Auth snapshot rejected")?,
+    );
     assert!(&*engine_before == &*engine_after && &*auth_before == &*auth_after);
     Ok(())
 }
