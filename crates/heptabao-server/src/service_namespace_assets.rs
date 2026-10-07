@@ -27,6 +27,66 @@ pub(super) struct NamespaceAssets {
     owners: Vec<OwnedNamespace>,
 }
 
+/// An exclusive partial transaction. No State leaves this capsule before
+/// the actual keyed ciphertext owner and complete typed cells are installed.
+pub(super) struct NamespacePartition<'key> {
+    closed: State,
+    assets: NamespaceAssets,
+    cells: Cells,
+    binding: crate::namespace_custody::Binding,
+    key: &'key Key,
+}
+
+impl NamespacePartition<'_> {
+    pub(super) fn finish_with_owner(
+        mut self,
+        install: impl FnOnce(&mut State, &NamespaceAssets, &Cells) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        install(&mut self.closed, &self.assets, &self.cells)?;
+        self.closed.schema = self.closed.writer_schema();
+        let actual = self.binding.namespace();
+        if !self.key.matches_binding(&self.binding)
+            || self
+                .closed
+                .namespaces
+                .custody_binding(&self.closed.cluster_id, actual)?
+                != self.binding
+        {
+            return Err(failed());
+        }
+        self.closed.namespaces.validate(&self.closed.cluster_id)?;
+        let opened = match (
+            self.closed.namespaces.custody_owner(actual),
+            self.closed.namespaces.inherited_owner(actual),
+        ) {
+            (Some(owner), None) => owner.open_assets(&self.binding, self.key),
+            (None, Some(owner)) => owner.open_assets(&self.binding, self.key),
+            _ => return Err(failed()),
+        }
+        .map_err(|_| failed())?;
+        let expected = zeroize::Zeroizing::new(
+            owner_store::serialize_owner(&self.assets).map_err(state_serialization_error)?,
+        );
+        let actual_cells = self
+            .closed
+            .engines
+            .namespace_record_cells(&self.binding)
+            .map_err(|_| failed())?;
+        if opened.as_slice() != expected.as_slice() || actual_cells != self.cells {
+            return Err(failed());
+        }
+        let authenticated: NamespaceAssets =
+            serde_json::from_slice(&opened).map_err(|_| failed())?;
+        // Restore the actual MAC-opened graph into an exclusive verification view.
+        // No key slot, callback, route grant or durable publication is installed.
+        self.closed
+            .restore_namespace_assets(actual, self.key, authenticated, &actual_cells)?;
+        self.closed.schema = self.closed.writer_schema();
+        self.closed.validate_format()?;
+        Ok(self.closed)
+    }
+}
+
 fn failed() -> Response {
     Response::error(503, "namespace typed owner validation rejected")
 }
@@ -66,11 +126,12 @@ impl NamespaceAssets {
 }
 
 impl State {
-    pub(super) fn partition_namespace_assets(
+    pub(super) fn partition_namespace_assets<'key>(
         &self,
         actual: &str,
-        key: &Key,
-    ) -> Result<(Self, NamespaceAssets, Cells), Response> {
+        key: &'key Key,
+    ) -> Result<NamespacePartition<'key>, Response> {
+        self.validate_format()?;
         let binding = self.namespaces.custody_binding(&self.cluster_id, actual)?;
         if actual.is_empty() || !key.matches_binding(&binding) {
             return Err(failed());
@@ -113,10 +174,11 @@ impl State {
             });
         }
         let catalog = candidate.namespaces.detach_catalog(actual)?;
-        candidate.validate_format()?;
-        Ok((
-            candidate,
-            NamespaceAssets {
+        // Detachment is deliberately incomplete until the real opaque owner is
+        // installed. Only finish_with_owner can expose a fully validated State.
+        Ok(NamespacePartition {
+            closed: candidate,
+            assets: NamespaceAssets {
                 version: 1,
                 namespace: actual.to_owned(),
                 incarnation,
@@ -124,7 +186,9 @@ impl State {
                 owners,
             },
             cells,
-        ))
+            binding,
+            key,
+        })
     }
 
     pub(super) fn restore_namespace_assets(
@@ -363,9 +427,23 @@ mod tests {
             };
             (TypedOwner::Independent(created.descriptor), key)
         };
-        let (mut closed, assets, cells) = original
+        let partition = original
             .partition_namespace_assets("custody", &key)
             .map_err(|_| "partition")?;
+        let assets = partition.assets.clone();
+        let cells = partition.cells.clone();
+        let bytes = crate::secret_serde::to_vec(&assets, MAX_STATE_BYTES)
+            .map_err(|_| "typed assets serialization")?;
+        let protected = owner.replace(&binding, &key, &bytes)?;
+        let mut closed = partition
+            .finish_with_owner(|closed, _, cells| {
+                closed
+                    .engines
+                    .publish_namespace_record_cells(&binding, cells)
+                    .map_err(|_| failed())?;
+                protected.install(closed)
+            })
+            .map_err(|_| "actual encrypted owner closure")?;
         assert!(
             closed.namespace_exists("custody") && !closed.namespace_exists("custody/child"),
             "closed parent keeps its public owner and unloads actual child routing catalog"
@@ -388,17 +466,6 @@ mod tests {
                 && closed.auth.authenticate_read_only(&token, 100).is_ok(),
             "scoped token authority unloads while root credential stays root owned"
         );
-        let bytes = crate::secret_serde::to_vec(&assets, MAX_STATE_BYTES)
-            .map_err(|_| "typed assets serialization")?;
-        let protected = owner.replace(&binding, &key, &bytes)?;
-        closed
-            .engines
-            .publish_namespace_record_cells(&binding, &cells)
-            .map_err(|_| "actual cipher cell staging")?;
-        protected
-            .install(&mut closed)
-            .map_err(|_| "actual encrypted owner")?;
-        closed.schema = closed.writer_schema();
         assert!(
             closed.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA,
             "typed ciphertext and actual native Token API facts require reader floor 86"

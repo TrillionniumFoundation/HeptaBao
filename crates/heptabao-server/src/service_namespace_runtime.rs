@@ -567,27 +567,31 @@ impl Runtime {
         }
         let key = key.ok_or_else(unavailable)?;
         let verifiers = state.auth.namespace_token_verifiers(actual);
-        let (mut candidate, assets, cells) = state.partition_namespace_assets(actual, &key)?;
-        let bytes = zeroize::Zeroizing::new(
-            owner_store::serialize_owner(&assets).map_err(state_serialization_error)?,
-        );
-        let descriptor = created
-            .descriptor
-            .replace_assets(&binding, &key, &bytes)
-            .map_err(|_| unavailable())?;
-        candidate
-            .engines
-            .publish_namespace_record_cells(&binding, &cells)
-            .map_err(|_| unavailable())?;
-        candidate
-            .namespaces
-            .install_custody_owner(&candidate.cluster_id, actual, descriptor)?;
-        candidate.namespaces.set_sealed(actual, true)?;
-        candidate
-            .namespaces
-            .capture_closed_auth_routes(&binding, verifiers)?;
-        candidate.schema = candidate.writer_schema();
-        candidate.validate_format()?;
+        let candidate = state
+            .partition_namespace_assets(actual, &key)?
+            .finish_with_owner(|candidate, assets, cells| {
+                let bytes = zeroize::Zeroizing::new(
+                    owner_store::serialize_owner(assets).map_err(state_serialization_error)?,
+                );
+                let descriptor = created
+                    .descriptor
+                    .replace_assets(&binding, &key, &bytes)
+                    .map_err(|_| unavailable())?;
+                candidate
+                    .engines
+                    .publish_namespace_record_cells(&binding, cells)
+                    .map_err(|_| unavailable())?;
+                candidate.namespaces.install_custody_owner(
+                    &candidate.cluster_id,
+                    actual,
+                    descriptor,
+                )?;
+                candidate.namespaces.set_sealed(actual, true)?;
+                candidate
+                    .namespaces
+                    .capture_closed_auth_routes(&binding, verifiers)?;
+                Ok(())
+            })?;
         request_live()?;
         Ok(Fresh {
             candidate,
@@ -622,30 +626,33 @@ impl Runtime {
                     &binding,
                     routed.auth.namespace_token_verifiers(&path),
                 )?;
-                let (mut next, assets, cells) = routed.partition_namespace_assets(&path, key)?;
-                let bytes =
-                    owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
-                let previous = descriptor
-                    .open_assets(&binding, key)
-                    .map_err(|_| unavailable())?;
-                let updated = if previous.as_slice() == bytes.as_slice() {
-                    descriptor.clone()
-                } else {
-                    descriptor
-                        .replace_assets(&binding, key, &bytes)
-                        .map_err(|_| unavailable())?
-                };
-                let closed = updated
-                    .advance_seal_frontier(&binding, key)
-                    .map_err(|_| unavailable())?;
-                next.engines
-                    .publish_namespace_record_cells(&binding, &cells)
-                    .map_err(|_| unavailable())?;
-                closed.install(&mut next, &path)?;
-                next.namespace_leases
-                    .0
-                    .retain(|candidate| !Arc::ptr_eq(&candidate.0, &lease.0));
-                Ok(next)
+                routed
+                    .partition_namespace_assets(&path, key)?
+                    .finish_with_owner(|next, assets, cells| {
+                        let bytes = owner_store::serialize_owner(assets)
+                            .map_err(state_serialization_error)?;
+                        let previous = descriptor
+                            .open_assets(&binding, key)
+                            .map_err(|_| unavailable())?;
+                        let updated = if previous.as_slice() == bytes.as_slice() {
+                            descriptor.clone()
+                        } else {
+                            descriptor
+                                .replace_assets(&binding, key, &bytes)
+                                .map_err(|_| unavailable())?
+                        };
+                        let closed = updated
+                            .advance_seal_frontier(&binding, key)
+                            .map_err(|_| unavailable())?;
+                        next.engines
+                            .publish_namespace_record_cells(&binding, cells)
+                            .map_err(|_| unavailable())?;
+                        closed.install(next, &path)?;
+                        next.namespace_leases
+                            .0
+                            .retain(|candidate| !Arc::ptr_eq(&candidate.0, &lease.0));
+                        Ok(())
+                    })
             })?;
         }
         self.prepare(&mut candidate)?;
@@ -697,21 +704,24 @@ impl Runtime {
         // detached before any publication or runtime grant is possible.
         candidate.namespaces.set_sealed(actual, false)?;
         let verifiers = candidate.auth.namespace_token_verifiers(actual);
-        let (mut closed, assets, cells) = candidate.partition_namespace_assets(actual, &key)?;
-        let bytes = owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
-        let descriptor = owner
-            .replace_assets(&binding, &key, &bytes)
-            .map_err(|_| unavailable())?;
-        closed
-            .engines
-            .publish_namespace_record_cells(&binding, &cells)
-            .map_err(|_| unavailable())?;
-        Owner::Inherited(descriptor).install(&mut closed, actual)?;
-        closed
-            .namespaces
-            .capture_closed_auth_routes(&binding, verifiers)?;
-        closed.schema = closed.writer_schema();
-        closed.validate_format()?;
+        let closed = candidate
+            .partition_namespace_assets(actual, &key)?
+            .finish_with_owner(|closed, assets, cells| {
+                let bytes =
+                    owner_store::serialize_owner(assets).map_err(state_serialization_error)?;
+                let descriptor = owner
+                    .replace_assets(&binding, &key, &bytes)
+                    .map_err(|_| unavailable())?;
+                closed
+                    .engines
+                    .publish_namespace_record_cells(&binding, cells)
+                    .map_err(|_| unavailable())?;
+                Owner::Inherited(descriptor).install(closed, actual)?;
+                closed
+                    .namespaces
+                    .capture_closed_auth_routes(&binding, verifiers)?;
+                Ok(())
+            })?;
         request_live()?;
         Ok(closed)
     }
@@ -869,34 +879,38 @@ impl Runtime {
     }
 
     fn close_inherited_parcel(&self, parcel: &ClosedInheritedParcel) -> Result<State, Response> {
-        let (mut closed, assets, cells) = parcel
+        let mut closed = parcel
             .private
-            .partition_namespace_assets(&parcel.actual, &parcel.key)?;
-        let bytes = owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
-        let previous = parcel
-            .owner
-            .open_assets(&parcel.binding, &parcel.key)
-            .map_err(|_| unavailable())?;
-        let updated = if previous.as_slice() == bytes.as_slice() {
-            parcel.owner.clone()
-        } else {
-            parcel
-                .owner
-                .replace_assets(&parcel.binding, &parcel.key, &bytes)
-                .map_err(|_| unavailable())?
-        };
-        // Cleanup changes only generation. The manual closure and actual
-        // parent stay closed; no loaded slot or new lease is manufactured.
-        if updated.seal_frontier() != parcel.owner.seal_frontier()
-            || updated.parent() != parcel.owner.parent()
-        {
-            return Err(unavailable());
-        }
-        closed
-            .engines
-            .publish_namespace_record_cells(&parcel.binding, &cells)
-            .map_err(|_| unavailable())?;
-        Owner::Inherited(updated).install(&mut closed, &parcel.actual)?;
+            .partition_namespace_assets(&parcel.actual, &parcel.key)?
+            .finish_with_owner(|closed, assets, cells| {
+                let bytes =
+                    owner_store::serialize_owner(assets).map_err(state_serialization_error)?;
+                let previous = parcel
+                    .owner
+                    .open_assets(&parcel.binding, &parcel.key)
+                    .map_err(|_| unavailable())?;
+                let updated = if previous.as_slice() == bytes.as_slice() {
+                    parcel.owner.clone()
+                } else {
+                    parcel
+                        .owner
+                        .replace_assets(&parcel.binding, &parcel.key, &bytes)
+                        .map_err(|_| unavailable())?
+                };
+                // Cleanup changes only generation. The original manual closure
+                // and actual parent stay closed; no slot or lease is manufactured.
+                if updated.seal_frontier() != parcel.owner.seal_frontier()
+                    || updated.parent() != parcel.owner.parent()
+                {
+                    return Err(unavailable());
+                }
+                closed
+                    .engines
+                    .publish_namespace_record_cells(&parcel.binding, cells)
+                    .map_err(|_| unavailable())?;
+                Owner::Inherited(updated).install(closed, &parcel.actual)?;
+                Ok(())
+            })?;
         self.prepare(&mut closed)?;
         closed.validate_format()?;
         request_live()?;
@@ -1153,27 +1167,27 @@ impl Runtime {
                 .custody_binding(&protected.cluster_id, actual)?;
             let lease = loaded(actual).ok_or_else(unavailable)?;
             protected = lease.with_key(&descriptor, |key| {
-                let (mut next, assets, cells) =
-                    protected.partition_namespace_assets(actual, key)?;
-                let bytes =
-                    owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
-                let previous = descriptor
-                    .open_assets(&binding, key)
-                    .map_err(|_| unavailable())?;
-                let next_descriptor = if previous.as_slice() == bytes.as_slice() {
-                    descriptor.clone()
-                } else {
-                    descriptor
-                        .replace_assets(&binding, key, &bytes)
-                        .map_err(|_| unavailable())?
-                };
-                next.engines
-                    .publish_namespace_record_cells(&binding, &cells)
-                    .map_err(|_| unavailable())?;
-                next_descriptor.install(&mut next, actual)?;
-                next.schema = next.writer_schema();
-                next.validate_format()?;
-                Ok(next)
+                protected
+                    .partition_namespace_assets(actual, key)?
+                    .finish_with_owner(|next, assets, cells| {
+                        let bytes = owner_store::serialize_owner(assets)
+                            .map_err(state_serialization_error)?;
+                        let previous = descriptor
+                            .open_assets(&binding, key)
+                            .map_err(|_| unavailable())?;
+                        let next_descriptor = if previous.as_slice() == bytes.as_slice() {
+                            descriptor.clone()
+                        } else {
+                            descriptor
+                                .replace_assets(&binding, key, &bytes)
+                                .map_err(|_| unavailable())?
+                        };
+                        next.engines
+                            .publish_namespace_record_cells(&binding, cells)
+                            .map_err(|_| unavailable())?;
+                        next_descriptor.install(next, actual)?;
+                        Ok(())
+                    })
             })?;
         }
         protected.namespace_leases = Leases::default();
@@ -1399,24 +1413,27 @@ mod tests {
             .map_err(|_| "binding")?;
         let created = Descriptor::create(binding.clone(), 1, 1, b"{}")?;
         let key = key(&created.descriptor, &created)?;
-        let (mut closed, assets, cells) = state
+        let mut closed = state
             .partition_namespace_assets(actual, &key)
-            .map_err(|_| "partition")?;
-        let bytes = owner_store::serialize_owner(&assets)?;
-        let descriptor = created.descriptor.replace_assets(&binding, &key, &bytes)?;
-        closed
-            .engines
-            .publish_namespace_record_cells(&binding, &cells)
-            .map_err(|_| "cipher cells")?;
-        closed
-            .namespaces
-            .install_custody_owner(&closed.cluster_id, actual, descriptor)
-            .map_err(|_| "descriptor")?;
-        closed
-            .namespaces
-            .set_sealed(actual, true)
-            .map_err(|_| "closed routing owner")?;
-        closed.schema = closed.writer_schema();
+            .map_err(|_| "partition")?
+            .finish_with_owner(|closed, assets, cells| {
+                let bytes =
+                    owner_store::serialize_owner(assets).map_err(state_serialization_error)?;
+                let descriptor = created
+                    .descriptor
+                    .replace_assets(&binding, &key, &bytes)
+                    .map_err(|_| unavailable())?;
+                closed
+                    .engines
+                    .publish_namespace_record_cells(&binding, cells)
+                    .map_err(|_| unavailable())?;
+                closed
+                    .namespaces
+                    .install_custody_owner(&closed.cluster_id, actual, descriptor)?;
+                closed.namespaces.set_sealed(actual, true)?;
+                Ok(())
+            })
+            .map_err(|_| "actual owner closure")?;
         service
             .commit_state(&mut closed)
             .map_err(|_| "actual protected publication")?;
