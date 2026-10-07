@@ -105,10 +105,11 @@ const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
 const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
 const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
+const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = RAW_WRAPPED_REPLY_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = RAW_PKI_HTTP_REPLY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -142,6 +143,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
                 | PKI_RSA8192_STATE_SCHEMA
                 | RAW_WRAPPED_REPLY_STATE_SCHEMA
+                | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;

@@ -393,14 +393,14 @@ fn raw110_pki_unwrap(
             .as_ref()
             .ok_or("PKI unwrap origin")?
             .raw_bytes(&response.body)?
-            .ok_or("PKI stored JSON")?
+            .ok_or("PKI stored raw HTTP")?
             .to_vec(),
     );
     Ok((response, bytes))
 }
 
 #[test]
-fn raw110_actual_pki_certificate_chain_issuer_and_crl_preserve_special_data_and_original_id()
+fn raw110_actual_pki_certificate_chain_issuer_and_crl_preserve_raw_http_and_private_original_id()
 -> TestResult {
     use base64::Engine as _;
     let directory = Root::new();
@@ -465,24 +465,28 @@ fn raw110_actual_pki_certificate_chain_issuer_and_crl_preserve_special_data_and_
         let attempt = [0x41 + u8::try_from(index)?; 16];
         let bearer = raw110_pki_issue(&mut service, &admin, "GET", path, json!({}), attempt)?;
         let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
-        let mut envelope: Value = serde_json::from_slice(&bytes)?;
-        assert_eq!(envelope.as_object().ok_or("envelope")?.len(), 8);
+        let origin = response
+            .unwrapped_json
+            .as_ref()
+            .ok_or("actual PKI origin")?;
         assert_eq!(
-            envelope["request_id"],
-            crate::crypto::uuid_from_bytes(&attempt)
+            origin.raw_http_transport(&response.body)?,
+            Some((200, mime))
         );
         assert_eq!(
-            envelope["data"],
+            response.body["data"],
             json!({
                 "http_content_type":mime,"http_raw_body":encoded,"http_status_code":200
             })
         );
-        assert_eq!(envelope["auth"], Value::Null);
-        assert_eq!(envelope["wrap_info"], Value::Null);
-        assert_eq!(response.body["data"], envelope["data"]);
-        assert!(bytes.starts_with(b"{\"request_id\":"));
-        assert!(!bytes.ends_with(b"\n"));
-        assert_ne!(bytes.as_slice(), actual.as_slice());
+        assert_eq!(bytes.as_slice(), actual.as_slice());
+        let mut owner = serde_json::to_value(origin.stored_reply().ok_or("stored PKI")?)?;
+        assert_eq!(
+            owner["request_id"],
+            crate::crypto::uuid_from_bytes(&attempt)
+        );
+        assert_eq!(owner["kind"]["pki-raw-http-v1"]["status"], 200);
+        erase_json(&mut owner);
         assert_eq!(
             call(
                 &mut service,
@@ -494,7 +498,7 @@ fn raw110_actual_pki_certificate_chain_issuer_and_crl_preserve_special_data_and_
             .status,
             400
         );
-        erase_json(&mut envelope);
+        raw110_assert_http_terminal(response, 200, mime, &actual)?;
     }
     Ok(())
 }
@@ -511,19 +515,27 @@ fn raw110_actual_rootless_pki_crl_preserves_nil_body_204_and_historical_none() -
         let actual = call(&mut service, "GET", path, &admin, json!({}));
         assert_eq!(actual.status, 204);
         let bearer = raw110_pki_issue(&mut service, &admin, "GET", path, json!({}), attempt)?;
-        let (_, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
-        let mut envelope: Value = serde_json::from_slice(&bytes)?;
+        let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
+        assert!(bytes.is_empty());
+        let origin = response.unwrapped_json.as_ref().ok_or("rootless origin")?;
         assert_eq!(
-            envelope["data"],
+            origin.raw_http_transport(&response.body)?,
+            Some((204, mime))
+        );
+        assert_eq!(
+            response.body["data"],
             json!({
                 "http_content_type":mime,"http_raw_body":null,"http_status_code":204
             })
         );
+        let mut owner = serde_json::to_value(origin.stored_reply().ok_or("nil stored PKI")?)?;
         assert_eq!(
-            envelope["request_id"],
+            owner["request_id"],
             crate::crypto::uuid_from_bytes(&attempt)
         );
-        erase_json(&mut envelope);
+        assert_eq!(owner["kind"]["pki-raw-http-v1"]["nil_body"], true);
+        erase_json(&mut owner);
+        raw110_assert_http_terminal(response, 204, mime, &[])?;
     }
     // A real legacy producer remains None even for the newly supported raw route.
     let mut request = ServiceRequest::new("GET", "rawpki/crl", "", &admin, json!({}));
@@ -571,19 +583,23 @@ fn raw110_actual_ocsp_malformed_reply_wraps_protocol_data_without_granting_arbit
         body,
         [0x81; 16],
     )?;
-    let (_, stored) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
-    let mut envelope: Value = serde_json::from_slice(&stored)?;
+    let (response, stored) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
+    assert_eq!(stored.as_slice(), bytes.as_slice());
+    let origin = response
+        .unwrapped_json
+        .as_ref()
+        .ok_or("OCSP protocol origin")?;
     assert_eq!(
-        envelope["data"],
-        json!({
-            "http_content_type":"application/ocsp-response","http_raw_body":"MAMKAQE=","http_status_code":400
-        })
+        origin.raw_http_transport(&response.body)?,
+        Some((400, "application/ocsp-response"))
     );
+    let mut owner = serde_json::to_value(origin.stored_reply().ok_or("stored OCSP")?)?;
     assert_eq!(
-        envelope["request_id"],
+        owner["request_id"],
         crate::crypto::uuid_from_bytes(&[0x81; 16])
     );
-    erase_json(&mut envelope);
+    erase_json(&mut owner);
+    raw110_assert_http_terminal(response, 400, "application/ocsp-response", &bytes)?;
     let mut request = ServiceRequest::new("GET", "rawpki/unknown", "", &admin, json!({}));
     request.wrap_ttl_seconds = Some(60);
     let error = service.handle_request_at(request, 100);
@@ -618,6 +634,12 @@ fn raw110_actual_pki_rewrap_and_encrypted_reopen_keep_original_complete_reply() 
         original_wrapper["wrapping"]["stored_reply"]["bytes"].clone(),
     )?);
     let original_digest = original_wrapper["wrapping"]["stored_reply"]["digest"].clone();
+    let mut original_metadata = original_wrapper["wrapping"]["stored_reply"].clone();
+    assert_eq!(original_metadata["kind"]["pki-raw-http-v1"]["status"], 200);
+    assert_eq!(
+        original_metadata["request_id"],
+        crate::crypto::uuid_from_bytes(&[0x91; 16])
+    );
     erase_json(&mut original_owner);
     let rewrapped = {
         let _later = crate::auth::IngressReplyScope::listener(&[0x92; 16]);
@@ -653,6 +675,8 @@ fn raw110_actual_pki_rewrap_and_encrypted_reopen_keep_original_complete_reply() 
         transferred["wrapping"]["stored_reply"]["digest"],
         original_digest
     );
+    assert_eq!(transferred["wrapping"]["stored_reply"], original_metadata);
+    erase_json(&mut original_metadata);
     erase_json(&mut transferred_owner);
     assert_eq!(
         call(
@@ -671,24 +695,24 @@ fn raw110_actual_pki_rewrap_and_encrypted_reopen_keep_original_complete_reply() 
         call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
         200
     );
-    let (_, bytes) = raw110_pki_unwrap(&mut service, &admin, &next)?;
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &next)?;
     assert_eq!(bytes.as_slice(), original_stored.as_slice());
-    let mut envelope: Value = serde_json::from_slice(&bytes)?;
+    assert!(openssl::x509::X509::from_der(&bytes).is_ok());
+    let origin = response
+        .unwrapped_json
+        .as_ref()
+        .ok_or("reopened PKI origin")?;
     assert_eq!(
-        envelope["request_id"],
+        origin.raw_http_transport(&response.body)?,
+        Some((200, "application/pkix-cert"))
+    );
+    let mut owner = serde_json::to_value(origin.stored_reply().ok_or("reopened stored PKI")?)?;
+    assert_eq!(
+        owner["request_id"],
         crate::crypto::uuid_from_bytes(&[0x91; 16])
     );
-    assert_eq!(
-        envelope["data"]["http_content_type"],
-        "application/pkix-cert"
-    );
-    assert_eq!(envelope["data"]["http_status_code"], 200);
-    assert!(
-        envelope["data"]["http_raw_body"]
-            .as_str()
-            .is_some_and(|s| !s.is_empty())
-    );
-    erase_json(&mut envelope);
+    erase_json(&mut owner);
+    raw110_assert_http_terminal(response, 200, "application/pkix-cert", &bytes)?;
     Ok(())
 }
 #[test]
@@ -839,29 +863,325 @@ fn raw110_actual_ocsp_signed_success_retains_protocol_body_inside_complete_json(
         body,
         [0xa8; 16],
     )?;
-    let (_, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
-    let mut envelope: Value = serde_json::from_slice(&bytes)?;
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
+    let origin = response
+        .unwrapped_json
+        .as_ref()
+        .ok_or("signed OCSP origin")?;
     assert_eq!(
-        envelope["request_id"],
+        origin.raw_http_transport(&response.body)?,
+        Some((200, "application/ocsp-response"))
+    );
+    let mut owner = serde_json::to_value(origin.stored_reply().ok_or("stored signed OCSP")?)?;
+    assert_eq!(
+        owner["request_id"],
         crate::crypto::uuid_from_bytes(&[0xa8; 16])
     );
-    assert_eq!(envelope["data"]["http_status_code"], 200);
-    assert_eq!(
-        envelope["data"]["http_content_type"],
-        "application/ocsp-response"
-    );
-    let wrapped_raw = base64::engine::general_purpose::STANDARD.decode(
-        envelope["data"]["http_raw_body"]
-            .as_str()
-            .ok_or("stored OCSP bytes")?,
-    )?;
-    let wrapped_parsed = openssl::ocsp::OcspResponse::from_der(&wrapped_raw)?;
+    erase_json(&mut owner);
+    let wrapped_parsed = openssl::ocsp::OcspResponse::from_der(&bytes)?;
     assert_eq!(
         wrapped_parsed.status(),
         openssl::ocsp::OcspResponseStatus::SUCCESSFUL
     );
     wrapped_parsed.basic()?;
-    assert_eq!(envelope.as_object().ok_or("complete envelope")?.len(), 8);
+    raw110_assert_http_terminal(response, 200, "application/ocsp-response", &bytes)?;
+    Ok(())
+}
+
+fn raw110_assert_http_terminal(
+    response: Response,
+    status: u16,
+    mime: &str,
+    expected: &[u8],
+) -> TestResult {
+    let mut wire = Zeroizing::new(Vec::new());
+    crate::http::write_raw110_reply_for_test(&mut *wire, response, false)?;
+    let split = wire
+        .windows(4)
+        .position(|b| b == b"\r\n\r\n")
+        .ok_or("HTTP boundary")?;
+    let header = std::str::from_utf8(&wire[..split])?;
+    assert!(header.starts_with(&format!("HTTP/1.1 {status} ")));
+    assert!(
+        header
+            .lines()
+            .any(|line| line == format!("Content-Type: {mime}"))
+    );
+    assert_eq!(&wire[split + 4..], expected);
+    Ok(())
+}
+
+#[test]
+fn raw112_actual_sticky_floor_consume_retire_reopen_and_snapshot_cow_veto() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    raw110_pki_install(&mut service, &admin, true)?;
+    let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let mut old_state = service.state.as_ref().ok_or("old state")?.clone();
+    let old_plan = service
+        .prepare_record_plan(&mut old_state)
+        .map_err(|_| "old COW plan")?;
+    let bearer = raw110_pki_issue(
+        &mut service,
+        &admin,
+        "GET",
+        "rawpki/ca",
+        json!({}),
+        [0xd1; 16],
+    )?;
+    let live = service.state.as_ref().ok_or("live")?.clone();
+    assert_eq!(live.schema, RAW_PKI_HTTP_REPLY_STATE_SCHEMA);
+    assert_eq!(live.writer_schema(), RAW_PKI_HTTP_REPLY_STATE_SCHEMA);
+    assert!(live.auth.has_pki_raw_http_reply_state());
+    assert!(supported_reader_schema(RAW_PKI_HTTP_REPLY_STATE_SCHEMA));
+    assert!(!supported_reader_schema(111));
+    let encoded = Zeroizing::new(serde_json::to_vec(&live.auth)?);
+    for schema in [108, 110, 111] {
+        assert!(AuthState::predecode_raw_reply_owner(&encoded, schema).is_err());
+        let mut lower = live.clone();
+        lower.schema = schema;
+        assert!(lower.validate_format().is_err());
+        assert!(lower.validate_publication_schema(Some(&live)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&live, &lower).is_err());
+    }
+    assert!(AuthState::predecode_raw_reply_owner(&encoded, 112).is_ok());
+    // This is the literal known R13 bool decoder, not a new-reader mock.
+    #[derive(Deserialize)]
+    struct R13Floor {
+        #[serde(default)]
+        raw_wrapped_reply_floor: bool,
+    }
+    assert!(serde_json::from_slice::<R13Floor>(&encoded).is_err());
+    assert!(
+        serde_json::from_value::<R13Floor>(json!({"raw_wrapped_reply_floor":true}))?
+            .raw_wrapped_reply_floor
+    );
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
+    raw110_assert_http_terminal(response, 200, "application/pkix-cert", &bytes)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &admin,
+            json!({"token":bearer.as_str()})
+        )
+        .status,
+        204
+    );
+    let retired = service.state.as_ref().ok_or("retired")?.clone();
+    assert!(retired.auth.has_pki_raw_http_reply_state());
+    assert_eq!(retired.schema, 112);
+    let mut owner = serde_json::to_value(&retired.auth)?;
+    assert_eq!(owner["raw_wrapped_reply_floor"], "pki-raw-http-v1");
+    assert!(serde_json::from_value::<R13Floor>(owner.clone()).is_err());
+    for marker in [None, Some(json!(false)), Some(json!(true))] {
+        let mut changed = owner.clone();
+        let fields = changed.as_object_mut().ok_or("owner")?;
+        match marker {
+            None => {
+                fields.remove("raw_wrapped_reply_floor");
+            }
+            Some(value) => {
+                fields.insert("raw_wrapped_reply_floor".into(), value);
+            }
+        }
+        let mut stripped = retired.clone();
+        stripped.auth = serde_json::from_value(changed)?;
+        assert!(stripped.validate_format().is_err());
+        assert!(
+            stripped
+                .validate_publication_schema(Some(&retired))
+                .is_err()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&retired, &stripped).is_err());
+    }
+    erase_json(&mut owner);
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    assert!(service.commit_record_plan(&retired, old_plan).is_err());
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    // A labelled empty successor cannot substitute the genuine permanent fact.
+    let mut empty = old_state;
+    empty.schema = 112;
+    assert!(!empty.auth.has_pki_raw_http_reply_state());
+    assert!(empty.validate_format().is_err());
+    assert!(empty.validate_publication_schema(Some(&retired)).is_err());
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let reopened = service.state.as_ref().ok_or("reopened")?;
+    assert_eq!(reopened.schema, 112);
+    assert!(reopened.auth.has_pki_raw_http_reply_state());
+    Ok(())
+}
+
+#[test]
+fn raw112_actual_raw_kind_metadata_veto_and_client_special_fields_remain_json() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    raw110_pki_install(&mut service, &admin, true)?;
+    let bearer = raw110_pki_issue(
+        &mut service,
+        &admin,
+        "GET",
+        "rawpki/ca",
+        json!({}),
+        [0xd2; 16],
+    )?;
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &bearer)?;
+    let origin = response.unwrapped_json.as_ref().ok_or("origin")?;
+    let stored = origin.stored_reply().ok_or("stored")?;
+    let mut original = serde_json::to_value(stored)?;
+    for (name, value) in [
+        ("media_type", json!("application/pkix-crl")),
+        ("media_type", json!("application/pkix-cert\r\nInjected: no")),
+        (
+            "kind",
+            json!({"pki-raw-http-v1":{"status":400,"nil_body":false}}),
+        ),
+        (
+            "kind",
+            json!({"pki-raw-http-v1":{"status":200,"nil_body":true}}),
+        ),
+        ("kind", json!("json-envelope-v1")),
+        ("byte_count", json!(1)),
+    ] {
+        let mut altered = original.clone();
+        altered[name] = value;
+        let decoded: crate::auth::StoredWrappedReply = serde_json::from_value(altered)?;
+        assert!(decoded.validate(&response.body).is_err());
+    }
+    let mut unknown = original.clone();
+    unknown["kind"] = json!({"pki-raw-http-v2":{"status":200}});
+    assert!(serde_json::from_value::<crate::auth::StoredWrappedReply>(unknown).is_err());
+    let mut extra = original.clone();
+    extra["kind"]["pki-raw-http-v1"]["untrusted"] = json!(true);
+    assert!(serde_json::from_value::<crate::auth::StoredWrappedReply>(extra).is_err());
+    erase_json(&mut original);
+    raw110_assert_http_terminal(response, 200, "application/pkix-cert", &bytes)?;
+    // Anti-forgery of private producer custody only. Broader primary
+    // special-Data projection compatibility remains an independent OPEN scope.
+    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd3; 16]);
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        &admin,
+        json!({"http_content_type":"application/pkix-cert","http_raw_body":"MAMKAQE=","http_status_code":200,"kind":"pki-raw-http-v1"}),
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let issued = service.handle_request_at(request, 100);
+    assert_eq!(issued.status, 200);
+    let token = Zeroizing::new(
+        issued.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("client wrapper")?
+            .to_owned(),
+    );
+    let response = call(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &admin,
+        json!({"token":token.as_str()}),
+    );
+    let origin = response.unwrapped_json.as_ref().ok_or("client origin")?;
+    assert!(origin.raw_http_transport(&response.body)?.is_none());
+    let raw = origin.raw_bytes(&response.body)?.ok_or("client JSON")?;
+    let mut envelope: Value = serde_json::from_slice(raw)?;
+    assert_eq!(envelope.as_object().ok_or("full JSON")?.len(), 8);
+    assert_eq!(envelope["data"]["kind"], "pki-raw-http-v1");
     erase_json(&mut envelope);
+    Ok(())
+}
+
+#[test]
+fn raw112_actual_pki_q7_oldq6_refuses_before_token_consume_and_s5_raw_custody() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    raw110_pki_install(&mut service, &admin, true)?;
+    let token = raw110_pki_issue(
+        &mut service,
+        &admin,
+        "GET",
+        "rawpki/ca",
+        json!({}),
+        [0xd4; 16],
+    )?;
+    let body = json!({"token":token.as_str()});
+    let context = crate::ha_forward::ForwardContext {
+        method: "POST",
+        path: "sys/wrapping/unwrap",
+        namespace: "",
+        token: &admin,
+        body: &body,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+        caller_deadline: None,
+    };
+    let frame = crate::ha_forward::encode_completed_index_request_for_cluster(
+        "pki112-ha",
+        (1, 2),
+        &context,
+        Some([5; 32]),
+    )?;
+    assert!(frame.starts_with(b"HBFQ7"));
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for magic in [b"HBFQ5", b"HBFQ6"] {
+        let mut old = frame.clone();
+        old[..5].copy_from_slice(magic);
+        assert!(crate::ha_forward::decode_request_for_cluster(&old, "pki112-ha").is_err());
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .is_wrapping_token(&token)
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &token)?;
+    let frame = crate::ha_forward::encode_completed_unwrap_response_for_cluster(
+        "pki112-ha",
+        2,
+        1,
+        &response,
+        None,
+    )?;
+    assert!(frame.starts_with(b"HBFS5"));
+    let received = crate::ha_forward::decode_unwrap_response_for_cluster(&frame, "pki112-ha")?;
+    let stored = received
+        .raw_wrapped_reply
+        .as_ref()
+        .ok_or("received raw custody")?;
+    assert_eq!(stored.bytes(&received.body)?, bytes.as_slice());
+    assert_eq!(
+        stored.raw_http_transport(&received.body)?,
+        Some((200, "application/pkix-cert"))
+    );
+    assert_eq!(
+        crate::ha_forward_completion::response_digest(&response)?,
+        crate::ha_forward_completion::wire_response_digest(&received)?
+    );
+    for magic in [b"HBFS3", b"HBFS4"] {
+        let mut old = frame.clone();
+        old[..5].copy_from_slice(magic);
+        assert!(crate::ha_forward::decode_unwrap_response_for_cluster(&old, "pki112-ha").is_err());
+    }
     Ok(())
 }

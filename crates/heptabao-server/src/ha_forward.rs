@@ -12,11 +12,11 @@ const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
 // Older frames and their strict decoding remain unchanged; no mutation replay.
 const INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFQ4";
 const INDEX_RESPONSE_MAGIC: &[u8; 5] = b"HBFS2";
-// Q6/S4 negotiates complete original bytes and ingress custody. Q5/S3 only
+// Q7/S5 negotiates complete original bytes and ingress custody. Q5/S3 only
 // represented the older newline unit and cannot authorize full reply transfer.
 const LEGACY_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ5";
-const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ6";
-const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS4";
+const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ7";
+const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS5";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
@@ -511,7 +511,7 @@ pub(crate) fn encode_completed_index_request_for_cluster(
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     if encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC) {
-        return Err("HA original stored reply requires Q6 before consumption".into());
+        return Err("HA original stored reply requires Q7 before consumption".into());
     }
     let unwrap_response = encoded.starts_with(UNWRAP_REQUEST_MAGIC);
     let index_response = encoded.starts_with(INDEX_REQUEST_MAGIC) || unwrap_response;
@@ -1017,7 +1017,7 @@ fn erase_json(value: &mut Value) {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn raw110_q6_preconsume_and_s4_complete_payload_digest()
+    fn raw110_q7_preconsume_and_s5_complete_payload_digest()
     -> Result<(), Box<dyn std::error::Error>> {
         let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
         let admin = auth.authenticate(&root, 100)?;
@@ -1050,10 +1050,13 @@ mod tests {
             &context,
             Some([5; 32]),
         )?;
-        assert!(request.starts_with(b"HBFQ6"));
-        let mut downgraded = request.clone();
-        downgraded[..5].copy_from_slice(b"HBFQ5");
-        assert!(decode_request_for_cluster(&downgraded, "raw110-ha").is_err());
+        assert!(request.starts_with(b"HBFQ7"));
+        for old_magic in [b"HBFQ5", b"HBFQ6"] {
+            let mut downgraded = request.clone();
+            downgraded[..5].copy_from_slice(old_magic);
+            assert!(decode_request_for_cluster(&downgraded, "raw110-ha").is_err());
+            assert!(auth.is_wrapping_token(&token));
+        }
         // Refusal occurred before any Auth dispatch or token consume.
         assert!(auth.is_wrapping_token(&token));
         let consumed = auth.wrapping_route(
@@ -1073,16 +1076,18 @@ mod tests {
         };
         let bytes =
             encode_completed_unwrap_response_for_cluster("raw110-ha", 2, 1, &response, None)?;
-        assert!(bytes.starts_with(b"HBFS4"));
+        assert!(bytes.starts_with(b"HBFS5"));
         let received = decode_unwrap_response_for_cluster(&bytes, "raw110-ha")?;
         assert!(received.raw_wrapped_reply.is_some());
         assert!(
             crate::ha_forward_completion::response_digest(&response)?
                 == crate::ha_forward_completion::wire_response_digest(&received)?
         );
-        let mut lower = bytes.clone();
-        lower[..5].copy_from_slice(b"HBFS3");
-        assert!(decode_unwrap_response_for_cluster(&lower, "raw110-ha").is_err());
+        for old_magic in [b"HBFS3", b"HBFS4"] {
+            let mut lower = bytes.clone();
+            lower[..5].copy_from_slice(old_magic);
+            assert!(decode_unwrap_response_for_cluster(&lower, "raw110-ha").is_err());
+        }
         let mut tampered = serde_json::to_value(&received)?;
         tampered["raw_wrapped_reply"]["digest"] = json!(vec![9_u8; 32]);
         assert!(

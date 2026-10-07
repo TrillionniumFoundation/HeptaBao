@@ -7,11 +7,11 @@ use super::*;
 /// Neither user JSON, a header, an SDK response nor the URL constructs it.
 #[path = "auth_wrapped_reply110.rs"]
 mod raw_reply;
-pub(super) use raw_reply::RawReplyTokenCustody;
 pub(crate) use raw_reply::{
     IngressReplyContext, IngressReplyScope, StoredWrappedReply, current_ingress,
     encode_http_envelope, logical_envelope,
 };
+pub(super) use raw_reply::{RawReplyReaderFloor, RawReplyTokenCustody};
 
 pub(crate) struct UnwrappedJson {
     // Keep the secret-bearing owner affine without inflating every Response result.
@@ -41,6 +41,16 @@ impl UnwrappedJson {
     }
     pub(crate) fn stored_reply(&self) -> Option<&StoredWrappedReply> {
         self.stored_reply.as_deref()
+    }
+    pub(crate) fn raw_http_transport<'a>(
+        &'a self,
+        logical: &Value,
+    ) -> Result<Option<(u16, &'a str)>, AuthError> {
+        self.stored_reply
+            .as_ref()
+            .map(|stored| stored.raw_http_transport(logical))
+            .transpose()
+            .map(Option::flatten)
     }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
         self.stored_reply
@@ -212,7 +222,7 @@ impl AuthState {
     }
 
     /// A sealed actual PKI producer supplies the HTTP special logical fields.
-    /// The private ingress carrier captures a complete JSON HTTPResponse once;
+    /// The private ingress carrier captures the dedicated raw HTTP variant once;
     /// historical callers keep their original Value-only representation.
     pub(crate) fn wrap_pki_raw_response(
         &mut self,
@@ -227,7 +237,7 @@ impl AuthState {
             return self.wrap_response(namespace, path, ttl, historical_response, now);
         };
         let logical = transport.logical_response();
-        let stored = StoredWrappedReply::capture(logical, &context, path)?;
+        let stored = StoredWrappedReply::capture_pki(transport, &context, path)?;
         self.wrap_response_with_stored(namespace, path, ttl, logical, now, Some(stored))
     }
 
@@ -340,7 +350,13 @@ impl AuthState {
             .as_ref()
             .is_some_and(|w| w.stored_reply.is_some())
         {
-            self.raw_wrapped_reply_floor = true;
+            self.raw_wrapped_reply_floor.observe(
+                token
+                    .wrapping
+                    .as_ref()
+                    .and_then(|wrapped| wrapped.stored_reply.as_ref())
+                    .is_some_and(StoredWrappedReply::is_pki_raw_http),
+            );
         }
         self.store_token(id, token);
         Ok(result)

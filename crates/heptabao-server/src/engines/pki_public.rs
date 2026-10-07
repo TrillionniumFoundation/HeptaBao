@@ -56,7 +56,8 @@ fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineRespon
 }
 
 /// A private proof selected by the actual PKI mount and closed public producer.
-/// HTTP bytes are logical Go []byte data here, not a naked unwrap entity.
+/// HTTP special logical fields retain Go []byte/nil semantics in private custody;
+/// the dedicated stored variant releases their original raw HTTP entity.
 pub(crate) struct PkiWrappedTransport {
     logical_response: Value,
 }

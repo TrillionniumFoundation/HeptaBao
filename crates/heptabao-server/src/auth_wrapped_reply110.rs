@@ -1,6 +1,7 @@
 //! Private custody of the original admitted logical HTTP envelope (format110).
 //! This carries response data only: no actor, provider authority or new clock.
 use super::*;
+use base64::{Engine as _, engine::general_purpose::STANDARD as RAW_BASE64};
 use std::cell::RefCell;
 
 #[derive(Clone)]
@@ -48,10 +49,11 @@ impl IngressReplyContext {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[serde(rename_all = "kebab-case")]
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
 enum ReplyKind {
     JsonEnvelopeV1,
+    PkiRawHttpV1 { status: u16, nil_body: bool },
 }
 
 /// Only the admitted server route selects this closed internal Data projection.
@@ -120,6 +122,43 @@ impl LogicalProjection {
                 }
             }
             Self::Ordinary => {}
+        }
+    }
+}
+
+/// Legacy bool JSON stays byte-identical. The dedicated PKI marker permanently
+/// refuses old literal bool decoders, including after last-token retirement.
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(untagged)]
+pub(in crate::auth) enum RawReplyReaderFloor {
+    Legacy(bool),
+    PkiHttp(PkiHttpReader),
+}
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub(in crate::auth) enum PkiHttpReader {
+    PkiRawHttpV1,
+}
+impl Default for RawReplyReaderFloor {
+    fn default() -> Self {
+        Self::Legacy(false)
+    }
+}
+impl RawReplyReaderFloor {
+    pub(in crate::auth) fn is_absent(&self) -> bool {
+        matches!(self, Self::Legacy(false))
+    }
+    fn has_original(&self) -> bool {
+        !self.is_absent()
+    }
+    fn has_pki_http(&self) -> bool {
+        matches!(self, Self::PkiHttp(PkiHttpReader::PkiRawHttpV1))
+    }
+    pub(in crate::auth) fn observe(&mut self, pki_http: bool) {
+        if pki_http {
+            *self = Self::PkiHttp(PkiHttpReader::PkiRawHttpV1);
+        } else if self.is_absent() {
+            *self = Self::Legacy(true);
         }
     }
 }
@@ -439,6 +478,62 @@ fn go_float(number: &serde_json::Number) -> Result<String, AuthError> {
     }
     Ok(result)
 }
+/// A closed projection is validated again after encrypted loading and HA receipt.
+/// This cannot mint an origin: only capture_pki accepts the sealed producer type.
+fn pki_http_projection(
+    logical: &Value,
+) -> Result<(u16, String, bool, Zeroizing<Vec<u8>>), AuthError> {
+    let invalid = || bad("invalid stored PKI raw HTTP projection");
+    let root = logical.as_object().ok_or_else(invalid)?;
+    let data = root
+        .get("data")
+        .and_then(Value::as_object)
+        .ok_or_else(invalid)?;
+    if root.len() != 1 || data.len() != 3 {
+        return Err(invalid());
+    }
+    let status = data
+        .get("http_status_code")
+        .and_then(Value::as_u64)
+        .and_then(|n| u16::try_from(n).ok())
+        .ok_or_else(invalid)?;
+    let media = data
+        .get("http_content_type")
+        .and_then(Value::as_str)
+        .ok_or_else(invalid)?;
+    let valid_status = match media {
+        "application/pkix-cert" | "application/pem-certificate-chain" => status == 200,
+        "application/pkix-crl" | "application/x-pem-file" => matches!(status, 200 | 204),
+        "application/ocsp-response" => matches!(status, 200 | 400 | 401 | 500),
+        _ => false,
+    };
+    if !valid_status {
+        return Err(invalid());
+    }
+    let body = data.get("http_raw_body").ok_or_else(invalid)?;
+    let nil_body = status == 204;
+    let bytes = if nil_body {
+        if !body.is_null() {
+            return Err(invalid());
+        }
+        Zeroizing::new(Vec::new())
+    } else {
+        let text = body.as_str().ok_or_else(invalid)?;
+        if text.len() > MAX_WRAPPED_RESPONSE_BYTES.div_ceil(3) * 4 {
+            return Err(invalid());
+        }
+        let bytes = Zeroizing::new(RAW_BASE64.decode(text).map_err(|_| invalid())?);
+        if bytes.is_empty()
+            || bytes.len() > MAX_WRAPPED_RESPONSE_BYTES
+            || RAW_BASE64.encode(&*bytes) != text
+        {
+            return Err(invalid());
+        }
+        bytes
+    };
+    Ok((status, media.to_owned(), nil_body, bytes))
+}
+
 impl StoredWrappedReply {
     pub(super) fn capture(
         response: &Value,
@@ -464,6 +559,38 @@ impl StoredWrappedReply {
         result.validate(response)?;
         Ok(result)
     }
+    /// Only the actual sealed PKI producer selects a dedicated raw HTTP reply.
+    /// The ingress ID stays in encrypted custody; raw HTTP exposes no UUID.
+    pub(super) fn capture_pki(
+        transport: &crate::engines::PkiWrappedTransport,
+        context: &IngressReplyContext,
+        path: &str,
+    ) -> Result<Self, AuthError> {
+        let logical = transport.logical_response();
+        let (status, media_type, nil_body, bytes) = pki_http_projection(logical)?;
+        let result = Self {
+            kind: ReplyKind::PkiRawHttpV1 { status, nil_body },
+            logical_projection: LogicalProjection::for_path(path),
+            media_type,
+            byte_count: bytes.len(),
+            digest: crate::ha_forward_completion::digest(&bytes),
+            request_id: context.request_id(),
+            bytes: bytes.to_vec(),
+        };
+        result.validate(logical)?;
+        Ok(result)
+    }
+    /// This authenticated private discriminant, never a Data key, selects HTTP.
+    pub(crate) fn raw_http_transport<'a>(
+        &'a self,
+        logical: &Value,
+    ) -> Result<Option<(u16, &'a str)>, AuthError> {
+        self.validate(logical)?;
+        match self.kind {
+            ReplyKind::JsonEnvelopeV1 => Ok(None),
+            ReplyKind::PkiRawHttpV1 { status, .. } => Ok(Some((status, &self.media_type))),
+        }
+    }
     pub(super) fn validate_owner(&self, logical: &Value, path: &str) -> Result<(), AuthError> {
         if self.logical_projection != LogicalProjection::for_path(path) {
             return Err(bad("stored logical projection owner differs"));
@@ -471,6 +598,21 @@ impl StoredWrappedReply {
         self.validate(logical)
     }
     pub(crate) fn validate(&self, logical: &Value) -> Result<(), AuthError> {
+        if let ReplyKind::PkiRawHttpV1 { status, nil_body } = self.kind {
+            let (actual_status, media_type, actual_nil, bytes) = pki_http_projection(logical)?;
+            if self.logical_projection != LogicalProjection::Ordinary
+                || !valid_request_id(&self.request_id)
+                || status != actual_status
+                || nil_body != actual_nil
+                || self.media_type != media_type
+                || self.byte_count != self.bytes.len()
+                || self.bytes.as_slice() != bytes.as_slice()
+                || self.digest != crate::ha_forward_completion::digest(&self.bytes)
+            {
+                return Err(bad("stored PKI raw HTTP projection differs"));
+            }
+            return Ok(());
+        }
         if self.media_type != "application/json"
             || self.bytes.is_empty()
             || self.bytes.len() > MAX_WRAPPED_RESPONSE_BYTES
@@ -514,6 +656,9 @@ impl StoredWrappedReply {
         } else {
             Err(bad("stored wrapped reply projection differs"))
         }
+    }
+    pub(in crate::auth) fn is_pki_raw_http(&self) -> bool {
+        matches!(self.kind, ReplyKind::PkiRawHttpV1 { .. })
     }
     pub(crate) fn bytes<'a>(&'a self, logical: &Value) -> Result<&'a [u8], AuthError> {
         self.validate(logical)?;
@@ -610,12 +755,22 @@ impl RawReplyTokenCustody {
 
 impl AuthState {
     pub(crate) fn has_raw_wrapped_reply_state(&self) -> bool {
-        self.raw_wrapped_reply_floor
+        self.raw_wrapped_reply_floor.has_original()
             || self.tokens.values().any(|t| {
                 t.raw_wrapped_reply_custody.is_some()
                     || t.wrapping
                         .as_ref()
                         .is_some_and(|w| w.stored_reply.is_some())
+            })
+    }
+    pub(crate) fn has_pki_raw_http_reply_state(&self) -> bool {
+        self.raw_wrapped_reply_floor.has_pki_http()
+            || self.tokens.values().any(|token| {
+                token
+                    .wrapping
+                    .as_ref()
+                    .and_then(|wrapped| wrapped.stored_reply.as_ref())
+                    .is_some_and(|stored| stored.is_pki_raw_http())
             })
     }
     pub(crate) fn validate_raw_wrapped_reply_state(&self) -> Result<(), AuthError> {
@@ -635,7 +790,7 @@ impl AuthState {
                 return Err(bad("consumed wrapping token is not canonical"));
             }
             if let Some(custody) = &token.raw_wrapped_reply_custody {
-                if !self.raw_wrapped_reply_floor {
+                if !self.raw_wrapped_reply_floor.has_original() {
                     return Err(bad("stored reply token reader floor missing"));
                 }
                 custody.validate(token)?;
@@ -645,13 +800,18 @@ impl AuthState {
                 .as_ref()
                 .and_then(|w| w.stored_reply.as_ref())
             {
-                if !self.raw_wrapped_reply_floor || token.raw_wrapped_reply_custody.is_none() {
+                if !self.raw_wrapped_reply_floor.has_original()
+                    || token.raw_wrapped_reply_custody.is_none()
+                {
                     return Err(bad("stored reply reader or token owner missing"));
                 }
                 let owner = token
                     .wrapping
                     .as_ref()
                     .ok_or_else(|| bad("stored reply owner missing"))?;
+                if stored.is_pki_raw_http() && !self.raw_wrapped_reply_floor.has_pki_http() {
+                    return Err(bad("PKI raw HTTP permanent reader floor missing"));
+                }
                 stored.validate_owner(&owner.response, &owner.creation_path)?;
             }
         }
@@ -662,7 +822,14 @@ impl AuthState {
         previous: &Self,
     ) -> Result<(), AuthError> {
         self.validate_raw_wrapped_reply_state()?;
-        if previous.raw_wrapped_reply_floor && !self.raw_wrapped_reply_floor {
+        if previous.raw_wrapped_reply_floor.has_pki_http()
+            && !self.raw_wrapped_reply_floor.has_pki_http()
+        {
+            return Err(bad("PKI raw HTTP reader floor cannot retire"));
+        }
+        if previous.raw_wrapped_reply_floor.has_original()
+            && !self.raw_wrapped_reply_floor.has_original()
+        {
             return Err(bad("stored reply reader floor cannot retire"));
         }
         for (id, old) in &previous.tokens {
@@ -800,7 +967,7 @@ impl AuthState {
 #[derive(Deserialize)]
 struct RawAuthProbe {
     #[serde(default)]
-    raw_wrapped_reply_floor: bool,
+    raw_wrapped_reply_floor: RawReplyReaderFloor,
     #[serde(default)]
     tokens: BTreeMap<String, RawTokenProbe>,
 }
@@ -818,7 +985,7 @@ struct RawWrapperProbe {
 }
 impl RawAuthProbe {
     fn requires_raw_floor(&self) -> bool {
-        self.raw_wrapped_reply_floor
+        self.raw_wrapped_reply_floor.has_original()
             || self.tokens.values().any(|token| {
                 token.raw_wrapped_reply_custody.is_some()
                     || token
@@ -828,6 +995,9 @@ impl RawAuthProbe {
             })
     }
     fn validate_schema(&self, schema: u32) -> Result<(), AuthError> {
+        if schema < 112 && self.raw_wrapped_reply_floor.has_pki_http() {
+            return Err(bad("PKI raw HTTP incoming header is downgraded"));
+        }
         if schema < 110 && self.requires_raw_floor() {
             Err(bad("original wrapped reply incoming header is downgraded"))
         } else {
@@ -923,7 +1093,10 @@ mod tests {
                 )
                 .is_err()
         );
-        assert!(state.raw_wrapped_reply_floor && state.validate_raw_wrapped_reply_state().is_ok());
+        assert!(
+            state.raw_wrapped_reply_floor.has_original()
+                && state.validate_raw_wrapped_reply_state().is_ok()
+        );
         Ok(())
     }
     #[test]
@@ -1047,7 +1220,7 @@ mod tests {
         )?;
         assert!(state.has_raw_wrapped_reply_state() && !state.has_live_wrappers());
         let mut downgraded = state.clone();
-        downgraded.raw_wrapped_reply_floor = false;
+        downgraded.raw_wrapped_reply_floor = RawReplyReaderFloor::Legacy(false);
         assert!(
             downgraded
                 .validate_raw_wrapped_reply_successor(&state)
@@ -1212,13 +1385,13 @@ mod tests {
         assert!(expiry.validate_raw_wrapped_reply_state().is_ok());
         assert!(expiry.validate_raw_wrapped_reply_successor(&before).is_ok());
         let mut floor_stripped = live.clone();
-        floor_stripped.raw_wrapped_reply_floor = false;
+        floor_stripped.raw_wrapped_reply_floor = RawReplyReaderFloor::Legacy(false);
         let bytes = Zeroizing::new(serde_json::to_vec(&floor_stripped)?);
         assert!(AuthState::predecode_raw_reply_owner(&bytes, 108).is_err());
         let mut deleted = live.clone();
         deleted.tokens.remove(&hash(&bearer));
         assert!(deleted.validate_raw_wrapped_reply_successor(&live).is_ok());
-        assert!(deleted.raw_wrapped_reply_floor);
+        assert!(deleted.raw_wrapped_reply_floor.has_original());
         Ok(())
     }
 
@@ -1293,6 +1466,35 @@ mod tests {
         let mut unknown = serde_json::to_value(&stored)?;
         unknown["kind"] = json!("future-raw-body");
         assert!(serde_json::from_value::<StoredWrappedReply>(unknown).is_err());
+        Ok(())
+    }
+    #[test]
+    fn raw112_reader_marker_keeps_bool_bytes_and_rejects_unknown_or_numeric_claims() -> TestResult {
+        assert_eq!(
+            serde_json::to_vec(&RawReplyReaderFloor::Legacy(false))?,
+            b"false"
+        );
+        assert_eq!(
+            serde_json::to_vec(&RawReplyReaderFloor::Legacy(true))?,
+            b"true"
+        );
+        let tagged = RawReplyReaderFloor::PkiHttp(PkiHttpReader::PkiRawHttpV1);
+        assert_eq!(serde_json::to_vec(&tagged)?, b"\"pki-raw-http-v1\"");
+        for value in [
+            json!(null),
+            json!(0),
+            json!(112),
+            json!({}),
+            json!([]),
+            json!("true"),
+            json!("unknown"),
+            json!({"pki-raw-http-v1":112}),
+        ] {
+            assert!(serde_json::from_value::<RawReplyReaderFloor>(value).is_err());
+        }
+        let mut floor = tagged;
+        floor.observe(false);
+        assert!(floor == tagged);
         Ok(())
     }
 }

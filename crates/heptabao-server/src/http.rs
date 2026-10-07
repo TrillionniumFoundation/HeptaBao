@@ -2080,7 +2080,26 @@ fn write_response_with_namespace(
         None
     };
     let raw_ocsp = crate::engines::raw_ocsp_response(response.status, &response.body);
-    let content_type = if let Some((_, media)) = &raw_acme {
+    let stored_raw_transport = if response.status == 200 {
+        response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.raw_http_transport(&response.body))
+            .transpose()
+            .map_err(|_| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "stored raw HTTP transport rejected",
+                )
+            })?
+            .flatten()
+    } else {
+        None
+    };
+    let admitted_http_status = stored_raw_transport.map_or(response.status, |(status, _)| status);
+    let content_type = if let Some((_, media)) = stored_raw_transport {
+        media
+    } else if let Some((_, media)) = &raw_acme {
         *media
     } else if raw_ocsp.is_some() {
         "application/ocsp-response"
@@ -2097,7 +2116,10 @@ fn write_response_with_namespace(
     };
     // ACME's closed logical JSON carries no explicit native Content-Length.
     // Certificate/CRL/OCSP producers retain their admitted fixed-length framing.
-    let fixed_raw_body = raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
+    let fixed_raw_body = stored_raw_transport.is_some()
+        || raw_ocsp.is_some()
+        || raw_certificate.is_some()
+        || raw_crl.is_some();
     let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
     let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
 
@@ -2170,7 +2192,7 @@ fn write_response_with_namespace(
         bytes = Zeroizing::new(b"{\"errors\":[\"response exceeds limit\"]}\n".to_vec());
         500
     } else {
-        response.status
+        admitted_http_status
     };
     // Use Go HTTP status text, including its custom health-code fallback.
     let reason = match status {
@@ -2248,7 +2270,7 @@ fn write_response_with_namespace(
     } else {
         ""
     };
-    let index = if status == response.status {
+    let index = if status == admitted_http_status {
         response
             .consistency_index
             .as_ref()
@@ -2276,9 +2298,9 @@ fn write_response_with_namespace(
     write_standard_headers_with_date(
         writer,
         namespace,
-        status == response.status && response.response_headers.has_date(),
+        status == admitted_http_status && response.response_headers.has_date(),
     )?;
-    if status == response.status {
+    if status == admitted_http_status {
         response.response_headers.write(writer)?;
     }
     writer.write_all(b"\r\n")?;
@@ -3780,4 +3802,13 @@ mod encoded_sdk_path_tests {
             assert!(decode_native_logical_path(path).is_err());
         }
     }
+}
+
+#[cfg(test)]
+pub(crate) fn write_raw110_reply_for_test(
+    writer: &mut impl Write,
+    response: Response,
+    head: bool,
+) -> io::Result<()> {
+    write_response(writer, response, head)
 }
