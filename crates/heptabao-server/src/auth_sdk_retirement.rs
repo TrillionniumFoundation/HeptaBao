@@ -95,6 +95,25 @@ fn record_digest(record: &Record) -> Result<[u8; 32], AuthError> {
     hash(record)
 }
 impl AuthState {
+    /// Subtractive joint107/109 gate; never creates either job's dispatch proof.
+    pub(crate) fn sdk_auth_retirement_namespace_gate(
+        &self,
+        binding: &sdk::Binding,
+        id: Option<&str>,
+    ) -> Result<(), AuthError> {
+        if self.namespace_is_tainted(&binding.namespace)
+            || id.is_some_and(|id| {
+                self.namespace_sdk_cleanup_blocks(
+                    namespace_sdk_cleanup::Kind::Credential,
+                    &binding.namespace,
+                    id,
+                )
+            })
+        {
+            return Err(err(503, "namespace cleanup owns SDK retirement resource"));
+        }
+        Ok(())
+    }
     pub(crate) fn has_sdk_auth_retirement_state(&self) -> bool {
         self.sdk_auth_retirements.is_some()
     }
@@ -146,6 +165,7 @@ impl AuthState {
         accepted_at: Timestamp,
         request: String,
     ) -> Result<(), AuthError> {
+        self.sdk_auth_retirement_namespace_gate(&binding, None)?;
         self.sdk_auth_owner_gate(&binding)?;
         if self.sdk_auth_retirement_has_live_issuer(&binding, accepted_at) {
             return Err(err(
@@ -173,6 +193,7 @@ impl AuthState {
         };
         let mut resources = BTreeMap::new();
         for record in self.sdk_credential_mount_records(&binding)? {
+            self.sdk_auth_retirement_namespace_gate(&binding, Some(&record.id))?;
             if record.phase != LeasePhase::PendingRevoke {
                 return Err(err(503, "SDK retirement record was not durably selected"));
             }
@@ -216,6 +237,10 @@ impl AuthState {
         id: &str,
         at: Timestamp,
     ) -> Result<(), AuthError> {
+        let selected = self
+            .sdk_auth_retirement_job(job)
+            .ok_or_else(|| err(503, "SDK retirement job absent"))?;
+        self.sdk_auth_retirement_namespace_gate(&selected.binding, Some(id))?;
         let registry = self
             .sdk_auth_retirements
             .as_mut()
@@ -380,6 +405,10 @@ impl AuthState {
                     &job.binding.namespace,
                 )?;
                 if job.completion.is_none() {
+                    self.sdk_auth_retirement_namespace_gate(&job.binding, None)?;
+                    for id in job.resources.keys() {
+                        self.sdk_auth_retirement_namespace_gate(&job.binding, Some(id))?;
+                    }
                     self.sdk_auth_owner_gate(&job.binding)?;
                     if let Some(current) = incarnation(&job.binding.namespace)
                         && job

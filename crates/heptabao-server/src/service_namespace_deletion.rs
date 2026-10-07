@@ -43,6 +43,9 @@ impl State {
             Response::error(503, "namespace deletion lacks actual namespace lifecycle")
         })?;
         for (path, binding) in ledger.pending() {
+            if self.auth.sdk_auth_retirement_namespace_pending(path) {
+                return Err(Response::error(503, "SDK Auth retirement already owns namespace work"));
+            }
             let expected = crate::namespace_custody::Binding::new(
                 self.cluster_id.clone(),
                 path.clone(),
@@ -277,7 +280,8 @@ impl Service {
         namespace_runtime::request_live()?;
         state.validate_namespace_deletion_state()?;
         state.namespace_leases.validate()?;
-        if state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
+        if state.auth.sdk_auth_retirement_namespace_pending(binding.namespace())
+            || state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
             || state.namespace_is_sealed(request.namespace)
             || state
                 .namespaces
@@ -333,6 +337,10 @@ impl Service {
         binding: Binding,
     ) -> Response {
         let run = (|| {
+            // Reject before taint, host reservation or any candidate resource selection.
+            if state.auth.sdk_auth_retirement_namespace_pending(binding.namespace()) {
+                return Err(Response::error(409, "SDK Auth retirement owns this namespace"));
+            }
             let expected = self.current_state_identity()?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             let mut sdk_hosts = self.reserve_namespace_sdk_hosts(&state, binding.namespace())?;

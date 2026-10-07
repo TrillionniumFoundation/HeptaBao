@@ -36,6 +36,8 @@ impl Retirement {
             .remaining
             .front()
             .ok_or_else(|| Response::error(503, "SDK retirement attempted resource absent"))?;
+        auth.sdk_auth_retirement_namespace_gate(binding, Some(&first.id))
+            .map_err(auth_error)?;
         if job.binding() != binding
             || job.completed()
             || job.phase(&first.id) != Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
@@ -59,6 +61,15 @@ impl Plan {
         let job = auth
             .sdk_auth_retirement_job(&retirement.job)
             .ok_or_else(|| Response::error(503, "SDK retirement durable job absent"))?;
+        if !job.completed() {
+            // Includes an empty fixed set or all Terminal before mount Completion.
+            auth.sdk_auth_retirement_namespace_gate(&self.binding, None)
+                .map_err(auth_error)?;
+            for record in &retirement.remaining {
+                auth.sdk_auth_retirement_namespace_gate(&self.binding, Some(&record.id))
+                    .map_err(auth_error)?;
+            }
+        }
         if job.binding() != &self.binding || job.completed() != retirement.completed.is_some() {
             return Err(Response::error(
                 503,

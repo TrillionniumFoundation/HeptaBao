@@ -925,6 +925,9 @@ impl Service {
         target: StageTarget<'_>,
         namespace_work: Option<&namespace_sdk_cleanup::Authority>,
     ) -> Response {
+        if target.retirement.is_some() && namespace_work.is_some() {
+            return Response::error(503, "SDK cleanup authority scopes are mutually exclusive");
+        }
         if let Some(work) = namespace_work
             && let Err(error) = work.sync_before_setup(self)
         {

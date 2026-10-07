@@ -56,6 +56,9 @@ impl Authority {
     }
     pub(in crate::service) fn check_auth(&self, auth: &AuthState) -> Result<(), Response> {
         self.check_deadline()?;
+        if auth.sdk_auth_retirement_namespace_pending(self.selected.binding().namespace()) {
+            return Err(unavailable());
+        }
         let ledger = auth.namespace_deletion_ledger().ok_or_else(unavailable)?;
         if ledger.pending().get(self.selected.binding().namespace())
             != Some(self.selected.binding())
@@ -337,6 +340,9 @@ impl State {
         &self,
         namespace: &str,
     ) -> Result<bool, Response> {
+        if self.auth.sdk_auth_retirement_namespace_pending(namespace) {
+            return Ok(false);
+        }
         let auth = self
             .auth
             .namespace_sdk_native_deletion_projection(namespace)
@@ -377,6 +383,9 @@ impl State {
         binding: &Binding,
     ) -> Result<(), Response> {
         let namespace = binding.namespace();
+        if self.auth.sdk_auth_retirement_namespace_pending(namespace) {
+            return Err(unavailable());
+        }
         let logical = self
             .engines
             .namespace_sdk_deletion_records(namespace)
