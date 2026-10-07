@@ -346,6 +346,20 @@ fn start_worker_typed(
     }))
 }
 
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+fn namespace_storage_diagnostic(stage: &'static str, cause: &Response) {
+    let first = cause.body["errors"]
+        .as_array()
+        .and_then(|errors| errors.first())
+        .and_then(Value::as_str)
+        .unwrap_or("");
+    eprintln!(
+        "heptabao-ns-storage-diag: phase={stage} status={} first_error_sha={}",
+        cause.status,
+        hex(&crypto::digest(first.as_bytes()))
+    );
+}
+
 struct StorageTransaction {
     engines: CowOwner<EngineState>,
     admitted_original: Option<CowOwner<EngineState>>,
@@ -1305,7 +1319,13 @@ impl Service {
             crate::request_deadline::RequestDeadlineScope::enter(deadline.min(plan.deadline));
         let mut authority = plan.authority.lock().map_err(|_| SdkBridgeError::Fenced)?;
         self.validate_sdk_authority(&mut authority)
-            .map_err(|_| SdkBridgeError::Fenced)?;
+            .map_err(|_cause| {
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                if plan.namespace_cleanup {
+                    namespace_storage_diagnostic("logical_authority_gate", &_cause);
+                }
+                SdkBridgeError::Fenced
+            })?;
         self.sdk_binding_gate(plan)?;
         let mut state = self.state.clone().ok_or(SdkBridgeError::Fenced)?;
         let auth_clock_changed = authority
@@ -1324,6 +1344,14 @@ impl Service {
             != transaction.identity
             && !authority.admitted_data()
         {
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if plan.namespace_cleanup {
+                eprintln!(
+                    "heptabao-ns-storage-diag: phase=logical_whole_identity status=503 identity_equal=false private_namespace_cleanup=true precise_token={} schema={}",
+                    state.has_token_api_precision_state(),
+                    state.schema
+                );
+            }
             return Err(SdkBridgeError::Fenced);
         }
         if authority.admitted_data()
@@ -1396,7 +1424,13 @@ impl Service {
             state.schema = state.writer_schema();
             let publication = self
                 .prepare_record_plan(&mut state)
-                .map_err(|_| SdkBridgeError::Storage)?;
+                .map_err(|_cause| {
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    if plan.namespace_cleanup {
+                        namespace_storage_diagnostic("logical_record_plan", &_cause);
+                    }
+                    SdkBridgeError::Storage
+                })?;
             self.validate_sdk_authority(&mut authority)
                 .map_err(|_| SdkBridgeError::Fenced)?;
             self.sdk_binding_gate(plan)?;

@@ -1254,12 +1254,25 @@ impl Service {
         plan: &Plan,
         operation: StorageOp,
     ) -> Result<StorageReply, Response> {
-        self.sdk_auth_gate(plan)?;
+        self.sdk_auth_gate(plan).inspect_err(|_cause| {
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if plan.namespace_cleanup {
+                namespace_storage_diagnostic("credential_authority_gate", _cause);
+            }
+        })?;
         let mut transaction = plan
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
         if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if plan.namespace_cleanup {
+                eprintln!(
+                    "heptabao-ns-storage-diag: phase=credential_whole_identity status=503 identity_equal=false private_namespace_cleanup=true precise_token={} schema={}",
+                    self.state.as_ref().is_some_and(State::has_token_api_precision_state),
+                    self.state.as_ref().map_or(0, |state| state.schema)
+                );
+            }
             return Err(Response::error(
                 503,
                 "SDK Auth Storage root changed since admission",
@@ -1274,7 +1287,12 @@ impl Service {
         let changed = current.auth.observe_sdk_auth_clock(at);
         if changed {
             current.schema = current.writer_schema();
-            let publication = self.prepare_record_plan(&mut current)?;
+            let publication = self.prepare_record_plan(&mut current).inspect_err(|_cause| {
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                if plan.namespace_cleanup {
+                    namespace_storage_diagnostic("credential_record_plan", _cause);
+                }
+            })?;
             self.sdk_auth_gate(plan)?;
             self.commit_record_plan_with_before_publish(
                 &current,
