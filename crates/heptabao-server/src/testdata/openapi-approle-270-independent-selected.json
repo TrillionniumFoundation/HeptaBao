@@ -1,0 +1,214 @@
+{
+  "paths": {
+    "/auth/diag-approle/login": {
+      "description": "Issue a token based on the credentials supplied",
+      "post": {
+        "operationId": "app-role-login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppRoleLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      },
+      "x-vault-unauthenticated": true
+    },
+    "/auth/diag-approle/role/{role_name}/role-id": {
+      "description": "Returns the 'role_id' of the role.",
+      "get": {
+        "operationId": "app-role-read-role-id",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleReadRoleIdResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "Name of the role. Must be less than 4096 bytes.",
+          "in": "path",
+          "name": "role_name",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "app-role-write-role-id",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppRoleWriteRoleIdRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/diag-approle/role/{role_name}/secret-id-accessor/lookup": {
+      "parameters": [
+        {
+          "description": "Name of the role. Must be less than 4096 bytes.",
+          "in": "path",
+          "name": "role_name",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "app-role-look-up-secret-id-by-accessor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppRoleLookUpSecretIdByAccessorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppRoleLookUpSecretIdByAccessorResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    }
+  },
+  "schemas": {
+    "AppRoleLoginRequest": {
+      "properties": {
+        "role_id": {
+          "description": "Unique identifier of the Role. Required to be supplied when the 'bind_secret_id' constraint is set.",
+          "type": "string"
+        },
+        "secret_id": {
+          "default": "",
+          "description": "SecretID belong to the App role",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppRoleLookUpSecretIdByAccessorRequest": {
+      "properties": {
+        "secret_id_accessor": {
+          "description": "Accessor of the SecretID",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppRoleLookUpSecretIdByAccessorResponse": {
+      "properties": {
+        "cidr_list": {
+          "description": "List of CIDR blocks enforcing secret IDs to be used from specific set of IP addresses. If 'bound_cidr_list' is set on the role, then the list of CIDR blocks listed here should be a subset of the CIDR blocks listed on the role.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "creation_time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "expiration_time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "last_updated_time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "metadata": {
+          "format": "kvpairs",
+          "type": "object"
+        },
+        "secret_id_accessor": {
+          "description": "Accessor of the secret ID",
+          "type": "string"
+        },
+        "secret_id_num_uses": {
+          "description": "Number of times a secret ID can access the role, after which the secret ID will expire.",
+          "type": "integer"
+        },
+        "secret_id_ttl": {
+          "description": "Duration in seconds after which the issued secret ID expires.",
+          "format": "seconds",
+          "type": "integer"
+        },
+        "token_bound_cidrs": {
+          "description": "List of CIDR blocks. If set, specifies the blocks of IP addresses which can use the returned token. Should be a subset of the token CIDR blocks listed on the role, if any.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "AppRoleReadRoleIdResponse": {
+      "properties": {
+        "role_id": {
+          "description": "Identifier of the role. Defaults to a UUID.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppRoleWriteRoleIdRequest": {
+      "properties": {
+        "role_id": {
+          "description": "Identifier of the role. Defaults to a UUID.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

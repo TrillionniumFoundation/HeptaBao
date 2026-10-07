@@ -2,6 +2,9 @@ use super::{Response, Value};
 use serde_json::{Map, json};
 use std::collections::BTreeMap;
 
+#[path = "service_openapi_approle.rs"]
+mod approle;
+
 struct Route {
     path: &'static str,
     methods: &'static [&'static str],
@@ -775,34 +778,7 @@ fn add_actual_mount_routes(
                 add_list_query(paths, &format!("/{prefix}/users"), false, false);
             }
             Some("approle") => {
-                let prefix = openapi_mount_path(mount, generic, true);
-                for (suffix, methods, description) in [
-                    (
-                        "role/{role_name}",
-                        &["get", "post", "delete"][..],
-                        "Manage an AppRole role.",
-                    ),
-                    (
-                        "role/{role_name}/custom-secret-id",
-                        &["post"][..],
-                        "Issue a bounded operator-supplied AppRole SecretID.",
-                    ),
-                    (
-                        "login",
-                        &["post"][..],
-                        "Authenticate with AppRole credentials.",
-                    ),
-                ] {
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/{suffix}"),
-                        methods,
-                        description,
-                        mount,
-                        generic,
-                        true,
-                    );
-                }
+                approle::add(paths, schemas, mount, generic)?;
             }
             _ => {}
         }
@@ -1202,6 +1178,124 @@ mod tests {
             }
         }
         assert!(paths.keys().all(|path| !path.contains("diag-visible")));
+        Ok(())
+    }
+
+    fn approle_primary_fixture() -> Result<Value, Box<dyn std::error::Error>> {
+        Ok(serde_json::from_str(include_str!(
+            "testdata/openapi-approle-270-independent-selected.json"
+        ))?)
+    }
+
+    #[test]
+    fn openapi_approle_existing_credential_routes_match_independent_primary_metadata()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = approle_primary_fixture()?;
+        let mounts = BTreeMap::from([("auth/diag-approle/".into(), json!({"type":"approle"}))]);
+        let response = handle_anonymous("GET", &json!({}), &mounts, &BTreeMap::new());
+        assert_eq!(response.status, 200);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        for (path, expected) in reference["paths"].as_object().ok_or("reference paths")? {
+            assert_eq!(paths.get(path), Some(expected));
+        }
+        for (name, expected) in reference["schemas"]
+            .as_object()
+            .ok_or("reference schemas")?
+        {
+            assert_eq!(
+                response.body["components"]["schemas"].get(name),
+                Some(expected)
+            );
+        }
+        let accessor_destroy = paths
+            .get("/auth/diag-approle/role/{role_name}/secret-id-accessor/destroy")
+            .ok_or("destroy")?;
+        assert!(accessor_destroy.get("post").is_some());
+        assert!(accessor_destroy.get("delete").is_none());
+        assert!(
+            paths
+                .get("/auth/diag-approle/role/{role_name}/secret-id")
+                .and_then(|item| item.get("get"))
+                .is_some()
+        );
+        assert!(
+            paths
+                .get("/auth/diag-approle/tidy/secret-id")
+                .and_then(|item| item.get("post"))
+                .is_some()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_approle_generic_current_mount_preserves_backend_role_parameter()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = approle_primary_fixture()?;
+        let mounts = BTreeMap::from([("auth/new-role/".into(), json!({"type":"approle"}))]);
+        let response = handle_anonymous(
+            "GET",
+            &json!({"generic_mount_paths":true}),
+            &mounts,
+            &BTreeMap::new(),
+        );
+        assert_eq!(response.status, 200);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        assert!(paths.keys().all(|path| !path.contains("diag-approle")));
+        let item = paths
+            .get("/auth/{new_role_mount_path}/role/{role_name}/role-id")
+            .ok_or("role-id")?;
+        let parameters = item["parameters"].as_array().ok_or("parameters")?;
+        assert_eq!(parameters.len(), 2);
+        assert_eq!(
+            parameters[0],
+            reference["paths"]["/auth/diag-approle/role/{role_name}/role-id"]["parameters"][0]
+        );
+        assert_eq!(
+            parameters[1],
+            json!({
+                "name":"new_role_mount_path", "description":"Path that the backend was mounted at",
+                "in":"path", "schema":{"type":"string","default":"new-role"}, "required":true
+            })
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_approle_does_not_advertise_unimplemented_attributes_or_unknown_role_fields()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mounts = BTreeMap::from([("auth/diag-approle/".into(), json!({"type":"approle"}))]);
+        let response = handle_anonymous("GET", &json!({}), &mounts, &BTreeMap::new());
+        assert_eq!(response.status, 200);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        assert!(!paths.contains_key("/auth/diag-approle/role/{role_name}/local-secret-ids"));
+        assert!(!paths.contains_key("/auth/diag-approle/role/{role_name}/token-ttl"));
+        let schemas = response.body["components"]["schemas"]
+            .as_object()
+            .ok_or("schemas")?;
+        assert!(!schemas.contains_key("AppRoleReadLocalSecretIdsResponse"));
+        assert!(!schemas.contains_key("AppRoleWriteTokenTtlRequest"));
+        let write = schemas["AppRoleWriteRoleRequest"]["properties"]
+            .as_object()
+            .ok_or("write properties")?;
+        for name in [
+            "local_secret_ids",
+            "role_id",
+            "period",
+            "token_no_default_policy",
+            "token_strictly_bind_ip",
+        ] {
+            assert!(!write.contains_key(name));
+        }
+        assert!(write.contains_key("token_ttl") && write.contains_key("secret_id_bound_cidrs"));
+        let read = schemas["AppRoleReadRoleResponse"]["properties"]
+            .as_object()
+            .ok_or("read properties")?;
+        assert!(!read.contains_key("local_secret_ids") && !read.contains_key("policies"));
+        let issue = schemas["AppRoleWriteSecretIdRequest"]["properties"]
+            .as_object()
+            .ok_or("issue properties")?;
+        assert!(!issue.contains_key("after") && !issue.contains_key("limit"));
+        assert!(issue.contains_key("ttl") && issue.contains_key("metadata"));
         Ok(())
     }
 }
