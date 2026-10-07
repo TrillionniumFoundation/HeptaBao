@@ -739,6 +739,7 @@ fn process_parsed_request(
 ) -> (snapshot::NativeReply, bool, String) {
     match parsed {
         Ok(mut request) => {
+            let _raw_reply_ingress = crate::auth::IngressReplyScope::listener(attempt_id);
             request.client_certificates = client_certificates;
             let is_head = request.method == "HEAD"
                 || help::request(&request.method, &request.path, &request.body.0)
@@ -2100,7 +2101,25 @@ fn write_response_with_namespace(
     let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
     let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
 
-    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_acme {
+    let stored_unwrap = if response.status == 200 {
+        response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.raw_bytes(&response.body))
+            .transpose()
+            .map_err(|_| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "stored unwrap representation rejected",
+                )
+            })?
+            .flatten()
+    } else {
+        None
+    };
+    let mut bytes = Zeroizing::new(if let Some(raw) = stored_unwrap {
+        raw.to_vec()
+    } else if let Some((raw, _)) = raw_acme {
         raw
     } else if let Some(raw) = raw_ocsp {
         raw
@@ -2111,7 +2130,34 @@ fn write_response_with_namespace(
     } else if response.status == 204 {
         Vec::new()
     } else {
-        let mut json = serde_json::to_vec(&response.body)?;
+        let complete_envelope = response.status == 200
+            && response.body.as_object().is_some_and(|object| {
+                object.len() == 8
+                    && [
+                        "request_id",
+                        "lease_id",
+                        "renewable",
+                        "lease_duration",
+                        "data",
+                        "wrap_info",
+                        "warnings",
+                        "auth",
+                    ]
+                    .iter()
+                    .all(|name| object.contains_key(*name))
+            });
+        let mut json = if complete_envelope {
+            crate::auth::encode_http_envelope(&response.body, MAX_RESPONSE)
+                .map_err(|_| {
+                    io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "logical envelope encoding rejected",
+                    )
+                })?
+                .to_vec()
+        } else {
+            serde_json::to_vec(&response.body)?
+        };
         // The admitted Auth unwrap producer carries stored JSON. OpenBao writes
         // those bytes directly. Other JSON, including every error, keeps the
         // encoder newline. No request URL or body key selects this branch.

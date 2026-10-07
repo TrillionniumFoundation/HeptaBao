@@ -156,7 +156,10 @@ pub(crate) use ldap_renewal::{LdapRenewalObservation, LdapRenewalPlan};
 use provider_renewal::ProviderCredential;
 pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
-pub(crate) use wrapping::UnwrappedJson;
+pub(crate) use wrapping::{
+    IngressReplyContext, IngressReplyScope, StoredWrappedReply, UnwrappedJson, current_ingress,
+    encode_http_envelope, logical_envelope,
+};
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
@@ -249,6 +252,9 @@ pub struct AuthState {
     system_lease_defaults: Option<token_ttl::SystemLeaseDefaults>,
     #[serde(default, skip_serializing_if = "is_zero")]
     wrapping_clock: u64,
+    /// Sticky original-envelope custody, retained after final consume.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    raw_wrapped_reply_floor: bool,
     tokens: BTreeMap<String, Token>,
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -2435,6 +2441,7 @@ impl AuthState {
             namespace_deletions: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
+            raw_wrapped_reply_floor: false,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
             token_roles: BTreeMap::new(),

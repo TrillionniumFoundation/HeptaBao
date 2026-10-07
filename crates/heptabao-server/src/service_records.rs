@@ -47,7 +47,9 @@ impl RecordPlan {
 
     fn validate_precise_auth_owner(&self, state: &State) -> Result<(), Response> {
         self.validate_kubernetes_artifact_owner(state)?;
-        if !state.has_token_api_precision_state() {
+        if !state.has_token_api_precision_state()
+            && !state.protected_state()?.auth.has_raw_wrapped_reply_state()
+        {
             return Ok(());
         }
         // Bind the private floor and every precise issuer field to the exact
@@ -276,6 +278,12 @@ impl Service {
             .iter()
             .map(|owner| owner_bytes(root, owner, reader))
             .collect::<Result<Vec<_>, _>>()?;
+        AuthState::predecode_raw_reply_owner(&owners[1], root.state_schema).map_err(|_| {
+            Response::error(
+                503,
+                "original wrapped reply incoming record header rejected",
+            )
+        })?;
         let mut state = State {
             namespace_protected: None,
             namespace_leases: namespace_runtime::Leases::default(),

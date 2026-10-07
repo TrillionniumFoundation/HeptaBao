@@ -2187,6 +2187,17 @@ impl EngineState {
         Some((format!("{prefix}ocsp"), suffix.to_owned()))
     }
 
+    /// Capture classification follows the longest actual PKI owner and its
+    /// closed route enum, never an untrusted reply key or request media header.
+    pub(crate) fn wrapping_uses_raw_pki_transport(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(pki, relative)| pki.wrapping_uses_raw_public_transport(method, relative))
+    }
     pub(crate) fn is_actual_pki_ocsp(&self, namespace: &str, path: &str) -> bool {
         self.public_pki_mount(namespace, path)
             .is_some_and(|(_, relative)| relative == "ocsp")

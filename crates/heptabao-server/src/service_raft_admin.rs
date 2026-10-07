@@ -466,6 +466,9 @@ impl Service {
                 }
             })));
         }
+        AuthState::predecode_raw_reply_state(&committed.bytes).map_err(|_| {
+            Response::error(503, "original wrapped reply HA migration header rejected")
+        })?;
         let mut state: State = serde_json::from_slice(&committed.bytes)
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
         state.validate_format()?;

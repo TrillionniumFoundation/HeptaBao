@@ -178,6 +178,8 @@ pub(super) struct ExternalPkiPlan {
     deadline: Option<std::time::Instant>,
     publication_clock: PublicationClock,
     wrapping_ttl: Option<u64>,
+    // Closed actual PKI route classification captured with the admitted owner.
+    raw_wrapping_transport: bool,
     creation_path: String,
     // Captured only after our own durable publication. The original provider
     // stage identity and generation above are never replaced by this checkpoint.
@@ -497,13 +499,28 @@ impl Service {
             }
         };
         if let Some(ttl) = request.wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
-            let mut wrapped = match candidate.auth.wrap_response(
+            let wrapped = if candidate.engines.wrapping_uses_raw_pki_transport(
                 request.namespace,
+                request.method,
                 request.path,
-                ttl,
-                &response.body,
-                observed.seconds(),
             ) {
+                candidate.auth.wrap_response(
+                    request.namespace,
+                    request.path,
+                    ttl,
+                    &response.body,
+                    observed.seconds(),
+                )
+            } else {
+                candidate.auth.wrap_logical_response(
+                    request.namespace,
+                    request.path,
+                    ttl,
+                    &response.body,
+                    observed.seconds(),
+                )
+            };
+            let mut wrapped = match wrapped {
                 Ok(value) => value,
                 Err(error) => {
                     erase_json(&mut response.body);
@@ -847,6 +864,11 @@ impl Service {
             deadline: crate::request_deadline::current(),
             publication_clock: PublicationClock::capture(),
             wrapping_ttl: request.wrap_ttl_seconds.filter(|ttl| *ttl > 0),
+            raw_wrapping_transport: state.engines.wrapping_uses_raw_pki_transport(
+                request.namespace,
+                request.method,
+                request.path,
+            ),
             creation_path: request.path.into(),
             delivery_checkpoint: None,
         });
@@ -1027,13 +1049,24 @@ impl Service {
                     0
                 });
             }
-            let mut wrapped = match candidate.auth.wrap_response(
-                &plan.namespace,
-                &plan.creation_path,
-                ttl,
-                &response.body,
-                now,
-            ) {
+            let wrapped = if plan.raw_wrapping_transport {
+                candidate.auth.wrap_response(
+                    &plan.namespace,
+                    &plan.creation_path,
+                    ttl,
+                    &response.body,
+                    now,
+                )
+            } else {
+                candidate.auth.wrap_logical_response(
+                    &plan.namespace,
+                    &plan.creation_path,
+                    ttl,
+                    &response.body,
+                    now,
+                )
+            };
+            let mut wrapped = match wrapped {
                 Ok(value) => value,
                 Err(cause) => {
                     erase_json(&mut response.body);

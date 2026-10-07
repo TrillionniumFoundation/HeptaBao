@@ -819,6 +819,7 @@ impl HaProcess {
                                     let legacy_v1 = request.legacy_v1;
                                     let index_response = request.index_response;
                                     let unwrap_response = request.unwrap_response;
+                                    let _raw_reply_ingress = crate::auth::IngressReplyScope::authenticated_forward(request.wrapped_reply_ingress);
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
                                     let _forward_slot =
@@ -1182,7 +1183,9 @@ impl HaProcess {
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
         let legacy_v1 = self.emit_legacy_peer_v1;
-        let unwrap_response = path == "sys/wrapping/unwrap";
+        let unwrap_response = path == "sys/wrapping/unwrap"
+            || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+                && crate::auth::current_ingress().is_some();
         if unwrap_response && (legacy_v1 || !completed) {
             return Err("HA unwrap requires negotiated completed-forward authority".into());
         }
@@ -1271,10 +1274,11 @@ impl HaProcess {
             self.wait_forward_applied(receipt)?;
         }
         let unwrapped_json = if response.unwrapped_json.is_some() {
-            Some(crate::auth::UnwrappedJson::from_completed_forward(
+            Some(crate::auth::UnwrappedJson::from_completed_raw_forward(
                 receipt
                     .as_ref()
                     .ok_or("HA unwrap completed authority is missing")?,
+                &response,
             )?)
         } else {
             None

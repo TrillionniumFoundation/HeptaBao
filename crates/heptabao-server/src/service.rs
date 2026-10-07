@@ -104,10 +104,11 @@ const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
 const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
 const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
+const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_RSA8192_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = RAW_WRAPPED_REPLY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -140,6 +141,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_KEY_POLICY_STATE_SCHEMA
                 | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
                 | PKI_RSA8192_STATE_SCHEMA
+                | RAW_WRAPPED_REPLY_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -1095,6 +1097,7 @@ pub(crate) enum ExternalEffectResult {
 }
 
 pub(crate) struct PendingExternalRequest {
+    raw_reply_ingress: Option<crate::auth::IngressReplyContext>,
     fingerprint: String,
     now: u64,
     token_clock: Option<RequestClock>,
@@ -2044,6 +2047,8 @@ impl Service {
         pending: PendingExternalRequest,
         result: ExternalEffectResult,
     ) -> Response {
+        let _raw_reply_ingress =
+            crate::auth::IngressReplyScope::restore(pending.raw_reply_ingress.clone());
         let response = match (pending.effect, result) {
             #[cfg(target_os = "linux")]
             (
@@ -2552,6 +2557,7 @@ impl Service {
                 erase_json(&mut body);
                 return match plan {
                     Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
+                        raw_reply_ingress: crate::auth::current_ingress(),
                         fingerprint,
                         now,
                         token_clock,
@@ -2709,6 +2715,7 @@ impl Service {
             .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
+                raw_reply_ingress: crate::auth::current_ingress(),
                 fingerprint,
                 now,
                 token_clock,
@@ -3971,10 +3978,19 @@ impl Service {
             && !response.body.is_null()
             && response.body.get("wrap_info").is_none_or(Value::is_null)
         {
-            match transaction
-                .auth
-                .wrap_response(namespace, path, ttl, &response.body, now)
+            let wrapped = if transaction
+                .engines
+                .wrapping_uses_raw_pki_transport(namespace, method, path)
             {
+                transaction
+                    .auth
+                    .wrap_response(namespace, path, ttl, &response.body, now)
+            } else {
+                transaction
+                    .auth
+                    .wrap_logical_response(namespace, path, ttl, &response.body, now)
+            };
+            match wrapped {
                 Ok(wrapped) => {
                     response = Response {
                         unwrapped_json: None,
@@ -9674,3 +9690,7 @@ mod initialization_existing_tests;
 #[cfg(test)]
 #[path = "service_auth_mount_options_tests.rs"]
 mod auth_mount_options_tests;
+
+#[cfg(test)]
+#[path = "service_raw_wrapped_reply110_tests.rs"]
+mod raw_wrapped_reply110_tests;

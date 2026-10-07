@@ -5,15 +5,45 @@ use super::*;
 /// Private, response-only origin. Local construction occurs only after an
 /// actual wrapper was consumed, including the admitted affine final-use view.
 /// Neither user JSON, a header, an SDK response nor the URL constructs it.
-pub(crate) struct UnwrappedJson(());
+#[path = "auth_wrapped_reply110.rs"]
+mod raw_reply;
+pub(crate) use raw_reply::{
+    IngressReplyContext, IngressReplyScope, StoredWrappedReply, current_ingress,
+    encode_http_envelope, logical_envelope,
+};
+
+pub(crate) struct UnwrappedJson {
+    stored_reply: Option<StoredWrappedReply>,
+}
 impl UnwrappedJson {
-    pub(crate) fn from_completed_forward(
+    pub(crate) fn from_completed_raw_forward(
         receipt: &crate::ha_forward_completion::CompletedForwardReceipt,
+        response: &crate::ha_forward::ForwardResponse,
     ) -> Result<Self, String> {
-        if std::time::Instant::now() >= receipt.deadline {
-            return Err("HA unwrap framing receipt deadline exceeded".into());
+        if std::time::Instant::now() >= receipt.deadline || !receipt.wire_response_matches(response)
+        {
+            return Err("HA stored reply completion does not match".into());
         }
-        Ok(Self(()))
+        if let Some(stored) = &response.raw_wrapped_reply {
+            stored
+                .validate(&response.body)
+                .map_err(|_| "HA stored reply projection rejected")?;
+        }
+        Ok(Self {
+            stored_reply: response.raw_wrapped_reply.clone(),
+        })
+    }
+    pub(crate) fn has_stored_reply(&self) -> bool {
+        self.stored_reply.is_some()
+    }
+    pub(crate) fn stored_reply(&self) -> Option<&StoredWrappedReply> {
+        self.stored_reply.as_ref()
+    }
+    pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
+        self.stored_reply
+            .as_ref()
+            .map(|stored| stored.bytes(logical))
+            .transpose()
     }
 }
 
@@ -52,6 +82,8 @@ pub(super) struct WrappedResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     creation_stamp: Option<public_origin::CreationStamp>,
     response: Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    stored_reply: Option<StoredWrappedReply>,
     creation_path: String,
     creation_ttl: u64,
     wrapped_accessor: Option<String>,
@@ -113,6 +145,7 @@ impl AuthState {
     }
 
     pub(crate) fn validate_wrapping_state(&self) -> Result<(), AuthError> {
+        self.validate_raw_wrapped_reply_state()?;
         let mut count = 0;
         for token in self.tokens.values() {
             let Some(wrapped) = token.wrapping.as_ref() else {
@@ -152,6 +185,38 @@ impl AuthState {
         response: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        // Historical/direct Value-only producer cannot claim original HTTP bytes.
+        self.wrap_response_with_stored(namespace, path, ttl, response, now, None)
+    }
+
+    /// Closed JSON producer call sites select this after actual logical dispatch.
+    /// Raw PKI transports remain on the explicit historical producer.
+    pub(crate) fn wrap_logical_response(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        ttl: u64,
+        response: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let stored_reply = current_ingress()
+            .map(|context| StoredWrappedReply::capture(response, &context, path))
+            .transpose()?;
+        self.wrap_response_with_stored(namespace, path, ttl, response, now, stored_reply)
+    }
+
+    fn wrap_response_with_stored(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        ttl: u64,
+        response: &Value,
+        now: u64,
+        stored_reply: Option<StoredWrappedReply>,
+    ) -> Result<AuthResponse, AuthError> {
+        if let Some(stored) = &stored_reply {
+            stored.validate_owner(response, path)?;
+        }
         validate_namespace(namespace)?;
         validate_path(path, false)?;
         if ttl == 0 || ttl > MAX_TTL {
@@ -186,6 +251,7 @@ impl AuthState {
         let wrapped = WrappedResponse {
             creation_stamp: creation_stamp.clone(),
             response: response.clone(),
+            stored_reply,
             creation_path: path.into(),
             creation_ttl: ttl,
             wrapped_accessor: wrapped_accessor.clone(),
@@ -235,6 +301,13 @@ impl AuthState {
                 "data":null,"auth":null,"warnings":null,"wrap_info":info}),
         };
         self.wrapping_clock = now;
+        if token
+            .wrapping
+            .as_ref()
+            .is_some_and(|w| w.stored_reply.is_some())
+        {
+            self.raw_wrapped_reply_floor = true;
+        }
         self.store_token(id, token);
         Ok(result)
     }
@@ -354,16 +427,19 @@ impl AuthState {
         };
         if path == "sys/wrapping/rewrap" {
             // Same payload, origin and original TTL; no plaintext in the result.
-            return self.wrap_response(
+            return self.wrap_response_with_stored(
                 namespace,
                 &wrapped.creation_path,
                 wrapped.creation_ttl,
                 &wrapped.response,
                 now,
+                wrapped.stored_reply.clone(),
             );
         }
         Ok(AuthResponse {
-            unwrapped_json: Some(UnwrappedJson(())),
+            unwrapped_json: Some(UnwrappedJson {
+                stored_reply: wrapped.stored_reply.clone(),
+            }),
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,

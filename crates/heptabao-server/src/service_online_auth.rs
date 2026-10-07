@@ -311,9 +311,10 @@ impl Service {
             response.body["auth"]["client_token"] = json!(token.as_str());
         }
         if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
-            let wrapped = state
-                .auth
-                .wrap_response(namespace, &path, ttl, &response.body, now);
+            let wrapped =
+                state
+                    .auth
+                    .wrap_logical_response(namespace, &path, ttl, &response.body, now);
             erase_json(&mut response.body);
             response = match wrapped {
                 Ok(response) => response,
@@ -504,9 +505,10 @@ impl Service {
             && response.status != 204
             && !response.body.is_null()
         {
-            let wrapped = state
-                .auth
-                .wrap_response(namespace, &path, ttl, &response.body, now);
+            let wrapped =
+                state
+                    .auth
+                    .wrap_logical_response(namespace, &path, ttl, &response.body, now);
             erase_json(&mut response.body);
             response = match wrapped {
                 Ok(response) => response,
@@ -937,10 +939,13 @@ impl Service {
             };
         }
         if let Some((path, ttl)) = wrapping {
-            let wrapped =
-                state
-                    .auth
-                    .wrap_response(&request_namespace, &path, ttl, &issued.body, request_now);
+            let wrapped = state.auth.wrap_logical_response(
+                &request_namespace,
+                &path,
+                ttl,
+                &issued.body,
+                request_now,
+            );
             erase_json(&mut issued.body);
             issued = match wrapped {
                 Ok(response) => response,

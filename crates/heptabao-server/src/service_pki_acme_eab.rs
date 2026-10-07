@@ -137,7 +137,7 @@ impl Service {
                     return error;
                 }
             };
-            let mut wrapped = match candidate.auth.wrap_response(
+            let mut wrapped = match candidate.auth.wrap_logical_response(
                 scoped.namespace,
                 scoped.path,
                 ttl,

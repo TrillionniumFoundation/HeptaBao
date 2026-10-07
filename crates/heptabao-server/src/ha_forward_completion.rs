@@ -138,6 +138,12 @@ impl CompletedForwardReceipt {
     pub(crate) fn precise(&self) -> bool {
         self.wire.precise
     }
+    pub(crate) fn wire_response_matches(
+        &self,
+        response: &crate::ha_forward::ForwardResponse,
+    ) -> bool {
+        wire_response_digest(response).is_ok_and(|digest| digest == self.wire.response_digest)
+    }
     pub(crate) fn response_matches(&self, response: &crate::Response) -> bool {
         response_digest(response).is_ok_and(|digest| digest == self.wire.response_digest)
     }
@@ -147,7 +153,19 @@ pub(crate) fn response_digest(response: &crate::Response) -> Result<[u8; 32], St
     // Ordinary completion digests remain byte-identical to the old version.
     // A negotiated unwrap origin is additionally bound to the same completion.
     let encoded = zeroize::Zeroizing::new(
-        if response.unwrapped_json.is_some() {
+        if let Some(stored) = response
+            .unwrapped_json
+            .as_ref()
+            .and_then(|origin| origin.stored_reply())
+        {
+            serde_json::to_vec(&(
+                response.status,
+                &response.body,
+                &response.response_headers,
+                crate::ha_forward::UnwrapFramingWire::StoredJson,
+                stored,
+            ))
+        } else if response.unwrapped_json.is_some() {
             serde_json::to_vec(&(
                 response.status,
                 &response.body,
@@ -167,7 +185,15 @@ pub(crate) fn wire_response_digest(
     // Ordinary completion digests remain byte-identical to the old version.
     // A negotiated unwrap origin is additionally bound to the same completion.
     let encoded = zeroize::Zeroizing::new(
-        if response.unwrapped_json.is_some() {
+        if let Some(stored) = &response.raw_wrapped_reply {
+            serde_json::to_vec(&(
+                response.status,
+                &response.body,
+                &response.response_headers,
+                crate::ha_forward::UnwrapFramingWire::StoredJson,
+                stored,
+            ))
+        } else if response.unwrapped_json.is_some() {
             serde_json::to_vec(&(
                 response.status,
                 &response.body,

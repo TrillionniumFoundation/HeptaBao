@@ -196,6 +196,8 @@ impl Service {
                 return Err(unavailable("HA join cannot reuse an absent cursor"));
             }
             CommittedStateRead::Materialized(committed) => {
+                AuthState::predecode_raw_reply_state(&committed.bytes)
+                    .map_err(|_| unavailable("original wrapped reply HA join header rejected"))?;
                 let state: State = serde_json::from_slice(&committed.bytes)
                     .map_err(|_| unavailable("HA join state schema invalid"))?;
                 state.validate_format()?;

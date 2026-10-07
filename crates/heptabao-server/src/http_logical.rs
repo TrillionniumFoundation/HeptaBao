@@ -50,8 +50,32 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
     let snapshot::NativeReply::Json(response) = reply else {
         return;
     };
-    if response.status != 200 {
+    if response.status != 200
+        || response
+            .unwrapped_json
+            .as_ref()
+            .is_some_and(crate::auth::UnwrappedJson::has_stored_reply)
+    {
         return;
+    }
+    let Some(original) = response.body.as_object() else {
+        return;
+    };
+    if ["data", "auth", "warnings"]
+        .iter()
+        .any(|key| original.contains_key(*key))
+        && original.get("wrap_info").is_none_or(Value::is_null)
+    {
+        match crate::auth::logical_envelope(&response.body, &request_id(random), path) {
+            Ok(mut envelope) => {
+                crate::service::erase_json(&mut response.body);
+                response.body = std::mem::take(&mut envelope);
+            }
+            Err(_) => {
+                *response = Response::error(503, "logical envelope projection rejected");
+                return;
+            }
+        }
     }
     let Some(body) = response.body.as_object_mut() else {
         return;
@@ -99,45 +123,6 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
             {
                 auth.remove(name);
             }
-        }
-    }
-    if matches!(
-        path,
-        "auth/token/lookup" | "auth/token/lookup-self" | "auth/token/lookup-accessor"
-    ) && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
-    {
-        // These values come from the admitted credential owner. This wire
-        // projection cannot add a token, namespace capability or lease.
-        data.remove("namespace");
-        data.remove("expire_time_unix");
-        data.entry("meta").or_insert(Value::Null);
-        if !data.contains_key("issue_time")
-            && let Some(created) = data.get("creation_time").and_then(Value::as_u64)
-        {
-            data.insert(
-                "issue_time".into(),
-                json!(crate::engines::timestamp(created)),
-            );
-        }
-        if data.contains_key("identity_policies") {
-            data.entry("external_namespace_policies")
-                .or_insert_with(|| json!({}));
-        }
-    }
-    if path.ends_with("/tune")
-        && (path.starts_with("sys/mounts/") || path.starts_with("sys/auth/"))
-        && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
-    {
-        for field in ["revision", "incarnation", "accessor"] {
-            data.remove(field);
-        }
-    }
-    if path == "sys/mounts"
-        && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
-    {
-        for mount in data.values_mut().filter_map(Value::as_object_mut) {
-            mount.remove("revision");
-            mount.remove("incarnation");
         }
     }
     if inject_system_data(path)

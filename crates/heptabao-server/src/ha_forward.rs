@@ -12,10 +12,11 @@ const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
 // Older frames and their strict decoding remain unchanged; no mutation replay.
 const INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFQ4";
 const INDEX_RESPONSE_MAGIC: &[u8; 5] = b"HBFS2";
-// Only the explicit unwrap negotiation can carry the trusted framing origin.
-// A pre-HBFQ5 sender/receiver fails before unwrap consumption, without retry.
-const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ5";
-const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS3";
+// Q6/S4 negotiates complete original bytes and ingress custody. Q5/S3 only
+// represented the older newline unit and cannot authorize full reply transfer.
+const LEGACY_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ5";
+const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ6";
+const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS4";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
@@ -58,6 +59,8 @@ pub(crate) struct ForwardRequest {
     pub origin_peer: Option<std::net::IpAddr>,
     #[serde(default)]
     pub completion_nonce: Option<[u8; 32]>,
+    #[serde(default)]
+    pub wrapped_reply_ingress: Option<[u8; 16]>,
     /// True only when an explicitly enabled one-step rolling transition
     /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
     #[serde(skip)]
@@ -156,6 +159,8 @@ struct ForwardRequestRef<'a> {
     origin_peer: Option<std::net::IpAddr>,
     #[serde(skip_serializing_if = "Option::is_none")]
     completion_nonce: Option<[u8; 32]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    wrapped_reply_ingress: Option<[u8; 16]>,
 }
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
@@ -169,6 +174,8 @@ pub(crate) enum UnwrapFramingWire {
 pub(crate) struct ForwardResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unwrapped_json: Option<UnwrapFramingWire>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub raw_wrapped_reply: Option<crate::auth::StoredWrappedReply>,
     pub cluster_id: String,
     pub source: u64,
     pub target: u64,
@@ -209,6 +216,7 @@ pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
         || encoded.starts_with(PEER_REQUEST_MAGIC)
         || encoded.starts_with(INDEX_REQUEST_MAGIC)
         || encoded.starts_with(UNWRAP_REQUEST_MAGIC)
+        || encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC)
 }
 
 #[cfg(test)]
@@ -283,6 +291,7 @@ pub(crate) fn encode_request_for_cluster(
             client_certificates,
             origin_peer: None,
             completion_nonce: None,
+            wrapped_reply_ingress: None,
         },
     )
 }
@@ -363,6 +372,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
             client_certificates,
             origin_peer: None,
             completion_nonce: None,
+            wrapped_reply_ingress: None,
         },
     )
 }
@@ -405,6 +415,7 @@ pub(crate) fn encode_peer_request_for_cluster(
             client_certificates,
             origin_peer: Some(origin_peer),
             completion_nonce: None,
+            wrapped_reply_ingress: None,
         },
     )
 }
@@ -461,14 +472,17 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     validate_direction(direction.0, direction.1)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
-    if path == "sys/wrapping/unwrap" && completion_nonce.is_none() {
+    let wrapped_reply_ingress = crate::auth::current_ingress().map(|context| context.attempt_id());
+    let full_reply = path == "sys/wrapping/unwrap"
+        || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some();
+    if full_reply && completion_nonce.is_none() {
         return Err("HA unwrap requires original completed-request nonce".into());
     }
     if wrap_ttl_seconds.is_some_and(|ttl| ttl > 32 * 24 * 3600) {
         return Err("HA wrapping TTL is invalid".into());
     }
     encode(
-        if path == "sys/wrapping/unwrap" {
+        if full_reply {
             UNWRAP_REQUEST_MAGIC
         } else {
             INDEX_REQUEST_MAGIC
@@ -486,11 +500,19 @@ pub(crate) fn encode_completed_index_request_for_cluster(
             client_certificates,
             origin_peer,
             completion_nonce,
+            wrapped_reply_ingress: if full_reply {
+                wrapped_reply_ingress
+            } else {
+                None
+            },
         },
     )
 }
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
+    if encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC) {
+        return Err("HA original stored reply requires Q6 before consumption".into());
+    }
     let unwrap_response = encoded.starts_with(UNWRAP_REQUEST_MAGIC);
     let index_response = encoded.starts_with(INDEX_REQUEST_MAGIC) || unwrap_response;
     let with_peer = encoded.starts_with(PEER_REQUEST_MAGIC);
@@ -515,8 +537,12 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     if unwrap_response && request.completion_nonce.is_none() {
         return Err("HA unwrap framing requires original completion nonce".into());
     }
-    if unwrap_response != (request.path == "sys/wrapping/unwrap") {
-        return Err("HA unwrap framing requires explicit negotiated version".into());
+    let full_reply = request.path == "sys/wrapping/unwrap"
+        || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+            && request.wrapped_reply_ingress.is_some();
+    if unwrap_response != full_reply || !unwrap_response && request.wrapped_reply_ingress.is_some()
+    {
+        return Err("HA original reply requires explicit negotiated version".into());
     }
     if !index_response
         && (with_peer != request.origin_peer.is_some()
@@ -617,6 +643,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 index_response: false,
                 unwrap_response: false,
                 completion_nonce: None,
+                wrapped_reply_ingress: None,
             })
         }
         Err(error) => Err(error),
@@ -654,6 +681,7 @@ pub(crate) fn encode_response_for_cluster(
             status,
             body: body.clone(),
             unwrapped_json: None,
+            raw_wrapped_reply: None,
             response_headers: Default::default(),
             consistency_index: None,
             completion: None,
@@ -708,6 +736,15 @@ fn encode_completed_framed_response_for_cluster(
     {
         return Err("HA trusted unwrap origin requires successful negotiated framing".into());
     }
+    if let Some(stored) = response
+        .unwrapped_json
+        .as_ref()
+        .and_then(|origin| origin.stored_reply())
+    {
+        stored
+            .validate(&response.body)
+            .map_err(|_| "HA stored reply representation rejected")?;
+    }
     validate_cluster_id(cluster_id)?;
     validate_direction(source, target)?;
     if !(100..=599).contains(&response.status) {
@@ -738,6 +775,10 @@ fn encode_completed_framed_response_for_cluster(
                 .unwrapped_json
                 .as_ref()
                 .map(|_| UnwrapFramingWire::StoredJson),
+            raw_wrapped_reply: response
+                .unwrapped_json
+                .as_ref()
+                .and_then(|origin| origin.stored_reply().cloned()),
             response_headers: response.response_headers.copy_for_forward(),
             consistency_index,
             completion,
@@ -777,6 +818,14 @@ fn decode_framed_response_for_cluster(
     {
         return Err("HA unwrapped JSON origin is outside negotiated successful reply".into());
     }
+    if let Some(stored) = &response.raw_wrapped_reply {
+        if !unwrap_response || response.unwrapped_json.is_none() || response.status != 200 {
+            return Err("HA original stored reply is outside negotiated consumption".into());
+        }
+        stored
+            .validate(&response.body)
+            .map_err(|_| "HA stored reply representation rejected")?;
+    }
     validate_direction(response.source, response.target)?;
     validate_cluster_id(&response.cluster_id)?;
     if response.cluster_id != expected_cluster_id || !(100..=599).contains(&response.status) {
@@ -789,6 +838,7 @@ fn decode_framed_response_for_cluster(
 pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
     let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
     if response.unwrapped_json.is_some()
+        || response.raw_wrapped_reply.is_some()
         || response.consistency_index.is_some()
         || response.completion.is_some()
         || !response.response_headers.is_empty()
@@ -854,6 +904,7 @@ pub(crate) fn decode_legacy_response_for_transition(
         status: response.status,
         body: std::mem::take(&mut response.body),
         unwrapped_json: None,
+        raw_wrapped_reply: None,
         response_headers: Default::default(),
         consistency_index: None,
         completion: None,
@@ -965,6 +1016,85 @@ fn erase_json(value: &mut Value) {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn raw110_q6_preconsume_and_s4_complete_payload_digest()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
+        let admin = auth.authenticate(&root, 100)?;
+        let _ingress = crate::auth::IngressReplyScope::listener(&[0x91; 16]);
+        let issued = auth.wrap_logical_response(
+            "",
+            "sys/wrapping/wrap",
+            60,
+            &json!({"data":{"stable":"<>&"}}),
+            100,
+        )?;
+        let token = issued.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?
+            .to_owned();
+        let context = ForwardContext {
+            method: "POST",
+            path: "sys/wrapping/unwrap",
+            namespace: "",
+            token: &root,
+            body: &Value::Null,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+            caller_deadline: None,
+        };
+        let request = encode_completed_index_request_for_cluster(
+            "raw110-ha",
+            (1, 2),
+            &context,
+            Some([5; 32]),
+        )?;
+        assert!(request.starts_with(b"HBFQ6"));
+        let mut downgraded = request.clone();
+        downgraded[..5].copy_from_slice(b"HBFQ5");
+        assert!(decode_request_for_cluster(&downgraded, "raw110-ha").is_err());
+        // Refusal occurred before any Auth dispatch or token consume.
+        assert!(auth.is_wrapping_token(&token));
+        let consumed = auth.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":token}),
+            100,
+        )?;
+        let response = crate::Response {
+            unwrapped_json: consumed.unwrapped_json,
+            status: consumed.status,
+            body: consumed.body,
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        let bytes =
+            encode_completed_unwrap_response_for_cluster("raw110-ha", 2, 1, &response, None)?;
+        assert!(bytes.starts_with(b"HBFS4"));
+        let received = decode_unwrap_response_for_cluster(&bytes, "raw110-ha")?;
+        assert!(received.raw_wrapped_reply.is_some());
+        assert!(
+            crate::ha_forward_completion::response_digest(&response)?
+                == crate::ha_forward_completion::wire_response_digest(&received)?
+        );
+        let mut lower = bytes.clone();
+        lower[..5].copy_from_slice(b"HBFS3");
+        assert!(decode_unwrap_response_for_cluster(&lower, "raw110-ha").is_err());
+        let mut tampered = serde_json::to_value(&received)?;
+        tampered["raw_wrapped_reply"]["digest"] = json!(vec![9_u8; 32]);
+        assert!(
+            decode_unwrap_response_for_cluster(
+                &encode(UNWRAP_RESPONSE_MAGIC, &tampered)?,
+                "raw110-ha"
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+
     #[test]
     fn trusted_unwrap_framing_negotiation_rejects_downgrade_and_unknown_origin()
     -> Result<(), Box<dyn std::error::Error>> {

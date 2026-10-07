@@ -147,6 +147,9 @@ impl Service {
             let engines = Self::load_owner_bytes(resources, &manifest, "engines")?;
             let database = Self::load_owner_bytes(resources, &manifest, "database")?;
             let raft_admin = Self::load_owner_bytes(resources, &manifest, "raft_admin")?;
+            AuthState::predecode_raw_reply_owner(&auth, manifest.state_schema()).map_err(|_| {
+                Response::error(503, "original wrapped reply incoming owner header rejected")
+            })?;
             let state = State {
                 namespace_protected: None,
                 namespace_leases: namespace_runtime::Leases::default(),
@@ -202,6 +205,9 @@ impl Service {
                 }
                 (Zeroizing::new(record.expose().to_vec()), true)
             };
+            AuthState::predecode_raw_reply_state(&bytes).map_err(|_| {
+                Response::error(503, "original wrapped reply incoming state header rejected")
+            })?;
             let state: State = serde_json::from_slice(&bytes)
                 .map_err(|_| Response::error(503, "server state schema is invalid"))?;
             state.validate_format()?;
@@ -329,6 +335,21 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= RAW_WRAPPED_REPLY_STATE_SCHEMA
+            && incoming.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade original wrapped reply custody",
+            ));
+        }
+        incoming
+            .protected_state()?
+            .auth
+            .validate_raw_wrapped_reply_successor(&current.protected_state()?.auth)
+            .map_err(|_| {
+                Response::error(400, "snapshot would regress original wrapped reply custody")
+            })?;
         if current.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
             && incoming.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
         {

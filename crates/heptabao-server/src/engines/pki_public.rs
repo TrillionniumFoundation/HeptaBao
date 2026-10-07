@@ -56,6 +56,25 @@ fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineRespon
 }
 
 impl Pki {
+    pub(in crate::engines) fn wrapping_uses_raw_public_transport(
+        &self,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        match self.public_read_route(method, path) {
+            Some(
+                PkiPublicRead::Ocsp(..)
+                | PkiPublicRead::RawCa(..)
+                | PkiPublicRead::RawCertificate(..)
+                | PkiPublicRead::IssuerCertificate(..),
+            ) => true,
+            Some(PkiPublicRead::LocalCrl(_, format) | PkiPublicRead::IssuerCrl(_, _, format)) => {
+                !matches!(format, IssuerCrlFormat::Json)
+            }
+            Some(PkiPublicRead::ExternalCrl(path)) => !path.starts_with("cert/"),
+            _ => false,
+        }
+    }
     fn local_crl_response(der: &[u8], format: IssuerCrlFormat) -> Result<EngineResponse> {
         if matches!(format, IssuerCrlFormat::Json) {
             return Ok(ok(json!({"crl":pem("X509 CRL",der)}), false));
