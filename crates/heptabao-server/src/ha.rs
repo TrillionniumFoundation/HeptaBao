@@ -805,7 +805,7 @@ impl HaProcess {
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
                                 if is_forward_request(&frame) {
-                                    let request = decode_forward_request(
+                                    let mut request = decode_forward_request(
                                         &frame,
                                         &listener_cluster_id,
                                         listener_allow_legacy_peer_v1,

@@ -2424,7 +2424,7 @@ mod tests {
             )?;
             let mut output = zeroize::Zeroizing::new(Vec::new());
             write_response(
-                &mut output,
+                &mut *output,
                 Response {
                     status: unwrapped.status,
                     body: unwrapped.body,

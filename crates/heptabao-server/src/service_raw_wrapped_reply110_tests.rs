@@ -1491,7 +1491,7 @@ fn raw113_actual_opaque_number_and_string_shadow_require_distinct_mandatory_audi
                 .to_owned(),
         ));
     }
-    let mut audit = Zeroizing::new(std::fs::read(directory.0.join("audit.jsonl"))?);
+    let mut audit = Zeroizing::new(std::fs::read(directory.path.join("audit.jsonl"))?);
     let mut request_digests = Vec::new();
     for line in audit
         .split(|byte| *byte == b'\n')
@@ -1964,7 +1964,7 @@ fn raw113_actual_selected_byte_string_drop_projection_reaches_mandatory_audit_be
             101,
         );
         assert_eq!(response.status, 200);
-        let audit = Zeroizing::new(std::fs::read(directory.0.join("audit.jsonl"))?);
+        let audit = Zeroizing::new(std::fs::read(directory.path.join("audit.jsonl"))?);
         let rows = audit
             .split(|b| *b == b'\n')
             .filter(|line| !line.is_empty())
