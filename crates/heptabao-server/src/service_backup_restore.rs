@@ -355,6 +355,16 @@ impl Service {
                 "snapshot would downgrade PKI raw HTTP reply custody",
             ));
         }
+        current.validate_namespace_deletion_state()?;
+        incoming.validate_namespace_deletion_state()?;
+        if current.auth.has_sdk_auth_retirement_state()
+            && incoming.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK Auth retirement ownership",
+            ));
+        }
         if current.schema >= RAW_WRAPPED_REPLY_STATE_SCHEMA
             && incoming.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA
         {
@@ -363,6 +373,15 @@ impl Service {
                 "snapshot would downgrade original wrapped reply custody",
             ));
         }
+        incoming
+            .protected_state()?
+            .auth
+            .validate_sdk_auth_retirement_state(
+                Some(&current.protected_state()?.auth),
+                &incoming.cluster_id,
+                |ns| incoming.namespaces.incarnation(ns),
+            )
+            .map_err(|e| Response::error(400, &e.message))?;
         incoming
             .protected_state()?
             .auth
@@ -395,6 +414,14 @@ impl Service {
             .auth
             .validate_namespace_deletion_successor(&current.auth, &incoming.cluster_id)
             .map_err(|error| Response::error(error.status, &error.message))?;
+        if current.auth.has_namespace_sdk_cleanup_state()
+            && incoming.schema < NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                503,
+                "namespace SDK cleanup reader floor cannot decrease",
+            ));
+        }
         if current.has_namespace_deletion_state()
             && incoming.schema < NAMESPACE_DELETION_STATE_SCHEMA
         {
@@ -450,6 +477,14 @@ impl Service {
             .engines
             .validate_pki_revocation_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && incoming.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade mount listing visibility",
+            ));
+        }
         if current.schema >= PKI_RSA8192_STATE_SCHEMA && incoming.schema < PKI_RSA8192_STATE_SCHEMA
         {
             return Err(Response::error(

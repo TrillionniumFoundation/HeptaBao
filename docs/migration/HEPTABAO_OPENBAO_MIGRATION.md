@@ -47,6 +47,7 @@ and `full_format_migration=false`.
 | Pruned/partial history | Rejected; historical gaps are not silently renumbered |
 | Custom metadata | Copied and read back |
 | `cas_required` | Copied; every data write uses an explicit CAS regardless of policy |
+| `metadata_cas_required` | Copied when the source exposes a valid policy; a newly initialized target metadata counter starts at one, rather than copying the source counter |
 | `max_versions` | At least the larger of the source's explicit setting and copied-history length, so a target default cannot prune the copied history |
 | `delete_version_after` | Source automatic-deletion settings are rejected; target auto-delete is explicitly disabled |
 | Creation/update/deletion timestamps | Original timestamps are retained only in optional export metadata; target timestamps are newly assigned, never forged |
@@ -222,9 +223,11 @@ This is stronger than the migration CLI's assertion flags, but it remains a
 bounded synthetic process rehearsal. It does not freeze an arbitrary production
 OpenBao deployment, switch a real load balancer/DNS endpoint, or grant cutover/rollback authority. The
 current extension described below repatriates only verified append-only KV history
-on already-migrated keys. New keys, deleted/destroyed/pruned versions, changed
-metadata, other engines and external effects still require separate adapters and
-an explicit data-forward/reconcile policy and RPO decision.
+on already-migrated keys, creation of explicitly selected absent keys, and a
+separately opted-in custom-metadata update after history verification.
+Deleted/destroyed/pruned versions, other metadata changes, other engines and
+external effects still require separate adapters and an explicit data-forward
+reconcile policy and RPO decision.
 
 ## Recorded live rehearsal
 
@@ -302,29 +305,37 @@ compatibility, or atomic multi-object cutover.
 ## Explicit prefix-append import for post-cutover KV writes
 
 `import --append-verified-prefix` is a distinct, opt-in destination admission for
-an existing KV object. It requires an immutable private export, a separate bound
-checkpoint, `--apply` and `--target-exclusive` before any write. The mode is not
+an existing KV object or an explicitly selected absent key. It requires an
+immutable private export, a separate bound checkpoint, `--apply` and `--target-exclusive` before any write. The mode is not
 available for live `transfer` or `export`, and its checkpoint binding cannot be
 reused as the default new-object transfer binding. A dry-run performs only reads
 and does not allocate a checkpoint.
 
 For each explicitly selected existing key, every original value/version ordinal
-must be an exact prefix of the exported history. Selected metadata must match,
-auto-deletion must be disabled, and the destination must explicitly retain the
-complete imported history. A divergent prefix, destination-ahead history, missing
-object, changed metadata, deletion/destruction/pruning or insufficient retention
-is rejected. Existing values and metadata are never overwritten or fabricated.
+must be an exact prefix of the exported history. Selected metadata must match
+unless the separate custom-metadata option below admits that one field.
+Auto-deletion must be disabled, and the destination must explicitly retain the
+complete imported history. A divergent prefix, destination-ahead history,
+metadata change outside the explicit option, deletion/destruction/pruning or
+insufficient retention is rejected. Existing values are never overwritten or
+fabricated. Custom metadata changes require the separate protocol below.
 Only after readback and unchanged-metadata verification is the admitted prefix
-saved in the checkpoint. Missing suffix versions then use the existing durable
+saved in the checkpoint. An absent key uses the normal new-object copier with
+its own durable admission and a second absence check before metadata creation;
+a concurrent creator is rejected. Missing suffix versions then use the existing
+durable
 intent → CAS append → exact history readback → checkpoint path. A lost response
 cannot reseed the prefix or permit blind retry; absent uncertain writes still
 require authoritative reconciliation. Repeating a completed import is read-only.
 
-The live rehearsal now makes actual new target versions after the official source
-process has stopped, exports that bounded synthetic history, then stops the
+The live rehearsal now creates an explicitly selected new key, new versions on
+existing keys and a custom-metadata change after the official source process
+has stopped. It exports that bounded synthetic history, then stops the
 target before restarting the same official source root. It executes the actual
-prefix-append CLI, discards one acknowledgement only after a real source append
-has committed, restarts the source and verifies resume without duplicate versions.
+prefix-append CLI, discards acknowledgements only after actual selected effects
+have committed, restarts the source and verifies resume without duplicate versions.
+These are executable fixture paths; the historical receipts above retain their
+original binary and case scope.
 Original source revocation, Cubbyhole and wrapping isolation checks remain.
 
 This is bounded data-forward recovery, not all-asset or atomic rollback. The
@@ -341,4 +352,37 @@ python qa/openbao-acceptance/migrate_kv2.py import \
   --append-verified-prefix
 # After actual writer fencing and review, repeat with:
 # --apply --target-exclusive --checkpoint /secure/migration/rollback-append.json
+```
+
+## Explicit custom-metadata updates during append import
+
+Add `--allow-custom-metadata-update` only to an
+`import --append-verified-prefix` invocation. The option uses a distinct bound
+checkpoint context. All other selected metadata, the existing version prefix,
+complete retention and writer-fencing obligations still apply.
+
+After every imported version is verified, the copier persists the complete
+observed metadata and an in-flight intent before issuing one metadata CAS
+request. It changes only `custom_metadata`. Readback must preserve every version
+state, ordinal, timestamp, retention field and other object field, with exactly
+one increment of `current_metadata_version`; only the object update timestamp
+may also change.
+
+A committed response lost before checkpoint acknowledgement resumes through
+exact history and metadata readback. An unchanged old object remains an ambiguous
+in-flight outcome and stops with
+`ambiguous_custom_metadata_requires_authoritative_reconciliation`; it does not
+authorize another request. A changed history, counter or owner rejects the
+operation. This option provides no general metadata rewrite, source freeze,
+full asset migration or cutover.
+
+For an admitted append import, include the option on every resume:
+
+```sh
+python qa/openbao-acceptance/migrate_kv2.py import \
+  --target-prefix HB_ROLLBACK --target-mount secret \
+  --export-file /secure/migration/post-cutover.json \
+  --append-verified-prefix --allow-custom-metadata-update \
+  --apply --target-exclusive \
+  --checkpoint /secure/migration/rollback-custom-metadata.json
 ```

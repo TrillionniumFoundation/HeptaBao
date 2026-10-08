@@ -50,8 +50,12 @@ pub(super) struct Cleanup {
     clock: RequestClock,
     deadline: Instant,
     expected: [u8; 32],
+    namespace_work: Option<namespace_sdk_cleanup::Authority>,
 }
 impl Cleanup {
+    pub(super) fn namespace_work(&self) -> Option<&namespace_sdk_cleanup::Authority> {
+        self.namespace_work.as_ref()
+    }
     pub(super) fn check(&self, call: &Call) -> Result<(), Response> {
         self.clock
             .observed_at()
@@ -64,6 +68,21 @@ impl Cleanup {
                 503,
                 "SDK credential original cleanup authority changed",
             ));
+        }
+        if let Some(work) = &self.namespace_work {
+            work.check_deadline()?;
+        }
+        Ok(())
+    }
+    pub(super) fn check_service(&self, service: &Service) -> Result<(), Response> {
+        if let Some(work) = &self.namespace_work {
+            work.check(service)?;
+        }
+        Ok(())
+    }
+    pub(super) fn check_auth(&self, auth: &AuthState) -> Result<(), Response> {
+        if let Some(work) = &self.namespace_work {
+            work.check_auth(auth)?;
         }
         Ok(())
     }
@@ -215,8 +234,18 @@ pub(super) fn finish_callback(
     candidate.auth.observe_sdk_auth_clock(at);
     candidate
         .auth
-        .store_sdk_credential(record)
+        .store_sdk_credential(record.clone())
         .map_err(auth_error)?;
+    plan.retirement_resource_completed(&mut candidate.auth, &record.id, at)?;
+    if let Some(cleanup) = plan
+        .cleanup
+        .lock()
+        .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?
+        .as_ref()
+        && let Some(work) = &cleanup.namespace_work
+    {
+        work.finish_credential(candidate, &record)?;
+    }
     Ok(response)
 }
 pub(super) fn after_publication(plan: &Plan, auth: &AuthState) -> Result<(), Response> {
@@ -241,11 +270,14 @@ pub(super) fn after_publication(plan: &Plan, auth: &AuthState) -> Result<(), Res
                 ));
             }
             cleanup.expected = digest(&call.record)?;
+            if let Some(work) = &mut cleanup.namespace_work {
+                work.after_publication(auth)?;
+            }
         }
     }
     Ok(())
 }
-fn context(
+pub(super) fn context(
     service: &Service,
     state: &State,
     request: &RequestView<'_>,
@@ -358,6 +390,13 @@ impl Service {
         let Some(record) = state.auth.sdk_credential_record(request.namespace, id) else {
             return Response::error(400, "invalid lease");
         };
+        if state.auth.namespace_sdk_cleanup_blocks(
+            crate::auth::namespace_sdk_cleanup::Kind::Credential,
+            &record.namespace,
+            &record.id,
+        ) {
+            return Response::error(503, "SDK credential belongs to a namespace cleanup task");
+        }
         if record.cluster != state.cluster_id {
             return Response::error(503, "SDK credential cluster owner rejected");
         }
@@ -432,6 +471,7 @@ impl Service {
                 path: &path,
                 deadline,
                 renewal: None,
+                retirement: None,
             },
         );
         if let Some(plan) = self.pending_sdk_auth_request.as_mut() {
@@ -544,6 +584,20 @@ impl Service {
         &mut self,
         clock: RequestClock,
     ) -> Result<Option<Plan>, Response> {
+        self.prepare_selected_credential_cleanup(clock, None)
+    }
+    pub(in crate::service) fn prepare_namespace_sdk_credential(
+        &mut self,
+        clock: RequestClock,
+        key: String,
+    ) -> Result<Option<Plan>, Response> {
+        self.prepare_selected_credential_cleanup(clock, Some(key))
+    }
+    fn prepare_selected_credential_cleanup(
+        &mut self,
+        clock: RequestClock,
+        namespace_work: Option<String>,
+    ) -> Result<Option<Plan>, Response> {
         if self.pending_sdk_auth_request.is_some()
             || self.recovery_required
             || self.audit_failed
@@ -579,11 +633,31 @@ impl Service {
             .auth
             .sdk_auth_clock_floor()
             .map_or(at, |floor| at.max(floor));
-        let Some(mut record) = state
-            .auth
-            .next_sdk_credential_cleanup(at, self.sdk_credential_cleanup_cursor.as_deref())
-            .map_err(auth_error)?
-        else {
+        let selected = if let Some(key) = &namespace_work {
+            let job = state.namespace_sdk_cleanup_record(key)?;
+            if job.kind() != crate::auth::namespace_sdk_cleanup::Kind::Credential
+                || job.stage() != &crate::auth::namespace_sdk_cleanup::Stage::Queued
+            {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK job is not queued credential work",
+                ));
+            }
+            let record = state
+                .auth
+                .sdk_credential_record(job.binding().namespace(), job.lease_id())
+                .ok_or_else(|| {
+                    Response::error(503, "namespace SDK saved credential lease missing")
+                })?;
+            job.check_credential(&record, false).map_err(auth_error)?;
+            Some(record)
+        } else {
+            state
+                .auth
+                .next_sdk_credential_cleanup(at, self.sdk_credential_cleanup_cursor.as_deref())
+                .map_err(auth_error)?
+        };
+        let Some(mut record) = selected else {
             return Ok(None);
         };
         self.sdk_credential_cleanup_cursor = Some(record.id.clone());
@@ -601,7 +675,8 @@ impl Service {
             .map_err(auth_error)?;
         let key = sdk_auth_key(&state.cluster_id, &record.backend)?;
         if self.sdk_hosts.get(&key).is_some_and(|control| {
-            control.busy.load(Ordering::Acquire) || control.retiring.load(Ordering::Acquire)
+            control.busy.load(Ordering::Acquire)
+                || (control.retiring.load(Ordering::Acquire) && namespace_work.is_none())
         }) {
             return Ok(None);
         }
@@ -638,6 +713,9 @@ impl Service {
             .auth
             .store_sdk_credential(record.clone())
             .map_err(auth_error)?;
+        if let Some(key) = &namespace_work {
+            state.attempt_namespace_sdk_cleanup(key)?;
+        }
         state.schema = state.writer_schema();
         let original = self.current_state_identity()?;
         let publication = self.prepare_record_plan(&mut state)?;
@@ -666,6 +744,9 @@ impl Service {
             None,
         )?;
         self.state = Some(state.clone());
+        let namespace_work = namespace_work
+            .map(|key| namespace_sdk_cleanup::Authority::capture(self, key, clock, deadline))
+            .transpose()?;
         let path = record
             .path
             .strip_prefix(&record.mount)
@@ -687,7 +768,7 @@ impl Service {
             origin_peer: None,
             client_certificates: None,
         };
-        let response = self.stage_sdk_auth(
+        let response = self.stage_owned_sdk_auth(
             &state,
             &request,
             StageTarget {
@@ -698,7 +779,9 @@ impl Service {
                 path: &path,
                 deadline,
                 renewal: None,
+                retirement: None,
             },
+            namespace_work.as_ref(),
         );
         let Some(plan) = self.pending_sdk_auth_request.take() else {
             return Err(response);
@@ -720,6 +803,7 @@ impl Service {
                 clock,
                 deadline,
                 expected: digest(&record)?,
+                namespace_work,
             });
         Ok(Some(plan))
     }

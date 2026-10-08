@@ -17,7 +17,15 @@ impl State {
             &self.namespaces.deletions,
             self.auth.namespace_deletion_ledger(),
         ) {
-            (None, None) => return Ok(()),
+            (None, None)
+                if self
+                    .engines
+                    .sdk_logical_history_projection()
+                    .map_err(Response::from_engine_error)?
+                    .is_none() =>
+            {
+                return Ok(());
+            }
             (Some(actual), Some(auth))
                 if actual == auth && self.schema >= NAMESPACE_DELETION_STATE_SCHEMA => {}
             _ => {
@@ -33,10 +41,22 @@ impl State {
             .as_ref()
             .ok_or_else(|| Response::error(503, "namespace deletion ledger is unavailable"))?;
         ledger.validate(&self.cluster_id).map_err(auth_error)?;
+        if ledger.sdk_cleanup().is_some() && self.schema < NAMESPACE_SDK_CLEANUP_STATE_SCHEMA {
+            return Err(Response::error(
+                503,
+                "namespace SDK cleanup requires actual format 109",
+            ));
+        }
         let lifecycle = self.namespaces.batch_lifecycle.as_ref().ok_or_else(|| {
             Response::error(503, "namespace deletion lacks actual namespace lifecycle")
         })?;
         for (path, binding) in ledger.pending() {
+            if self.auth.sdk_auth_retirement_namespace_pending(path) {
+                return Err(Response::error(
+                    503,
+                    "SDK Auth retirement already owns namespace work",
+                ));
+            }
             let expected = crate::namespace_custody::Binding::new(
                 self.cluster_id.clone(),
                 path.clone(),
@@ -66,6 +86,143 @@ impl State {
                 ));
             }
         }
+        let actual_history = self
+            .engines
+            .sdk_logical_history_projection()
+            .map_err(Response::from_engine_error)?;
+        let mirrored_history = ledger
+            .sdk_cleanup()
+            .and_then(|work| work.logical_history())
+            .cloned();
+        if actual_history != mirrored_history {
+            return Err(Response::error(
+                503,
+                "namespace SDK logical history lacks exact dual mirror",
+            ));
+        }
+        if let Some(history) = &actual_history {
+            for binding in history.bindings() {
+                let expected = crate::namespace_custody::Binding::new(
+                    self.cluster_id.clone(),
+                    binding.namespace().to_owned(),
+                    namespaces::namespace_id(
+                        &self.cluster_id,
+                        binding.namespace(),
+                        binding.incarnation(),
+                    ),
+                    binding.incarnation(),
+                )
+                .map_err(|_| Response::error(503, "namespace SDK historical Binding rejected"))?;
+                if *binding != expected
+                    || !lifecycle
+                        .knows_retired_incarnation(binding.namespace(), binding.incarnation())
+                {
+                    return Err(Response::error(
+                        503,
+                        "namespace SDK history lacks actual retired incarnation",
+                    ));
+                }
+            }
+        }
+        if let Some(work) = ledger.sdk_cleanup() {
+            // An opaque owner is a deferred authenticated hydration obligation,
+            // only after its exact Binding, descriptor and durable floor validate.
+            self.namespaces.validate(&self.cluster_id)?;
+            for (path, binding) in ledger.pending() {
+                // Closed ciphertext remains subject to actual authenticated hydration.
+                // Membership is immutable; it never claims an opaque payload is empty.
+                let materialized = self.engines.sdk_namespace_records_materialized(path)
+                    || (self.namespaces.custody_owner(path).is_none()
+                        && self.namespaces.inherited_owner(path).is_none());
+                if materialized {
+                    for lease in self
+                        .engines
+                        .sdk_materialized_namespace_records(path)
+                        .map_err(Response::from_engine_error)?
+                    {
+                        if lease.phase == crate::engines::sdk_lease::Phase::Revoked {
+                            continue;
+                        }
+                        let job = work
+                            .records()
+                            .values()
+                            .find(|job| {
+                                job.kind() == crate::auth::namespace_sdk_cleanup::Kind::Logical
+                                    && job.binding() == binding
+                                    && job.lease_id() == lease.id
+                            })
+                            .ok_or_else(|| {
+                                Response::error(
+                                    503,
+                                    "namespace SDK logical resource lacks original job",
+                                )
+                            })?;
+                        job.check_logical(&lease, false).map_err(auth_error)?;
+                    }
+                }
+                for lease in self
+                    .auth
+                    .namespace_sdk_saved_credential_records(path)
+                    .map_err(auth_error)?
+                {
+                    if lease.phase == crate::engines::sdk_lease::Phase::Revoked {
+                        continue;
+                    }
+                    let job = work
+                        .records()
+                        .values()
+                        .find(|job| {
+                            job.kind() == crate::auth::namespace_sdk_cleanup::Kind::Credential
+                                && job.binding() == binding
+                                && job.lease_id() == lease.id
+                        })
+                        .ok_or_else(|| {
+                            Response::error(
+                                503,
+                                "namespace SDK credential resource lacks original job",
+                            )
+                        })?;
+                    job.check_credential(&lease, false).map_err(auth_error)?;
+                }
+                for job in work
+                    .records()
+                    .values()
+                    .filter(|job| job.binding() == binding)
+                {
+                    let terminal = matches!(
+                        job.stage(),
+                        crate::auth::namespace_sdk_cleanup::Stage::Terminal { .. }
+                    );
+                    match job.kind() {
+                        crate::auth::namespace_sdk_cleanup::Kind::Logical if materialized => {
+                            let record = self.engines.sdk_lease(path, job.lease_id()).ok_or_else(
+                                || {
+                                    Response::error(
+                                        503,
+                                        "namespace SDK materialized selected logical record absent",
+                                    )
+                                },
+                            )?;
+                            job.check_logical(&record, terminal).map_err(auth_error)?;
+                        }
+                        crate::auth::namespace_sdk_cleanup::Kind::Credential => {
+                            let record = self
+                                .auth
+                                .sdk_credential_record(path, job.lease_id())
+                                .ok_or_else(|| {
+                                    Response::error(
+                                        503,
+                                        "namespace SDK selected credential record absent",
+                                    )
+                                })?;
+                            job.check_credential(&record, terminal)
+                                .map_err(auth_error)?;
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
         Ok(())
     }
     pub(in crate::service) fn begin_namespace_deletion(
@@ -80,9 +237,9 @@ impl State {
         ledger
             .begin(binding, &self.cluster_id)
             .map_err(auth_error)?;
-        self.sync_namespace_deletion_ledger()?;
+        // Queue and source selection finish before installing the Auth mirror.
         self.schema = self.writer_schema();
-        self.validate_namespace_deletion_state()
+        Ok(())
     }
     pub(in crate::service) fn complete_namespace_deletion(
         &mut self,
@@ -98,7 +255,7 @@ impl State {
         self.schema = self.writer_schema();
         self.validate_namespace_deletion_state()
     }
-    fn sync_namespace_deletion_ledger(&mut self) -> Result<(), Response> {
+    pub(in crate::service) fn sync_namespace_deletion_ledger(&mut self) -> Result<(), Response> {
         let ledger = self
             .namespaces
             .deletions
@@ -243,14 +400,14 @@ impl LocalCleanup {
         Ok(())
     }
 }
-fn barrier_digest(service: &Service) -> Result<[u8; 32], Response> {
+pub(in crate::service) fn barrier_digest(service: &Service) -> Result<[u8; 32], Response> {
     service
         .barrier_key
         .as_ref()
         .map(|key| crypto::digest(key.as_ref()))
         .ok_or_else(|| Response::error(503, "namespace cleanup barrier unavailable"))
 }
-fn seal_digest(service: &Service) -> Result<[u8; 32], Response> {
+pub(in crate::service) fn seal_digest(service: &Service) -> Result<[u8; 32], Response> {
     let seal = service
         .seal
         .as_ref()
@@ -271,7 +428,10 @@ impl Service {
         namespace_runtime::request_live()?;
         state.validate_namespace_deletion_state()?;
         state.namespace_leases.validate()?;
-        if state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
+        if state
+            .auth
+            .sdk_auth_retirement_namespace_pending(binding.namespace())
+            || state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
             || state.namespace_is_sealed(request.namespace)
             || state
                 .namespaces
@@ -327,8 +487,24 @@ impl Service {
         binding: Binding,
     ) -> Response {
         let run = (|| {
+            // Reject before taint, host reservation or any candidate resource selection.
+            if state
+                .auth
+                .sdk_auth_retirement_namespace_pending(binding.namespace())
+            {
+                return Err(Response::error(
+                    409,
+                    "SDK Auth retirement owns this namespace",
+                ));
+            }
             let expected = self.current_state_identity()?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let mut sdk_hosts = self.reserve_namespace_sdk_hosts(&state, binding.namespace())?;
             state.begin_namespace_deletion(binding.clone())?;
+            #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+            state.sync_namespace_deletion_ledger()?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            state.queue_namespace_sdk_deletion(&binding)?;
             // Every response binding is captured before publication with the
             // original affine admission, never rebuilt from completed state.
             let authority = AcceptedDelete::capture(actor, self, &state, request, binding.clone())?;
@@ -342,6 +518,8 @@ impl Service {
             self.prepare_namespace_deletion_record_root(&mut state)?;
             let publication = self.prepare_record_plan(&mut state)?;
             authority.check_state(self, &state)?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_hosts.check()?;
             if self.current_state_identity()? != expected {
                 return Err(Response::error(503, "namespace deletion source changed"));
             }
@@ -365,12 +543,22 @@ impl Service {
                             "namespace deletion intent changed before publication",
                         ));
                     }
-                    authority.check_actor(auth)
+                    authority.check_actor(auth)?;
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    {
+                        sdk_hosts.check()?;
+                        // All original gates passed at the real Publish boundary.
+                        // An unknown publication outcome must keep these owners
+                        // barred; only earlier definite rejection may release them.
+                        sdk_hosts.publication_entered();
+                    }
+                    Ok(())
                 },
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
             )?;
-            // The durable taint survives a late response veto.
+            // The durable taint survives a late response veto. The host
+            // reservation was already retained before Publish could be submitted.
             self.state = Some(state);
             authority.check(self)?;
             self.pending_namespace_deletion = Some(authority);
@@ -416,6 +604,11 @@ impl Service {
             .ok_or_else(|| Response::error(503, "namespace cleanup state unavailable"))?
             .clone();
         let actual = binding.namespace();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if !source.namespace_sdk_deletion_terminal(actual)? {
+            return Ok(false);
+        }
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         if !source.namespace_has_only_native_local_deletion_owners(actual) {
             return Ok(false);
         }
@@ -434,6 +627,22 @@ impl Service {
         self.audit_event("namespace-cleanup-request", &fingerprint, now, None)
             .map_err(|_| Response::error(503, "namespace cleanup audit unavailable"))?;
         let result = (|| {
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let history = if source
+                .engines
+                .sdk_logical_history_projection()
+                .map_err(Response::from_engine_error)?
+                .is_some()
+            {
+                Some(
+                    source
+                        .engines
+                        .sdk_logical_history_source(&binding)
+                        .map_err(Response::from_engine_error)?,
+                )
+            } else {
+                None
+            };
             let mut next = source.clone();
             if self.namespace_runtime.has_loaded_within(actual) {
                 next = self.namespace_runtime.closed_candidate(&next, actual)?;
@@ -482,6 +691,25 @@ impl Service {
             next.engines
                 .remove_empty_namespace(actual)
                 .map_err(Response::from_engine_error)?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            if let Some(history) = history {
+                next.engines
+                    .install_sdk_logical_history(&binding, history)
+                    .map_err(Response::from_engine_error)?;
+                let mirror = next
+                    .engines
+                    .sdk_logical_history_projection()
+                    .map_err(Response::from_engine_error)?
+                    .ok_or_else(|| {
+                        Response::error(503, "namespace SDK terminal history missing")
+                    })?;
+                next.namespaces
+                    .deletions
+                    .as_mut()
+                    .ok_or_else(|| Response::error(503, "namespace SDK terminal ledger missing"))?
+                    .update_sdk_history(mirror)
+                    .map_err(auth_error)?;
+            }
             next.complete_namespace_deletion(&binding)?;
             next.schema = next.writer_schema();
             next.validate_format()?;
@@ -509,6 +737,8 @@ impl Service {
             )?;
             self.namespace_runtime.close(actual);
             self.state = Some(next);
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            self.retire_namespace_sdk_hosts(&source, actual)?;
             authority.check_base(self)?;
             authority.check_terminal(
                 self.state
@@ -551,6 +781,7 @@ impl Service {
     }
 }
 impl State {
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
     pub(in crate::service) fn namespace_has_only_native_local_deletion_owners(
         &self,
         namespace: &str,
@@ -611,10 +842,34 @@ pub(crate) fn start_worker(service: &Arc<Mutex<Service>>) -> Result<Worker, Stri
                 let Ok(clock) = RequestClock::anchored(wall, started) else {
                     continue;
                 };
-                let deadline = started + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET;
-                let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
-                if writer.maintain_namespace_deletions(clock).is_err() {
-                    eprintln!("heptabao-namespace: deletion remains pending");
+                {
+                    let deadline = started + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET;
+                    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                    if writer.maintain_namespace_deletions(clock).is_err() {
+                        eprintln!("heptabao-namespace: deletion remains pending");
+                    }
+                }
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                {
+                    let Some(deadline) = writer.namespace_sdk_cleanup_deadline(clock) else {
+                        continue;
+                    };
+                    let pending = {
+                        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                        writer.prepare_namespace_sdk_cleanup(clock)
+                    };
+                    drop(writer);
+                    match pending {
+                        Ok(Some(plan)) => {
+                            if plan.execute(&service).is_err() {
+                                eprintln!("heptabao-namespace: SDK cleanup attempt unresolved");
+                            }
+                        }
+                        Ok(None) => {}
+                        Err(_) => {
+                            eprintln!("heptabao-namespace: SDK cleanup admission unavailable")
+                        }
+                    }
                 }
             }
         })

@@ -15,6 +15,7 @@ impl State {
                 .into_iter()
                 .chain(self.database.all_lease_owners())
                 .chain(self.auth.sdk_credential_owners())
+                .chain(self.auth.namespace_sdk_cleanup_owners())
                 .any(|(_, owner)| {
                     owner
                         .batch_claims()
@@ -22,9 +23,13 @@ impl State {
                 })
     }
 
-    /// Preserve unknown schemas for admission to reject; never normalize them
-    /// into an older supported format. The all-namespace scan also finds safe
-    /// material introduced by the current candidate before its first commit.
+    /// Scan persisted mount metadata in every namespace.
+    pub(super) fn has_mount_listing_visibility_state(&self) -> bool {
+        self.auth.has_mount_listing_visibility_state()
+            || self.engines.has_mount_listing_visibility_state()
+    }
+
+    /// Keep unknown schemas for admission to reject and preserve sticky floors.
     pub(super) fn writer_schema(&self) -> u32 {
         if !supported_reader_schema(self.schema) {
             return self.schema;
@@ -149,6 +154,27 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_sdk_auth_retirement_state() {
+            required.max(SDK_AUTH_RETIREMENT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_namespace_sdk_cleanup_state()
+            || self
+                .namespaces
+                .deletions
+                .as_ref()
+                .is_some_and(|ledger| ledger.sdk_cleanup().is_some())
+        {
+            required.max(NAMESPACE_SDK_CLEANUP_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.has_mount_listing_visibility_state() {
+            required.max(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -157,6 +183,16 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && (self.has_mount_listing_visibility_state()
+                || previous
+                    .is_some_and(|state| state.schema >= MOUNT_LISTING_VISIBILITY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "mount listing visibility requires schema 111",
+            ));
+        }
         let protected = self.protected_state()?;
         protected
             .auth
@@ -266,6 +302,22 @@ impl State {
                 |ns| self.namespaces.incarnation(ns),
             )
             .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
+            .validate_sdk_auth_retirement_state(
+                previous.map(|state| &*state.auth),
+                &self.cluster_id,
+                |ns| self.namespaces.incarnation(ns),
+            )
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            && (self.auth.has_sdk_auth_retirement_state()
+                || previous.is_some_and(|old| old.auth.has_sdk_auth_retirement_state()))
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth retirement ownership requires format 107",
+            ));
+        }
         let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
         self.auth
             .validate_sdk_auth_epoch_floor(floor.as_ref())
@@ -687,6 +739,27 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && self.has_mount_listing_visibility_state()
+        {
+            return Err(Response::error(
+                503,
+                "mount listing visibility requires schema 111",
+            ));
+        }
+        self.auth
+            .validate_sdk_auth_retirement_state(None, &self.cluster_id, |ns| {
+                self.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            && self.auth.has_sdk_auth_retirement_state()
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth retirement ownership requires format 107",
+            ));
+        }
         self.auth
             .validate_raw_wrapped_reply_state()
             .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))?;
@@ -1351,6 +1424,7 @@ impl State {
             .into_iter()
             .chain(self.database.all_lease_owners())
             .chain(self.auth.sdk_credential_owners())
+            .chain(self.auth.namespace_sdk_cleanup_owners())
         {
             if let Some(claims) = owner.batch_claims() {
                 if self.schema < 41 {
@@ -1770,6 +1844,7 @@ impl State {
             | PKI_KEY_POLICY_STATE_SCHEMA
             | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             | PKI_RSA8192_STATE_SCHEMA
+            | MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
             | RAW_WRAPPED_REPLY_STATE_SCHEMA
             | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
             | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
@@ -1778,6 +1853,8 @@ impl State {
             | PKI_ACME_ACCOUNT_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
             | NAMESPACE_DELETION_STATE_SCHEMA
+            | SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            | NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),

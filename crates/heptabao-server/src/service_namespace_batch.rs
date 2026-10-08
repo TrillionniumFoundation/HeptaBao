@@ -133,6 +133,7 @@ impl State {
             .into_iter()
             .chain(self.database.all_lease_owners())
             .chain(self.auth.sdk_credential_owners())
+            .chain(self.auth.namespace_sdk_cleanup_owners())
             .any(|(_, owner)| {
                 owner
                     .batch_claims()

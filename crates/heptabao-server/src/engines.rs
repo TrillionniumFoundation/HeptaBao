@@ -40,6 +40,8 @@ pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
 pub(crate) mod namespace_assets;
 #[path = "engine_sdk.rs"]
 pub(crate) mod sdk;
+#[path = "engine_sdk_history.rs"]
+pub(crate) mod sdk_history;
 #[path = "engine_sdk_lease.rs"]
 pub(crate) mod sdk_lease;
 #[path = "engine_sdk_registration.rs"]
@@ -79,6 +81,8 @@ pub struct EngineState {
     kubernetes_artifact_clock: Option<crate::auth::Timestamp>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_lease_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_retired_logical: Option<CowValue<sdk_history::Registry>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pki_revocation_clock: Option<crate::auth::Timestamp>,
     namespaces: BTreeMap<String, CowNamespace>,
@@ -293,6 +297,8 @@ pub(crate) struct NativeRemountOwner {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct MountState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    listing_visibility: Option<crate::mount_listing_visibility::ListingVisibility>,
     #[serde(default = "mount_revision_one")]
     revision: u64,
     #[serde(default = "mount_revision_one")]
@@ -387,6 +393,7 @@ impl Mount {
 
     fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
         Self::from(MountState {
+            listing_visibility: None,
             revision: 1,
             incarnation: incarnation.max(1),
             description: description.into(),
@@ -413,10 +420,14 @@ impl Mount {
             Backend::Pki(engine) => (engine.default_ttl, engine.max_ttl),
             _ => (0, 0),
         };
-        json!({"type":kind,"description":self.description,"options":options,
+        let mut descriptor = json!({"type":kind,"description":self.description,"options":options,
             "revision":self.revision,"incarnation":self.incarnation,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
-            "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}})
+            "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}});
+        if let Some(visibility) = self.listing_visibility {
+            descriptor["config"]["listing_visibility"] = json!(visibility.name());
+        }
+        descriptor
     }
 }
 
@@ -2565,6 +2576,15 @@ impl EngineState {
         Ok(changed)
     }
 
+    pub(crate) fn has_mount_listing_visibility_state(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state
+                .mounts
+                .values()
+                .any(|mount| mount.listing_visibility.is_some())
+        })
+    }
+
     pub(crate) fn ui_secret_mounts(&self, namespace: &str) -> BTreeMap<String, Value> {
         let fallback = CowNamespace::default();
         let state = self.namespaces.get(namespace).unwrap_or(&fallback);
@@ -2927,17 +2947,29 @@ fn handle_mounts(
         let name = format!("{mount_path}/");
         let mount = state.mounts.get_mut(&name).ok_or_else(not_found)?;
         if method == "GET" {
-            return Ok(ok(
-                json!({"description":mount.description,"options":mount.descriptor()["options"],
+            let mut data = json!({"description":mount.description,"options":mount.descriptor()["options"],
                     "default_lease_ttl":mount.descriptor()["config"]["default_lease_ttl"],
                     "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"],
-                    "revision":mount.revision,"incarnation":mount.incarnation}),
-                false,
-            ));
+                    "revision":mount.revision,"incarnation":mount.incarnation});
+            if let Some(visibility) = mount.listing_visibility {
+                data["listing_visibility"] = json!(visibility.name());
+            }
+            return Ok(ok(data, false));
         }
         if !write_method(method) {
             return Err(unsupported());
         }
+        let visibility = body
+            .get("listing_visibility")
+            .map(crate::mount_listing_visibility::ListingVisibility::parse)
+            .transpose()
+            .map_err(bad)?;
+        let mut sanitized_body = body.clone();
+        sanitized_body
+            .as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .remove("listing_visibility");
+        let body = &sanitized_body;
         let expected = optional_u64(body, "cas_revision")?;
         require_mount_revision(expected, mount.revision)?;
         let before = crate::secret_serde::to_vec(&*mount, crate::MAX_APPLICATION_STATE_BYTES)
@@ -3027,6 +3059,9 @@ fn handle_mounts(
                 _ => return Err(bad("KV version must be 1 or 2 on a KV mount")),
             }
         }
+        if let Some(visibility) = visibility {
+            mount.listing_visibility = visibility;
+        }
         let after = crate::secret_serde::to_vec(&*mount, crate::MAX_APPLICATION_STATE_BYTES)
             .map_err(|_| error(507, "mount state exceeds serialization capacity"))?;
         if before == after {
@@ -3090,6 +3125,21 @@ fn handle_mounts(
     if !write_method(method) {
         return Err(unsupported());
     }
+    let listing_visibility = body
+        .get("config")
+        .and_then(|config| config.get("listing_visibility"))
+        .map(crate::mount_listing_visibility::ListingVisibility::parse)
+        .transpose()
+        .map_err(bad)?
+        .flatten();
+    let mut sanitized_body = body.clone();
+    if let Some(config) = sanitized_body
+        .get_mut("config")
+        .and_then(Value::as_object_mut)
+    {
+        config.remove("listing_visibility");
+    }
+    let body = &sanitized_body;
     reject_unknown(
         body,
         &[
@@ -3271,10 +3321,9 @@ fn handle_mounts(
         .transpose()?
         .unwrap_or("");
     let incarnation = state.mount_epochs.get(&name).copied().unwrap_or(1).max(1);
-    state.mounts.insert(
-        name,
-        Mount::with_incarnation(backend, description, incarnation),
-    );
+    let mut mount = Mount::with_incarnation(backend, description, incarnation);
+    mount.listing_visibility = listing_visibility;
+    state.mounts.insert(name, mount);
     Ok(empty(true))
 }
 

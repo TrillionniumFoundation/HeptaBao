@@ -2,6 +2,9 @@ use super::{Response, Value};
 use serde_json::{Map, json};
 use std::collections::BTreeMap;
 
+#[path = "service_openapi_approle.rs"]
+mod approle;
+
 struct Route {
     path: &'static str,
     methods: &'static [&'static str],
@@ -585,96 +588,113 @@ fn add_mount_route(
     }
 }
 
+fn qualify_kv_openapi(value: &mut Value) {
+    match value {
+        Value::Object(object) => {
+            for (key, value) in object {
+                match (key.as_str(), value) {
+                    ("$ref", Value::String(reference))
+                        if reference.starts_with("#/components/schemas/") =>
+                    {
+                        *reference = format!(
+                            "#/components/schemas/Kv{}",
+                            &reference["#/components/schemas/".len()..]
+                        );
+                    }
+                    ("operationId", Value::String(operation)) => {
+                        *operation = format!("kv-{operation}");
+                    }
+                    (_, nested) => qualify_kv_openapi(nested),
+                }
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                qualify_kv_openapi(item);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn add_kv_help_document(
+    paths: &mut Map<String, Value>,
+    schemas: &mut Map<String, Value>,
+    mount: &str,
+    generic: bool,
+    version_two: bool,
+) -> Result<(), ()> {
+    // Use the same pinned 2.7.0 backend help document as actual HELP requests.
+    // Its empty catch-all path item declares no unsupported operation.
+    let template = if version_two {
+        include_str!("help_templates/kv2-root.json")
+    } else {
+        include_str!("help_templates/kv1-root.json")
+    };
+    let mut help: Value = serde_json::from_str(template).map_err(|_| ())?;
+    let document = help.get_mut("openapi").ok_or(())?;
+    qualify_kv_openapi(document);
+    let backend_paths = document.get("paths").and_then(Value::as_object).ok_or(())?;
+    let prefix = openapi_mount_path(mount, generic, false);
+    for (suffix, item) in backend_paths {
+        let path = format!("/{prefix}{suffix}");
+        let mut item = item.clone();
+        if generic {
+            let parameter_name = format!(
+                "{}_mount_path",
+                mount.trim_end_matches('/').replace('-', "_")
+            );
+            let object = item.as_object_mut().ok_or(())?;
+            let parameters = object
+                .entry("parameters")
+                .or_insert_with(|| Value::Array(Vec::new()))
+                .as_array_mut()
+                .ok_or(())?;
+            parameters.push(json!({
+                "name": parameter_name,
+                "description": "Path that the backend was mounted at",
+                "in": "path",
+                "schema": {"type": "string", "default": mount.trim_end_matches('/')},
+                "required": true
+            }));
+        }
+        paths.insert(path, item);
+    }
+    let backend_schemas = document
+        .get("components")
+        .and_then(|components| components.get("schemas"))
+        .and_then(Value::as_object)
+        .ok_or(())?;
+    for (name, schema) in backend_schemas {
+        let name = format!("Kv{name}");
+        if let Some(previous) = schemas.get(&name)
+            && previous != schema
+        {
+            return Err(());
+        }
+        schemas.insert(name, schema.clone());
+    }
+    Ok(())
+}
+
 fn add_actual_mount_routes(
     paths: &mut Map<String, Value>,
+    schemas: &mut Map<String, Value>,
     generic: bool,
     auth_mounts: &BTreeMap<String, Value>,
     secret_mounts: &BTreeMap<String, Value>,
-) {
+) -> Result<(), ()> {
     for (mount, descriptor) in secret_mounts {
         let kind = descriptor.get("type").and_then(Value::as_str);
         match kind {
             Some("kv") => {
-                let prefix = openapi_mount_path(mount, generic, false);
-                if descriptor["options"]["version"] == "2" {
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/data/{{path}}"),
-                        &["get", "post", "patch", "delete"],
-                        "Read, write or soft-delete a KV v2 value.",
-                        mount,
-                        generic,
-                        false,
-                    );
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/metadata/{{path}}"),
-                        &["get", "post", "patch", "delete"],
-                        "Read, tune or destroy KV v2 metadata.",
-                        mount,
-                        generic,
-                        false,
-                    );
-                    add_list_query(paths, &format!("/{prefix}/metadata/{{path}}"), true, true);
-                    for (suffix, methods, description) in [
-                        (
-                            "config",
-                            &["get", "post"][..],
-                            "Read or configure KV v2 settings.",
-                        ),
-                        (
-                            "delete/{path}",
-                            &["post"][..],
-                            "Soft-delete selected KV v2 versions.",
-                        ),
-                        (
-                            "undelete/{path}",
-                            &["post"][..],
-                            "Restore selected KV v2 versions.",
-                        ),
-                        (
-                            "destroy/{path}",
-                            &["post"][..],
-                            "Permanently destroy selected KV v2 versions.",
-                        ),
-                        (
-                            "subkeys/{path}",
-                            &["get"][..],
-                            "Read a KV v2 structure without stored values.",
-                        ),
-                        (
-                            "detailed-metadata/{path}",
-                            &["get"][..],
-                            "List detailed KV v2 key metadata.",
-                        ),
-                    ] {
-                        add_mount_route(
-                            paths,
-                            format!("/{prefix}/{suffix}"),
-                            methods,
-                            description,
-                            mount,
-                            generic,
-                            false,
-                        );
-                    }
-                    add_list_query(
-                        paths,
-                        &format!("/{prefix}/detailed-metadata/{{path}}"),
-                        true,
-                        false,
-                    );
-                } else {
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/{{path}}"),
-                        &["get", "post", "delete"],
-                        "Read, write or delete a KV v1 value.",
-                        mount,
-                        generic,
-                        false,
-                    );
-                }
+                add_kv_help_document(
+                    paths,
+                    schemas,
+                    mount,
+                    generic,
+                    descriptor["options"]["version"] == "2",
+                )?;
             }
             Some("transit") => {
                 let prefix = openapi_mount_path(mount, generic, false);
@@ -758,49 +778,21 @@ fn add_actual_mount_routes(
                 add_list_query(paths, &format!("/{prefix}/users"), false, false);
             }
             Some("approle") => {
-                let prefix = openapi_mount_path(mount, generic, true);
-                for (suffix, methods, description) in [
-                    (
-                        "role/{role_name}",
-                        &["get", "post", "delete"][..],
-                        "Manage an AppRole role.",
-                    ),
-                    (
-                        "role/{role_name}/custom-secret-id",
-                        &["post"][..],
-                        "Issue a bounded operator-supplied AppRole SecretID.",
-                    ),
-                    (
-                        "login",
-                        &["post"][..],
-                        "Authenticate with AppRole credentials.",
-                    ),
-                ] {
-                    add_mount_route(
-                        paths,
-                        format!("/{prefix}/{suffix}"),
-                        methods,
-                        description,
-                        mount,
-                        generic,
-                        true,
-                    );
-                }
+                approle::add(paths, schemas, mount, generic)?;
             }
             _ => {}
         }
     }
+    Ok(())
 }
 
-pub(super) fn handle_anonymous(method: &str, body: &Value) -> Response {
-    handle_with_visibility(
-        method,
-        body,
-        false,
-        true,
-        &BTreeMap::new(),
-        &BTreeMap::new(),
-    )
+pub(super) fn handle_anonymous(
+    method: &str,
+    body: &Value,
+    auth_mounts: &BTreeMap<String, Value>,
+    secret_mounts: &BTreeMap<String, Value>,
+) -> Response {
+    handle_with_visibility(method, body, false, true, auth_mounts, secret_mounts)
 }
 
 pub(super) fn handle(
@@ -838,17 +830,28 @@ fn handle_with_visibility(
         return Response::error(400, "unsupported OpenAPI parameter");
     }
     let generic = match object.get("generic_mount_paths") {
-        None => false,
+        None | Some(Value::Null) => false,
         Some(Value::Bool(value)) => *value,
+        Some(Value::String(value)) => match value.as_str() {
+            "1" | "t" | "T" | "TRUE" | "true" | "True" => true,
+            "" | "0" | "f" | "F" | "FALSE" | "false" | "False" => false,
+            _ => return Response::error(400, "generic_mount_paths must be a boolean"),
+        },
+        // The native HTTP decoder uses json.Number. Weak bool conversion
+        // therefore parses its lexical integer 0/1 rather than numeric truth.
+        Some(Value::Number(value)) => match value.to_string().as_str() {
+            "0" => false,
+            "1" => true,
+            _ => return Response::error(400, "generic_mount_paths must be a boolean"),
+        },
         Some(_) => {
             return Response::error(400, "generic_mount_paths must be a boolean");
         }
     };
 
-    // An absent token does not grant mount listing or policy visibility. The
-    // native anonymous document contains no paths or schemas, including public
-    // routes; build that projection without reading either mount catalog.
-    if anonymous_visibility {
+    // Default anonymous discovery remains empty. Only actual mounts explicitly
+    // configured for unauthenticated listing can enter this projection.
+    if anonymous_visibility && auth_mounts.is_empty() && secret_mounts.is_empty() {
         return Response::ok(json!({
             "openapi": "3.0.2",
             "info": {
@@ -864,40 +867,31 @@ fn handle_with_visibility(
 
     let mut paths = Map::new();
     for route in FIXED_ROUTES {
-        if root_visibility || route.unauthenticated || route.path == "/sys/internal/specs/openapi" {
-            add_route(&mut paths, route);
-        }
+        add_route(&mut paths, route);
     }
-
-    if !root_visibility {
-        return Response::ok(json!({
-            "openapi": "3.0.2",
-            "info": {
-                "title": "HeptaBao API",
-                "description": "Fail-closed OpenAPI view for a non-root caller. HeptaBao currently emits only unauthenticated routes plus the spec endpoint instead of over-advertising policy-visible paths it cannot yet derive exactly.",
-                "version": "0.1.0",
-                "license": {"name": "Apache License 2.0"}
-            },
-            "security": [{"VaultToken": []}],
-            "paths": paths,
-            "components": {
-                "securitySchemes": {
-                    "VaultToken": {
-                        "type": "apiKey",
-                        "in": "header",
-                        "name": "X-Vault-Token"
-                    }
-                }
-            },
-            "x-heptabao-bounded": true,
-            "x-heptabao-policy-filtering": "fail_closed_non_root_subset",
-            "x-heptabao-generic-mount-paths": generic
-        }));
-    }
-
     add_implemented_control_and_identity_routes(&mut paths);
     add_token_routes(&mut paths);
-    add_actual_mount_routes(&mut paths, generic, auth_mounts, secret_mounts);
+    if !root_visibility {
+        paths.retain(|path, _| {
+            let path = path.trim_start_matches('/');
+            auth_mounts
+                .keys()
+                .chain(secret_mounts.keys())
+                .any(|mount| path == mount.trim_end_matches('/') || path.starts_with(mount))
+        });
+    }
+    let mut schemas = Map::new();
+    if add_actual_mount_routes(
+        &mut paths,
+        &mut schemas,
+        generic,
+        auth_mounts,
+        secret_mounts,
+    )
+    .is_err()
+    {
+        return Response::error(503, "OpenAPI backend help template rejected");
+    }
 
     Response::ok(json!({
         "openapi": "3.0.2",
@@ -912,6 +906,7 @@ fn handle_with_visibility(
         "security": [{"VaultToken": []}],
         "paths": paths,
         "components": {
+            "schemas": schemas,
             "securitySchemes": {
                 "VaultToken": {
                     "type": "apiKey",
@@ -921,6 +916,7 @@ fn handle_with_visibility(
             }
         },
         "x-heptabao-bounded": true,
+        "x-heptabao-policy-filtering": "current_mount_acl_or_unauth_listing",
         "x-heptabao-generic-mount-paths": generic
     }))
 }
@@ -1046,28 +1042,260 @@ mod tests {
     fn invalid_parameters_and_methods_fail_closed() {
         assert_eq!(handle("DELETE", &json!({}), true).status, 405);
         assert_eq!(
-            handle("POST", &json!({"generic_mount_paths":"true"}), true).status,
+            handle("POST", &json!({"generic_mount_paths":"yes"}), true).status,
             400
         );
         assert_eq!(handle("POST", &json!({"unknown":true}), true).status, 400);
     }
 
     #[test]
-    fn non_root_document_fails_closed_instead_of_over_advertising()
+    fn generic_mount_paths_weak_boolean_matches_actual_native_fields()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for (value, expected) in [
+            (Value::Null, false),
+            (json!(true), true),
+            (json!(false), false),
+            (json!("true"), true),
+            (json!("True"), true),
+            (json!("t"), true),
+            (json!("1"), true),
+            (json!("false"), false),
+            (json!("0"), false),
+            (json!(""), false),
+            (json!(0), false),
+            (json!(1), true),
+        ] {
+            let response = handle("POST", &json!({"generic_mount_paths":value}), true);
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["x-heptabao-generic-mount-paths"], expected);
+        }
+        for value in [
+            json!("yes"),
+            json!("2"),
+            json!(2),
+            json!(-1),
+            json!(0.5),
+            json!([]),
+            json!({}),
+        ] {
+            assert_eq!(
+                handle("POST", &json!({"generic_mount_paths":value}), true).status,
+                400
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn non_root_document_contains_only_actual_projected_mounts()
     -> Result<(), Box<dyn std::error::Error>> {
         let response = handle("GET", &json!({}), false);
         assert_eq!(response.status, 200);
         assert_eq!(
             response.body["x-heptabao-policy-filtering"],
-            "fail_closed_non_root_subset"
+            "current_mount_acl_or_unauth_listing"
         );
         let paths = response.body["paths"]
             .as_object()
             .ok_or("missing OpenAPI paths")?;
-        assert!(paths.contains_key("/sys/health"));
-        assert!(paths.contains_key("/sys/internal/specs/openapi"));
+        assert!(!paths.contains_key("/sys/health"));
+        assert!(!paths.contains_key("/sys/internal/specs/openapi"));
+        assert!(paths.contains_key("/secret/data/{path}"));
+        assert!(paths.contains_key("/auth/userpass/login/{username}"));
         assert!(!paths.contains_key("/auth/token/create"));
         assert!(!paths.contains_key("/identity/entity"));
+        Ok(())
+    }
+
+    fn kv2_primary_fixture() -> Result<Value, Box<dyn std::error::Error>> {
+        Ok(serde_json::from_str(include_str!(
+            "testdata/openapi-kv2-270-independent-documents.json"
+        ))?)
+    }
+
+    #[test]
+    fn openapi_kv2_routes_and_schemas_match_actual_primary270_complete_document()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = kv2_primary_fixture()?;
+        let mounts = BTreeMap::from([(
+            "diag-visible/".into(),
+            json!({"type":"kv","options":{"version":"2"}}),
+        )]);
+        let response = handle_anonymous("GET", &json!({}), &BTreeMap::new(), &mounts);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["paths"], reference["plain_paths"]);
+        assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
+        assert_eq!(response.body["paths"]["/diag-visible/^.*$"], json!({}));
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_kv2_generic_mount_and_refs_match_actual_primary270_document()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = kv2_primary_fixture()?;
+        let mounts = BTreeMap::from([(
+            "diag-visible/".into(),
+            json!({"type":"kv","options":{"version":"2"}}),
+        )]);
+        let response = handle_anonymous(
+            "GET",
+            &json!({"generic_mount_paths":true}),
+            &BTreeMap::new(),
+            &mounts,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["paths"], reference["generic_paths"]);
+        assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_kv2_two_actual_mounts_share_schemas_and_do_not_retain_old_paths()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = kv2_primary_fixture()?;
+        let mounts = BTreeMap::from([
+            (
+                "new-a/".into(),
+                json!({"type":"kv","options":{"version":"2"}}),
+            ),
+            (
+                "new-b/".into(),
+                json!({"type":"kv","options":{"version":"2"}}),
+            ),
+        ]);
+        let response = handle_anonymous("GET", &json!({}), &BTreeMap::new(), &mounts);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["components"]["schemas"], reference["schemas"]);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        let expected = reference["plain_paths"]
+            .as_object()
+            .ok_or("reference paths")?;
+        assert_eq!(paths.len(), expected.len() * 2);
+        for mount in ["new-a", "new-b"] {
+            for (path, item) in expected {
+                let suffix = path.strip_prefix("/diag-visible").ok_or("original mount")?;
+                assert_eq!(paths.get(&format!("/{mount}{suffix}")), Some(item));
+            }
+        }
+        assert!(paths.keys().all(|path| !path.contains("diag-visible")));
+        Ok(())
+    }
+
+    fn approle_primary_fixture() -> Result<Value, Box<dyn std::error::Error>> {
+        Ok(serde_json::from_str(include_str!(
+            "testdata/openapi-approle-270-independent-selected.json"
+        ))?)
+    }
+
+    #[test]
+    fn openapi_approle_existing_credential_routes_match_independent_primary_metadata()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = approle_primary_fixture()?;
+        let mounts = BTreeMap::from([("auth/diag-approle/".into(), json!({"type":"approle"}))]);
+        let response = handle_anonymous("GET", &json!({}), &mounts, &BTreeMap::new());
+        assert_eq!(response.status, 200);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        for (path, expected) in reference["paths"].as_object().ok_or("reference paths")? {
+            assert_eq!(paths.get(path), Some(expected));
+        }
+        for (name, expected) in reference["schemas"]
+            .as_object()
+            .ok_or("reference schemas")?
+        {
+            assert_eq!(
+                response.body["components"]["schemas"].get(name),
+                Some(expected)
+            );
+        }
+        let accessor_destroy = paths
+            .get("/auth/diag-approle/role/{role_name}/secret-id-accessor/destroy")
+            .ok_or("destroy")?;
+        assert!(accessor_destroy.get("post").is_some());
+        assert!(accessor_destroy.get("delete").is_none());
+        assert!(
+            paths
+                .get("/auth/diag-approle/role/{role_name}/secret-id")
+                .and_then(|item| item.get("get"))
+                .is_some()
+        );
+        assert!(
+            paths
+                .get("/auth/diag-approle/tidy/secret-id")
+                .and_then(|item| item.get("post"))
+                .is_some()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_approle_generic_current_mount_preserves_backend_role_parameter()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let reference = approle_primary_fixture()?;
+        let mounts = BTreeMap::from([("auth/new-role/".into(), json!({"type":"approle"}))]);
+        let response = handle_anonymous(
+            "GET",
+            &json!({"generic_mount_paths":true}),
+            &mounts,
+            &BTreeMap::new(),
+        );
+        assert_eq!(response.status, 200);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        assert!(paths.keys().all(|path| !path.contains("diag-approle")));
+        let item = paths
+            .get("/auth/{new_role_mount_path}/role/{role_name}/role-id")
+            .ok_or("role-id")?;
+        let parameters = item["parameters"].as_array().ok_or("parameters")?;
+        assert_eq!(parameters.len(), 2);
+        assert_eq!(
+            parameters[0],
+            reference["paths"]["/auth/diag-approle/role/{role_name}/role-id"]["parameters"][0]
+        );
+        assert_eq!(
+            parameters[1],
+            json!({
+                "name":"new_role_mount_path", "description":"Path that the backend was mounted at",
+                "in":"path", "schema":{"type":"string","default":"new-role"}, "required":true
+            })
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn openapi_approle_does_not_advertise_unimplemented_attributes_or_unknown_role_fields()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mounts = BTreeMap::from([("auth/diag-approle/".into(), json!({"type":"approle"}))]);
+        let response = handle_anonymous("GET", &json!({}), &mounts, &BTreeMap::new());
+        assert_eq!(response.status, 200);
+        let paths = response.body["paths"].as_object().ok_or("paths")?;
+        assert!(!paths.contains_key("/auth/diag-approle/role/{role_name}/local-secret-ids"));
+        assert!(!paths.contains_key("/auth/diag-approle/role/{role_name}/token-ttl"));
+        let schemas = response.body["components"]["schemas"]
+            .as_object()
+            .ok_or("schemas")?;
+        assert!(!schemas.contains_key("AppRoleReadLocalSecretIdsResponse"));
+        assert!(!schemas.contains_key("AppRoleWriteTokenTtlRequest"));
+        let write = schemas["AppRoleWriteRoleRequest"]["properties"]
+            .as_object()
+            .ok_or("write properties")?;
+        for name in [
+            "local_secret_ids",
+            "role_id",
+            "period",
+            "token_no_default_policy",
+            "token_strictly_bind_ip",
+        ] {
+            assert!(!write.contains_key(name));
+        }
+        assert!(write.contains_key("token_ttl") && write.contains_key("secret_id_bound_cidrs"));
+        let read = schemas["AppRoleReadRoleResponse"]["properties"]
+            .as_object()
+            .ok_or("read properties")?;
+        assert!(!read.contains_key("local_secret_ids") && !read.contains_key("policies"));
+        let issue = schemas["AppRoleWriteSecretIdRequest"]["properties"]
+            .as_object()
+            .ok_or("issue properties")?;
+        assert!(!issue.contains_key("after") && !issue.contains_key("limit"));
+        assert!(issue.contains_key("ttl") && issue.contains_key("metadata"));
         Ok(())
     }
 }

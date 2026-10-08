@@ -257,6 +257,7 @@ impl EngineState {
             && self.lease_clock == previous.lease_clock
             && self.kubernetes_artifact_clock == previous.kubernetes_artifact_clock
             && self.sdk_lease_clock == previous.sdk_lease_clock
+            && self.sdk_logical_history_shared_with(previous)
             && self.pki_revocation_clock == previous.pki_revocation_clock
             && self.acme_clock == previous.acme_clock
             && self.acme_revision == previous.acme_revision

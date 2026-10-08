@@ -30,6 +30,8 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) mod sdk;
 #[path = "auth_sdk_credential.rs"]
 pub(crate) mod sdk_credential;
+#[path = "auth_sdk_retirement.rs"]
+pub(crate) mod sdk_retirement;
 
 #[path = "auth_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
@@ -235,6 +237,8 @@ pub struct AuthState {
     sdk_auth_clock: Option<Timestamp>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_credential_leases: Option<sdk_credential::Registry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_auth_retirements: Option<sdk_retirement::Registry>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1190,6 +1194,8 @@ impl Eq for NativeRemountOwner {}
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    listing_visibility: Option<crate::mount_listing_visibility::ListingVisibility>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     options: Option<mount_options::Options>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_type: Option<batch_issuance::MountTokenType>,
@@ -1240,6 +1246,7 @@ const fn auth_mount_revision_one() -> u64 {
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            listing_visibility: None,
             options: None,
             token_type: None,
             userpass_name_mode: None,
@@ -1257,7 +1264,7 @@ impl AuthMount {
     }
 
     fn descriptor(&self) -> Value {
-        json!({
+        let mut descriptor = json!({
             "type": self.kind,
             "accessor": self.accessor.as_deref().unwrap_or(""),
             "revision": self.revision,
@@ -1270,7 +1277,11 @@ impl AuthMount {
                 "max_lease_ttl": self.max_lease_ttl,
                 "force_no_cache": false
             }
-        })
+        });
+        if let Some(visibility) = self.listing_visibility {
+            descriptor["config"]["listing_visibility"] = json!(visibility.name());
+        }
+        descriptor
     }
 }
 
@@ -2353,6 +2364,7 @@ impl AuthState {
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
         !self.sdk_credential_namespace_pending(namespace)
+            && !self.sdk_auth_retirement_namespace_pending(namespace)
             && !self
                 .tokens
                 .values()
@@ -2451,6 +2463,7 @@ impl AuthState {
             sdk_auth_catalog: None,
             sdk_auth_clock: None,
             sdk_credential_leases: None,
+            sdk_auth_retirements: None,
             namespace_batch_registry: None,
             namespace_deletions: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
@@ -3730,6 +3743,9 @@ impl AuthState {
                         "revision":entry.revision,
                         "accessor":entry.accessor.as_deref().unwrap_or("")
                     });
+                    if let Some(visibility) = entry.listing_visibility {
+                        data["listing_visibility"] = json!(visibility.name());
+                    }
                     if entry.kind == "userpass" {
                         data["user_lockout_disable"] = json!(entry.user_lockout_disable);
                         data["user_lockout_threshold"] = json!(entry.user_lockout_threshold);
@@ -3750,6 +3766,7 @@ impl AuthState {
                             "max_lease_ttl",
                             "cas_revision",
                             "token_type",
+                            "listing_visibility",
                             "user_lockout_disable",
                             "user_lockout_threshold",
                             "user_lockout_duration",
@@ -3763,6 +3780,13 @@ impl AuthState {
                         .ok_or_else(|| err(404, "auth mount not found"))?;
                     require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
                     let mut changed = false;
+                    if let Some(value) = body.get("listing_visibility") {
+                        let visibility =
+                            crate::mount_listing_visibility::ListingVisibility::parse(value)
+                                .map_err(bad)?;
+                        changed |= entry.listing_visibility != visibility;
+                        entry.listing_visibility = visibility;
+                    }
                     if let Some(value) = body.get("token_type") {
                         if !matches!(entry.kind.as_str(), "userpass" | "approle" | "jwt" | "cert") {
                             return Err(bad(
@@ -3878,7 +3902,20 @@ impl AuthState {
             "POST" | "PUT" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &["type", "description", "options", "cas_revision"])?;
+                reject_unknown(
+                    body,
+                    &["type", "description", "options", "config", "cas_revision"],
+                )?;
+                let visibility = if let Some(config) = body.get("config") {
+                    reject_unknown(config, &["listing_visibility"])?;
+                    config
+                        .get("listing_visibility")
+                        .map(crate::mount_listing_visibility::ListingVisibility::parse)
+                        .transpose()
+                        .map_err(bad)?
+                } else {
+                    None
+                };
                 let kind = body
                     .get("type")
                     .and_then(Value::as_str)
@@ -3939,7 +3976,11 @@ impl AuthState {
                 }
                 let mut next = AuthMount::new(kind, description);
                 next.options = options;
+                next.listing_visibility = visibility.flatten();
                 if let Some(old) = existing.as_ref() {
+                    if visibility.is_none() {
+                        next.listing_visibility = old.listing_visibility;
+                    }
                     next.token_type = old.token_type;
                     next.userpass_name_mode = old.userpass_name_mode;
                     next.accessor = old.accessor.clone();
@@ -3952,7 +3993,10 @@ impl AuthState {
                     if body.get("options").is_none() {
                         next.options = old.options.clone();
                     }
-                    if old.description != description || old.options != next.options {
+                    if old.description != description
+                        || old.options != next.options
+                        || old.listing_visibility != next.listing_visibility
+                    {
                         next.revision = next_auth_revision(old.revision)?;
                     }
                 } else {
@@ -3980,7 +4024,7 @@ impl AuthState {
                 if mount == "token" {
                     return Err(bad("the built-in token auth method cannot be disabled"));
                 }
-                let mut entries = self.effective_auth_mounts(namespace);
+                let entries = self.effective_auth_mounts(namespace);
                 let current = entries
                     .get(mount)
                     .cloned()
@@ -3992,15 +4036,27 @@ impl AuthState {
                         "SDK credential cleanup is required before auth mount retirement",
                     ));
                 }
-                self.advance_native_remount_epochs(namespace, &[mount])?;
-                self.advance_approle_tidy_epochs(namespace, &[mount])?;
-                entries.remove(mount);
-                self.auth_mounts.insert(namespace.into(), entries);
-                self.disable_auth_mount(AuthScope { namespace, mount });
+                self.remove_auth_mount_current(namespace, mount)?;
                 Ok(empty(true))
             }
             _ => Err(err(405, "method not allowed")),
         }
+    }
+
+    // The public route checks Principal, sudo, body, revision and pending
+    // credentials first. The only cleanup caller supplies a selected durable
+    // SDK job and verifies its terminal resources and exact SDK mount Binding.
+    fn remove_auth_mount_current(&mut self, namespace: &str, mount: &str) -> Result<(), AuthError> {
+        let mut entries = self.effective_auth_mounts(namespace);
+        if !entries.contains_key(mount) || mount == "token" {
+            return Err(err(503, "auth mount removal owner absent"));
+        }
+        self.advance_native_remount_epochs(namespace, &[mount])?;
+        self.advance_approle_tidy_epochs(namespace, &[mount])?;
+        entries.remove(mount);
+        self.auth_mounts.insert(namespace.into(), entries);
+        self.disable_auth_mount(AuthScope { namespace, mount });
+        Ok(())
     }
 
     /// Login credentials, not an unrelated bearer header, authenticate these
@@ -9464,6 +9520,8 @@ mod batch;
 pub(crate) mod batch_namespace;
 #[path = "auth_namespace_deletion.rs"]
 pub(crate) mod namespace_deletion;
+#[path = "auth_namespace_sdk_cleanup.rs"]
+pub(crate) mod namespace_sdk_cleanup;
 #[cfg(test)]
 pub(crate) use batch::{BatchClaims, BatchKeyAuthority};
 #[path = "auth_batch_issuance.rs"]

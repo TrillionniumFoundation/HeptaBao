@@ -2,6 +2,33 @@
 use super::*;
 
 impl Service {
+    pub(super) fn listed_mount_catalog(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        now: u64,
+    ) -> Result<BTreeMap<String, Value>, Response> {
+        let mut mounts = state.engines.ui_secret_mounts(namespace);
+        mounts.extend(state.auth.ui_auth_mounts(namespace));
+        let mut visible = BTreeMap::new();
+        for (mount, descriptor) in mounts {
+            let unauth = crate::mount_listing_visibility::ListingVisibility::is_unauth(&descriptor);
+            // Even a public listing must validate a supplied actor. Its ACL
+            // projection reveals metadata and never grants data access.
+            let acl = match principal {
+                Some(actor) => state
+                    .auth
+                    .ui_mount_visible(actor, namespace, &mount, now)
+                    .map_err(|error| Response::error(error.status, &error.message))?,
+                None => false,
+            };
+            if unauth || acl {
+                visible.insert(mount, descriptor);
+            }
+        }
+        Ok(visible)
+    }
+
     pub(super) fn ui_mounts_route(
         state: &State,
         principal: Option<&Principal>,
@@ -26,19 +53,22 @@ impl Service {
             }
         };
         if suffix.is_empty() || suffix == "/" {
+            let mounts = match Self::listed_mount_catalog(state, principal, namespace, now) {
+                Ok(mounts) => mounts,
+                Err(response) => return response,
+            };
             let mut auth = serde_json::Map::new();
             let mut secret = serde_json::Map::new();
             for (mount, descriptor) in mounts {
-                match visible(&mount) {
-                    Ok(true) => {
-                        if let Some(name) = mount.strip_prefix("auth/") {
-                            auth.insert(name.to_owned(), descriptor);
-                        } else {
-                            secret.insert(mount, descriptor);
-                        }
-                    }
-                    Ok(false) => {}
-                    Err(response) => return response,
+                let descriptor = if principal.is_none() {
+                    json!({"type":descriptor["type"],"description":descriptor["description"],"options":descriptor["options"]})
+                } else {
+                    descriptor
+                };
+                if let Some(name) = mount.strip_prefix("auth/") {
+                    auth.insert(name.to_owned(), descriptor);
+                } else {
+                    secret.insert(mount, descriptor);
                 }
             }
             return Response::ok(json!({"data":{"auth":auth,"secret":secret}}));

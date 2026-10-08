@@ -279,12 +279,21 @@ impl AuthState {
         };
         // Rotate discovery before preparation; no owned Plan is prepared and discarded.
         let eligible = |record: &Record| -> Result<bool, AuthError> {
-            Ok(record.phase != Phase::Revoked
-                && (record.phase == Phase::PendingRevoke
-                    || at >= record.expires
-                    || record
-                        .parent_cleanup_required(self, at)
-                        .map_err(|e| err(e.status, &e.message))?))
+            Ok(
+                !self.sdk_auth_retirement_claims_record(&record.namespace, &record.id)
+                    && !self.namespace_is_tainted(&record.namespace)
+                    && !self.namespace_sdk_cleanup_blocks(
+                        namespace_sdk_cleanup::Kind::Credential,
+                        &record.namespace,
+                        &record.id,
+                    )
+                    && record.phase != Phase::Revoked
+                    && (record.phase == Phase::PendingRevoke
+                        || at >= record.expires
+                        || record
+                            .parent_cleanup_required(self, at)
+                            .map_err(|e| err(e.status, &e.message))?),
+            )
         };
         for (id, record) in &registry.records {
             if after.is_none_or(|after| id.as_str() > after) && eligible(record)? {
@@ -299,5 +308,104 @@ impl AuthState {
             }
         }
         Ok(None)
+    }
+}
+
+impl AuthState {
+    pub(crate) fn namespace_sdk_saved_credential_records(
+        &self,
+        namespace: &str,
+    ) -> Result<Vec<Record>, AuthError> {
+        let records = self
+            .sdk_credential_leases
+            .as_ref()
+            .map_or_else(Vec::new, |registry| {
+                registry
+                    .records
+                    .values()
+                    .filter(|record| record.namespace == namespace)
+                    .cloned()
+                    .collect::<Vec<_>>()
+            });
+        for record in &records {
+            self.validate_sdk_credential_record(record)?;
+        }
+        Ok(records)
+    }
+    pub(crate) fn namespace_sdk_deletion_records(
+        &self,
+        namespace: &str,
+    ) -> Result<Vec<Record>, AuthError> {
+        if namespace.is_empty() {
+            return Err(err(503, "root credential deletion scope rejected"));
+        }
+        let records: Vec<_> =
+            self.sdk_credential_leases
+                .as_ref()
+                .map_or_else(Vec::new, |registry| {
+                    registry
+                        .records
+                        .values()
+                        .filter(|record| record.namespace == namespace)
+                        .cloned()
+                        .collect()
+                });
+        for record in &records {
+            self.validate_sdk_credential_record(record)?;
+            if record.phase != Phase::Revoked {
+                self.sdk_auth_owner_gate(&record.backend)?;
+            }
+        }
+        Ok(records)
+    }
+    /// Never published: retain the global real Registry in every actual state.
+    pub(crate) fn namespace_sdk_native_deletion_projection(
+        &self,
+        namespace: &str,
+    ) -> Result<Self, AuthError> {
+        self.namespace_sdk_deletion_records(namespace)?;
+        let mut candidate = self.clone();
+        if let Some(mounts) = self.plugin_auth_mounts.get(namespace) {
+            for (mount, config) in mounts {
+                if config.sdk.is_none() {
+                    return Err(err(409, "namespace contains a non-SDK callback Auth mount"));
+                }
+                self.sdk_auth_binding(namespace, &format!("auth/{mount}/"))?
+                    .filter(|binding| binding.mount == *mount)
+                    .ok_or_else(|| err(503, "namespace SDK Auth actual binding unavailable"))?;
+                if let Some(auth) = candidate.auth_mounts.get_mut(namespace) {
+                    auth.remove(mount);
+                }
+            }
+            candidate.plugin_auth_mounts.remove(namespace);
+        }
+        if let Some(registry) = &mut candidate.sdk_credential_leases {
+            registry
+                .records
+                .retain(|_, record| record.namespace != namespace);
+        }
+        Ok(candidate)
+    }
+}
+
+impl AuthState {
+    pub(crate) fn namespace_sdk_auth_bindings(
+        &self,
+        namespace: &str,
+    ) -> Result<Vec<sdk::Binding>, AuthError> {
+        let mut result = Vec::new();
+        if let Some(mounts) = self.plugin_auth_mounts.get(namespace) {
+            for (mount, config) in mounts {
+                if config.sdk.is_none() {
+                    return Err(err(409, "namespace contains a non-SDK callback Auth mount"));
+                }
+                let binding = self
+                    .sdk_auth_binding(namespace, &format!("auth/{mount}/"))?
+                    .filter(|binding| binding.mount == *mount)
+                    .ok_or_else(|| err(503, "namespace SDK Auth actual binding unavailable"))?;
+                result.push(binding);
+            }
+        }
+        Ok(result)
     }
 }

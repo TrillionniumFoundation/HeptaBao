@@ -365,6 +365,7 @@ impl Service {
                         body: json!({"warnings":[STARTED]}),
                         response_headers: Default::default(),
                         consistency_index: None,
+                        unwrapped_json: None,
                     },
                 )
             } else {
@@ -392,6 +393,7 @@ impl Service {
                     body: wrapped.body,
                     response_headers: Default::default(),
                     consistency_index: None,
+                    unwrapped_json: None,
                 };
             }
             self.pending_approle_tidy = Some(Accepted {

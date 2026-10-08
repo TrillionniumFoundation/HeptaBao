@@ -98,8 +98,35 @@ impl Authority {
         match self {
             Self::Client(value) => value.validate_live_auth(auth),
             Self::Admitted(value) => value.check_deadline(),
-            Self::Cleanup(value) => value.check_deadline(),
+            Self::Cleanup(value) => {
+                value.check_deadline()?;
+                if let Some(work) = &value.namespace_work {
+                    work.check_auth(auth)?;
+                }
+                Ok(())
+            }
         }
+    }
+    pub(super) fn finish_namespace_logical(
+        &self,
+        state: &mut State,
+        lease: &crate::engines::sdk_lease::Lease,
+    ) -> Result<(), Response> {
+        if let Self::Cleanup(value) = self
+            && let Some(work) = &value.namespace_work
+        {
+            work.finish_logical(state, lease)?;
+        }
+        Ok(())
+    }
+    pub(super) fn namespace_work(&self) -> Option<&namespace_sdk_cleanup::Authority> {
+        match self {
+            Self::Cleanup(value) => value.namespace_work.as_ref(),
+            _ => None,
+        }
+    }
+    pub(super) fn namespace_cleanup(&self) -> bool {
+        matches!(self, Self::Cleanup(value) if value.namespace_work.is_some())
     }
     pub(super) fn admitted_data(&self) -> bool {
         matches!(self, Self::Admitted(_))
@@ -119,6 +146,9 @@ impl Authority {
         }
         value.record = current;
         value.terminal = true;
+        if let Some(work) = &mut value.namespace_work {
+            work.after_publication(&state.auth)?;
+        }
         Ok(())
     }
 }
@@ -224,6 +254,7 @@ pub(super) struct CleanupAuthority {
     admitted_at: u64,
     deadline: Instant,
     terminal: bool,
+    namespace_work: Option<namespace_sdk_cleanup::Authority>,
 }
 impl CleanupAuthority {
     fn check_deadline(&self) -> Result<(), Response> {
@@ -297,6 +328,9 @@ impl Service {
             }
             Authority::Cleanup(value) => {
                 value.check_deadline()?;
+                if let Some(work) = &value.namespace_work {
+                    work.check(self)?;
+                }
                 if self.recovery_required
                     || self.audit_failed
                     || self.unseal_nonce != value.activation
@@ -358,6 +392,9 @@ impl Service {
                 if let Some(floor) = state.engines.sdk_lease_clock_floor() {
                     value.clock = value.clock.with_timestamp_floor(floor);
                 }
+                if let Some(work) = &value.namespace_work {
+                    work.check(self)?;
+                }
                 value.check_deadline()
             }
         }
@@ -365,6 +402,20 @@ impl Service {
     pub(in crate::service) fn prepare_sdk_expiry(
         &mut self,
         clock: RequestClock,
+    ) -> Result<Option<Plan>, Response> {
+        self.prepare_selected_sdk_cleanup(clock, None)
+    }
+    pub(in crate::service) fn prepare_namespace_sdk_logical(
+        &mut self,
+        clock: RequestClock,
+        key: String,
+    ) -> Result<Option<Plan>, Response> {
+        self.prepare_selected_sdk_cleanup(clock, Some(key))
+    }
+    fn prepare_selected_sdk_cleanup(
+        &mut self,
+        clock: RequestClock,
+        namespace_work: Option<String>,
     ) -> Result<Option<Plan>, Response> {
         if self.sdk_configuration.is_none() || self.state.is_none() {
             return Ok(None);
@@ -404,11 +455,30 @@ impl Service {
             .sdk_cleanup_cursor
             .as_ref()
             .map(|(namespace, id)| (namespace.as_str(), id.as_str()));
-        let Some(mut record) = state
-            .engines
-            .sdk_cleanup_candidate(&state.auth, at, after)
-            .map_err(Response::from_engine_error)?
-        else {
+        let selected = if let Some(key) = &namespace_work {
+            let job = state.namespace_sdk_cleanup_record(key)?;
+            if job.kind() != crate::auth::namespace_sdk_cleanup::Kind::Logical
+                || job.stage() != &crate::auth::namespace_sdk_cleanup::Stage::Queued
+            {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK job is not queued logical work",
+                ));
+            }
+            let lease = state
+                .engines
+                .sdk_lease(job.binding().namespace(), job.lease_id())
+                .ok_or_else(|| Response::error(503, "namespace SDK saved logical lease missing"))?;
+            job.check_logical(&lease, false)
+                .map_err(|e| Response::error(e.status, &e.message))?;
+            Some(lease)
+        } else {
+            state
+                .engines
+                .sdk_cleanup_candidate(&state.auth, at, after)
+                .map_err(Response::from_engine_error)?
+        };
+        let Some(mut record) = selected else {
             return Ok(None);
         };
         self.sdk_cleanup_cursor = Some((record.namespace.clone(), record.id.clone()));
@@ -429,7 +499,8 @@ impl Service {
         };
         let key = self.sdk_host_key(&namespace, &mount, &owner);
         if self.sdk_hosts.get(&key).is_some_and(|control| {
-            control.busy.load(Ordering::Acquire) || control.retiring.load(Ordering::Acquire)
+            control.busy.load(Ordering::Acquire)
+                || (control.retiring.load(Ordering::Acquire) && namespace_work.is_none())
         }) {
             return Ok(None);
         }
@@ -462,6 +533,9 @@ impl Service {
             .engines
             .store_sdk_lease(record.clone())
             .map_err(Response::from_engine_error)?;
+        if let Some(key) = &namespace_work {
+            state.attempt_namespace_sdk_cleanup(key)?;
+        }
         state.schema = state.writer_schema();
         let identity = self.current_state_identity()?;
         let publication = self.prepare_record_plan(&mut state)?;
@@ -487,6 +561,9 @@ impl Service {
             None,
         )?;
         self.state = Some(state.clone());
+        let namespace_work = namespace_work
+            .map(|key| namespace_sdk_cleanup::Authority::capture(self, key, clock, deadline))
+            .transpose()?;
         let cleanup = CleanupAuthority {
             record: record.clone(),
             namespace_incarnation: state.namespaces.incarnation(&namespace),
@@ -498,6 +575,7 @@ impl Service {
             admitted_at: at.seconds(),
             deadline,
             terminal: false,
+            namespace_work,
         };
         let body = json!({});
         let path = record.path.strip_prefix(&mount).unwrap_or("").to_owned();

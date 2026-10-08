@@ -346,9 +346,24 @@ fn start_worker_typed(
     }))
 }
 
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+fn namespace_storage_diagnostic(stage: &'static str, cause: &Response) {
+    let first = cause.body["errors"]
+        .as_array()
+        .and_then(|errors| errors.first())
+        .and_then(Value::as_str)
+        .unwrap_or("");
+    eprintln!(
+        "heptabao-ns-storage-diag: phase={stage} status={} first_error_sha={}",
+        cause.status,
+        hex(&crypto::digest(first.as_bytes()))
+    );
+}
+
 struct StorageTransaction {
     engines: CowOwner<EngineState>,
     admitted_original: Option<CowOwner<EngineState>>,
+    namespace_original: Option<namespace_sdk_cleanup::LogicalStorageCut>,
     identity: crate::state_record_root::StateIdentity,
     changed: bool,
 }
@@ -365,6 +380,7 @@ pub(super) struct Plan {
     data: Value,
     lease: Mutex<Option<Box<secret_lease::LeaseCall>>>,
     retirement: Option<Mutex<retirement::Retirement>>,
+    namespace_cleanup: bool,
     transaction: Mutex<StorageTransaction>,
     pub(in crate::service) deadline: Instant,
 }
@@ -397,12 +413,23 @@ impl Plan {
         let deadline = deadline.min(self.deadline);
         if self.control.fenced.load(Ordering::Acquire)
             || Instant::now() >= deadline
-            || (self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none())
+            || (self.control.retiring.load(Ordering::Acquire)
+                && self.retirement.is_none()
+                && !self.namespace_cleanup)
         {
             return Err(Response::error(
                 503,
                 "SDK owner or original deadline unavailable before entry",
             ));
+        }
+        if self.namespace_cleanup {
+            let mut writer = writer_before(service, deadline)?;
+            let mut authority = self
+                .authority
+                .lock()
+                .map_err(|_| Response::error(503, "namespace SDK original attempt unavailable"))?;
+            writer.validate_sdk_authority(&mut authority)?;
+            writer.sdk_binding_gate(self).map_err(bridge_failure)?;
         }
         let call = self
             .lease
@@ -418,7 +445,10 @@ impl Plan {
         {
             return Err(Response::error(503, "SDK mount is busy before entry"));
         }
-        if self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none() {
+        if self.control.retiring.load(Ordering::Acquire)
+            && self.retirement.is_none()
+            && !self.namespace_cleanup
+        {
             self.control.busy.store(false, Ordering::Release);
             return Err(Response::error(
                 503,
@@ -1247,7 +1277,9 @@ impl Service {
         if Instant::now() >= plan.deadline
             || plan.control.fenced.load(Ordering::Acquire)
             || self.recovery_required
-            || (plan.control.retiring.load(Ordering::Acquire) && plan.retirement.is_none())
+            || (plan.control.retiring.load(Ordering::Acquire)
+                && plan.retirement.is_none()
+                && !plan.namespace_cleanup)
         {
             return Err(SdkBridgeError::Fenced);
         }
@@ -1288,7 +1320,13 @@ impl Service {
             crate::request_deadline::RequestDeadlineScope::enter(deadline.min(plan.deadline));
         let mut authority = plan.authority.lock().map_err(|_| SdkBridgeError::Fenced)?;
         self.validate_sdk_authority(&mut authority)
-            .map_err(|_| SdkBridgeError::Fenced)?;
+            .map_err(|_cause| {
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                if plan.namespace_cleanup {
+                    namespace_storage_diagnostic("logical_authority_gate", &_cause);
+                }
+                SdkBridgeError::Fenced
+            })?;
         self.sdk_binding_gate(plan)?;
         let mut state = self.state.clone().ok_or(SdkBridgeError::Fenced)?;
         let auth_clock_changed = authority
@@ -1301,12 +1339,36 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| SdkBridgeError::Fenced)?;
+        let namespace_role = authority
+            .namespace_work()
+            .map(|work| work.logical_native_role(self, &plan.namespace, &plan.mount, &plan.owner))
+            .transpose()
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        if plan.namespace_cleanup != namespace_role.is_some() {
+            return Err(SdkBridgeError::Fenced);
+        }
+        match (&transaction.namespace_original, &namespace_role) {
+            (Some(cut), Some(_)) => cut
+                .check(&state.engines, &plan.namespace, &plan.mount, &plan.owner)
+                .map_err(|_| SdkBridgeError::Fenced)?,
+            (None, None) => {}
+            _ => return Err(SdkBridgeError::Fenced),
+        }
         if self
             .current_state_identity()
             .map_err(|_| SdkBridgeError::Fenced)?
             != transaction.identity
             && !authority.admitted_data()
+            && namespace_role.is_none()
         {
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if plan.namespace_cleanup {
+                eprintln!(
+                    "heptabao-ns-storage-diag: phase=logical_whole_identity status=503 identity_equal=false private_namespace_cleanup=true precise_token={} schema={}",
+                    state.has_token_api_precision_state(),
+                    state.schema
+                );
+            }
             return Err(SdkBridgeError::Fenced);
         }
         if authority.admitted_data()
@@ -1377,9 +1439,13 @@ impl Service {
         let changed = clock_changed;
         if changed {
             state.schema = state.writer_schema();
-            let publication = self
-                .prepare_record_plan(&mut state)
-                .map_err(|_| SdkBridgeError::Storage)?;
+            let publication = self.prepare_record_plan(&mut state).map_err(|_cause| {
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                if plan.namespace_cleanup {
+                    namespace_storage_diagnostic("logical_record_plan", &_cause);
+                }
+                SdkBridgeError::Storage
+            })?;
             self.validate_sdk_authority(&mut authority)
                 .map_err(|_| SdkBridgeError::Fenced)?;
             self.sdk_binding_gate(plan)?;
@@ -1391,9 +1457,12 @@ impl Service {
                 return Err(SdkBridgeError::Fenced);
             }
             if self
-                .commit_record_plan_with_before_publish(
+                .commit_record_plan_with_native_role(
                     &state,
                     publication,
+                    namespace_role
+                        .as_ref()
+                        .and_then(namespace_sdk_cleanup::NativeRole::captured),
                     |auth| authority.validate_live_auth(auth),
                     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                     None,
@@ -1605,6 +1674,15 @@ impl Service {
             };
         }
         let admitted_original = authority.admitted_data().then(|| state.engines.clone());
+        let namespace_cleanup = authority.namespace_cleanup();
+        let namespace_original = match authority
+            .namespace_work()
+            .map(|work| work.logical_storage_cut(self, request.namespace, &mount, &owner))
+            .transpose()
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             mount,
@@ -1617,9 +1695,11 @@ impl Service {
             data,
             lease: Mutex::new(lease.map(Box::new)),
             retirement: None,
+            namespace_cleanup,
             transaction: Mutex::new(StorageTransaction {
                 engines: state.engines.clone(),
                 admitted_original,
+                namespace_original,
                 identity,
                 changed: false,
             }),
@@ -1788,3 +1868,94 @@ impl Service {
 #[cfg(test)]
 #[path = "service_sdk_authority_tests.rs"]
 mod authority_tests;
+
+/// This process-local barrier grants no callback or Principal. It prevents
+/// previously captured ordinary Plans from entering after durable deletion.
+pub(in crate::service) struct NamespaceHosts {
+    controls: Vec<Arc<Control>>,
+    publication_entered: bool,
+}
+impl Drop for NamespaceHosts {
+    fn drop(&mut self) {
+        if !self.publication_entered {
+            for control in &self.controls {
+                control.retiring.store(false, Ordering::Release);
+            }
+        }
+    }
+}
+impl NamespaceHosts {
+    pub(in crate::service) fn publication_entered(&mut self) {
+        self.publication_entered = true;
+    }
+    pub(in crate::service) fn check(&self) -> Result<(), Response> {
+        if self.controls.iter().any(|control| {
+            !control.retiring.load(Ordering::Acquire)
+                || control.busy.load(Ordering::Acquire)
+                || control.fenced.load(Ordering::Acquire)
+        }) {
+            return Err(Response::error(
+                409,
+                "namespace SDK owner is busy or unavailable",
+            ));
+        }
+        Ok(())
+    }
+}
+impl Service {
+    fn namespace_sdk_host_keys(
+        &self,
+        state: &State,
+        namespace: &str,
+    ) -> Result<Vec<String>, Response> {
+        let mut keys = Vec::new();
+        for (mount, owner) in state
+            .engines
+            .namespace_sdk_mount_bindings(namespace)
+            .map_err(Response::from_engine_error)?
+        {
+            keys.push(self.sdk_host_key(namespace, &mount, &owner));
+        }
+        for binding in state
+            .auth
+            .namespace_sdk_auth_bindings(namespace)
+            .map_err(|e| Response::error(e.status, &e.message))?
+        {
+            keys.push(auth100::sdk_auth_key(&state.cluster_id, &binding)?);
+        }
+        Ok(keys)
+    }
+    pub(in crate::service) fn reserve_namespace_sdk_hosts(
+        &self,
+        state: &State,
+        namespace: &str,
+    ) -> Result<NamespaceHosts, Response> {
+        let mut reserved = NamespaceHosts {
+            controls: Vec::new(),
+            publication_entered: false,
+        };
+        for key in self.namespace_sdk_host_keys(state, namespace)? {
+            if let Some(control) = self.sdk_hosts.get(&key) {
+                control
+                    .retiring
+                    .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                    .map_err(|_| Response::error(409, "namespace SDK owner is already retiring"))?;
+                reserved.controls.push(Arc::clone(control));
+            }
+        }
+        reserved.check()?;
+        Ok(reserved)
+    }
+    pub(in crate::service) fn retire_namespace_sdk_hosts(
+        &mut self,
+        source: &State,
+        namespace: &str,
+    ) -> Result<(), Response> {
+        for key in self.namespace_sdk_host_keys(source, namespace)? {
+            if let Some(control) = self.sdk_hosts.remove(&key) {
+                control.retire();
+            }
+        }
+        Ok(())
+    }
+}

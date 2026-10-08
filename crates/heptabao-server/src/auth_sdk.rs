@@ -201,6 +201,15 @@ impl std::fmt::Debug for Entry {
     }
 }
 impl AuthState {
+    pub(crate) fn sdk_auth_retirement_has_live_issuer(
+        &self,
+        binding: &Binding,
+        at: Timestamp,
+    ) -> bool {
+        self.tokens.values().any(|token| token.uses_remaining != Some(0)
+            && matches!(&token.auth_provenance, Some(TokenAuthProvenance::Sdk { origin })
+                if origin.binding == *binding && origin.lease.expires_at.is_none_or(|end| at <= end)))
+    }
     pub(crate) fn has_sdk_auth_state(&self) -> bool {
         self.sdk_auth_catalog.is_some()
             || self.sdk_auth_clock.is_some()

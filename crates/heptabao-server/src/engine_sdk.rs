@@ -76,8 +76,19 @@ pub(crate) struct Catalog {
     entries: BTreeMap<String, Descriptor>,
     /// Registration incarnation survives deregistration of its descriptor.
     epochs: BTreeMap<String, u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    auth_retirement107: Option<crate::auth::sdk_retirement::Mirror>,
 }
 impl Catalog {
+    pub(crate) fn auth_retirement_mirror(&self) -> Option<&crate::auth::sdk_retirement::Mirror> {
+        self.auth_retirement107.as_ref()
+    }
+    pub(crate) fn set_auth_retirement_mirror(
+        &mut self,
+        mirror: Option<crate::auth::sdk_retirement::Mirror>,
+    ) {
+        self.auth_retirement107 = mirror;
+    }
     pub(crate) fn is_empty(&self) -> bool {
         self.entries.is_empty() && self.epochs.is_empty()
     }
@@ -323,6 +334,12 @@ impl EngineState {
     }
     pub(crate) fn validate_sdk_state(&self) -> Result<()> {
         self.sdk_catalog.validate()?;
+        if self.sdk_catalog.auth_retirement_mirror().is_some() {
+            return Err(error(
+                503,
+                "Auth retirement mirror cannot be a Logical catalog",
+            ));
+        }
         for ns in self.namespaces.values() {
             for (mount, owner) in &ns.sdk_owners {
                 let valid = ns.mounts.get(mount).is_some_and(|m| {
@@ -731,4 +748,56 @@ fn decode_record(
             .and_then(Value::as_bool)
             .ok_or(RecordError::Corrupt)?,
     ))
+}
+
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
+impl EngineState {
+    /// A predicate projection only. The real namespace is closed and retired
+    /// with its original custody/record graph after all registered jobs finish.
+    pub(crate) fn namespace_sdk_deletion_records(
+        &self,
+        actual: &str,
+    ) -> Result<Vec<sdk_lease::Lease>> {
+        if actual.is_empty() {
+            return Err(error(503, "root SDK deletion scope rejected"));
+        }
+        self.validate_sdk_state()?;
+        self.validate_sdk_leases()?;
+        let Some(ns) = self.namespaces.get(actual) else {
+            return Ok(Vec::new());
+        };
+        for (mount, owner) in &ns.sdk_owners {
+            self.sdk_owner_gate(actual, mount, owner)?;
+        }
+        Ok(ns.sdk_leases.values().cloned().collect())
+    }
+    pub(crate) fn namespace_sdk_native_deletion_projection(&self, actual: &str) -> Result<Self> {
+        self.namespace_sdk_deletion_records(actual)?;
+        let mut candidate = self.clone();
+        if let Some(ns) = candidate.namespaces.get_mut(actual) {
+            let sdk_mounts: Vec<_> = ns.sdk_owners.keys().cloned().collect();
+            for mount in sdk_mounts {
+                ns.mounts.remove(&mount);
+            }
+            ns.sdk_owners.clear();
+            ns.sdk_leases.clear();
+        }
+        Ok(candidate)
+    }
+}
+
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
+impl EngineState {
+    pub(crate) fn namespace_sdk_mount_bindings(
+        &self,
+        namespace: &str,
+    ) -> Result<Vec<(String, sdk::MountOwner)>> {
+        self.namespace_sdk_deletion_records(namespace)?;
+        Ok(self.namespaces.get(namespace).map_or_else(Vec::new, |ns| {
+            ns.sdk_owners
+                .iter()
+                .map(|(mount, owner)| (mount.clone(), owner.clone()))
+                .collect()
+        }))
+    }
 }

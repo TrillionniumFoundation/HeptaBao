@@ -366,7 +366,13 @@ impl EngineState {
             let eligible = lease.phase == Phase::PendingRevoke
                 || (lease.phase == Phase::Active
                     && (at >= lease.expires || lease.parent_cleanup_required(auth, at)?));
-            if !eligible {
+            if !eligible
+                || auth.namespace_sdk_cleanup_blocks(
+                    crate::auth::namespace_sdk_cleanup::Kind::Logical,
+                    &lease.namespace,
+                    &lease.id,
+                )
+            {
                 continue;
             }
             if first.is_none() {
@@ -406,6 +412,7 @@ impl EngineState {
             .namespaces
             .values()
             .flat_map(|ns| ns.sdk_leases.values())
+            .chain(self.sdk_logical_history_records())
             .any(|lease| {
                 self.sdk_lease_clock.is_none_or(|floor| {
                     floor < lease.issued || lease.renewed.is_some_and(|at| floor < at)
@@ -421,6 +428,7 @@ impl EngineState {
     }
     pub(crate) fn has_sdk_lease_state(&self) -> bool {
         self.sdk_lease_clock.is_some()
+            || self.sdk_retired_logical.is_some()
             || self.namespaces.values().any(|ns| !ns.sdk_leases.is_empty())
     }
     pub(crate) fn sdk_lease(&self, namespace: &str, id: &str) -> Option<Lease> {
@@ -428,6 +436,9 @@ impl EngineState {
     }
     pub(crate) fn store_sdk_lease(&mut self, lease: Lease) -> Result<()> {
         lease.validate(&lease.namespace)?;
+        if self.sdk_history_contains_id(&lease.namespace, &lease.id) {
+            return Err(error(503, "SDK logical history ID cannot be reused"));
+        }
         let ns = self
             .namespaces
             .get_mut(&lease.namespace)
@@ -446,9 +457,14 @@ impl EngineState {
                     .values()
                     .map(move |l| (n.clone(), l.issuer.clone()))
             })
+            .chain(
+                self.sdk_logical_history_records()
+                    .map(|lease| (lease.namespace.clone(), lease.issuer.clone())),
+            )
             .collect()
     }
     pub(crate) fn validate_sdk_lease_cluster(&self, cluster: &str) -> Result<()> {
+        self.validate_sdk_logical_history(cluster, None)?;
         if self
             .namespaces
             .values()

@@ -8,6 +8,7 @@ use heptabao_plugin_host::sdk_backend::SdkBackendType;
 mod credential;
 #[path = "service_sdk_auth_retirement.rs"]
 mod retirement;
+pub(in crate::service) use retirement::RecoveryWork;
 
 struct Context {
     namespace: String,
@@ -27,6 +28,7 @@ struct StageTarget<'a> {
     path: &'a str,
     deadline: Instant,
     renewal: Option<RenewalTarget>,
+    retirement: Option<retirement::Retirement>,
 }
 /// Minted only by stage_sdk_auth after the actual entrance authentication,
 /// consumed use, parameter ACL and SpecialPaths authorization. The moved
@@ -102,6 +104,7 @@ impl CredentialList {
 }
 struct Transaction {
     auth: CowOwner<AuthState>,
+    namespace_original: Option<namespace_sdk_cleanup::CredentialStorageCut>,
     identity: crate::state_record_root::StateIdentity,
 }
 pub(in crate::service) struct Plan {
@@ -120,6 +123,7 @@ pub(in crate::service) struct Plan {
     lease: Mutex<Option<credential::Call>>,
     cleanup: Mutex<Option<credential::Cleanup>>,
     retirement: Option<Mutex<retirement::Retirement>>,
+    namespace_cleanup: bool,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -127,6 +131,42 @@ impl Drop for Plan {
     }
 }
 impl Plan {
+    fn namespace_native_role(
+        &self,
+        service: &Service,
+    ) -> Result<Option<namespace_sdk_cleanup::NativeRole>, Response> {
+        let cleanup = self
+            .cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?;
+        let role = cleanup
+            .as_ref()
+            .and_then(credential::Cleanup::namespace_work)
+            .map(|work| work.credential_native_role(service, &self.binding))
+            .transpose()?;
+        if self.namespace_cleanup != role.is_some() {
+            return Err(Response::error(
+                503,
+                "namespace SDK credential authority scope changed",
+            ));
+        }
+        // The guard is released before any live_auth/sdk_auth_gate publication closure.
+        Ok(role)
+    }
+    fn namespace_storage_cut(
+        &self,
+        service: &Service,
+    ) -> Result<Option<namespace_sdk_cleanup::CredentialStorageCut>, Response> {
+        let cleanup = self
+            .cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?;
+        cleanup
+            .as_ref()
+            .and_then(credential::Cleanup::namespace_work)
+            .map(|work| work.credential_storage_cut(service, &self.binding))
+            .transpose()
+    }
     pub(in crate::service) fn execute(
         &self,
         service: &Arc<Mutex<Service>>,
@@ -144,11 +184,21 @@ impl Plan {
         deadline: Instant,
     ) -> Result<Option<Value>, Response> {
         let deadline = deadline.min(self.deadline);
-        if self.control.fenced.load(Ordering::Acquire) || Instant::now() >= deadline {
+        if self.control.fenced.load(Ordering::Acquire)
+            || Instant::now() >= deadline
+            || (self.control.retiring.load(Ordering::Acquire)
+                && self.retirement.is_none()
+                && !self.namespace_cleanup)
+        {
             return Err(Response::error(
                 503,
                 "SDK Auth original owner or deadline unavailable",
             ));
+        }
+        let native_retirement = self.has_native_retirement()?;
+        if self.namespace_cleanup || native_retirement {
+            let mut writer = writer_before(service, deadline)?;
+            writer.sdk_auth_gate(self)?;
         }
         let auth = self
             .renewal
@@ -177,6 +227,24 @@ impl Plan {
             .is_err()
         {
             return Err(Response::error(503, "SDK Auth mount is busy before entry"));
+        }
+        if self.control.retiring.load(Ordering::Acquire)
+            && self.retirement.is_none()
+            && !self.namespace_cleanup
+        {
+            self.control.busy.store(false, Ordering::Release);
+            return Err(Response::error(
+                409,
+                "SDK Auth retirement blocks an old invocation",
+            ));
+        }
+        if native_retirement {
+            let result =
+                writer_before(service, deadline).and_then(|mut writer| writer.sdk_auth_gate(self));
+            if let Err(error) = result {
+                self.control.busy.store(false, Ordering::Release);
+                return Err(error);
+            }
         }
         let (events, received) = mpsc::channel();
         let path = if self.retirement.is_some() {
@@ -293,6 +361,13 @@ impl Plan {
             caller.apply_sdk_auth_clock_floor(auth)?;
             caller.validate_live_auth(auth)?;
         }
+        if self.retirement.is_none() && auth.sdk_auth_retirement_tainted(&self.binding) {
+            return Err(Response::error(
+                409,
+                "SDK Auth durable retirement blocks delivery",
+            ));
+        }
+        self.check_retirement_control(auth)?;
         self.time(auth)?;
         self.credential_owner_gate(auth)?;
         self.live_target(auth)?;
@@ -312,6 +387,7 @@ impl Plan {
                 .as_ref()
             {
                 cleanup.check(call)?;
+                cleanup.check_auth(auth)?;
             }
         }
         Ok(())
@@ -332,7 +408,10 @@ impl Plan {
 fn auth_error(error: crate::auth::AuthError) -> Response {
     Response::error(error.status, &error.message)
 }
-fn sdk_auth_key(cluster: &str, binding: &Binding) -> Result<String, Response> {
+pub(in crate::service) fn sdk_auth_key(
+    cluster: &str,
+    binding: &Binding,
+) -> Result<String, Response> {
     let data = serde_json::to_vec(&(cluster, binding))
         .map_err(|_| Response::error(503, "SDK Auth host identity encoding failed"))?;
     Ok(format!("AUTH:{}", hex(&crypto::digest(&data))))
@@ -689,7 +768,7 @@ impl Service {
                     Ok(None) => return Response::error(404, "SDK Auth mount not found"),
                     Err(e) => return auth_error(e),
                 };
-                if state.auth.sdk_credential_mount_pending(&binding) {
+                {
                     let Some(authority) = caller.take() else {
                         return Response::error(503, "SDK retirement original caller absent");
                     };
@@ -697,57 +776,6 @@ impl Service {
                         state, authority, request, binding, context, deadline,
                     );
                 }
-                let key = match sdk_auth_key(&state.cluster_id, &binding) {
-                    Ok(k) => k,
-                    Err(e) => return e,
-                };
-                if self
-                    .sdk_hosts
-                    .get(&key)
-                    .is_some_and(|c| c.busy.load(Ordering::Acquire))
-                {
-                    return Response::error(503, "SDK Auth mount is busy before retirement");
-                }
-                let response = state.auth.handle_with_connection_clock(
-                    caller.as_ref().map(|a| a.principal()),
-                    request.namespace,
-                    request.method,
-                    request.path,
-                    request.body,
-                    request
-                        .token_time()
-                        .unwrap_or(AuthorityTime::Coarse(request.now)),
-                    Some(clock),
-                    request.client_certificates,
-                    request.origin_peer,
-                );
-                match response {
-                    Ok(Some(r)) if r.status == 204 => {}
-                    Ok(_) => return Response::error(503, "SDK Auth retirement returned no owner"),
-                    Err(e) => return auth_error(e),
-                }
-                if let Err(e) = self.sdk_auth_commit_control(
-                    &mut state,
-                    match caller.as_mut() {
-                        Some(authority) => authority,
-                        None => {
-                            return Response::error(
-                                503,
-                                "SDK Auth original control capsule absent",
-                            );
-                        }
-                    },
-                    &expected,
-                    clock,
-                ) {
-                    return e;
-                }
-                self.state = Some(state);
-                if let Some(host) = self.sdk_hosts.remove(&key) {
-                    host.retire()
-                }
-                self.pending_sdk_control_authority = caller;
-                return empty_response();
             }
             if !matches!(request.method, "POST" | "PUT") {
                 return Response::error(405, "SDK Auth mount requires POST, PUT or DELETE");
@@ -866,6 +894,7 @@ impl Service {
                     path: "",
                     deadline,
                     renewal: None,
+                    retirement: None,
                 },
             );
         }
@@ -888,6 +917,7 @@ impl Service {
                     path: &path,
                     deadline,
                     renewal: Some(renewal),
+                    retirement: None,
                 },
             );
         }
@@ -911,6 +941,7 @@ impl Service {
                 path,
                 deadline,
                 renewal: None,
+                retirement: None,
             },
         )
     }
@@ -933,6 +964,44 @@ impl Service {
         request: &RequestView<'_>,
         target: StageTarget<'_>,
     ) -> Response {
+        self.stage_owned_sdk_auth(state, request, target, None)
+    }
+    fn stage_owned_sdk_auth(
+        &mut self,
+        state: &State,
+        request: &RequestView<'_>,
+        target: StageTarget<'_>,
+        namespace_work: Option<&namespace_sdk_cleanup::Authority>,
+    ) -> Response {
+        if target.retirement.is_some() && namespace_work.is_some() {
+            return Response::error(503, "SDK cleanup authority scopes are mutually exclusive");
+        }
+        if let Some(work) = namespace_work
+            && let Err(error) = work.sync_before_setup(self)
+        {
+            return error;
+        }
+        // Cleanup's Setup transaction starts from the actual graph admitted
+        // by that original task, never the pre-sync Auth snapshot.
+        if let Some(native) = target
+            .retirement
+            .as_ref()
+            .and_then(|value| value.native.as_ref())
+            && let Err(error) = native.sync_before_setup(self)
+        {
+            return error;
+        }
+        let current_state = if namespace_work.is_some()
+            || target
+                .retirement
+                .as_ref()
+                .is_some_and(|value| value.native.is_some())
+        {
+            self.state.clone()
+        } else {
+            None
+        };
+        let state = current_state.as_ref().unwrap_or(state);
         let StageTarget {
             binding,
             mut caller,
@@ -941,7 +1010,15 @@ impl Service {
             path,
             deadline,
             renewal,
+            retirement,
         } = target;
+        if let Some(retirement) = &retirement {
+            if let Err(error) = retirement.check_attempt(&state.auth, &binding) {
+                return error;
+            }
+        } else if state.auth.sdk_auth_retirement_tainted(&binding) {
+            return Response::error(409, "SDK Auth durable retirement is in progress");
+        }
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK Auth runtime absent");
         };
@@ -994,6 +1071,16 @@ impl Service {
                 default_ttl_seconds: 2_764_800,
                 max_ttl_seconds: 2_764_800,
             };
+            if let Some(work) = namespace_work
+                && let Err(error) = work.check(self)
+            {
+                return error;
+            }
+            if let Some(native) = retirement.as_ref().and_then(|value| value.native.as_ref())
+                && let Err(error) = native.check(self)
+            {
+                return error;
+            }
             let control = match start_worker_typed(launch, SdkBackendType::Auth) {
                 Ok(c) => c,
                 Err(e) => return e,
@@ -1001,7 +1088,10 @@ impl Service {
             self.sdk_hosts.insert(key, Arc::clone(&control));
             control
         };
-        if control.retiring.load(Ordering::Acquire) {
+        if control.retiring.load(Ordering::Acquire)
+            && retirement.is_none()
+            && namespace_work.is_none()
+        {
             return Response::error(409, "SDK Auth mount retirement is in progress");
         }
         let identity = match self.current_state_identity() {
@@ -1048,6 +1138,13 @@ impl Service {
             } else {
                 None
             };
+        let namespace_original = match namespace_work
+            .map(|work| work.credential_storage_cut(self, &binding))
+            .transpose()
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
         self.pending_sdk_auth_request = Some(Plan {
             context,
             binding,
@@ -1057,6 +1154,7 @@ impl Service {
             control,
             transaction: Mutex::new(Transaction {
                 auth: state.auth.clone(),
+                namespace_original,
                 identity,
             }),
             operation: operation.into(),
@@ -1066,12 +1164,14 @@ impl Service {
             renewal: Mutex::new(renewal.map(Box::new)),
             lease: Mutex::new(None),
             cleanup: Mutex::new(None),
-            retirement: None,
+            retirement: retirement.map(Mutex::new),
+            namespace_cleanup: namespace_work.is_some(),
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
     fn sdk_auth_gate(&mut self, plan: &Plan) -> Result<(), Response> {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        plan.sync_native_retirement(self)?;
         let completed_retirement = plan.retirement_completed()?;
         if plan.operation != "_mount" && !completed_retirement {
             let Some(state) = self.state.as_ref() else {
@@ -1127,7 +1227,7 @@ impl Service {
                 caller.apply_sdk_auth_clock_floor(&state.auth)?;
                 caller.validate_live_auth(&state.auth)?;
             }
-        } else {
+        } else if !plan.has_native_retirement()? {
             self.revalidate_online_authority_with_sync(
                 &plan.context.namespace,
                 &plan.context.activation,
@@ -1171,6 +1271,21 @@ impl Service {
                 .sdk_auth_owner_gate(&plan.binding)
                 .map_err(auth_error)?;
         }
+        if plan.retirement.is_none() && state.auth.sdk_auth_retirement_tainted(&plan.binding) {
+            return Err(Response::error(
+                409,
+                "SDK Auth durable retirement blocks delivery",
+            ));
+        }
+        plan.check_retirement_control(&state.auth)?;
+        if let Some(cleanup) = plan
+            .cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK credential cleanup unavailable"))?
+            .as_ref()
+        {
+            cleanup.check_service(self)?;
+        }
         plan.time(&state.auth)?;
         plan.credential_owner_gate(&state.auth)?;
         plan.live_target(&state.auth)?;
@@ -1184,12 +1299,48 @@ impl Service {
         plan: &Plan,
         operation: StorageOp,
     ) -> Result<StorageReply, Response> {
-        self.sdk_auth_gate(plan)?;
+        self.sdk_auth_gate(plan).inspect_err(|_cause| {
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if plan.namespace_cleanup {
+                namespace_storage_diagnostic("credential_authority_gate", _cause);
+            }
+        })?;
         let mut transaction = plan
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
-        if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
+        let namespace_role = plan.namespace_native_role(self)?;
+        match (&transaction.namespace_original, &namespace_role) {
+            (Some(cut), Some(_)) => cut.check(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK Auth current owner unavailable"))?
+                    .auth,
+                &plan.binding,
+            )?,
+            (None, None) => {}
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK credential Storage cut scope changed",
+                ));
+            }
+        }
+        if plan.admission.is_none()
+            && self.current_state_identity()? != transaction.identity
+            && namespace_role.is_none()
+        {
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if plan.namespace_cleanup {
+                eprintln!(
+                    "heptabao-ns-storage-diag: phase=credential_whole_identity status=503 identity_equal=false private_namespace_cleanup=true precise_token={} schema={}",
+                    self.state
+                        .as_ref()
+                        .is_some_and(State::has_token_api_precision_state),
+                    self.state.as_ref().map_or(0, |state| state.schema)
+                );
+            }
             return Err(Response::error(
                 503,
                 "SDK Auth Storage root changed since admission",
@@ -1204,11 +1355,21 @@ impl Service {
         let changed = current.auth.observe_sdk_auth_clock(at);
         if changed {
             current.schema = current.writer_schema();
-            let publication = self.prepare_record_plan(&mut current)?;
+            let publication = self
+                .prepare_record_plan(&mut current)
+                .inspect_err(|_cause| {
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    if plan.namespace_cleanup {
+                        namespace_storage_diagnostic("credential_record_plan", _cause);
+                    }
+                })?;
             self.sdk_auth_gate(plan)?;
-            self.commit_record_plan_with_before_publish(
+            self.commit_record_plan_with_native_role(
                 &current,
                 publication,
+                namespace_role
+                    .as_ref()
+                    .and_then(namespace_sdk_cleanup::NativeRole::captured),
                 |auth| plan.live_auth(auth),
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
@@ -1299,7 +1460,28 @@ impl Service {
             .transaction
             .lock()
             .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
-        if plan.admission.is_none() && self.current_state_identity()? != transaction.identity {
+        let namespace_role = plan.namespace_native_role(self)?;
+        match (&transaction.namespace_original, &namespace_role) {
+            (Some(cut), Some(_)) => cut.check(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK Auth current owner unavailable"))?
+                    .auth,
+                &plan.binding,
+            )?,
+            (None, None) => {}
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "namespace SDK credential Storage cut scope changed",
+                ));
+            }
+        }
+        if plan.admission.is_none()
+            && self.current_state_identity()? != transaction.identity
+            && namespace_role.is_none()
+        {
             return Err(Response::error(
                 503,
                 "SDK Auth original root changed before publication",
@@ -1322,6 +1504,14 @@ impl Service {
             if value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null())) {
                 admitted_terminal = AdmittedTerminal::UnexpectedAuth;
             }
+        } else if namespace_role.is_some() {
+            transaction
+                .namespace_original
+                .as_ref()
+                .ok_or_else(|| {
+                    Response::error(503, "namespace SDK credential Storage cut missing")
+                })?
+                .merge(&mut candidate.auth, &transaction.auth, &plan.binding)?;
         } else {
             candidate.auth = transaction.auth.clone();
         }
@@ -1490,9 +1680,12 @@ impl Service {
                     "SDK Auth root changed before final publish",
                 ));
             }
-            self.commit_record_plan_with_before_publish(
+            self.commit_record_plan_with_native_role(
                 &candidate,
                 publication,
+                namespace_role
+                    .as_ref()
+                    .and_then(namespace_sdk_cleanup::NativeRole::captured),
                 |auth| plan.live_auth(auth),
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
@@ -1520,6 +1713,16 @@ impl Service {
                     .ok_or_else(|| Response::error(503, "SDK credential publication absent"))?
                     .auth,
             )?;
+            plan.retirement_native_after_callback(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Response::error(503, "SDK retirement actual publication absent")
+                    })?
+                    .auth,
+                at,
+            )?;
             if let Some(admission) = &plan.admission {
                 let auth = &self
                     .state
@@ -1529,6 +1732,9 @@ impl Service {
                     })?
                     .auth;
                 admission.published(auth, &plan.binding)?;
+            }
+            if namespace_role.is_some() {
+                transaction.namespace_original = plan.namespace_storage_cut(self)?;
             }
             self.sdk_auth_gate(plan)?;
             Ok(())

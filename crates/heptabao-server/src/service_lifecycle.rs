@@ -112,6 +112,8 @@ pub(super) enum ProviderMaintenance {
     Sdk(Box<sdk_backend::Plan>),
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     SdkCredential(Box<sdk_backend::auth100::Plan>),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkAuthRetirement(Box<sdk_backend::auth100::RecoveryWork>),
     Database(Box<database::DatabaseMaintenance>),
     DatabaseRotation(Box<database::DatabaseRotationMaintenance>),
     OpenLdap(Box<openldap_secret::OpenLdapMaintenance>),
@@ -157,6 +159,9 @@ fn prepare_sdk_provider(writer: &mut Service, clock: RequestClock) -> Option<Pro
         return None;
     }
     let _sdk_scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    if let Ok(Some(work)) = writer.prepare_sdk_auth_retirement_recovery(clock) {
+        return Some(ProviderMaintenance::SdkAuthRetirement(Box::new(work)));
+    }
     writer.sdk_credential_preferred = !writer.sdk_credential_preferred;
     if writer.sdk_credential_preferred
         && let Ok(Some(plan)) = writer.prepare_sdk_credential_expiry(clock)
@@ -358,6 +363,14 @@ pub(crate) fn start_lifecycle_worker(
                         };
                         if writer.finish_sdk_credential_expiry(*plan, result).is_err() {
                             eprintln!("heptabao-lifecycle: SDK credential revoke remains pending");
+                        }
+                    }
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    ProviderMaintenance::SdkAuthRetirement(work) => {
+                        if work.execute(&service).is_err() {
+                            eprintln!(
+                                "heptabao-lifecycle: SDK Auth accepted retirement remains pending"
+                            );
                         }
                     }
                     ProviderMaintenance::Database(pending) => {

@@ -231,6 +231,11 @@ fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Resul
 }
 
 impl NamespaceRegistry {
+    #[cfg(test)]
+    pub(super) fn deletion_fixture_remove_custody_frontier(&mut self, actual: &str) {
+        self.custody_frontiers.remove(actual);
+    }
+
     pub(super) fn capture_closed_auth_routes(
         &mut self,
         binding: &crate::namespace_custody::Binding,
@@ -1102,6 +1107,37 @@ impl Service {
             .map_err(|error| Response::error(error.status, &error.message))
     }
 
+    fn commit_actual_namespace_seal(
+        &mut self,
+        state: &State,
+        target: &str,
+        principal: &Principal,
+        request: &RequestView<'_>,
+        caller_incarnation: u64,
+        binding: &crate::namespace_custody::Binding,
+    ) -> Result<State, Response> {
+        let proof = self.prepare_namespace_seal_publication(state, target)?;
+        self.commit_namespace_seal_publication(proof, |live_auth, closed| {
+            Self::namespace_custody_gate(
+                closed,
+                principal,
+                request,
+                caller_incarnation,
+                target,
+                binding,
+            )?;
+            live_auth
+                .authorize_request(
+                    principal,
+                    request.namespace,
+                    request.path,
+                    "update",
+                    external_pki::publication_now(request.now),
+                )
+                .map_err(|error| Response::error(error.status, &error.message))
+        })
+    }
+
     pub(super) fn namespace_route(
         &mut self,
         mut state: State,
@@ -1264,14 +1300,37 @@ impl Service {
                     .status(&state, &target)
                     .unwrap_or_else(|error| error);
             }
+            if state.namespace_is_tainted(&target) {
+                return Response::error(400, "unable to seal tainted namespace");
+            }
             if state.namespaces.custody_owner(&target).is_some() {
                 if !state.namespaces.entries[&target].sealed {
-                    state = match self.namespace_runtime.closed_candidate(&state, &target) {
-                        Ok(candidate) => candidate,
-                        Err(error) => return error,
-                    };
-                    if let Err(error) = self.commit_state(&mut state) {
-                        return error;
+                    if state.engines.record_root().is_some() {
+                        let binding =
+                            match state.namespaces.custody_binding(&state.cluster_id, &target) {
+                                Ok(binding) => binding,
+                                Err(error) => return error,
+                            };
+                        state = match self.commit_actual_namespace_seal(
+                            &state,
+                            &target,
+                            principal,
+                            request,
+                            caller_incarnation,
+                            &binding,
+                        ) {
+                            Ok(candidate) => candidate,
+                            Err(error) => return error,
+                        };
+                    } else {
+                        // Keep the original legacy path and its rejection gates.
+                        state = match self.namespace_runtime.closed_candidate(&state, &target) {
+                            Ok(candidate) => candidate,
+                            Err(error) => return error,
+                        };
+                        if let Err(error) = self.commit_state(&mut state) {
+                            return error;
+                        }
                     }
                     // Publication precedes revocation. Failed commits keep the
                     // existing loaded owner and deliver no new runtime state.
@@ -1298,15 +1357,34 @@ impl Service {
                 let Some(root_key) = self.barrier_key.as_ref() else {
                     return Response::error(503, "actual barrier key is unavailable");
                 };
-                state = match self
-                    .namespace_runtime
-                    .inherited_closed_candidate(&state, &target, root_key)
+                if state.engines.record_root().is_some()
+                    && (self.namespace_runtime.has_loaded_within(&target)
+                        || state.namespaces.inherited_owner(&target).is_none())
                 {
-                    Ok(candidate) => candidate,
-                    Err(error) => return error,
-                };
-                if let Err(error) = self.commit_state(&mut state) {
-                    return error;
+                    state = match self.commit_actual_namespace_seal(
+                        &state,
+                        &target,
+                        principal,
+                        request,
+                        caller_incarnation,
+                        &binding,
+                    ) {
+                        Ok(candidate) => candidate,
+                        Err(error) => return error,
+                    };
+                } else {
+                    // A closed no-transition or legacy publication receives no
+                    // private seal capability and retains the ordinary validator.
+                    state = match self
+                        .namespace_runtime
+                        .inherited_closed_candidate(&state, &target, root_key)
+                    {
+                        Ok(candidate) => candidate,
+                        Err(error) => return error,
+                    };
+                    if let Err(error) = self.commit_state(&mut state) {
+                        return error;
+                    }
                 }
                 // Durable closure is authoritative even if the caller expires
                 // after commit. Revoke all old slots and retain the closed state
@@ -1549,7 +1627,14 @@ impl Service {
                     return Response::ok(json!({"data":{"status":"in-progress"}}));
                 }
                 let populated = !state.namespace_payload_is_empty(&target);
-                if populated && !state.namespace_has_only_native_local_deletion_owners(&target) {
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                let owned_cleanup = match state.namespace_sdk_deletion_eligible(&target) {
+                    Ok(eligible) => eligible,
+                    Err(error) => return error,
+                };
+                #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+                let owned_cleanup = state.namespace_has_only_native_local_deletion_owners(&target);
+                if populated && !owned_cleanup {
                     return Response::error(
                         409,
                         "namespace contains runtime state; owned cleanup is required before deletion",

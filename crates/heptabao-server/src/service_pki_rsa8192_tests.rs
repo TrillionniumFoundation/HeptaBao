@@ -50,7 +50,8 @@ fn pki_rsa8192_108_role_actual_predecessor_retirement_and_snapshot_floor() -> Te
         assert!(service.prepare_record_plan(&mut lower).is_err());
     }
     assert!(supported_reader_schema(NAMESPACE_DELETION_STATE_SCHEMA));
-    for schema in [107, MAX_SUPPORTED_STATE_SCHEMA + 1] {
+    assert!(supported_reader_schema(SDK_AUTH_RETIREMENT_STATE_SCHEMA));
+    for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         assert!(
             !supported_reader_schema(schema),
             "absent models are not numerically admitted"

@@ -26,7 +26,7 @@ symlinked parent or group/world-readable parent is rejected before networking.
 Publication uses the existing private 0600 create-only output function. This
 command loads no direct bearer tokens or routing settings from environment.
 
-The source must report OpenBao 2.6.2, the target must report HeptaBao and its
+The source must report OpenBao 2.6.2 or 2.7.0; the target must report HeptaBao and its
 recognized bounded capacity profile. Equal endpoints or cluster identities are
 rejected. Version text plus TLS is an observation, not a binary attestation;
 actual acceptance additionally uses the pinned official binary launcher.

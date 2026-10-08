@@ -84,6 +84,8 @@ const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
 const NAMESPACE_DELETION_STATE_SCHEMA: u32 = 106;
+const SDK_AUTH_RETIREMENT_STATE_SCHEMA: u32 = 107;
+const NAMESPACE_SDK_CLEANUP_STATE_SCHEMA: u32 = crate::auth::namespace_sdk_cleanup::STATE_SCHEMA;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
@@ -105,6 +107,8 @@ const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
 const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
 const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
+// Persisted anonymous mount discovery configuration survives clearing and retirement.
+const MOUNT_LISTING_VISIBILITY_STATE_SCHEMA: u32 = 111;
 const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
 const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
 #[path = "service_pki_acme_eab.rs"]
@@ -128,6 +132,8 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
                 | NAMESPACE_BATCH_STATE_SCHEMA
                 | NAMESPACE_DELETION_STATE_SCHEMA
+                | SDK_AUTH_RETIREMENT_STATE_SCHEMA
+                | NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
                 | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
@@ -143,6 +149,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_KEY_POLICY_STATE_SCHEMA
                 | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
                 | PKI_RSA8192_STATE_SCHEMA
+                | MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
                 | RAW_WRAPPED_REPLY_STATE_SCHEMA
                 | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
                 | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
@@ -218,6 +225,9 @@ use namespaces::deletion as namespace_deletion;
 pub(crate) use native_remount::start_worker as start_native_remount_worker;
 #[path = "service_approle_lookup.rs"]
 mod approle_lookup;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_namespace_sdk_cleanup.rs"]
+mod namespace_sdk_cleanup;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_openbao_wrapper.rs"]
@@ -1266,6 +1276,8 @@ pub struct Service {
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_cleanup_cursor: Option<(String, String)>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
+    namespace_sdk_cleanup_cursor: Option<String>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_credential_cleanup_cursor: Option<String>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_credential_preferred: bool,
@@ -1665,6 +1677,8 @@ impl Service {
             sdk_migrations: BTreeMap::new(),
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            namespace_sdk_cleanup_cursor: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_credential_cleanup_cursor: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -3178,7 +3192,7 @@ impl Service {
             .is_some_and(|state| state.namespace_is_tainted(namespace))
         {
             return Response::error(
-                if path == "sys/auth" || path.starts_with("sys/auth/") {
+                if matches!(path, "sys/auth" | "sys/mounts") || path.starts_with("sys/auth/") {
                     404
                 } else {
                     403
@@ -4239,9 +4253,11 @@ impl Service {
             || admitted.auth.has_jwt_user_claim_state()
             || admitted.auth.has_jwt_pem_keyset_state()
             || admitted.auth.has_auth_mount_options_state()
+            || admitted.auth.has_sdk_auth_retirement_state()
             || admitted.engines.has_pki_key_policy_state()
             || admitted.engines.has_ordinary_pki_revocation_state()
             || admitted.engines.has_pki_rsa8192_state()
+            || admitted.has_mount_listing_visibility_state()
             || admitted.auth.has_raw_wrapped_reply_state()
         {
             admitted.schema = admitted.writer_schema();
@@ -4795,21 +4811,24 @@ impl Service {
             Ok(None) => {}
         }
         if path == "sys/internal/specs/openapi" {
-            let Some(principal) = principal else {
-                return openapi::handle_anonymous(method, body);
+            let mounts = match Self::listed_mount_catalog(state, principal, namespace, now) {
+                Ok(mounts) => mounts,
+                Err(response) => return response,
             };
-            if let Err(error) = state
-                .auth
-                .authorize_request(principal, namespace, path, "read", now)
-            {
-                return Response::error(error.status, &error.message);
-            }
+            let (auth_mounts, secret_mounts) = mounts
+                .into_iter()
+                .partition(|(path, _)| path.starts_with("auth/"));
+            let Some(principal) = principal else {
+                return openapi::handle_anonymous(method, body, &auth_mounts, &secret_mounts);
+            };
+            // A valid token discovers each mount allowed by its actual ACL or
+            // public listing configuration. This grants no backend capability.
             return openapi::handle(
                 method,
                 body,
                 principal.is_root(),
-                &state.auth.ui_auth_mounts(namespace),
-                &state.engines.ui_secret_mounts(namespace),
+                &auth_mounts,
+                &secret_mounts,
             );
         }
         let Some(principal) = principal else {
@@ -9624,6 +9643,9 @@ mod ssh_service_tests;
 #[path = "pki_service_tests.rs"]
 mod pki_service_tests;
 
+#[cfg(test)]
+#[path = "service_mount_listing_visibility_tests.rs"]
+mod mount_listing_visibility_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "openapi_service_tests.rs"]
 mod openapi_service_tests;
