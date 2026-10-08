@@ -60,6 +60,21 @@ pub(super) struct Admitted {
     invocation: Invocation,
 }
 impl Admitted {
+    /// A fresh protocol nonce for another operation on the same original
+    /// operator binding and generation. This never performs a new admission.
+    pub(super) fn for_operation(
+        &self,
+        operation: Operation,
+        input: &SecretValue,
+    ) -> Result<Self, Response> {
+        Ok(Self {
+            id: self.id.clone(),
+            binding: Arc::clone(&self.binding),
+            generation: self.generation,
+            invocation: Invocation::new(operation, input).map_err(plugin::failure)?,
+        })
+    }
+
     pub(super) fn host(&self) -> plugin::SharedKmsPlugin {
         Arc::clone(&self.binding.host)
     }

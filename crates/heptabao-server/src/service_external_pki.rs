@@ -151,6 +151,7 @@ impl PublicationClock {
 }
 
 struct RelatedPkiLane {
+    genuine: Option<external_kms::Admitted>,
     request: SecretValue,
     template: Box<crate::engines::ExternalPkiTemplate>,
     sign_url: String,
@@ -164,6 +165,9 @@ pub(super) struct NoEffectPkiPlan {
 }
 
 pub(super) struct ExternalPkiPlan {
+    genuine: Option<external_kms::Admitted>,
+    ha_admission: Option<super::external_transit::ExternalTransitHaAdmission>,
+    response_audited: bool,
     request: SecretValue,
     template: Box<crate::engines::ExternalPkiTemplate>,
     related: Vec<RelatedPkiLane>,
@@ -255,8 +259,241 @@ pub(super) fn enrolled_pki_routes(
     Ok((sign_url.into(), metadata_url))
 }
 
+fn genuine_pki_bytes(
+    result: heptabao_plugin_host::kms_bridge::ProviderResult,
+    expected: heptabao_plugin_host::kms_bridge::Operation,
+    maximum: usize,
+) -> Result<Zeroizing<Vec<u8>>, Response> {
+    use heptabao_plugin_host::kms_bridge::ProviderResult;
+    match result {
+        ProviderResult::Bytes { operation, encoded } if operation == expected => {
+            let text = std::str::from_utf8(encoded.expose()).map_err(|_| unknown())?;
+            if text.is_empty() || text.len() > maximum.div_ceil(3) * 4 {
+                return Err(unknown());
+            }
+            let bytes = Zeroizing::new(BASE64.decode(text).map_err(|_| unknown())?);
+            if bytes.is_empty() || bytes.len() > maximum || BASE64.encode(&*bytes) != text {
+                return Err(unknown());
+            }
+            Ok(bytes)
+        }
+        ProviderResult::NotImplemented => Err(Response::error(
+            501,
+            "genuine KMS PKI operation is not implemented",
+        )),
+        ProviderResult::Rejected => Err(Response::error(
+            500,
+            "genuine KMS PKI provider rejected operation",
+        )),
+        _ => Err(unknown()),
+    }
+}
+
+fn genuine_pki_sign_request(
+    seed: &SecretValue,
+    material: &crate::engines::ExternalPkiMaterial,
+    tbs: &[u8],
+) -> Result<SecretValue, Response> {
+    let mut input =
+        SensitiveJson(crate::auth::parse_strict_json(seed.expose()).map_err(|_| unknown())?);
+    let object = input.0.as_object_mut().ok_or_else(unknown)?;
+    if object.len() != 2
+        || !object.get("config").is_some_and(Value::is_object)
+        || !object.get("key").is_some_and(Value::is_object)
+    {
+        return Err(unknown());
+    }
+    let data = Zeroizing::new(
+        material
+            .signing_input(tbs)
+            .map_err(Response::from_engine_error)?,
+    );
+    object.insert("data".into(), json!(BASE64.encode(&*data)));
+    let hash = material.hash_algorithm();
+    object.insert("prehashed".into(), json!(hash.is_some()));
+    object.insert("hash".into(), json!(hash.unwrap_or("none")));
+    object.insert(
+        "scheme".into(),
+        json!(if material.signature_algorithm() == "pss" {
+            "pss"
+        } else {
+            "hash"
+        }),
+    );
+    if material.signature_algorithm() == "pss" {
+        object.insert("salt_length".into(), json!(-1));
+    }
+    object.insert("marshaling".into(), json!("asn1"));
+    let mut bytes = Zeroizing::new(serde_json::to_vec(&input.0).map_err(|_| unknown())?);
+    SecretValue::new(std::mem::take(&mut *bytes)).map_err(|_| unknown())
+}
+
 impl ExternalPkiPlan {
+    fn genuine_admissions(&self) -> impl Iterator<Item = &external_kms::Admitted> {
+        self.genuine
+            .iter()
+            .chain(self.related.iter().filter_map(|lane| lane.genuine.as_ref()))
+    }
+
+    fn uses_genuine(&self) -> bool {
+        self.genuine_admissions().next().is_some()
+    }
+
+    fn uses_native(&self) -> bool {
+        self.genuine.is_none() || self.related.iter().any(|lane| lane.genuine.is_none())
+    }
+
+    fn original_ha_binding_current(&self, current: &Option<Arc<Mutex<HaProcess>>>) -> bool {
+        if !self.uses_genuine() {
+            return true;
+        }
+        match (&self.ha_admission, current) {
+            (None, None) => true,
+            (Some(admission), _) => admission.current(current),
+            _ => false,
+        }
+    }
+
+    fn lock_original_ha(
+        &self,
+        identity: crate::state_record_root::StateIdentity,
+    ) -> Result<Option<std::sync::MutexGuard<'_, HaProcess>>, Response> {
+        self.ha_admission
+            .as_ref()
+            .map(|admission| admission.lock_original(identity))
+            .transpose()
+    }
+
+    // A related signer may use the same host as the main signer. Acquire each
+    // original Arc once; do not recursively try_lock a duplicate provider.
+    fn retained_hosts(&self) -> Vec<SharedKmsPlugin> {
+        let mut hosts = Vec::new();
+        for host in self
+            .genuine_admissions()
+            .map(external_kms::Admitted::host)
+            .chain(
+                self.provider_binding
+                    .iter()
+                    .map(|(host, _, _)| Arc::clone(host)),
+            )
+        {
+            if !hosts.iter().any(|old| Arc::ptr_eq(old, &host)) {
+                hosts.push(host);
+            }
+        }
+        hosts
+    }
+
+    fn providers_current_locked(
+        &self,
+        service: &Service,
+        hosts: &[SharedKmsPlugin],
+        guards: &[std::sync::MutexGuard<
+            '_,
+            heptabao_plugin_host::PluginHost<heptabao_plugin_host::CommandSandboxRunner>,
+        >],
+    ) -> bool {
+        let guard_for = |host: &SharedKmsPlugin| {
+            hosts
+                .iter()
+                .position(|h| Arc::ptr_eq(h, host))
+                .and_then(|i| guards.get(i))
+        };
+        if !self.genuine_admissions().all(|admitted| {
+            admitted.current(&service.external_kms_plugins)
+                && guard_for(admitted.host_ref()).is_some_and(|guard| admitted.host_current(guard))
+        }) {
+            return false;
+        }
+        if !self.uses_native() {
+            return self.provider_binding.is_none();
+        }
+        // Installing an operator provider after a native admission cannot
+        // silently reclassify an already-entered lane.
+        if service.external_kms_plugins.contains_key("transit") {
+            return false;
+        }
+        match (
+            &self.provider_binding,
+            service.kms_plugins.get("transit"),
+            service.kms_keys.get("transit"),
+        ) {
+            (None, None, None) => true,
+            (Some((host, binding, generation)), Some(current_host), Some(current_binding)) => {
+                Arc::ptr_eq(host, current_host)
+                    && binding.enabled
+                    && current_binding.enabled
+                    && binding.key_id == current_binding.key_id
+                    && binding.key_version == current_binding.key_version
+                    && binding.capabilities == current_binding.capabilities
+                    && guard_for(host).is_some_and(|guard| {
+                        guard.state() == PluginHostState::Active
+                            && guard.manifest().descriptor().generation() == *generation
+                    })
+            }
+            _ => false,
+        }
+    }
+
+    fn execute_genuine_lane(
+        &self,
+        seed: &SecretValue,
+        template: &crate::engines::ExternalPkiTemplate,
+        admitted: &external_kms::Admitted,
+    ) -> Result<Observation, Response> {
+        use heptabao_plugin_host::kms_bridge::Operation;
+        self.validate_private_leaf_time()?;
+        let _deadline_scope = self
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        drop(self.lock_original_ha(self.expected_identity)?);
+        if self.authority.deadline_expired() || !self.provider_host_current() {
+            return Err(unknown());
+        }
+        let spki = genuine_pki_bytes(admitted.execute()?, Operation::ExportPublic, 8192)?;
+        let public = crate::engines::ExternalPkiPublicKey::from_spki(&spki)
+            .map_err(Response::from_engine_error)?;
+        let material = template
+            .clone()
+            .materialize(public)
+            .map_err(Response::from_engine_error)?;
+        let mut signatures = Vec::with_capacity(material.tbs_parts().count());
+        for (index, tbs) in material.tbs_parts().enumerate() {
+            self.validate_private_leaf_time()?;
+            drop(self.lock_original_ha(self.expected_identity)?);
+            if self.authority.deadline_expired() || !self.provider_host_current() {
+                return Err(unknown());
+            }
+            let input = genuine_pki_sign_request(seed, &material, tbs)?;
+            // Fresh nonce, original operator Arc/generation/clock and absolute deadline.
+            let signing = admitted.for_operation(Operation::Sign, &input)?;
+            let signature = genuine_pki_bytes(
+                signing.execute()?,
+                Operation::Sign,
+                material.signature_size_bound(),
+            )?;
+            material
+                .verify_at(index, &signature)
+                .map_err(Response::from_engine_error)?;
+            signatures.push(signature);
+        }
+        self.validate_private_leaf_time()?;
+        drop(self.lock_original_ha(self.expected_identity)?);
+        Ok(Observation {
+            material: Box::new(material),
+            signatures,
+            related: Vec::new(),
+        })
+    }
     fn provider_host_current(&self) -> bool {
+        if !self.genuine_admissions().all(|admitted| {
+            admitted
+                .host_ref()
+                .try_lock()
+                .is_ok_and(|guard| admitted.host_current(&guard))
+        }) {
+            return false;
+        }
         self.provider_binding
             .as_ref()
             .is_none_or(|(host, binding, generation)| {
@@ -278,30 +515,44 @@ impl ExternalPkiPlan {
     }
 
     fn enrollment_current(&self, outbound: &crate::outbound::Outbound) -> bool {
+        if self.genuine.is_some() && self.related.iter().all(|lane| lane.genuine.is_some()) {
+            return true;
+        }
         [self.sign_url.as_str(), self.metadata_url.as_str()]
             .into_iter()
+            .filter(|_| self.genuine.is_none())
             .chain(
                 self.related
                     .iter()
+                    .filter(|lane| lane.genuine.is_none())
                     .flat_map(|lane| [lane.sign_url.as_str(), lane.metadata_url.as_str()]),
             )
             .all(|url| outbound.same_https_enrollment(&self.outbound, url))
     }
 
     pub(super) fn execute(&self) -> Result<Observation, Response> {
-        let mut main = self.execute_lane(
-            &self.request,
-            &self.template,
-            &self.sign_url,
-            &self.metadata_url,
-        )?;
+        let mut main = if let Some(admitted) = self.genuine.as_ref() {
+            self.execute_genuine_lane(&self.request, &self.template, admitted)?
+        } else {
+            self.execute_lane(
+                &self.request,
+                &self.template,
+                &self.sign_url,
+                &self.metadata_url,
+            )?
+        };
         for lane in &self.related {
-            main.related.push(self.execute_lane(
-                &lane.request,
-                &lane.template,
-                &lane.sign_url,
-                &lane.metadata_url,
-            )?);
+            let observation = if let Some(admitted) = lane.genuine.as_ref() {
+                self.execute_genuine_lane(&lane.request, &lane.template, admitted)?
+            } else {
+                self.execute_lane(
+                    &lane.request,
+                    &lane.template,
+                    &lane.sign_url,
+                    &lane.metadata_url,
+                )?
+            };
+            main.related.push(observation);
         }
         Ok(main)
     }
@@ -316,6 +567,7 @@ impl ExternalPkiPlan {
         // Every lane borrows the same original response authority, actor clock,
         // absolute deadline and provider generation. No lane creates a new clock.
         self.validate_private_leaf_time()?;
+        drop(self.lock_original_ha(self.expected_identity)?);
         let _deadline_scope = self
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
@@ -408,6 +660,7 @@ impl ExternalPkiPlan {
             if let Some(hash) = material.hash_algorithm() {
                 body.0["hash_algorithm"] = json!(hash);
             }
+            drop(self.lock_original_ha(self.expected_identity)?);
             let signed = crypto_response(
                 self.outbound
                     .put_external_transit(sign_url, token, namespace, &body.0)
@@ -730,18 +983,36 @@ impl Service {
             Ok(None) => {}
             Err(cause) => return Response::from_engine_error(cause),
         }
-        let plan = match state.engines.prepare_external_pki(
-            request.namespace,
-            request.method,
-            request.path,
-            request.body,
-            crate::engines::PkiRequestContext {
-                owner: owner.as_ref(),
-                time,
-                clock: request.token_clock,
-                identity_templates: Some(&identity_values),
-            },
-        ) {
+        let providers = self
+            .external_kms_plugins
+            .keys()
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>();
+        let context = crate::engines::PkiRequestContext {
+            owner: owner.as_ref(),
+            time,
+            clock: request.token_clock,
+            identity_templates: Some(&identity_values),
+        };
+        let prepared = if providers.is_empty() {
+            state.engines.prepare_external_pki(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                context,
+            )
+        } else {
+            state.engines.prepare_external_pki_with_providers(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                context,
+                &providers,
+            )
+        };
+        let plan = match prepared {
             Ok(Some(plan)) => plan,
             Ok(None) if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) => {
                 return Response::error(
@@ -790,7 +1061,26 @@ impl Service {
             Ok(None) => return Response::error(404, "external PKI route not found"),
             Err(cause) => return Response::from_engine_error(cause),
         };
-        let (sign_url, metadata_url) = match enrolled_pki_routes(&self.outbound, &plan.request) {
+        let genuine = match plan.genuine_provider.as_deref() {
+            Some(id) => match external_kms::prepare(
+                &self.external_kms_plugins,
+                id,
+                heptabao_plugin_host::kms_bridge::Operation::ExportPublic,
+                &plan.request,
+            ) {
+                Ok(Some(admitted)) => Some(admitted),
+                Ok(None) => {
+                    return Response::error(503, "genuine PKI operator binding unavailable");
+                }
+                Err(cause) => return cause,
+            },
+            None => None,
+        };
+        let (sign_url, metadata_url) = match if genuine.is_some() {
+            Ok((String::new(), String::new()))
+        } else {
+            enrolled_pki_routes(&self.outbound, &plan.request)
+        } {
             Ok(routes) => routes,
             Err(cause) => return cause,
         };
@@ -798,8 +1088,27 @@ impl Service {
             .related
             .into_iter()
             .map(|lane| {
-                let (sign_url, metadata_url) = enrolled_pki_routes(&self.outbound, &lane.request)?;
+                let genuine = match lane.genuine_provider.as_deref() {
+                    Some(id) => Some(
+                        external_kms::prepare(
+                            &self.external_kms_plugins,
+                            id,
+                            heptabao_plugin_host::kms_bridge::Operation::ExportPublic,
+                            &lane.request,
+                        )?
+                        .ok_or_else(|| {
+                            Response::error(503, "related genuine PKI operator binding unavailable")
+                        })?,
+                    ),
+                    None => None,
+                };
+                let (sign_url, metadata_url) = if genuine.is_some() {
+                    (String::new(), String::new())
+                } else {
+                    enrolled_pki_routes(&self.outbound, &lane.request)?
+                };
                 Ok(RelatedPkiLane {
+                    genuine,
                     request: lane.request,
                     template: Box::new(lane.template),
                     sign_url,
@@ -811,31 +1120,36 @@ impl Service {
             Ok(lanes) => lanes,
             Err(cause) => return cause,
         };
-        let provider_binding = match (
-            self.kms_plugins.get("transit"),
-            self.kms_keys.get("transit"),
-        ) {
-            (Some(host), Some(binding)) => {
-                if !binding.enabled || !binding.capabilities.contains(&KmsCapability::Sign) {
-                    return Response::error(
-                        403,
-                        "external PKI provider is disabled or lacks signing capability",
-                    );
+        let uses_native = genuine.is_none() || related.iter().any(|lane| lane.genuine.is_none());
+        let provider_binding = if !uses_native {
+            None
+        } else {
+            match (
+                self.kms_plugins.get("transit"),
+                self.kms_keys.get("transit"),
+            ) {
+                (Some(host), Some(binding)) => {
+                    if !binding.enabled || !binding.capabilities.contains(&KmsCapability::Sign) {
+                        return Response::error(
+                            403,
+                            "external PKI provider is disabled or lacks signing capability",
+                        );
+                    }
+                    let Ok(guard) = host.try_lock() else {
+                        return Response::error(503, "external PKI provider host busy");
+                    };
+                    if guard.state() != PluginHostState::Active {
+                        return Response::error(
+                            503,
+                            "external PKI provider host revoked or requires reconciliation",
+                        );
+                    }
+                    let generation = guard.manifest().descriptor().generation();
+                    Some((Arc::clone(host), binding.clone(), generation))
                 }
-                let Ok(guard) = host.try_lock() else {
-                    return Response::error(503, "external PKI provider host busy");
-                };
-                if guard.state() != PluginHostState::Active {
-                    return Response::error(
-                        503,
-                        "external PKI provider host revoked or requires reconciliation",
-                    );
-                }
-                let generation = guard.manifest().descriptor().generation();
-                Some((Arc::clone(host), binding.clone(), generation))
+                (None, None) => None,
+                _ => return Response::error(503, "external PKI provider binding is incomplete"),
             }
-            (None, None) => None,
-            _ => return Response::error(503, "external PKI provider binding is incomplete"),
         };
         let expected_identity = match self.current_state_identity() {
             Ok(value) => value,
@@ -845,7 +1159,22 @@ impl Service {
             Ok(value) => value,
             Err(cause) => return cause,
         };
+        let uses_genuine = genuine.is_some() || related.iter().any(|lane| lane.genuine.is_some());
+        let ha_admission = if uses_genuine {
+            match super::external_transit::ExternalTransitHaAdmission::capture(
+                &self.ha,
+                expected_identity,
+            ) {
+                Ok(admission) => admission,
+                Err(cause) => return cause,
+            }
+        } else {
+            None
+        };
         self.pending_external_pki = Some(ExternalPkiPlan {
+            genuine,
+            ha_admission,
+            response_audited: false,
             request: plan.request,
             template: Box::new(plan.template),
             related,
@@ -900,48 +1229,22 @@ impl Service {
         let _deadline_scope = plan
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
-        let retained_host = plan
-            .provider_binding
-            .as_ref()
-            .map(|(host, _, _)| Arc::clone(host));
-        let host_guard = if let Some(host) = retained_host.as_ref() {
+        let retained_hosts = plan.retained_hosts();
+        let mut host_guards = Vec::with_capacity(retained_hosts.len());
+        for host in &retained_hosts {
             match host.try_lock() {
-                Ok(guard) => Some(guard),
+                Ok(guard) => host_guards.push(guard),
                 Err(_) => {
                     return Response::error(
                         503,
-                        "external PKI provider host busy before publication",
+                        "external PKI original provider busy at completion",
                     );
                 }
             }
-        } else {
-            None
-        };
-        let provider_current = match (
-            &plan.provider_binding,
-            self.kms_plugins.get("transit"),
-            self.kms_keys.get("transit"),
-            host_guard.as_ref(),
-        ) {
-            (None, None, None, None) => true,
-            (
-                Some((host, binding, generation)),
-                Some(current_host),
-                Some(current_binding),
-                Some(guard),
-            ) => {
-                Arc::ptr_eq(host, current_host)
-                    && binding.enabled
-                    && current_binding.enabled
-                    && binding.key_id == current_binding.key_id
-                    && binding.key_version == current_binding.key_version
-                    && binding.capabilities == current_binding.capabilities
-                    && guard.state() == PluginHostState::Active
-                    && guard.manifest().descriptor().generation() == *generation
-            }
-            _ => false,
-        };
-        if !provider_current
+        }
+        let provider_current = plan.providers_current_locked(self, &retained_hosts, &host_guards);
+        if !plan.original_ha_binding_current(&self.ha)
+            || !provider_current
             || !self
                 .current_state_identity()
                 .is_ok_and(|value| value == plan.expected_identity)
@@ -1096,7 +1399,29 @@ impl Service {
                 return cause;
             }
         };
-        if let Err(cause) = self.commit_record_plan(&candidate, record_plan) {
+        let committed = if plan.uses_genuine() {
+            if let Err(cause) = plan.authority.validate_live_auth(&candidate.auth) {
+                erase_json(&mut response.body);
+                return cause;
+            }
+            if let Err(cause) = plan.lock_original_ha(plan.expected_identity) {
+                erase_json(&mut response.body);
+                return cause;
+            }
+            self.commit_record_plan_with_native_role(
+                &candidate,
+                record_plan,
+                plan.ha_admission
+                    .as_ref()
+                    .map(|admission| admission.original_role()),
+                |auth| plan.authority.validate_live_auth(auth),
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                None,
+            )
+        } else {
+            self.commit_record_plan(&candidate, record_plan)
+        };
+        if let Err(cause) = committed {
             erase_json(&mut response.body);
             return cause;
         }
@@ -1141,10 +1466,11 @@ impl Service {
             after_audit,
             true,
         );
-        if (200..300).contains(&response.status)
-            && let Some(receipt) = receipt
-        {
-            receipt.advance(&mut plan.delivery_checkpoint);
+        if (200..300).contains(&response.status) {
+            plan.response_audited = true;
+            if let Some(receipt) = receipt {
+                receipt.advance(&mut plan.delivery_checkpoint);
+            }
         }
         response
     }
@@ -1194,6 +1520,13 @@ impl Service {
         if !(200..300).contains(&response.status) {
             return response;
         }
+        if plan.uses_genuine() && !plan.response_audited {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "genuine PKI response requires original completed audit",
+            );
+        }
         if let Err(cause) = self.validate_plugin_response(&mut plan.authority) {
             erase_json(&mut response.body);
             return cause;
@@ -1201,45 +1534,21 @@ impl Service {
         let _deadline_scope = plan
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
-        let retained_host = plan
-            .provider_binding
-            .as_ref()
-            .map(|(host, _, _)| Arc::clone(host));
-        let host_guard = if let Some(host) = retained_host.as_ref() {
+        let retained_hosts = plan.retained_hosts();
+        let mut host_guards = Vec::with_capacity(retained_hosts.len());
+        for host in &retained_hosts {
             match host.try_lock() {
-                Ok(guard) => Some(guard),
+                Ok(guard) => host_guards.push(guard),
                 Err(_) => {
                     erase_json(&mut response.body);
-                    return Response::error(503, "external PKI provider host busy before delivery");
+                    return Response::error(
+                        503,
+                        "external PKI original provider busy at completion",
+                    );
                 }
             }
-        } else {
-            None
-        };
-        let provider_current = match (
-            &plan.provider_binding,
-            self.kms_plugins.get("transit"),
-            self.kms_keys.get("transit"),
-            host_guard.as_ref(),
-        ) {
-            (None, None, None, None) => true,
-            (
-                Some((host, binding, generation)),
-                Some(current_host),
-                Some(current_binding),
-                Some(guard),
-            ) => {
-                Arc::ptr_eq(host, current_host)
-                    && binding.enabled
-                    && current_binding.enabled
-                    && binding.key_id == current_binding.key_id
-                    && binding.key_version == current_binding.key_version
-                    && binding.capabilities == current_binding.capabilities
-                    && guard.state() == PluginHostState::Active
-                    && guard.manifest().descriptor().generation() == *generation
-            }
-            _ => false,
-        };
+        }
+        let provider_current = plan.providers_current_locked(self, &retained_hosts, &host_guards);
         let checkpoint_current =
             plan.delivery_checkpoint
                 .as_ref()
@@ -1250,7 +1559,8 @@ impl Service {
                             .external_effect_generation()
                             .is_ok_and(|current| current == *generation)
                 });
-        if !provider_current
+        if !plan.original_ha_binding_current(&self.ha)
+            || !provider_current
             || !checkpoint_current
             || !self.state.as_ref().is_some_and(|state| {
                 state.engines.external_pki_mount_current(
@@ -1306,6 +1616,51 @@ impl Service {
             if !active {
                 erase_json(&mut response.body);
                 return Response::error(403, "external PKI committed leaf owner is no longer live");
+            }
+        }
+        let original_ha_guard = match plan.delivery_checkpoint.as_ref() {
+            Some((identity, _)) => match plan.lock_original_ha(*identity) {
+                Ok(guard) => guard,
+                Err(cause) => {
+                    erase_json(&mut response.body);
+                    return cause;
+                }
+            },
+            None => {
+                erase_json(&mut response.body);
+                return unknown();
+            }
+        };
+        if plan.uses_genuine() {
+            let expected = plan
+                .delivery_checkpoint
+                .as_ref()
+                .map(|(_, generation)| generation);
+            let generation = match original_ha_guard.as_ref() {
+                Some(process) => self.external_effect_generation_with_retained_ha(process),
+                None => self.external_effect_generation(),
+            };
+            if !generation.is_ok_and(|current| expected == Some(&current))
+                || !plan.providers_current_locked(self, &retained_hosts, &host_guards)
+            {
+                erase_json(&mut response.body);
+                return Response::error(503, "genuine PKI final original HA or provider changed");
+            }
+            if let Err(cause) = self
+                .state
+                .as_ref()
+                .ok_or_else(unknown)
+                .and_then(|state| plan.authority.validate_live_auth(&state.auth))
+            {
+                erase_json(&mut response.body);
+                return cause;
+            }
+            if let (Some(admission), Some(process)) =
+                (plan.ha_admission.as_ref(), original_ha_guard.as_ref())
+                && let Err(cause) = admission.check_role(process)
+            {
+                erase_json(&mut response.body);
+                return cause;
             }
         }
         // Sample after every potentially blocking publication/audit/HA check.
@@ -1402,3 +1757,7 @@ mod clock_tests {
         assert!(PublicationClock::capture().0.is_none());
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_genuine_pki_consumer_tests.rs"]
+mod genuine_consumer_tests;
