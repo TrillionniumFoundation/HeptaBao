@@ -217,7 +217,7 @@ fn ssh115_role_limit_combines_ca_and_otp_and_same_name_replacement_remains_legal
             .handle_role(
                 "POST",
                 "roles/overflow",
-                &json!({"key_type":"otp"}),
+                &json!({"key_type":"otp","default_user":"alice","cidr_list":"192.0.2.0/24"}),
                 100,
                 ""
             )
@@ -229,7 +229,7 @@ fn ssh115_role_limit_combines_ca_and_otp_and_same_name_replacement_remains_legal
     engine.handle_role(
         "POST",
         "roles/r0",
-        &json!({"key_type":"otp","default_user":"alice"}),
+        &json!({"key_type":"otp","default_user":"alice","cidr_list":"192.0.2.0/24"}),
         100,
         "",
     )?;
