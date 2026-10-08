@@ -51,7 +51,10 @@ pub use service::{
     WrapperReply,
 };
 pub use service::{OpenBaoWrapperConfig, OpenBaoWrapperLaunchPlan, OpenBaoWrapperTransport};
-pub use service::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
+pub use service::{
+    PluginAuthConfig, PluginDatabaseConfig, PluginExternalKmsConfig, PluginKmsConfig,
+    PluginSecretConfig,
+};
 pub use service::{Response, Service};
 
 #[cfg(test)]

@@ -462,7 +462,14 @@ pub(crate) fn external_key_verification_route(method: &str, path: &str) -> bool 
     external_keys::verification_path(path) && matches!(method, "POST" | "PUT" | "PATCH")
 }
 
+pub(crate) struct ExternalParameterRead {
+    pub(crate) plugin_id: String,
+    pub(crate) config: bool,
+    pub(crate) values: SecretValue,
+}
+
 pub(crate) struct ExternalTransitRequest {
+    pub(crate) genuine_provider: Option<String>,
     pub(crate) request: SecretValue,
     pub(crate) operation: &'static str,
     pub(crate) local_version: u64,
@@ -1267,12 +1274,39 @@ impl EngineState {
             })
     }
 
+    pub(crate) fn external_parameter_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> Result<Option<ExternalParameterRead>> {
+        match self.namespaces.get(namespace) {
+            Some(state) => state.external_keys.parameter_read(method, path),
+            None => Ok(None),
+        }
+    }
     pub(crate) fn prepare_external_transit(
         &self,
         namespace: &str,
         method: &str,
         path: &str,
         body: &Value,
+    ) -> Result<Option<ExternalTransitRequest>> {
+        self.prepare_external_transit_with_providers(
+            namespace,
+            method,
+            path,
+            body,
+            &BTreeSet::new(),
+        )
+    }
+    pub(crate) fn prepare_external_transit_with_providers(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        admitted: &BTreeSet<String>,
     ) -> Result<Option<ExternalTransitRequest>> {
         let path = path.trim_start_matches('/');
         if path.contains('?') {
@@ -1291,16 +1325,43 @@ impl EngineState {
         let Backend::Transit(engine) = &mount.backend else {
             return Ok(None);
         };
-        let Some(plan) = engine.prepare_external(method, &path[mount_path.len()..], body)? else {
+        let Some(plan) = engine.prepare_external_with_provider(
+            method,
+            &path[mount_path.len()..],
+            body,
+            !admitted.is_empty(),
+        )?
+        else {
             return Ok(None);
         };
-        let request = state.external_keys.transit_consumer_request(
-            &plan.reference,
-            mount_path,
-            plan.operation,
-            plan.body,
-        )?;
+        let provider = state
+            .external_keys
+            .consumer_plugin(&plan.reference, mount_path)?;
+        let genuine_provider = admitted.contains(provider).then(|| provider.to_owned());
+        let plan = if genuine_provider.is_none() {
+            engine
+                .prepare_external(method, &path[mount_path.len()..], body)?
+                .ok_or_else(not_found)?
+        } else {
+            plan
+        };
+        let request = if genuine_provider.is_some() {
+            state.external_keys.genuine_consumer_request(
+                &plan.reference,
+                mount_path,
+                plan.operation,
+                plan.body,
+            )?
+        } else {
+            state.external_keys.transit_consumer_request(
+                &plan.reference,
+                mount_path,
+                plan.operation,
+                plan.body,
+            )?
+        };
         Ok(Some(ExternalTransitRequest {
+            genuine_provider,
             request,
             operation: plan.operation,
             local_version: plan.local_version,
@@ -2821,7 +2882,7 @@ impl EngineState {
         {
             state
                 .external_keys
-                .require_consumer(reference, &mount_path)?;
+                .consumer_plugin(reference, &mount_path)?;
         }
         let pki_request = matches!(mount.backend, Backend::Pki(_));
         let response = match &mut mount.backend {

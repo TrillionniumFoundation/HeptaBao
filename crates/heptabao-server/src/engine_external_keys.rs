@@ -377,6 +377,144 @@ impl Registry {
         Ok((&config.values, &key.values))
     }
 
+    pub(super) fn parameter_read(
+        &self,
+        method: &str,
+        path: &str,
+    ) -> Result<Option<ExternalParameterRead>> {
+        if !matches!(method, "GET" | "HEAD") {
+            return Ok(None);
+        }
+        let Some(rest) = path.strip_prefix("sys/external-keys/configs/") else {
+            return Ok(None);
+        };
+        let parts: Vec<_> = rest.split('/').collect();
+        let (name, key_name) = match parts.as_slice() {
+            [name] if valid_name(name) => (*name, None),
+            [name, "keys", key] if valid_name(name) && valid_name(key) => (*name, Some(*key)),
+            _ => return Ok(None),
+        };
+        let Some(config) = self.configs.get(name) else {
+            return Ok(None);
+        };
+        let values = match key_name {
+            None => &config.values,
+            Some(key) => match config.keys.get(key) {
+                Some(key) => &key.values,
+                None => return Ok(None),
+            },
+        };
+        Ok(Some(ExternalParameterRead {
+            plugin_id: config.plugin.clone(),
+            config: key_name.is_none(),
+            values: encode_provider_request(&**values)?,
+        }))
+    }
+    // Names are selected only after the exact stored reference and mount grant pass.
+    pub(super) fn consumer_plugin(&self, reference: &str, mount: &str) -> Result<&str> {
+        let (name, key) = reference
+            .split_once(':')
+            .filter(|(c, k)| valid_name(c) && valid_name(k))
+            .ok_or_else(|| bad("external_key_ref must be config:key"))?;
+        let config = self
+            .configs
+            .get(name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        let key = config
+            .keys
+            .get(key)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        if !key.grants.contains(&canonical_grant(mount)?) {
+            return Err(bad("external key has no grant for this mount"));
+        }
+        Ok(&config.plugin)
+    }
+    pub(super) fn genuine_consumer_request(
+        &self,
+        reference: &str,
+        mount: &str,
+        operation: &str,
+        mut body: SecretJson,
+    ) -> Result<SecretValue> {
+        let _plugin = self.consumer_plugin(reference, mount)?;
+        let (name, key_name) = reference
+            .split_once(':')
+            .ok_or_else(|| bad("external_key_ref must be config:key"))?;
+        let config = self
+            .configs
+            .get(name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        let key = config
+            .keys
+            .get(key_name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        let mut input = SecretJson(json!({"config":*config.values,"key":*key.values}));
+        match operation {
+            "encrypt" => input["data"] = body["plaintext"].clone(),
+            "decrypt" => input["data"] = body["ciphertext"].clone(),
+            "sign" | "verify" => {
+                if body.get("hash_algorithm").is_none() {
+                    body["hash_algorithm"] = json!("sha2-256");
+                }
+                prehash_transit_input(
+                    &mut body,
+                    optional_bool(&key.values, "disable_prehashing")?.unwrap_or(false),
+                )?;
+                input["data"] = body["input"].clone();
+                input["hash"] = body["hash_algorithm"].clone();
+                input["prehashed"] = json!(optional_bool(&body, "prehashed")?.unwrap_or(false));
+                input["scheme"] = json!(match body
+                    .get("signature_algorithm")
+                    .and_then(Value::as_str)
+                    .unwrap_or("pss")
+                {
+                    "pss" => "pss",
+                    "pkcs1v15" => "hash",
+                    _ => return Err(bad("unsupported external signing algorithm")),
+                });
+                let salt = match body.get("salt_length") {
+                    None => 0,
+                    Some(Value::String(s)) if s == "auto" => 0,
+                    Some(Value::String(s)) if s == "hash" => -1,
+                    Some(Value::String(s)) => s
+                        .parse::<i64>()
+                        .map_err(|_| bad("invalid external signing salt length"))?,
+                    Some(v) => v
+                        .as_i64()
+                        .ok_or_else(|| bad("invalid external signing salt length"))?,
+                };
+                if salt < -1 {
+                    return Err(bad("invalid external signing salt length"));
+                }
+                input["salt_length"] = json!(salt);
+                input["marshaling"] = body
+                    .get("marshaling_algorithm")
+                    .cloned()
+                    .unwrap_or(json!("asn1"));
+                if operation == "verify" {
+                    let encoded = string(&body, "signature")?;
+                    let bytes = Zeroizing::new(
+                        if body.get("marshaling_algorithm").and_then(Value::as_str) == Some("jws") {
+                            base64::engine::general_purpose::URL_SAFE_NO_PAD
+                                .decode(encoded)
+                                .map_err(|_| bad("invalid external signature"))?
+                        } else {
+                            BASE64
+                                .decode(encoded)
+                                .map_err(|_| bad("invalid external signature"))?
+                        },
+                    );
+                    input["signature"] = json!(BASE64.encode(&*bytes));
+                }
+            }
+            _ => return Err(error(501, "genuine external operation is not implemented")),
+        }
+        if let Some(aad) = body.get("associated_data") {
+            input["aad"] = aad.clone();
+        }
+        encode_provider_request(&*input)
+    }
+
     pub(super) fn transit_consumer_request(
         &self,
         reference: &str,
@@ -1424,6 +1562,93 @@ mod verification_candidate_tests {
                 .is_err()
         );
         assert!(state.namespaces.is_empty());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod genuine_provider_tests {
+    use super::*;
+    type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
+    #[test]
+    fn genuine_external_provider_parameters_preserve_grant_and_original_registry_values()
+    -> TestResult {
+        let mut registry = Registry::default();
+        for (path, body) in [
+            (
+                "sys/external-keys/configs/hsm",
+                json!({"plugin":"pkcs11","verify":false,"lib":"owned-alias","pin":"synthetic-pin"}),
+            ),
+            (
+                "sys/external-keys/configs/hsm/keys/key",
+                json!({"verify":false,"id":"original-key"}),
+            ),
+            (
+                "sys/external-keys/configs/hsm/keys/key/grants/transit",
+                json!({}),
+            ),
+        ] {
+            assert!(registry.handle("POST", path, &body)?.status == 204);
+        }
+        let before = zeroize::Zeroizing::new(serde_json::to_vec(&registry)?);
+        assert!(
+            registry
+                .genuine_consumer_request(
+                    "hsm:key",
+                    "other",
+                    "encrypt",
+                    SecretJson(json!({"plaintext":"YQ=="}))
+                )
+                .is_err()
+        );
+        let input = registry.genuine_consumer_request(
+            "hsm:key",
+            "transit",
+            "encrypt",
+            SecretJson(json!({"plaintext":"YQ==","associated_data":"Yg=="})),
+        )?;
+        let data = SecretJson(crate::auth::parse_strict_json(input.expose())?);
+        assert!(
+            data["config"]["pin"] == "synthetic-pin"
+                && data["config"]["lib"] == "owned-alias"
+                && data["key"]["id"] == "original-key"
+        );
+        assert!(
+            data["data"] == "YQ=="
+                && data["aad"] == "Yg=="
+                && data.get("image").is_none()
+                && data.get("libraries").is_none()
+        );
+        assert!(serde_json::to_vec(&registry)? == *before);
+        assert!(registry.require_consumer("hsm:key", "transit").is_err());
+        Ok(())
+    }
+    #[test]
+    fn genuine_external_metadata_target_keeps_original_unredacted_values_private() -> TestResult {
+        let mut registry = Registry::default();
+        assert!(registry.handle("POST","sys/external-keys/configs/same", &json!({"plugin":"transit","verify":false,"token":"synthetic","custom_sensitive":"original"}))?.status==204);
+        let before = zeroize::Zeroizing::new(serde_json::to_vec(&registry)?);
+        let read = registry
+            .parameter_read("GET", "sys/external-keys/configs/same")?
+            .ok_or("metadata target")?;
+        let original = SecretJson(crate::auth::parse_strict_json(read.values.expose())?);
+        assert!(
+            read.plugin_id == "transit"
+                && read.config
+                && original["token"] == "synthetic"
+                && original["custom_sensitive"] == "original"
+        );
+        assert!(
+            registry
+                .parameter_read("POST", "sys/external-keys/configs/same")?
+                .is_none()
+        );
+        assert!(
+            registry
+                .parameter_read("GET", "sys/external-keys/configs/same/keys")?
+                .is_none()
+        );
+        assert!(serde_json::to_vec(&registry)? == *before);
         Ok(())
     }
 }
