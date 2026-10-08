@@ -4950,7 +4950,7 @@ impl Service {
             path,
             engine_body,
             now,
-            principal.map_or("", Principal::display_name),
+            principal.display_name(),
         ) {
             Ok(Some(mut response)) => {
                 if let Err(error) = Self::project_kv1_read_lease(
