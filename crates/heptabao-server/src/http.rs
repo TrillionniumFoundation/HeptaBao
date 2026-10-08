@@ -1936,7 +1936,6 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
         .map_err(|_| bad("invalid query text"))
 }
 
-#[cfg(test)]
 // Match Go net/http Header.writeSubset without changing stored/audit values.
 // Only the ASCII space bytes accepted by textproto.TrimString are trimmed;
 // CR and LF inside the value each become one space, so they cannot add a header.
@@ -1952,6 +1951,7 @@ fn write_go_content_type_header(writer: &mut impl Write, value: &str) -> io::Res
     writer.write_all(b"\r\n")
 }
 
+#[cfg(test)]
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
     write_response_with_namespace(writer, response, head, "")
 }
