@@ -81,6 +81,21 @@ fn encode_public(key: &PublicKey) -> Result<String> {
     text.push('\n');
     Ok(text)
 }
+fn signing_public_key(text: &str) -> Result<PublicKey> {
+    let public = PublicKey::from_openssh(text).map_err(|_| bad("invalid SSH public key"))?;
+    // OpenBao's x/crypto parser accepts these known plain key types and rejects unknowns.
+    // ssh-key also accepts opaque Other keys, which must not enter either certificate builder.
+    match public.key_data() {
+        ssh_key::public::KeyData::Dsa(_)
+        | ssh_key::public::KeyData::Ecdsa(_)
+        | ssh_key::public::KeyData::Ed25519(_)
+        | ssh_key::public::KeyData::Rsa(_)
+        | ssh_key::public::KeyData::SkEcdsaSha2NistP256(_)
+        | ssh_key::public::KeyData::SkEd25519(_) => Ok(public),
+        _ => Err(bad("unsupported SSH public key algorithm")),
+    }
+}
+
 impl CaState {
     pub(super) fn roles(&self) -> impl Iterator<Item = &String> {
         self.roles.keys()
@@ -466,7 +481,7 @@ impl CaState {
                 if text.is_empty() || text.len() > 16384 {
                     return Err(bad("invalid SSH public key"));
                 }
-                PublicKey::from_openssh(text).map_err(|_| bad("invalid SSH public key"))?
+                signing_public_key(text)?
             }
         };
         let policy = role.signing_policy(body, &public, context)?;
@@ -576,7 +591,7 @@ impl CaState {
                 if text.is_empty() || text.len() > 16384 {
                     return Err(bad("invalid SSH public key"));
                 }
-                PublicKey::from_openssh(text).map_err(|_| bad("invalid SSH public key"))?
+                signing_public_key(text)?
             }
         };
         let (policy, template_warning) =
@@ -741,3 +756,7 @@ impl EngineState {
 #[cfg(test)]
 #[path = "ssh_ca_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "ssh_ca_known_keys_tests.rs"]
+mod known_key_tests;
