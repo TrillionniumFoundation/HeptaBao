@@ -56,11 +56,12 @@ impl Fixture {
         // A short, newly owned 0700 socket directory is the same real admission
         // prerequisite used by the operator configuration. No source clocks or
         // ambient directory permissions are altered to satisfy it.
-        let socket = SocketDirectory(std::env::temp_dir().join(format!(
-            "k-{}",
-            &uuid::Uuid::new_v4().simple().to_string()[..8]
-        )));
-        fs::create_dir(&socket.0)?;
+        let mut socket_nonce = [0u8; 4];
+        getrandom::fill(&mut socket_nonce)
+            .map_err(|_| std::io::Error::other("fixture socket entropy failed"))?;
+        let socket_path = std::env::temp_dir().join(format!("k-{}", hex(&socket_nonce)));
+        fs::create_dir(&socket_path)?;
+        let socket = SocketDirectory(socket_path);
         fs::set_permissions(&socket.0, fs::Permissions::from_mode(0o700))?;
         service.install_external_kms_plugins(vec![
             super::super::external_kms::PluginExternalKmsConfig {
