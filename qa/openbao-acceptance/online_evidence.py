@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import owned_process
 import subprocess
 from bao_http import private_write
 from heptabao.private_state import _descriptor_walk_path
@@ -26,7 +27,7 @@ def admit_output(path: Path) -> tuple[int, int]:
 
 def source_identity(root: Path, binary: Path) -> dict:
     def git(*args):
-        return subprocess.check_output(["git", *args], cwd=root, stderr=subprocess.DEVNULL)
+        return owned_process.check_output(["git", *args], cwd=root, stderr=subprocess.DEVNULL, label="online_evidence.29")
     # Commit identity alone does not bind a dirty source tree. Include bytes of
     # tracked and untracked non-ignored source, but never follow source symlinks.
     digest = hashlib.sha256()

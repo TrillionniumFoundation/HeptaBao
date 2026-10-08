@@ -16,6 +16,7 @@ import secrets
 import select
 import signal
 import socket
+import owned_process
 import subprocess
 import sys
 import threading
@@ -364,18 +365,7 @@ class PartitionCluster(Cluster):
         self.full_partition()
 
     def close(self) -> None:
-        failed = False
-        try:
-            super().close()
-        except (FixtureError, OSError, subprocess.SubprocessError):
-            failed = True
-        for link in self.links.values():
-            try:
-                link.close()
-            except (FixtureError, OSError):
-                failed = True
-        if failed:
-            raise FixtureError("partition_fixture_cleanup_failed")
+        owned_process.close_all([super().close, *(link.close for link in self.links.values())])
 
 
 def terminate(signum, frame) -> None:

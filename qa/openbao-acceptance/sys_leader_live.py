@@ -16,6 +16,7 @@ import shutil
 import signal
 import socket
 import ssl
+import owned_process
 import subprocess
 import tempfile
 import time
@@ -214,15 +215,17 @@ class Official:
                 'tls_cert_file':str(root/'tls.crt'),'tls_key_file':str(root/'tls.key')}}]})
     def start(self):
         self.log=(self.root/'server.log').open('ab');os.chmod(self.root/'server.log',0o600)
-        self.process=subprocess.Popen([str(self.binary),'server','-config='+str(self.root/'server.json')],
-            stdout=self.log,stderr=self.log,env=oracle_environment(self.root))
-        ready(self.endpoint,501,expected_version=ORACLE_VERSION)
+        self.process=owned_process.popen([str(self.binary),'server','-config='+str(self.root/'server.json')],
+            stdout=self.log,stderr=self.log,env=oracle_environment(self.root), label="sys_leader_live.217", action="TERM", stop_timeout=5)
+        try:
+            ready(self.endpoint,501,expected_version=ORACLE_VERSION)
+        except BaseException as error:
+            owned_process.abort(error, [self.stop])
     def stop(self):
-        if self.process is not None:
-            if self.process.poll() is None:self.process.terminate()
-            try:self.process.wait(timeout=5)
-            except subprocess.TimeoutExpired:self.process.kill();self.process.wait(timeout=5)
-        if self.log is not None and not self.log.closed:self.log.close()
+        owned_process.close_all([
+            lambda: owned_process.stop(self.process, action="TERM", timeout=5, expected_codes=(0,)),
+            lambda: self.log.close() if self.log is not None and not self.log.closed else None,
+        ])
 
 
 def ready(endpoint,status,*,expected_version=None):

@@ -17,6 +17,7 @@ import secrets
 import shutil
 import socket
 import ssl
+import owned_process
 import subprocess
 import sys
 import time
@@ -59,9 +60,9 @@ def private_write(path: Path, value: str | bytes) -> None:
 
 
 def openssl(*arguments: str) -> None:
-    subprocess.run(["openssl", *arguments], check=True, timeout=30,
+    owned_process.run(["openssl", *arguments], check=True, timeout=30,
                    stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL)
+                   stderr=subprocess.DEVNULL, label="ha_destructive.62")
 
 
 def free_ports(count: int) -> tuple[int, ...]:
@@ -154,12 +155,15 @@ class Node:
         command = [str(self.binary), "--config", str(self.root / "server.json")]
         if ha:
             command.extend(["--ha-config", str(self.ha_config)])
-        self.process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-                                        stdout=self.log, stderr=self.log, start_new_session=True)
-        self.started_pids.append(self.process.pid)
-        if not wait:
-            return
-        self.wait_ready()
+        self.process = owned_process.popen(command, stdin=subprocess.DEVNULL,
+                                        stdout=self.log, stderr=self.log, start_new_session=True, label="ha_destructive.157", action="KILL", stop_timeout=10)
+        try:
+            self.started_pids.append(self.process.pid)
+            if not wait:
+                return
+            self.wait_ready()
+        except BaseException as error:
+            owned_process.abort(error, [self.stop])
 
     def wait_ready(self) -> None:
         """Wait for the HTTPS listener after all peers have had a chance to bind.
@@ -191,7 +195,7 @@ class Node:
         self.start(wait=False)
         try:
             try:
-                returncode = self.process.wait(timeout=10)
+                returncode = owned_process.wait(self.process, timeout=10)
             except subprocess.TimeoutExpired as error:
                 raise FixtureError("misbound_cluster_process_did_not_exit") from error
             if self.log is None:
@@ -207,16 +211,15 @@ class Node:
             self.stop()
 
     def stop(self) -> None:
+        process, log = self.process, self.log
         try:
-            if self.process is not None:
-                if self.process.poll() is None:
-                    self.process.kill()
-                self.process.wait(timeout=10)
-                self.process = None
+            owned_process.close_all([
+                lambda: owned_process.stop(process, action="KILL", timeout=10, expected_codes=(-9,)),
+                lambda: log.close() if log is not None and not log.closed else None,
+            ])
         finally:
-            if self.log is not None:
-                self.log.close()
-                self.log = None
+            self.process = None
+            self.log = None
 
 
 class Cluster:
@@ -480,14 +483,7 @@ class Cluster:
         self.check("all_three_rejoined_after_quorum_recovery", True)
 
     def close(self) -> None:
-        failed = False
-        for node in self.nodes:
-            try:
-                node.stop()
-            except (OSError, subprocess.SubprocessError):
-                failed = True
-        if failed:
-            raise FixtureError("node_cleanup_failed")
+        owned_process.close_all([node.stop for node in self.nodes])
 
 
 def main() -> int:

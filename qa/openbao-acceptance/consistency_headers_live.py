@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import shutil
 import signal
+import owned_process
 import subprocess
 import tempfile
 import time
@@ -156,16 +157,19 @@ class Trace:
 class RestartableOfficial(Official):
     def start(self):
         self.log=(self.root/"server.log").open("ab")
-        self.process=subprocess.Popen([str(self.binary),"server","-config="+str(self.root/"server.json")],
-            stdout=self.log,stderr=self.log,env=oracle_environment(self.root))
-        deadline=time.monotonic()+15
-        while time.monotonic()<deadline:
-            try:
-                status,value,_=call(self.endpoint,"GET","sys/health")
-                if status in (501,503) and value.get("version")==VERSION:return
-            except (OSError,http.client.HTTPException):pass
-            time.sleep(.05)
-        raise FixtureError("official_readiness")
+        self.process=owned_process.popen([str(self.binary),"server","-config="+str(self.root/"server.json")],
+            stdout=self.log,stderr=self.log,env=oracle_environment(self.root), label="consistency_headers_live.159", action="TERM", stop_timeout=5)
+        try:
+            deadline=time.monotonic()+15
+            while time.monotonic()<deadline:
+                try:
+                    status,value,_=call(self.endpoint,"GET","sys/health")
+                    if status in (501,503) and value.get("version")==VERSION:return
+                except (OSError,http.client.HTTPException):pass
+                time.sleep(.05)
+            raise FixtureError("official_readiness")
+        except BaseException as error:
+            owned_process.abort(error, [self.stop])
 
 
 from core_isolation import ScenarioFailure
@@ -293,6 +297,7 @@ def candidate_ha(binary,root,t):
     t.check("stopped",all(n.process is None for n in cluster.nodes));t.check("complete",True)
 
 
+@owned_process.profile_main
 def main():
     os.umask(0o077)
     parser=SafeArgumentParser(description=__doc__)
@@ -304,7 +309,7 @@ def main():
     bao=verify_inputs(version=args.oracle_version);before=source_identity(ROOT,binary)
     work=Path(tempfile.mkdtemp(prefix="consistency270-",dir=output.parent))
     traces={};failures={};config_hashes={};oracle_hash=file_hash(bao)
-    def interrupted(signum,frame):raise FixtureError("interrupted")
+    def interrupted(signum,frame):owned_process.interrupt(signum)
     handlers={kind:signal.signal(kind,interrupted) for kind in (signal.SIGINT,signal.SIGTERM)}
     try:
         for side in ("candidate","official_pebbledb","official_raft"):

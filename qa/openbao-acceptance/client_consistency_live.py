@@ -9,6 +9,7 @@ import json
 import hashlib
 import http.client
 import socket
+import owned_process
 import subprocess
 import time
 import os
@@ -172,8 +173,8 @@ def proxy_ha(binary,root,t):
             'routes':[{'method':method,'path':path,'effectful':method=='POST'} for method in ('GET','POST')]},replace=False)
         log=(root/'proxy.log').open('wb')
         env=os.environ.copy();env['PYTHONPATH']=str(ROOT/'clients/python')
-        process=subprocess.Popen([sys.executable,'-m','heptabao.proxy','--config',str(root/'proxy.json')],
-            stdout=log,stderr=log,env=env)
+        process=owned_process.popen([sys.executable,'-m','heptabao.proxy','--config',str(root/'proxy.json')],
+            stdout=log,stderr=log,env=env, label="client_consistency_live.175", action="TERM", stop_timeout=8)
         deadline=time.monotonic()+8
         while not (socket_dir/'api.sock').exists():
             if process.poll() is not None or time.monotonic()>=deadline:raise FixtureError('proxy_not_ready')
@@ -204,20 +205,20 @@ def proxy_ha(binary,root,t):
             [('X-Vault-Inconsistent','await-state'),('X-Vault-Inconsistent','fail')])
         t.check('await_fail',status==429 and h.get('retry-after')=='1')
         t.check('await_bound',.020<=time.monotonic()-begin<2)
-        process.terminate();process.wait(timeout=8)
+        owned_process.stop(process, action='TERM', timeout=8, expected_codes=(0,))
         t.check('stopped',process.returncode==0)
         t.check('socket_removed',not (socket_dir/'api.sock').exists())
         t.check('complete',True)
     finally:
-        if process is not None and process.poll() is None:
-            process.terminate()
-            try:process.wait(timeout=8)
-            except subprocess.TimeoutExpired:process.kill();process.wait(timeout=5)
-        if log is not None:log.close()
-        cluster.close()
-        if socket_dir is not None:shutil.rmtree(socket_dir)
+        owned_process.close_all([
+            lambda: owned_process.stop(process, action='TERM', timeout=8, expected_codes=(0,)),
+            lambda: log.close() if log is not None else None,
+            cluster.close,
+            lambda: shutil.rmtree(socket_dir) if socket_dir is not None else None,
+        ])
 
 
+@owned_process.profile_main
 def main():
     os.umask(0o077)
     p=SafeArgumentParser(description=__doc__)
@@ -229,7 +230,7 @@ def main():
     bao=verify_inputs(version=VERSION);before=source_identity(ROOT,binary)
     work=Path(tempfile.mkdtemp(prefix='client-consistency270-',dir=output.parent))
     traces={}; failures={}; oracle_hash=file_hash(bao)
-    def interrupted(signum,frame): raise FixtureError('interrupted')
+    def interrupted(signum,frame): owned_process.interrupt(signum)
     handlers={k:signal.signal(k,interrupted) for k in (signal.SIGINT,signal.SIGTERM)}
     try:
         for side in ('candidate','official_pebbledb','official_raft'):
