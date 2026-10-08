@@ -29,6 +29,8 @@ serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = { version = "=1.0.151", features = ["raw_value"] }
 ring = "=0.17.14"
 base64 = "=0.22.1"
+ssh-key = { version = "=0.6.7", default-features = false, features = ["std", "crypto"] }
+signature = { version = "=2.2.0", default-features = false }
 idna = "=1.1.0"
 qrcode = { path = "../../vendor/qrcode-0.14.1", default-features = false }
 chacha20poly1305 = { version = "=0.10.1", default-features = false, features = ["alloc", "std"] }

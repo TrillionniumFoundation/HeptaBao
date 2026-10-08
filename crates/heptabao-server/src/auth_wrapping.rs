@@ -23,6 +23,23 @@ pub(crate) struct UnwrappedJson {
     selected_response: Option<Box<raw_reply::SelectedResponseProjection>>,
 }
 impl UnwrappedJson {
+    // The owning SSH mount, rather than caller JSON or a route string, is the
+    // sole producer. Reuse the existing authenticated GeneralRawHttp wire kind.
+    pub(crate) fn from_native_ssh_public_key(
+        transport: &crate::engines::SshPublicKeyTransport,
+        context: &IngressReplyContext,
+        path: &str,
+    ) -> Result<Self, AuthError> {
+        let stored = StoredWrappedReply::capture(transport.logical_response(), context, path)?;
+        if stored.raw_http_transport(transport.logical_response())? != Some((200, "text/plain")) {
+            return Err(bad("SSH public key native projection rejected"));
+        }
+        Ok(Self {
+            stored_reply: Some(Box::new(stored)),
+            selected_json_http: None,
+            selected_response: None,
+        })
+    }
     pub(crate) fn from_completed_raw_forward(
         receipt: &crate::ha_forward_completion::CompletedForwardReceipt,
         response: &crate::ha_forward::ForwardResponse,

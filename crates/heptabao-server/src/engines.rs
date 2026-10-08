@@ -60,11 +60,17 @@ pub(crate) use pki::acme_revoke::Request as AcmeRevocationRequest;
 pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
 pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
 mod ssh;
+mod ssh_ca;
+pub(crate) use ssh_ca::SshPublicKeyTransport;
+mod ssh_ca_crypto;
+mod ssh_ca_policy;
 mod totp;
 mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    ssh_ca_format: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     acme_clock: Option<crate::auth::Timestamp>,
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
@@ -2698,6 +2704,35 @@ impl EngineState {
         body: &Value,
         now: u64,
     ) -> Result<Option<EngineResponse>> {
+        self.handle_in_identity_namespace_with_ssh_display(scope, method, path, body, now, "")
+    }
+
+    pub(crate) fn has_ssh_ca_state(&self) -> bool {
+        self.ssh_ca_format.is_some()
+    }
+    pub(crate) fn validate_ssh_ca_format(&self) -> Result<()> {
+        let present = self.namespaces.values().any(|ns| {
+            ns.mounts.values().any(
+                |mount| matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()),
+            )
+        });
+        if self.ssh_ca_format.is_some_and(|format| format != 115)
+            || present && self.ssh_ca_format != Some(115)
+        {
+            return Err(bad("invalid SSH CA format custody"));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn handle_in_identity_namespace_with_ssh_display(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        display_name: &str,
+    ) -> Result<Option<EngineResponse>> {
         let namespace = scope.path;
         let (path, query) = path.split_once('?').unwrap_or((path, ""));
         let path = path.trim_start_matches('/');
@@ -2859,9 +2894,14 @@ impl EngineState {
             Backend::Pki(engine) => {
                 engine.handle_admin(method, relative, &params, now.max(self.lease_clock))?
             }
-            Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
+            Backend::Ssh(engine) => {
+                engine.handle_role(method, relative, &params, now, display_name)?
+            }
         };
         if response.mutated {
+            if matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()) {
+                self.ssh_ca_format = Some(115);
+            }
             if pki_request {
                 self.lease_clock = self.lease_clock.max(now);
             }

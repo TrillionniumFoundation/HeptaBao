@@ -111,10 +111,11 @@ const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
 const MOUNT_LISTING_VISIBILITY_STATE_SCHEMA: u32 = 111;
 const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
 const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
+const SSH_CA_STATE_SCHEMA: u32 = 115;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SSH_CA_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -153,6 +154,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | RAW_WRAPPED_REPLY_STATE_SCHEMA
                 | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
                 | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+                | SSH_CA_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -3423,6 +3425,14 @@ impl Service {
                 Ok(None) => Response::error(503, "public PKI projection changed"),
             };
         }
+        if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            && admitted
+                .engines
+                .is_public_ssh_key_read(namespace, method, path)
+        {
+            return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
+                .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
+        }
         let public_otp_verify = admitted
             .engines
             .is_ssh_verification(namespace, method, path);
@@ -4259,6 +4269,7 @@ impl Service {
             || admitted.engines.has_pki_rsa8192_state()
             || admitted.has_mount_listing_visibility_state()
             || admitted.auth.has_raw_wrapped_reply_state()
+            || admitted.engines.has_ssh_ca_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -4530,6 +4541,42 @@ impl Service {
     /// The top-level request boundary consumes `Principal` by value in
     /// `dispatch`. This borrowed form exists only so a workflow can evaluate
     /// multiple bounded local steps under that single affine capability.
+    fn native_ssh_public_response(
+        state: &State,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Option<Response> {
+        let transport = match state
+            .engines
+            .capture_public_ssh_key(namespace, method, path, body)
+        {
+            Ok(Some(transport)) => transport,
+            Ok(None) => return None,
+            Err(error) => return Some(Response::from_engine_error(error)),
+        };
+        let Some(context) = crate::auth::current_ingress() else {
+            return Some(Response::error(
+                503,
+                "SSH public key requires original ingress",
+            ));
+        };
+        let origin = match crate::auth::UnwrappedJson::from_native_ssh_public_key(
+            &transport, &context, path,
+        ) {
+            Ok(origin) => origin,
+            Err(error) => return Some(Response::error(error.status, &error.message)),
+        };
+        Some(Response {
+            unwrapped_json: Some(origin),
+            response_headers: Default::default(),
+            consistency_index: None,
+            status: 200,
+            body: transport.logical_response().clone(),
+        })
+    }
+
     #[allow(clippy::too_many_arguments)]
     fn dispatch_authorized_subrequest(
         state: &mut State,
@@ -4548,6 +4595,11 @@ impl Service {
     ) -> Response {
         if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
             return Self::ui_mounts_route(state, principal, namespace, method, path, now);
+        }
+        if let Some(response) =
+            Self::native_ssh_public_response(state, namespace, method, path, body)
+        {
+            return response;
         }
         match state
             .engines
@@ -4892,7 +4944,14 @@ impl Service {
                 id: None,
             }
         };
-        match engines.handle_in_identity_namespace(identity_scope, method, path, engine_body, now) {
+        match engines.handle_in_identity_namespace_with_ssh_display(
+            identity_scope,
+            method,
+            path,
+            engine_body,
+            now,
+            principal.map_or("", Principal::display_name),
+        ) {
             Ok(Some(mut response)) => {
                 if let Err(error) = Self::project_kv1_read_lease(
                     state,
@@ -9826,3 +9885,7 @@ mod auth_mount_options_tests;
 #[cfg(test)]
 #[path = "service_raw_wrapped_reply110_tests.rs"]
 mod raw_wrapped_reply110_tests;
+
+#[cfg(test)]
+#[path = "service_ssh_ca115_tests.rs"]
+mod ssh_ca115_tests;

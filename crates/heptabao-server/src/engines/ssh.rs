@@ -1,4 +1,4 @@
-//! Stateful SSH OTP profile. No shell, password database or SSH CA is invoked.
+//! Stateful SSH OTP and CA profiles. No shell or password database is invoked.
 //! Verification is online and single-use; the Service owns authorization,
 //! issuer revocation checks and durable commit before delivery.
 use super::*;
@@ -70,6 +70,8 @@ pub(super) struct Lease {
 #[serde(deny_unknown_fields)]
 pub(super) struct SshOtp {
     roles: BTreeMap<String, Role>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    ca: Option<super::ssh_ca::CaState>,
     pub(super) leases: BTreeMap<String, Lease>,
     pub(super) default_ttl: u64,
     pub(super) max_ttl: u64,
@@ -79,6 +81,7 @@ impl Default for SshOtp {
     fn default() -> Self {
         Self {
             roles: BTreeMap::new(),
+            ca: None,
             leases: BTreeMap::new(),
             default_ttl: 600,
             max_ttl: MAX_LEASE_TTL,
@@ -180,6 +183,15 @@ impl Role {
 }
 
 impl SshOtp {
+    pub(super) fn has_ca_state(&self) -> bool {
+        self.ca.is_some()
+    }
+    pub(super) fn public_ca_key(&self, reference: &str) -> Result<&str> {
+        self.ca
+            .as_ref()
+            .ok_or_else(not_found)?
+            .public_key(reference)
+    }
     pub(super) fn tune(&mut self, body: &Value) -> Result<()> {
         let parse = |value: &Value, default| -> Result<u64> {
             let ttl = match value {
@@ -214,6 +226,18 @@ impl SshOtp {
             || self.leases.len() > MAX_LEASES
         {
             return Err(bad("invalid SSH OTP state bounds"));
+        }
+        if let Some(ca) = &self.ca {
+            ca.validate()?;
+            if self
+                .roles
+                .len()
+                .checked_add(ca.role_count())
+                .is_none_or(|count| count > MAX_ROLES)
+                || ca.roles().any(|name| self.roles.contains_key(name))
+            {
+                return Err(bad("invalid combined SSH role state"));
+            }
         }
         for (name, role) in &self.roles {
             valid_name(name)?;
@@ -255,7 +279,47 @@ impl SshOtp {
         method: &str,
         path: &str,
         body: &Value,
+        now: u64,
+        display_name: &str,
     ) -> Result<EngineResponse> {
+        if path == "config/ca"
+            || path == "config/issuers"
+            || path == "issuers"
+            || path == "issuers/"
+            || path.starts_with("issuer/")
+            || path == "issuers/import"
+            || path.starts_with("issuers/import/")
+        {
+            let ca = self.ca.get_or_insert_with(Default::default);
+            return ca.handle_admin(method, path, body)?.ok_or_else(not_found);
+        }
+        if let Some(name) = path
+            .strip_prefix("sign/")
+            .or_else(|| path.strip_prefix("issue/"))
+        {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            valid_name(name)?;
+            let ca = self.ca.as_mut().ok_or_else(not_found)?;
+            return ca.sign(
+                body,
+                &super::ssh_ca_policy::SigningContext {
+                    role_name: name,
+                    display_name,
+                    now,
+                    default_ttl: self.default_ttl,
+                    max_ttl: self.max_ttl,
+                },
+                path.starts_with("issue/"),
+            );
+        }
+        if path == "public_key" {
+            return Err(error(
+                501,
+                "SSH public key requires the typed public HTTP dispatcher",
+            ));
+        }
         if path == "roles" || path == "roles/" {
             if method != "LIST" {
                 return Err(unsupported());
@@ -275,9 +339,14 @@ impl SshOtp {
             } else {
                 limit as usize
             };
-            let keys: Vec<_> = self
+            let all_keys: BTreeSet<_> = self
                 .roles
                 .keys()
+                .chain(self.ca.iter().flat_map(|ca| ca.roles()))
+                .cloned()
+                .collect();
+            let keys: Vec<_> = all_keys
+                .iter()
                 .filter(|key| key.as_str() > after)
                 .take(count)
                 .cloned()
@@ -301,6 +370,30 @@ impl SshOtp {
             .strip_prefix("roles/")
             .ok_or_else(|| error(501, "SSH CA and unsupported OTP routes are not implemented"))?;
         valid_name(name)?;
+        let ca_write =
+            write_method(method) && body.get("key_type").and_then(Value::as_str) == Some("ca");
+        let ca_existing = self.ca.as_ref().is_some_and(|ca| ca.contains_role(name));
+        if ca_write {
+            let total = self.roles.len() + self.ca.as_ref().map_or(0, |ca| ca.role_count());
+            if !self.roles.contains_key(name) && !ca_existing && total >= MAX_ROLES {
+                return Err(error(507, "SSH role capacity exhausted"));
+            }
+            let response = self
+                .ca
+                .get_or_insert_with(Default::default)
+                .put_role(name, body)?;
+            self.roles.remove(name);
+            return Ok(response);
+        }
+        if ca_existing && matches!(method, "GET" | "DELETE") {
+            reject_unknown(body, &[])?;
+            let ca = self.ca.as_mut().ok_or_else(not_found)?;
+            return if method == "GET" {
+                ca.role_descriptor(name)
+            } else {
+                Ok(empty(ca.remove_role(name)))
+            };
+        }
         match method {
             "GET" => {
                 reject_unknown(body, &[])?;
@@ -326,7 +419,7 @@ impl SshOtp {
                     ],
                 )?;
                 if string(body, "key_type")? != "otp" {
-                    return Err(error(501, "SSH CA mode is not implemented"));
+                    return Err(bad("invalid SSH role key type"));
                 }
                 let value = |key, default: &str| -> Result<String> {
                     Ok(body
@@ -345,8 +438,14 @@ impl SshOtp {
                         .map_err(|_| bad("invalid SSH port"))?,
                 };
                 role.validate()?;
-                if !self.roles.contains_key(name) && self.roles.len() >= MAX_ROLES {
+                let combined = self.roles.len() + self.ca.as_ref().map_or(0, |ca| ca.role_count());
+                let existing = self.roles.contains_key(name)
+                    || self.ca.as_ref().is_some_and(|ca| ca.contains_role(name));
+                if !existing && combined >= MAX_ROLES {
                     return Err(error(507, "SSH role capacity exhausted"));
+                }
+                if let Some(ca) = &mut self.ca {
+                    ca.remove_role(name);
                 }
                 self.roles.insert(name.into(), role);
                 Ok(empty(true))

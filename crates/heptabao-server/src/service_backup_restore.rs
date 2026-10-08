@@ -335,6 +335,18 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if (current.schema >= SSH_CA_STATE_SCHEMA || current.engines.has_ssh_ca_state())
+            && (incoming.schema < SSH_CA_STATE_SCHEMA || !incoming.engines.has_ssh_ca_state())
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SSH CA custody",
+            ));
+        }
+        incoming
+            .engines
+            .validate_ssh_ca_format()
+            .map_err(Response::from_engine_error)?;
         // Check the authenticated incoming label before any HA writer normalization.
         // Both permanent facts remain after consumption and last-token retirement.
         if (current.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA

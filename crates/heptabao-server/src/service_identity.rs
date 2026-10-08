@@ -175,6 +175,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_ssh_ca_state() {
+            required.max(SSH_CA_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -193,7 +198,24 @@ impl State {
                 "mount listing visibility requires schema 111",
             ));
         }
+        self.engines
+            .validate_ssh_ca_format()
+            .map_err(Response::from_engine_error)?;
+        if self.engines.has_ssh_ca_state() && self.schema < SSH_CA_STATE_SCHEMA
+            || previous.is_some_and(|state| {
+                state.schema >= SSH_CA_STATE_SCHEMA || state.engines.has_ssh_ca_state()
+            }) && (self.schema < SSH_CA_STATE_SCHEMA || !self.engines.has_ssh_ca_state())
+        {
+            return Err(Response::error(503, "SSH CA custody cannot regress"));
+        }
         let protected = self.protected_state()?;
+        protected
+            .engines
+            .validate_ssh_ca_format()
+            .map_err(Response::from_engine_error)?;
+        if protected.engines.has_ssh_ca_state() != self.engines.has_ssh_ca_state() {
+            return Err(Response::error(503, "SSH CA owner marker disagrees"));
+        }
         protected
             .auth
             .validate_raw_wrapped_reply_state()
@@ -739,6 +761,15 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.engines
+            .validate_ssh_ca_format()
+            .map_err(Response::from_engine_error)?;
+        if self.schema < SSH_CA_STATE_SCHEMA && self.engines.has_ssh_ca_state()
+            || self.schema == SSH_CA_STATE_SCHEMA && !self.engines.has_ssh_ca_state()
+        {
+            return Err(Response::error(503, "SSH CA custody requires schema 115"));
+        }
+
         if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
             && self.has_mount_listing_visibility_state()
         {
@@ -1848,6 +1879,7 @@ impl State {
             | RAW_WRAPPED_REPLY_STATE_SCHEMA
             | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
             | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+            | SSH_CA_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA
