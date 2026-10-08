@@ -10,7 +10,7 @@ fn metadata_value<'a>(
 }
 
 impl IdentityState {
-    pub(super) fn ssh_template_values(
+    pub(in crate::engines) fn ssh_template_values(
         &self,
         projection: &super::super::IdentityProjection,
         selectors: &BTreeSet<String>,
