@@ -8,6 +8,9 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts"))
+from governance_source_contracts import retired_workflow_errors
 
 
 class PlanV147Tests(unittest.TestCase):
@@ -32,10 +35,12 @@ class PlanV147Tests(unittest.TestCase):
         )
         self.assertEqual("NONE", value["claims"]["authority_effect"])
 
-    def test_current_workflow_is_read_only_and_pr_only(self) -> None:
+    def test_current_retired_workflow_is_read_only_and_manual_only(self) -> None:
         text = (ROOT / ".github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml").read_text(encoding="utf-8")
+        self.assertEqual(retired_workflow_errors(ROOT, ".github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml"), [])
         self.assertIn("contents: read", text)
-        self.assertIn("pull_request:", text)
+        self.assertIn("workflow_dispatch:", text)
+        self.assertNotIn("pull_request:", text)
         self.assertNotIn("push:", text)
         self.assertIn("exact-head", text)
         self.assertIn("prospective-merge", text)

@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_provider_errors
+
+
 import json
 import re
 import sys
@@ -332,20 +338,21 @@ def validate_rust_sources(root: Path) -> None:
             "pub fn create_new",
             "pub fn reopen_existing",
             "pub fn reconcile_next_orphan",
-            "create_new(true)",
-            "fs::rename",
+            "root.open_file(leaf_name, FileAccess::CreateNew)",
+            "root.rename(&temporary_name, target_name)",
             "sync_all",
             "AppendOutcomeUnknown",
             "PendingOrphan",
             "AuthenticationFailed",
-            "secure_create_new",
+            "root.open_file(&temporary_name, FileAccess::CreateNew)",
         ],
         "single-node journal",
     )
+    descriptor_errors = descriptor_provider_errors(root, "journal")
+    require(not descriptor_errors, "; ".join(descriptor_errors))
     require(
-        "fs::symlink_metadata(entry.path())" in journal
-        or "fs::symlink_metadata(self.tail_path())" in journal,
-        "single-node journal is missing symlink-safe metadata inspection",
+        "self.root.entries()" in journal or "root.entries()" in journal,
+        "single-node journal is missing descriptor-relative directory enumeration",
     )
     require(
         "fn parse_entry_file_name(name: &str) -> Result<Option<JournalSequence>, DecodeError>"

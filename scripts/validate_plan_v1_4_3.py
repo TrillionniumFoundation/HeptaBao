@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_guard_errors, descriptor_provider_errors, retired_workflow_errors
+
+
 import json
 import re
 import sys
@@ -376,7 +382,7 @@ def validate_guard_source(root: Path) -> None:
             "identity: DirectoryIdentity",
             "if !original_path.is_absolute()",
             "fs::symlink_metadata(&original_path)",
-            ".custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)",
+            "OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC",
             "identity(&opened) != before_identity",
             "identity(&after) != before_identity",
             "format!(\"/proc/self/fd/{}\", handle.as_raw_fd())",
@@ -390,6 +396,8 @@ def validate_guard_source(root: Path) -> None:
         ],
         "filesystem guard source",
     )
+    descriptor_errors = descriptor_guard_errors(root)
+    require(not descriptor_errors, "; ".join(descriptor_errors))
     require("unsafe {" not in source, "filesystem guard contains an unsafe block")
     require("Command::new" in source, "writer fence lacks a subprocess contention test")
     require("MAX_GUARDED_LEAF_BYTES: usize = 240" in source, "leaf bound drifted")
@@ -403,30 +411,18 @@ def validate_store_source(root: Path) -> None:
             "root: ExclusiveDirectory",
             "ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?",
             "self.root.verify().map_err(map_directory_guard_error)?",
-            "self.root.access_path()",
             "pub fn root_identity(&self)",
             "DirectoryGuardError::WriterBusy => FileStoreError::WriterBusy",
-            "options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)",
-            "let file = options.open(path)",
-            "let metadata = file.metadata()",
-            "options.write(true).create_new(true)",
             "write_new_file_and_sync_parent(&self.root, &bundle_name, &bundle_bytes)",
             "atomic_replace(&self.root, CURRENT_NAME, &current_bytes)",
-            "root.sync_all().map_err(io::Error::other)",
             "FileStoreError::CommitOutcomeUnknown",
             "second_store_writer_is_fenced",
             "open_store_remains_bound_after_root_path_replacement",
         ],
         "generation store source",
     )
-    compact = re.sub(r"\s+", "", source)
-    require(
-        compact.count("options.custom_flags(libc::O_NOFOLLOW|libc::O_CLOEXEC)") >= 2,
-        "generation store source lost nofollow on a read or create path",
-    )
-    require("fn validate_root" not in source, "generation store retained path-reopen root validation")
-    require("if self.bundle_path(generation).exists()" not in source, "generation creation regained a check-then-create race")
-
+    descriptor_errors = descriptor_provider_errors(root, "store")
+    require(not descriptor_errors, "; ".join(descriptor_errors))
 
 def validate_journal_source(root: Path) -> None:
     source = read_text(root, "crates/heptabao-single-node-journal/src/lib.rs")
@@ -436,29 +432,18 @@ def validate_journal_source(root: Path) -> None:
             "root: ExclusiveDirectory",
             "ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?",
             "self.root.verify().map_err(map_directory_guard_error)?",
-            "self.root.access_path()",
             "pub fn root_identity(&self)",
             "DirectoryGuardError::WriterBusy => FileJournalError::WriterBusy",
-            "options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)",
-            "let file = options.open(path)",
-            "let metadata = file.metadata()",
-            "options.write(true).create_new(true)",
             "write_new_file_and_sync_parent(&self.root, &entry_name, &encoded)",
             "atomic_replace(&self.root, TAIL_NAME, &encoded)",
-            "root.sync_all().map_err(io::Error::other)",
             "FileJournalError::AppendOutcomeUnknown",
             "second_journal_writer_is_fenced",
             "open_journal_remains_bound_after_root_path_replacement",
         ],
         "durable journal source",
     )
-    compact = re.sub(r"\s+", "", source)
-    require(
-        compact.count("options.custom_flags(libc::O_NOFOLLOW|libc::O_CLOEXEC)") >= 2,
-        "durable journal source lost nofollow on a read or create path",
-    )
-    require("fn validate_root" not in source, "journal retained path-reopen root validation")
-
+    descriptor_errors = descriptor_provider_errors(root, "journal")
+    require(not descriptor_errors, "; ".join(descriptor_errors))
 
 def validate_documents(root: Path) -> None:
     plan = read_text(
@@ -504,13 +489,9 @@ def validate_workflow(root: Path) -> None:
     require(workflow.get("name") == "plan-v1.4.3-descriptor-fencing", "workflow name drifted")
     triggers = workflow.get("on")
     require(isinstance(triggers, dict), "workflow trigger mapping is missing")
-    require(set(triggers) == {"pull_request", "workflow_dispatch"}, "workflow trigger set drifted")
-    pull_request = triggers.get("pull_request")
-    require(
-        isinstance(pull_request, dict)
-        and pull_request.get("branches") == ["codex/plan-v1.4.2-recovery-foundation-v1"],
-        "workflow base branch drifted",
-    )
+    require(set(triggers) == {"workflow_dispatch"}, "retired workflow must remain exactly manual-only")
+    current_errors = retired_workflow_errors(root, relative)
+    require(not current_errors, "; ".join(current_errors))
     require(workflow.get("permissions") == {"contents": "read"}, "workflow gained write permission")
     jobs = workflow.get("jobs")
     require(isinstance(jobs, dict) and set(jobs) == {"descriptor-fencing"}, "workflow job set drifted")

@@ -4,14 +4,17 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts"))
+from governance_source_contracts import retired_workflow_errors
 WORKFLOW = ROOT / ".github/workflows/export-exact-audit-source.yml"
 
 
 class ExactSourceExportContractTests(unittest.TestCase):
     def test_every_integration_head_is_exportable_without_write_authority(self) -> None:
         source = WORKFLOW.read_text(encoding="utf-8")
+        self.assertEqual(retired_workflow_errors(ROOT, ".github/workflows/export-exact-audit-source.yml"), [])
         for marker in (
-            '      - "codex/plan-v1.3-gap-closure-v2"',
             "  workflow_dispatch:",
             "permissions:\n  contents: read",
             "runs-on: ubuntu-slim",
@@ -24,6 +27,8 @@ class ExactSourceExportContractTests(unittest.TestCase):
         ):
             self.assertIn(marker, source)
 
+        self.assertNotIn("  pull_request:", source)
+        self.assertNotIn("  push:", source)
         self.assertNotIn("paths:", source)
         self.assertNotIn("contents: write", source)
         self.assertNotIn("persist-credentials: true", source)

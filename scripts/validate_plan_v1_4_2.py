@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import retired_workflow_errors
+
+
 import json
 import re
 import sys
@@ -438,13 +444,9 @@ def validate_workflow(root: Path) -> None:
     require(workflow.get("name") == "plan-v1.4.2-anchored-recovery", "workflow name drifted")
     triggers = workflow.get("on")
     require(isinstance(triggers, dict), "workflow trigger mapping is missing")
-    require(set(triggers) == {"pull_request", "workflow_dispatch"}, "workflow trigger set drifted")
-    pull_request = triggers.get("pull_request")
-    require(
-        isinstance(pull_request, dict)
-        and pull_request.get("branches") == ["codex/plan-v1.4-full-gap-closure-v1"],
-        "workflow base branch drifted",
-    )
+    require(set(triggers) == {"workflow_dispatch"}, "retired workflow must remain exactly manual-only")
+    current_errors = retired_workflow_errors(root, relative)
+    require(not current_errors, "; ".join(current_errors))
     require(workflow.get("permissions") == {"contents": "read"}, "workflow gained write permission")
     jobs = workflow.get("jobs")
     require(isinstance(jobs, dict) and set(jobs) == {"anchored-recovery"}, "workflow job set drifted")

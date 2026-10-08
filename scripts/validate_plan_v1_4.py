@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_provider_errors
+
+
 import json
 import re
 import sys
@@ -328,8 +334,8 @@ def validate_rust_sources(root: Path) -> None:
             "pub fn create_new",
             "pub fn reopen_existing",
             "pub fn adopt_legacy",
-            "create_new(true)",
-            "fs::rename",
+            "root.open_file(leaf_name, FileAccess::CreateNew)",
+            "root.rename(&temporary_name, target_name)",
             "sync_all",
             "CommitOutcomeUnknown",
             "GenerationConflict",
@@ -338,6 +344,9 @@ def validate_rust_sources(root: Path) -> None:
         ],
         "single-node store",
     )
+
+    descriptor_errors = descriptor_provider_errors(root, "store")
+    require(not descriptor_errors, "; ".join(descriptor_errors))
 
     core = read_text(root, "crates/heptabao-durable-core/src/lib.rs")
     require_tokens(

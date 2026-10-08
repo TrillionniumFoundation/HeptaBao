@@ -54,8 +54,60 @@
           },
           "source_binding": {
             "const": "RESOLVE_FROM_EXACT_SOURCE"
+          },
+          "archived_reference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "SHA256",
+              "bytes",
+              "commit",
+              "fixture",
+              "git_blob"
+            ],
+            "properties": {
+              "SHA256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "commit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fixture": {
+                "type": "string",
+                "minLength": 1
+              },
+              "git_blob": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "archived_reference"
+              ]
+            },
+            "then": {
+              "properties": {
+                "path": {
+                  "const": ".github/workflows/plan-v1.4.4-module-documentation.yml"
+                },
+                "role": {
+                  "const": "RETIRED_WORKFLOW_REFERENCE"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "claims": {

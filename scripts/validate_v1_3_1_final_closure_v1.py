@@ -50,7 +50,7 @@ EXPECTED_HISTORICAL_WORKFLOWS = {
 # plus an explicit manual dispatch lane.  Keep this set narrow so a future
 # push/schedule/workflow-call trigger cannot silently create an evidence lane
 # whose source identity is not covered by the arbitration contract.
-EXPECTED_WORKFLOW_EVENTS = frozenset({"pull_request", "workflow_dispatch"})
+EXPECTED_WORKFLOW_EVENTS = frozenset({"workflow_dispatch"})
 
 # GitHub accepts a finite set of permission names.  Every permission granted
 # by this workflow must be read-only (or explicitly disabled); any write
@@ -583,7 +583,7 @@ def _validate_workflow_triggers(
             and all(isinstance(event_name, str) for event_name in declaration)
             and len(declaration) == len(set(declaration))
             and set(declaration) == EXPECTED_WORKFLOW_EVENTS,
-            "canonical workflow trigger list must contain exactly pull_request and workflow_dispatch",
+            "retired canonical workflow trigger list must contain exactly workflow_dispatch",
         )
         return
     require(
@@ -593,7 +593,7 @@ def _validate_workflow_triggers(
     event_names = set(declaration)
     require(
         event_names == EXPECTED_WORKFLOW_EVENTS,
-        "canonical workflow trigger set must be exactly pull_request and workflow_dispatch",
+        "retired canonical workflow trigger set must be exactly workflow_dispatch",
     )
     for event_name, configuration in declaration.items():
         require(

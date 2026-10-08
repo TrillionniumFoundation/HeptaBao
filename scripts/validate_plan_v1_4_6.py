@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_provider_errors, retired_workflow_errors
+
+
 import argparse
 import sys
 from pathlib import Path
@@ -139,7 +145,6 @@ def validate(root: Path) -> list[str]:
         root,
         "crates/heptabao-single-node-store/src/lib.rs",
         (
-            "options.mode(0o600);",
             "durable_store_files_are_owner_only_on_unix",
             "recover_commit",
             "exact_orphan_bundle_is_completed_only_for_matching_intent",
@@ -191,10 +196,13 @@ def validate(root: Path) -> list[str]:
         ),
     )
 
+    errors.extend(descriptor_provider_errors(root, "store"))
+    errors.extend(descriptor_provider_errors(root, "journal"))
+
     workflow_path = ".github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml"
     workflow = text(root, workflow_path)
     for token in (
-        "pull_request:",
+        "workflow_dispatch:",
         "contents: read",
         "matrix.source_kind",
         "exact-head",
@@ -209,6 +217,8 @@ def validate(root: Path) -> list[str]:
     for token in ("push:", "contents: write", "git push", "persist-credentials: true"):
         if token in workflow:
             errors.append(f"{workflow_path} is not a read-only PR-only gate: {token!r}")
+
+    errors.extend(retired_workflow_errors(root, workflow_path))
 
     blocker = load_yaml(root, "planning/HEPTABAO_BLOCKER_REGISTER_V1_4_6.yaml")
     status = load_yaml(root, "planning/HEPTABAO_V1_4_6_AUTHORITATIVE_RECOVERY_STATUS.yaml")
