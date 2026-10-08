@@ -175,6 +175,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_sdk_namespace_custody() {
+            required.max(SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -194,6 +199,33 @@ impl State {
             ));
         }
         let protected = self.protected_state()?;
+        if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (protected.auth.has_sdk_namespace_custody()
+                || previous
+                    .is_some_and(|old| old.schema >= SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth namespace custody requires schema 114",
+            ));
+        }
+        if let Some(previous) = previous {
+            self.auth
+                .validate_sdk_namespace_custody_successor(&previous.auth)
+                .map_err(|e| Response::error(e.status, &e.message))?;
+            if self.namespace_protected.is_none()
+                && self.namespace_leases.is_empty()
+                && !self
+                    .auth
+                    .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
+                    .map_err(|e| Response::error(e.status, &e.message))?
+            {
+                return Err(Response::error(
+                    503,
+                    "SDK namespace ciphertext requires actual typed publication proof",
+                ));
+            }
+        }
         protected
             .auth
             .validate_raw_wrapped_reply_state()
@@ -739,6 +771,17 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+            && self.auth.has_sdk_namespace_custody()
+            || self.schema == SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+                && !self.auth.has_sdk_namespace_custody()
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth namespace custody requires format 114",
+            ));
+        }
+        self.validate_sdk_namespace_custody()?;
         if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
             && self.has_mount_listing_visibility_state()
         {

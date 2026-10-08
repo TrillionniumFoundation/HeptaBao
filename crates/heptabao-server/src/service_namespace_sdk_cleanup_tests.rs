@@ -2414,29 +2414,23 @@ fn namespace109_authenticated_inherited_seal_keeps_actual_auth_retirement_attemp
         Ok(_) => return Err("ordinary namespace acquired independent seal status".into()),
     }
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
-    let retained = closed
-        .auth
-        .sdk_credential_record(NS, &f.credential.id)
-        .ok_or("actual global credential retained while namespace assets are closed")?;
-    assert!(
-        retained.phase == credential.phase
-            && retained.registration == credential.registration
-            && retained.issued == credential.issued
-            && retained.backend == credential.backend
-    );
-    let retained_bytes = Zeroizing::new(
-        crate::secret_serde::to_vec(&retained, 4 * 1024 * 1024)
-            .map_err(|_| "closed retained credential snapshot rejected")?,
-    );
-    assert!(&*retained_bytes == &*credential_bytes);
+    assert!(closed.auth.sdk_credential_record(NS, &f.credential.id).is_none(),
+        "ordinary lookup cannot execute a ciphertext credential");
+    let (retained, digest) = closed.auth
+        .sdk_namespace_credential_index_for_test(NS, &f.credential.id)
+        .ok_or("actual private non-executable credential index absent")?;
+    assert!(retained.phase == credential.phase
+        && retained.registration == credential.registration
+        && retained.issued == credential.issued
+        && retained.backend == credential.backend);
+    assert!(digest == crypto::digest(&credential_bytes),
+        "complete original Record digest remains committed, not a reconstructed record");
     assert!(closed.namespaces.deletions == namespace_jobs);
-    assert!(closed.auth.sdk_auth_retirement_jobs_for_test() == jobs);
-    assert!(
-        closed
-            .auth
-            .sdk_auth_retirement_job(job_id)
-            .is_some_and(|actual| actual == job)
-    );
+    assert!(closed.auth.sdk_auth_retirement_jobs_for_test().is_empty());
+    assert!(closed.auth.sdk_auth_retirement_job(job_id).is_none(),
+        "ordinary lookup cannot execute ciphertext Job metadata");
+    assert!(closed.auth.sdk_namespace_job_index_for_test(NS, job_id).as_ref() == Some(job),
+        "complete original accepted/Attempted task metadata remains exact");
     let bytes = owner_store::serialize_owner(closed)?;
     for marker in [
         b"finite-logical-owned".as_slice(),
@@ -2575,21 +2569,17 @@ fn namespace109_authenticated_independent_seal_preserves_two_original_descendant
             && parent_closed.seal_frontier() == parent.seal_frontier() + 1
     );
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
-    let retained = closed
-        .auth
-        .sdk_credential_record(NS, &f.credential.id)
-        .ok_or("actual global credential retained while namespace assets are closed")?;
-    assert!(
-        retained.phase == credential.phase
-            && retained.registration == credential.registration
-            && retained.issued == credential.issued
-            && retained.backend == credential.backend
-    );
-    let retained_bytes = Zeroizing::new(
-        crate::secret_serde::to_vec(&retained, 4 * 1024 * 1024)
-            .map_err(|_| "closed retained credential snapshot rejected")?,
-    );
-    assert!(&*retained_bytes == &*credential_bytes);
+    assert!(closed.auth.sdk_credential_record(NS, &f.credential.id).is_none(),
+        "ordinary lookup cannot execute a ciphertext credential");
+    let (retained, digest) = closed.auth
+        .sdk_namespace_credential_index_for_test(NS, &f.credential.id)
+        .ok_or("actual private non-executable credential index absent")?;
+    assert!(retained.phase == credential.phase
+        && retained.registration == credential.registration
+        && retained.issued == credential.issued
+        && retained.backend == credential.backend);
+    assert!(digest == crypto::digest(&credential_bytes),
+        "complete original Record digest remains committed, not a reconstructed record");
     let Fixture {
         directory,
         service,
@@ -2879,7 +2869,7 @@ fn current_published_physical_bytes(service: &Service) -> TestResult<Zeroizing<V
 #[test]
 fn namespace109_authenticated_seal_same_generation_ciphertext_install_is_rejected_without_changing_proof()
 -> TestResult {
-    let mut f = fixture()?;
+    let f = fixture()?;
     let original = f.service.state.clone().ok_or("actual original graph")?;
     let identity = f
         .service
@@ -3247,4 +3237,1350 @@ fn namespace109_ordinary_unseal_keeps_primary_nonempty400_and_emptykey500_withou
             .map_err(|_| "actual unchanged graph")?;
     }
     Ok(())
+}
+
+
+#[test]
+fn namespace114_terminal_renewable_credential_index_keeps_original_metadata_and_digest()
+-> TestResult {
+    let mut f = fixture()?;
+    begin(&mut f)?;
+    let key = owned_job(&f.service, Kind::Credential)?;
+    let mut state = f.service.state.clone().ok_or("actual pending graph")?;
+    state
+        .attempt_namespace_sdk_cleanup(&key)
+        .map_err(|_| "actual attempt")?;
+    publish(&mut f.service, state)?;
+    let work = owned_authority(&f.service, Kind::Credential)?;
+    let mut state = f.service.state.clone().ok_or("actual Attempted graph")?;
+    let original = state
+        .auth
+        .sdk_credential_record(NS, &f.credential.id)
+        .ok_or("actual pending Record")?;
+    assert!(original.renewable && original.phase == Phase::PendingRevoke);
+    let mut terminal = original.clone();
+    terminal.revoke();
+    state.auth.store_sdk_credential(terminal.clone())?;
+    work.finish_credential(&mut state, &terminal)
+        .map_err(|_| "actual Terminal projection")?;
+    let actual = state
+        .namespace_sdk_cleanup_record(&key)
+        .map_err(|_| "actual Terminal job")?;
+    let bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&terminal, 512 * 1024)
+            .map_err(|_| "complete terminal Record bytes")?,
+    );
+    let digest = crypto::digest(&bytes);
+    let metadata = terminal.public_metadata();
+    assert!(actual.check_credential_index(&metadata, digest).is_ok());
+    actual.check_credential(&terminal, true)?;
+    let mut bad = metadata.clone();
+    bad.renewable = true;
+    assert!(actual.check_credential_index(&bad, digest).is_err());
+    let mut bad = metadata.clone();
+    bad.phase = Phase::PendingRevoke;
+    assert!(actual.check_credential_index(&bad, digest).is_err());
+    let mut bad = metadata.clone();
+    bad.issued = Timestamp::checked(1, 0)?;
+    assert!(actual.check_credential_index(&bad, digest).is_err());
+    let mut bad_digest = digest;
+    bad_digest[31] ^= 1;
+    assert!(
+        actual
+            .check_credential_index(&metadata, bad_digest)
+            .is_err()
+    );
+    assert!(state.validate_format().is_ok());
+    assert!(
+        f.service
+            .state
+            .as_ref()
+            .ok_or("original state retained")?
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .is_some_and(|record| record.phase == Phase::PendingRevoke && record.renewable)
+    );
+    Ok(())
+}
+
+const CHILD114: &str = "retire/child";
+fn model_cleanup_fixture114(
+    independent: bool,
+) -> TestResult<(Fixture, Option<Zeroizing<Vec<u8>>>)> {
+    fixture_with_owner_initialized(independent, |directory, service| {
+        let plugins = directory.path.join("model-custody-plugins");
+        let runtime = directory.path.join("model-custody-runtime");
+        private_directory(&plugins)?;
+        private_directory(&runtime)?;
+        service.install_sdk_backend(Some(crate::service::SdkBackendConfig {
+            plugin_directory: plugins,
+            runtime_directory: runtime,
+            companion: directory.path.join("intentionally-absent-model-companion"),
+            companion_sha256: "a".repeat(64),
+            timeout_ms: 5_000,
+        }))?;
+        Ok(())
+    })
+}
+fn child_resources114(f: &mut Fixture) -> TestResult<(Lease, crate::auth::sdk_credential::Record)> {
+    let (logical, credential) = child_resources114_mode(f, true)?;
+    Ok((logical, credential.ok_or("actual model credential")?))
+}
+fn child_resources114_mode(
+    f: &mut Fixture,
+    credential: bool,
+) -> TestResult<(Lease, Option<crate::auth::sdk_credential::Record>)> {
+    assert_eq!(
+        owned_namespace_body(
+            &mut f.service,
+            NS,
+            "sys/namespaces/child",
+            &f.token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let mut state = f.service.state.clone().ok_or("actual child namespace")?;
+    state
+        .ensure_namespace_batch_registry()
+        .map_err(|_| "actual child lifecycle")?;
+    let descriptor = state.engines.register_sdk_descriptor(Descriptor {
+        name: "child_logical_probe".into(),
+        version: "v1.0.0".into(),
+        command: "probe".into(),
+        args: vec![],
+        sha256: "c".repeat(64),
+        generation: 1,
+    })?;
+    state.engines.handle(
+        CHILD114,
+        "POST",
+        "sys/mounts/logical",
+        &json!({"type":"plugin","config":{"plugin_id":"child_logical_probe"}}),
+        100,
+    )?;
+    let backend = state
+        .engines
+        .bind_sdk_mount(CHILD114, "logical/", &descriptor)?;
+    f.service
+        .prepare_sdk_mount_record_root(&mut state)
+        .map_err(|_| "actual child mount root")?;
+    publish(&mut f.service, state)?;
+    let mut state = f.service.state.clone().ok_or("actual child SDK mount")?;
+    let at = clock()?.observed_at()?;
+    let actor =
+        state
+            .auth
+            .authenticate_from_observed(&f.token, AuthorityTime::Precise(at), None)?;
+    let entry = state
+        .auth
+        .admitted_standard_sdk_lease_issuer_observed(&actor, CHILD114, AuthorityTime::Precise(at))?
+        .ok_or("actual child issuer")?;
+    let registration = Registration::from_entry(
+        &entry,
+        at,
+        at,
+        false,
+        &state.auth,
+        CHILD114,
+        state.namespaces.incarnation(CHILD114),
+    )?;
+    let grant = || Grant {
+        issued: at,
+        ttl_ns: 30_000_000_000,
+        max_ttl_ns: 60_000_000_000,
+        renewable: true,
+        secret: json!({"LeaseID":"","lease":30_000_000_000u64,"max_ttl":60_000_000_000u64,
+            "renewable":true,"internal_data":{"secret_type":"owned","storage_key":"record"}}),
+        data: json!({"value":"actual-child-private-secret"}),
+    };
+    let mut logical = Lease::new(
+        LeaseBinding {
+            id: "logical/record/child-selected".into(),
+            namespace: CHILD114.into(),
+            cluster: state.cluster_id.clone(),
+            mount: "logical/".into(),
+            path: "logical/record".into(),
+            backend: backend.clone(),
+            issuer: entry.issuer.owner.clone(),
+        },
+        grant(),
+    )?;
+    logical.register(registration.clone())?;
+    state.engines.observe_sdk_lease_clock(at);
+    state.engines.store_sdk_lease(logical.clone())?;
+    state.engines.sdk_storage_put(
+        CHILD114,
+        "logical/",
+        &backend,
+        StorageEntry {
+            key: "record".into(),
+            value: Zeroizing::new(b"actual-child-logical-owned".to_vec()),
+            seal_wrap: true,
+        },
+    )?;
+    if !credential {
+        publish(&mut f.service, state)?;
+        return Ok((logical, None));
+    }
+    assert_eq!(
+        state
+            .auth
+            .handle(
+                Some(&actor),
+                CHILD114,
+                "POST",
+                "sys/auth/credential",
+                &json!({"type":"plugin"}),
+                at.seconds()
+            )?
+            .ok_or("actual child Auth mount")?
+            .status,
+        204
+    );
+    let descriptor = state.auth.register_sdk_auth_descriptor(Descriptor {
+        name: "child_credential_probe".into(),
+        version: "v1.0.0".into(),
+        command: "probe".into(),
+        args: vec![],
+        sha256: "d".repeat(64),
+        generation: 1,
+    })?;
+    let backend = state
+        .auth
+        .bind_sdk_auth_mount(CHILD114, "credential", &descriptor)?;
+    let mut record = Lease::new(
+        LeaseBinding {
+            id: "auth/credential/record/child-selected".into(),
+            namespace: CHILD114.into(),
+            cluster: state.cluster_id.clone(),
+            mount: "auth/credential/".into(),
+            path: "auth/credential/record".into(),
+            backend: backend.clone(),
+            issuer: entry.issuer.owner.clone(),
+        },
+        grant(),
+    )?;
+    record.register(registration)?;
+    let owner = state
+        .auth
+        .namespace_batch_registry()
+        .ok_or("actual child registry")?
+        .binding(CHILD114)?;
+    let credential = crate::auth::sdk_credential::Record::new(record, Some(owner));
+    state.auth.observe_sdk_auth_clock(at);
+    state.auth.store_sdk_credential(credential.clone())?;
+    state.auth.sdk_auth_storage_put(
+        &backend,
+        crate::auth::sdk::Entry {
+            key: "record".into(),
+            value: Zeroizing::new(b"actual-child-credential-owned".to_vec()),
+            seal_wrap: true,
+        },
+    )?;
+    publish(&mut f.service, state)?;
+    Ok((logical, Some(credential)))
+}
+fn begin_child114(f: &mut Fixture) -> TestResult {
+    let execution = f.service.begin_request_before(
+        ServiceRequest {
+            method: "DELETE",
+            path: "sys/namespaces/child",
+            namespace: NS,
+            token: &f.token,
+            body: json!({}),
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    let response = f.service.finish_synchronous_request(execution);
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body["data"]["status"], "in-progress");
+    let state = f.service.state.as_ref().ok_or("actual child deletion")?;
+    assert!(state.namespace_is_tainted(CHILD114) && !state.namespace_is_tainted(NS));
+    state
+        .validate_format()
+        .map_err(|_| "actual full child source")?;
+    Ok(())
+}
+fn child_work114(service: &Service, kind: Kind) -> TestResult<String> {
+    let state = service.state.as_ref().ok_or("actual child work")?;
+    state
+        .namespaces
+        .deletions
+        .as_ref()
+        .and_then(|ledger| ledger.sdk_cleanup())
+        .and_then(|work| {
+            work.records()
+                .iter()
+                .find(|(_, job)| job.kind() == kind && job.binding().namespace() == CHILD114)
+        })
+        .map(|(id, _)| id.clone())
+        .ok_or_else(|| "actual selected child work".into())
+}
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ModelFailure114 {
+    Deadline,
+    RootActivation,
+    HigherHaTerm,
+}
+struct ModelThread114(Option<std::thread::JoinHandle<Result<(), Response>>>);
+impl ModelThread114 {
+    fn join(mut self) -> TestResult<Result<(), Response>> {
+        self.0
+            .take()
+            .ok_or("original model worker absent")?
+            .join()
+            .map_err(|_| "original model worker panicked".into())
+    }
+}
+impl Drop for ModelThread114 {
+    fn drop(&mut self) {
+        if let Some(original) = self.0.take() {
+            let _ = original.join();
+        }
+    }
+}
+fn model_late_ack114(kind: Kind, independent: bool) -> TestResult {
+    model_late_ack114_mode(kind, independent, None)
+}
+fn model_late_ack114_mode(
+    kind: Kind,
+    independent: bool,
+    failure: Option<ModelFailure114>,
+) -> TestResult {
+    // This tests the real Service/Plan queue and Storage callback path with a
+    // typed model response. It does not launch a companion or claim provider RPC.
+    let (mut f, parent_share) = model_cleanup_fixture114(independent)?;
+    let (child_logical, child_credential) = child_resources114(&mut f)?;
+    let ha_cluster = if failure == Some(ModelFailure114::HigherHaTerm) {
+        let cluster_id = f
+            .service
+            .state
+            .as_ref()
+            .ok_or("actual HA source")?
+            .cluster_id
+            .clone();
+        let cluster = crate::ha::snapshot_test_support::Cluster::new(
+            &f.directory.path.join("late-ack-raft"),
+            &cluster_id,
+        )?;
+        f.service.ha = Some(Arc::clone(&cluster.processes[0]));
+        f.service
+            .sync_from_ha()
+            .map_err(|_| "actual initial HA publication")?;
+        Some(cluster)
+    } else {
+        None
+    };
+    begin_child114(&mut f)?;
+    let selected = child_work114(&f.service, kind)?;
+    let other_kind = if kind == Kind::Logical {
+        Kind::Credential
+    } else {
+        Kind::Logical
+    };
+    let sibling = child_work114(&f.service, other_kind)?;
+    let (control, queue) = sdk_backend::model_revoke_queue();
+    let state = f.service.state.as_ref().ok_or("actual child work source")?;
+    let host = if kind == Kind::Logical {
+        f.service
+            .sdk_host_key(CHILD114, &child_logical.mount, &child_logical.backend)
+    } else {
+        sdk_backend::auth100::sdk_auth_key(&state.cluster_id, &child_credential.backend)
+            .map_err(|_| "actual child Auth key")?
+    };
+    assert!(f.service.sdk_hosts.insert(host, control).is_none());
+    let original = clock()?;
+    // Capture a real future deadline in the original factory; never rearm it.
+    let deadline_scope = if failure == Some(ModelFailure114::Deadline) {
+        Some(crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_secs(2),
+        ))
+    } else {
+        None
+    };
+    let plan = if kind == Kind::Logical {
+        Plan::Logical(Box::new(
+            f.service
+                .prepare_namespace_sdk_logical(original, selected.clone())
+                .map_err(|_| "actual logical Attempted factory")?
+                .ok_or("actual logical Plan")?,
+        ))
+    } else {
+        Plan::Credential(Box::new(
+            f.service
+                .prepare_namespace_sdk_credential(original, selected.clone())
+                .map_err(|_| "actual credential Attempted factory")?
+                .ok_or("actual credential Plan")?,
+        ))
+    };
+    let deadline = match &plan {
+        Plan::Logical(p) => p.deadline,
+        Plan::Credential(p) => p.deadline,
+    };
+    drop(deadline_scope);
+    let state = f.service.state.as_ref().ok_or("actual published attempt")?;
+    assert!(
+        state
+            .namespace_sdk_cleanup_record(&selected)
+            .map_err(|_| "actual original namespace cleanup record unavailable")?
+            .stage()
+            == &Stage::Attempted
+    );
+    assert!(
+        state
+            .namespace_sdk_cleanup_record(&sibling)
+            .map_err(|_| "actual original namespace cleanup record unavailable")?
+            .stage()
+            == &Stage::Queued
+    );
+    let accepted = state
+        .namespace_sdk_cleanup_record(&selected)
+        .map_err(|_| "actual original namespace cleanup record unavailable")?;
+    let Fixture {
+        directory,
+        service,
+        key,
+        token,
+        logical,
+        credential,
+    } = f;
+    let shared = Arc::new(Mutex::new(service));
+    let worker_service = Arc::clone(&shared);
+    let worker = ModelThread114(Some(std::thread::spawn(move || {
+        plan.execute(&worker_service)
+    })));
+    let mut rejected_bytes = None;
+    let mut rejected_identity = None;
+    let mut rejected_generation = None;
+    // An error path still joins this original thread before returning.
+    let observed = (|| -> TestResult {
+        let entered = queue
+            .entered_before(deadline)
+            .map_err(|_| "actual original Invoke not observed")?;
+        {
+            let mut writer = shared.lock().map_err(|_| "actual Service writer")?;
+            assert_eq!(
+                owned_body(
+                    &mut writer,
+                    "POST",
+                    "sys/namespaces/retire/seal",
+                    &token,
+                    json!({})
+                )
+                .status,
+                204
+            );
+            assert!(
+                !writer.namespace_runtime.is_loaded(NS)
+                    && !writer.namespace_runtime.is_loaded(CHILD114)
+            );
+            let closed = writer
+                .state
+                .as_ref()
+                .ok_or("actual closed physical graph")?;
+            assert_eq!(closed.schema, 114);
+            assert!(
+                closed.namespaces.custody_owner(CHILD114).is_none()
+                    && closed.namespaces.inherited_owner(CHILD114).is_none()
+            );
+            assert!(
+                closed
+                    .auth
+                    .sdk_credential_record(CHILD114, &child_credential.id)
+                    .is_none()
+            );
+            assert!(
+                closed
+                    .engines
+                    .sdk_lease(CHILD114, &child_logical.id)
+                    .is_none()
+            );
+            assert!(
+                closed
+                    .namespace_sdk_cleanup_record(&selected)
+                    .map_err(|_| "actual original namespace cleanup record unavailable")?
+                    == accepted
+            );
+            closed
+                .validate_format()
+                .map_err(|_| "actual closed graph complete validation")?;
+        }
+        if failure.is_some() {
+            if failure == Some(ModelFailure114::RootActivation) {
+                let mut writer = shared.lock().map_err(|_| "actual root cycle writer")?;
+                assert_eq!(
+                    owned_body(&mut writer, "POST", "sys/seal", &token, json!({})).status,
+                    204
+                );
+                assert_eq!(
+                    owned_body(&mut writer, "POST", "sys/unseal", "", json!({"key":key})).status,
+                    200
+                );
+            } else if failure == Some(ModelFailure114::HigherHaTerm) {
+                let cluster = ha_cluster.as_ref().ok_or("actual original HA cluster")?;
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                let original = cluster.processes[0]
+                    .lock()
+                    .map_err(|_| "actual original HA process")?
+                    .leader_status()?;
+                let next = cluster.processes[0]
+                    .lock()
+                    .map_err(|_| "actual original HA process")?
+                    .step_down()?;
+                assert_ne!(next, 1);
+                let returned = cluster.processes[(next - 1) as usize]
+                    .lock()
+                    .map_err(|_| "actual successor HA process")?
+                    .step_down()?;
+                assert_eq!(returned, 1);
+                let actual = cluster.processes[0]
+                    .lock()
+                    .map_err(|_| "actual returned HA process")?
+                    .leader_status()?;
+                assert!(
+                    actual.local_is_leader
+                        && actual.local_id == original.local_id
+                        && actual.term > original.term
+                );
+            } else {
+                std::thread::sleep(deadline.saturating_duration_since(Instant::now()));
+                assert!(Instant::now() >= deadline);
+            }
+            {
+                let writer = shared.lock().map_err(|_| "actual rejected ACK source")?;
+                rejected_bytes = Some(current_published_physical_bytes(&writer)?);
+                rejected_identity = Some(
+                    writer
+                        .current_state_identity()
+                        .map_err(|_| "actual rejected ACK identity")?,
+                );
+                rejected_generation = Some(
+                    writer
+                        .durable
+                        .as_ref()
+                        .ok_or("actual rejected ACK durable")?
+                        .generation(),
+                );
+            }
+            assert!(entered.storage_delete("record").is_err());
+            // Finish the same model invocation if its original pump is alive;
+            // an expired original pump may already have closed this channel.
+            let _ = entered.complete();
+        } else {
+            entered
+                .storage_delete("record")
+                .map_err(|_| "actual sealed Storage ACK rejected")?;
+            entered
+                .complete()
+                .map_err(|_| "actual original Complete rejected")?;
+        }
+        Ok(())
+    })();
+    let completed = worker.join()?;
+    observed?;
+    if failure.is_some() {
+        assert!(
+            completed
+                .as_ref()
+                .is_err_and(|response| response.status == 503)
+        );
+        let writer = shared.lock().map_err(|_| "actual rejected ACK result")?;
+        let after = current_published_physical_bytes(&writer)?;
+        assert!(
+            rejected_bytes
+                .as_ref()
+                .is_some_and(|before| &**before == &*after)
+        );
+        assert!(
+            rejected_identity
+                == Some(
+                    writer
+                        .current_state_identity()
+                        .map_err(|_| "unchanged rejection identity")?
+                )
+        );
+        assert!(
+            rejected_generation
+                == Some(
+                    writer
+                        .durable
+                        .as_ref()
+                        .ok_or("unchanged rejection durable")?
+                        .generation()
+                )
+        );
+    } else {
+        completed.map_err(|_| "actual sealed callback/final delivery rejected")?;
+    }
+    assert_eq!(queue.unexpected_invokes(), 0);
+    let terminal = {
+        let writer = shared.lock().map_err(|_| "actual completed writer")?;
+        let closed = writer
+            .state
+            .as_ref()
+            .ok_or("actual closed Terminal graph")?;
+        if failure.is_some() {
+            assert!(
+                closed
+                    .namespace_sdk_cleanup_record(&selected)
+                    .map_err(|_| "actual original namespace cleanup record unavailable")?
+                    .stage()
+                    == &Stage::Attempted
+            );
+        } else {
+            assert!(matches!(
+                closed
+                    .namespace_sdk_cleanup_record(&selected)
+                    .map_err(|_| "actual original namespace cleanup record unavailable")?
+                    .stage(),
+                Stage::Terminal { .. }
+            ));
+        }
+        assert!(
+            closed
+                .namespace_sdk_cleanup_record(&sibling)
+                .map_err(|_| "actual original namespace cleanup record unavailable")?
+                .stage()
+                == &Stage::Queued
+        );
+        if failure == Some(ModelFailure114::RootActivation) {
+            assert!(
+                closed
+                    .auth
+                    .sdk_credential_record(CHILD114, &child_credential.id)
+                    .is_some()
+            );
+        } else {
+            assert!(
+                closed
+                    .auth
+                    .sdk_credential_record(CHILD114, &child_credential.id)
+                    .is_none()
+            );
+        }
+        closed
+            .validate_format()
+            .map_err(|_| "actual complete closed Terminal graph")?;
+        closed
+            .namespace_sdk_cleanup_record(&selected)
+            .map_err(|_| "actual original namespace cleanup record unavailable")?
+    };
+    let service = Arc::try_unwrap(shared)
+        .map_err(|_| "original model Service still borrowed")?
+        .into_inner()
+        .map_err(|_| "original model Service poisoned")?;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        owned_body(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    if let Some(share) = parent_share {
+        assert!(!reopened.namespace_runtime.is_loaded(NS));
+        assert_eq!(
+            owned_body(
+                &mut reopened,
+                "POST",
+                "sys/namespaces/retire/unseal",
+                &token,
+                json!({"key":hex(&share)})
+            )
+            .status,
+            200
+        );
+    }
+    let state = reopened.state.as_ref().ok_or("actual encrypted reopen")?;
+    assert!(
+        state
+            .namespace_sdk_cleanup_record(&selected)
+            .map_err(|_| "actual original namespace cleanup record unavailable")?
+            == terminal
+    );
+    assert!(
+        state
+            .namespace_sdk_cleanup_record(&sibling)
+            .map_err(|_| "actual original namespace cleanup record unavailable")?
+            .stage()
+            == &Stage::Queued
+    );
+    assert_original_sdk_and_storage(state, &logical, &credential)?;
+    let actual_logical = state
+        .engines
+        .sdk_lease(CHILD114, &child_logical.id)
+        .ok_or("complete reopened logical")?;
+    let actual_credential = state
+        .auth
+        .sdk_credential_record(CHILD114, &child_credential.id)
+        .ok_or("complete reopened credential")?;
+    let mut expected_logical = child_logical;
+    let mut expected_credential = child_credential;
+    if failure.is_some() {
+        expected_logical.phase = Phase::PendingRevoke;
+        expected_credential.phase = Phase::PendingRevoke;
+    } else if kind == Kind::Logical {
+        expected_logical.revoke();
+        expected_credential.phase = Phase::PendingRevoke;
+    } else {
+        expected_credential.revoke();
+        expected_logical.phase = Phase::PendingRevoke;
+    }
+    let actual_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&actual_logical, 512 * 1024)
+            .map_err(|_| "complete actual reopened logical bytes")?,
+    );
+    let expected_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&expected_logical, 512 * 1024)
+            .map_err(|_| "complete original revoked logical bytes")?,
+    );
+    assert!(&*actual_bytes == &*expected_bytes);
+    let actual_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&actual_credential, 512 * 1024)
+            .map_err(|_| "complete actual reopened credential bytes")?,
+    );
+    let expected_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&expected_credential, 512 * 1024)
+            .map_err(|_| "complete original revoked credential bytes")?,
+    );
+    assert!(&*actual_bytes == &*expected_bytes);
+    assert!(actual_logical.registration.is_some() && actual_credential.registration.is_some());
+    if failure.is_some() {
+        assert!(
+            state
+                .engines
+                .sdk_storage_get(
+                    CHILD114,
+                    &actual_logical.mount,
+                    &actual_logical.backend,
+                    "record"
+                )?
+                .is_some()
+        );
+        assert!(
+            state
+                .auth
+                .sdk_auth_storage_get(&actual_credential.backend, "record")?
+                .is_some()
+        );
+        assert!(!actual_logical.callback().is_null() && !actual_credential.callback().is_null());
+    } else if kind == Kind::Logical {
+        assert!(actual_logical.callback().is_null() && actual_logical.response_data().is_null());
+        assert!(
+            state
+                .engines
+                .sdk_storage_get(
+                    CHILD114,
+                    &actual_logical.mount,
+                    &actual_logical.backend,
+                    "record"
+                )?
+                .is_none()
+        );
+        assert!(
+            state
+                .auth
+                .sdk_auth_storage_get(&actual_credential.backend, "record")?
+                .is_some()
+        );
+    } else {
+        assert!(
+            actual_credential.callback().is_null() && actual_credential.response_data().is_null()
+        );
+        assert!(
+            state
+                .auth
+                .sdk_auth_storage_get(&actual_credential.backend, "record")?
+                .is_none()
+        );
+        assert!(
+            state
+                .engines
+                .sdk_storage_get(
+                    CHILD114,
+                    &actual_logical.mount,
+                    &actual_logical.backend,
+                    "record"
+                )?
+                .is_some()
+        );
+    }
+    state
+        .validate_format()
+        .map_err(|_| "actual reopened full graph")?;
+    Ok(())
+}
+#[test]
+fn namespace114_logical_late_ack_after_inherited_parent_seal_keeps_original_attempt_and_sibling_queued()
+-> TestResult {
+    model_late_ack114(Kind::Logical, false)
+}
+#[test]
+fn namespace114_credential_late_ack_after_inherited_parent_seal_keeps_original_attempt_and_sibling_queued()
+-> TestResult {
+    model_late_ack114(Kind::Credential, false)
+}
+#[test]
+fn namespace114_logical_late_ack_after_independent_parent_seal_reopens_with_original_share()
+-> TestResult {
+    model_late_ack114(Kind::Logical, true)
+}
+#[test]
+fn namespace114_credential_late_ack_after_independent_parent_seal_reopens_with_original_share()
+-> TestResult {
+    model_late_ack114(Kind::Credential, true)
+}
+
+#[test]
+fn namespace114_logical_late_ack_rejects_the_successfully_captured_original_deadline_without_rearming()
+-> TestResult {
+    model_late_ack114_mode(Kind::Logical, false, Some(ModelFailure114::Deadline))
+}
+#[test]
+fn namespace114_credential_late_ack_rejects_the_successfully_captured_original_deadline_without_rearming()
+-> TestResult {
+    model_late_ack114_mode(Kind::Credential, false, Some(ModelFailure114::Deadline))
+}
+#[test]
+fn namespace114_logical_late_ack_rejects_real_root_seal_and_unseal_activation_without_changing_saved_work()
+-> TestResult {
+    model_late_ack114_mode(Kind::Logical, false, Some(ModelFailure114::RootActivation))
+}
+#[test]
+fn namespace114_credential_late_ack_rejects_real_root_seal_and_unseal_activation_without_changing_saved_work()
+-> TestResult {
+    model_late_ack114_mode(
+        Kind::Credential,
+        false,
+        Some(ModelFailure114::RootActivation),
+    )
+}
+
+#[test]
+fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_rejects_missing_or_changed_locator()
+-> TestResult {
+    let (mut f, _) = model_cleanup_fixture114(false)?;
+    let (logical, absent) = child_resources114_mode(&mut f, false)?;
+    assert!(absent.is_none());
+    begin_child114(&mut f)?;
+    let selected = child_work114(&f.service, Kind::Logical)?;
+    let original = f
+        .service
+        .state
+        .as_ref()
+        .ok_or("actual child logical source")?
+        .namespace_sdk_cleanup_record(&selected)
+        .map_err(|_| "actual original namespace cleanup record unavailable")?;
+    assert_eq!(
+        owned_body(
+            &mut f.service,
+            "POST",
+            "sys/namespaces/retire/seal",
+            &f.token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let closed = f
+        .service
+        .state
+        .as_ref()
+        .ok_or("actual hidden logical graph")?;
+    assert!(
+        closed.namespaces.inherited_owner(CHILD114).is_none()
+            && closed.namespaces.custody_owner(CHILD114).is_none()
+    );
+    assert!(closed.engines.sdk_lease(CHILD114, &logical.id).is_none());
+    closed
+        .validate_format()
+        .map_err(|_| "actual closed logical-only obligation")?;
+    let bytes = current_published_physical_bytes(&f.service)?;
+    let value: Value = serde_json::from_slice(&bytes)?;
+    let index = &value["auth"]["sdk_namespace_custody"]["namespaces"][CHILD114];
+    assert!(
+        index["credentials"]
+            .as_object()
+            .is_some_and(|v| v.is_empty())
+    );
+    assert!(
+        index["retirements"]
+            .as_object()
+            .is_some_and(|v| v.is_empty())
+    );
+    assert!(
+        index["logical_cleanup"]
+            .as_object()
+            .is_some_and(|v| v.len() == 1)
+    );
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "actual original closed identity")?;
+    let generation = f
+        .service
+        .durable
+        .as_ref()
+        .ok_or("actual closed durable")?
+        .generation();
+    for change in ["missing", "empty", "stage", "digest", "descriptor"] {
+        let mut forged = value.clone();
+        let locators = forged["auth"]["sdk_namespace_custody"]["namespaces"]
+            .as_object_mut()
+            .ok_or("actual locator map")?;
+        if change == "missing" {
+            locators.remove(CHILD114);
+        } else {
+            let index = locators.get_mut(CHILD114).ok_or("actual child locator")?;
+            match change {
+                "empty" => {
+                    index["logical_cleanup"] = json!({});
+                }
+                "stage" => {
+                    index["logical_cleanup"][&selected]["stage"] = json!({"stage":"Attempted"});
+                }
+                "digest" => {
+                    let digest = index["logical_cleanup"][&selected]["pending_digest"]
+                        .as_array_mut()
+                        .ok_or("actual full original digest")?;
+                    digest[31] = json!(digest[31].as_u64().ok_or("actual digest byte")? ^ 1);
+                }
+                "descriptor" => {
+                    let stamp = if index["enclosures"]
+                        .as_array()
+                        .is_some_and(|v| !v.is_empty())
+                    {
+                        index["enclosures"]
+                            .as_array_mut()
+                            .ok_or("actual enclosure chain")?
+                            .last_mut()
+                            .ok_or("actual outer owner")?
+                    } else {
+                        &mut index["ciphertext_owner"]
+                    };
+                    let digest = stamp["descriptor"]
+                        .as_array_mut()
+                        .ok_or("actual outer descriptor")?;
+                    digest[31] = json!(digest[31].as_u64().ok_or("actual descriptor byte")? ^ 1);
+                }
+                _ => return Err("unknown negative scope".into()),
+            }
+        }
+        let forged: State = serde_json::from_value(forged)?;
+        assert!(forged.validate_format().is_err());
+        assert!(
+            f.service
+                .current_state_identity()
+                .map_err(|_| "original identity retained")?
+                == identity
+        );
+        assert_eq!(
+            f.service
+                .durable
+                .as_ref()
+                .ok_or("original durable retained")?
+                .generation(),
+            generation
+        );
+        assert!(
+            f.service
+                .state
+                .as_ref()
+                .ok_or("original graph retained")?
+                .namespace_sdk_cleanup_record(&selected)
+                .map_err(|_| "actual original namespace cleanup record unavailable")?
+                == original
+        );
+    }
+    let mut downgraded: State=serde_json::from_value(value.clone())?;
+    downgraded.schema=GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
+    assert!(downgraded.validate_format().is_err());
+    assert!(Service::validate_snapshot_protected_floor(&downgraded,
+        f.service.state.as_ref().ok_or("actual sticky114 source")?).is_err());
+    let mut erased=value.clone();
+    erased["auth"]["sdk_namespace_custody"]=Value::Null;
+    let erased:State=serde_json::from_value(erased)?;
+    assert!(erased.validate_format().is_err());
+    let mut future:State=serde_json::from_value(value)?;
+    future.schema=MAX_SUPPORTED_STATE_SCHEMA+1;
+    assert!(future.validate_format().is_err());
+    // Reopen the real published parent ciphertext; the original full Lease,
+    // registration, Secret/data and 109 selection are checked again.
+    let Fixture {
+        directory,
+        service,
+        key,
+        token: _,
+        logical: _,
+        credential: _,
+    } = f;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        owned_body(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = reopened
+        .state
+        .as_ref()
+        .ok_or("actual MAC-hydrated full logical graph")?;
+    assert_eq!(state.schema,114);
+    assert!(state.auth.has_sdk_namespace_custody());
+    assert!(
+        state
+            .namespace_sdk_cleanup_record(&selected)
+            .map_err(|_| "actual original namespace cleanup record unavailable")?
+            == original
+    );
+    let actual = state
+        .engines
+        .sdk_lease(CHILD114, &logical.id)
+        .ok_or("actual hydrated logical")?;
+    let mut expected = logical;
+    expected.phase = Phase::PendingRevoke;
+    let actual = Zeroizing::new(
+        crate::secret_serde::to_vec(&actual, 512 * 1024)
+            .map_err(|_| "actual complete hydrated logical bytes")?,
+    );
+    let expected = Zeroizing::new(
+        crate::secret_serde::to_vec(&expected, 512 * 1024)
+            .map_err(|_| "original complete retained logical bytes")?,
+    );
+    assert!(&*actual == &*expected);
+    state
+        .validate_format()
+        .map_err(|_| "actual complete reopened graph")?;
+    Ok(())
+}
+
+#[test]
+fn namespace114_logical_late_ack_rejects_real_return_to_the_original_node_in_a_higher_ha_term()
+-> TestResult {
+    model_late_ack114_mode(Kind::Logical, false, Some(ModelFailure114::HigherHaTerm))
+}
+#[test]
+fn namespace114_credential_late_ack_rejects_real_return_to_the_original_node_in_a_higher_ha_term()
+-> TestResult {
+    model_late_ack114_mode(Kind::Credential, false, Some(ModelFailure114::HigherHaTerm))
+}
+
+fn additional_child_credential114(
+    f: &mut Fixture,
+    backend: &crate::auth::sdk::Binding,
+) -> TestResult<crate::auth::sdk_credential::Record> {
+    let mut state = f.service.state.clone().ok_or("actual sibling source")?;
+    let at = clock()?.observed_at()?;
+    let actor =
+        state
+            .auth
+            .authenticate_from_observed(&f.token, AuthorityTime::Precise(at), None)?;
+    let entry = state
+        .auth
+        .admitted_standard_sdk_lease_issuer_observed(&actor, CHILD114, AuthorityTime::Precise(at))?
+        .ok_or("actual sibling admitted issuer")?;
+    let registration = Registration::from_entry(
+        &entry,
+        at,
+        at,
+        false,
+        &state.auth,
+        CHILD114,
+        state.namespaces.incarnation(CHILD114),
+    )?;
+    let mut lease = Lease::new(
+        LeaseBinding {
+            id: "auth/credential/record/child-sibling".into(),
+            namespace: CHILD114.into(),
+            cluster: state.cluster_id.clone(),
+            mount: "auth/credential/".into(),
+            path: "auth/credential/record".into(),
+            backend: backend.clone(),
+            issuer: entry.issuer.owner.clone(),
+        },
+        Grant {
+            issued: at,
+            ttl_ns: 30_000_000_000,
+            max_ttl_ns: 60_000_000_000,
+            renewable: true,
+            secret: json!({"LeaseID":"","lease":30_000_000_000u64,"max_ttl":60_000_000_000u64,
+            "renewable":true,"internal_data":{"secret_type":"owned","storage_key":"sibling"}}),
+            data: json!({"value":"actual-sibling-private-secret"}),
+        },
+    )?;
+    lease.register(registration)?;
+    let owner = state
+        .auth
+        .namespace_batch_registry()
+        .ok_or("actual sibling lifecycle")?
+        .binding(CHILD114)?;
+    let record = crate::auth::sdk_credential::Record::new(lease, Some(owner));
+    state.auth.observe_sdk_auth_clock(at);
+    state.auth.store_sdk_credential(record.clone())?;
+    state.auth.sdk_auth_storage_put(
+        backend,
+        crate::auth::sdk::Entry {
+            key: "sibling".into(),
+            value: Zeroizing::new(b"actual-sibling-owned".to_vec()),
+            seal_wrap: true,
+        },
+    )?;
+    publish(&mut f.service, state)?;
+    Ok(record)
+}
+fn model_retirement_late_ack114(independent: bool) -> TestResult {
+    let (mut f, parent_share) = model_cleanup_fixture114(independent)?;
+    let (child_logical, child_credential) = child_resources114(&mut f)?;
+    let sibling = additional_child_credential114(&mut f, &child_credential.backend)?;
+    let (control, queue) = sdk_backend::model_revoke_queue();
+    let source = f.service.state.as_ref().ok_or("actual retirement source")?;
+    let host = sdk_backend::auth100::sdk_auth_key(&source.cluster_id, &child_credential.backend)
+        .map_err(|_| "actual retiring child Auth key")?;
+    assert!(f.service.sdk_hosts.insert(host, control).is_none());
+    let execution = f.service.begin_request_before(
+        ServiceRequest {
+            method: "DELETE",
+            path: "sys/auth/credential",
+            namespace: CHILD114,
+            token: &f.token,
+            body: json!({}),
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    let RequestExecution::External(pending) = execution else {
+        return Err("actual Auth mount DELETE did not produce original external Plan".into());
+    };
+    let deadline = match &pending.effect {
+        ExternalEffectPlan::SdkAuth(plan) => plan.deadline,
+        _ => return Err("actual retirement effect changed family".into()),
+    };
+    let state = f
+        .service
+        .state
+        .as_ref()
+        .ok_or("actual admitted retirement")?;
+    assert!(!state.namespace_is_tainted(CHILD114) && !state.namespace_is_tainted(NS));
+    let jobs = state.auth.sdk_auth_retirement_jobs_for_test();
+    assert_eq!(jobs.len(), 1);
+    let (job_id, accepted) = jobs[0].clone();
+    assert!(
+        accepted.phase(&child_credential.id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+    );
+    assert!(
+        accepted.phase(&sibling.id) == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+    );
+    let original_auth = state.auth.clone();
+    let Fixture {
+        directory,
+        service,
+        key,
+        token,
+        logical,
+        credential,
+    } = f;
+    let shared = Arc::new(Mutex::new(service));
+    let original_service = Arc::clone(&shared);
+    let worker = ModelThread114(Some(std::thread::spawn(move || {
+        let outcome = pending.execute_with_service_before(&original_service, deadline);
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        let mut writer = sdk_backend::writer_before(&original_service, deadline)?;
+        let response = writer.finish_external_request(*pending, outcome);
+        if response.status >= 400 {
+            Err(response)
+        } else {
+            Ok(())
+        }
+    })));
+    let observed = (|| -> TestResult {
+        let entered = queue
+            .entered_before(deadline)
+            .map_err(|_| "original retirement Invoke not observed")?;
+        {
+            let mut writer = shared.lock().map_err(|_| "actual retirement seal writer")?;
+            assert_eq!(
+                owned_body(
+                    &mut writer,
+                    "POST",
+                    "sys/namespaces/retire/seal",
+                    &token,
+                    json!({})
+                )
+                .status,
+                204
+            );
+            assert!(
+                !writer.namespace_runtime.is_loaded(NS)
+                    && !writer.namespace_runtime.is_loaded(CHILD114)
+            );
+            let state = writer.state.as_ref().ok_or("actual closed retirement")?;
+            assert!(state.auth.sdk_auth_retirement_job(&job_id).is_none());
+            assert!(
+                state
+                    .auth
+                    .sdk_namespace_job_index_for_test(CHILD114, &job_id)
+                    .as_ref()
+                    == Some(&accepted)
+            );
+            state
+                .validate_format()
+                .map_err(|_| "actual closed retirement full format")?;
+        }
+        entered
+            .storage_delete("record")
+            .map_err(|_| "original retirement sealed Storage ACK rejected")?;
+        entered
+            .complete()
+            .map_err(|_| "original retirement completion channel closed")?;
+        Ok(())
+    })();
+    let completed = worker.join()?;
+    observed?;
+    // The original ACK may finish only its first Attempted resource. It cannot
+    // create permission to attempt the saved Queued sibling under a sealed owner.
+    assert!(
+        completed
+            .as_ref()
+            .is_err_and(|response| response.status == 503)
+    );
+    assert_eq!(queue.unexpected_invokes(), 0);
+    let expected_job = {
+        let writer = shared
+            .lock()
+            .map_err(|_| "actual retirement result writer")?;
+        let state = writer
+            .state
+            .as_ref()
+            .ok_or("actual closed retirement result")?;
+        let actual = state
+            .auth
+            .sdk_namespace_job_index_for_test(CHILD114, &job_id)
+            .ok_or("actual closed original retirement index")?;
+        assert!(
+            actual.phase(&child_credential.id)
+                == Some(crate::auth::sdk_retirement::ResourcePhase::Terminal)
+        );
+        assert!(
+            actual.phase(&sibling.id) == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+        );
+        assert!(!actual.completed() && state.auth.sdk_auth_retirement_job(&job_id).is_none());
+        let at = state
+            .auth
+            .sdk_auth_clock_floor()
+            .ok_or("actual ACK publication time")?;
+        let mut expected = original_auth.clone();
+        let mut revoked = child_credential.clone();
+        revoked.revoke();
+        expected.store_sdk_credential(revoked)?;
+        expected.complete_sdk_auth_retirement_resource(&job_id, &child_credential.id, at)?;
+        let expected = expected
+            .sdk_auth_retirement_job(&job_id)
+            .ok_or("complete expected original Job")?;
+        assert!(actual == *expected);
+        state
+            .validate_format()
+            .map_err(|_| "actual closed ACK result")?;
+        actual
+    };
+    let service = Arc::try_unwrap(shared)
+        .map_err(|_| "original retirement Service still borrowed")?
+        .into_inner()
+        .map_err(|_| "original retirement Service poisoned")?;
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        owned_body(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    if let Some(share) = parent_share {
+        assert_eq!(
+            owned_body(
+                &mut reopened,
+                "POST",
+                "sys/namespaces/retire/unseal",
+                &token,
+                json!({"key":hex(&share)})
+            )
+            .status,
+            200
+        );
+    }
+    let state = reopened
+        .state
+        .as_ref()
+        .ok_or("actual reopened original retirement")?;
+    assert!(state.auth.sdk_auth_retirement_job(&job_id) == Some(&expected_job));
+    assert_original_sdk_and_storage(state, &logical, &credential)?;
+    let actual = state
+        .auth
+        .sdk_credential_record(CHILD114, &child_credential.id)
+        .ok_or("reopened full Terminal credential")?;
+    let mut expected = child_credential;
+    expected.revoke();
+    let actual_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&actual, 512 * 1024).map_err(|_| "complete Terminal bytes")?,
+    );
+    let expected_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&expected, 512 * 1024)
+            .map_err(|_| "complete revoked original bytes")?,
+    );
+    assert!(
+        &*actual_bytes == &*expected_bytes
+            && actual.callback().is_null()
+            && actual.response_data().is_null()
+    );
+    let actual_sibling = state
+        .auth
+        .sdk_credential_record(CHILD114, &sibling.id)
+        .ok_or("reopened original sibling")?;
+    let mut expected_sibling = sibling;
+    expected_sibling.phase = Phase::PendingRevoke;
+    let actual_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&actual_sibling, 512 * 1024)
+            .map_err(|_| "complete queued sibling bytes")?,
+    );
+    let expected_bytes = Zeroizing::new(
+        crate::secret_serde::to_vec(&expected_sibling, 512 * 1024)
+            .map_err(|_| "complete original sibling bytes")?,
+    );
+    assert!(&*actual_bytes == &*expected_bytes && !actual_sibling.callback().is_null());
+    assert!(
+        state
+            .auth
+            .sdk_auth_storage_get(&actual.backend, "record")?
+            .is_none()
+    );
+    assert!(
+        state
+            .auth
+            .sdk_auth_storage_get(&actual_sibling.backend, "sibling")?
+            .is_some()
+    );
+    assert!(
+        state
+            .engines
+            .sdk_lease(CHILD114, &child_logical.id)
+            .is_some_and(|record| record.phase == Phase::Active)
+    );
+    state
+        .validate_format()
+        .map_err(|_| "actual complete reopened retirement graph")?;
+    Ok(())
+}
+#[test]
+fn namespace114_original_auth_retirement_ack_after_inherited_ancestor_seal_cannot_dispatch_queued_sibling()
+-> TestResult {
+    model_retirement_late_ack114(false)
+}
+#[test]
+fn namespace114_original_auth_retirement_ack_after_independent_ancestor_seal_keeps_original_job_on_reopen()
+-> TestResult {
+    model_retirement_late_ack114(true)
 }

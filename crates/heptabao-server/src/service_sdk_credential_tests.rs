@@ -335,6 +335,8 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         renewal: Mutex::new(None),
         lease: Mutex::new(None),
         cleanup: Mutex::new(None),
+        private_retirement: Mutex::new(None),
+        private_cleanup: Mutex::new(None),
         retirement: Some(Mutex::new(super::super::retirement::Retirement {
             remaining: VecDeque::new(),
             job,

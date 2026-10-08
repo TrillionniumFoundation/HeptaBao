@@ -111,10 +111,11 @@ const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
 const MOUNT_LISTING_VISIBILITY_STATE_SCHEMA: u32 = 111;
 const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
 const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
+const SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 114;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -153,6 +154,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | RAW_WRAPPED_REPLY_STATE_SCHEMA
                 | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
                 | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+                | SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;

@@ -20,7 +20,7 @@ impl Drop for Retirement {
         erase_json(&mut self.body);
     }
 }
-fn digest(record: &Record) -> Result<[u8; 32], Response> {
+pub(super) fn digest(record: &Record) -> Result<[u8; 32], Response> {
     let bytes = Zeroizing::new(
         crate::secret_serde::to_vec(record, 512 * 1024)
             .map_err(|_| Response::error(503, "SDK retirement record encoding unavailable"))?,
@@ -315,11 +315,13 @@ impl Plan {
             if response.status != 204 {
                 return Err(response);
             }
-            let current = writer
-                .state
+            let private = writer.sdk_auth_private_view(self)?;
+            let published_auth = private
                 .as_ref()
-                .ok_or_else(|| Response::error(503, "SDK retirement current state unavailable"))?
-                .auth
+                .map(|view| &view.state().auth)
+                .or_else(|| writer.state.as_ref().map(|state| &state.auth))
+                .ok_or_else(|| Response::error(503, "SDK retirement current state unavailable"))?;
+            let current = published_auth
                 .sdk_credential_record(&record.namespace, &record.id)
                 .ok_or_else(|| Response::error(503, "SDK retirement terminal record absent"))?;
             let mut expected = record.clone();
@@ -340,12 +342,7 @@ impl Plan {
                     "SDK retirement root advanced after callback",
                 ));
             }
-            transaction.auth = writer
-                .state
-                .as_ref()
-                .ok_or_else(|| Response::error(503, "SDK retirement state sealed"))?
-                .auth
-                .clone();
+            transaction.auth = published_auth.clone();
             drop(transaction);
             self.retirement
                 .as_ref()
@@ -570,6 +567,30 @@ impl Service {
         plan: &Plan,
         id: &str,
     ) -> Result<(), Response> {
+        if let Some(view) = self.sdk_auth_private_view(plan)? {
+            let job = view
+                .state()
+                .auth
+                .sdk_auth_retirement_job(
+                    &plan
+                        .retirement
+                        .as_ref()
+                        .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+                        .lock()
+                        .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?
+                        .job,
+                )
+                .ok_or_else(|| Response::error(503, "SDK private retirement job absent"))?;
+            if id != view.resource()
+                || job.phase(id) != Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+            {
+                return Err(Response::error(
+                    503,
+                    "sealed SDK Queued work cannot be attempted",
+                ));
+            }
+            return Ok(());
+        }
         self.sdk_auth_gate(plan)?;
         let job = plan
             .retirement
@@ -637,12 +658,17 @@ impl Service {
             .auth
             .clone();
         transaction.identity = self.current_state_identity()?;
+        drop(transaction);
+        self.refresh_namespace_sdk_retirement(plan, id)?;
         Ok(())
     }
     pub(super) fn finalize_sdk_auth_retirement(
         &mut self,
         plan: &Plan,
     ) -> Result<Response, Response> {
+        if let Some(view) = self.sdk_auth_private_view(plan)? {
+            return self.finalize_sdk_auth_private_retirement(plan, view);
+        }
         self.sdk_auth_gate(plan)?;
         let mut retirement = plan
             .retirement

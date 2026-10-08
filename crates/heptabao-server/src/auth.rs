@@ -30,6 +30,8 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) mod sdk;
 #[path = "auth_sdk_credential.rs"]
 pub(crate) mod sdk_credential;
+#[path = "auth_sdk_namespace_custody.rs"]
+pub(crate) mod sdk_namespace_custody;
 #[path = "auth_sdk_retirement.rs"]
 pub(crate) mod sdk_retirement;
 
@@ -239,6 +241,8 @@ pub struct AuthState {
     sdk_credential_leases: Option<sdk_credential::Registry>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_auth_retirements: Option<sdk_retirement::Registry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_namespace_custody: Option<sdk_namespace_custody::Registry>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2464,6 +2468,7 @@ impl AuthState {
             sdk_auth_clock: None,
             sdk_credential_leases: None,
             sdk_auth_retirements: None,
+            sdk_namespace_custody: None,
             namespace_batch_registry: None,
             namespace_deletions: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),

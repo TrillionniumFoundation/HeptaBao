@@ -42,6 +42,49 @@ pub(crate) struct Lease<B: Backend = sdk::MountOwner> {
     secret: SecretJson,
     data: SecretJson,
 }
+/// Typed public projection of an actual retained lease. No Secret/data, Actor,
+/// reconstructed lease or callback can be obtained from this value.
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Metadata<B: Backend> {
+    pub(crate) id: String,
+    pub(crate) namespace: String,
+    pub(crate) cluster: String,
+    pub(crate) mount: String,
+    pub(crate) path: String,
+    pub(crate) backend: B,
+    pub(crate) issuer: LeaseOwner,
+    pub(crate) registration: Option<sdk_registration::Registration>,
+    pub(crate) issued: Timestamp,
+    pub(crate) expires: Timestamp,
+    pub(crate) renewed: Option<Timestamp>,
+    pub(crate) max_ttl_ns: u64,
+    pub(crate) ttl_ns: u64,
+    pub(crate) renewable: bool,
+    pub(crate) phase: Phase,
+}
+impl<B: Backend> Lease<B> {
+    pub(crate) fn public_metadata(&self) -> Metadata<B> {
+        Metadata {
+            id: self.id.clone(),
+            namespace: self.namespace.clone(),
+            cluster: self.cluster.clone(),
+            mount: self.mount.clone(),
+            path: self.path.clone(),
+            backend: self.backend.clone(),
+            issuer: self.issuer.clone(),
+            registration: self.registration.clone(),
+            issued: self.issued,
+            expires: self.expires,
+            renewed: self.renewed,
+            max_ttl_ns: self.max_ttl_ns,
+            ttl_ns: self.ttl_ns,
+            renewable: self.renewable,
+            phase: self.phase,
+        }
+    }
+}
+
 impl<B: Backend> std::fmt::Debug for Lease<B> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str("SDKLease([REDACTED])")
@@ -499,6 +542,60 @@ impl EngineState {
                     return Err(error(503, "SDK lease mount owner rejected"));
                 }
             }
+        }
+        Ok(())
+    }
+}
+
+impl<B: Backend> Metadata<B> {
+    /// Public structural projection only. Complete Lease::validate additionally
+    /// validates the actual Secret/data; no Lease can be made from this value.
+    pub(crate) fn validate_metadata(&self, namespace: &str) -> Result<()> {
+        if let Some(registration) = &self.registration {
+            registration.validate_metadata(sdk_registration::LeaseMetadata {
+                issuer: &self.issuer,
+                namespace: &self.namespace,
+                issued: self.issued,
+                expires: self.expires,
+                renewed: self.renewed,
+                ttl_ns: self.ttl_ns,
+                renewable: self.renewable,
+                phase: self.phase,
+            })?;
+        }
+        self.backend
+            .validate_lease_binding(namespace, &self.mount)?;
+        valid_path(&self.id)?;
+        valid_path(self.mount.trim_end_matches('/'))?;
+        valid_path(&self.path)?;
+        self.issuer
+            .validate_scope(namespace, ServiceOwnerProfile::CanonicalDigest)
+            .map_err(|_| error(503, "SDK lease issuer scope rejected"))?;
+        if self.namespace != namespace
+            || self.cluster.is_empty()
+            || self.id.len() > 4096
+            || !self
+                .id
+                .starts_with(&format!("{}/", self.path.trim_end_matches('/')))
+            || !self.path.starts_with(&self.mount)
+            || self.ttl_ns == 0
+            || self.ttl_ns > self.max_ttl_ns
+            || self.max_ttl_ns > i64::MAX as u64
+            || (self.expires < self.issued
+                && self
+                    .registration
+                    .as_ref()
+                    .map(|r| r.batch_expiry())
+                    .transpose()?
+                    .flatten()
+                    .is_none())
+            || self.expires > add_ns(self.issued, self.max_ttl_ns)?
+            || self
+                .renewed
+                .is_some_and(|at| at < self.issued || at > self.expires)
+            || (self.phase == Phase::Revoked && self.renewable)
+        {
+            return Err(error(503, "SDK lease public metadata rejected"));
         }
         Ok(())
     }

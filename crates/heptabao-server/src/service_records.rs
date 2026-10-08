@@ -21,12 +21,16 @@ pub(super) struct RecordPlan {
 enum RecordPublication<'a> {
     Ordinary(&'a State),
     NamespaceSeal(&'a namespace_runtime::SealPublication),
+    NamespaceSdkRetirement(&'a namespace_runtime::RetirementPublication),
+    NamespaceSdkCleanup(&'a namespace_runtime::CleanupPublication),
 }
 impl RecordPublication<'_> {
     fn state(&self) -> &State {
         match self {
             Self::Ordinary(state) => state,
             Self::NamespaceSeal(proof) => proof.closed_state(),
+            Self::NamespaceSdkRetirement(proof) => proof.state(),
+            Self::NamespaceSdkCleanup(proof) => proof.state(),
         }
     }
     fn validate(&self, service: &Service) -> Result<(), Response> {
@@ -40,12 +44,16 @@ impl RecordPublication<'_> {
                 service.current_state_identity()?,
                 &service.ha,
             ),
+            Self::NamespaceSdkRetirement(proof) => proof.validate(service),
+            Self::NamespaceSdkCleanup(proof) => proof.validate(service),
         }
     }
     fn check_private_custody(&self) -> Result<(), Response> {
         match self {
             Self::Ordinary(_) => Ok(()),
             Self::NamespaceSeal(proof) => proof.check_original_custody(),
+            Self::NamespaceSdkRetirement(proof) => proof.check_original(),
+            Self::NamespaceSdkCleanup(proof) => proof.check_original(),
         }
     }
 }
@@ -558,6 +566,8 @@ impl Service {
         }
         let state = proof.closed_state();
         let plan = self.prepare_record_plan_from_validated_owner(state)?;
+        let seal = namespace_deletion::seal_digest(self)?;
+        let barrier = namespace_deletion::barrier_digest(self)?;
         self.commit_record_publication_checked(
             RecordPublication::NamespaceSeal(&proof),
             plan,
@@ -566,7 +576,77 @@ impl Service {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             None,
         )?;
-        Ok(proof.into_closed())
+        match proof.handoff_into_closed(
+            &mut self.namespace_runtime,
+            &self.unseal_nonce,
+            seal,
+            barrier,
+        ) {
+            Ok(closed) => Ok(closed),
+            Err(error) => {
+                // Publish already succeeded. A failed sole-key transfer cannot
+                // leave the previous logical owner eligible for another request.
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.namespace_runtime.clear();
+                self.retire_sdk_hosts();
+                Err(error)
+            }
+        }
+    }
+
+    pub(super) fn commit_namespace_sdk_retirement_publication(
+        &mut self,
+        proof: namespace_runtime::RetirementPublication,
+        before_publish: impl FnOnce(&AuthState) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        proof.validate(self)?;
+        let plan = self.prepare_record_plan_from_validated_owner(proof.state())?;
+        self.commit_record_publication_checked(
+            RecordPublication::NamespaceSdkRetirement(&proof),
+            plan,
+            Some(|_: &AuthState| before_publish(proof.logical_before())),
+            proof.role(),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )?;
+        match proof.installed(self) {
+            Ok(closed) => Ok(closed),
+            Err(error) => {
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.namespace_runtime.clear();
+                self.retire_sdk_hosts();
+                Err(error)
+            }
+        }
+    }
+
+    pub(super) fn commit_namespace_sdk_cleanup_publication(
+        &mut self,
+        proof: namespace_runtime::CleanupPublication,
+        before_publish: impl FnOnce(&State) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        proof.validate(self)?;
+        let plan = self.prepare_record_plan_from_validated_owner(proof.state())?;
+        self.commit_record_publication_checked(
+            RecordPublication::NamespaceSdkCleanup(&proof),
+            plan,
+            Some(|_: &AuthState| before_publish(proof.logical_before())),
+            proof.role(),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )?;
+        match proof.installed(self) {
+            Ok(closed) => Ok(closed),
+            Err(error) => {
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.namespace_runtime.clear();
+                self.retire_sdk_hosts();
+                Err(error)
+            }
+        }
     }
 
     pub(super) fn commit_record_plan(

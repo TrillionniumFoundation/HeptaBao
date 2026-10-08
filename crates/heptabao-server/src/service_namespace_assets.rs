@@ -43,6 +43,13 @@ impl NamespacePartition<'_> {
         install: impl FnOnce(&mut State, &NamespaceAssets, &Cells) -> Result<(), Response>,
     ) -> Result<State, Response> {
         install(&mut self.closed, &self.assets, &self.cells)?;
+        let stamp = self
+            .closed
+            .sdk_namespace_ciphertext_owner(self.binding.namespace())?;
+        self.closed
+            .auth
+            .bind_sdk_namespace_ciphertext(&self.binding, stamp)
+            .map_err(|_| failed())?;
         self.closed.schema = self.closed.writer_schema();
         let actual = self.binding.namespace();
         if !self.key.matches_binding(&self.binding)
@@ -150,6 +157,10 @@ impl State {
                 .auth
                 .detach_namespace(&namespace)
                 .map_err(|_| failed())?;
+            candidate
+                .auth
+                .install_sdk_namespace_custody(&namespace, &binding, &auth)
+                .map_err(|_| failed())?;
             let (engines, private_cells) = candidate
                 .engines
                 .detach_namespace(&namespace, key)
@@ -209,10 +220,24 @@ impl State {
         {
             return Err(failed());
         }
+        let stamp = self.sdk_namespace_ciphertext_owner(actual)?;
+        let inner = self
+            .auth
+            .sdk_namespace_custody_opening_owners(actual, &stamp)
+            .map_err(|_| failed())?;
         let mut candidate = self.clone();
         candidate
             .namespaces
             .attach_catalog(actual, assets.catalog)?;
+        for expected in inner {
+            if candidate.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != expected {
+                return Err(failed());
+            }
+        }
+        candidate
+            .auth
+            .remove_sdk_namespace_enclosure(actual, &stamp)
+            .map_err(|_| failed())?;
         let expected = candidate
             .namespaces
             .partition_paths(actual)?

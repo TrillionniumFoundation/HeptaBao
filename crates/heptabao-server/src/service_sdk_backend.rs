@@ -381,6 +381,7 @@ pub(super) struct Plan {
     lease: Mutex<Option<Box<secret_lease::LeaseCall>>>,
     retirement: Option<Mutex<retirement::Retirement>>,
     namespace_cleanup: bool,
+    private_cleanup: Mutex<Option<namespace_runtime::CleanupPermit>>,
     transaction: Mutex<StorageTransaction>,
     pub(in crate::service) deadline: Instant,
 }
@@ -478,17 +479,55 @@ impl Plan {
             deadline,
             events,
         };
-        if self
-            .control
-            .sender
-            .try_send(WorkerCommand::Invoke(job))
-            .is_err()
-        {
+        let dispatch = (|| {
+            let private = self
+                .private_cleanup
+                .lock()
+                .map_err(|_| Response::error(503, "SDK original cleanup permit unavailable"))?
+                .is_some();
+            if private {
+                // Keep the gate and successful original queue enrollment under
+                // the same Service writer as namespace Seal publication.
+                let mut writer = writer_before(service, deadline)?;
+                let mut authority = self.authority.lock().map_err(|_| {
+                    Response::error(503, "SDK original cleanup authority unavailable")
+                })?;
+                writer.validate_sdk_authority(&mut authority)?;
+                writer.sdk_binding_gate(self).map_err(bridge_failure)?;
+                let permit = self
+                    .private_cleanup
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK original cleanup permit unavailable"))?;
+                let permit = permit
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK cleanup permit absent"))?;
+                if permit.handed_off()? {
+                    return Err(Response::error(
+                        503,
+                        "sealed SDK cleanup cannot be redispatched",
+                    ));
+                }
+                self.control
+                    .sender
+                    .try_send(WorkerCommand::Invoke(job))
+                    .map_err(|_| {
+                        Response::error(503, "SDK owner queue unavailable before entry")
+                    })?;
+                permit.dispatched();
+            } else {
+                self.control
+                    .sender
+                    .try_send(WorkerCommand::Invoke(job))
+                    .map_err(|_| {
+                        Response::error(503, "SDK owner queue unavailable before entry")
+                    })?;
+            }
+            Ok(())
+        })();
+        if let Err(error) = dispatch {
             self.control.busy.store(false, Ordering::Release);
-            return Err(Response::error(
-                503,
-                "SDK owner queue unavailable before entry",
-            ));
+            self.control.retire();
+            return Err(error);
         }
         self.pump(service, received, deadline)
     }
@@ -1301,7 +1340,12 @@ impl Service {
         }
         Ok(())
     }
-    fn sdk_host_key(&self, namespace: &str, mount: &str, owner: &MountOwner) -> String {
+    pub(in crate::service) fn sdk_host_key(
+        &self,
+        namespace: &str,
+        mount: &str,
+        owner: &MountOwner,
+    ) -> String {
         hex(&crypto::digest(
             format!(
                 "{}\0{namespace}\0{mount}\0{}\0{}\0{}",
@@ -1318,6 +1362,12 @@ impl Service {
     ) -> Result<StorageReply, SdkBridgeError> {
         let _scope =
             crate::request_deadline::RequestDeadlineScope::enter(deadline.min(plan.deadline));
+        if let Some(view) = self
+            .sdk_logical_cleanup_private_view(plan)
+            .map_err(|_| SdkBridgeError::Fenced)?
+        {
+            return self.sdk_logical_cleanup_private_storage(plan, view, op);
+        }
         let mut authority = plan.authority.lock().map_err(|_| SdkBridgeError::Fenced)?;
         self.validate_sdk_authority(&mut authority)
             .map_err(|_cause| {
@@ -1391,50 +1441,8 @@ impl Service {
             .current_state_identity()
             .map_err(|_| SdkBridgeError::Fenced)?;
         transaction.engines.observe_sdk_lease_clock(observed);
-        let (reply, storage_changed) = match op {
-            StorageOp::Get(key) => {
-                let entry = transaction
-                    .engines
-                    .sdk_storage_get(&plan.namespace, &plan.mount, &plan.owner, &key)
-                    .map_err(|_| SdkBridgeError::Storage)?;
-                (
-                    StorageReply::Entry(entry.map(|e| SdkStorageEntry {
-                        key: e.key,
-                        value: e.value,
-                        seal_wrap: e.seal_wrap,
-                    })),
-                    false,
-                )
-            }
-            StorageOp::List(prefix, after, limit) => {
-                let keys = transaction
-                    .engines
-                    .sdk_storage_list(
-                        &plan.namespace,
-                        &plan.mount,
-                        &plan.owner,
-                        &prefix,
-                        &after,
-                        limit,
-                    )
-                    .map_err(|_| SdkBridgeError::Storage)?;
-                (StorageReply::Keys(keys), false)
-            }
-            StorageOp::Put(entry) => (
-                StorageReply::Empty,
-                transaction
-                    .engines
-                    .sdk_storage_put(&plan.namespace, &plan.mount, &plan.owner, entry)
-                    .map_err(|_| SdkBridgeError::Storage)?,
-            ),
-            StorageOp::Delete(key) => (
-                StorageReply::Empty,
-                transaction
-                    .engines
-                    .sdk_storage_delete(&plan.namespace, &plan.mount, &plan.owner, &key)
-                    .map_err(|_| SdkBridgeError::Storage)?,
-            ),
-        };
+        let (reply, storage_changed) =
+            sdk_logical_storage_operation(&mut transaction.engines, plan, op)?;
         transaction.changed |= storage_changed;
         let changed = clock_changed;
         if changed {
@@ -1683,6 +1691,22 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let private_cleanup = match authority
+            .namespace_work()
+            .map(|work| {
+                work.capture_logical_custody(
+                    self,
+                    request.namespace,
+                    &mount,
+                    &owner,
+                    Arc::clone(&control),
+                )
+            })
+            .transpose()
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             mount,
@@ -1696,6 +1720,7 @@ impl Service {
             lease: Mutex::new(lease.map(Box::new)),
             retirement: None,
             namespace_cleanup,
+            private_cleanup: Mutex::new(private_cleanup),
             transaction: Mutex::new(StorageTransaction {
                 engines: state.engines.clone(),
                 admitted_original,
@@ -1956,6 +1981,256 @@ impl Service {
                 control.retire();
             }
         }
+        Ok(())
+    }
+}
+
+impl Service {
+    pub(super) fn sdk_logical_cleanup_private_view(
+        &self,
+        plan: &Plan,
+    ) -> Result<Option<namespace_runtime::CleanupView>, Response> {
+        let permit = plan
+            .private_cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK cleanup permit unavailable"))?;
+        let Some(permit) = permit.as_ref() else {
+            return Ok(None);
+        };
+        if !permit.handed_off()? {
+            return Ok(None);
+        }
+        if !plan.namespace_cleanup
+            || plan.retirement.is_some()
+            || plan.operation != "revoke"
+            || Instant::now() >= plan.deadline
+            || plan.control.fenced.load(Ordering::Acquire)
+        {
+            return Err(Response::error(
+                503,
+                "SDK logical original cleanup scope changed",
+            ));
+        }
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        let view = permit.open(self)?;
+        let authority = plan
+            .authority
+            .lock()
+            .map_err(|_| Response::error(503, "SDK cleanup authority unavailable"))?;
+        self.validate_sdk_private_cleanup_authority(&authority, &view)?;
+        self.sdk_binding_private_gate(plan, view.state())
+            .map_err(bridge_failure)?;
+        view.check_current(self)?;
+        Ok(Some(view))
+    }
+    pub(super) fn sdk_binding_private_gate(
+        &self,
+        plan: &Plan,
+        state: &State,
+    ) -> Result<(), SdkBridgeError> {
+        if !plan.namespace_cleanup
+            || plan.retirement.is_some()
+            || Instant::now() >= plan.deadline
+            || plan.control.fenced.load(Ordering::Acquire)
+            || self.recovery_required
+            || state
+                .engines
+                .sdk_mount_binding(&plan.namespace, &plan.mount)
+                != Some((plan.mount.clone(), plan.owner.clone()))
+            || state
+                .engines
+                .sdk_descriptor(&plan.owner.plugin, &plan.owner.version)
+                != Some(plan.descriptor.clone())
+            || self
+                .sdk_hosts
+                .get(&self.sdk_host_key(&plan.namespace, &plan.mount, &plan.owner))
+                .is_none_or(|current| !Arc::ptr_eq(current, &plan.control))
+        {
+            return Err(SdkBridgeError::Fenced);
+        }
+        Ok(())
+    }
+    fn sdk_logical_cleanup_private_storage(
+        &mut self,
+        plan: &Plan,
+        view: namespace_runtime::CleanupView,
+        op: StorageOp,
+    ) -> Result<StorageReply, SdkBridgeError> {
+        view.check_current(self)
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        let authority = plan.authority.lock().map_err(|_| SdkBridgeError::Fenced)?;
+        self.validate_sdk_private_cleanup_authority(&authority, &view)
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        let observed =
+            expiry::precise(&authority, view.state()).map_err(|_| SdkBridgeError::Fenced)?;
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        let work = authority.namespace_work().ok_or(SdkBridgeError::Fenced)?;
+        let mut candidate = view.state().clone();
+        if candidate.engines.observe_sdk_lease_clock(observed) {
+            let proof = view
+                .clock_publication(self, observed)
+                .map_err(|_| SdkBridgeError::Fenced)?;
+            let closed = self
+                .commit_namespace_sdk_cleanup_publication(proof, |state| {
+                    work.check_auth(&state.auth)
+                })
+                .map_err(|_| {
+                    if self.recovery_required {
+                        SdkBridgeError::OutcomeUnknown
+                    } else {
+                        SdkBridgeError::Fenced
+                    }
+                })?;
+            self.state = Some(closed);
+        }
+        transaction.identity = self
+            .current_state_identity()
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        transaction.engines.observe_sdk_lease_clock(observed);
+        let (reply, changed) = sdk_logical_storage_operation(&mut transaction.engines, plan, op)?;
+        transaction.changed |= changed;
+        let permit = plan
+            .private_cleanup
+            .lock()
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        let current = permit
+            .as_ref()
+            .ok_or(SdkBridgeError::Fenced)?
+            .open(self)
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        self.validate_sdk_private_cleanup_authority(&authority, &current)
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        self.sdk_binding_private_gate(plan, current.state())?;
+        Ok(reply)
+    }
+}
+
+fn sdk_logical_storage_operation(
+    engines: &mut EngineState,
+    plan: &Plan,
+    op: StorageOp,
+) -> Result<(StorageReply, bool), SdkBridgeError> {
+    Ok(match op {
+        StorageOp::Get(key) => {
+            let entry = engines
+                .sdk_storage_get(&plan.namespace, &plan.mount, &plan.owner, &key)
+                .map_err(|_| SdkBridgeError::Storage)?;
+            (
+                StorageReply::Entry(entry.map(|e| SdkStorageEntry {
+                    key: e.key,
+                    value: e.value,
+                    seal_wrap: e.seal_wrap,
+                })),
+                false,
+            )
+        }
+        StorageOp::List(prefix, after, limit) => {
+            let keys = engines
+                .sdk_storage_list(
+                    &plan.namespace,
+                    &plan.mount,
+                    &plan.owner,
+                    &prefix,
+                    &after,
+                    limit,
+                )
+                .map_err(|_| SdkBridgeError::Storage)?;
+            (StorageReply::Keys(keys), false)
+        }
+        StorageOp::Put(entry) => (
+            StorageReply::Empty,
+            engines
+                .sdk_storage_put(&plan.namespace, &plan.mount, &plan.owner, entry)
+                .map_err(|_| SdkBridgeError::Storage)?,
+        ),
+        StorageOp::Delete(key) => (
+            StorageReply::Empty,
+            engines
+                .sdk_storage_delete(&plan.namespace, &plan.mount, &plan.owner, &key)
+                .map_err(|_| SdkBridgeError::Storage)?,
+        ),
+    })
+}
+
+// Typed-model queue observation only. No companion, Setup, or provider RPC is
+// simulated as native evidence; the real Plan dispatch and Service callbacks run.
+#[cfg(test)]
+pub(in crate::service) struct ModelQueue {
+    commands: Receiver<WorkerCommand>,
+    control: Arc<Control>,
+}
+#[cfg(test)]
+pub(in crate::service) struct ModelRevoke {
+    events: Sender<Event>,
+    deadline: Instant,
+    control: Arc<Control>,
+}
+#[cfg(test)]
+pub(in crate::service) fn model_revoke_queue() -> (Arc<Control>, ModelQueue) {
+    let (sender, commands) = mpsc::sync_channel(1);
+    let control = Arc::new(Control {
+        sender,
+        busy: Arc::new(AtomicBool::new(false)),
+        fenced: Arc::new(AtomicBool::new(false)),
+        retiring: AtomicBool::new(false),
+    });
+    (Arc::clone(&control), ModelQueue { commands, control })
+}
+#[cfg(test)]
+impl ModelQueue {
+    pub(in crate::service) fn entered_before(
+        &self,
+        deadline: Instant,
+    ) -> Result<ModelRevoke, Response> {
+        let remaining = deadline
+            .checked_duration_since(Instant::now())
+            .ok_or_else(|| Response::error(503, "model original deadline expired"))?;
+        match self
+            .commands
+            .recv_timeout(remaining)
+            .map_err(|_| Response::error(503, "model original Invoke not observed"))?
+        {
+            WorkerCommand::Invoke(job) if job.operation == "revoke" && job.lease.is_some() => {
+                Ok(ModelRevoke {
+                    events: job.events.clone(),
+                    deadline: job.deadline,
+                    control: Arc::clone(&self.control),
+                })
+            }
+            _ => Err(Response::error(503, "model original Revoke scope changed")),
+        }
+    }
+    pub(in crate::service) fn unexpected_invokes(&self) -> usize {
+        self.commands
+            .try_iter()
+            .filter(|value| matches!(value, WorkerCommand::Invoke(_)))
+            .count()
+    }
+}
+#[cfg(test)]
+impl ModelRevoke {
+    pub(in crate::service) fn storage_delete(&self, key: &str) -> Result<(), Response> {
+        let (reply, received) = mpsc::channel();
+        self.events
+            .send(Event::Storage(StorageOp::Delete(key.into()), reply))
+            .map_err(|_| Response::error(503, "model original Storage channel closed"))?;
+        let remaining = self
+            .deadline
+            .checked_duration_since(Instant::now())
+            .ok_or_else(|| Response::error(503, "model original Storage deadline expired"))?;
+        match received.recv_timeout(remaining) {
+            Ok(Ok(StorageReply::Empty)) => Ok(()),
+            _ => Err(Response::error(503, "model original Storage ACK rejected")),
+        }
+    }
+    pub(in crate::service) fn complete(self) -> Result<(), Response> {
+        self.events
+            .send(Event::Complete(Ok(None)))
+            .map_err(|_| Response::error(503, "model original completion channel closed"))?;
+        self.control.busy.store(false, Ordering::Release);
         Ok(())
     }
 }

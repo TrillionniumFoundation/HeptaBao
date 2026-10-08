@@ -7,6 +7,12 @@ use crate::namespace_custody::{
 };
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
+#[path = "service_namespace_sdk_custody.rs"]
+mod sdk_custody;
+pub(super) use sdk_custody::{
+    CleanupPermit, CleanupPublication, CleanupView, RetirementPermit, RetirementPublication,
+    RetirementView,
+};
 
 pub(super) fn unloaded_route(path: &str) -> Response {
     Response::error(
@@ -498,6 +504,8 @@ impl Leases {
 pub(super) struct Runtime {
     loaded: BTreeMap<String, Lease>,
     progress: BTreeMap<String, Progress>,
+    sdk_retirements: Vec<std::sync::Weak<sdk_custody::Original>>,
+    sdk_cleanups: Vec<std::sync::Weak<sdk_custody::CleanupOriginal>>,
 }
 
 pub(super) struct Fresh {
@@ -607,6 +615,7 @@ impl Drop for Runtime {
 
 impl Runtime {
     pub(super) fn clear(&mut self) {
+        self.retire_sdk_handoffs();
         for lease in self.loaded.values() {
             lease.revoke();
         }
@@ -2578,6 +2587,49 @@ mod tests {
                 && owner_store::serialize_owner(retained)?.as_slice() == before.as_slice(),
             "failed real commit neither unloads live assets nor publishes a ciphertext grant"
         );
+        Ok(())
+    }
+}
+
+impl State {
+    pub(super) fn sdk_namespace_ciphertext_owner(
+        &self,
+        actual: &str,
+    ) -> Result<auth::sdk_namespace_custody::CiphertextOwner, Response> {
+        let owner = Owner::actual(self, actual)?;
+        let binding = self.namespaces.custody_binding(&self.cluster_id, actual)?;
+        if owner.binding() != &binding {
+            return Err(unavailable());
+        }
+        let bytes = match &owner {
+            Owner::Independent(value) => {
+                owner_store::serialize_owner(&(b"heptabao-sdk-auth-independent-owner-114", value))
+            }
+            Owner::Inherited(value) => {
+                owner_store::serialize_owner(&(b"heptabao-sdk-auth-inherited-owner-114", value))
+            }
+        }
+        .map_err(state_serialization_error)?;
+        Ok(auth::sdk_namespace_custody::CiphertextOwner {
+            binding,
+            key_epoch: owner.key_epoch(),
+            seal_frontier: owner.seal_frontier(),
+            parent: owner.parent().cloned(),
+            descriptor: crate::crypto::digest(&bytes),
+        })
+    }
+    pub(super) fn validate_sdk_namespace_custody(&self) -> Result<(), Response> {
+        self.auth
+            .validate_sdk_namespace_custody_structure(&self.cluster_id)
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        for expected in self.auth.sdk_namespace_custody_visible_owners() {
+            if self.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != *expected {
+                return Err(Response::error(
+                    503,
+                    "SDK namespace actual ciphertext ownership differs",
+                ));
+            }
+        }
         Ok(())
     }
 }

@@ -131,9 +131,17 @@ impl State {
             for (path, binding) in ledger.pending() {
                 // Closed ciphertext remains subject to actual authenticated hydration.
                 // Membership is immutable; it never claims an opaque payload is empty.
+                let hidden_logical = self
+                    .auth
+                    .validate_namespace_sdk_logical_custody_obligation(path, binding)
+                    .map_err(auth_error)?;
+                if hidden_logical {
+                    self.validate_sdk_namespace_custody()?;
+                }
                 let materialized = self.engines.sdk_namespace_records_materialized(path)
                     || (self.namespaces.custody_owner(path).is_none()
-                        && self.namespaces.inherited_owner(path).is_none());
+                        && self.namespaces.inherited_owner(path).is_none()
+                        && !hidden_logical);
                 if materialized {
                     for lease in self
                         .engines
@@ -205,18 +213,26 @@ impl State {
                             )?;
                             job.check_logical(&record, terminal).map_err(auth_error)?;
                         }
-                        crate::auth::namespace_sdk_cleanup::Kind::Credential => {
-                            let record = self
-                                .auth
-                                .sdk_credential_record(path, job.lease_id())
-                                .ok_or_else(|| {
-                                    Response::error(
-                                        503,
-                                        "namespace SDK selected credential record absent",
-                                    )
-                                })?;
-                            job.check_credential(&record, terminal)
+                        crate::auth::namespace_sdk_cleanup::Kind::Logical if hidden_logical => {
+                            self.auth
+                                .validate_namespace_sdk_logical_custody_index(path, job)
                                 .map_err(auth_error)?;
+                        }
+                        crate::auth::namespace_sdk_cleanup::Kind::Credential => {
+                            if let Some(record) =
+                                self.auth.sdk_credential_record(path, job.lease_id())
+                            {
+                                job.check_credential(&record, terminal)
+                                    .map_err(auth_error)?;
+                            } else {
+                                // A non-executable index is only a deferred full MAC
+                                // hydration obligation. The visible descriptor and
+                                // complete locator graph are independently checked.
+                                self.validate_sdk_namespace_custody()?;
+                                self.auth
+                                    .validate_namespace_sdk_credential_index(path, job)
+                                    .map_err(auth_error)?;
+                            }
                         }
                         _ => {}
                     }

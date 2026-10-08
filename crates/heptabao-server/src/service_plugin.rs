@@ -1606,6 +1606,52 @@ impl Service {
                 "plugin response withheld because owner binding changed",
             ));
         }
+        Self::validate_plugin_response_payload(state, authority)
+    }
+
+    pub(super) fn validate_plugin_response_custody(
+        &mut self,
+        authority: &mut PluginResponseAuthority,
+        view: &namespace_runtime::RetirementView,
+    ) -> Result<(), Response> {
+        let _scope = authority
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if authority.deadline_expired()
+            || self.recovery_required
+            || self.state.is_none()
+            || self.unseal_nonce != authority.activation_nonce
+        {
+            return Err(Response::error(
+                503,
+                "plugin response withheld by deadline, seal or recovery fence",
+            ));
+        }
+        view.check_current(self)?;
+        view.matches_original(
+            &authority.activation_nonce,
+            &authority.cluster_id,
+            &authority.namespace,
+            authority.namespace_incarnation,
+            &authority.namespace_delivery_binding,
+        )?;
+        let state = view.state();
+        if authority.namespace_catalog_required && !state.namespace_exists(&authority.namespace)
+            || state.namespaces.incarnation(&authority.namespace) != authority.namespace_incarnation
+        {
+            return Err(Response::error(
+                503,
+                "plugin private namespace original binding changed",
+            ));
+        }
+        Self::validate_plugin_response_payload(state, authority)?;
+        view.check_current(self)
+    }
+
+    fn validate_plugin_response_payload(
+        state: &State,
+        authority: &mut PluginResponseAuthority,
+    ) -> Result<(), Response> {
         authority.apply_sdk_clock_floor(&state.engines)?;
         Self::bind_identity_principal(state, &mut authority.principal, &authority.namespace)?;
         let time = authority.token_time()?;
