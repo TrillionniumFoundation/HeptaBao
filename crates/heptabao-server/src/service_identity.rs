@@ -29,7 +29,13 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_pki_rsa8192_state() {
+        let required = if self.auth.has_general_wrapped_reply_state() {
+            GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+        } else if self.auth.has_pki_raw_http_reply_state() {
+            RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+        } else if self.auth.has_raw_wrapped_reply_state() {
+            RAW_WRAPPED_REPLY_STATE_SCHEMA
+        } else if self.engines.has_pki_rsa8192_state() {
             PKI_RSA8192_STATE_SCHEMA
         } else if self.engines.has_ordinary_pki_revocation_state() {
             PKI_ORDINARY_REVOCATION_STATE_SCHEMA
@@ -151,6 +157,46 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        let protected = self.protected_state()?;
+        protected
+            .auth
+            .validate_raw_wrapped_reply_state()
+            .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))?;
+        if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+            && (protected.auth.has_general_wrapped_reply_state()
+                || previous.is_some_and(|state| state.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "general reply custody requires schema 113",
+            ));
+        }
+        if self.schema < RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+            && (protected.auth.has_pki_raw_http_reply_state()
+                || previous.is_some_and(|state| state.schema >= RAW_PKI_HTTP_REPLY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI raw HTTP custody requires schema 112",
+            ));
+        }
+        if self.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA
+            && (protected.auth.has_raw_wrapped_reply_state()
+                || previous.is_some_and(|state| state.schema >= RAW_WRAPPED_REPLY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "original wrapped reply custody requires schema 110",
+            ));
+        }
+        if let Some(previous) = previous {
+            protected
+                .auth
+                .validate_raw_wrapped_reply_successor(&previous.protected_state()?.auth)
+                .map_err(|_| {
+                    Response::error(503, "original wrapped reply custody cannot regress")
+                })?;
+        }
         if self.schema < PKI_RSA8192_STATE_SCHEMA
             && (self.engines.has_pki_rsa8192_state()
                 || previous.is_some_and(|state| state.schema >= PKI_RSA8192_STATE_SCHEMA))
@@ -641,6 +687,37 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.auth
+            .validate_raw_wrapped_reply_state()
+            .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))?;
+        if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+            && self.auth.has_general_wrapped_reply_state()
+            || self.schema == GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+                && !self.auth.has_general_wrapped_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "general reply custody requires schema 113",
+            ));
+        }
+        if self.schema < RAW_PKI_HTTP_REPLY_STATE_SCHEMA && self.auth.has_pki_raw_http_reply_state()
+            || self.schema == RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+                && !self.auth.has_pki_raw_http_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI raw HTTP custody requires schema 112",
+            ));
+        }
+        if self.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA && self.auth.has_raw_wrapped_reply_state()
+            || self.schema == RAW_WRAPPED_REPLY_STATE_SCHEMA
+                && !self.auth.has_raw_wrapped_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "original wrapped reply custody requires schema 110",
+            ));
+        }
         self.auth
             .validate_auth_mount_options_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
@@ -1693,6 +1770,9 @@ impl State {
             | PKI_KEY_POLICY_STATE_SCHEMA
             | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             | PKI_RSA8192_STATE_SCHEMA
+            | RAW_WRAPPED_REPLY_STATE_SCHEMA
+            | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+            | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA

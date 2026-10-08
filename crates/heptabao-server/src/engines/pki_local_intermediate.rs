@@ -7,6 +7,7 @@ use openssl::{
     x509::{X509, X509Req},
 };
 use x509_parser::{
+    asn1_rs::{Class, Tag},
     certification_request::X509CertificationRequest,
     extensions::{GeneralName, ParsedExtension},
     prelude::{FromDer, X509Certificate},
@@ -233,7 +234,33 @@ pub(super) fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
     {
         return Err(bad("invalid CSR encoding"));
     }
-    let public = LocalPublicKey::from_spki(csr.certification_request_info.subject_pki.raw)?;
+    let info = &csr.certification_request_info.subject_pki;
+    if info.algorithm.algorithm.to_id_string() == "1.2.840.10045.2.1" {
+        // The public CSR boundary follows Go x509: EC parameters must identify
+        // a supported named curve. Owned/durable key validation stays separate.
+        let curve = info
+            .algorithm
+            .parameters
+            .as_ref()
+            .filter(|parameters| {
+                parameters.class() == Class::Universal
+                    && parameters.tag() == Tag::Oid
+                    && !parameters.header.constructed()
+            })
+            .and_then(|parameters| parameters.as_oid().ok())
+            .ok_or_else(|| {
+                bad("certificate request could not be parsed: x509: invalid ECDSA parameters")
+            })?;
+        if !matches!(
+            curve.to_id_string().as_str(),
+            "1.3.132.0.33" | "1.2.840.10045.3.1.7" | "1.3.132.0.34" | "1.3.132.0.35"
+        ) {
+            return Err(bad(
+                "certificate request could not be parsed: x509: unsupported elliptic curve",
+            ));
+        }
+    }
+    let public = LocalPublicKey::from_spki(info.raw)?;
     let valid = match (
         X509Req::from_der(bytes),
         PKey::public_key_from_der(&public.spki()?),
@@ -3636,6 +3663,101 @@ mod tests {
         assert_eq!(*before, serde_json::to_vec(&pki)?);
         let reopened: Pki = serde_json::from_slice(&before)?;
         reopened.validate("", "pki/", NOW)?;
+        Ok(())
+    }
+
+    #[test]
+    fn raw112_actual_unknown_curve_and_malformed_or_wrong_signature_csrs_are_public_rejections()
+    -> TestResult {
+        let named = include_str!("../../fixtures/raw112-actual-official-named-p256.csr");
+        let original = pem_blocks(named, "CERTIFICATE REQUEST")?.remove(0);
+        assert!(parse_csr(&original).is_ok(), "frozen official accepted CSR");
+        let oid = [0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07];
+        let matches = original
+            .windows(oid.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == oid).then_some(at))
+            .collect::<Vec<_>>();
+        assert_eq!(matches.len(), 1);
+        let mut unknown = original.clone();
+        unknown[matches[0] + oid.len() - 1] = 0x7f;
+        let error = parse_csr(&unknown).err().ok_or("unknown curve accepted")?;
+        assert_eq!(error.status, 400);
+        assert!(
+            error.message
+                == "certificate request could not be parsed: x509: unsupported elliptic curve",
+            "primary unsupported-curve classification"
+        );
+        let mut wrong_signature = original.clone();
+        *wrong_signature.last_mut().ok_or("actual CSR signature")? ^= 1;
+        assert!(matches!(parse_csr(&wrong_signature), Err(error) if error.status == 400));
+        let mut truncated = original.clone();
+        truncated.pop();
+        assert!(matches!(parse_csr(&truncated), Err(error) if error.status == 400));
+        Ok(())
+    }
+
+    #[test]
+    fn raw112_csr_parameter_header_tag_class_and_primitive_are_required_before_oid_decode()
+    -> TestResult {
+        let named = include_str!("../../fixtures/raw112-actual-official-named-p256.csr");
+        let der = pem_blocks(named, "CERTIFICATE REQUEST")?.remove(0);
+        let parsed = parse_csr(&der)?;
+        let parameters = parsed
+            .certification_request_info
+            .subject_pki
+            .algorithm
+            .parameters
+            .as_ref()
+            .ok_or("named curve parameters")?;
+        assert_eq!(parameters.class(), Class::Universal);
+        assert_eq!(parameters.tag(), Tag::Oid);
+        assert!(!parameters.header.constructed());
+        let original_oid = [0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07];
+        let locations: Vec<_> = der
+            .windows(original_oid.len())
+            .enumerate()
+            .filter_map(|(index, bytes)| (bytes == original_oid).then_some(index))
+            .collect();
+        assert_eq!(locations.len(), 1);
+        for tag in [0x86, 0x26, 0x16] {
+            let mut changed = der.clone();
+            changed[locations[0]] = tag;
+            let error = parse_csr(&changed)
+                .err()
+                .ok_or("non-OID parameter accepted")?;
+            assert_eq!(error.status, 400);
+            assert!(
+                error.message
+                    == "certificate request could not be parsed: x509: invalid ECDSA parameters",
+                "wrong class, constructed OID or wrong tag must not be decoded as a named curve"
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn raw112_public_explicit_csr_is_400_but_internal_owned_key_guards_remain_503() -> TestResult {
+        let explicit = include_str!("../../fixtures/raw112-actual-mac-explicit-p256.csr");
+        let der = pem_blocks(explicit, "CERTIFICATE REQUEST")?.remove(0);
+        let error = parse_csr(&der).err().ok_or("explicit EC CSR accepted")?;
+        assert_eq!(error.status, 400);
+        assert!(
+            error.message
+                == "certificate request could not be parsed: x509: invalid ECDSA parameters",
+            "primary explicit-parameters classification"
+        );
+        let (_, parsed) = X509CertificationRequest::from_der(&der)?;
+        assert!(matches!(
+            LocalPublicKey::from_spki(parsed.certification_request_info.subject_pki.raw),
+            Err(error) if error.status == 503
+        ));
+        assert!(matches!(LocalPublicKey::from_spki(&[]), Err(error) if error.status == 503));
+        let invalid = LocalPrivateMaterial::Pkcs8 {
+            kind: LocalKeyKind::Ec256,
+            der: vec![0],
+        };
+        assert!(matches!(invalid.public(), Err(error) if error.status == 503));
         Ok(())
     }
 }

@@ -49,6 +49,7 @@ pub(crate) mod sdk_registration;
 mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
+pub(crate) use pki::PkiWrappedTransport;
 pub(crate) use pki::acme_engine::{
     AcmeBinding, AcmeExternalDelivery, AcmeExternalEffect, AcmeParsedJws, AcmeView,
 };
@@ -2185,6 +2186,30 @@ impl EngineState {
         let suffix = relative.strip_prefix("ocsp/")?;
         let prefix = &path[..path.len() - relative.len()];
         Some((format!("{prefix}ocsp"), suffix.to_owned()))
+    }
+
+    /// Capture classification follows the longest actual PKI owner and its
+    /// closed route enum, never an untrusted reply key or request media header.
+    pub(crate) fn wrapping_uses_raw_pki_transport(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(pki, relative)| pki.wrapping_uses_raw_public_transport(method, relative))
+    }
+    /// Only the actual longest PKI mount can construct this sealed producer proof.
+    pub(crate) fn wrapping_raw_pki_reply(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        status: u16,
+        body: &Value,
+    ) -> Option<PkiWrappedTransport> {
+        let (pki, relative) = self.public_pki_mount(namespace, path)?;
+        pki.wrapping_public_transport(method, relative, status, body)
     }
 
     pub(crate) fn is_actual_pki_ocsp(&self, namespace: &str, path: &str) -> bool {

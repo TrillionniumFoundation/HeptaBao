@@ -438,6 +438,7 @@ impl Service {
             return Response {
                 status: 503,
                 body: json!({"errors":[message],"recovery_required":true,"retry_allowed":false}),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             };
@@ -453,6 +454,7 @@ impl Service {
             // This is exclusively a public negative storage observation. Never
             // reuse the handler/audit body or stamp an index; it proves no grant.
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 503,

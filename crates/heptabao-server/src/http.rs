@@ -751,6 +751,10 @@ fn process_parsed_request(
 ) -> (snapshot::NativeReply, bool, String) {
     match parsed {
         Ok(mut request) => {
+            let _raw_reply_ingress = crate::auth::IngressReplyScope::listener_wrapping(
+                attempt_id,
+                request.lexical_wrapping_body.take(),
+            );
             request.client_certificates = client_certificates;
             let is_head = request.method == "HEAD"
                 || help::request(&request.method, &request.path, &request.body.0)
@@ -1135,6 +1139,7 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
+    lexical_wrapping_body: Option<crate::auth::LexicalJson>,
     consistency: consistency::Headers,
     native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
@@ -1532,6 +1537,7 @@ fn read_request_mode(
             return Err(bad("ambiguous encoded paths are not supported"));
         }
         return Ok(Request {
+            lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
             method: "HELP".to_owned(),
@@ -1567,6 +1573,7 @@ fn read_request_mode(
     if leader_route {
         leader::validate_selectors(&method, &target)?;
         return Ok(Request {
+            lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
             method,
@@ -1599,10 +1606,28 @@ fn read_request_mode(
         &bytes[header_end..],
         query,
     );
+    let mut lexical_wrapping_body = if carrier.is_none()
+        && !native_snapshot
+        && length > 0
+        && !query_only
+        && matches!(method.as_str(), "POST" | "PUT")
+        && decode_native_logical_path(route)? == "sys/wrapping/wrap"
+    {
+        Some(
+            crate::auth::LexicalJson::parse_listener(&bytes[header_end..])
+                .map_err(|_| bad("invalid JSON object"))?,
+        )
+    } else {
+        None
+    };
     let mut body = SecretJson(if let Some(carrier) = carrier {
         carrier
     } else if native_snapshot || length == 0 || query_only {
         json!({})
+    } else if let Some(lexical) = &lexical_wrapping_body {
+        lexical
+            .wrapping_view()
+            .map_err(|_| bad("invalid JSON object"))?
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
             .map_err(|_| bad("invalid JSON object"))?
@@ -1732,7 +1757,13 @@ fn read_request_mode(
     } else {
         None
     };
+    if let Some(lexical) = &mut lexical_wrapping_body {
+        lexical
+            .bind_transport_fields(&body.0)
+            .map_err(|_| bad("invalid lexical transport body"))?;
+    }
     Ok(Request {
+        lexical_wrapping_body,
         consistency,
         native_snapshot,
         method,
@@ -1917,6 +1948,21 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
         .map_err(|_| bad("invalid query text"))
 }
 
+// Match Go net/http Header.writeSubset without changing stored/audit values.
+// Only the ASCII space bytes accepted by textproto.TrimString are trimmed;
+// CR and LF inside the value each become one space, so they cannot add a header.
+fn write_go_content_type_header(writer: &mut impl Write, value: &str) -> io::Result<()> {
+    let value = value.trim_matches([' ', '\t', '\r', '\n']);
+    writer.write_all(b"Content-Type: ")?;
+    for (index, part) in value.split(['\r', '\n']).enumerate() {
+        if index != 0 {
+            writer.write_all(b" ")?;
+        }
+        writer.write_all(part.as_bytes())?;
+    }
+    writer.write_all(b"\r\n")
+}
+
 #[cfg(test)]
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
     write_response_with_namespace(writer, response, head, "")
@@ -2091,7 +2137,26 @@ fn write_response_with_namespace(
         None
     };
     let raw_ocsp = crate::engines::raw_ocsp_response(response.status, &response.body);
-    let content_type = if let Some((_, media)) = &raw_acme {
+    let stored_raw_transport = if response.status == 200 {
+        response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.raw_http_transport(&response.body))
+            .transpose()
+            .map_err(|_| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "stored raw HTTP transport rejected",
+                )
+            })?
+            .flatten()
+    } else {
+        None
+    };
+    let admitted_http_status = stored_raw_transport.map_or(response.status, |(status, _)| status);
+    let content_type = if let Some((_, media)) = stored_raw_transport {
+        media
+    } else if let Some((_, media)) = &raw_acme {
         *media
     } else if raw_ocsp.is_some() {
         "application/ocsp-response"
@@ -2108,11 +2173,32 @@ fn write_response_with_namespace(
     };
     // ACME's closed logical JSON carries no explicit native Content-Length.
     // Certificate/CRL/OCSP producers retain their admitted fixed-length framing.
-    let fixed_raw_body = raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
+    let fixed_raw_body = stored_raw_transport.is_some()
+        || raw_ocsp.is_some()
+        || raw_certificate.is_some()
+        || raw_crl.is_some();
     let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
     let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
 
-    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_acme {
+    let stored_unwrap = if response.status == 200 {
+        response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.raw_bytes(&response.body))
+            .transpose()
+            .map_err(|_| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "stored unwrap representation rejected",
+                )
+            })?
+            .flatten()
+    } else {
+        None
+    };
+    let mut bytes = Zeroizing::new(if let Some(raw) = stored_unwrap {
+        raw.to_vec()
+    } else if let Some((raw, _)) = raw_acme {
         raw
     } else if let Some(raw) = raw_ocsp {
         raw
@@ -2123,16 +2209,47 @@ fn write_response_with_namespace(
     } else if response.status == 204 {
         Vec::new()
     } else {
-        let mut json = serde_json::to_vec(&response.body)?;
-        // OpenBao's JSON encoder terminates each JSON value with a newline.
-        json.push(b'\n');
+        let complete_envelope = response.status == 200
+            && response.body.as_object().is_some_and(|object| {
+                object.len() == 8
+                    && [
+                        "request_id",
+                        "lease_id",
+                        "renewable",
+                        "lease_duration",
+                        "data",
+                        "wrap_info",
+                        "warnings",
+                        "auth",
+                    ]
+                    .iter()
+                    .all(|name| object.contains_key(*name))
+            });
+        let mut json = if complete_envelope {
+            crate::auth::encode_http_envelope(&response.body, MAX_RESPONSE)
+                .map_err(|_| {
+                    io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "logical envelope encoding rejected",
+                    )
+                })?
+                .to_vec()
+        } else {
+            serde_json::to_vec(&response.body)?
+        };
+        // The admitted Auth unwrap producer carries stored JSON. OpenBao writes
+        // those bytes directly. Other JSON, including every error, keeps the
+        // encoder newline. No request URL or body key selects this branch.
+        if response.status != 200 || response.unwrapped_json.is_none() {
+            json.push(b'\n');
+        }
         json
     });
     let status = if bytes.len() > MAX_RESPONSE {
         bytes = Zeroizing::new(b"{\"errors\":[\"response exceeds limit\"]}\n".to_vec());
         500
     } else {
-        response.status
+        admitted_http_status
     };
     // Use Go HTTP status text, including its custom health-code fallback.
     let reason = match status {
@@ -2210,7 +2327,7 @@ fn write_response_with_namespace(
     } else {
         ""
     };
-    let index = if status == response.status {
+    let index = if status == admitted_http_status {
         response
             .consistency_index
             .as_ref()
@@ -2226,21 +2343,28 @@ fn write_response_with_namespace(
     let no_body = status == 204 || status == 304 || (100..200).contains(&status);
     let chunked = !no_body && !head && !fixed_raw_body && bytes.len() > 2048;
     write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
-    if !acme_no_media {
-        write!(writer, "Content-Type: {content_type}\r\n")?;
+    if !acme_no_media && !content_type.is_empty() {
+        write_go_content_type_header(writer, content_type)?;
     }
     if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
         write!(writer, "Content-Length: {}\r\n", bytes.len())?;
     } else if chunked {
         writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
     }
+    if let Some(origin) = &response.unwrapped_json
+        && let Some(error) = origin
+            .raw_error_header(&response.body)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "raw error custody rejected"))?
+    {
+        write!(writer, "X-Vault-Raw-Error: {error}\r\n")?;
+    }
     write!(writer, "{retry_after}{index}")?;
     write_standard_headers_with_date(
         writer,
         namespace,
-        status == response.status && response.response_headers.has_date(),
+        status == admitted_http_status && response.response_headers.has_date(),
     )?;
-    if status == response.status {
+    if status == admitted_http_status {
         response.response_headers.write(writer)?;
     }
     writer.write_all(b"\r\n")?;
@@ -2257,6 +2381,10 @@ fn write_response_with_namespace(
 }
 
 #[cfg(test)]
+#[path = "http_unwrap_framing_tests.rs"]
+mod unwrap_framing_tests;
+
+#[cfg(test)]
 #[path = "http_response_framing_tests.rs"]
 mod response_framing_tests;
 
@@ -2266,6 +2394,166 @@ mod ocsp_service_tests;
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn raw113_actual_listener_parse_private_wrap_and_http_writer_keep_unquoted_number_lexicals()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for number in ["1.0", "1E+0", "-0", "-0.0", "18446744073709551616", "1e309"] {
+            let body = format!("{{\"number\":{number},\"string\":\"{number}\"}}");
+            let wire = format!(
+                "POST /v1/sys/wrapping/wrap HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nX-Vault-Wrap-TTL: 60\r\nContent-Length: {}\r\n\r\n{}",
+                body.len(),
+                body,
+            );
+            let mut request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("actual listener rejected literal"))?;
+            let tree = request
+                .lexical_wrapping_body
+                .take()
+                .ok_or("private tree absent")?;
+            tree.validate_wrapping_view(&request.body.0)?;
+            let _ingress =
+                crate::auth::IngressReplyScope::listener_wrapping(&[0x88; 16], Some(tree));
+            let (mut state, root) = crate::auth::AuthState::bootstrap(100)?;
+            let admin = state.authenticate(&root, 100)?;
+            let wrapped = state.wrap_logical_response(
+                "",
+                &request.path,
+                60,
+                &json!({"data":request.body.0.clone()}),
+                100,
+            )?;
+            let token = wrapped.body["wrap_info"]["token"]
+                .as_str()
+                .ok_or("actual wrapper")?;
+            let unwrapped = state.wrapping_route(
+                Some(&admin),
+                "",
+                "POST",
+                "sys/wrapping/unwrap",
+                &json!({"token":token}),
+                100,
+            )?;
+            let mut output = zeroize::Zeroizing::new(Vec::new());
+            write_response(
+                &mut *output,
+                Response {
+                    status: unwrapped.status,
+                    body: unwrapped.body,
+                    unwrapped_json: unwrapped.unwrapped_json,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                },
+                false,
+            )?;
+            let boundary = output
+                .windows(4)
+                .position(|b| b == b"\r\n\r\n")
+                .ok_or("HTTP boundary")?;
+            let bytes = &output[boundary + 4..];
+            let parsed = crate::auth::LexicalJson::parse_listener(bytes)?;
+            let crate::auth::LexicalJson::Object(fields) = &parsed else {
+                return Err("full object".into());
+            };
+            assert_eq!(fields.len(), 8);
+            let crate::auth::LexicalJson::Object(data) = &fields["data"] else {
+                return Err("real data".into());
+            };
+            assert!(
+                matches!(&data["number"],crate::auth::LexicalJson::Number(value) if value==number)
+            );
+            assert!(
+                matches!(&data["string"],crate::auth::LexicalJson::String(value) if value==number)
+            );
+            assert_eq!(bytes.last(), Some(&b'}')); // Stored generic JSON has no added LF.
+            assert!(
+                state
+                    .wrapping_route(
+                        Some(&admin),
+                        "",
+                        "POST",
+                        "sys/wrapping/unwrap",
+                        &json!({"token":token}),
+                        100
+                    )
+                    .is_err()
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn raw113_actual_listener_carrier_is_opaque_wrap_only_and_cannot_be_claimed_by_data()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for body in [
+            r#"{"$serde_json::private::Number":"1.0"}"#,
+            r#"{"number":"1.0","kind":"general-json-envelope-v1"}"#,
+        ] {
+            let wire = format!(
+                "POST /v1/sys/wrapping/wrap HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+                body.len(),
+                body
+            );
+            let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("literal object rejected"))?;
+            let tree = request
+                .lexical_wrapping_body
+                .as_ref()
+                .ok_or("actual body tree")?;
+            let crate::auth::LexicalJson::Object(fields) = tree else {
+                return Err("object".into());
+            };
+            assert!(
+                fields
+                    .values()
+                    .all(|value| matches!(value, crate::auth::LexicalJson::String(_)))
+            );
+        }
+        let overflow = r#"{"number":1e309}"#;
+        let ordinary = format!(
+            "POST /v1/some-sdk-float HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            overflow.len(),
+            overflow
+        );
+        assert!(read_request(&mut ordinary.as_bytes(), Duration::from_secs(1)).is_err());
+        let ordinary = r#"{"number":1.0}"#;
+        let wire = format!(
+            "POST /v1/some-sdk-float HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            ordinary.len(),
+            ordinary
+        );
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("ordinary typed input"))?;
+        assert!(request.lexical_wrapping_body.is_none());
+        assert_eq!(request.body.0["number"].as_f64(), Some(1.0));
+        let duplicate = r#"{"number":1,"number":2}"#;
+        let wire = format!(
+            "POST /v1/sys/wrapping/wrap HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            duplicate.len(),
+            duplicate
+        );
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("primary duplicate map input"))?;
+        assert_eq!(request.path, "sys/wrapping/wrap");
+        let tree = request
+            .lexical_wrapping_body
+            .as_ref()
+            .ok_or("actual listener tree")?;
+        let crate::auth::LexicalJson::Object(fields) = tree else {
+            return Err("actual listener object".into());
+        };
+        assert_eq!(fields.len(), 1);
+        assert!(matches!(
+            fields.get("number"), Some(crate::auth::LexicalJson::Number(number)) if number == "2"
+        ));
+        assert_eq!(request.body.0["number"].as_i64(), Some(2));
+        tree.validate_wrapping_view(&request.body.0)?;
+        let mut forged_string = request.body.0.clone();
+        forged_string["number"] = json!("2");
+        assert!(tree.validate_wrapping_view(&forged_string).is_err());
+        crate::service::erase_json(&mut forged_string);
+        Ok(())
+    }
+
     #[test]
     fn pki_acme99_owned_raw_json_native_chunk_boundary_retains_exact_body() -> io::Result<()> {
         for length in [2048, 2049] {
@@ -2275,6 +2563,7 @@ mod tests {
             for head in [false, true] {
                 let response = Response {
                     status: 200,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_acme":payload,"media":"json"}),
@@ -2331,6 +2620,7 @@ mod tests {
                 Response {
                     status: 200,
                     body: body.clone(),
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                 },
@@ -2361,6 +2651,7 @@ mod tests {
             Response {
                 status: 400,
                 body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":"actual closed producer"},"media":"problem"}),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             },
@@ -2485,6 +2776,7 @@ mod tests {
                 &mut output,
                 Response {
                     status,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded}),
@@ -2502,6 +2794,7 @@ mod tests {
                 &mut invalid,
                 Response {
                     status,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded,"extra":true}),
@@ -2528,6 +2821,7 @@ mod tests {
         ] {
             let response = || Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_certificate":encoded,"format":format}),
@@ -2562,6 +2856,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 200,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body,
@@ -2585,6 +2880,7 @@ mod tests {
             Response {
                 status: 400,
                 body: json!({"__heptabao_acme":{"type":"urn:ietf:params:acme:error:malformed","detail":detail},"media":"problem"}),
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
             },
@@ -2618,6 +2914,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 204,
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
@@ -2642,6 +2939,7 @@ mod tests {
         let encoded = base64::engine::general_purpose::STANDARD.encode(der);
         let response = || Response {
             status: 200,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
@@ -2665,6 +2963,7 @@ mod tests {
             &mut rejected,
             Response {
                 status: 200,
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_crl":encoded,"pem":"text/html"}),
@@ -3245,6 +3544,7 @@ mod service_lock_deadline_tests {
                     assert_eq!(crate::request_deadline::current(), Some(deadline));
                     *value = result + 1;
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
@@ -3308,6 +3608,7 @@ mod service_lock_deadline_tests {
                     worker_finished.store(true, Ordering::Release);
                     *value = observed;
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
@@ -3724,5 +4025,50 @@ mod encoded_sdk_path_tests {
         ] {
             assert!(decode_native_logical_path(path).is_err());
         }
+    }
+}
+
+#[cfg(test)]
+pub(crate) fn write_raw110_reply_for_test(
+    writer: &mut impl Write,
+    response: Response,
+    head: bool,
+) -> io::Result<()> {
+    write_response(writer, response, head)
+}
+
+#[cfg(test)]
+mod raw113_terminal_media_tests {
+    use super::*;
+
+    #[test]
+    fn raw113_terminal_content_type_matches_go_header_write_without_header_injection()
+    -> io::Result<()> {
+        for (original, expected) in [
+            ("text/plain", "text/plain"),
+            (" \ttext/plain\r\n ", "text/plain"),
+            ("text/plain\r\nInjected: no", "text/plain  Injected: no"),
+            ("text/plain\nx\ry", "text/plain x y"),
+            ("\t \r\n", ""),
+            ("\u{0b}text/plain\u{0c}", "\u{0b}text/plain\u{0c}"),
+            ("\u{a0}text/plain\u{a0}", "\u{a0}text/plain\u{a0}"),
+            // Go preserves NUL in the output value. This asserts original wire
+            // behavior, not acceptance of that header by an HTTP client parser.
+            ("text/plain\0suffix", "text/plain\0suffix"),
+        ] {
+            let mut output = Vec::new();
+            write_go_content_type_header(&mut output, original)?;
+            assert_eq!(
+                output.as_slice(),
+                format!("Content-Type: {expected}\r\n").as_bytes()
+            );
+            assert_eq!(output.windows(2).filter(|part| *part == b"\r\n").count(), 1);
+            assert!(
+                !output
+                    .windows(b"\r\nInjected:".len())
+                    .any(|p| p == b"\r\nInjected:")
+            );
+        }
+        Ok(())
     }
 }

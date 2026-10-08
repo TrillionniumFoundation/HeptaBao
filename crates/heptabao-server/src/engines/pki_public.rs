@@ -39,6 +39,19 @@ pub(super) fn stored_pem(label: &str, der: &[u8]) -> String {
     encoded
 }
 
+// The primary public full-chain projection trims each generated PEM before
+// joining, then trims the complete chain. Stored issuer PEM arrays keep their
+// original representation; this is only the public full-chain presentation.
+fn public_chain_pem(chain: &[String]) -> String {
+    chain
+        .iter()
+        .map(|certificate| certificate.trim())
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim()
+        .to_owned()
+}
+
 fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineResponse> {
     if der.len() > 64 * 1024 {
         return Err(error(503, "public certificate exceeds bounds"));
@@ -55,7 +68,145 @@ fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineRespon
     })
 }
 
+/// A private proof selected by the actual PKI mount and closed public producer.
+/// HTTP special logical fields retain Go []byte/nil semantics in private custody;
+/// the dedicated stored variant releases their original raw HTTP entity.
+pub(crate) struct PkiWrappedTransport {
+    logical_response: Value,
+}
+impl PkiWrappedTransport {
+    fn new(media: &'static str, body: Value, status: u16) -> Self {
+        Self {
+            logical_response: json!({"data":{
+                "http_content_type":media,
+                "http_raw_body":body,
+                "http_status_code":status
+            }}),
+        }
+    }
+    pub(crate) fn logical_response(&self) -> &Value {
+        &self.logical_response
+    }
+}
+impl Drop for PkiWrappedTransport {
+    fn drop(&mut self) {
+        crate::service::erase_json(&mut self.logical_response);
+    }
+}
+fn canonical_transport_base64<'a>(body: &'a Value, marker: &str, bound: usize) -> Option<&'a str> {
+    let text = body.get(marker)?.as_str()?;
+    if text.len() > bound.div_ceil(3).checked_mul(4)? {
+        return None;
+    }
+    let bytes = BASE64.decode(text).ok()?;
+    (bytes.len() <= bound && BASE64.encode(&bytes) == text).then_some(text)
+}
+
 impl Pki {
+    /// This is called only after dispatch by the longest actual PKI owner.
+    /// Route, response status, canonical bytes and producer-specific format must
+    /// agree. A SDK/client object with similar keys does not select this proof.
+    pub(in crate::engines) fn wrapping_public_transport(
+        &self,
+        method: &str,
+        path: &str,
+        status: u16,
+        body: &Value,
+    ) -> Option<PkiWrappedTransport> {
+        let route = self.public_read_route(method, path)?;
+        match route {
+            PkiPublicRead::Ocsp(..) => {
+                let bytes = super::local_ocsp::raw_response(status, body)?;
+                Some(PkiWrappedTransport::new(
+                    "application/ocsp-response",
+                    json!(BASE64.encode(bytes)),
+                    status,
+                ))
+            }
+            PkiPublicRead::RawCa(format)
+            | PkiPublicRead::RawCertificate(_, format)
+            | PkiPublicRead::IssuerCertificate(_, format) => {
+                if status != 200 || body.as_object()?.len() != 2 {
+                    return None;
+                }
+                let (mode, media) = match format {
+                    CertificateFormat::Der => ("der", "application/pkix-cert"),
+                    CertificateFormat::Pem => ("pem", "application/pem-certificate-chain"),
+                    CertificateFormat::Chain => ("chain", "application/pkix-cert"),
+                };
+                if body.get("format")?.as_str()? != mode {
+                    return None;
+                }
+                let text =
+                    canonical_transport_base64(body, "__heptabao_pki_certificate", 128 * 1024)?;
+                Some(PkiWrappedTransport::new(media, json!(text), status))
+            }
+            PkiPublicRead::LocalCrl(_, format) | PkiPublicRead::IssuerCrl(_, _, format) => {
+                if matches!(format, IssuerCrlFormat::Json) {
+                    return None;
+                }
+                let pem = matches!(format, IssuerCrlFormat::Pem);
+                // The actual rootless LocalCrl producer returns Go's nil
+                // certificate slice. Empty base64 alone never proves nilness.
+                let nil_local_crl = status == 204
+                    && self.root.is_none()
+                    && matches!(
+                        self.public_read_route(method, path),
+                        Some(PkiPublicRead::LocalCrl(..))
+                    );
+                Self::wrapping_crl_transport(status, body, pem, nil_local_crl)
+            }
+            PkiPublicRead::ExternalCrl(path) if !path.starts_with("cert/") => {
+                Self::wrapping_crl_transport(status, body, path.ends_with("/pem"), false)
+            }
+            _ => None,
+        }
+    }
+    fn wrapping_crl_transport(
+        status: u16,
+        body: &Value,
+        pem: bool,
+        nil_local_crl: bool,
+    ) -> Option<PkiWrappedTransport> {
+        if body.as_object()?.len() != 2 || body.get("pem")?.as_bool()? != pem {
+            return None;
+        }
+        let text = canonical_transport_base64(body, "__heptabao_pki_crl", 512 * 1024)?;
+        let raw_body = match status {
+            200 => json!(text),
+            204 if nil_local_crl && text.is_empty() => Value::Null,
+            _ => return None,
+        };
+        Some(PkiWrappedTransport::new(
+            if pem {
+                "application/x-pem-file"
+            } else {
+                "application/pkix-crl"
+            },
+            raw_body,
+            status,
+        ))
+    }
+
+    pub(in crate::engines) fn wrapping_uses_raw_public_transport(
+        &self,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        match self.public_read_route(method, path) {
+            Some(
+                PkiPublicRead::Ocsp(..)
+                | PkiPublicRead::RawCa(..)
+                | PkiPublicRead::RawCertificate(..)
+                | PkiPublicRead::IssuerCertificate(..),
+            ) => true,
+            Some(PkiPublicRead::LocalCrl(_, format) | PkiPublicRead::IssuerCrl(_, _, format)) => {
+                !matches!(format, IssuerCrlFormat::Json)
+            }
+            Some(PkiPublicRead::ExternalCrl(path)) => !path.starts_with("cert/"),
+            _ => false,
+        }
+    }
     fn local_crl_response(der: &[u8], format: IssuerCrlFormat) -> Result<EngineResponse> {
         if matches!(format, IssuerCrlFormat::Json) {
             return Ok(ok(json!({"crl":pem("X509 CRL",der)}), false));
@@ -245,7 +396,7 @@ impl Pki {
                     if matches!(format, CertificateFormat::Chain) {
                         return Ok(EngineResponse {
                             status: 200,
-                            body: json!({"__heptabao_pki_certificate":BASE64.encode(chain.join("\n").as_bytes()),"format":"chain"}),
+                            body: json!({"__heptabao_pki_certificate":BASE64.encode(public_chain_pem(&chain).as_bytes()),"format":"chain"}),
                             mutated: false,
                         });
                     }
@@ -258,7 +409,7 @@ impl Pki {
                 if matches!(format, CertificateFormat::Chain)
                     && (root.local_chain.is_some() || root.is_external())
                 {
-                    let bytes = self.external_ca_chain_pem(root)?.join("\n").into_bytes();
+                    let bytes = public_chain_pem(&self.external_ca_chain_pem(root)?).into_bytes();
                     return Ok(EngineResponse {
                         status: 200,
                         body: json!({"__heptabao_pki_certificate":BASE64.encode(bytes),"format":"chain"}),
@@ -309,7 +460,7 @@ impl Pki {
             }
             PkiPublicRead::Chain => {
                 if let Some((_, chain)) = self.public_imported_ca("default") {
-                    let certificate = chain.join("\n").trim_end().to_owned();
+                    let certificate = public_chain_pem(&chain);
                     return Ok(ok(
                         json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                         false,
@@ -319,11 +470,7 @@ impl Pki {
                     return Err(not_found());
                 }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                let certificate = self
-                    .external_ca_chain_pem(root)?
-                    .join("\n")
-                    .trim_end()
-                    .to_owned();
+                let certificate = public_chain_pem(&self.external_ca_chain_pem(root)?);
                 Ok(ok(
                     json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                     false,
@@ -482,5 +629,26 @@ impl Pki {
                 ))
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod public_chain_framing_tests {
+    use super::public_chain_pem;
+
+    #[test]
+    fn raw112_public_full_chain_trims_each_boundary_and_keeps_internal_pem_lines() {
+        let first = "-----BEGIN CERTIFICATE-----\nQQ==\n-----END CERTIFICATE-----";
+        let second = "-----BEGIN CERTIFICATE-----\nQg==\n-----END CERTIFICATE-----";
+        assert_eq!(public_chain_pem(&[format!("\r\n\t {first} \r\n")]), first);
+        assert_eq!(
+            public_chain_pem(&[format!("\r\n {first}\r\n"), format!("\t{second} \n\n"),]),
+            format!("{first}\n{second}")
+        );
+        assert_eq!(public_chain_pem(&[]), "");
+        assert_eq!(public_chain_pem(&[" \t\r\n".to_owned()]), "");
+        assert_eq!(public_chain_pem(&[format!("{first}\n"), "".into()]), first);
+        let interior = "-----BEGIN CERTIFICATE-----\r\nQQ==\r\n-----END CERTIFICATE-----";
+        assert_eq!(public_chain_pem(&[format!(" \n{interior}\n ")]), interior);
     }
 }

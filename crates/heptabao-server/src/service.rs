@@ -104,10 +104,13 @@ const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
 const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
 const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
+const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
+const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
+const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_RSA8192_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -140,6 +143,9 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_KEY_POLICY_STATE_SCHEMA
                 | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
                 | PKI_RSA8192_STATE_SCHEMA
+                | RAW_WRAPPED_REPLY_STATE_SCHEMA
+                | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+                | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -619,6 +625,7 @@ pub(crate) use response_headers::{
 };
 
 pub struct Response {
+    pub(crate) unwrapped_json: Option<crate::auth::UnwrappedJson>,
     pub status: u16,
     pub body: Value,
     pub(crate) response_headers: ResponseHeaders,
@@ -638,6 +645,7 @@ impl Response {
         Self {
             status,
             body: json!({"errors":[message]}),
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         }
@@ -646,6 +654,7 @@ impl Response {
         Self {
             status: 200,
             body,
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
         }
@@ -1097,6 +1106,7 @@ pub(crate) enum ExternalEffectResult {
 }
 
 pub(crate) struct PendingExternalRequest {
+    raw_reply_ingress: Option<crate::auth::IngressReplyContext>,
     fingerprint: String,
     now: u64,
     token_clock: Option<RequestClock>,
@@ -2061,6 +2071,8 @@ impl Service {
         pending: PendingExternalRequest,
         result: ExternalEffectResult,
     ) -> Response {
+        let _raw_reply_ingress =
+            crate::auth::IngressReplyScope::restore(pending.raw_reply_ingress.clone());
         let response = match (pending.effect, result) {
             #[cfg(target_os = "linux")]
             (
@@ -2288,10 +2300,32 @@ impl Service {
             erase_json(&mut response.body);
             response = cause;
         }
-        if self
-            .audit_event("response", fingerprint, now, Some(response.status))
-            .is_err()
-        {
+        let response_audit_fingerprint = response
+            .unwrapped_json
+            .as_mut()
+            .map(|origin| origin.selected_response_audit_binding(&response.body))
+            .transpose()
+            .map(Option::flatten)
+            .map(|binding| {
+                if let Some(binding) = binding {
+                    let mut context = hmac::Context::with_key(&self.audit_key);
+                    context.update(b"heptabao.audit.selected-response-custody.v1");
+                    context.update(&(fingerprint.len() as u64).to_le_bytes());
+                    context.update(fingerprint.as_bytes());
+                    context.update(&(binding.len() as u64).to_le_bytes());
+                    context.update(&binding);
+                    STANDARD.encode(context.sign().as_ref())
+                } else {
+                    fingerprint.to_owned()
+                }
+            });
+        // Selection and mandatory audit are one delivery boundary. This binds
+        // private response custody to the existing chain; it does not implement
+        // OpenBao's per-field HMAC or audit-device JSON contract.
+        let response_audit = response_audit_fingerprint
+            .map_err(|_| std::io::Error::other("selected response audit projection rejected"))
+            .and_then(|bound| self.audit_event("response", &bound, now, Some(response.status)));
+        if response_audit.is_err() {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -2494,6 +2528,26 @@ impl Service {
                 fingerprint = STANDARD.encode(context.sign().as_ref());
             }
         }
+        if let Some(ingress) = crate::auth::current_ingress() {
+            match ingress.lexical_request_binding(method, path, &body) {
+                Ok(Some(payload)) => {
+                    let mut context = hmac::Context::with_key(&self.audit_key);
+                    context.update(b"heptabao.audit.lexical-wrapping-data.v1");
+                    context.update(fingerprint.as_bytes());
+                    context.update(&(payload.len() as u64).to_le_bytes());
+                    context.update(&payload);
+                    fingerprint = STANDARD.encode(context.sign().as_ref());
+                }
+                Ok(None) => {}
+                Err(_) => {
+                    erase_json(&mut body);
+                    return RequestExecution::Complete(Response::error(
+                        400,
+                        "private lexical request binding rejected",
+                    ));
+                }
+            }
+        }
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
             context.update(b"heptabao.audit.wrapping-request.v1");
@@ -2574,6 +2628,7 @@ impl Service {
                 erase_json(&mut body);
                 return match plan {
                     Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
+                        raw_reply_ingress: crate::auth::current_ingress(),
                         fingerprint,
                         now,
                         token_clock,
@@ -2733,6 +2788,7 @@ impl Service {
             .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
+                raw_reply_ingress: crate::auth::current_ingress(),
                 fingerprint,
                 now,
                 token_clock,
@@ -2946,6 +3002,7 @@ impl Service {
                 health_codes,
             );
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status,
@@ -3322,6 +3379,7 @@ impl Service {
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 200,
@@ -3341,6 +3399,7 @@ impl Service {
                 .handle_public_pki_read(namespace, method, path, body, now)
             {
                 Ok(Some(mut response)) => Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -3496,6 +3555,7 @@ impl Service {
                         object.insert("id".into(), Value::String(token.to_owned()));
                     }
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
@@ -3702,6 +3762,7 @@ impl Service {
                 ),
             ));
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
@@ -3803,6 +3864,7 @@ impl Service {
                 return Response::error(503, "operating system randomness unavailable");
             }
             return Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
@@ -3888,6 +3950,7 @@ impl Service {
                 .lookup_wrapping_request(token, namespace, method, body, now)
             {
                 Ok(value) => Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: value.status,
@@ -3996,18 +4059,47 @@ impl Service {
                 data.insert("id".into(), json!(bearer));
             }
         }
+        let raw_pki_reply = wrap_ttl_seconds.filter(|ttl| *ttl > 0).and_then(|_| {
+            transaction.engines.wrapping_raw_pki_reply(
+                namespace,
+                method,
+                path,
+                response.status,
+                &response.body,
+            )
+        });
         if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
-            && (200..300).contains(&response.status)
-            && response.status != 204
-            && !response.body.is_null()
+            && (raw_pki_reply.is_some()
+                || ((200..300).contains(&response.status)
+                    && response.status != 204
+                    && !response.body.is_null()))
             && response.body.get("wrap_info").is_none_or(Value::is_null)
         {
-            match transaction
-                .auth
-                .wrap_response(namespace, path, ttl, &response.body, now)
+            let wrapped = if let Some(transport) = &raw_pki_reply {
+                transaction.auth.wrap_pki_raw_response(
+                    namespace,
+                    path,
+                    ttl,
+                    &response.body,
+                    transport,
+                    now,
+                )
+            } else if transaction
+                .engines
+                .wrapping_uses_raw_pki_transport(namespace, method, path)
             {
+                transaction
+                    .auth
+                    .wrap_response(namespace, path, ttl, &response.body, now)
+            } else {
+                transaction
+                    .auth
+                    .wrap_logical_response(namespace, path, ttl, &response.body, now)
+            };
+            match wrapped {
                 Ok(wrapped) => {
                     response = Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: wrapped.status,
@@ -4150,6 +4242,7 @@ impl Service {
             || admitted.engines.has_pki_key_policy_state()
             || admitted.engines.has_ordinary_pki_revocation_state()
             || admitted.engines.has_pki_rsa8192_state()
+            || admitted.auth.has_raw_wrapped_reply_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -4313,6 +4406,7 @@ impl Service {
             time.seconds(),
         ) {
             Ok(mut response) => Response {
+                unwrapped_json: None,
                 response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
@@ -4445,6 +4539,7 @@ impl Service {
         {
             Ok(Some(mut response)) => {
                 return Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -4529,6 +4624,7 @@ impl Service {
                 (Some(from), Some(to)) => {
                     return match state.auth.remount_mount(namespace, from, to, cas_revision) {
                         Ok(response) => Response {
+                            unwrapped_json: None,
                             response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
@@ -4552,6 +4648,7 @@ impl Service {
                     }
                     return match state.engines.remount(namespace, from, to, cas_revision) {
                         Ok(mut response) => Response {
+                            unwrapped_json: None,
                             response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
@@ -4687,6 +4784,7 @@ impl Service {
                     state.namespaces = namespaces;
                 }
                 return Response {
+                    unwrapped_json: response.unwrapped_json,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -4792,6 +4890,7 @@ impl Service {
                     state.engines = engines;
                 }
                 Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -6200,6 +6299,7 @@ impl Service {
             );
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: 204,
@@ -6500,6 +6600,7 @@ impl Service {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 503,
@@ -6735,6 +6836,7 @@ impl Service {
                 }
                 self.rekey = None;
                 return Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
@@ -7136,6 +7238,7 @@ impl Service {
                     }
                 })),
                 ReconciliationStatus::Unknown => Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 404,
@@ -7635,6 +7738,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
@@ -8188,6 +8292,7 @@ impl Service {
                     }
                 }
                 Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
@@ -9695,3 +9800,7 @@ mod initialization_existing_tests;
 #[cfg(test)]
 #[path = "service_auth_mount_options_tests.rs"]
 mod auth_mount_options_tests;
+
+#[cfg(test)]
+#[path = "service_raw_wrapped_reply110_tests.rs"]
+mod raw_wrapped_reply110_tests;

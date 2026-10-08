@@ -129,6 +129,7 @@ impl OpenLdapEffectPlan {
 
 fn openldap_outcome_unknown(lease_id: &str) -> Response {
     Response {
+        unwrapped_json: None,
         response_headers: Default::default(),
         consistency_index: None,
         status: 503,
@@ -458,6 +459,7 @@ impl Service {
                 self.state = Some(state);
                 let mut response = response;
                 return Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -518,6 +520,7 @@ impl Service {
                     self.state = Some(state);
                 }
                 Response {
+                    unwrapped_json: None,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -765,6 +768,7 @@ impl Service {
             response.body["lease_duration"] = json!(plan.inner.expires_at.saturating_sub(now));
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: response.status,

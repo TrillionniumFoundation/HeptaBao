@@ -172,6 +172,7 @@ impl Service {
                         object.insert("id".into(), Value::String(request.token.to_owned()));
                     }
                     Response {
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,

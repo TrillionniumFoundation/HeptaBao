@@ -889,6 +889,7 @@ fn select_superseding_application(
             if crypto::digest(&committed.bytes) != committed.digest {
                 return Err(rejected());
             }
+            AuthState::predecode_raw_reply_state(&committed.bytes).map_err(|_| rejected())?;
             let state: State = serde_json::from_slice(&committed.bytes).map_err(|_| rejected())?;
             if state.auth.has_recovery_state()
                 && (committed.owner_manifest_digest.is_none()
@@ -1680,6 +1681,7 @@ impl Service {
         if crypto::digest(&committed.bytes) != committed.digest {
             return Err(rejected());
         }
+        AuthState::predecode_raw_reply_state(&committed.bytes).map_err(|_| rejected())?;
         let state: State = serde_json::from_slice(&committed.bytes).map_err(|_| rejected())?;
         if state.auth.has_recovery_state()
             && (committed.owner_manifest_digest.is_none() || committed.changed_owner_mask.is_none())

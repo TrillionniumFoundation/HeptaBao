@@ -118,6 +118,7 @@ impl Service {
                     return Response {
                         status: 404,
                         body: json!({"errors":[]}),
+                        unwrapped_json: None,
                         response_headers: Default::default(),
                         consistency_index: None,
                     };
@@ -136,7 +137,7 @@ impl Service {
                     return error;
                 }
             };
-            let mut wrapped = match candidate.auth.wrap_response(
+            let mut wrapped = match candidate.auth.wrap_logical_response(
                 scoped.namespace,
                 scoped.path,
                 ttl,

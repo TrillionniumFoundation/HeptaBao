@@ -17,6 +17,7 @@ impl Service {
             body["recovery_reference"] = json!(reference);
         }
         Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: 503,
@@ -154,6 +155,7 @@ mod tests {
         assert_eq!(refused.body["retry_allowed"], false);
         assert_eq!(refused.body["recovery_required"], true);
         let unknown = Service::ha_committed_local_failure(Response {
+            unwrapped_json: None,
             response_headers: Default::default(),
             consistency_index: None,
             status: 503,
