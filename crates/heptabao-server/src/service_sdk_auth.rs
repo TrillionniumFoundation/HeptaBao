@@ -124,6 +124,8 @@ pub(in crate::service) struct Plan {
     cleanup: Mutex<Option<credential::Cleanup>>,
     retirement: Option<Mutex<retirement::Retirement>>,
     namespace_cleanup: bool,
+    private_retirement: Mutex<Option<namespace_runtime::RetirementPermit>>,
+    private_cleanup: Mutex<Option<namespace_runtime::CleanupPermit>>,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -283,7 +285,80 @@ impl Plan {
             deadline,
             events,
         };
-        if self
+        let private = (|| {
+            let retirement = self
+                .private_retirement
+                .lock()
+                .map_err(|_| Response::error(503, "SDK private original permit unavailable"))?
+                .is_some();
+            let cleanup = self
+                .private_cleanup
+                .lock()
+                .map_err(|_| Response::error(503, "SDK private cleanup permit unavailable"))?
+                .is_some();
+            if retirement && cleanup {
+                return Err(Response::error(503, "SDK private scopes overlap"));
+            }
+            Ok(retirement || cleanup)
+        })();
+        let original_private = match private {
+            Ok(value) => value,
+            Err(error) => {
+                self.control.busy.store(false, Ordering::Release);
+                self.control.retire();
+                return Err(error);
+            }
+        };
+        if original_private {
+            let dispatch = (|| {
+                let mut writer = writer_before(service, deadline)?;
+                writer.sdk_auth_gate(self)?;
+                let retirement = self
+                    .private_retirement
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK original permit unavailable"))?;
+                let cleanup = self
+                    .private_cleanup
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK original cleanup unavailable"))?;
+                if retirement
+                    .as_ref()
+                    .map(|permit| permit.handed_off())
+                    .transpose()?
+                    .unwrap_or(false)
+                    || cleanup
+                        .as_ref()
+                        .map(|permit| permit.handed_off())
+                        .transpose()?
+                        .unwrap_or(false)
+                {
+                    return Err(Response::error(
+                        503,
+                        "sealed SDK callback cannot be redispatched",
+                    ));
+                }
+                if self
+                    .control
+                    .sender
+                    .try_send(WorkerCommand::Invoke(job))
+                    .is_err()
+                {
+                    return Err(Response::error(503, "SDK Auth owner queue unavailable"));
+                }
+                if let Some(permit) = retirement.as_ref() {
+                    permit.dispatched();
+                }
+                if let Some(permit) = cleanup.as_ref() {
+                    permit.dispatched();
+                }
+                Ok(())
+            })();
+            if let Err(error) = dispatch {
+                self.control.busy.store(false, Ordering::Release);
+                self.control.retire();
+                return Err(error);
+            }
+        } else if self
             .control
             .sender
             .try_send(WorkerCommand::Invoke(job))
@@ -1145,6 +1220,47 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let private_retirement = if let Some(value) = retirement.as_ref()
+            && !binding.namespace.is_empty()
+            && (caller.is_some() || value.native.is_some())
+        {
+            let Some(first) = value.remaining.front() else {
+                return Response::error(503, "SDK namespace original attempted resource absent");
+            };
+            match self.capture_namespace_sdk_retirement(
+                state,
+                &binding,
+                &value.job,
+                &first.id,
+                context.clock,
+                deadline,
+                Arc::clone(&control),
+            ) {
+                Ok(permit) => {
+                    if value
+                        .native
+                        .as_ref()
+                        .is_some_and(|native| native.role_for_custody() != permit.role())
+                    {
+                        return Response::error(
+                            503,
+                            "SDK native original role differs from handoff",
+                        );
+                    }
+                    Some(permit)
+                }
+                Err(error) => return error,
+            }
+        } else {
+            None
+        };
+        let private_cleanup = match namespace_work
+            .map(|work| work.capture_credential_custody(self, &binding, Arc::clone(&control)))
+            .transpose()
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
         self.pending_sdk_auth_request = Some(Plan {
             context,
             binding,
@@ -1166,10 +1282,18 @@ impl Service {
             cleanup: Mutex::new(None),
             retirement: retirement.map(Mutex::new),
             namespace_cleanup: namespace_work.is_some(),
+            private_retirement: Mutex::new(private_retirement),
+            private_cleanup: Mutex::new(private_cleanup),
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
     fn sdk_auth_gate(&mut self, plan: &Plan) -> Result<(), Response> {
+        if self.sdk_auth_cleanup_private_view(plan)?.is_some() {
+            return Ok(());
+        }
+        if self.sdk_auth_private_view(plan)?.is_some() {
+            return Ok(());
+        }
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
         plan.sync_native_retirement(self)?;
         let completed_retirement = plan.retirement_completed()?;
@@ -1299,6 +1423,12 @@ impl Service {
         plan: &Plan,
         operation: StorageOp,
     ) -> Result<StorageReply, Response> {
+        if let Some(view) = self.sdk_auth_cleanup_private_view(plan)? {
+            return self.sdk_auth_cleanup_private_storage(plan, view, operation);
+        }
+        if let Some(view) = self.sdk_auth_private_view(plan)? {
+            return self.sdk_auth_private_storage(plan, view, operation);
+        }
         self.sdk_auth_gate(plan).inspect_err(|_cause| {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             if plan.namespace_cleanup {
@@ -1382,46 +1512,7 @@ impl Service {
             .auth
             .sdk_auth_owner_gate(&plan.binding)
             .map_err(auth_error)?;
-        let reply = match operation {
-            StorageOp::Get(key) => StorageReply::Entry(
-                transaction
-                    .auth
-                    .sdk_auth_storage_get(&plan.binding, &key)
-                    .map_err(auth_error)?
-                    .map(|entry| SdkStorageEntry {
-                        key: entry.key,
-                        value: entry.value,
-                        seal_wrap: entry.seal_wrap,
-                    }),
-            ),
-            StorageOp::Put(entry) => {
-                transaction
-                    .auth
-                    .sdk_auth_storage_put(
-                        &plan.binding,
-                        Entry {
-                            key: entry.key,
-                            value: entry.value,
-                            seal_wrap: entry.seal_wrap,
-                        },
-                    )
-                    .map_err(auth_error)?;
-                StorageReply::Empty
-            }
-            StorageOp::Delete(key) => {
-                transaction
-                    .auth
-                    .sdk_auth_storage_delete(&plan.binding, &key)
-                    .map_err(auth_error)?;
-                StorageReply::Empty
-            }
-            StorageOp::List(prefix, after, limit) => StorageReply::Keys(
-                transaction
-                    .auth
-                    .sdk_auth_storage_list(&plan.binding, &prefix, &after, limit)
-                    .map_err(auth_error)?,
-            ),
-        };
+        let reply = sdk_auth_storage_operation(&mut transaction.auth, &plan.binding, operation)?;
         self.sdk_auth_gate(plan)?;
         Ok(reply)
     }
@@ -1455,6 +1546,12 @@ impl Service {
         plan: &Plan,
         value: Option<&Value>,
     ) -> Result<Response, Response> {
+        if let Some(view) = self.sdk_auth_cleanup_private_view(plan)? {
+            return self.finish_sdk_auth_cleanup_private_callback(plan, view, value);
+        }
+        if let Some(view) = self.sdk_auth_private_view(plan)? {
+            return self.finish_sdk_auth_private_callback(plan, view, value);
+        }
         self.sdk_auth_gate(plan)?;
         let mut transaction = plan
             .transaction
@@ -2389,5 +2486,597 @@ mod durable_tests {
         );
         assert!(reopened.prepare_snapshot_restore(&backup).is_err());
         Ok(())
+    }
+}
+
+fn sdk_auth_storage_operation(
+    auth: &mut AuthState,
+    binding: &Binding,
+    operation: StorageOp,
+) -> Result<StorageReply, Response> {
+    let reply = match operation {
+        StorageOp::Get(key) => StorageReply::Entry(
+            auth.sdk_auth_storage_get(binding, &key)
+                .map_err(auth_error)?
+                .map(|entry| SdkStorageEntry {
+                    key: entry.key,
+                    value: entry.value,
+                    seal_wrap: entry.seal_wrap,
+                }),
+        ),
+        StorageOp::Put(entry) => {
+            auth.sdk_auth_storage_put(
+                binding,
+                Entry {
+                    key: entry.key,
+                    value: entry.value,
+                    seal_wrap: entry.seal_wrap,
+                },
+            )
+            .map_err(auth_error)?;
+            StorageReply::Empty
+        }
+        StorageOp::Delete(key) => {
+            auth.sdk_auth_storage_delete(binding, &key)
+                .map_err(auth_error)?;
+            StorageReply::Empty
+        }
+        StorageOp::List(prefix, after, limit) => StorageReply::Keys(
+            auth.sdk_auth_storage_list(binding, &prefix, &after, limit)
+                .map_err(auth_error)?,
+        ),
+    };
+    Ok(reply)
+}
+
+impl Service {
+    fn refresh_namespace_sdk_retirement(&mut self, plan: &Plan, id: &str) -> Result<(), Response> {
+        if plan.binding.namespace.is_empty() {
+            return Ok(());
+        }
+        let mut permit = plan
+            .private_retirement
+            .lock()
+            .map_err(|_| Response::error(503, "SDK original private permit unavailable"))?;
+        let Some(previous) = permit.as_ref() else {
+            return Ok(());
+        };
+        if previous.handed_off()? {
+            return Err(Response::error(
+                503,
+                "closed SDK original permit cannot be replaced",
+            ));
+        }
+        if previous.original_resource() == id {
+            return Ok(());
+        }
+        previous.check_service(self)?;
+        let role = previous.role();
+        let job = plan
+            .retirement
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+            .lock()
+            .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?
+            .job
+            .clone();
+        let state = self
+            .state
+            .clone()
+            .ok_or_else(|| Response::error(503, "SDK retirement actual owner absent"))?;
+        let next = self.capture_namespace_sdk_retirement(
+            &state,
+            &plan.binding,
+            &job,
+            id,
+            plan.context.clock,
+            plan.deadline,
+            Arc::clone(&plan.control),
+        )?;
+        if next.role() != role {
+            return Err(Response::error(
+                503,
+                "SDK original retirement role cannot be rearmed",
+            ));
+        }
+        *permit = Some(next);
+        Ok(())
+    }
+
+    fn sdk_auth_private_view(
+        &mut self,
+        plan: &Plan,
+    ) -> Result<Option<namespace_runtime::RetirementView>, Response> {
+        let permit = plan
+            .private_retirement
+            .lock()
+            .map_err(|_| Response::error(503, "SDK private original permit unavailable"))?;
+        let Some(permit) = permit.as_ref() else {
+            return Ok(None);
+        };
+        if !permit.handed_off()? {
+            return Ok(None);
+        }
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        permit.check_service(self)?;
+        self.sync_from_ha()?;
+        permit.check_service(self)?;
+        let view = permit.open(self)?;
+        let state = view.state();
+        let same_ha = match (&self.ha, &plan.context.ha) {
+            (None, None) => true,
+            (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+            _ => false,
+        };
+        if !same_ha
+            || plan.context.namespace_required && !state.namespace_exists(&plan.context.namespace)
+            || state.namespaces.incarnation(&plan.context.namespace) != plan.context.incarnation
+        {
+            return Err(Response::error(
+                503,
+                "SDK original private namespace or HA owner changed",
+            ));
+        }
+        let completed = plan.retirement_completed()?;
+        if plan.admission.is_some()
+            || plan.namespace_cleanup
+            || plan.retirement.is_none()
+            || plan
+                .renewal
+                .lock()
+                .map_err(|_| Response::error(503, "SDK renewal target unavailable"))?
+                .is_some()
+            || Instant::now() >= plan.deadline
+            || (!completed && plan.control.fenced.load(Ordering::Acquire))
+        {
+            return Err(Response::error(
+                503,
+                "SDK original private retirement fenced",
+            ));
+        }
+        view.matches_original(
+            &plan.context.activation,
+            &plan.context.cluster,
+            &plan.context.namespace,
+            plan.context.incarnation,
+            &plan.context.delivery,
+        )?;
+        if plan.operation != "_mount"
+            && !completed
+            && state
+                .auth
+                .sdk_auth_paths(&plan.binding)
+                .map_err(auth_error)?
+                != plan.paths
+        {
+            return Err(Response::error(
+                503,
+                "SDK path policy changed after admission",
+            ));
+        }
+        {
+            let mut caller = plan
+                .caller
+                .lock()
+                .map_err(|_| Response::error(503, "SDK Auth original capsule unavailable"))?;
+            if let Some(caller) = caller.as_mut() {
+                caller.apply_sdk_auth_clock_floor(&state.auth)?;
+                self.validate_plugin_response_custody(caller, &view)?;
+                caller.apply_sdk_auth_clock_floor(&state.auth)?;
+                caller.validate_live_auth(&state.auth)?;
+            } else if !plan.has_native_retirement()? {
+                return Err(Response::error(
+                    503,
+                    "SDK private retirement original caller absent",
+                ));
+            }
+        }
+        if completed {
+            plan.retirement_delivery_gate(&state.auth)?;
+        } else {
+            state
+                .auth
+                .sdk_auth_owner_gate(&plan.binding)
+                .map_err(auth_error)?;
+            view.check_storage()?;
+        }
+        plan.check_retirement_control(&state.auth)?;
+        plan.time(&state.auth)?;
+        plan.credential_owner_gate(&state.auth)?;
+        plan.live_target(&state.auth)?;
+        view.check_current(self)?;
+        Ok(Some(view))
+    }
+
+    fn sdk_auth_private_storage(
+        &mut self,
+        plan: &Plan,
+        view: namespace_runtime::RetirementView,
+        operation: StorageOp,
+    ) -> Result<StorageReply, Response> {
+        view.check_current(self)?;
+        view.check_storage()?;
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
+        let at = plan.time(&view.state().auth)?;
+        let mut candidate = view.state().clone();
+        if candidate.auth.observe_sdk_auth_clock(at) {
+            let proof = view.clock_publication(self, candidate, at)?;
+            let closed = self
+                .commit_namespace_sdk_retirement_publication(proof, |auth| plan.live_auth(auth))?;
+            self.state = Some(closed);
+        }
+        transaction.identity = self.current_state_identity()?;
+        transaction.auth.observe_sdk_auth_clock(at);
+        transaction
+            .auth
+            .sdk_auth_owner_gate(&plan.binding)
+            .map_err(auth_error)?;
+        let reply = sdk_auth_storage_operation(&mut transaction.auth, &plan.binding, operation)?;
+        self.sdk_auth_gate(plan)?;
+        Ok(reply)
+    }
+
+    fn finish_sdk_auth_private_callback(
+        &mut self,
+        plan: &Plan,
+        view: namespace_runtime::RetirementView,
+        value: Option<&Value>,
+    ) -> Result<Response, Response> {
+        view.check_current(self)?;
+        view.check_storage()?;
+        {
+            let lease = plan
+                .lease
+                .lock()
+                .map_err(|_| Response::error(503, "SDK credential callback unavailable"))?;
+            let call = lease
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK original attempted callback absent"))?;
+            if call.action != "revoke" || call.record.id != view.resource() {
+                return Err(Response::error(
+                    503,
+                    "SDK private callback differs from original Attempted",
+                ));
+            }
+        }
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
+        let mut candidate = view.state().clone();
+        view.merge_storage(&mut candidate.auth, &transaction.auth)?;
+        let at = plan.time(&candidate.auth)?;
+        let mut response = credential::finish_callback(plan, &mut candidate, value, at)?;
+        let published_auth = candidate.auth.clone();
+        let mut published = false;
+        let result = (|| {
+            let proof = view.callback_publication(self, candidate, &transaction.auth, at)?;
+            let closed = self
+                .commit_namespace_sdk_retirement_publication(proof, |auth| plan.live_auth(auth))?;
+            published = true;
+            self.state = Some(closed);
+            transaction.identity = self.current_state_identity()?;
+            // These original post-Publish receipts consume only the complete
+            // logical Auth whose exact ciphertext was just physically committed.
+            credential::after_publication(plan, &published_auth)?;
+            plan.retirement_native_after_callback(&published_auth, at)?;
+            transaction.auth = published_auth;
+            self.sdk_auth_gate(plan)
+        })();
+        if let Err(error) = result {
+            erase_json(&mut response.body);
+            response.response_headers.clear();
+            if published {
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.namespace_runtime.clear();
+                self.retire_sdk_hosts();
+            }
+            return Err(error);
+        }
+        Ok(response)
+    }
+}
+
+impl Service {
+    fn finalize_sdk_auth_private_retirement(
+        &mut self,
+        plan: &Plan,
+        view: namespace_runtime::RetirementView,
+    ) -> Result<Response, Response> {
+        view.check_current(self)?;
+        let (mut body, job, retired) = {
+            let retirement = plan
+                .retirement
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?;
+            if !retirement.remaining.is_empty() || retirement.completed.is_some() {
+                return Err(Response::error(503, "SDK retirement callbacks incomplete"));
+            }
+            let retired = view
+                .state()
+                .auth
+                .sdk_credential_retired_mount_records(&plan.binding)
+                .map_err(auth_error)?
+                .into_iter()
+                .map(|r| Ok((r.id.clone(), retirement::digest(&r)?)))
+                .collect::<Result<Vec<_>, Response>>()?;
+            (retirement.body.clone(), retirement.job.clone(), retired)
+        };
+        let mut published = false;
+        let result = (|| {
+            let mut caller = plan
+                .caller
+                .lock()
+                .map_err(|_| Response::error(503, "SDK retirement actual caller unavailable"))?;
+            let proof = if let Some(caller) = caller.as_mut() {
+                self.validate_plugin_response_custody(caller, &view)?;
+                view.removal_publication(self, caller, &body)?
+            } else {
+                let retirement = plan
+                    .retirement
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?;
+                let native = retirement
+                    .native
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK retirement native owner absent"))?;
+                view.native_removal_publication(self, &native.selected)?
+            };
+            drop(caller);
+            let closed = self
+                .commit_namespace_sdk_retirement_publication(proof, |auth| plan.live_auth(auth))?;
+            published = true;
+            self.state = Some(closed);
+            let permit = plan
+                .private_retirement
+                .lock()
+                .map_err(|_| Response::error(503, "SDK original private permit unavailable"))?;
+            let current = permit
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK original private permit absent"))?
+                .open(self)?;
+            let at = plan.time(&current.state().auth)?;
+            {
+                let mut retirement = plan
+                    .retirement
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK retirement scope absent"))?
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK retirement scope unavailable"))?;
+                if retirement.job != job
+                    || !retirement.remaining.is_empty()
+                    || retirement.completed.is_some()
+                {
+                    return Err(Response::error(
+                        503,
+                        "SDK original retirement control changed",
+                    ));
+                }
+                if let Some(native) = retirement.native.as_mut() {
+                    native.published_private_removal(&current.state().auth, at)?;
+                }
+                retirement.completed = Some(retired);
+            }
+            drop(permit);
+            let key = sdk_auth_key(&plan.context.cluster, &plan.binding)?;
+            let host = self
+                .sdk_hosts
+                .get(&key)
+                .ok_or_else(|| Response::error(503, "SDK retirement actual Control absent"))?;
+            if !Arc::ptr_eq(host, &plan.control) {
+                return Err(Response::error(
+                    503,
+                    "SDK retirement actual Control changed",
+                ));
+            }
+            if let Some(host) = self.sdk_hosts.remove(&key) {
+                host.retire();
+            }
+            self.sdk_auth_gate(plan)?;
+            Ok(empty_response())
+        })();
+        erase_json(&mut body);
+        if result.is_err() && published {
+            // A post-Publish error must never resurrect the old maintenance owner.
+            self.recovery_required = true;
+            self.ha_activation = None;
+            self.namespace_runtime.clear();
+            self.retire_sdk_hosts();
+        }
+        result
+    }
+}
+
+impl Service {
+    fn sdk_auth_cleanup_private_view(
+        &mut self,
+        plan: &Plan,
+    ) -> Result<Option<namespace_runtime::CleanupView>, Response> {
+        let permit = plan
+            .private_cleanup
+            .lock()
+            .map_err(|_| Response::error(503, "SDK namespace cleanup permit unavailable"))?;
+        let Some(permit) = permit.as_ref() else {
+            return Ok(None);
+        };
+        if !permit.handed_off()? {
+            return Ok(None);
+        }
+        if !plan.namespace_cleanup
+            || plan.retirement.is_some()
+            || plan.admission.is_some()
+            || plan
+                .caller
+                .lock()
+                .map_err(|_| Response::error(503, "SDK original caller unavailable"))?
+                .is_some()
+            || plan
+                .renewal
+                .lock()
+                .map_err(|_| Response::error(503, "SDK original renewal unavailable"))?
+                .is_some()
+            || plan.operation != "revoke"
+            || Instant::now() >= plan.deadline
+            || plan.control.fenced.load(Ordering::Acquire)
+        {
+            return Err(Response::error(
+                503,
+                "SDK namespace cleanup original scope changed",
+            ));
+        }
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        let view = permit.open(self)?;
+        view.matches_origin(
+            &plan.context.namespace,
+            plan.context.incarnation,
+            &plan.context.cluster,
+            &plan.context.activation,
+            &plan.context.ha,
+            &plan.context.delivery,
+            plan.context.clock,
+            plan.deadline,
+        )?;
+        if view
+            .state()
+            .auth
+            .sdk_auth_paths(&plan.binding)
+            .map_err(auth_error)?
+            != plan.paths
+        {
+            return Err(Response::error(
+                503,
+                "SDK namespace cleanup original policy changed",
+            ));
+        }
+        {
+            let cleanup = plan
+                .cleanup
+                .lock()
+                .map_err(|_| Response::error(503, "SDK cleanup unavailable"))?;
+            let cleanup = cleanup
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK cleanup absent"))?;
+            let lease = plan
+                .lease
+                .lock()
+                .map_err(|_| Response::error(503, "SDK cleanup lease unavailable"))?;
+            let call = lease
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK cleanup lease absent"))?;
+            cleanup.check(call)?;
+            cleanup
+                .namespace_work()
+                .ok_or_else(|| Response::error(503, "SDK original task absent"))?
+                .check_private_graph(self, &view)?;
+            call.check(&view.state().auth, plan.time(&view.state().auth)?)?;
+        }
+        view.state()
+            .auth
+            .sdk_auth_owner_gate(&plan.binding)
+            .map_err(auth_error)?;
+        view.check_current(self)?;
+        Ok(Some(view))
+    }
+    fn sdk_auth_cleanup_private_storage(
+        &mut self,
+        plan: &Plan,
+        view: namespace_runtime::CleanupView,
+        operation: StorageOp,
+    ) -> Result<StorageReply, Response> {
+        view.check_current(self)?;
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
+        let at = plan.time(&view.state().auth)?;
+        let mut candidate = view.state().clone();
+        if candidate.auth.observe_sdk_auth_clock(at) {
+            let proof = view.clock_publication(self, at)?;
+            let cleanup = plan
+                .cleanup
+                .lock()
+                .map_err(|_| Response::error(503, "SDK cleanup unavailable"))?;
+            let work = cleanup
+                .as_ref()
+                .and_then(credential::Cleanup::namespace_work)
+                .ok_or_else(|| Response::error(503, "SDK cleanup task absent"))?;
+            let closed = self.commit_namespace_sdk_cleanup_publication(proof, |state| {
+                work.check_auth(&state.auth)
+            })?;
+            self.state = Some(closed);
+        }
+        transaction.identity = self.current_state_identity()?;
+        transaction.auth.observe_sdk_auth_clock(at);
+        transaction
+            .auth
+            .sdk_auth_owner_gate(&plan.binding)
+            .map_err(auth_error)?;
+        let reply = sdk_auth_storage_operation(&mut transaction.auth, &plan.binding, operation)?;
+        // This gate uses the actual unchanged captured task and private MAC graph;
+        // it does not reacquire a loaded slot or reconstruct a Principal.
+        self.sdk_auth_gate(plan)?;
+        Ok(reply)
+    }
+    fn finish_sdk_auth_cleanup_private_callback(
+        &mut self,
+        plan: &Plan,
+        view: namespace_runtime::CleanupView,
+        value: Option<&Value>,
+    ) -> Result<Response, Response> {
+        view.check_current(self)?;
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| Response::error(503, "SDK Auth transaction unavailable"))?;
+        let mut incoming = view.state().clone();
+        incoming.auth = transaction.auth.clone();
+        let mut candidate = view.state().clone();
+        view.merge_storage(&mut candidate, &incoming)?;
+        let at = plan.time(&candidate.auth)?;
+        let mut response = credential::finish_callback(plan, &mut candidate, value, at)?;
+        let published = candidate.clone();
+        let mut committed = false;
+        let result = (|| {
+            let proof = view.callback_publication(self, candidate, &incoming, at)?;
+            let closed = {
+                let cleanup = plan
+                    .cleanup
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK cleanup unavailable"))?;
+                let work = cleanup
+                    .as_ref()
+                    .and_then(credential::Cleanup::namespace_work)
+                    .ok_or_else(|| Response::error(503, "SDK original task absent"))?;
+                self.commit_namespace_sdk_cleanup_publication(proof, |state| {
+                    work.check_auth(&state.auth)
+                })?
+            };
+            committed = true;
+            self.state = Some(closed);
+            transaction.identity = self.current_state_identity()?;
+            credential::after_publication(plan, &published.auth)?;
+            transaction.auth = published.auth;
+            self.sdk_auth_gate(plan)
+        })();
+        if let Err(error) = result {
+            erase_json(&mut response.body);
+            response.response_headers.clear();
+            if committed {
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.namespace_runtime.clear();
+                self.retire_sdk_hosts();
+            }
+            return Err(error);
+        }
+        Ok(response)
     }
 }

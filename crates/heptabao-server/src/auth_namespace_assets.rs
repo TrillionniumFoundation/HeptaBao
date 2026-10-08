@@ -27,9 +27,14 @@ pub(crate) struct NamespaceAssets {
     kerberos_mounts: Option<BTreeMap<String, kerberos::KerberosMount>>,
     plugin_auth_mounts: Option<BTreeMap<String, PluginAuthMount>>,
     cert_roles: Option<BTreeMap<String, BTreeMap<String, CertRole>>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_namespace: Option<sdk_namespace_custody::Parcel>,
 }
 
 impl NamespaceAssets {
+    pub(crate) fn sdk_namespace_parcel(&self) -> Option<&sdk_namespace_custody::Parcel> {
+        self.sdk_namespace.as_ref()
+    }
     pub(crate) fn namespace(&self) -> &str {
         &self.namespace
     }
@@ -243,6 +248,7 @@ impl AuthState {
             kerberos_mounts: self.kerberos_mounts.remove(namespace),
             plugin_auth_mounts: self.plugin_auth_mounts.remove(namespace),
             cert_roles: self.cert_roles.remove(namespace),
+            sdk_namespace: self.detach_sdk_namespace(namespace)?,
         })
     }
 
@@ -252,6 +258,7 @@ impl AuthState {
         assets: NamespaceAssets,
     ) -> Result<(), AuthError> {
         assets.validate(actual)?;
+        self.sdk_namespace_attach_preflight(actual, &assets.sdk_namespace)?;
         if self.public_origin_floor.is_none()
             && assets.tokens.values().any(Token::has_public_origin)
         {
@@ -282,6 +289,7 @@ impl AuthState {
         {
             return Err(err(503, "namespace auth owner is already loaded"));
         }
+        self.attach_sdk_namespace(actual, assets.sdk_namespace)?;
         self.tokens.extend(assets.tokens);
         if let Some(value) = assets.policies {
             self.policies.insert(actual.to_owned(), value);

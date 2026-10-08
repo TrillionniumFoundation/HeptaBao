@@ -53,7 +53,8 @@ impl AuthState {
             .cloned()
     }
     pub(crate) fn sdk_credential_owners(&self) -> Vec<(String, LeaseOwner)> {
-        self.sdk_credential_leases
+        let mut owners = self
+            .sdk_credential_leases
             .as_ref()
             .map_or_else(Vec::new, |registry| {
                 registry
@@ -61,15 +62,22 @@ impl AuthState {
                     .values()
                     .map(|record| (record.namespace.clone(), record.issuer.clone()))
                     .collect()
-            })
+            });
+        owners.extend(
+            self.custody_credential_records()
+                .into_iter()
+                .map(|record| (record.lease.namespace.clone(), record.lease.issuer.clone())),
+        );
+        owners
     }
     pub(crate) fn sdk_credential_namespace_pending(&self, namespace: &str) -> bool {
-        self.sdk_credential_leases.as_ref().is_some_and(|registry| {
-            registry
-                .records
-                .values()
-                .any(|record| record.namespace == namespace && record.phase != Phase::Revoked)
-        })
+        self.sdk_namespace_custody_pending(namespace)
+            || self.sdk_credential_leases.as_ref().is_some_and(|registry| {
+                registry
+                    .records
+                    .values()
+                    .any(|record| record.namespace == namespace && record.phase != Phase::Revoked)
+            })
     }
     pub(crate) fn sdk_credential_mount_records(
         &self,
@@ -129,15 +137,22 @@ impl AuthState {
             }))
     }
     pub(crate) fn sdk_credential_mount_pending(&self, binding: &sdk::Binding) -> bool {
-        self.sdk_credential_leases.as_ref().is_some_and(|registry| {
-            registry
-                .records
-                .values()
-                .any(|record| record.backend == *binding && record.phase != Phase::Revoked)
-        })
+        self.custody_credential_records()
+            .iter()
+            .any(|record| record.lease.backend == *binding && record.lease.phase != Phase::Revoked)
+            || self.sdk_credential_leases.as_ref().is_some_and(|registry| {
+                registry
+                    .records
+                    .values()
+                    .any(|record| record.backend == *binding && record.phase != Phase::Revoked)
+            })
     }
     pub(super) fn sdk_credential_mount_name_pending(&self, namespace: &str, mount: &str) -> bool {
-        self.sdk_credential_leases.as_ref().is_some_and(|registry| {
+        self.custody_credential_records().iter().any(|record| {
+            record.lease.namespace == namespace
+                && record.lease.backend.mount == mount
+                && record.lease.phase != Phase::Revoked
+        }) || self.sdk_credential_leases.as_ref().is_some_and(|registry| {
             registry.records.values().any(|record| {
                 record.namespace == namespace
                     && record.backend.mount == mount
@@ -259,12 +274,33 @@ impl AuthState {
         }
         if let Some(old) = previous.and_then(|old| old.sdk_credential_leases.as_ref()) {
             for (id, record) in &old.records {
-                let current = self
+                if let Some(current) = self
                     .sdk_credential_leases
                     .as_ref()
                     .and_then(|registry| registry.records.get(id))
-                    .ok_or_else(|| err(503, "SDK credential retained record removed"))?;
-                Self::sdk_credential_successor_record(current, record)?;
+                {
+                    Self::sdk_credential_successor_record(current, record)?;
+                } else {
+                    let current = self
+                        .custody_credential_record(id)
+                        .ok_or_else(|| err(503, "SDK credential retained record removed"))?;
+                    if current.digest != record.custody_record()?.digest {
+                        return Err(err(503, "SDK credential partition changed retained record"));
+                    }
+                }
+            }
+        }
+        if let Some(old) = previous {
+            for record in old.custody_credential_records() {
+                let current = self
+                    .custody_record_for_validation(&record.lease.namespace, &record.lease.id)?
+                    .ok_or_else(|| err(503, "SDK credential closed history removed"))?;
+                if current.digest != record.digest {
+                    return Err(err(
+                        503,
+                        "SDK credential closed history changed without logical proof",
+                    ));
+                }
             }
         }
         Ok(())
@@ -407,5 +443,169 @@ impl AuthState {
             }
         }
         Ok(result)
+    }
+}
+
+/// Non-executable exact projection. The complete Record remains solely in its
+/// actual global owner or authenticated namespace parcel.
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct CustodyRecord {
+    pub(super) namespace_owner: Option<batch_namespace::Binding>,
+    pub(super) lease: crate::engines::sdk_lease::Metadata<sdk::Binding>,
+    pub(super) digest: [u8; 32],
+}
+impl Record {
+    pub(super) fn custody_record(&self) -> Result<CustodyRecord, AuthError> {
+        let bytes = Zeroizing::new(
+            crate::secret_serde::to_vec(self, 4 * 1024 * 1024)
+                .map_err(|_| err(503, "SDK namespace credential custody encoding unavailable"))?,
+        );
+        Ok(CustodyRecord {
+            namespace_owner: self.namespace_owner.clone(),
+            lease: self.lease.public_metadata(),
+            digest: crate::crypto::digest(&bytes),
+        })
+    }
+}
+impl Registry {
+    pub(super) fn namespace_slice(
+        &mut self,
+        namespace: &str,
+        owner: &batch_namespace::Binding,
+    ) -> Self {
+        let keys = self
+            .records
+            .iter()
+            .filter(|(_, record)| {
+                record.namespace == namespace && record.namespace_owner.as_ref() == Some(owner)
+            })
+            .map(|(id, _)| id.clone())
+            .collect::<Vec<_>>();
+        Self {
+            records: keys
+                .into_iter()
+                .filter_map(|id| self.records.remove_entry(&id))
+                .collect(),
+        }
+    }
+    pub(super) fn namespace_index(
+        &self,
+        namespace: &str,
+    ) -> Result<BTreeMap<String, CustodyRecord>, AuthError> {
+        self.records
+            .iter()
+            .map(|(id, record)| {
+                if id != &record.id || record.namespace != namespace {
+                    return Err(err(503, "SDK namespace credential parcel binding rejected"));
+                }
+                Ok((id.clone(), record.custody_record()?))
+            })
+            .collect()
+    }
+    pub(super) fn contains_any(&self, incoming: &Self) -> bool {
+        incoming
+            .records
+            .keys()
+            .any(|id| self.records.contains_key(id))
+    }
+    pub(super) fn append_exact(&mut self, incoming: Self) -> Result<(), AuthError> {
+        if self.contains_any(&incoming) || self.records.len() + incoming.records.len() > 4096 {
+            return Err(err(
+                503,
+                "SDK namespace credential parcel collision or capacity rejected",
+            ));
+        }
+        self.records.extend(incoming.records);
+        Ok(())
+    }
+    pub(super) fn is_empty(&self) -> bool {
+        self.records.is_empty()
+    }
+    pub(super) fn custody_global_record_count(&self) -> usize {
+        self.records.len()
+    }
+}
+
+impl AuthState {
+    pub(super) fn validate_sdk_custody_credential_metadata(
+        &self,
+        record: &CustodyRecord,
+        cluster: &str,
+    ) -> Result<(), AuthError> {
+        let lease = &record.lease;
+        self.validate_batch_namespace_owner_structure(
+            record.namespace_owner.as_ref(),
+            &lease.namespace,
+        )?;
+        if lease.namespace.is_empty() != record.namespace_owner.is_none()
+            || lease.cluster != cluster
+            || record.digest == [0; 32]
+        {
+            return Err(err(503, "SDK credential custody saved owner rejected"));
+        }
+        lease
+            .validate_metadata(&lease.namespace)
+            .map_err(|e| err(e.status, &e.message))?;
+        let registration = lease
+            .registration
+            .as_ref()
+            .ok_or_else(|| err(503, "SDK credential custody registration absent"))?;
+        registration
+            .validate_namespace(
+                record
+                    .namespace_owner
+                    .as_ref()
+                    .map_or(Some(0), |owner| Some(owner.incarnation())),
+                lease.phase,
+            )
+            .map_err(|e| err(e.status, &e.message))?;
+        if self.sdk_auth_catalog.as_ref().is_none_or(|catalog| {
+            !catalog.known_generation(
+                &lease.backend.descriptor().name,
+                &lease.backend.descriptor().version,
+                lease.backend.descriptor().generation,
+            )
+        }) || self.sdk_auth_clock.is_none_or(|floor| {
+            lease.issued > floor || lease.renewed.is_some_and(|time| time > floor)
+        }) {
+            return Err(err(503, "SDK credential custody catalog or clock rejected"));
+        }
+        if let Some(claims) = lease.issuer.batch_claims() {
+            self.validate_batch_lease_owner(claims, &lease.namespace)?;
+        }
+        Ok(())
+    }
+    pub(super) fn custody_record_for_validation(
+        &self,
+        namespace: &str,
+        id: &str,
+    ) -> Result<Option<CustodyRecord>, AuthError> {
+        if let Some(record) = self
+            .sdk_credential_leases
+            .as_ref()
+            .and_then(|registry| registry.records.get(id))
+            .filter(|record| record.namespace == namespace)
+        {
+            return record.custody_record().map(Some);
+        }
+        Ok(self
+            .custody_credential_record(id)
+            .filter(|record| record.lease.namespace == namespace)
+            .cloned())
+    }
+}
+
+impl Registry {
+    pub(super) fn namespace_present(&self, actual: &str) -> bool {
+        self.records
+            .values()
+            .any(|record| record.namespace == actual)
+    }
+}
+
+impl Registry {
+    pub(super) fn custody_contains_id(&self, id: &str) -> bool {
+        self.records.contains_key(id)
     }
 }

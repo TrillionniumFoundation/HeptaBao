@@ -121,35 +121,54 @@ impl AuthState {
         self.sdk_auth_retirements.as_ref()?.jobs.get(id)
     }
     pub(crate) fn sdk_auth_retirement_tainted(&self, binding: &sdk::Binding) -> bool {
-        self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
-            registry
-                .jobs
-                .values()
-                .any(|job| job.completion.is_none() && job.binding == *binding)
-        })
+        self.custody_retirement_jobs()
+            .iter()
+            .any(|job| !job.completed() && job.binding == *binding)
+            || self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
+                registry
+                    .jobs
+                    .values()
+                    .any(|job| job.completion.is_none() && job.binding == *binding)
+            })
     }
     pub(crate) fn sdk_auth_retirement_namespace_pending(&self, namespace: &str) -> bool {
-        self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
-            registry
-                .jobs
-                .values()
-                .any(|job| job.completion.is_none() && job.binding.namespace == namespace)
-        })
+        self.sdk_namespace_custody_pending(namespace)
+            || self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
+                registry
+                    .jobs
+                    .values()
+                    .any(|job| job.completion.is_none() && job.binding.namespace == namespace)
+            })
     }
     pub(crate) fn sdk_auth_retirement_claims_record(&self, namespace: &str, id: &str) -> bool {
-        self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
-            registry
-                .jobs
-                .values()
-                .any(|job| job.binding.namespace == namespace && job.resources.contains_key(id))
-        })
+        self.custody_retirement_jobs()
+            .iter()
+            .any(|job| job.binding.namespace == namespace && job.resources.contains_key(id))
+            || self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
+                registry
+                    .jobs
+                    .values()
+                    .any(|job| job.binding.namespace == namespace && job.resources.contains_key(id))
+            })
     }
-    fn update_sdk_auth_retirement_mirror(&mut self) -> Result<(), AuthError> {
-        let mirror = self
-            .sdk_auth_retirements
-            .as_ref()
-            .map(|registry| hash(registry).map(|digest| Mirror { digest }))
-            .transpose()?;
+    fn expected_sdk_auth_retirement_mirror(&self) -> Result<Option<Mirror>, AuthError> {
+        match &self.sdk_namespace_custody {
+            None => self
+                .sdk_auth_retirements
+                .as_ref()
+                .map(|registry| hash(registry).map(|digest| Mirror { digest }))
+                .transpose(),
+            Some(custody) => Ok(Some(Mirror {
+                digest: hash(&(
+                    b"heptabao-sdk-auth-custody-mirror-114",
+                    &self.sdk_auth_retirements,
+                    custody,
+                ))?,
+            })),
+        }
+    }
+    pub(super) fn update_sdk_auth_retirement_mirror(&mut self) -> Result<(), AuthError> {
+        let mirror = self.expected_sdk_auth_retirement_mirror()?;
         let catalog = self
             .sdk_auth_catalog
             .as_mut()
@@ -345,11 +364,7 @@ impl AuthState {
         cluster: &str,
         incarnation: impl Fn(&str) -> Option<u64>,
     ) -> Result<(), AuthError> {
-        let expected = self
-            .sdk_auth_retirements
-            .as_ref()
-            .map(|registry| hash(registry).map(|digest| Mirror { digest }))
-            .transpose()?;
+        let expected = self.expected_sdk_auth_retirement_mirror()?;
         if self
             .sdk_auth_catalog
             .as_ref()
@@ -387,7 +402,7 @@ impl AuthState {
                 }
                 if previous.is_some()
                     && previous
-                        .and_then(|auth| auth.sdk_auth_retirement_job(id))
+                        .and_then(|auth| auth.sdk_auth_retirement_job_for_validation(id))
                         .is_none()
                     && (job.completion.is_some()
                         || job
@@ -494,7 +509,7 @@ impl AuthState {
         if let Some(old) = previous.and_then(|auth| auth.sdk_auth_retirements.as_ref()) {
             for (id, before) in &old.jobs {
                 let after = self
-                    .sdk_auth_retirement_job(id)
+                    .sdk_auth_retirement_job_for_validation(id)
                     .ok_or_else(|| err(503, "SDK retirement history removed"))?;
                 if before.id != after.id
                     || before.cluster != after.cluster
@@ -561,13 +576,12 @@ impl RecoverySelection {
         if auth.sdk_auth_retirement_job(self.id()) != Some(&self.selected) {
             return Err(err(503, "SDK retirement selected durable intent changed"));
         }
-        let registry = auth
-            .sdk_auth_retirements
+        auth.sdk_auth_retirements
             .as_ref()
             .ok_or_else(|| err(503, "SDK retirement selected registry absent"))?;
-        let expected = Mirror {
-            digest: hash(registry)?,
-        };
+        let expected = auth
+            .expected_sdk_auth_retirement_mirror()?
+            .ok_or_else(|| err(503, "SDK retirement selected strict mirror absent"))?;
         if auth
             .sdk_auth_catalog
             .as_ref()
@@ -828,5 +842,212 @@ impl AuthState {
             }
         }
         self.update_sdk_auth_retirement_mirror()
+    }
+}
+
+impl Registry {
+    pub(super) fn namespace_slice(
+        &mut self,
+        namespace: &str,
+        owner: &batch_namespace::Binding,
+    ) -> Self {
+        let keys = self
+            .jobs
+            .iter()
+            .filter(|(_, job)| {
+                job.binding.namespace == namespace && job.namespace_owner.as_ref() == Some(owner)
+            })
+            .map(|(id, _)| id.clone())
+            .collect::<Vec<_>>();
+        Self {
+            jobs: keys
+                .into_iter()
+                .filter_map(|id| self.jobs.remove_entry(&id))
+                .collect(),
+        }
+    }
+    /// Jobs contain original digests/control metadata, never Secret/data or a
+    /// Principal. This copy is validation/indexing only; ordinary job lookup
+    /// never consults it and it cannot produce a RecoverySelection.
+    pub(super) fn namespace_index(
+        &self,
+        namespace: &str,
+    ) -> Result<BTreeMap<String, Job>, AuthError> {
+        if self
+            .jobs
+            .iter()
+            .any(|(id, job)| id != &job.id || job.binding.namespace != namespace)
+        {
+            return Err(err(503, "SDK namespace retirement parcel binding rejected"));
+        }
+        Ok(self.jobs.clone())
+    }
+    pub(super) fn contains_any(&self, incoming: &Self) -> bool {
+        incoming.jobs.keys().any(|id| self.jobs.contains_key(id))
+    }
+    pub(super) fn append_exact(&mut self, incoming: Self) -> Result<(), AuthError> {
+        if self.contains_any(&incoming) || self.jobs.len() + incoming.jobs.len() > 256 {
+            return Err(err(
+                503,
+                "SDK namespace retirement parcel collision or capacity rejected",
+            ));
+        }
+        self.jobs.extend(incoming.jobs);
+        Ok(())
+    }
+    pub(super) fn is_empty(&self) -> bool {
+        self.jobs.is_empty()
+    }
+    pub(super) fn custody_global_job_count(&self) -> usize {
+        self.jobs.len()
+    }
+}
+
+impl AuthState {
+    /// Structural/history lookup only. This method never prepares work.
+    fn sdk_auth_retirement_job_for_validation(&self, id: &str) -> Option<&Job> {
+        self.sdk_auth_retirement_job(id)
+            .or_else(|| self.custody_retirement_job_for_validation(id))
+    }
+}
+impl Job {
+    pub(super) fn saved_namespace_owner(&self) -> Option<&batch_namespace::Binding> {
+        self.namespace_owner.as_ref()
+    }
+}
+
+impl Job {
+    /// A locator proves only the retained control projection. Full per-Job
+    /// validation still runs after authenticated restoration and checks actual
+    /// Records, Secret/data digests, owner/mount and completion removal.
+    pub(super) fn validate_custody_index(
+        &self,
+        id: &str,
+        cluster: &str,
+        auth: &AuthState,
+    ) -> Result<(), AuthError> {
+        if id != self.id
+            || id.len() != 32
+            || !id.bytes().all(|c| c.is_ascii_hexdigit())
+            || self.cluster != cluster
+            || self.request.len() != 44
+            || base64::engine::general_purpose::STANDARD
+                .decode(&self.request)
+                .map_or(true, |bytes| bytes.len() != 32)
+            || self.resources.len() > 4096
+            || auth
+                .sdk_auth_clock
+                .is_none_or(|floor| self.accepted_at > floor)
+            || self.binding.namespace.is_empty() != self.namespace_owner.is_none()
+        {
+            return Err(err(
+                503,
+                "SDK retirement custody original admission rejected",
+            ));
+        }
+        auth.validate_batch_namespace_owner_structure(
+            self.namespace_owner.as_ref(),
+            &self.binding.namespace,
+        )?;
+        for (id, resource) in &self.resources {
+            let record = auth
+                .custody_record_for_validation(&self.binding.namespace, id)?
+                .ok_or_else(|| err(503, "SDK retirement custody credential index absent"))?;
+            let lease = &record.lease;
+            let original = hash(&(
+                &lease.id,
+                &lease.namespace,
+                &lease.cluster,
+                &lease.mount,
+                &lease.path,
+                &lease.backend,
+                &lease.issuer,
+                &lease.registration,
+                lease.issued,
+                lease.expires,
+                lease.renewed,
+                lease.max_ttl_ns,
+                lease.ttl_ns,
+            ))?;
+            if lease.backend != self.binding
+                || record.namespace_owner != self.namespace_owner
+                || original != resource.original
+                || record.digest != resource.record
+            {
+                return Err(err(
+                    503,
+                    "SDK retirement custody resource projection differs",
+                ));
+            }
+            match resource.phase {
+                ResourcePhase::Queued
+                    if lease.phase == LeasePhase::PendingRevoke
+                        && resource.attempted_at.is_none()
+                        && resource.terminal_at.is_none()
+                        && resource.record == resource.accepted_record => {}
+                ResourcePhase::Attempted
+                    if lease.phase == LeasePhase::PendingRevoke
+                        && resource.record == resource.accepted_record
+                        && resource.terminal_at.is_none()
+                        && resource.attempted_at.is_some_and(|at| {
+                            at >= self.accepted_at
+                                && auth.sdk_auth_clock.is_some_and(|floor| at <= floor)
+                        }) => {}
+                ResourcePhase::Terminal
+                    if lease.phase == LeasePhase::Revoked
+                        && resource.attempted_at.is_some_and(|before| {
+                            before >= self.accepted_at
+                                && resource.terminal_at.is_some_and(|at| {
+                                    at >= before
+                                        && auth.sdk_auth_clock.is_some_and(|floor| at <= floor)
+                                })
+                        }) => {}
+                _ => return Err(err(503, "SDK retirement custody attempt phase rejected")),
+            }
+        }
+        if let Some(completion) = &self.completion
+            && (completion.at < self.accepted_at
+                || auth
+                    .sdk_auth_clock
+                    .is_none_or(|floor| completion.at > floor)
+                || completion.records != self.terminal_projection()?
+                || self.resources.values().any(|resource| {
+                    resource.phase != ResourcePhase::Terminal
+                        || resource.terminal_at.is_none_or(|at| completion.at < at)
+                }))
+        {
+            return Err(err(
+                503,
+                "SDK retirement custody completion projection rejected",
+            ));
+        }
+        Ok(())
+    }
+}
+
+impl Registry {
+    pub(super) fn namespace_present(&self, actual: &str) -> bool {
+        self.jobs
+            .values()
+            .any(|job| job.binding.namespace == actual)
+    }
+}
+
+impl Registry {
+    pub(super) fn custody_global_resource_count(&self) -> Option<usize> {
+        self.jobs
+            .values()
+            .try_fold(0usize, |count, job| count.checked_add(job.resources.len()))
+    }
+}
+impl Job {
+    pub(super) fn custody_resource_count(&self) -> usize {
+        self.resources.len()
+    }
+}
+
+impl Job {
+    pub(super) fn custody_id(&self) -> &str {
+        &self.id
     }
 }

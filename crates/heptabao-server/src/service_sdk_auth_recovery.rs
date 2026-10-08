@@ -20,6 +20,9 @@ fn unavailable() -> Response {
     Response::error(503, "SDK Auth native retirement owner unavailable")
 }
 impl Authority {
+    pub(in crate::service) fn role_for_custody(&self) -> Option<(u64, u64)> {
+        self.role
+    }
     fn capture(
         service: &Service,
         selected: RecoverySelection,
@@ -184,6 +187,17 @@ impl Authority {
             auth.sdk_auth_storage_witness(self.selected.binding())
                 .map_err(auth_error)?,
         );
+        self.check_auth(auth)
+    }
+    pub(in crate::service) fn published_private_removal(
+        &mut self,
+        auth: &AuthState,
+        at: Timestamp,
+    ) -> Result<(), Response> {
+        self.selected
+            .published_removal(auth, at)
+            .map_err(auth_error)?;
+        self.storage = None;
         self.check_auth(auth)
     }
     pub(super) fn published_removal(

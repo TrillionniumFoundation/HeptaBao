@@ -271,6 +271,52 @@ impl CleanupAuthority {
     }
 }
 impl Service {
+    pub(super) fn validate_sdk_private_cleanup_authority(
+        &self,
+        authority: &Authority,
+        view: &namespace_runtime::CleanupView,
+    ) -> Result<(), Response> {
+        let Authority::Cleanup(value) = authority else {
+            return Err(Response::error(
+                503,
+                "SDK private namespace cleanup Kind changed",
+            ));
+        };
+        value.check_deadline()?;
+        let work = value
+            .namespace_work
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK private namespace cleanup task absent"))?;
+        work.check_private_graph(self, view)?;
+        view.matches_origin(
+            &value.record.namespace,
+            value.namespace_incarnation,
+            &value.cluster,
+            &value.activation,
+            &value.ha,
+            &value.binding,
+            value.clock,
+            value.deadline,
+        )?;
+        let current = view
+            .state()
+            .engines
+            .sdk_lease(&value.record.namespace, &value.record.id)
+            .ok_or_else(|| Response::error(503, "SDK private cleanup saved lease absent"))?;
+        if digest(&current)? != digest(&value.record)?
+            || (value.terminal && current.phase != Phase::Revoked)
+            || (!value.terminal && current.phase != Phase::PendingRevoke)
+        {
+            return Err(Response::error(
+                503,
+                "SDK private cleanup typed lease changed",
+            ));
+        }
+        current
+            .validate(&value.record.namespace)
+            .map_err(Response::from_engine_error)?;
+        value.check_deadline()
+    }
     pub(super) fn validate_sdk_authority(
         &mut self,
         authority: &mut Authority,

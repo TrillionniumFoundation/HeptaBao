@@ -349,6 +349,26 @@ impl Service {
             .map_err(Response::from_engine_error)?;
         // Check the authenticated incoming label before any HA writer normalization.
         // Both permanent facts remain after consumption and last-token retirement.
+        if (current.schema >= SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+            || current.auth.has_sdk_namespace_custody())
+            && incoming.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK Auth namespace custody",
+            ));
+        }
+        incoming.validate_sdk_namespace_custody()?;
+        incoming
+            .auth
+            .validate_sdk_namespace_custody_successor(&current.auth)
+            .map_err(|e| Response::error(400, &e.message))?;
+        incoming
+            .auth
+            .validate_sdk_credential_state(Some(&current.auth), &incoming.cluster_id, |ns| {
+                incoming.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(400, &e.message))?;
         if (current.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             || current.auth.has_general_wrapped_reply_state())
             && incoming.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA

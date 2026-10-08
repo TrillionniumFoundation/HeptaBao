@@ -269,6 +269,53 @@ impl Record {
         }
         Ok(())
     }
+    /// Structural deferred hydration only. The complete Record is still
+    /// required by check_credential before execution or a logical publication.
+    pub(crate) fn check_credential_index(
+        &self,
+        value: &crate::engines::sdk_lease::Metadata<sdk::Binding>,
+        digest: [u8; 32],
+    ) -> Result<(), AuthError> {
+        let Resource::Credential { backend } = &self.resource else {
+            return Err(err(503, "namespace SDK locator has wrong resource Kind"));
+        };
+        let metadata = Metadata {
+            id: value.id.clone(),
+            mount: value.mount.clone(),
+            path: value.path.clone(),
+            issuer: value.issuer.clone(),
+            registration: value.registration.clone(),
+            issued: value.issued,
+            expires: value.expires,
+            renewed: value.renewed,
+            ttl_ns: value.ttl_ns,
+            max_ttl_ns: value.max_ttl_ns,
+            renewable: value.renewable,
+        };
+        let (phase, expected) = match self.stage {
+            Stage::Queued | Stage::Attempted => (Phase::PendingRevoke, self.pending_digest),
+            Stage::Terminal { revoked_digest } => (Phase::Revoked, revoked_digest),
+        };
+        let mut saved = self.metadata.clone();
+        if phase == Phase::Revoked {
+            saved.renewable = false;
+        }
+        if value.namespace != self.deletion_owner.namespace()
+            || &value.backend != backend.as_ref()
+            || metadata != saved
+            || value.phase != phase
+            || digest != expected
+        {
+            return Err(err(
+                503,
+                "namespace SDK credential locator differs from saved resource",
+            ));
+        }
+        self.deletion_owner
+            .validate_cluster_namespace(&value.cluster, &value.namespace)
+            .map_err(|_| err(503, "namespace SDK locator actual cluster differs"))?;
+        self.validate(&value.cluster)
+    }
     pub(crate) fn is_terminal_successor(&self, old: &Self) -> bool {
         self.same_selected(old)
             && old.stage == Stage::Attempted

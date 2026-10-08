@@ -365,12 +365,22 @@ impl Service {
         mut response: Option<Value>,
     ) -> Response {
         let result = (|| {
+            let mut private_view = self.sdk_logical_cleanup_private_view(plan)?;
             let mut authority = plan
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
-            self.validate_sdk_authority(&mut authority)?;
-            self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+            if let Some(view) = private_view.as_ref() {
+                self.validate_sdk_private_cleanup_authority(&authority, view)?;
+            } else {
+                self.validate_sdk_authority(&mut authority)?;
+            }
+            if let Some(view) = private_view.as_ref() {
+                self.sdk_binding_private_gate(plan, view.state())
+                    .map_err(bridge_failure)?;
+            } else {
+                self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+            }
             let mut transaction = plan
                 .transaction
                 .lock()
@@ -392,7 +402,17 @@ impl Service {
             let namespace_role = authority
                 .namespace_work()
                 .map(|work| {
-                    work.logical_native_role(self, &plan.namespace, &plan.mount, &plan.owner)
+                    if let Some(view) = private_view.as_ref() {
+                        work.logical_native_role_private(
+                            self,
+                            view,
+                            &plan.namespace,
+                            &plan.mount,
+                            &plan.owner,
+                        )
+                    } else {
+                        work.logical_native_role(self, &plan.namespace, &plan.mount, &plan.owner)
+                    }
                 })
                 .transpose()?;
             if plan.namespace_cleanup != namespace_role.is_some() {
@@ -420,10 +440,13 @@ impl Service {
                     "SDK transaction snapshot changed before publication",
                 ));
             }
-            let mut state = self
-                .state
-                .clone()
-                .ok_or_else(|| Response::error(503, "SDK server sealed"))?;
+            let mut state = if let Some(view) = private_view.as_ref() {
+                view.state().clone()
+            } else {
+                self.state
+                    .clone()
+                    .ok_or_else(|| Response::error(503, "SDK server sealed"))?
+            };
             if authority.admitted_data() {
                 let original = transaction
                     .admitted_original
@@ -642,11 +665,68 @@ impl Service {
             if !warnings.is_null() {
                 body["warnings"] = std::mem::take(&mut warnings.0);
             }
-            if changed {
+            if changed && private_view.is_some() {
+                let view = private_view
+                    .take()
+                    .ok_or_else(|| Response::error(503, "SDK private view absent"))?;
+                let mut incoming = view.state().clone();
+                incoming.engines = transaction.engines.clone();
+                let at = state
+                    .engines
+                    .sdk_lease_clock_floor()
+                    .ok_or_else(|| Response::error(503, "SDK private original floor absent"))?;
+                let proof = view.callback_publication(self, state.clone(), &incoming, at)?;
+                let closed = self.commit_namespace_sdk_cleanup_publication(proof, |logical| {
+                    authority.validate_live_auth(&logical.auth)
+                })?;
+                self.state = Some(closed);
+                let post = (|| {
+                    authority.after_lease_commit(&state)?;
+                    transaction.identity = self.current_state_identity()?;
+                    let permit = plan
+                        .private_cleanup
+                        .lock()
+                        .map_err(|_| Response::error(503, "SDK private cleanup unavailable"))?;
+                    let view = permit
+                        .as_ref()
+                        .ok_or_else(|| Response::error(503, "SDK private cleanup absent"))?
+                        .open(self)?;
+                    self.validate_sdk_private_cleanup_authority(&authority, &view)?;
+                    let work = authority.namespace_work().ok_or_else(|| {
+                        Response::error(503, "SDK original namespace task absent")
+                    })?;
+                    transaction.namespace_original = Some(work.logical_storage_cut_private(
+                        self,
+                        &view,
+                        &plan.namespace,
+                        &plan.mount,
+                        &plan.owner,
+                    )?);
+                    transaction.changed = false;
+                    private_view = Some(view);
+                    Ok::<(), Response>(())
+                })();
+                if let Err(error) = post {
+                    self.recovery_required = true;
+                    self.ha_activation = None;
+                    self.namespace_runtime.clear();
+                    self.retire_sdk_hosts();
+                    return Err(error);
+                }
+            } else if changed {
                 state.schema = state.writer_schema();
                 let publication = self.prepare_record_plan(&mut state)?;
-                self.validate_sdk_authority(&mut authority)?;
-                self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                if let Some(view) = private_view.as_ref() {
+                    self.validate_sdk_private_cleanup_authority(&authority, view)?;
+                } else {
+                    self.validate_sdk_authority(&mut authority)?;
+                }
+                if let Some(view) = private_view.as_ref() {
+                    self.sdk_binding_private_gate(plan, view.state())
+                        .map_err(bridge_failure)?;
+                } else {
+                    self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                }
                 if self.current_state_identity()? != publication_identity {
                     return Err(Response::error(
                         503,
@@ -691,8 +771,17 @@ impl Service {
                 }
                 transaction.changed = false;
             }
-            self.validate_sdk_authority(&mut authority)?;
-            self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+            if let Some(view) = private_view.as_ref() {
+                self.validate_sdk_private_cleanup_authority(&authority, view)?;
+            } else {
+                self.validate_sdk_authority(&mut authority)?;
+            }
+            if let Some(view) = private_view.as_ref() {
+                self.sdk_binding_private_gate(plan, view.state())
+                    .map_err(bridge_failure)?;
+            } else {
+                self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+            }
             Ok(Response {
                 status,
                 body: std::mem::take(&mut body.0),
