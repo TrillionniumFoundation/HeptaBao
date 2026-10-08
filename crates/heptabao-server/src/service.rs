@@ -2173,9 +2173,22 @@ impl Service {
                 self.finalize_external_key(plan, result)
             }
             (
-                ExternalEffectPlan::ExternalTransit(plan),
+                ExternalEffectPlan::ExternalTransit(mut plan),
                 ExternalEffectResult::ExternalTransit(result),
-            ) => self.finalize_external_transit(plan, result),
+            ) => {
+                let response = self.finalize_external_transit(&mut plan, result);
+                let response = self.audit_external_transit_response(
+                    &mut plan,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                    response,
+                );
+                return self.complete_external_transit_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
             (
                 ExternalEffectPlan::AcmeExternal(mut plan),
                 ExternalEffectResult::AcmeExternal(result),

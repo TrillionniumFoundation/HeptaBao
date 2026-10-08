@@ -95,7 +95,7 @@ impl Drop for PublicationClockScope {
 }
 
 #[derive(Clone, Copy)]
-struct PublicationClock(Option<(Duration, Instant)>);
+pub(super) struct PublicationClock(Option<(Duration, Instant)>);
 
 /// Reuse the listener's trusted wall-time observation plus its original
 /// monotonic anchor. Explicit-clock embedders without a scope retain exactly
@@ -117,8 +117,15 @@ pub(super) fn publication_now(logical_now: u64) -> u64 {
 }
 
 impl PublicationClock {
-    fn capture() -> Self {
+    pub(super) fn capture() -> Self {
         Self(PUBLICATION_CLOCK.with(Cell::get))
+    }
+    // Re-enter the original private anchor without sampling a new wall clock.
+    pub(super) fn enter_scope(self) -> PublicationClockScope {
+        match self.0 {
+            Some((unix, started)) => PublicationClockScope::enter(unix, started),
+            None => PublicationClockScope::explicit(),
+        }
     }
     fn remaining_at(self, expires: u64, logical_now: u64, elapsed: Duration) -> Duration {
         let now = self

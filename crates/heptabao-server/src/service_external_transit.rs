@@ -24,6 +24,16 @@ pub(super) struct ExternalTransitPlan {
     expected_identity: crate::state_record_root::StateIdentity,
     expected_generation: plugin::PublicationGeneration,
     authority: PluginResponseAuthority,
+    wrapping_ttl: Option<u64>,
+    creation_path: String,
+    publication_clock: super::external_pki::PublicationClock,
+    // This checkpoint is created only after our own completed publication.
+    // The original provider admission identity/generation above never change.
+    delivery_checkpoint: Option<(
+        crate::state_record_root::StateIdentity,
+        plugin::PublicationGeneration,
+    )>,
+    wrapped_token: Option<Zeroizing<String>>,
 }
 
 struct SensitiveJson(Value);
@@ -235,9 +245,6 @@ impl Service {
         ) {
             return Response::error(error.status, &error.message);
         }
-        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
-            return Response::error(501, "external Transit response wrapping is not implemented");
-        }
         if self.pending_external_transit.is_some() {
             return Response::error(503, "another external Transit operation is pending");
         }
@@ -323,6 +330,11 @@ impl Service {
             provider_binding,
             expected_identity,
             expected_generation,
+            wrapping_ttl: request.wrap_ttl_seconds.filter(|ttl| *ttl > 0),
+            creation_path: request.path.into(),
+            publication_clock: super::external_pki::PublicationClock::capture(),
+            delivery_checkpoint: None,
+            wrapped_token: None,
             authority: PluginResponseAuthority::new(
                 principal,
                 state,
@@ -337,7 +349,7 @@ impl Service {
 
     pub(super) fn finalize_external_transit(
         &mut self,
-        mut plan: ExternalTransitPlan,
+        plan: &mut ExternalTransitPlan,
         result: Result<Observation, Response>,
     ) -> Response {
         let mut observation = match result {
@@ -394,7 +406,302 @@ impl Service {
             };
             Response::error(status, "external Transit provider rejected request")
         } else {
-            Response::ok(json!({"data":std::mem::take(&mut observation.data)}))
+            let mut response = Response::ok(json!({"data":std::mem::take(&mut observation.data)}));
+            if let Err(cause) = self.publish_external_transit_wrapping(plan, &mut response) {
+                erase_json(&mut response.body);
+                return cause;
+            }
+            plan.delivery_checkpoint = match (
+                self.current_state_identity(),
+                self.external_effect_generation(),
+            ) {
+                (Ok(identity), Ok(generation)) => Some((identity, generation)),
+                _ => {
+                    erase_json(&mut response.body);
+                    return Response::error(
+                        503,
+                        "external Transit delivery checkpoint unavailable; no blind retry",
+                    );
+                }
+            };
+            response
         }
+    }
+
+    fn publish_external_transit_wrapping(
+        &mut self,
+        plan: &mut ExternalTransitPlan,
+        response: &mut Response,
+    ) -> Result<(), Response> {
+        let Some(ttl) = plan.wrapping_ttl else {
+            return Ok(());
+        };
+        let mut candidate = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external Transit wrapping owner unavailable"))?
+            .clone();
+        let time = plan.authority.observe_candidate_time(&mut candidate)?;
+        let _origin_scope = plan.publication_clock.enter_scope();
+        let mut wrapped = candidate
+            .auth
+            .wrap_logical_response(
+                &plan.namespace,
+                &plan.creation_path,
+                ttl,
+                &response.body,
+                time.seconds(),
+            )
+            .map_err(|cause| Response::error(cause.status, &cause.message))?;
+        let mut wrapped_body = SensitiveJson(std::mem::take(&mut wrapped.body));
+        plan.wrapped_token = Some(Zeroizing::new(
+            wrapped_body.0["wrap_info"]["token"]
+                .as_str()
+                .ok_or_else(|| {
+                    Response::error(503, "external Transit private wrapper unavailable")
+                })?
+                .to_owned(),
+        ));
+        erase_json(&mut response.body);
+        response.status = wrapped.status;
+        response.body = std::mem::take(&mut wrapped_body.0);
+        candidate.schema = candidate.writer_schema();
+        candidate.validate_format()?;
+        let record_plan = self.prepare_record_plan(&mut candidate)?;
+        self.validate_plugin_response(&mut plan.authority)?;
+        if !self
+            .current_state_identity()
+            .is_ok_and(|identity| identity == plan.expected_identity)
+            || !self
+                .external_effect_generation()
+                .is_ok_and(|generation| generation == plan.expected_generation)
+            || !self.state.as_ref().is_some_and(|state| {
+                state.engines.external_transit_mount_current(
+                    &plan.namespace,
+                    &plan.mount,
+                    plan.mount_incarnation,
+                )
+            })
+            || !self
+                .outbound
+                .same_https_enrollment(&plan.outbound, &plan.url)
+        {
+            return Err(Response::error(
+                503,
+                "external Transit wrapping withheld after owner changed; remote outcome unknown; no blind retry",
+            ));
+        }
+        // Retain the optional host lock through the authenticated writer commit.
+        // The native result remains the real HTTPS provider's cryptographic result.
+        let retained_host = plan
+            .provider_binding
+            .as_ref()
+            .map(|(host, _, _)| Arc::clone(host));
+        let host_guard = match retained_host.as_ref() {
+            Some(host) => Some(host.try_lock().map_err(|_| {
+                Response::error(
+                    503,
+                    "external Transit provider host busy before wrapping publication",
+                )
+            })?),
+            None => None,
+        };
+        let provider_current = match (
+            &plan.provider_binding,
+            self.kms_plugins.get("transit"),
+            self.kms_keys.get("transit"),
+            host_guard.as_ref(),
+        ) {
+            (None, None, None, None) => true,
+            (
+                Some((host, binding, generation)),
+                Some(current_host),
+                Some(current_binding),
+                Some(guard),
+            ) => {
+                Arc::ptr_eq(host, current_host)
+                    && provider_binding_matches(binding, current_binding)
+                    && guard.state() == PluginHostState::Active
+                    && guard.manifest().descriptor().generation() == *generation
+            }
+            _ => false,
+        };
+        if !provider_current {
+            return Err(Response::error(
+                503,
+                "external Transit provider changed before wrapping publication; no blind retry",
+            ));
+        }
+        plan.authority.validate_live_auth(&candidate.auth)?;
+        self.commit_record_plan_with_before_publish(
+            &candidate,
+            record_plan,
+            |auth| plan.authority.validate_live_auth(auth),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )?;
+        self.state = Some(candidate);
+        Ok(())
+    }
+
+    pub(super) fn audit_external_transit_response(
+        &mut self,
+        plan: &mut ExternalTransitPlan,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
+        response: Response,
+    ) -> Response {
+        let (response, receipt) = self.audit_completed_response_with_clock_receipt(
+            fingerprint,
+            request_clock,
+            response,
+            || {},
+            true,
+        );
+        if (200..300).contains(&response.status)
+            && let Some(receipt) = receipt
+        {
+            receipt.advance(&mut plan.delivery_checkpoint);
+        }
+        response
+    }
+
+    pub(super) fn complete_external_transit_delivery(
+        &mut self,
+        plan: &mut ExternalTransitPlan,
+        response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        let planned_success = (200..300).contains(&response.status);
+        let mut response = self.external_transit_delivery_gate(plan, response);
+        if planned_success
+            && !(200..300).contains(&response.status)
+            && self
+                .audit_event(
+                    "external-transit-delivery-veto",
+                    fingerprint,
+                    plan.authority.now(),
+                    Some(response.status),
+                )
+                .is_err()
+        {
+            erase_json(&mut response.body);
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(
+                503,
+                "external Transit delivery veto audit failed; authoritative recovery required; no blind retry",
+            );
+        }
+        response
+    }
+
+    fn external_transit_delivery_gate(
+        &mut self,
+        plan: &mut ExternalTransitPlan,
+        mut response: Response,
+    ) -> Response {
+        if !(200..300).contains(&response.status) {
+            return response;
+        }
+        if let Err(cause) = self.validate_plugin_response(&mut plan.authority) {
+            erase_json(&mut response.body);
+            return cause;
+        }
+        let retained_host = plan
+            .provider_binding
+            .as_ref()
+            .map(|(host, _, _)| Arc::clone(host));
+        let host_guard = match retained_host.as_ref() {
+            Some(host) => match host.try_lock() {
+                Ok(guard) => Some(guard),
+                Err(_) => {
+                    erase_json(&mut response.body);
+                    return Response::error(
+                        503,
+                        "external Transit provider host busy before delivery",
+                    );
+                }
+            },
+            None => None,
+        };
+        let provider_current = match (
+            &plan.provider_binding,
+            self.kms_plugins.get("transit"),
+            self.kms_keys.get("transit"),
+            host_guard.as_ref(),
+        ) {
+            (None, None, None, None) => true,
+            (
+                Some((host, binding, generation)),
+                Some(current_host),
+                Some(current_binding),
+                Some(guard),
+            ) => {
+                Arc::ptr_eq(host, current_host)
+                    && provider_binding_matches(binding, current_binding)
+                    && guard.state() == PluginHostState::Active
+                    && guard.manifest().descriptor().generation() == *generation
+            }
+            _ => false,
+        };
+        let checkpoint_current =
+            plan.delivery_checkpoint
+                .as_ref()
+                .is_some_and(|(identity, generation)| {
+                    self.current_state_identity()
+                        .is_ok_and(|current| current == *identity)
+                        && self
+                            .external_effect_generation()
+                            .is_ok_and(|current| current == *generation)
+                });
+        if !provider_current
+            || !checkpoint_current
+            || !self.state.as_ref().is_some_and(|state| {
+                state.engines.external_transit_mount_current(
+                    &plan.namespace,
+                    &plan.mount,
+                    plan.mount_incarnation,
+                )
+            })
+            || !self
+                .outbound
+                .same_https_enrollment(&plan.outbound, &plan.url)
+            || plan.authority.deadline_expired()
+        {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "external Transit committed response withheld by delivery fence; public readback required; no blind retry",
+            );
+        }
+        if let Some(token) = plan.wrapped_token.as_ref() {
+            let time = match plan.authority.token_time() {
+                Ok(time) => time,
+                Err(cause) => {
+                    erase_json(&mut response.body);
+                    return cause;
+                }
+            };
+            let lookup = SensitiveJson(json!({"token":token.as_str()}));
+            let live_wrapper = self.state.as_ref().is_some_and(|state| {
+                state
+                    .auth
+                    .lookup_wrapping_request("", &plan.namespace, "POST", &lookup.0, time.seconds())
+                    .is_ok_and(|metadata| {
+                        metadata.body["data"]["creation_path"] == plan.creation_path
+                            && metadata.body["data"]["creation_ttl"].as_u64() == plan.wrapping_ttl
+                    })
+            });
+            if !live_wrapper {
+                erase_json(&mut response.body);
+                return Response::error(
+                    503,
+                    "external Transit committed wrapper no longer live before delivery; no blind retry",
+                );
+            }
+        }
+        response
     }
 }
