@@ -1604,10 +1604,23 @@ fn raw113_actual_selected_json_consume_needs_real_http_ingress_and_stays_permane
         .ok_or("actual consumed private origin")?;
     let stored = origin.stored_reply().ok_or("actual selected original")?;
     let original = Zeroizing::new(stored.bytes(&response.body)?.to_vec());
-    let original_id = serde_json::from_slice::<Value>(&original)?["request_id"]
-        .as_str()
-        .ok_or("original ID")?
-        .to_owned();
+    // Read the complete original with the same typed lexical decoder as its
+    // custody. A valid JSON Number such as 1e309 is not an f64 Value.
+    let original_envelope = crate::auth::LexicalJson::parse_listener(&original)?;
+    let crate::auth::LexicalJson::Object(original_fields) = &original_envelope else {
+        return Err("original envelope object".into());
+    };
+    let Some(crate::auth::LexicalJson::String(original_id)) = original_fields.get("request_id")
+    else {
+        return Err("original ID".into());
+    };
+    let original_id = original_id.clone();
+    let Some(crate::auth::LexicalJson::Object(original_data)) = original_fields.get("data") else {
+        return Err("original Data object".into());
+    };
+    assert!(
+        matches!(original_data.get("extra"), Some(crate::auth::LexicalJson::Number(value)) if value == "1e309")
+    );
     assert_eq!(original_id, crate::crypto::uuid_from_bytes(&[0x91; 16]));
     // No response writer may accidentally release the original envelope for this kind.
     assert!(origin.raw_bytes(&response.body).is_err());
