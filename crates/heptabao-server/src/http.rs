@@ -1937,6 +1937,21 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
 }
 
 #[cfg(test)]
+// Match Go net/http Header.writeSubset without changing stored/audit values.
+// Only the ASCII space bytes accepted by textproto.TrimString are trimmed;
+// CR and LF inside the value each become one space, so they cannot add a header.
+fn write_go_content_type_header(writer: &mut impl Write, value: &str) -> io::Result<()> {
+    let value = value.trim_matches([' ', '\t', '\r', '\n']);
+    writer.write_all(b"Content-Type: ")?;
+    for (index, part) in value.split(['\r', '\n']).enumerate() {
+        if index != 0 {
+            writer.write_all(b" ")?;
+        }
+        writer.write_all(part.as_bytes())?;
+    }
+    writer.write_all(b"\r\n")
+}
+
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
     write_response_with_namespace(writer, response, head, "")
 }
@@ -2317,7 +2332,7 @@ fn write_response_with_namespace(
     let chunked = !no_body && !head && !fixed_raw_body && bytes.len() > 2048;
     write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
     if !acme_no_media && !content_type.is_empty() {
-        write!(writer, "Content-Type: {content_type}\r\n")?;
+        write_go_content_type_header(writer, content_type)?;
     }
     if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
         write!(writer, "Content-Length: {}\r\n", bytes.len())?;
@@ -3989,4 +4004,40 @@ pub(crate) fn write_raw110_reply_for_test(
     head: bool,
 ) -> io::Result<()> {
     write_response(writer, response, head)
+}
+
+#[cfg(test)]
+mod raw113_terminal_media_tests {
+    use super::*;
+
+    #[test]
+    fn raw113_terminal_content_type_matches_go_header_write_without_header_injection()
+    -> io::Result<()> {
+        for (original, expected) in [
+            ("text/plain", "text/plain"),
+            (" \ttext/plain\r\n ", "text/plain"),
+            ("text/plain\r\nInjected: no", "text/plain  Injected: no"),
+            ("text/plain\nx\ry", "text/plain x y"),
+            ("\t \r\n", ""),
+            ("\u{0b}text/plain\u{0c}", "\u{0b}text/plain\u{0c}"),
+            ("\u{a0}text/plain\u{a0}", "\u{a0}text/plain\u{a0}"),
+            // Go preserves NUL in the output value. This asserts original wire
+            // behavior, not acceptance of that header by an HTTP client parser.
+            ("text/plain\0suffix", "text/plain\0suffix"),
+        ] {
+            let mut output = Vec::new();
+            write_go_content_type_header(&mut output, original)?;
+            assert_eq!(
+                output.as_slice(),
+                format!("Content-Type: {expected}\r\n").as_bytes()
+            );
+            assert_eq!(output.windows(2).filter(|part| *part == b"\r\n").count(), 1);
+            assert!(
+                !output
+                    .windows(b"\r\nInjected:".len())
+                    .any(|p| p == b"\r\nInjected:")
+            );
+        }
+        Ok(())
+    }
 }

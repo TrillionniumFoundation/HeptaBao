@@ -2102,3 +2102,162 @@ fn raw113_actual_selected_mandatory_response_audit_failure_erases_owner_and_reta
     assert!(retired.auth.has_general_wrapped_reply_state());
     Ok(())
 }
+
+fn raw113_issue_media(
+    service: &mut Service,
+    admin: &str,
+    media: &str,
+    attempt: [u8; 16],
+) -> Result<Zeroizing<String>, Box<dyn std::error::Error>> {
+    let lexical = crate::auth::LexicalJson::from_backend(&json!({
+        "http_status_code":200,"http_content_type":media,"http_raw_body":"YQ==",
+        "extra":"must-not-be-a-header"
+    }))?;
+    let _ingress =
+        crate::auth::IngressReplyScope::listener_wrapping(&attempt, Some(lexical.clone()));
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        admin,
+        lexical.wrapping_view()?,
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let response = service.handle_request_at(request, 100);
+    assert_eq!(response.status, 200);
+    Ok(Zeroizing::new(
+        response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("media wrapper")?
+            .to_owned(),
+    ))
+}
+
+#[test]
+fn raw113_actual_wrapped_raw_media_sanitizes_only_terminal_header_through_rewrap_reopen()
+-> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    let original = " \ttext/plain\r\nInjected: cannot-be-a-header\t ";
+    let expected = "text/plain  Injected: cannot-be-a-header";
+    let first = raw113_issue_media(&mut service, &admin, original, [0xb9; 16])?;
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &first)?;
+    assert_eq!(bytes.as_slice(), b"a");
+    let mut stored = serde_json::to_value(
+        response
+            .unwrapped_json
+            .as_ref()
+            .ok_or("origin")?
+            .stored_reply()
+            .ok_or("stored")?,
+    )?;
+    assert_eq!(stored["media_type"], original);
+    assert_eq!(
+        stored["request_id"],
+        crate::crypto::uuid_from_bytes(&[0xb9; 16])
+    );
+    assert!(stored["kind"].get("general-raw-http-v1").is_some());
+    erase_json(&mut stored);
+    raw110_assert_http_terminal(response, 200, expected, b"a")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":first.as_str()})
+        )
+        .status,
+        400
+    );
+
+    let second = raw113_issue_media(&mut service, &admin, original, [0xba; 16])?;
+    let response = {
+        let _rewrap = crate::auth::IngressReplyScope::listener(&[0xbb; 16]);
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/rewrap",
+            &admin,
+            json!({"token":second.as_str()}),
+        )
+    };
+    assert_eq!(response.status, 200);
+    let next = Zeroizing::new(
+        response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("rewrapped media")?
+            .to_owned(),
+    );
+    assert!(next.as_str() != second.as_str());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":second.as_str()})
+        )
+        .status,
+        400
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let (response, bytes) = raw110_pki_unwrap(&mut service, &admin, &next)?;
+    assert_eq!(bytes.as_slice(), b"a");
+    let mut stored = serde_json::to_value(
+        response
+            .unwrapped_json
+            .as_ref()
+            .ok_or("origin")?
+            .stored_reply()
+            .ok_or("stored")?,
+    )?;
+    assert_eq!(stored["media_type"], original);
+    assert_eq!(
+        stored["request_id"],
+        crate::crypto::uuid_from_bytes(&[0xba; 16])
+    );
+    erase_json(&mut stored);
+    let mut wire = Zeroizing::new(Vec::new());
+    crate::http::write_raw110_reply_for_test(&mut *wire, response, false)?;
+    let split = wire
+        .windows(4)
+        .position(|p| p == b"\r\n\r\n")
+        .ok_or("HTTP boundary")?;
+    let header = std::str::from_utf8(&wire[..split])?;
+    assert!(
+        header
+            .lines()
+            .any(|line| line == format!("Content-Type: {expected}"))
+    );
+    assert!(!header.lines().any(|line| line.starts_with("Injected:")));
+    assert!(
+        !wire
+            .windows(b"must-not-be-a-header".len())
+            .any(|p| p == b"must-not-be-a-header")
+    );
+    assert_eq!(&wire[split + 4..], b"a");
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":next.as_str()})
+        )
+        .status,
+        400
+    );
+    let state = service.state.as_ref().ok_or("retired state")?;
+    assert_eq!(state.writer_schema(), GENERAL_WRAPPED_REPLY_STATE_SCHEMA);
+    assert!(
+        state.auth.has_general_wrapped_reply_state() && !state.auth.has_pki_raw_http_reply_state()
+    );
+    Ok(())
+}

@@ -878,12 +878,9 @@ fn general_raw_projection(
     }
     let status = number as u16;
     let media_type = match get("http_content_type") {
-        Some(LexicalJson::String(media)) => {
-            if media.bytes().any(|b| b == b'\r' || b == b'\n' || b == 0) {
-                return Err(bad("raw content type contains invalid header bytes"));
-            }
-            media.clone()
-        }
+        // Keep the original media string in authenticated stored/audit custody.
+        // Go normalizes CR/LF only when Header.Write emits the terminal header.
+        Some(LexicalJson::String(media)) => media.clone(),
         Some(_) => return error(GeneralRawError::CannotDecodeContentType),
         None if status != 204 => return error(GeneralRawError::NoContentType),
         None => String::new(),
@@ -2653,6 +2650,42 @@ mod tests {
         );
         assert!(stored.bytes(&logical)? == original.as_slice());
         crate::service::erase_json(&mut logical);
+        Ok(())
+    }
+
+    #[test]
+    fn raw113_generic_raw_media_retains_original_custody_and_rejects_safe_header_substitution()
+    -> TestResult {
+        let _ingress = IngressReplyScope::listener(&[0xb8; 16]);
+        let context = current_ingress().ok_or("actual private context")?;
+        for media in [
+            " \ttext/plain\r\nInjected: no\t ",
+            "text/plain\0suffix",
+            "\u{0b}text/plain\u{0c}",
+            "\u{a0}text/plain\u{a0}",
+        ] {
+            let mut logical = json!({"data":{
+                "http_status_code":200,"http_content_type":media,"http_raw_body":"YQ=="
+            }});
+            let stored = StoredWrappedReply::capture(&logical, &context, "sys/wrapping/wrap")?;
+            assert!(stored.is_general_reply() && !stored.is_pki_raw_http());
+            assert_eq!(stored.raw_http_transport(&logical)?, Some((200, media)));
+            assert_eq!(stored.bytes(&logical)?, b"a");
+            let binding = stored
+                .selected_response_for_audit(&logical)?
+                .ok_or("selected actual raw response")?
+                .audit_binding()?;
+            assert!(!binding.is_empty());
+            let mut changed = stored.clone();
+            changed.media_type.push(' ');
+            assert!(changed.validate(&logical).is_err());
+            let mut changed_logical = logical.clone();
+            changed_logical["data"]["http_content_type"] = json!(format!("{media} "));
+            assert!(stored.validate(&changed_logical).is_err());
+            assert_eq!(stored.raw_http_transport(&logical)?, Some((200, media)));
+            crate::service::erase_json(&mut changed_logical);
+            crate::service::erase_json(&mut logical);
+        }
         Ok(())
     }
 }
