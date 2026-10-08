@@ -12,11 +12,11 @@ const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
 // Older frames and their strict decoding remain unchanged; no mutation replay.
 const INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFQ4";
 const INDEX_RESPONSE_MAGIC: &[u8; 5] = b"HBFS2";
-// Q7/S5 negotiates complete original bytes and ingress custody. Q5/S3 only
+// Q8/S6 negotiates complete original bytes, lexical ingress and two sticky reader facts. Q5/S3 only
 // represented the older newline unit and cannot authorize full reply transfer.
 const LEGACY_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ5";
-const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ7";
-const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS5";
+const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ8";
+const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS6";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
@@ -61,6 +61,8 @@ pub(crate) struct ForwardRequest {
     pub completion_nonce: Option<[u8; 32]>,
     #[serde(default)]
     pub wrapped_reply_ingress: Option<[u8; 16]>,
+    #[serde(default)]
+    pub wrapped_reply_lexical: Option<crate::auth::LexicalJson>,
     /// True only when an explicitly enabled one-step rolling transition
     /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
     #[serde(skip)]
@@ -161,6 +163,8 @@ struct ForwardRequestRef<'a> {
     completion_nonce: Option<[u8; 32]>,
     #[serde(skip_serializing_if = "Option::is_none")]
     wrapped_reply_ingress: Option<[u8; 16]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    wrapped_reply_lexical: Option<&'a crate::auth::LexicalJson>,
 }
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
@@ -292,6 +296,7 @@ pub(crate) fn encode_request_for_cluster(
             origin_peer: None,
             completion_nonce: None,
             wrapped_reply_ingress: None,
+            wrapped_reply_lexical: None,
         },
     )
 }
@@ -373,6 +378,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
             origin_peer: None,
             completion_nonce: None,
             wrapped_reply_ingress: None,
+            wrapped_reply_lexical: None,
         },
     )
 }
@@ -416,6 +422,7 @@ pub(crate) fn encode_peer_request_for_cluster(
             origin_peer: Some(origin_peer),
             completion_nonce: None,
             wrapped_reply_ingress: None,
+            wrapped_reply_lexical: None,
         },
     )
 }
@@ -472,9 +479,21 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     validate_direction(direction.0, direction.1)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
-    let wrapped_reply_ingress = crate::auth::current_ingress().map(|context| context.attempt_id());
+    let wrapped_reply_context = crate::auth::current_ingress();
+    let wrapped_reply_ingress = wrapped_reply_context
+        .as_ref()
+        .map(|context| context.attempt_id());
+    let wrapped_reply_lexical = wrapped_reply_context
+        .as_ref()
+        .and_then(|context| context.wrapping_body());
+    if let Some(context) = &wrapped_reply_context {
+        context
+            .lexical_request_binding(method, path, body)
+            .map_err(|_| "HA private lexical request binding differs")?;
+    }
     let full_reply = path == "sys/wrapping/unwrap"
-        || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some();
+        || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some()
+        || wrapped_reply_lexical.is_some();
     if full_reply && completion_nonce.is_none() {
         return Err("HA unwrap requires original completed-request nonce".into());
     }
@@ -505,11 +524,19 @@ pub(crate) fn encode_completed_index_request_for_cluster(
             } else {
                 None
             },
+            wrapped_reply_lexical: if full_reply {
+                wrapped_reply_lexical
+            } else {
+                None
+            },
         },
     )
 }
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
+    if encoded.starts_with(b"HBFQ7") {
+        return Err("HA general stored reply requires Q8 before consumption".into());
+    }
     if encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC) {
         return Err("HA original stored reply requires Q7 before consumption".into());
     }
@@ -539,7 +566,20 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     }
     let full_reply = request.path == "sys/wrapping/unwrap"
         || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
-            && request.wrapped_reply_ingress.is_some();
+            && request.wrapped_reply_ingress.is_some()
+        || request.wrapped_reply_lexical.is_some();
+    if let Some(lexical) = &request.wrapped_reply_lexical {
+        if !unwrap_response
+            || request.wrapped_reply_ingress.is_none()
+            || request.path != "sys/wrapping/wrap"
+            || !matches!(request.method.as_str(), "POST" | "PUT")
+        {
+            return Err("HA lexical payload is outside negotiated wrapping ingress".into());
+        }
+        lexical
+            .validate_wrapping_view(&request.body)
+            .map_err(|_| "HA lexical payload and complete request body differ")?;
+    }
     if unwrap_response != full_reply || !unwrap_response && request.wrapped_reply_ingress.is_some()
     {
         return Err("HA original reply requires explicit negotiated version".into());
@@ -644,6 +684,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 unwrap_response: false,
                 completion_nonce: None,
                 wrapped_reply_ingress: None,
+                wrapped_reply_lexical: None,
             })
         }
         Err(error) => Err(error),
@@ -1016,8 +1057,112 @@ fn erase_json(value: &mut Value) {
 
 #[cfg(test)]
 mod tests {
+
     #[test]
-    fn raw110_q7_preconsume_and_s5_complete_payload_digest()
+    fn raw113_actual_q8_lexical_shadow_binding_oldpeer_nonce_and_s6_immutable_reply()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let lexical = crate::auth::LexicalJson::parse_listener(br#"{"number":1.0,"large":1e309}"#)?;
+        let body = lexical.wrapping_view()?;
+        let _ingress =
+            crate::auth::IngressReplyScope::listener_wrapping(&[0x93; 16], Some(lexical));
+        let context = ForwardContext {
+            method: "POST",
+            path: "sys/wrapping/wrap",
+            namespace: "",
+            token: "root-fixture",
+            body: &body,
+            wrap_ttl_seconds: Some(60),
+            origin_peer: None,
+            client_certificates: None,
+            caller_deadline: None,
+        };
+        assert!(
+            encode_completed_index_request_for_cluster("raw113-ha", (1, 2), &context, None)
+                .is_err()
+        );
+        let encoded = encode_completed_index_request_for_cluster(
+            "raw113-ha",
+            (1, 2),
+            &context,
+            Some([7; 32]),
+        )?;
+        assert!(encoded.starts_with(b"HBFQ8"));
+        let admitted = decode_request_for_cluster(&encoded, "raw113-ha")?;
+        assert!(admitted.wrapped_reply_lexical.is_some() && admitted.unwrap_response);
+        assert_eq!(admitted.wrapped_reply_ingress, Some([0x93; 16]));
+        assert!(decode_request_for_cluster(&encoded, "wrong-cluster").is_err());
+        for magic in [b"HBFQ4", b"HBFQ5", b"HBFQ6", b"HBFQ7"] {
+            let mut old = encoded.clone();
+            old[..5].copy_from_slice(magic);
+            assert!(decode_request_for_cluster(&old, "raw113-ha").is_err());
+        }
+        let mut wire: Value = serde_json::from_slice(&encoded[9..])?;
+        for mutation in 0..4 {
+            let mut changed = wire.clone();
+            match mutation {
+                0 => changed["wrapped_reply_ingress"] = serde_json::Value::Null,
+                1 => changed["completion_nonce"] = serde_json::Value::Null,
+                2 => changed["body"]["number"] = json!("1.0"),
+                _ => changed["path"] = json!("auth/token/create"),
+            }
+            assert!(
+                decode_request_for_cluster(&encode(UNWRAP_REQUEST_MAGIC, &changed)?, "raw113-ha")
+                    .is_err()
+            );
+            erase_json(&mut changed);
+        }
+        let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
+        let admin = auth.authenticate(&root, 100)?;
+        let wrapped =
+            auth.wrap_logical_response("", "sys/wrapping/wrap", 60, &json!({"data":body}), 100)?;
+        let token = wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?;
+        let _later = crate::auth::IngressReplyScope::listener(&[0x94; 16]);
+        let unwrapped = auth.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":token}),
+            100,
+        )?;
+        let response = crate::Response {
+            status: unwrapped.status,
+            body: unwrapped.body,
+            unwrapped_json: unwrapped.unwrapped_json,
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        let encoded =
+            encode_completed_unwrap_response_for_cluster("raw113-ha", 2, 1, &response, None)?;
+        assert!(encoded.starts_with(b"HBFS6"));
+        let received = decode_unwrap_response_for_cluster(&encoded, "raw113-ha")?;
+        assert_eq!(
+            crate::ha_forward_completion::response_digest(&response)?,
+            crate::ha_forward_completion::wire_response_digest(&received)?
+        );
+        for magic in [b"HBFS3", b"HBFS4", b"HBFS5"] {
+            let mut old = encoded.clone();
+            old[..5].copy_from_slice(magic);
+            assert!(decode_unwrap_response_for_cluster(&old, "raw113-ha").is_err());
+        }
+        let mut changed = serde_json::to_value(&received)?;
+        changed["raw_wrapped_reply"]["kind"]["general-json-envelope-v1"]["lexical_data"] =
+            json!({"type":"number","value":"NaN"});
+        assert!(
+            decode_unwrap_response_for_cluster(
+                &encode(UNWRAP_RESPONSE_MAGIC, &changed)?,
+                "raw113-ha"
+            )
+            .is_err()
+        );
+        erase_json(&mut changed);
+        erase_json(&mut wire);
+        Ok(())
+    }
+    #[test]
+    fn raw113_q8_preconsume_and_s6_complete_payload_digest()
     -> Result<(), Box<dyn std::error::Error>> {
         let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
         let admin = auth.authenticate(&root, 100)?;
@@ -1050,7 +1195,7 @@ mod tests {
             &context,
             Some([5; 32]),
         )?;
-        assert!(request.starts_with(b"HBFQ7"));
+        assert!(request.starts_with(b"HBFQ8"));
         for old_magic in [b"HBFQ5", b"HBFQ6"] {
             let mut downgraded = request.clone();
             downgraded[..5].copy_from_slice(old_magic);
@@ -1076,14 +1221,14 @@ mod tests {
         };
         let bytes =
             encode_completed_unwrap_response_for_cluster("raw110-ha", 2, 1, &response, None)?;
-        assert!(bytes.starts_with(b"HBFS5"));
+        assert!(bytes.starts_with(b"HBFS6"));
         let received = decode_unwrap_response_for_cluster(&bytes, "raw110-ha")?;
         assert!(received.raw_wrapped_reply.is_some());
         assert!(
             crate::ha_forward_completion::response_digest(&response)?
                 == crate::ha_forward_completion::wire_response_digest(&received)?
         );
-        for old_magic in [b"HBFS3", b"HBFS4"] {
+        for old_magic in [b"HBFS3", b"HBFS4", b"HBFS5"] {
             let mut lower = bytes.clone();
             lower[..5].copy_from_slice(old_magic);
             assert!(decode_unwrap_response_for_cluster(&lower, "raw110-ha").is_err());

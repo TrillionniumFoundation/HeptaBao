@@ -8,7 +8,7 @@ use super::*;
 #[path = "auth_wrapped_reply110.rs"]
 mod raw_reply;
 pub(crate) use raw_reply::{
-    IngressReplyContext, IngressReplyScope, StoredWrappedReply, current_ingress,
+    IngressReplyContext, IngressReplyScope, LexicalJson, StoredWrappedReply, current_ingress,
     encode_http_envelope, logical_envelope,
 };
 pub(super) use raw_reply::{RawReplyReaderFloor, RawReplyTokenCustody};
@@ -17,6 +17,10 @@ pub(crate) struct UnwrappedJson {
     // Keep the secret-bearing owner affine without inflating every Response result.
     // Box destruction still runs StoredWrappedReply's zeroizing destructor.
     stored_reply: Option<Box<StoredWrappedReply>>,
+    // Private response-only bytes bound by the final actual unwrap ingress.
+    selected_json_http: Option<Zeroizing<Vec<u8>>>,
+    // Prepared from the actual consumed owner before mandatory response audit.
+    selected_response: Option<Box<raw_reply::SelectedResponseProjection>>,
 }
 impl UnwrappedJson {
     pub(crate) fn from_completed_raw_forward(
@@ -34,6 +38,8 @@ impl UnwrappedJson {
         }
         Ok(Self {
             stored_reply: response.raw_wrapped_reply.clone().map(Box::new),
+            selected_json_http: None,
+            selected_response: None,
         })
     }
     pub(crate) fn has_stored_reply(&self) -> bool {
@@ -41,6 +47,16 @@ impl UnwrappedJson {
     }
     pub(crate) fn stored_reply(&self) -> Option<&StoredWrappedReply> {
         self.stored_reply.as_deref()
+    }
+    pub(crate) fn raw_error_header(
+        &self,
+        logical: &Value,
+    ) -> Result<Option<&'static str>, AuthError> {
+        self.stored_reply
+            .as_ref()
+            .map(|stored| stored.raw_error_header(logical))
+            .transpose()
+            .map(Option::flatten)
     }
     pub(crate) fn raw_http_transport<'a>(
         &'a self,
@@ -52,11 +68,58 @@ impl UnwrappedJson {
             .transpose()
             .map(Option::flatten)
     }
+    pub(crate) fn selected_response_audit_binding(
+        &mut self,
+        logical: &Value,
+    ) -> Result<Option<Zeroizing<Vec<u8>>>, AuthError> {
+        let Some(stored) = &self.stored_reply else {
+            return Ok(None);
+        };
+        if self.selected_response.is_some() {
+            return Err(bad(
+                "selected response mandatory audit was already prepared",
+            ));
+        }
+        let Some(prepared) = stored.selected_response_for_audit(logical)? else {
+            return Ok(None);
+        };
+        let binding = prepared.audit_binding()?;
+        self.selected_response = Some(Box::new(prepared));
+        Ok(Some(binding))
+    }
+    pub(crate) fn bind_selected_http_ingress(
+        &mut self,
+        logical: &Value,
+        actual_ingress: &[u8; 16],
+    ) -> Result<(), AuthError> {
+        if self.selected_json_http.is_some() {
+            return Err(bad("selected JSON ingress was already bound"));
+        }
+        if let Some(stored) = &self.stored_reply {
+            if stored.uses_selected_json_ingress() {
+                let prepared = self.selected_response.as_deref().ok_or_else(|| {
+                    bad("selected JSON lacks mandatory response audit projection")
+                })?;
+                self.selected_json_http =
+                    stored.selected_json_for_ingress(logical, actual_ingress, prepared)?;
+            }
+        }
+        Ok(())
+    }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
-        self.stored_reply
-            .as_ref()
-            .map(|stored| stored.bytes(logical))
-            .transpose()
+        let Some(stored) = &self.stored_reply else {
+            return Ok(None);
+        };
+        stored.validate(logical)?;
+        if stored.uses_selected_json_ingress() {
+            return self
+                .selected_json_http
+                .as_deref()
+                .map(Vec::as_slice)
+                .map(Some)
+                .ok_or_else(|| bad("selected JSON lacks actual HTTP ingress projection"));
+        }
+        stored.bytes(logical).map(Some)
     }
 }
 
@@ -356,6 +419,11 @@ impl AuthState {
                     .as_ref()
                     .and_then(|wrapped| wrapped.stored_reply.as_ref())
                     .is_some_and(StoredWrappedReply::is_pki_raw_http),
+                token
+                    .wrapping
+                    .as_ref()
+                    .and_then(|wrapped| wrapped.stored_reply.as_ref())
+                    .is_some_and(StoredWrappedReply::is_general_reply),
             );
         }
         self.store_token(id, token);
@@ -491,6 +559,8 @@ impl AuthState {
         }
         Ok(AuthResponse {
             unwrapped_json: Some(UnwrappedJson {
+                selected_json_http: None,
+                selected_response: None,
                 stored_reply: wrapped.stored_reply.clone().map(Box::new),
             }),
             approle_secret_consumption: None,

@@ -157,8 +157,8 @@ use provider_renewal::ProviderCredential;
 pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 pub(crate) use wrapping::{
-    IngressReplyContext, IngressReplyScope, StoredWrappedReply, UnwrappedJson, current_ingress,
-    encode_http_envelope, logical_envelope,
+    IngressReplyContext, IngressReplyScope, LexicalJson, StoredWrappedReply, UnwrappedJson,
+    current_ingress, encode_http_envelope, logical_envelope,
 };
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;

@@ -739,7 +739,10 @@ fn process_parsed_request(
 ) -> (snapshot::NativeReply, bool, String) {
     match parsed {
         Ok(mut request) => {
-            let _raw_reply_ingress = crate::auth::IngressReplyScope::listener(attempt_id);
+            let _raw_reply_ingress = crate::auth::IngressReplyScope::listener_wrapping(
+                attempt_id,
+                request.lexical_wrapping_body.take(),
+            );
             request.client_certificates = client_certificates;
             let is_head = request.method == "HEAD"
                 || help::request(&request.method, &request.path, &request.body.0)
@@ -1124,6 +1127,7 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
+    lexical_wrapping_body: Option<crate::auth::LexicalJson>,
     consistency: consistency::Headers,
     native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
@@ -1521,6 +1525,7 @@ fn read_request_mode(
             return Err(bad("ambiguous encoded paths are not supported"));
         }
         return Ok(Request {
+            lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
             method: "HELP".to_owned(),
@@ -1556,6 +1561,7 @@ fn read_request_mode(
     if leader_route {
         leader::validate_selectors(&method, &target)?;
         return Ok(Request {
+            lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
             method,
@@ -1588,10 +1594,28 @@ fn read_request_mode(
         &bytes[header_end..],
         query,
     );
+    let mut lexical_wrapping_body = if carrier.is_none()
+        && !native_snapshot
+        && length > 0
+        && !query_only
+        && matches!(method.as_str(), "POST" | "PUT")
+        && decode_native_logical_path(route)? == "sys/wrapping/wrap"
+    {
+        Some(
+            crate::auth::LexicalJson::parse_listener(&bytes[header_end..])
+                .map_err(|_| bad("invalid JSON object"))?,
+        )
+    } else {
+        None
+    };
     let mut body = SecretJson(if let Some(carrier) = carrier {
         carrier
     } else if native_snapshot || length == 0 || query_only {
         json!({})
+    } else if let Some(lexical) = &lexical_wrapping_body {
+        lexical
+            .wrapping_view()
+            .map_err(|_| bad("invalid JSON object"))?
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
             .map_err(|_| bad("invalid JSON object"))?
@@ -1721,7 +1745,13 @@ fn read_request_mode(
     } else {
         None
     };
+    if let Some(lexical) = &mut lexical_wrapping_body {
+        lexical
+            .bind_transport_fields(&body.0)
+            .map_err(|_| bad("invalid lexical transport body"))?;
+    }
     Ok(Request {
+        lexical_wrapping_body,
         consistency,
         native_snapshot,
         method,
@@ -2286,13 +2316,20 @@ fn write_response_with_namespace(
     let no_body = status == 204 || status == 304 || (100..200).contains(&status);
     let chunked = !no_body && !head && !fixed_raw_body && bytes.len() > 2048;
     write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
-    if !acme_no_media {
+    if !acme_no_media && !content_type.is_empty() {
         write!(writer, "Content-Type: {content_type}\r\n")?;
     }
     if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
         write!(writer, "Content-Length: {}\r\n", bytes.len())?;
     } else if chunked {
         writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
+    }
+    if let Some(origin) = &response.unwrapped_json
+        && let Some(error) = origin
+            .raw_error_header(&response.body)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "raw error custody rejected"))?
+    {
+        write!(writer, "X-Vault-Raw-Error: {error}\r\n")?;
     }
     write!(writer, "{retry_after}{index}")?;
     write_standard_headers_with_date(
@@ -2330,6 +2367,147 @@ mod ocsp_service_tests;
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn raw113_actual_listener_parse_private_wrap_and_http_writer_keep_unquoted_number_lexicals()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for number in ["1.0", "1E+0", "-0", "-0.0", "18446744073709551616", "1e309"] {
+            let body = format!("{{\"number\":{number},\"string\":\"{number}\"}}");
+            let wire = format!(
+                "POST /v1/sys/wrapping/wrap HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nX-Vault-Wrap-TTL: 60\r\nContent-Length: {}\r\n\r\n{}",
+                body.len(),
+                body,
+            );
+            let mut request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("actual listener rejected literal"))?;
+            let tree = request
+                .lexical_wrapping_body
+                .take()
+                .ok_or("private tree absent")?;
+            tree.validate_wrapping_view(&request.body.0)?;
+            let _ingress =
+                crate::auth::IngressReplyScope::listener_wrapping(&[0x88; 16], Some(tree));
+            let (mut state, root) = crate::auth::AuthState::bootstrap(100)?;
+            let admin = state.authenticate(&root, 100)?;
+            let wrapped = state.wrap_logical_response(
+                "",
+                &request.path,
+                60,
+                &json!({"data":request.body.0.clone()}),
+                100,
+            )?;
+            let token = wrapped.body["wrap_info"]["token"]
+                .as_str()
+                .ok_or("actual wrapper")?;
+            let unwrapped = state.wrapping_route(
+                Some(&admin),
+                "",
+                "POST",
+                "sys/wrapping/unwrap",
+                &json!({"token":token}),
+                100,
+            )?;
+            let mut output = zeroize::Zeroizing::new(Vec::new());
+            write_response(
+                &mut output,
+                Response {
+                    status: unwrapped.status,
+                    body: unwrapped.body,
+                    unwrapped_json: unwrapped.unwrapped_json,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                },
+                false,
+            )?;
+            let boundary = output
+                .windows(4)
+                .position(|b| b == b"\r\n\r\n")
+                .ok_or("HTTP boundary")?;
+            let bytes = &output[boundary + 4..];
+            let parsed = crate::auth::LexicalJson::parse_listener(bytes)?;
+            let crate::auth::LexicalJson::Object(fields) = &parsed else {
+                return Err("full object".into());
+            };
+            assert_eq!(fields.len(), 8);
+            let crate::auth::LexicalJson::Object(data) = &fields["data"] else {
+                return Err("real data".into());
+            };
+            assert!(
+                matches!(&data["number"],crate::auth::LexicalJson::Number(value) if value==number)
+            );
+            assert!(
+                matches!(&data["string"],crate::auth::LexicalJson::String(value) if value==number)
+            );
+            assert_eq!(bytes.last(), Some(&b'}')); // Stored generic JSON has no added LF.
+            assert!(
+                state
+                    .wrapping_route(
+                        Some(&admin),
+                        "",
+                        "POST",
+                        "sys/wrapping/unwrap",
+                        &json!({"token":token}),
+                        100
+                    )
+                    .is_err()
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn raw113_actual_listener_carrier_is_opaque_wrap_only_and_cannot_be_claimed_by_data()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for body in [
+            r#"{"$serde_json::private::Number":"1.0"}"#,
+            r#"{"number":"1.0","kind":"general-json-envelope-v1"}"#,
+        ] {
+            let wire = format!(
+                "POST /v1/sys/wrapping/wrap HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+                body.len(),
+                body
+            );
+            let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("literal object rejected"))?;
+            let tree = request
+                .lexical_wrapping_body
+                .as_ref()
+                .ok_or("actual body tree")?;
+            let crate::auth::LexicalJson::Object(fields) = tree else {
+                return Err("object".into());
+            };
+            assert!(
+                fields
+                    .values()
+                    .all(|value| matches!(value, crate::auth::LexicalJson::String(_)))
+            );
+        }
+        let overflow = r#"{"number":1e309}"#;
+        let ordinary = format!(
+            "POST /v1/some-sdk-float HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            overflow.len(),
+            overflow
+        );
+        assert!(read_request(&mut ordinary.as_bytes(), Duration::from_secs(1)).is_err());
+        let ordinary = r#"{"number":1.0}"#;
+        let wire = format!(
+            "POST /v1/some-sdk-float HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            ordinary.len(),
+            ordinary
+        );
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("ordinary typed input"))?;
+        assert!(request.lexical_wrapping_body.is_none());
+        assert_eq!(request.body.0["number"].as_f64(), Some(1.0));
+        let duplicate = r#"{"number":1,"number":2}"#;
+        let wire = format!(
+            "POST /v1/sys/wrapping/wrap HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{}",
+            duplicate.len(),
+            duplicate
+        );
+        assert!(read_request(&mut wire.as_bytes(), Duration::from_secs(1)).is_err());
+        Ok(())
+    }
+
     #[test]
     fn pki_acme99_owned_raw_json_native_chunk_boundary_retains_exact_body() -> io::Result<()> {
         for length in [2048, 2049] {

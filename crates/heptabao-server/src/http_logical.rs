@@ -50,12 +50,20 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
     let snapshot::NativeReply::Json(response) = reply else {
         return;
     };
-    if response.status != 200
-        || response
-            .unwrapped_json
-            .as_ref()
-            .is_some_and(crate::auth::UnwrappedJson::has_stored_reply)
+    if response.status != 200 {
+        return;
+    }
+    if let Some(origin) = response.unwrapped_json.as_mut()
+        && origin.has_stored_reply()
     {
+        // The stored original ID/bytes remain immutable. Only this real final
+        // ingress binds the ordinary selected-Data HTTP envelope and its ID.
+        if origin
+            .bind_selected_http_ingress(&response.body, random)
+            .is_err()
+        {
+            *response = Response::error(503, "selected JSON ingress projection rejected");
+        }
         return;
     }
     let Some(original) = response.body.as_object() else {

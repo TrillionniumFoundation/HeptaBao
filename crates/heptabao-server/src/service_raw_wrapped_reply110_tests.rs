@@ -1024,7 +1024,8 @@ fn raw112_actual_sticky_floor_consume_retire_reopen_and_snapshot_cow_veto() -> T
 }
 
 #[test]
-fn raw112_actual_raw_kind_metadata_veto_and_client_special_fields_remain_json() -> TestResult {
+fn raw113_actual_pki_kind_metadata_veto_and_client_special_fields_choose_separate_presentation()
+-> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
     let (_, admin) = bootstrap(&mut service)?;
@@ -1068,8 +1069,8 @@ fn raw112_actual_raw_kind_metadata_veto_and_client_special_fields_remain_json() 
     assert!(serde_json::from_value::<crate::auth::StoredWrappedReply>(extra).is_err());
     erase_json(&mut original);
     raw110_assert_http_terminal(response, 200, "application/pkix-cert", &bytes)?;
-    // Anti-forgery of private producer custody only. Broader primary
-    // special-Data projection compatibility remains an independent OPEN scope.
+    // Legitimate client presentation follows the primary special-Data branch.
+    // Its private generic origin cannot mint the independent sealed PKI history.
     let _ingress = crate::auth::IngressReplyScope::listener(&[0xd3; 16]);
     let mut request = ServiceRequest::new(
         "POST",
@@ -1095,17 +1096,28 @@ fn raw112_actual_raw_kind_metadata_veto_and_client_special_fields_remain_json() 
         json!({"token":token.as_str()}),
     );
     let origin = response.unwrapped_json.as_ref().ok_or("client origin")?;
-    assert!(origin.raw_http_transport(&response.body)?.is_none());
-    let raw = origin.raw_bytes(&response.body)?.ok_or("client JSON")?;
-    let mut envelope: Value = serde_json::from_slice(raw)?;
-    assert_eq!(envelope.as_object().ok_or("full JSON")?.len(), 8);
-    assert_eq!(envelope["data"]["kind"], "pki-raw-http-v1");
-    erase_json(&mut envelope);
+    assert_eq!(
+        origin.raw_http_transport(&response.body)?,
+        Some((200, "application/pkix-cert"))
+    );
+    let raw = origin
+        .raw_bytes(&response.body)?
+        .ok_or("client presentation")?;
+    assert_eq!(raw, &[0x30, 0x03, 0x0a, 0x01, 0x01]);
+    let mut client_stored =
+        serde_json::to_value(origin.stored_reply().ok_or("private presentation")?)?;
+    assert!(client_stored["kind"].get("general-raw-http-v1").is_some());
+    assert!(client_stored["kind"].get("pki-raw-http-v1").is_none());
+    let state = service.state.as_ref().ok_or("state")?;
+    assert_eq!(state.schema, GENERAL_WRAPPED_REPLY_STATE_SCHEMA);
+    assert!(state.auth.has_pki_raw_http_reply_state()); // Prior genuine PKI history is retained.
+    assert!(state.auth.has_general_wrapped_reply_state());
+    erase_json(&mut client_stored);
     Ok(())
 }
 
 #[test]
-fn raw112_actual_pki_q7_oldq6_refuses_before_token_consume_and_s5_raw_custody() -> TestResult {
+fn raw113_actual_pki_q8_oldq7_refuses_before_token_consume_and_s6_raw_custody() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
     let (_, admin) = bootstrap(&mut service)?;
@@ -1136,9 +1148,9 @@ fn raw112_actual_pki_q7_oldq6_refuses_before_token_consume_and_s5_raw_custody() 
         &context,
         Some([5; 32]),
     )?;
-    assert!(frame.starts_with(b"HBFQ7"));
+    assert!(frame.starts_with(b"HBFQ8"));
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
-    for magic in [b"HBFQ5", b"HBFQ6"] {
+    for magic in [b"HBFQ5", b"HBFQ6", b"HBFQ7"] {
         let mut old = frame.clone();
         old[..5].copy_from_slice(magic);
         assert!(crate::ha_forward::decode_request_for_cluster(&old, "pki112-ha").is_err());
@@ -1163,7 +1175,7 @@ fn raw112_actual_pki_q7_oldq6_refuses_before_token_consume_and_s5_raw_custody() 
         &response,
         None,
     )?;
-    assert!(frame.starts_with(b"HBFS5"));
+    assert!(frame.starts_with(b"HBFS6"));
     let received = crate::ha_forward::decode_unwrap_response_for_cluster(&frame, "pki112-ha")?;
     let stored = received
         .raw_wrapped_reply
@@ -1307,6 +1319,351 @@ fn raw112_actual_shared_official_named_curve_csr_signs_its_public_key_and_verifi
     let mut tampered = certificate.to_der()?;
     *tampered.last_mut().ok_or("actual certificate signature")? ^= 1;
     assert!(!openssl::x509::X509::from_der(&tampered)?.verify(&issuer)?);
+    Ok(())
+}
+
+#[test]
+fn raw113_actual_generic_floor_cow_snapshot_consume_revoke_encrypted_reopen() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let mut old_state = service.state.as_ref().ok_or("old state")?.clone();
+    let old_plan = service
+        .prepare_record_plan(&mut old_state)
+        .map_err(|_| "old COW")?;
+    let body = crate::auth::LexicalJson::parse_listener(
+        br#"{"number":1.0,"large":1e309,"string":"1.0"}"#,
+    )?;
+    let view = body.wrapping_view()?;
+    let _ingress = crate::auth::IngressReplyScope::listener_wrapping(&[0xe1; 16], Some(body));
+    let mut request = ServiceRequest::new("POST", "sys/wrapping/wrap", "", &admin, view);
+    request.wrap_ttl_seconds = Some(60);
+    let issued = service.handle_request_at(request, 100);
+    assert_eq!(issued.status, 200);
+    let token = Zeroizing::new(
+        issued.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?
+            .to_owned(),
+    );
+    let live = service.state.as_ref().ok_or("live")?.clone();
+    assert_eq!(live.schema, GENERAL_WRAPPED_REPLY_STATE_SCHEMA);
+    assert_eq!(live.writer_schema(), GENERAL_WRAPPED_REPLY_STATE_SCHEMA);
+    assert!(
+        live.auth.has_general_wrapped_reply_state() && !live.auth.has_pki_raw_http_reply_state()
+    );
+    assert!(supported_reader_schema(113) && !supported_reader_schema(111));
+    for schema in [108, 110, 111, 112] {
+        let mut lower = live.clone();
+        lower.schema = schema;
+        assert!(lower.validate_format().is_err());
+        assert!(lower.validate_publication_schema(Some(&live)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&live, &lower).is_err());
+        assert!(
+            AuthState::predecode_raw_reply_owner(&serde_json::to_vec(&live.auth)?, schema).is_err()
+        );
+    }
+    let _later = crate::auth::IngressReplyScope::listener(&[0xe2; 16]);
+    let response = call(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &admin,
+        json!({"token":token.as_str()}),
+    );
+    assert_eq!(response.status, 200);
+    let bytes = response
+        .unwrapped_json
+        .as_ref()
+        .ok_or("origin")?
+        .raw_bytes(&response.body)?
+        .ok_or("typed bytes")?;
+    let expected = b"\"number\":1.0";
+    assert!(bytes.windows(expected.len()).any(|b| b == expected));
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":token.as_str()})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &admin,
+            json!({"token":token.as_str()})
+        )
+        .status,
+        204
+    );
+    let retired = service.state.as_ref().ok_or("retired")?.clone();
+    assert_eq!(retired.schema, 113);
+    assert!(
+        retired.auth.has_general_wrapped_reply_state()
+            && !retired.auth.has_pki_raw_http_reply_state()
+    );
+    let mut owner = serde_json::to_value(&retired.auth)?;
+    assert_eq!(owner["raw_wrapped_reply_floor"], "general-wrapped-reply-v1");
+    for marker in [
+        None,
+        Some(json!(false)),
+        Some(json!(true)),
+        Some(json!("pki-raw-http-v1")),
+    ] {
+        let mut changed = owner.clone();
+        let fields = changed.as_object_mut().ok_or("owner")?;
+        match marker {
+            None => {
+                fields.remove("raw_wrapped_reply_floor");
+            }
+            Some(marker) => {
+                fields.insert("raw_wrapped_reply_floor".into(), marker);
+            }
+        }
+        let mut stripped = retired.clone();
+        stripped.auth = serde_json::from_value(changed)?;
+        assert!(stripped.validate_format().is_err());
+        assert!(
+            stripped
+                .validate_publication_schema(Some(&retired))
+                .is_err()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&retired, &stripped).is_err());
+    }
+    erase_json(&mut owner);
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    assert!(service.commit_record_plan(&retired, old_plan).is_err());
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    old_state.schema = 113;
+    assert!(old_state.validate_format().is_err());
+    assert!(
+        old_state
+            .validate_publication_schema(Some(&retired))
+            .is_err()
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let reopened = service.state.as_ref().ok_or("reopen")?;
+    assert_eq!(reopened.schema, 113);
+    assert!(reopened.auth.has_general_wrapped_reply_state());
+    assert!(!reopened.auth.has_pki_raw_http_reply_state());
+    Ok(())
+}
+
+#[test]
+fn raw113_actual_opaque_number_and_string_shadow_require_distinct_mandatory_audit() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_key, admin) = bootstrap(&mut service)?;
+    let number = crate::auth::LexicalJson::parse_listener(br#"{"number":1e309}"#)?;
+    let string = crate::auth::LexicalJson::parse_listener(br#"{"number":"1e309"}"#)?;
+    assert!(number.wrapping_view()? == string.wrapping_view()?);
+    let mut credentials = Vec::new();
+    for (index, lexical) in [number, string].into_iter().enumerate() {
+        let view = lexical.wrapping_view()?;
+        let _ingress = crate::auth::IngressReplyScope::listener_wrapping(
+            &[0xe8 + index as u8; 16],
+            Some(lexical),
+        );
+        let mut request = ServiceRequest::new("POST", "sys/wrapping/wrap", "", &admin, view);
+        request.wrap_ttl_seconds = Some(60);
+        let response = service.handle_request_at(request, 100);
+        assert_eq!(response.status, 200);
+        credentials.push(Zeroizing::new(
+            response.body["wrap_info"]["token"]
+                .as_str()
+                .ok_or("actual opaque wrapper")?
+                .to_owned(),
+        ));
+    }
+    let mut audit = Zeroizing::new(std::fs::read(directory.0.join("audit.jsonl"))?);
+    let mut request_digests = Vec::new();
+    for line in audit
+        .split(|byte| *byte == b'\n')
+        .filter(|line| !line.is_empty())
+    {
+        let mut record: Value = serde_json::from_slice(line)?;
+        if record["event"]["kind"] == "request" {
+            request_digests.push(
+                record["event"]["path_digest"]
+                    .as_str()
+                    .ok_or("mandatory audit digest")?
+                    .to_owned(),
+            );
+        }
+        erase_json(&mut record);
+    }
+    assert!(request_digests.len() >= 2);
+    let last = request_digests.len();
+    assert_ne!(request_digests[last - 2], request_digests[last - 1]);
+    audit.zeroize();
+    for (index, token) in credentials.iter().enumerate() {
+        let _ingress = crate::auth::IngressReplyScope::listener(&[0xea; 16]);
+        let response = call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":token.as_str()}),
+        );
+        assert_eq!(response.status, 200);
+        let bytes = response
+            .unwrapped_json
+            .as_ref()
+            .ok_or("origin")?
+            .raw_bytes(&response.body)?
+            .ok_or("complete stored bytes")?;
+        let tree = crate::auth::LexicalJson::parse_listener(bytes)?;
+        let crate::auth::LexicalJson::Object(root) = &tree else {
+            return Err("envelope".into());
+        };
+        let crate::auth::LexicalJson::Object(data) = &root["data"] else {
+            return Err("data".into());
+        };
+        if index == 0 {
+            assert!(matches!(&data["number"], crate::auth::LexicalJson::Number(n) if n == "1e309"));
+        } else {
+            assert!(matches!(&data["number"], crate::auth::LexicalJson::String(n) if n == "1e309"));
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/wrapping/unwrap",
+                &admin,
+                json!({"token":token.as_str()})
+            )
+            .status,
+            400
+        );
+    }
+    let current = service.state.as_ref().ok_or("current")?;
+    assert_eq!(current.schema, 113);
+    assert!(
+        current.auth.has_general_wrapped_reply_state()
+            && !current.auth.has_pki_raw_http_reply_state()
+    );
+    Ok(())
+}
+
+#[test]
+fn raw113_actual_selected_json_consume_needs_real_http_ingress_and_stays_permanent_without_pki_authority()
+-> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_key, admin) = bootstrap(&mut service)?;
+    let lexical = crate::auth::LexicalJson::parse_listener(
+        br#"{"http_status_code":null,"http_content_type":1.0,"http_raw_body":"1.0","request_id":"client-cannot-mint","extra":1e309}"#,
+    )?;
+    let _issued_ingress =
+        crate::auth::IngressReplyScope::listener_wrapping(&[0x91; 16], Some(lexical.clone()));
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        &admin,
+        lexical.wrapping_view()?,
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let issued = service.handle_request_at(request, 100);
+    assert_eq!(issued.status, 200);
+    let token = Zeroizing::new(
+        issued.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("actual wrapper")?
+            .to_owned(),
+    );
+    let _later_ingress = crate::auth::IngressReplyScope::listener(&[0x92; 16]);
+    let request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/unwrap",
+        "",
+        &admin,
+        json!({"token":&*token}),
+    );
+    let mut response = service.handle_request_at(request, 101);
+    assert_eq!(response.status, 200);
+    let origin = response
+        .unwrapped_json
+        .as_mut()
+        .ok_or("actual consumed private origin")?;
+    let stored = origin.stored_reply().ok_or("actual selected original")?;
+    let original = Zeroizing::new(stored.bytes(&response.body)?.to_vec());
+    let original_id = serde_json::from_slice::<Value>(&original)?["request_id"]
+        .as_str()
+        .ok_or("original ID")?
+        .to_owned();
+    assert_eq!(original_id, crate::crypto::uuid_from_bytes(&[0x91; 16]));
+    // No response writer may accidentally release the original envelope for this kind.
+    assert!(origin.raw_bytes(&response.body).is_err());
+    origin.bind_selected_http_ingress(&response.body, &[0x92; 16])?;
+    let wire = origin
+        .raw_bytes(&response.body)?
+        .ok_or("actual selected final ingress")?;
+    assert!(wire.ends_with(b"\n"));
+    let text = std::str::from_utf8(wire)?;
+    assert!(
+        text.contains("\"http_content_type\":1.0") && text.contains("\"http_raw_body\":\"1.0\"")
+    );
+    assert!(!text.contains("client-cannot-mint") && !text.contains("1e309"));
+    let mut public: Value = serde_json::from_slice(wire)?;
+    assert_eq!(
+        public["request_id"],
+        crate::crypto::uuid_from_bytes(&[0x92; 16])
+    );
+    assert!(
+        public["data"]
+            .get("http_raw_body_already_json_decoded")
+            .is_none()
+    );
+    assert!(public["data"].get("http_status_code").is_none());
+    assert!(origin.raw_http_transport(&response.body)?.is_none());
+    assert_eq!(
+        origin
+            .stored_reply()
+            .ok_or("retained private original")?
+            .bytes(&response.body)?,
+        original.as_slice()
+    );
+    assert!(
+        origin
+            .bind_selected_http_ingress(&response.body, &[0x93; 16])
+            .is_err()
+    );
+    let replay = service.handle_request_at(
+        ServiceRequest::new(
+            "POST",
+            "sys/wrapping/unwrap",
+            "",
+            &admin,
+            json!({"token":&*token}),
+        ),
+        102,
+    );
+    assert_eq!(replay.status, 400);
+    let retired = service.state.as_ref().ok_or("retired actual state")?;
+    assert_eq!(retired.schema, GENERAL_WRAPPED_REPLY_STATE_SCHEMA);
+    assert!(
+        retired.auth.has_general_wrapped_reply_state()
+            && !retired.auth.has_pki_raw_http_reply_state()
+    );
+    erase_json(&mut public);
+    erase_json(&mut response.body);
     Ok(())
 }
 
@@ -1559,4 +1916,189 @@ fn raw112_actual_two_certificate_ca_chain_has_one_separator_and_no_terminal_lf()
         200
     );
     raw112_assert_chain_rewrap_reopen_terminal(&directory, service, &key, &admin, &expected)
+}
+
+#[test]
+fn raw113_actual_selected_byte_string_drop_projection_reaches_mandatory_audit_before_http()
+-> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_key, admin) = bootstrap(&mut service)?;
+    let mut response_bindings = std::collections::BTreeSet::new();
+    for (index, raw) in [json!("/wBh"), json!("1.0"), json!(123), json!("")]
+        .into_iter()
+        .enumerate()
+    {
+        let lexical = crate::auth::LexicalJson::from_backend(
+            &json!({"http_raw_body":raw,"extra":"must-not-leak","http_raw_body_already_json_decoded":true}),
+        )?;
+        let _ingress = crate::auth::IngressReplyScope::listener_wrapping(
+            &[0x96 + index as u8; 16],
+            Some(lexical.clone()),
+        );
+        let mut request = ServiceRequest::new(
+            "POST",
+            "sys/wrapping/wrap",
+            "",
+            &admin,
+            lexical.wrapping_view()?,
+        );
+        request.wrap_ttl_seconds = Some(60);
+        let issued = service.handle_request_at(request, 100);
+        assert_eq!(issued.status, 200);
+        let token = Zeroizing::new(
+            issued.body["wrap_info"]["token"]
+                .as_str()
+                .ok_or("wrapper")?
+                .to_owned(),
+        );
+        let _later = crate::auth::IngressReplyScope::listener(&[0x9b; 16]);
+        let mut response = service.handle_request_at(
+            ServiceRequest::new(
+                "POST",
+                "sys/wrapping/unwrap",
+                "",
+                &admin,
+                json!({"token":&*token}),
+            ),
+            101,
+        );
+        assert_eq!(response.status, 200);
+        let audit = Zeroizing::new(std::fs::read(directory.0.join("audit.jsonl"))?);
+        let rows = audit
+            .split(|b| *b == b'\n')
+            .filter(|line| !line.is_empty())
+            .collect::<Vec<_>>();
+        assert!(rows.len() >= 2);
+        let mut request_record: Value = serde_json::from_slice(rows[rows.len() - 2])?;
+        let mut response_record: Value = serde_json::from_slice(rows[rows.len() - 1])?;
+        assert_eq!(request_record["event"]["kind"], "request");
+        assert_eq!(response_record["event"]["kind"], "response");
+        assert!(request_record["event"]["path_digest"] != response_record["event"]["path_digest"]);
+        let binding = response_record["event"]["path_digest"]
+            .as_str()
+            .ok_or("mandatory response binding")?
+            .to_owned();
+        assert!(response_bindings.insert(binding));
+        erase_json(&mut request_record);
+        erase_json(&mut response_record);
+        let origin = response
+            .unwrapped_json
+            .as_mut()
+            .ok_or("actual consumed owner")?;
+        assert!(origin.raw_bytes(&response.body).is_err());
+        // The actual Service boundary has prepared this projection exactly once.
+        assert!(
+            origin
+                .selected_response_audit_binding(&response.body)
+                .is_err()
+        );
+        origin.bind_selected_http_ingress(&response.body, &[0x9b; 16])?;
+        let wire = origin
+            .raw_bytes(&response.body)?
+            .ok_or("actual selected HTTP")?;
+        let mut public: Value = serde_json::from_slice(wire)?;
+        assert!(
+            !wire
+                .windows(b"must-not-leak".len())
+                .any(|w| w == b"must-not-leak")
+        );
+        if index == 2 {
+            assert_eq!(public["data"]["http_raw_body_already_json_decoded"], true);
+            assert!(public["data"].get("http_raw_body").is_none());
+        } else {
+            assert!(
+                public["data"]
+                    .get("http_raw_body_already_json_decoded")
+                    .is_none()
+            );
+            assert!(public["data"]["http_raw_body"] == raw);
+        }
+        assert_eq!(
+            public["request_id"],
+            crate::crypto::uuid_from_bytes(&[0x9b; 16])
+        );
+        erase_json(&mut public);
+        erase_json(&mut response.body);
+    }
+    assert_eq!(response_bindings.len(), 4);
+    Ok(())
+}
+
+#[test]
+fn raw113_actual_selected_mandatory_response_audit_failure_erases_owner_and_retains_consumption()
+-> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    let lexical =
+        crate::auth::LexicalJson::parse_listener(br#"{"http_raw_body":"do-not-release!"}"#)?;
+    let _issue =
+        crate::auth::IngressReplyScope::listener_wrapping(&[0x9c; 16], Some(lexical.clone()));
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        &admin,
+        lexical.wrapping_view()?,
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let issued = service.handle_request_at(request, 100);
+    assert_eq!(issued.status, 200);
+    let token = Zeroizing::new(
+        issued.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?
+            .to_owned(),
+    );
+    let _later = crate::auth::IngressReplyScope::listener(&[0x9d; 16]);
+    let old_sequence = service.audit_sequence;
+    let event = AuditUnsigned {
+        schema: 2,
+        sequence: old_sequence + 1,
+        previous: STANDARD.encode(service.audit_previous),
+        time: 101,
+        kind: "request".into(),
+        path_digest: service.request_fingerprint("POST", "sys/wrapping/unwrap", "", &admin),
+        status: None,
+    };
+    let payload = Zeroizing::new(serde_json::to_vec(&event)?);
+    let mac = STANDARD.encode(hmac::sign(&service.audit_key, &payload).as_ref());
+    let request_bytes = serde_json::to_vec(&AuditRecord { event, mac })?.len() + 1;
+    service.audit_capacity = service.audit.metadata()?.len() + request_bytes as u64;
+    let response = service.handle_request_at(
+        ServiceRequest::new(
+            "POST",
+            "sys/wrapping/unwrap",
+            "",
+            &admin,
+            json!({"token":&*token}),
+        ),
+        101,
+    );
+    assert_eq!(response.status, 503);
+    assert!(response.unwrapped_json.is_none());
+    assert!(!response.body.to_string().contains("do-not-release!"));
+    assert!(service.recovery_required && service.audit_sequence == old_sequence + 1);
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &admin,
+            json!({"token":&*token})
+        )
+        .status,
+        400
+    );
+    let retired = service.state.as_ref().ok_or("retired state")?;
+    assert_eq!(retired.schema, GENERAL_WRAPPED_REPLY_STATE_SCHEMA);
+    assert!(retired.auth.has_general_wrapped_reply_state());
+    Ok(())
 }

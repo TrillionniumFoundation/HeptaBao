@@ -3,10 +3,14 @@
 use super::*;
 use base64::engine::general_purpose::STANDARD as RAW_BASE64;
 use std::cell::RefCell;
+#[path = "auth_lexical_json113.rs"]
+mod lexical113;
+pub(crate) use lexical113::LexicalJson;
 
 #[derive(Clone)]
 pub(crate) struct IngressReplyContext {
     attempt_id: [u8; 16],
+    lexical_body: Option<LexicalJson>,
 }
 thread_local! {
     static INGRESS: RefCell<Option<IngressReplyContext>> = const { RefCell::new(None) };
@@ -15,15 +19,33 @@ pub(crate) struct IngressReplyScope {
     previous: Option<IngressReplyContext>,
 }
 impl IngressReplyScope {
-    /// Only the actual HTTP listener's already generated attempt enters here.
+    /// Test controls supply a fixed admitted ID; production uses listener_wrapping.
+    #[cfg(test)]
     pub(crate) fn listener(attempt_id: &[u8; 16]) -> Self {
         Self::restore(Some(IngressReplyContext {
             attempt_id: *attempt_id,
+            lexical_body: None,
+        }))
+    }
+    /// The actual listener has already parsed and bound the complete body.
+    pub(crate) fn listener_wrapping(
+        attempt_id: &[u8; 16],
+        lexical_body: Option<LexicalJson>,
+    ) -> Self {
+        Self::restore(Some(IngressReplyContext {
+            attempt_id: *attempt_id,
+            lexical_body,
         }))
     }
     /// Called after the authenticated peer frame and direction are admitted.
-    pub(crate) fn authenticated_forward(attempt_id: Option<[u8; 16]>) -> Self {
-        Self::restore(attempt_id.map(|attempt_id| IngressReplyContext { attempt_id }))
+    pub(crate) fn authenticated_forward(
+        attempt_id: Option<[u8; 16]>,
+        lexical_body: Option<LexicalJson>,
+    ) -> Self {
+        Self::restore(attempt_id.map(|attempt_id| IngressReplyContext {
+            attempt_id,
+            lexical_body,
+        }))
     }
     pub(crate) fn restore(context: Option<IngressReplyContext>) -> Self {
         let previous = INGRESS.with(|slot| slot.replace(context));
@@ -44,16 +66,47 @@ impl IngressReplyContext {
     pub(crate) fn attempt_id(&self) -> [u8; 16] {
         self.attempt_id
     }
+    pub(crate) fn wrapping_body(&self) -> Option<&LexicalJson> {
+        self.lexical_body.as_ref()
+    }
+    pub(crate) fn lexical_request_binding(
+        &self,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<Option<Zeroizing<Vec<u8>>>, AuthError> {
+        let Some(lexical) = &self.lexical_body else {
+            return Ok(None);
+        };
+        if !matches!(method, "POST" | "PUT") || path != "sys/wrapping/wrap" {
+            return Err(bad("lexical ingress is outside opaque wrapping endpoint"));
+        }
+        lexical.validate_wrapping_view(body)?;
+        lexical.encode(64 * 1024).map(Some)
+    }
     fn request_id(&self) -> String {
         crate::crypto::uuid_from_bytes(&self.attempt_id)
     }
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 enum ReplyKind {
     JsonEnvelopeV1,
-    PkiRawHttpV1 { status: u16, nil_body: bool },
+    PkiRawHttpV1 {
+        status: u16,
+        nil_body: bool,
+    },
+    GeneralJsonEnvelopeV1 {
+        lexical_data: LexicalJson,
+    },
+    GeneralSelectedJsonV1 {
+        lexical_data: Option<LexicalJson>,
+    },
+    GeneralRawHttpV1 {
+        lexical_data: Option<LexicalJson>,
+        presentation: GeneralRawPresentation,
+    },
 }
 
 /// Only the admitted server route selects this closed internal Data projection.
@@ -133,11 +186,18 @@ impl LogicalProjection {
 pub(in crate::auth) enum RawReplyReaderFloor {
     Legacy(bool),
     PkiHttp(PkiHttpReader),
+    GeneralHttp(GeneralHttpReader),
 }
 #[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub(in crate::auth) enum PkiHttpReader {
     PkiRawHttpV1,
+}
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub(in crate::auth) enum GeneralHttpReader {
+    GeneralWrappedReplyV1,
+    PkiAndGeneralWrappedReplyV1,
 }
 impl Default for RawReplyReaderFloor {
     fn default() -> Self {
@@ -152,10 +212,25 @@ impl RawReplyReaderFloor {
         !self.is_absent()
     }
     fn has_pki_http(&self) -> bool {
-        matches!(self, Self::PkiHttp(PkiHttpReader::PkiRawHttpV1))
+        matches!(
+            self,
+            Self::PkiHttp(PkiHttpReader::PkiRawHttpV1)
+                | Self::GeneralHttp(GeneralHttpReader::PkiAndGeneralWrappedReplyV1)
+        )
     }
-    pub(in crate::auth) fn observe(&mut self, pki_http: bool) {
-        if pki_http {
+    fn has_general(&self) -> bool {
+        matches!(self, Self::GeneralHttp(_))
+    }
+    pub(in crate::auth) fn observe(&mut self, pki_http: bool, general: bool) {
+        let pki_http = self.has_pki_http() || pki_http;
+        let general = self.has_general() || general;
+        if general {
+            *self = Self::GeneralHttp(if pki_http {
+                GeneralHttpReader::PkiAndGeneralWrappedReplyV1
+            } else {
+                GeneralHttpReader::GeneralWrappedReplyV1
+            });
+        } else if pki_http {
             *self = Self::PkiHttp(PkiHttpReader::PkiRawHttpV1);
         } else if self.is_absent() {
             *self = Self::Legacy(true);
@@ -348,6 +423,51 @@ pub(crate) fn encode_http_envelope(
     }
     Ok(bytes)
 }
+
+fn encode_lexical_envelope(
+    projection: &Value,
+    lexical_data: &LexicalJson,
+    bound: usize,
+) -> Result<Zeroizing<Vec<u8>>, AuthError> {
+    let mut bytes = Zeroizing::new(Vec::new());
+    bytes.push(b'{');
+    for (index, name) in ENVELOPE_FIELDS.iter().enumerate() {
+        if index != 0 {
+            bytes.push(b',');
+        }
+        append_json(&mut bytes, &json!(name), bound)?;
+        bytes.push(b':');
+        if *name == "data" {
+            bytes.extend_from_slice(&lexical_data.encode(bound)?);
+        } else if *name == "auth" && projection[*name].is_object() {
+            bytes.push(b'{');
+            let mut first = true;
+            for field in AUTH_FIELDS {
+                if let Some(value) = projection[*name].get(field) {
+                    if !first {
+                        bytes.push(b',');
+                    }
+                    first = false;
+                    append_json(&mut bytes, &json!(field), bound)?;
+                    bytes.push(b':');
+                    append_json(&mut bytes, value, bound)?;
+                }
+            }
+            bytes.push(b'}');
+        } else {
+            append_json(&mut bytes, &projection[*name], bound)?;
+        }
+        if bytes.len() > bound {
+            return Err(err(413, "lexical envelope exceeds bound"));
+        }
+    }
+    bytes.push(b'}');
+    if bytes.len() > bound {
+        return Err(err(413, "lexical envelope exceeds bound"));
+    }
+    Ok(bytes)
+}
+
 fn append_json(output: &mut Vec<u8>, value: &Value, bound: usize) -> Result<(), AuthError> {
     match value {
         Value::Array(values) => {
@@ -533,12 +653,290 @@ fn pki_http_projection(logical: &Value) -> Result<PkiHttpProjection, AuthError> 
     Ok((status, media.to_owned(), nil_body, bytes))
 }
 
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
+enum GeneralRawError {
+    NoStatusCode,
+    CannotDecodeStatusCode,
+    NoContentType,
+    CannotDecodeContentType,
+}
+impl GeneralRawError {
+    fn header(self) -> &'static str {
+        match self {
+            Self::NoStatusCode => "no status code given",
+            Self::CannotDecodeStatusCode => "cannot decode status code",
+            Self::NoContentType => "no content type given",
+            Self::CannotDecodeContentType => "cannot decode content type",
+        }
+    }
+}
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct GeneralRawPresentation {
+    status: u16,
+    error: Option<GeneralRawError>,
+    connection_abort: bool,
+}
+type GeneralRawProjection = (GeneralRawPresentation, String, Zeroizing<Vec<u8>>);
+fn has_special_presentation(response: &Value) -> bool {
+    response
+        .get("data")
+        .and_then(Value::as_object)
+        .is_some_and(|data| {
+            ["http_status_code", "http_content_type", "http_raw_body"]
+                .iter()
+                .any(|name| data.get(*name).is_some_and(|value| !value.is_null()))
+        })
+}
+/// Affine response-only selection prepared before the mandatory response audit.
+/// The HTTP Data and the original []byte/string audit type share this owner;
+/// neither a client marker nor an SDK Data key can construct this owner.
+pub(super) struct SelectedResponseProjection {
+    wire_data: LexicalJson,
+    raw_body: Option<SelectedAuditRawBody>,
+}
+enum SelectedAuditRawBody {
+    DecodedBytes(Zeroizing<Vec<u8>>),
+    Text(Zeroizing<String>),
+}
+impl SelectedResponseProjection {
+    pub(super) fn audit_binding(&self) -> Result<Zeroizing<Vec<u8>>, AuthError> {
+        // This is custody input for the existing mandatory audit chain, not
+        // OpenBao's per-field HashResponse format or a device salt contract.
+        let typed = Zeroizing::new(
+            serde_json::to_vec(&self.wire_data)
+                .map_err(|_| bad("selected response audit projection cannot encode"))?,
+        );
+        let mut payload = Zeroizing::new(Vec::new());
+        payload.extend_from_slice(&(typed.len() as u64).to_le_bytes());
+        payload.extend_from_slice(&typed);
+        let (kind, raw): (u8, &[u8]) = match &self.raw_body {
+            None => (0, &[]),
+            Some(SelectedAuditRawBody::DecodedBytes(bytes)) => (1, bytes),
+            Some(SelectedAuditRawBody::Text(text)) => (2, text.as_bytes()),
+        };
+        payload.push(kind);
+        payload.extend_from_slice(&(raw.len() as u64).to_le_bytes());
+        payload.extend_from_slice(raw);
+        if payload.len() > 256 * 1024 {
+            return Err(bad("selected response audit projection exceeds bound"));
+        }
+        Ok(payload)
+    }
+    fn same_selection(&self, other: &Self) -> bool {
+        self.wire_data == other.wire_data
+            && match (&self.raw_body, &other.raw_body) {
+                (None, None) => true,
+                (
+                    Some(SelectedAuditRawBody::DecodedBytes(left)),
+                    Some(SelectedAuditRawBody::DecodedBytes(right)),
+                ) => left.as_slice() == right.as_slice(),
+                (
+                    Some(SelectedAuditRawBody::Text(left)),
+                    Some(SelectedAuditRawBody::Text(right)),
+                ) => left.as_str() == right.as_str(),
+                _ => false,
+            }
+    }
+    fn has_status(&self) -> bool {
+        matches!(&self.wire_data, LexicalJson::Object(data) if data.contains_key("http_status_code"))
+    }
+}
+fn selected_response_projection(
+    logical: &Value,
+    lexical_data: Option<&LexicalJson>,
+) -> Result<Option<SelectedResponseProjection>, AuthError> {
+    if !has_special_presentation(logical) {
+        return Ok(None);
+    }
+    let generated;
+    let data = if let Some(data) = lexical_data {
+        data.validate_wrapping_view(&logical["data"])?;
+        data
+    } else {
+        generated = LexicalJson::from_backend(&logical["data"])?;
+        &generated
+    };
+    let LexicalJson::Object(fields) = data else {
+        return Err(bad("selected presentation requires actual data object"));
+    };
+    let get = |name| fields.get(name).filter(|v| !matches!(v, LexicalJson::Null));
+    let mut selected = std::collections::BTreeMap::new();
+    for name in ["http_status_code", "http_content_type"] {
+        if let Some(value) = get(name) {
+            selected.insert(name.into(), value.clone());
+        }
+    }
+    let mut raw_body = None;
+    if let Some(body) = get("http_raw_body") {
+        if let LexicalJson::String(text) = body {
+            let input = Zeroizing::new(
+                text.bytes()
+                    .filter(|b| !matches!(b, b'\r' | b'\n'))
+                    .collect::<Vec<_>>(),
+            );
+            let decoder = base64::engine::general_purpose::GeneralPurpose::new(
+                &base64::alphabet::STANDARD,
+                base64::engine::general_purpose::GeneralPurposeConfig::new()
+                    .with_decode_allow_trailing_bits(true),
+            );
+            // OpenBao restores valid Base64 to []byte for HashResponse, while
+            // the ordinary HTTP JSON encoder emits its standard Base64 text.
+            let wire_body = match decoder.decode(&*input) {
+                Ok(bytes) => {
+                    let bytes = Zeroizing::new(bytes);
+                    let wire = LexicalJson::String(RAW_BASE64.encode(&*bytes));
+                    raw_body = Some(SelectedAuditRawBody::DecodedBytes(bytes));
+                    wire
+                }
+                Err(_) => {
+                    raw_body = Some(SelectedAuditRawBody::Text(Zeroizing::new(text.clone())));
+                    LexicalJson::String(text.clone())
+                }
+            };
+            selected.insert("http_raw_body".into(), wire_body);
+            // request_handling removes the internal marker before both the
+            // mandatory audit and terminal projection when the body survives.
+        } else {
+            // logical_system dropped a non-string body, so request_handling's
+            // non-null body gate does not remove the server-created marker.
+            selected.insert(
+                "http_raw_body_already_json_decoded".into(),
+                LexicalJson::Bool(true),
+            );
+        }
+    }
+    Ok(Some(SelectedResponseProjection {
+        wire_data: LexicalJson::Object(selected),
+        raw_body,
+    }))
+}
+// A selected response without status is ordinary JSON of the current unwrap
+// request. Its original stored response bytes and request ID stay immutable.
+fn selected_ordinary_data(
+    logical: &Value,
+    lexical_data: Option<&LexicalJson>,
+) -> Result<Option<LexicalJson>, AuthError> {
+    Ok(selected_response_projection(logical, lexical_data)?
+        .filter(|projection| !projection.has_status())
+        .map(|projection| projection.wire_data.clone()))
+}
+fn general_raw_projection(
+    logical: &Value,
+    lexical_data: Option<&LexicalJson>,
+) -> Result<GeneralRawProjection, AuthError> {
+    let generated;
+    let data = if let Some(data) = lexical_data {
+        data.validate_wrapping_view(&logical["data"])?;
+        data
+    } else {
+        generated = LexicalJson::from_backend(&logical["data"])?;
+        &generated
+    };
+    let LexicalJson::Object(fields) = data else {
+        return Err(bad(
+            "special presentation requires admitted logical data object",
+        ));
+    };
+    // The primary stored unwrap copies non-null special values only. It does
+    // not inherit client Auth, Secret, arbitrary headers or a PKI producer label.
+    let get = |name| fields.get(name).filter(|v| !matches!(v, LexicalJson::Null));
+    let error = |value| {
+        Ok((
+            GeneralRawPresentation {
+                status: 500,
+                error: Some(value),
+                connection_abort: false,
+            },
+            String::new(),
+            Zeroizing::new(Vec::new()),
+        ))
+    };
+    let Some(status) = get("http_status_code") else {
+        return error(GeneralRawError::NoStatusCode);
+    };
+    let LexicalJson::Number(number) = status else {
+        return error(GeneralRawError::CannotDecodeStatusCode);
+    };
+    let number = match number.parse::<f64>() {
+        Ok(number) if number.is_finite() => number.trunc(),
+        _ => return error(GeneralRawError::CannotDecodeStatusCode),
+    };
+    // net/http panics rather than emits a status outside its valid 100..999
+    // range. The owned writer closes this connection after the genuine consume.
+    if !(100.0..=999.0).contains(&number) {
+        return Ok((
+            GeneralRawPresentation {
+                status: 500,
+                error: None,
+                connection_abort: true,
+            },
+            String::new(),
+            Zeroizing::new(Vec::new()),
+        ));
+    }
+    let status = number as u16;
+    let media_type = match get("http_content_type") {
+        Some(LexicalJson::String(media)) => {
+            if media.bytes().any(|b| b == b'\r' || b == b'\n' || b == 0) {
+                return Err(bad("raw content type contains invalid header bytes"));
+            }
+            media.clone()
+        }
+        Some(_) => return error(GeneralRawError::CannotDecodeContentType),
+        None if status != 204 => return error(GeneralRawError::NoContentType),
+        None => String::new(),
+    };
+    let bytes = if status == 204 {
+        Zeroizing::new(Vec::new())
+    } else if let Some(LexicalJson::String(body)) = get("http_raw_body") {
+        // Go StdEncoding ignores CR/LF and permits non-zero trailing pad bits.
+        let input = Zeroizing::new(
+            body.bytes()
+                .filter(|b| !matches!(b, b'\r' | b'\n'))
+                .collect::<Vec<_>>(),
+        );
+        let decoder = base64::engine::general_purpose::GeneralPurpose::new(
+            &base64::alphabet::STANDARD,
+            base64::engine::general_purpose::GeneralPurposeConfig::new()
+                .with_decode_allow_trailing_bits(true),
+        );
+        Zeroizing::new(
+            decoder
+                .decode(&*input)
+                .unwrap_or_else(|_| body.as_bytes().to_vec()),
+        )
+    } else {
+        // Missing or non-string body is not copied by primary unwrap.
+        Zeroizing::new(Vec::new())
+    };
+    if bytes.len() > MAX_WRAPPED_RESPONSE_BYTES {
+        return Err(err(413, "raw presentation exceeds supported bounds"));
+    }
+    Ok((
+        GeneralRawPresentation {
+            status,
+            error: None,
+            connection_abort: false,
+        },
+        media_type,
+        bytes,
+    ))
+}
+
 impl StoredWrappedReply {
     pub(super) fn capture(
         response: &Value,
         context: &IngressReplyContext,
         path: &str,
     ) -> Result<Self, AuthError> {
+        if has_special_presentation(response) {
+            return Self::capture_general_raw(response, context, path);
+        }
+        if let Some(lexical_data) = context.wrapping_body() {
+            return Self::capture_lexical(response, context, path, lexical_data);
+        }
         let request_id = context.request_id();
         let logical_projection = LogicalProjection::for_path(path);
         let mut projection =
@@ -558,6 +956,174 @@ impl StoredWrappedReply {
         result.validate(response)?;
         Ok(result)
     }
+
+    fn capture_general_raw(
+        response: &Value,
+        context: &IngressReplyContext,
+        path: &str,
+    ) -> Result<Self, AuthError> {
+        let lexical_data = context.wrapping_body();
+        if lexical_data.is_some() && path != "sys/wrapping/wrap" {
+            return Err(bad("lexical raw owner is outside wrapping endpoint"));
+        }
+        if selected_ordinary_data(response, lexical_data)?.is_some() {
+            return Self::capture_selected_json(response, context, path);
+        }
+        let (presentation, media_type, bytes) = general_raw_projection(response, lexical_data)?;
+        let result = Self {
+            kind: ReplyKind::GeneralRawHttpV1 {
+                lexical_data: lexical_data.cloned(),
+                presentation,
+            },
+            logical_projection: LogicalProjection::for_path(path),
+            media_type,
+            byte_count: bytes.len(),
+            digest: crate::ha_forward_completion::digest(&bytes),
+            request_id: context.request_id(),
+            bytes: bytes.to_vec(),
+        };
+        result.validate(response)?;
+        Ok(result)
+    }
+    fn capture_selected_json(
+        response: &Value,
+        context: &IngressReplyContext,
+        path: &str,
+    ) -> Result<Self, AuthError> {
+        let lexical_data = context.wrapping_body();
+        if selected_ordinary_data(response, lexical_data)?.is_none() {
+            return Err(bad(
+                "selected JSON has a raw status or lacks special fields",
+            ));
+        }
+        let request_id = context.request_id();
+        let logical_projection = LogicalProjection::for_path(path);
+        let generated;
+        let data = if let Some(data) = lexical_data {
+            data
+        } else {
+            generated = LexicalJson::from_backend(&response["data"])?;
+            &generated
+        };
+        let mut projection =
+            logical_envelope_for_projection(response, &request_id, &logical_projection)?;
+        let bytes = encode_lexical_envelope(&projection, data, MAX_WRAPPED_RESPONSE_BYTES);
+        crate::service::erase_json(&mut projection);
+        let bytes = bytes?;
+        let result = Self {
+            kind: ReplyKind::GeneralSelectedJsonV1 {
+                lexical_data: lexical_data.cloned(),
+            },
+            logical_projection,
+            media_type: "application/json".into(),
+            byte_count: bytes.len(),
+            digest: crate::ha_forward_completion::digest(&bytes),
+            request_id,
+            bytes: bytes.to_vec(),
+        };
+        result.validate(response)?;
+        Ok(result)
+    }
+    pub(crate) fn uses_selected_json_ingress(&self) -> bool {
+        matches!(self.kind, ReplyKind::GeneralSelectedJsonV1 { .. })
+    }
+    pub(super) fn selected_response_for_audit(
+        &self,
+        logical: &Value,
+    ) -> Result<Option<SelectedResponseProjection>, AuthError> {
+        self.validate(logical)?;
+        match &self.kind {
+            ReplyKind::GeneralSelectedJsonV1 { lexical_data }
+            | ReplyKind::GeneralRawHttpV1 { lexical_data, .. } => {
+                selected_response_projection(logical, lexical_data.as_ref())
+            }
+            _ => Ok(None),
+        }
+    }
+    pub(super) fn selected_json_for_ingress(
+        &self,
+        logical: &Value,
+        actual_ingress: &[u8; 16],
+        prepared: &SelectedResponseProjection,
+    ) -> Result<Option<Zeroizing<Vec<u8>>>, AuthError> {
+        self.validate(logical)?;
+        let ReplyKind::GeneralSelectedJsonV1 { lexical_data } = &self.kind else {
+            return Ok(None);
+        };
+        let selected = selected_response_projection(logical, lexical_data.as_ref())?
+            .ok_or_else(|| bad("selected JSON no longer has ordinary presentation"))?;
+        if selected.has_status() || !selected.same_selection(prepared) {
+            return Err(bad("selected JSON differs from mandatory audit projection"));
+        }
+        let selected = &prepared.wire_data;
+        let mut public_logical = json!({"data":selected.wrapping_view()?});
+        let request_id = crate::crypto::uuid_from_bytes(actual_ingress);
+        let mut projection = logical_envelope_for_projection(
+            &public_logical,
+            &request_id,
+            &LogicalProjection::Ordinary,
+        )?;
+        let encoded = encode_lexical_envelope(&projection, selected, MAX_WRAPPED_RESPONSE_BYTES);
+        crate::service::erase_json(&mut public_logical);
+        crate::service::erase_json(&mut projection);
+        let mut encoded = encoded?;
+        // The selected ordinary response follows the JSON encoder's newline.
+        encoded.push(b'\n');
+        Ok(Some(encoded))
+    }
+    pub(crate) fn raw_error_header(
+        &self,
+        logical: &Value,
+    ) -> Result<Option<&'static str>, AuthError> {
+        self.validate(logical)?;
+        Ok(match &self.kind {
+            ReplyKind::GeneralRawHttpV1 { presentation, .. } => {
+                presentation.error.map(GeneralRawError::header)
+            }
+            _ => None,
+        })
+    }
+
+    fn capture_lexical(
+        response: &Value,
+        context: &IngressReplyContext,
+        path: &str,
+        lexical_data: &LexicalJson,
+    ) -> Result<Self, AuthError> {
+        if path != "sys/wrapping/wrap" {
+            return Err(bad("lexical response owner is outside wrapping endpoint"));
+        }
+        lexical_data.validate_wrapping_view(&response["data"])?;
+        let request_id = context.request_id();
+        let logical_projection = LogicalProjection::Ordinary;
+        let mut projection =
+            logical_envelope_for_projection(response, &request_id, &logical_projection)?;
+        let bytes = encode_lexical_envelope(&projection, lexical_data, MAX_WRAPPED_RESPONSE_BYTES);
+        crate::service::erase_json(&mut projection);
+        let bytes = bytes?;
+        let result = Self {
+            kind: ReplyKind::GeneralJsonEnvelopeV1 {
+                lexical_data: lexical_data.clone(),
+            },
+            logical_projection,
+            media_type: "application/json".into(),
+            byte_count: bytes.len(),
+            digest: crate::ha_forward_completion::digest(&bytes),
+            request_id,
+            bytes: bytes.to_vec(),
+        };
+        result.validate(response)?;
+        Ok(result)
+    }
+    pub(in crate::auth) fn is_general_reply(&self) -> bool {
+        matches!(
+            &self.kind,
+            ReplyKind::GeneralJsonEnvelopeV1 { .. }
+                | ReplyKind::GeneralSelectedJsonV1 { .. }
+                | ReplyKind::GeneralRawHttpV1 { .. }
+        )
+    }
+
     /// Only the actual sealed PKI producer selects a dedicated raw HTTP reply.
     /// The ingress ID stays in encrypted custody; raw HTTP exposes no UUID.
     pub(super) fn capture_pki(
@@ -586,8 +1152,18 @@ impl StoredWrappedReply {
     ) -> Result<Option<(u16, &'a str)>, AuthError> {
         self.validate(logical)?;
         match self.kind {
-            ReplyKind::JsonEnvelopeV1 => Ok(None),
+            ReplyKind::JsonEnvelopeV1
+            | ReplyKind::GeneralJsonEnvelopeV1 { .. }
+            | ReplyKind::GeneralSelectedJsonV1 { .. } => Ok(None),
             ReplyKind::PkiRawHttpV1 { status, .. } => Ok(Some((status, &self.media_type))),
+            ReplyKind::GeneralRawHttpV1 {
+                ref presentation, ..
+            } => {
+                if presentation.connection_abort {
+                    return Err(bad("raw status requires connection abort"));
+                }
+                Ok(Some((presentation.status, &self.media_type)))
+            }
         }
     }
     pub(super) fn validate_owner(&self, logical: &Value, path: &str) -> Result<(), AuthError> {
@@ -597,6 +1173,105 @@ impl StoredWrappedReply {
         self.validate(logical)
     }
     pub(crate) fn validate(&self, logical: &Value) -> Result<(), AuthError> {
+        if let ReplyKind::GeneralSelectedJsonV1 { lexical_data } = &self.kind {
+            if selected_ordinary_data(logical, lexical_data.as_ref())?.is_none() {
+                return Err(bad(
+                    "stored selected JSON differs from original presentation",
+                ));
+            }
+            if !valid_request_id(&self.request_id)
+                || self.media_type != "application/json"
+                || self.byte_count != self.bytes.len()
+                || self.bytes.len() > MAX_WRAPPED_RESPONSE_BYTES
+                || self.digest != crate::ha_forward_completion::digest(&self.bytes)
+            {
+                return Err(bad("stored selected JSON immutable metadata differs"));
+            }
+            let generated;
+            let data = if let Some(data) = lexical_data {
+                data.validate_wrapping_view(&logical["data"])?;
+                data
+            } else {
+                generated = LexicalJson::from_backend(&logical["data"])?;
+                &generated
+            };
+            let mut projection = logical_envelope_for_projection(
+                logical,
+                &self.request_id,
+                &self.logical_projection,
+            )?;
+            let encoded = encode_lexical_envelope(&projection, data, MAX_WRAPPED_RESPONSE_BYTES);
+            crate::service::erase_json(&mut projection);
+            let encoded = encoded?;
+            let decoded = LexicalJson::parse_listener(&self.bytes)?;
+            let exact = matches!(&decoded, LexicalJson::Object(fields)
+                if fields.len() == 8 && ENVELOPE_FIELDS.iter().all(|n| fields.contains_key(*n)));
+            if !exact || encoded.as_slice() != self.bytes.as_slice() {
+                return Err(bad("stored selected JSON original custody differs"));
+            }
+            return Ok(());
+        }
+        if let ReplyKind::GeneralRawHttpV1 {
+            lexical_data,
+            presentation,
+        } = &self.kind
+        {
+            if !has_special_presentation(logical)
+                || selected_ordinary_data(logical, lexical_data.as_ref())?.is_some()
+            {
+                return Err(bad(
+                    "stored generic raw presentation has no actual special data",
+                ));
+            }
+            let (actual, media_type, bytes) =
+                general_raw_projection(logical, lexical_data.as_ref())?;
+            if &actual != presentation
+                || (lexical_data.is_some()
+                    && self.logical_projection != LogicalProjection::Ordinary)
+                || !valid_request_id(&self.request_id)
+                || self.media_type != media_type
+                || self.byte_count != self.bytes.len()
+                || self.bytes.as_slice() != bytes.as_slice()
+                || self.digest != crate::ha_forward_completion::digest(&self.bytes)
+            {
+                return Err(bad("stored generic raw projection differs"));
+            }
+            return Ok(());
+        }
+
+        if let ReplyKind::GeneralJsonEnvelopeV1 { lexical_data } = &self.kind {
+            lexical_data.validate_wrapping_view(&logical["data"])?;
+            if self.logical_projection != LogicalProjection::Ordinary
+                || !valid_request_id(&self.request_id)
+                || self.media_type != "application/json"
+                || self.byte_count != self.bytes.len()
+                || self.bytes.len() > MAX_WRAPPED_RESPONSE_BYTES
+                || self.digest != crate::ha_forward_completion::digest(&self.bytes)
+            {
+                return Err(bad("stored general lexical metadata differs"));
+            }
+            let mut projection = logical_envelope_for_projection(
+                logical,
+                &self.request_id,
+                &self.logical_projection,
+            )?;
+            let encoded =
+                encode_lexical_envelope(&projection, lexical_data, MAX_WRAPPED_RESPONSE_BYTES);
+            crate::service::erase_json(&mut projection);
+            let encoded = encoded?;
+            let decoded = LexicalJson::parse_listener(&self.bytes)?;
+            let exact_fields = match &decoded {
+                LexicalJson::Object(fields) => {
+                    fields.len() == 8 && ENVELOPE_FIELDS.iter().all(|n| fields.contains_key(*n))
+                }
+                _ => false,
+            };
+            if !exact_fields || encoded.as_slice() != self.bytes.as_slice() {
+                return Err(bad("stored general lexical projection differs"));
+            }
+            return Ok(());
+        }
+
         if let ReplyKind::PkiRawHttpV1 { status, nil_body } = self.kind {
             let (actual_status, media_type, actual_nil, bytes) = pki_http_projection(logical)?;
             if self.logical_projection != LogicalProjection::Ordinary
@@ -772,6 +1447,16 @@ impl AuthState {
                     .is_some_and(|stored| stored.is_pki_raw_http())
             })
     }
+    pub(crate) fn has_general_wrapped_reply_state(&self) -> bool {
+        self.raw_wrapped_reply_floor.has_general()
+            || self.tokens.values().any(|token| {
+                token
+                    .wrapping
+                    .as_ref()
+                    .and_then(|owner| owner.stored_reply.as_ref())
+                    .is_some_and(StoredWrappedReply::is_general_reply)
+            })
+    }
     pub(crate) fn validate_raw_wrapped_reply_state(&self) -> Result<(), AuthError> {
         for token in self.tokens.values() {
             // Token API admission forbids assigning this reserved policy. Both
@@ -811,6 +1496,9 @@ impl AuthState {
                 if stored.is_pki_raw_http() && !self.raw_wrapped_reply_floor.has_pki_http() {
                     return Err(bad("PKI raw HTTP permanent reader floor missing"));
                 }
+                if stored.is_general_reply() && !self.raw_wrapped_reply_floor.has_general() {
+                    return Err(bad("general reply permanent reader floor missing"));
+                }
                 stored.validate_owner(&owner.response, &owner.creation_path)?;
             }
         }
@@ -821,6 +1509,11 @@ impl AuthState {
         previous: &Self,
     ) -> Result<(), AuthError> {
         self.validate_raw_wrapped_reply_state()?;
+        if previous.raw_wrapped_reply_floor.has_general()
+            && !self.raw_wrapped_reply_floor.has_general()
+        {
+            return Err(bad("general reply reader floor cannot retire"));
+        }
         if previous.raw_wrapped_reply_floor.has_pki_http()
             && !self.raw_wrapped_reply_floor.has_pki_http()
         {
@@ -994,6 +1687,9 @@ impl RawAuthProbe {
             })
     }
     fn validate_schema(&self, schema: u32) -> Result<(), AuthError> {
+        if schema < 113 && self.raw_wrapped_reply_floor.has_general() {
+            return Err(bad("general reply incoming header is downgraded"));
+        }
         if schema < 112 && self.raw_wrapped_reply_floor.has_pki_http() {
             return Err(bad("PKI raw HTTP incoming header is downgraded"));
         }
@@ -1159,6 +1855,7 @@ mod tests {
                 &wrapped.response,
                 &IngressReplyContext {
                     attempt_id: [0x33; 16],
+                    lexical_body: None,
                 },
                 "sys/wrapping/wrap",
             )?);
@@ -1191,6 +1888,7 @@ mod tests {
             &wrapped.response,
             &IngressReplyContext {
                 attempt_id: [0x44; 16],
+                lexical_body: None,
             },
             "sys/wrapping/wrap",
         )?);
@@ -1237,6 +1935,7 @@ mod tests {
             &logical,
             &IngressReplyContext {
                 attempt_id: [0x92; 16],
+                lexical_body: None,
             },
             "sys/wrapping/wrap",
         )?;
@@ -1269,6 +1968,7 @@ mod tests {
                 &logical,
                 &IngressReplyContext {
                     attempt_id: [0x88; 16],
+                    lexical_body: None,
                 },
                 "sys/wrapping/wrap",
             )?;
@@ -1297,6 +1997,7 @@ mod tests {
         ] {
             let context = IngressReplyContext {
                 attempt_id: [0x93; 16],
+                lexical_body: None,
             };
             let stored = StoredWrappedReply::capture(&logical, &context, path)?;
             assert!(stored.validate_owner(&logical, path).is_ok());
@@ -1323,6 +2024,7 @@ mod tests {
             json!({"data":{"namespace":"user","revision":1,"incarnation":2,"accessor":"user"}});
         let context = IngressReplyContext {
             attempt_id: [0x94; 16],
+            lexical_body: None,
         };
         let stored = StoredWrappedReply::capture(&logical, &context, "sys/wrapping/wrap")?;
         let mut decoded: Value = serde_json::from_slice(&stored.bytes)?;
@@ -1448,6 +2150,7 @@ mod tests {
             &logical,
             &IngressReplyContext {
                 attempt_id: [0x66; 16],
+                lexical_body: None,
             },
             "sys/wrapping/wrap",
         )?;
@@ -1492,8 +2195,464 @@ mod tests {
             assert!(serde_json::from_value::<RawReplyReaderFloor>(value).is_err());
         }
         let mut floor = tagged;
-        floor.observe(false);
+        floor.observe(false, false);
         assert!(floor == tagged);
+        Ok(())
+    }
+
+    #[test]
+    fn raw113_private_listener_number_tree_rewrap_original_id_and_consumed_floor() -> TestResult {
+        let (mut state, root) = AuthState::bootstrap(100)?;
+        let admin = state.authenticate(&root, 100)?;
+        let lexical = LexicalJson::parse_listener(
+            br#"{"number":1.0,"large":1e309,"literal":"1.0","array":[-0.0],"named":{"$serde_json::private::Number":"1.0"}}"#
+        )?;
+        let mut logical = json!({"data":lexical.wrapping_view()?});
+        let _ingress = IngressReplyScope::listener_wrapping(&[0x81; 16], Some(lexical));
+        let first = wrapper_token(&state.wrap_logical_response(
+            "",
+            "sys/wrapping/wrap",
+            60,
+            &logical,
+            100,
+        )?)?;
+        assert!(state.has_general_wrapped_reply_state() && !state.has_pki_raw_http_reply_state());
+        let original = state.tokens[&hash(&first)]
+            .wrapping
+            .as_ref()
+            .ok_or("wrapper")?
+            .stored_reply
+            .as_ref()
+            .ok_or("private original")?
+            .clone();
+        assert_eq!(
+            original.request_id,
+            crate::crypto::uuid_from_bytes(&[0x81; 16])
+        );
+        for value in [
+            b"\"number\":1.0".as_slice(),
+            b"\"large\":1e309",
+            b"\"literal\":\"1.0\"",
+            b"\"array\":[-0.0]",
+        ] {
+            assert!(original.bytes.windows(value.len()).any(|w| w == value));
+        }
+        let before = state.clone();
+        let encoded = Zeroizing::new(serde_json::to_vec(&state)?);
+        assert!(AuthState::predecode_raw_reply_owner(&encoded, 112).is_err());
+        assert!(AuthState::predecode_raw_reply_owner(&encoded, 113).is_ok());
+        let _later = IngressReplyScope::listener(&[0x82; 16]);
+        let second = wrapper_token(&state.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/rewrap",
+            &json!({"token":first}),
+            100,
+        )?)?;
+        assert!(
+            state
+                .wrapping_route(
+                    Some(&admin),
+                    "",
+                    "POST",
+                    "sys/wrapping/unwrap",
+                    &json!({"token":first}),
+                    100
+                )
+                .is_err()
+        );
+        let transferred = state.tokens[&hash(&second)]
+            .wrapping
+            .as_ref()
+            .ok_or("rewrap")?
+            .stored_reply
+            .as_ref()
+            .ok_or("original")?;
+        assert!(transferred == &original);
+        let mut response = state.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":second}),
+            100,
+        )?;
+        assert_eq!(
+            response
+                .unwrapped_json
+                .as_ref()
+                .ok_or("origin")?
+                .raw_bytes(&response.body)?
+                .ok_or("original bytes")?,
+            original.bytes.as_slice()
+        );
+        assert!(
+            state
+                .wrapping_route(
+                    Some(&admin),
+                    "",
+                    "POST",
+                    "sys/wrapping/unwrap",
+                    &json!({"token":second}),
+                    100
+                )
+                .is_err()
+        );
+        state.validate_raw_wrapped_reply_successor(&before)?;
+        let retained = state.clone();
+        state.tokens.remove(&hash(&second));
+        state.validate_raw_wrapped_reply_successor(&retained)?;
+        assert!(state.has_general_wrapped_reply_state() && !state.has_pki_raw_http_reply_state());
+        let encoded = Zeroizing::new(serde_json::to_vec(&state)?);
+        assert!(AuthState::predecode_raw_reply_owner(&encoded, 112).is_err());
+        let reopened: AuthState = serde_json::from_slice(&encoded)?;
+        reopened.validate_raw_wrapped_reply_state()?;
+        assert!(reopened.has_general_wrapped_reply_state());
+        for floor in [
+            RawReplyReaderFloor::Legacy(false),
+            RawReplyReaderFloor::Legacy(true),
+            RawReplyReaderFloor::PkiHttp(PkiHttpReader::PkiRawHttpV1),
+        ] {
+            let mut lower = state.clone();
+            lower.raw_wrapped_reply_floor = floor;
+            assert!(lower.validate_raw_wrapped_reply_successor(&state).is_err());
+        }
+        for mutation in 0..4 {
+            let mut altered = original.clone();
+            match mutation {
+                0 => altered.bytes.push(b' '),
+                1 => altered.request_id = crate::crypto::uuid_from_bytes(&[0x83; 16]),
+                2 => altered.media_type = "text/plain".into(),
+                _ => {
+                    if let ReplyKind::GeneralJsonEnvelopeV1 { lexical_data } = &mut altered.kind {
+                        *lexical_data = LexicalJson::parse_listener(br#"{"number":"1.0"}"#)?;
+                    }
+                }
+            }
+            assert!(altered.validate(&logical).is_err());
+        }
+        crate::service::erase_json(&mut logical);
+        crate::service::erase_json(&mut response.body);
+        Ok(())
+    }
+    #[test]
+    fn raw113_closed_general_tag_preserves_independent_pki_history_and_old_readers_refuse()
+    -> TestResult {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Old112Floor {
+            Bool(bool),
+            Pki(PkiHttpReader),
+        }
+        let mut general = RawReplyReaderFloor::Legacy(false);
+        general.observe(false, true);
+        assert!(general.has_general() && !general.has_pki_http());
+        let general_wire = serde_json::to_vec(&general)?;
+        assert_eq!(general_wire, b"\"general-wrapped-reply-v1\"");
+        assert!(serde_json::from_slice::<bool>(&general_wire).is_err());
+        assert!(serde_json::from_slice::<Old112Floor>(&general_wire).is_err());
+        let mut combined = RawReplyReaderFloor::PkiHttp(PkiHttpReader::PkiRawHttpV1);
+        combined.observe(false, true);
+        assert!(combined.has_general() && combined.has_pki_http());
+        assert_eq!(
+            serde_json::to_vec(&combined)?,
+            b"\"pki-and-general-wrapped-reply-v1\""
+        );
+        combined.observe(false, false);
+        assert!(combined.has_general() && combined.has_pki_http());
+        general.observe(true, false);
+        assert!(general == combined);
+        assert!(serde_json::from_slice::<Old112Floor>(&serde_json::to_vec(&combined)?).is_err());
+        // Read the old variants so the literal negative decoder has no dead fields.
+        match serde_json::from_slice::<Old112Floor>(b"true")? {
+            Old112Floor::Bool(true) => {}
+            _ => return Err("old bool changed".into()),
+        }
+        match serde_json::from_slice::<Old112Floor>(b"\"pki-raw-http-v1\"")? {
+            Old112Floor::Pki(PkiHttpReader::PkiRawHttpV1) => {}
+            _ => return Err("old PKI changed".into()),
+        }
+        for value in [
+            json!(113),
+            json!({"general-wrapped-reply-v1":true}),
+            json!("pki-or-general"),
+            json!("general-v2"),
+        ] {
+            assert!(serde_json::from_value::<RawReplyReaderFloor>(value).is_err());
+        }
+        Ok(())
+    }
+    #[test]
+    fn raw113_generic_special_data_protocol_is_separate_from_private_pki_and_legacy_json()
+    -> TestResult {
+        let _ingress = IngressReplyScope::listener(&[0x84; 16]);
+        let context = current_ingress().ok_or("real private context")?;
+        for (data, status, media, body, error) in [
+            (
+                json!({"http_status_code":200,"http_content_type":"application/octet-stream","http_raw_body":"MAMKAQE="}),
+                200,
+                "application/octet-stream",
+                vec![0x30, 3, 10, 1, 1],
+                None,
+            ),
+            (
+                json!({"http_status_code":204,"http_raw_body":"not-used"}),
+                204,
+                "",
+                vec![],
+                None,
+            ),
+            (
+                json!({"http_status_code":200,"http_content_type":"text/plain","http_raw_body":123}),
+                200,
+                "text/plain",
+                vec![],
+                None,
+            ),
+            (
+                json!({"http_status_code":"200","http_content_type":"text/plain"}),
+                500,
+                "",
+                vec![],
+                Some("cannot decode status code"),
+            ),
+            (
+                json!({"http_status_code":200,"http_raw_body":"hello!"}),
+                500,
+                "",
+                vec![],
+                Some("no content type given"),
+            ),
+            (
+                json!({"http_status_code":200,"http_content_type":3}),
+                500,
+                "",
+                vec![],
+                Some("cannot decode content type"),
+            ),
+        ] {
+            let mut logical = json!({"data":data});
+            let stored = StoredWrappedReply::capture(&logical, &context, "sys/wrapping/wrap")?;
+            assert!(stored.is_general_reply() && !stored.is_pki_raw_http());
+            assert_eq!(stored.raw_http_transport(&logical)?, Some((status, media)));
+            assert_eq!(stored.bytes(&logical)?, body.as_slice());
+            assert_eq!(stored.raw_error_header(&logical)?, error);
+            let (mut state, _root) = AuthState::bootstrap(100)?;
+            state.wrap_logical_response("", "sys/wrapping/wrap", 60, &logical, 100)?;
+            assert!(
+                state.has_general_wrapped_reply_state() && !state.has_pki_raw_http_reply_state()
+            );
+            // An already stored JsonEnvelopeV1 never reclassifies by these keys.
+            let request_id = context.request_id();
+            let mut projected = logical_envelope(&logical, &request_id, "sys/wrapping/wrap")?;
+            let bytes = encode_envelope(&projected)?;
+            let legacy = StoredWrappedReply {
+                kind: ReplyKind::JsonEnvelopeV1,
+                logical_projection: LogicalProjection::Ordinary,
+                media_type: "application/json".into(),
+                byte_count: bytes.len(),
+                digest: crate::ha_forward_completion::digest(&bytes),
+                request_id,
+                bytes: bytes.to_vec(),
+            };
+            assert!(legacy.raw_http_transport(&logical)?.is_none());
+            legacy.validate(&logical)?;
+            crate::service::erase_json(&mut projected);
+            crate::service::erase_json(&mut logical);
+        }
+        Ok(())
+    }
+    #[test]
+    fn raw113_selected_special_data_without_status_uses_actual_unwrap_ingress_and_preserves_original_custody()
+    -> TestResult {
+        let _ingress = IngressReplyScope::listener(&[0x85; 16]);
+        let context = current_ingress().ok_or("actual private context")?;
+        for (data, expected) in [
+            (
+                json!({"http_content_type":"text/plain","http_raw_body":"hello!","extra":"drop"}),
+                json!({"http_content_type":"text/plain","http_raw_body":"hello!"}),
+            ),
+            (
+                json!({"http_status_code":null,"http_content_type":"text/plain","http_raw_body":"YQ==","extra":1}),
+                json!({"http_content_type":"text/plain","http_raw_body":"YQ=="}),
+            ),
+            (
+                json!({"http_raw_body":"YQ==\n"}),
+                json!({"http_raw_body":"YQ=="}),
+            ),
+            (
+                json!({"http_raw_body":123}),
+                json!({"http_raw_body_already_json_decoded":true}),
+            ),
+            (
+                json!({"http_content_type":3}),
+                json!({"http_content_type":3}),
+            ),
+        ] {
+            let mut logical = json!({"data":data});
+            let stored = StoredWrappedReply::capture(&logical, &context, "sys/wrapping/wrap")?;
+            assert!(
+                stored.uses_selected_json_ingress()
+                    && stored.is_general_reply()
+                    && !stored.is_pki_raw_http()
+            );
+            assert!(
+                stored.raw_http_transport(&logical)?.is_none()
+                    && stored.raw_error_header(&logical)?.is_none()
+            );
+            let original_id = stored.request_id.clone();
+            let original = stored.bytes(&logical)?.to_vec();
+            let prepared = stored
+                .selected_response_for_audit(&logical)?
+                .ok_or("actual mandatory audit projection")?;
+            for current in [[0x86; 16], [0x87; 16]] {
+                let wire = stored
+                    .selected_json_for_ingress(&logical, &current, &prepared)?
+                    .ok_or("selected ordinary HTTP")?;
+                assert!(wire.ends_with(b"\n"));
+                let public: Value = serde_json::from_slice(&wire)?;
+                assert_eq!(
+                    public["request_id"],
+                    crate::crypto::uuid_from_bytes(&current)
+                );
+                assert_ne!(public["request_id"], original_id);
+                assert_eq!(public["data"], expected);
+                assert_eq!(public.as_object().ok_or("actual envelope")?.len(), 8);
+                assert_eq!(stored.bytes(&logical)?, original.as_slice());
+                assert_eq!(stored.request_id, original_id);
+            }
+            let mut changed = logical.clone();
+            changed["data"]["http_status_code"] = json!(200);
+            assert!(stored.validate(&changed).is_err());
+            let mut altered = stored.clone();
+            altered.request_id = crate::crypto::uuid_from_bytes(&[0x88; 16]);
+            assert!(altered.validate(&logical).is_err());
+            crate::service::erase_json(&mut changed);
+            crate::service::erase_json(&mut logical);
+        }
+        Ok(())
+    }
+    #[test]
+    fn raw113_selected_json_keeps_typed_numeric_lexical_data_separate_from_body_strings()
+    -> TestResult {
+        let lexical = LexicalJson::parse_listener(br#"{"http_content_type":1.0,"http_raw_body":"1.0","request_id":"client-cannot-mint","extra":1e309}"#)?;
+        let context = IngressReplyContext {
+            attempt_id: [0x89; 16],
+            lexical_body: Some(lexical.clone()),
+        };
+        let mut logical = json!({"data":lexical.wrapping_view()?});
+        let stored = StoredWrappedReply::capture(&logical, &context, "sys/wrapping/wrap")?;
+        let prepared = stored
+            .selected_response_for_audit(&logical)?
+            .ok_or("typed mandatory audit projection")?;
+        let wire = stored
+            .selected_json_for_ingress(&logical, &[0x90; 16], &prepared)?
+            .ok_or("typed selected public response")?;
+        let text = std::str::from_utf8(&wire)?;
+        assert!(
+            text.contains("\"http_content_type\":1.0")
+                && text.contains("\"http_raw_body\":\"1.0\"")
+        );
+        assert!(!text.contains("client-cannot-mint") && !text.contains("1e309"));
+        assert!(stored.raw_http_transport(&logical)?.is_none());
+        crate::service::erase_json(&mut logical);
+        Ok(())
+    }
+
+    #[test]
+    fn raw113_selected_audit_preserves_decoded_bytes_text_and_dropped_body_without_utf8_loss()
+    -> TestResult {
+        let cases = [
+            (
+                json!({"http_raw_body":"/wBh","extra":"drop","http_raw_body_already_json_decoded":true}),
+                json!({"http_raw_body":"/wBh"}),
+                1_u8,
+                vec![0xff, 0, 0x61],
+            ),
+            (
+                json!({"http_raw_body":"1.0","http_raw_body_already_json_decoded":true}),
+                json!({"http_raw_body":"1.0"}),
+                2,
+                b"1.0".to_vec(),
+            ),
+            (
+                json!({"http_raw_body":""}),
+                json!({"http_raw_body":""}),
+                1,
+                vec![],
+            ),
+            (
+                json!({"http_raw_body":{"body":"drop"}}),
+                json!({"http_raw_body_already_json_decoded":true}),
+                0,
+                vec![],
+            ),
+            (
+                json!({"http_raw_body":null,"http_content_type":"text/plain","http_raw_body_already_json_decoded":true}),
+                json!({"http_content_type":"text/plain"}),
+                0,
+                vec![],
+            ),
+        ];
+        for (data, expected_wire, kind, expected_raw) in cases {
+            let mut logical = json!({"data":data});
+            let selected =
+                selected_response_projection(&logical, None)?.ok_or("actual selection")?;
+            let mut view = selected.wire_data.wrapping_view()?;
+            assert!(view == expected_wire, "closed selected wire projection");
+            let (actual_kind, actual_raw): (u8, &[u8]) = match &selected.raw_body {
+                None => (0, &[]),
+                Some(SelectedAuditRawBody::DecodedBytes(bytes)) => (1, bytes),
+                Some(SelectedAuditRawBody::Text(text)) => (2, text.as_bytes()),
+            };
+            assert!(actual_kind == kind && actual_raw == expected_raw.as_slice());
+            let binding = selected.audit_binding()?;
+            assert!(binding.ends_with(&expected_raw));
+            crate::service::erase_json(&mut view);
+            crate::service::erase_json(&mut logical);
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn raw113_selected_http_refuses_substituted_projection_after_mandatory_audit_selection()
+    -> TestResult {
+        let _ingress = IngressReplyScope::listener(&[0x94; 16]);
+        let context = current_ingress().ok_or("actual private context")?;
+        let mut logical = json!({"data":{"http_raw_body":"YQ==","extra":"drop"}});
+        let stored = StoredWrappedReply::capture(&logical, &context, "sys/wrapping/wrap")?;
+        let mut prepared = stored
+            .selected_response_for_audit(&logical)?
+            .ok_or("actual audit selection")?;
+        assert!(
+            stored
+                .selected_json_for_ingress(&logical, &[0x95; 16], &prepared)?
+                .is_some()
+        );
+        let original = Zeroizing::new(stored.bytes(&logical)?.to_vec());
+        let LexicalJson::Object(fields) = &mut prepared.wire_data else {
+            return Err("selected data".into());
+        };
+        fields.insert("http_raw_body".into(), LexicalJson::String("YmI=".into()));
+        assert!(
+            stored
+                .selected_json_for_ingress(&logical, &[0x95; 16], &prepared)
+                .is_err()
+        );
+        assert!(stored.bytes(&logical)? == original.as_slice());
+        let mut prepared = stored
+            .selected_response_for_audit(&logical)?
+            .ok_or("fresh actual selection")?;
+        prepared.raw_body = Some(SelectedAuditRawBody::Text(Zeroizing::new("a".into())));
+        // The wire Data still matches, but replacing []byte with string must veto.
+        assert!(
+            stored
+                .selected_json_for_ingress(&logical, &[0x95; 16], &prepared)
+                .is_err()
+        );
+        assert!(stored.bytes(&logical)? == original.as_slice());
+        crate::service::erase_json(&mut logical);
         Ok(())
     }
 }

@@ -106,10 +106,11 @@ const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
 const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
 const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
 const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
+const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = RAW_PKI_HTTP_REPLY_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -144,6 +145,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_RSA8192_STATE_SCHEMA
                 | RAW_WRAPPED_REPLY_STATE_SCHEMA
                 | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+                | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -2274,10 +2276,32 @@ impl Service {
                 None
             }
         };
-        if self
-            .audit_event("response", fingerprint, now, Some(response.status))
-            .is_err()
-        {
+        let response_audit_fingerprint = response
+            .unwrapped_json
+            .as_mut()
+            .map(|origin| origin.selected_response_audit_binding(&response.body))
+            .transpose()
+            .map(Option::flatten)
+            .map(|binding| {
+                if let Some(binding) = binding {
+                    let mut context = hmac::Context::with_key(&self.audit_key);
+                    context.update(b"heptabao.audit.selected-response-custody.v1");
+                    context.update(&(fingerprint.len() as u64).to_le_bytes());
+                    context.update(fingerprint.as_bytes());
+                    context.update(&(binding.len() as u64).to_le_bytes());
+                    context.update(&binding);
+                    STANDARD.encode(context.sign().as_ref())
+                } else {
+                    fingerprint.to_owned()
+                }
+            });
+        // Selection and mandatory audit are one delivery boundary. This binds
+        // private response custody to the existing chain; it does not implement
+        // OpenBao's per-field HMAC or audit-device JSON contract.
+        let response_audit = response_audit_fingerprint
+            .map_err(|_| std::io::Error::other("selected response audit projection rejected"))
+            .and_then(|bound| self.audit_event("response", &bound, now, Some(response.status)));
+        if response_audit.is_err() {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -2477,6 +2501,26 @@ impl Service {
                 context.update(&(binding.len() as u64).to_le_bytes());
                 context.update(&binding);
                 fingerprint = STANDARD.encode(context.sign().as_ref());
+            }
+        }
+        if let Some(ingress) = crate::auth::current_ingress() {
+            match ingress.lexical_request_binding(method, path, &body) {
+                Ok(Some(payload)) => {
+                    let mut context = hmac::Context::with_key(&self.audit_key);
+                    context.update(b"heptabao.audit.lexical-wrapping-data.v1");
+                    context.update(fingerprint.as_bytes());
+                    context.update(&(payload.len() as u64).to_le_bytes());
+                    context.update(&payload);
+                    fingerprint = STANDARD.encode(context.sign().as_ref());
+                }
+                Ok(None) => {}
+                Err(_) => {
+                    erase_json(&mut body);
+                    return RequestExecution::Complete(Response::error(
+                        400,
+                        "private lexical request binding rejected",
+                    ));
+                }
             }
         }
         if let Some(ttl) = wrap_ttl_seconds {

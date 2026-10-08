@@ -819,7 +819,7 @@ impl HaProcess {
                                     let legacy_v1 = request.legacy_v1;
                                     let index_response = request.index_response;
                                     let unwrap_response = request.unwrap_response;
-                                    let _raw_reply_ingress = crate::auth::IngressReplyScope::authenticated_forward(request.wrapped_reply_ingress);
+                                    let _raw_reply_ingress = crate::auth::IngressReplyScope::authenticated_forward(request.wrapped_reply_ingress, request.wrapped_reply_lexical.take());
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
                                     let _forward_slot =
