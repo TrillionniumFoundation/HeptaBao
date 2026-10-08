@@ -51,8 +51,15 @@ fn fixture() -> TestResult<Fixture> {
     fixture_with_owner(false).map(|(fixture, _)| fixture)
 }
 fn fixture_with_owner(independent: bool) -> TestResult<(Fixture, Option<Zeroizing<Vec<u8>>>)> {
+    fixture_with_owner_initialized(independent, |_, _| Ok(()))
+}
+fn fixture_with_owner_initialized(
+    independent: bool,
+    initialize: impl FnOnce(&Root, &mut Service) -> TestResult,
+) -> TestResult<(Fixture, Option<Zeroizing<Vec<u8>>>)> {
     let directory = Root::new();
     let mut service = directory.service()?;
+    initialize(&directory, &mut service)?;
     let (key, token) = bootstrap_unmounted(&mut service)?;
     assert_eq!(
         native(&mut service, "POST", "sys/namespaces/retire", &token).status,
@@ -1797,36 +1804,42 @@ fn namespace109_owned_storage_cut_rejects_wrong_family_scope_and_namespace_seal(
         .status,
         403
     );
-    let sealed_response = owned_body(
-        &mut f.service,
-        "POST",
-        "sys/namespaces/retire/seal",
-        &f.token,
-        json!({}),
+    // Taint rejects this target before any namespace seal publication.
+    // Use the direct route so no unrelated terminal clock audit changes State.
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "original identity")?;
+    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
+    let original = f.service.state.as_ref().ok_or("original state")?;
+    let bytes = owner_store::serialize_owner(original)?;
+    let loaded = f.service.namespace_runtime.is_loaded(NS);
+    let target =
+        namespace_route_with_original_clock(&mut f, "sys/namespaces/retire/seal", &json!({}))?;
+    assert_eq!(target.status, 400);
+    assert_eq!(target.body["errors"][0], "unable to seal tainted namespace");
+    let current = f.service.state.as_ref().ok_or("preserved state")?;
+    assert!(&*owner_store::serialize_owner(current)? == &*bytes);
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "preserved identity")?
+            == identity
     );
-    let seal_error_sha: String = crypto::digest(
-        sealed_response.body["errors"][0]
-            .as_str()
-            .unwrap_or("")
-            .as_bytes(),
-    )
-    .iter()
-    .map(|byte| format!("{byte:02x}"))
-    .collect();
-    let actual = f.service.state.as_ref();
-    eprintln!(
-        "NS_OWNED_SEAL namespace_seal status={} first_error_sha={} schema={} target_sealed={} jobs={} precise={}",
-        sealed_response.status,
-        seal_error_sha,
-        actual.map_or(0, |state| state.schema),
-        actual.is_some_and(|state| state.namespace_is_sealed(NS)),
-        actual
-            .and_then(|state| state.namespaces.deletions.as_ref())
-            .and_then(|ledger| ledger.sdk_cleanup())
-            .map_or(0, |jobs| jobs.records().len()),
-        actual.is_some_and(State::has_token_api_precision_state)
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
     );
-    assert_eq!(sealed_response.status, 204);
+    assert!(f.service.namespace_runtime.is_loaded(NS) == loaded);
+    assert_original_sdk_and_storage(current, &f.logical, &f.credential)?;
+
+    // A real ancestor root barrier seal, rather than a tainted target seal,
+    // makes both originally captured namespace authorities unavailable.
+    assert_eq!(
+        owned_body(&mut f.service, "POST", "sys/seal", &f.token, json!({})).status,
+        204
+    );
+    assert!(f.service.state.is_none());
     assert!(
         logical
             .logical_native_role(&f.service, NS, &f.logical.mount, &f.logical.backend)
@@ -2314,22 +2327,24 @@ fn assert_original_sdk_and_storage(
 #[test]
 fn namespace109_authenticated_inherited_seal_keeps_actual_auth_retirement_attempt_and_live_sdk_on_reopen()
 -> TestResult {
-    let mut f = fixture()?;
-    let plugins = f.directory.path.join("actual-retirement-plugins");
-    let runtime = f.directory.path.join("actual-retirement-runtime");
-    private_directory(&plugins)?;
-    private_directory(&runtime)?;
-    f.service
-        .install_sdk_backend(Some(crate::service::SdkBackendConfig {
+    // Install the actual runtime configuration while this Service is sealed.
+    // All other fixtures retain their original no-runtime initialization.
+    let (mut f, _) = fixture_with_owner_initialized(false, |directory, service| {
+        let plugins = directory.path.join("actual-retirement-plugins");
+        let runtime = directory.path.join("actual-retirement-runtime");
+        private_directory(&plugins)?;
+        private_directory(&runtime)?;
+        service.install_sdk_backend(Some(crate::service::SdkBackendConfig {
             plugin_directory: plugins,
             runtime_directory: runtime,
-            companion: f
-                .directory
+            companion: directory
                 .path
                 .join("intentionally-absent-retirement-companion"),
             companion_sha256: "a".repeat(64),
             timeout_ms: 5_000,
         }))?;
+        Ok(())
+    })?;
     let execution = f.service.begin_request_before(
         ServiceRequest {
             method: "DELETE",
@@ -2849,53 +2864,127 @@ fn namespace109_authenticated_seal_rejects_real_same_node_new_ha_term() -> TestR
     Ok(())
 }
 
+// Read the genuine current durable publication, never serialize a loaded
+// clone that has intentionally dropped its private protected view.
+fn current_published_physical_bytes(service: &Service) -> TestResult<Zeroizing<Vec<u8>>> {
+    let root = service
+        .record_root
+        .as_ref()
+        .ok_or("actual current record root")?;
+    let durable = service.durable.as_ref().ok_or("actual current durable")?;
+    let physical = Service::materialize_record_state(root, &records::DurableReader(durable))
+        .map_err(|_| "actual current authenticated canonical graph")?;
+    Ok(owner_store::serialize_owner(&physical)?)
+}
 #[test]
-fn namespace109_authenticated_seal_rejects_changed_ciphertext_and_resource_cells() -> TestResult {
-    for cells in [false, true] {
-        let mut f = fixture()?;
-        let original = f.service.state.clone().ok_or("actual original graph")?;
-        let mut proof = f
-            .service
-            .prepare_namespace_seal_publication(&original, NS)
-            .map_err(|_| "genuine authenticated seal proof")?;
-        proof
-            .check_original_custody()
-            .map_err(|_| "genuine live proof")?;
-        proof
-            .corrupt_physical_owner_for_test(cells)
-            .map_err(|_| "actual ciphertext or cell changed")?;
-        let identity = f
-            .service
+fn namespace109_authenticated_seal_same_generation_ciphertext_install_is_rejected_without_changing_proof()
+-> TestResult {
+    let mut f = fixture()?;
+    let original = f.service.state.clone().ok_or("actual original graph")?;
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "original identity")?;
+    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
+    let current_bytes = current_published_physical_bytes(&f.service)?;
+    let mut proof = f
+        .service
+        .prepare_namespace_seal_publication(&original, NS)
+        .map_err(|_| "genuine authenticated seal proof")?;
+    let proof_bytes = owner_store::serialize_owner(proof.closed_state())?;
+    proof
+        .check_original_custody()
+        .map_err(|_| "genuine live proof")?;
+    // The real immutable owner setter rejects altered ciphertext at the same
+    // generation. This is pre-install coverage, not a successful corruption
+    // followed by a commit/MAC veto. No owner is forged or re-signed.
+    let rejected = proof
+        .corrupt_physical_owner_for_test(false)
+        .err()
+        .ok_or("same-generation altered ciphertext must not install")?;
+    assert_eq!(rejected.status, 503);
+    proof
+        .validate(f.service.state.as_ref(), identity, &f.service.ha)
+        .map_err(|_| "unchanged complete proof remains valid")?;
+    assert!(&*owner_store::serialize_owner(proof.closed_state())? == &*proof_bytes);
+    assert!(
+        f.service
             .current_state_identity()
-            .map_err(|_| "original identity")?;
-        let generation = f
-            .service
-            .durable
-            .as_ref()
-            .ok_or("actual durable")?
-            .generation();
-        assert!(
-            f.service
-                .commit_namespace_seal_publication(proof, |_, _| Ok(()))
-                .is_err()
-        );
-        assert!(
-            f.service
-                .current_state_identity()
-                .map_err(|_| "same original identity")?
-                == identity
-        );
-        assert_eq!(
-            f.service.durable.as_ref().ok_or("durable")?.generation(),
-            generation
-        );
-        assert_original_sdk_and_storage(
-            f.service.state.as_ref().ok_or("original SDK")?,
-            &f.logical,
-            &f.credential,
-        )?;
-        assert!(!f.service.namespace_runtime.is_loaded(NS));
-    }
+            .map_err(|_| "same identity")?
+            == identity
+    );
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(&*current_published_physical_bytes(&f.service)? == &*current_bytes);
+    assert_original_sdk_and_storage(
+        f.service.state.as_ref().ok_or("preserved SDK")?,
+        &f.logical,
+        &f.credential,
+    )?;
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
+    Ok(())
+}
+#[test]
+fn namespace109_authenticated_seal_rejects_preserved_header_same_generation_resource_cell_tag()
+-> TestResult {
+    let mut f = fixture()?;
+    let original = f.service.state.clone().ok_or("actual original graph")?;
+    let identity = f
+        .service
+        .current_state_identity()
+        .map_err(|_| "original identity")?;
+    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
+    let current_bytes = current_published_physical_bytes(&f.service)?;
+    let mut proof = f
+        .service
+        .prepare_namespace_seal_publication(&original, NS)
+        .map_err(|_| "genuine authenticated seal proof")?;
+    proof
+        .check_original_custody()
+        .map_err(|_| "genuine live proof")?;
+    // Only the last byte of an actual encrypted resource cell changes. Header,
+    // length, descriptor, generation, original key, binding and clock remain.
+    proof
+        .corrupt_physical_owner_for_test(true)
+        .map_err(|_| "actual preserved-header cell was published into the closed proof")?;
+    proof
+        .check_original_custody()
+        .map_err(|_| "original clock and key remain live")?;
+    let invalid = proof
+        .validate(f.service.state.as_ref(), identity, &f.service.ha)
+        .err()
+        .ok_or("actual changed cell must fail complete proof validation")?;
+    assert_eq!(invalid.status, 503);
+    let before_publish = std::cell::Cell::new(false);
+    let failure = f
+        .service
+        .commit_namespace_seal_publication(proof, |_, _| {
+            before_publish.set(true);
+            Ok(())
+        })
+        .err()
+        .ok_or("actual changed cell must not commit")?;
+    assert_eq!(failure.status, 503);
+    assert!(!before_publish.get());
+    assert!(
+        f.service
+            .current_state_identity()
+            .map_err(|_| "same original identity")?
+            == identity
+    );
+    assert_eq!(
+        f.service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(&*current_published_physical_bytes(&f.service)? == &*current_bytes);
+    assert_original_sdk_and_storage(
+        f.service.state.as_ref().ok_or("original SDK")?,
+        &f.logical,
+        &f.credential,
+    )?;
+    assert!(!f.service.namespace_runtime.is_loaded(NS));
     Ok(())
 }
 
@@ -2919,7 +3008,7 @@ fn namespace109_authenticated_seal_rejects_original_captured_deadline_after_proo
         .as_ref()
         .ok_or("actual durable")?
         .generation();
-    let owner_bytes = owner_store::serialize_owner(&original)?;
+    let owner_bytes = current_published_physical_bytes(&f.service)?;
     let jobs = original.namespaces.deletions.clone();
     assert!(!original.namespace_is_sealed(NS));
     assert!(f.service.namespace_runtime.is_loaded(NS));
@@ -2981,7 +3070,7 @@ fn namespace109_authenticated_seal_rejects_original_captured_deadline_after_proo
     assert!(!actual.namespace_is_sealed(NS));
     assert!(f.service.namespace_runtime.is_loaded(NS));
     assert!(actual.namespaces.deletions == jobs);
-    let actual_bytes = owner_store::serialize_owner(actual)?;
+    let actual_bytes = current_published_physical_bytes(&f.service)?;
     assert!(&*actual_bytes == &*owner_bytes);
     assert_original_sdk_and_storage(actual, &f.logical, &f.credential)?;
     assert!(
