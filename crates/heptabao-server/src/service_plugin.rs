@@ -384,6 +384,7 @@ pub(super) struct PublicationGeneration {
 mod external_key_native;
 
 enum ExternalKeyProvider {
+    Genuine(super::external_kms::Admitted),
     Kms {
         host: SharedKmsPlugin,
         expected_host_generation: u64,
@@ -394,6 +395,7 @@ enum ExternalKeyProvider {
 pub(super) struct ExternalKeyPlan {
     pub(super) plugin_id: String,
     provider: ExternalKeyProvider,
+    genuine_ha: Option<super::external_transit::ExternalTransitHaAdmission>,
     request: SecretValue,
     action: &'static str,
     config_name: String,
@@ -401,7 +403,12 @@ pub(super) struct ExternalKeyPlan {
     authority: PluginResponseAuthority,
     expected_identity: crate::state_record_root::StateIdentity,
     expected_generation: PublicationGeneration,
-    candidate: State,
+    candidate: Option<State>,
+    delivery_checkpoint: Option<(
+        crate::state_record_root::StateIdentity,
+        PublicationGeneration,
+    )>,
+    response_audited: bool,
 }
 
 pub(super) struct PluginReadPlan {
@@ -805,6 +812,18 @@ impl Drop for VerificationResponse {
 }
 
 impl ExternalKeyPlan {
+    pub(super) fn is_genuine(&self) -> bool {
+        matches!(&self.provider, ExternalKeyProvider::Genuine(_))
+    }
+
+    fn original_ha_binding_current(&self, current: &Option<Arc<Mutex<HaProcess>>>) -> bool {
+        match (&self.genuine_ha, current) {
+            (None, None) => true,
+            (Some(admission), Some(_)) => admission.current(current),
+            _ => false,
+        }
+    }
+
     pub(super) fn execute(&self) -> Result<(), Response> {
         if self.authority.deadline_expired() {
             return Err(Response::error(
@@ -813,6 +832,41 @@ impl ExternalKeyPlan {
             ));
         }
         let (host, expected_host_generation) = match &self.provider {
+            ExternalKeyProvider::Genuine(genuine) => {
+                let _deadline_scope = self
+                    .authority
+                    .deadline
+                    .map(crate::request_deadline::RequestDeadlineScope::enter);
+                if let Some(admission) = &self.genuine_ha {
+                    drop(admission.lock_original(self.expected_identity)?);
+                }
+                let result = genuine.execute()?;
+                return match result {
+                    heptabao_plugin_host::kms_bridge::ProviderResult::ConfigOpened
+                        if self.action == "verify_config" =>
+                    {
+                        Ok(())
+                    }
+                    heptabao_plugin_host::kms_bridge::ProviderResult::KeyResolved
+                        if self.action == "verify_key" =>
+                    {
+                        Ok(())
+                    }
+                    heptabao_plugin_host::kms_bridge::ProviderResult::Rejected => Err(
+                        Response::error(400, "genuine KMS provider rejected verification"),
+                    ),
+                    heptabao_plugin_host::kms_bridge::ProviderResult::NotImplemented => {
+                        Err(Response::error(
+                            501,
+                            "genuine KMS provider verification is not implemented",
+                        ))
+                    }
+                    _ => Err(Response::error(
+                        503,
+                        "genuine KMS verification result kind mismatch",
+                    )),
+                };
+            }
             ExternalKeyProvider::NativeTransit(native) => {
                 let _deadline_scope = self
                     .authority
@@ -944,7 +998,7 @@ impl PluginReadPlan {
     }
 }
 
-fn failure(error: PluginHostError) -> Response {
+pub(super) fn failure(error: PluginHostError) -> Response {
     let message = match error {
         PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => {
             "plugin unavailable before entry"
@@ -1285,6 +1339,38 @@ impl Service {
         Ok(PublicationGeneration { local, raft })
     }
 
+    // Same PublicationGeneration contract, while a caller retains the actual HA lock.
+    // This avoids reopening the mutex between the last frontier check and delivery.
+    pub(super) fn external_effect_generation_with_retained_ha(
+        &self,
+        process: &HaProcess,
+    ) -> Result<PublicationGeneration, Response> {
+        let local = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external effect durable owner is unavailable"))?
+            .generation();
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external effect state owner is unavailable"))?;
+        if process.cluster_id() != state.cluster_id {
+            return Err(Response::error(503, "external effect HA cluster changed"));
+        }
+        let observed = process
+            .leader_status()
+            .map_err(|_| Response::error(503, "external effect HA frontier is unavailable"))?;
+        let raft = Some(
+            observed
+                .committed_index
+                .zip(observed.applied_index)
+                .ok_or_else(|| {
+                    Response::error(503, "external effect HA frontier is unavailable")
+                })?,
+        );
+        Ok(PublicationGeneration { local, raft })
+    }
+
     pub(super) fn stage_external_key_verification(
         &mut self,
         state: State,
@@ -1316,48 +1402,102 @@ impl Service {
         }
         // Presence of either registry entry selects the original KMS owner.
         // A disabled, revoked or incomplete binding must never fall back to HTTP.
-        let provider = match (
-            self.kms_plugins.get(&verification.plugin_id).cloned(),
-            self.kms_keys.get(&verification.plugin_id),
-        ) {
-            (Some(host), Some(binding)) => {
-                if !binding.enabled {
-                    return Response::error(403, "external key KMS provider is disabled");
-                }
-                let expected_host_generation = {
-                    let Ok(guard) = host.try_lock() else {
+        let provider = if self
+            .external_kms_plugins
+            .contains_key(&verification.plugin_id)
+        {
+            let original = VerificationResponse(
+                match crate::auth::parse_strict_json(verification.request.expose()) {
+                    Ok(value) => value,
+                    Err(_) => {
                         return Response::error(
                             503,
-                            "external key KMS plugin host busy or unavailable",
+                            "genuine KMS verification parameters unavailable",
                         );
-                    };
-                    if guard.state() != PluginHostState::Active {
-                        return Response::error(503, "external key KMS plugin host is not active");
                     }
-                    guard.manifest().descriptor().generation()
-                };
-                ExternalKeyProvider::Kms {
-                    host,
-                    expected_host_generation,
+                },
+            );
+            let (operation, input) = if verification.key_name.is_some() {
+                (
+                    heptabao_plugin_host::kms_bridge::Operation::ValidateKey,
+                    json!({"config":original.0["config_values"],"key":original.0["key_values"]}),
+                )
+            } else {
+                (
+                    heptabao_plugin_host::kms_bridge::Operation::ValidateConfig,
+                    json!({"config":original.0["values"]}),
+                )
+            };
+            let input = VerificationResponse(input);
+            let mut bytes = zeroize::Zeroizing::new(match serde_json::to_vec(&input.0) {
+                Ok(b) => b,
+                Err(_) => {
+                    return Response::error(503, "genuine KMS verification encoding unavailable");
                 }
-            }
-            (None, None) if verification.plugin_id == "transit" => {
-                match external_key_native::NativeTransitVerification::prepare(
-                    &self.outbound,
-                    verification.action,
-                    &verification.request,
-                ) {
-                    Ok(native) => ExternalKeyProvider::NativeTransit(native),
-                    Err(error) => return error,
+            });
+            let input = match SecretValue::new(std::mem::take(&mut *bytes)) {
+                Ok(v) => v,
+                Err(_) => {
+                    return Response::error(503, "genuine KMS verification encoding unavailable");
                 }
+            };
+            match super::external_kms::prepare(
+                &self.external_kms_plugins,
+                &verification.plugin_id,
+                operation,
+                &input,
+            ) {
+                Ok(Some(admitted)) => ExternalKeyProvider::Genuine(admitted),
+                Ok(None) => return Response::error(503, "genuine KMS verification owner vanished"),
+                Err(cause) => return cause,
             }
-            (None, None) => {
-                return Response::error(
-                    501,
-                    "external key verification requires an admitted KMS provider",
-                );
+        } else {
+            match (
+                self.kms_plugins.get(&verification.plugin_id).cloned(),
+                self.kms_keys.get(&verification.plugin_id),
+            ) {
+                (Some(host), Some(binding)) => {
+                    if !binding.enabled {
+                        return Response::error(403, "external key KMS provider is disabled");
+                    }
+                    let expected_host_generation = {
+                        let Ok(guard) = host.try_lock() else {
+                            return Response::error(
+                                503,
+                                "external key KMS plugin host busy or unavailable",
+                            );
+                        };
+                        if guard.state() != PluginHostState::Active {
+                            return Response::error(
+                                503,
+                                "external key KMS plugin host is not active",
+                            );
+                        }
+                        guard.manifest().descriptor().generation()
+                    };
+                    ExternalKeyProvider::Kms {
+                        host,
+                        expected_host_generation,
+                    }
+                }
+                (None, None) if verification.plugin_id == "transit" => {
+                    match external_key_native::NativeTransitVerification::prepare(
+                        &self.outbound,
+                        verification.action,
+                        &verification.request,
+                    ) {
+                        Ok(native) => ExternalKeyProvider::NativeTransit(native),
+                        Err(error) => return error,
+                    }
+                }
+                (None, None) => {
+                    return Response::error(
+                        501,
+                        "external key verification requires an admitted KMS provider",
+                    );
+                }
+                _ => return Response::error(403, "external key KMS provider is unavailable"),
             }
-            _ => return Response::error(403, "external key KMS provider is unavailable"),
         };
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "external key verification responses cannot be wrapped");
@@ -1369,6 +1509,17 @@ impl Service {
         let expected_generation = match self.external_effect_generation() {
             Ok(generation) => generation,
             Err(error) => return error,
+        };
+        let genuine_ha = if matches!(&provider, ExternalKeyProvider::Genuine(_)) {
+            match super::external_transit::ExternalTransitHaAdmission::capture(
+                &self.ha,
+                expected_identity,
+            ) {
+                Ok(value) => value,
+                Err(cause) => return cause,
+            }
+        } else {
+            None
         };
         let mut candidate = state;
         candidate.schema = candidate.writer_schema();
@@ -1387,6 +1538,7 @@ impl Service {
         self.pending_external_key = Some(ExternalKeyPlan {
             plugin_id: verification.plugin_id,
             provider,
+            genuine_ha,
             request: verification.request,
             action: verification.action,
             config_name: verification.config_name,
@@ -1394,14 +1546,16 @@ impl Service {
             authority,
             expected_identity,
             expected_generation,
-            candidate,
+            candidate: Some(candidate),
+            delivery_checkpoint: None,
+            response_audited: false,
         });
         Response::error(500, "external key verification was not dispatched")
     }
 
     pub(super) fn finalize_external_key(
         &mut self,
-        mut plan: ExternalKeyPlan,
+        plan: &mut ExternalKeyPlan,
         result: Result<(), Response>,
     ) -> Response {
         if let Err(error) = result {
@@ -1413,6 +1567,46 @@ impl Service {
         // Keep the original sandbox host lock through publication. Native
         // HTTP retains the exact enrolled TLS Arc and the absence of a KMS owner.
         let _host_guard = match &plan.provider {
+            ExternalKeyProvider::Genuine(genuine) => {
+                if !genuine.current(&self.external_kms_plugins) {
+                    return Response::error(
+                        503,
+                        "genuine KMS verification owner changed before publication",
+                    );
+                }
+                let guard = match genuine.host_ref().try_lock() {
+                    Ok(guard) => guard,
+                    Err(_) => {
+                        return Response::error(
+                            503,
+                            "genuine KMS verification owner busy before publication",
+                        );
+                    }
+                };
+                if !genuine.host_current(&guard) {
+                    return Response::error(
+                        503,
+                        "genuine KMS verification owner changed before publication",
+                    );
+                }
+                let ha_current = match (&plan.genuine_ha, &self.ha) {
+                    (None, None) => true,
+                    (Some(admission), Some(_)) => admission.current(&self.ha),
+                    _ => false,
+                };
+                if !ha_current {
+                    return Response::error(
+                        503,
+                        "genuine KMS verification original HA owner changed",
+                    );
+                }
+                if let Some(admission) = &plan.genuine_ha {
+                    if let Err(cause) = admission.lock_original(plan.expected_identity) {
+                        return cause;
+                    }
+                }
+                Some(guard)
+            }
             ExternalKeyProvider::Kms {
                 host,
                 expected_host_generation,
@@ -1448,7 +1642,8 @@ impl Service {
                 Some(guard)
             }
             ExternalKeyProvider::NativeTransit(native) => {
-                if self.kms_plugins.contains_key(&plan.plugin_id)
+                if self.external_kms_plugins.contains_key(&plan.plugin_id)
+                    || self.kms_plugins.contains_key(&plan.plugin_id)
                     || self.kms_keys.contains_key(&plan.plugin_id)
                     || !native.enrollment_current(&self.outbound)
                 {
@@ -1478,7 +1673,12 @@ impl Service {
             .authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
-        let mut candidate = plan.candidate;
+        let Some(mut candidate) = plan.candidate.take() else {
+            return Response::error(
+                503,
+                "external key verification publication already consumed",
+            );
+        };
         if candidate.engines.record_root().is_none() {
             let key = match crypto::random::<32>() {
                 Ok(key) => key,
@@ -1496,10 +1696,45 @@ impl Service {
             Ok(record_plan) => record_plan,
             Err(error) => return error,
         };
-        if let Err(error) = self.commit_record_plan(&candidate, record_plan) {
+        let publication = if matches!(&plan.provider, ExternalKeyProvider::Genuine(_)) {
+            self.commit_record_plan_with_native_role(
+                &candidate,
+                record_plan,
+                plan.genuine_ha
+                    .as_ref()
+                    .map(|admission| admission.original_role()),
+                |auth| plan.authority.validate_live_auth(auth),
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                None,
+            )
+        } else {
+            self.commit_record_plan(&candidate, record_plan)
+        };
+        if let Err(error) = publication {
             return error;
         }
         self.state = Some(candidate);
+        if plan.is_genuine() {
+            let identity = match self.current_state_identity() {
+                Ok(identity) => identity,
+                Err(_) => {
+                    return Response::error(
+                        503,
+                        "genuine KMS verification committed root unavailable; public readback required; no blind retry",
+                    );
+                }
+            };
+            let generation = match self.external_effect_generation() {
+                Ok(generation) => generation,
+                Err(_) => {
+                    return Response::error(
+                        503,
+                        "genuine KMS verification committed frontier unavailable; public readback required; no blind retry",
+                    );
+                }
+            };
+            plan.delivery_checkpoint = Some((identity, generation));
+        }
         Response {
             unwrapped_json: None,
             response_headers: Default::default(),
@@ -1507,6 +1742,176 @@ impl Service {
             status: 204,
             body: Value::Null,
         }
+    }
+
+    pub(super) fn audit_external_key_response(
+        &mut self,
+        plan: &mut ExternalKeyPlan,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
+        response: Response,
+    ) -> Response {
+        let _deadline_scope = plan
+            .authority
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        let (response, receipt) = self.audit_completed_response_with_clock_receipt(
+            fingerprint,
+            request_clock,
+            response,
+            || {},
+            true,
+        );
+        if (200..300).contains(&response.status) {
+            if let Some(receipt) = receipt {
+                receipt.advance(&mut plan.delivery_checkpoint);
+            }
+            // This marker is process-local and set only after the mandatory
+            // response audit above succeeds. It cannot be supplied by a client.
+            plan.response_audited = true;
+        }
+        response
+    }
+
+    pub(super) fn complete_external_key_delivery(
+        &mut self,
+        plan: &mut ExternalKeyPlan,
+        response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        let planned_success = (200..300).contains(&response.status);
+        let mut response = self.external_key_delivery_gate(plan, response);
+        if planned_success
+            && !(200..300).contains(&response.status)
+            && self
+                .audit_event(
+                    "external-key-delivery-veto",
+                    fingerprint,
+                    plan.authority.now(),
+                    Some(response.status),
+                )
+                .is_err()
+        {
+            erase_json(&mut response.body);
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(
+                503,
+                "external key delivery veto audit failed; authoritative recovery required; no blind retry",
+            );
+        }
+        response
+    }
+
+    fn external_key_delivery_gate(
+        &mut self,
+        plan: &mut ExternalKeyPlan,
+        mut response: Response,
+    ) -> Response {
+        let _deadline_scope = plan
+            .authority
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if !(200..300).contains(&response.status) {
+            return response;
+        }
+        if !plan.response_audited {
+            erase_json(&mut response.body);
+            return Response::error(503, "genuine KMS verification response audit unavailable");
+        }
+        if let Err(cause) = self.validate_plugin_response(&mut plan.authority) {
+            erase_json(&mut response.body);
+            return cause;
+        }
+        let ExternalKeyProvider::Genuine(genuine) = &plan.provider else {
+            erase_json(&mut response.body);
+            return Response::error(503, "genuine KMS verification delivery kind mismatch");
+        };
+        if !plan.original_ha_binding_current(&self.ha) {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "genuine KMS verification original HA owner changed before delivery",
+            );
+        }
+        let host = genuine.host();
+        let _host_guard = match host.try_lock() {
+            Ok(guard) => guard,
+            Err(_) => {
+                erase_json(&mut response.body);
+                return Response::error(503, "genuine KMS verification owner busy before delivery");
+            }
+        };
+        if !genuine.current(&self.external_kms_plugins) || !genuine.host_current(&_host_guard) {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "genuine KMS verification owner changed before delivery",
+            );
+        }
+        let Some((identity, generation)) = plan.delivery_checkpoint else {
+            erase_json(&mut response.body);
+            return Response::error(503, "genuine KMS verification delivery root unavailable");
+        };
+        if !self
+            .current_state_identity()
+            .is_ok_and(|current| current == identity)
+            || !self
+                .external_effect_generation()
+                .is_ok_and(|current| current == generation)
+        {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "genuine KMS verification committed response withheld after state changed; public readback required; no blind retry",
+            );
+        }
+        // Ordinary root/frontier reads occur before this lock. The same original
+        // Arc, leader id and term remain held through the actual final return.
+        let _original_ha_guard = match plan.genuine_ha.as_ref() {
+            Some(admission) => match admission.lock_original(identity) {
+                Ok(guard) => Some(guard),
+                Err(cause) => {
+                    erase_json(&mut response.body);
+                    return cause;
+                }
+            },
+            None => None,
+        };
+        let final_generation = match _original_ha_guard.as_ref() {
+            Some(process) => self.external_effect_generation_with_retained_ha(process),
+            None => self.external_effect_generation(),
+        };
+        if !plan.original_ha_binding_current(&self.ha)
+            || !final_generation.is_ok_and(|current| current == generation)
+            || !genuine.current(&self.external_kms_plugins)
+            || !genuine.host_current(&_host_guard)
+        {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "genuine KMS verification final owner or frontier changed; no blind retry",
+            );
+        }
+        // All lock and ReadIndex waits spend the original authority clock.
+        if let Err(cause) = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "genuine KMS verification owner unavailable"))
+            .and_then(|state| plan.authority.validate_live_auth(&state.auth))
+        {
+            erase_json(&mut response.body);
+            return cause;
+        }
+        if let (Some(admission), Some(process)) =
+            (plan.genuine_ha.as_ref(), _original_ha_guard.as_ref())
+            && let Err(cause) = admission.check_role(process)
+        {
+            erase_json(&mut response.body);
+            return cause;
+        }
+        response
     }
 
     pub(super) fn finalize_plugin_kms(
@@ -2049,3 +2454,7 @@ mod tests {
 #[cfg(test)]
 #[path = "service_plugin_completion_tests.rs"]
 mod completion_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_external_key_delivery_tests.rs"]
+mod external_key_delivery_tests;

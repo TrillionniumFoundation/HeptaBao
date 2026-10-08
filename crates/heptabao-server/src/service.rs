@@ -264,7 +264,10 @@ mod snapshot_transfer;
 mod ui_mounts;
 #[path = "service_workflows.rs"]
 mod workflows;
+pub use external_kms::PluginExternalKmsConfig;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
+#[path = "service_external_kms.rs"]
+mod external_kms;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 #[path = "service_sdk_backend.rs"]
 mod sdk_backend;
@@ -1326,6 +1329,7 @@ pub struct Service {
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
     database_plugins: BTreeMap<String, plugin::SharedDatabasePlugin>,
     kms_plugins: BTreeMap<String, plugin::SharedKmsPlugin>,
+    external_kms_plugins: external_kms::Bindings,
     kms_keys: BTreeMap<String, plugin::KmsKeyBinding>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
@@ -1451,6 +1455,17 @@ impl Service {
             return Err("plugin runtime configuration is immutable while unsealed".into());
         }
         self.database_plugins = plugin::admit_database_plugins(configs)?;
+        Ok(())
+    }
+
+    pub fn install_external_kms_plugins(
+        &mut self,
+        configs: Vec<PluginExternalKmsConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("genuine KMS runtime is immutable while unsealed".into());
+        }
+        self.external_kms_plugins = external_kms::admit(configs)?;
         Ok(())
     }
 
@@ -1728,6 +1743,7 @@ impl Service {
             auth_plugins: BTreeMap::new(),
             database_plugins: BTreeMap::new(),
             kms_plugins: BTreeMap::new(),
+            external_kms_plugins: BTreeMap::new(),
             kms_keys: BTreeMap::new(),
             plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
@@ -2173,13 +2189,43 @@ impl Service {
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
             }
-            (ExternalEffectPlan::ExternalKey(plan), ExternalEffectResult::ExternalKey(result)) => {
-                self.finalize_external_key(plan, result)
+            (
+                ExternalEffectPlan::ExternalKey(mut plan),
+                ExternalEffectResult::ExternalKey(result),
+            ) => {
+                let response = self.finalize_external_key(&mut plan, result);
+                if plan.is_genuine() {
+                    let response = self.audit_external_key_response(
+                        &mut plan,
+                        &pending.fingerprint,
+                        (pending.now, pending.token_clock),
+                        response,
+                    );
+                    return self.complete_external_key_delivery(
+                        &mut plan,
+                        response,
+                        &pending.fingerprint,
+                    );
+                }
+                response
             }
             (
-                ExternalEffectPlan::ExternalTransit(plan),
+                ExternalEffectPlan::ExternalTransit(mut plan),
                 ExternalEffectResult::ExternalTransit(result),
-            ) => self.finalize_external_transit(plan, result),
+            ) => {
+                let response = self.finalize_external_transit(&mut plan, result);
+                let response = self.audit_external_transit_response(
+                    &mut plan,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                    response,
+                );
+                return self.complete_external_transit_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
             (
                 ExternalEffectPlan::AcmeExternal(mut plan),
                 ExternalEffectResult::AcmeExternal(result),
@@ -3623,6 +3669,42 @@ impl Service {
         // above; an authorized resource request observes the unloaded router.
         if resources_unloaded && principal.is_some() {
             return namespace_runtime::unloaded_route(path);
+        }
+        if matches!(method, "GET" | "HEAD") && path.starts_with("sys/external-keys/configs/") {
+            let Some(actor) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            let Some(capability) = admitted
+                .engines
+                .required_capability(namespace, method, path)
+            else {
+                return Response::error(404, "external key route not found");
+            };
+            if let Err(cause) = admitted
+                .auth
+                .authorize_request(actor, namespace, path, capability, now)
+            {
+                return Response::error(cause.status, &cause.message);
+            }
+        }
+        // Dynamic metadata is an actual provider effect, selected only from operator bindings.
+        let parameter_read = match admitted
+            .engines
+            .external_parameter_read(namespace, method, path)
+        {
+            Ok(value) => value,
+            Err(cause) => return Response::error(cause.status, &cause.message),
+        };
+        if let Some(target) = parameter_read {
+            if self.external_kms_plugins.contains_key(&target.plugin_id) {
+                return self.stage_genuine_kms_metadata(&admitted, principal, &request, target);
+            }
+            if target.plugin_id != "transit" {
+                return Response::error(
+                    501,
+                    "external KMS metadata requires an admitted genuine provider",
+                );
+            }
         }
         // Do not inspect stored provider parameters or disclose candidate
         // validation/existence failures until this exact route is authorized.

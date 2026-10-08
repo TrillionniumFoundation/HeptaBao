@@ -130,6 +130,8 @@ pub struct Config {
     #[serde(default)]
     pub plugin_kms: Vec<crate::PluginKmsConfig>,
     #[serde(default)]
+    pub external_kms: Vec<crate::PluginExternalKmsConfig>,
+    #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     #[serde(default)]
@@ -283,6 +285,7 @@ fn serve_inner(
             || !config.plugin_auth.is_empty()
             || !config.plugin_database.is_empty()
             || !config.plugin_kms.is_empty()
+            || !config.external_kms.is_empty()
             || !config.plugin_secrets.is_empty()
             || !config
                 .openbao_wrapper
@@ -385,6 +388,7 @@ fn serve_inner(
         service.install_auth_plugins(config.plugin_auth)?;
         service.install_database_plugins(config.plugin_database)?;
         service.install_kms_plugins(config.plugin_kms)?;
+        service.install_external_kms_plugins(config.external_kms)?;
         service.install_secret_plugins(config.plugin_secrets)?;
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         service.install_sdk_backend(config.openbao_sdk)?;

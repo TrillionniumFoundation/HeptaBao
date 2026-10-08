@@ -61,7 +61,7 @@ pub(in crate::engines) struct Request {
     pub(in crate::engines) body: SecretJson,
 }
 
-fn split_ciphertext(ciphertext: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
+fn split_ciphertext(ciphertext: &str, genuine: bool) -> Result<(u64, Zeroizing<Vec<u8>>)> {
     let mut fields = ciphertext.splitn(3, ':');
     if fields.next() != Some("vault") {
         return Err(bad("invalid external ciphertext"));
@@ -79,7 +79,7 @@ fn split_ciphertext(ciphertext: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
         return Err(error(413, "external ciphertext exceeds bound"));
     }
     let payload = decode(encoded)?;
-    if payload.len() < 28 {
+    if payload.len() < if genuine { 1 } else { 28 } {
         return Err(bad("invalid external ciphertext"));
     }
     if payload.len() > MAX_EXTERNAL_PLAINTEXT + 64 {
@@ -276,6 +276,15 @@ impl Transit {
         path: &str,
         body: &Value,
     ) -> Result<Option<Request>> {
+        self.prepare_external_with_provider(method, path, body, false)
+    }
+    pub(in crate::engines) fn prepare_external_with_provider(
+        &self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        genuine: bool,
+    ) -> Result<Option<Request>> {
         if !self.external_handles(path) {
             return Ok(None);
         }
@@ -319,7 +328,7 @@ impl Transit {
             "decrypt" => {
                 reject_unknown(body, &["ciphertext", "associated_data", "context", "nonce"])?;
                 reject_context(body)?;
-                let (version, payload) = split_ciphertext(string(body, "ciphertext")?)?;
+                let (version, payload) = split_ciphertext(string(body, "ciphertext")?, genuine)?;
                 key.decrypt_version(version)?;
                 (
                     "decrypt",

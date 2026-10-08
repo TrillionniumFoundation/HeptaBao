@@ -19,6 +19,7 @@ use ring::digest::SHA256;
 use zeroize::Zeroizing;
 
 mod durable;
+pub mod kms_bridge;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 pub mod sdk_backend;
 #[cfg(any(target_os = "linux", target_os = "macos"))]

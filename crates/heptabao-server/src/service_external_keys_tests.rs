@@ -540,12 +540,14 @@ fn external_keys270_alias_only_acl_cannot_modify_the_canonical_config() -> TestR
 }
 
 #[test]
-fn external_keys270_client_private_key_redaction_survives_real_service_reopen() -> TestResult {
+fn external_keys270_builtin_transit_authorized_tls_value_survives_real_service_reopen() -> TestResult
+{
     let root = Root::new();
     let mut service = root.service()?;
     let (unseal, admin) = bootstrap(&mut service)?;
     let path = "sys/external-keys/configs/client-key";
     let canary = "synthetic-private-client-key-persistent-canary";
+    let remote_token = "synthetic-remote-config-token-never-disclosed";
     assert_eq!(
         call(
             &mut service,
@@ -554,6 +556,7 @@ fn external_keys270_client_private_key_redaction_survives_real_service_reopen() 
             &admin,
             json!({
                 "plugin":"transit", "verify":false, "tls_client_key_bytes":canary,
+                "token":remote_token,
                 "tls_client_cert_bytes":"public-client-certificate"
             })
         )
@@ -580,12 +583,16 @@ fn external_keys270_client_private_key_redaction_survives_real_service_reopen() 
         let response = call(&mut service, "GET", path, &admin, json!({}));
         assert_eq!(response.status, 200);
         assert!(
-            response.body["data"]["tls_client_key_bytes"] == "(redacted)",
-            "private client key was not redacted"
+            response.body["data"]["tls_client_key_bytes"].as_str() == Some(canary),
+            "builtin Transit changed its authorized original field"
         );
+        assert!(response.body["data"]["token"].as_str() == Some("(redacted)"));
+        let encoded = Zeroizing::new(serde_json::to_vec(&response.body)?);
         assert!(
-            !serde_json::to_string(&response.body)?.contains(canary),
-            "response exposed synthetic private key"
+            !encoded
+                .windows(remote_token.len())
+                .any(|w| w == remote_token.as_bytes()),
+            "response exposed redacted config token"
         );
         assert_eq!(
             response.body["data"]["tls_client_cert_bytes"],
@@ -603,8 +610,83 @@ fn external_keys270_client_private_key_redaction_survives_real_service_reopen() 
     )?;
     let response = call(&mut service, "GET", path, &reader, json!({}));
     assert_eq!(response.status, 200);
-    assert!(response.body["data"]["tls_client_key_bytes"] == "(redacted)");
-    assert!(!serde_json::to_string(&response.body)?.contains(canary));
+    assert!(response.body["data"]["tls_client_key_bytes"].as_str() == Some(canary));
+    assert!(response.body["data"]["token"].as_str() == Some("(redacted)"));
+    let spent = call(&mut service, "GET", path, &reader, json!({}));
+    assert_eq!(spent.status, 403);
+    assert!(spent.body.get("data").is_none());
+    Ok(())
+}
+
+#[test]
+fn external_keys270_builtin_transit_projection_checks_acl_and_preserves_engine_owner() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    let config = "sys/external-keys/configs/client-key";
+    let key = "sys/external-keys/configs/client-key/keys/mapped";
+    let canary = "synthetic-service-authorized-client-key";
+    let key_token = "synthetic-service-arbitrary-key-token-field";
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            config,
+            &admin,
+            json!({
+                "plugin":"transit", "verify":false, "token":"synthetic-config-token",
+                "tls_client_key_bytes":canary
+            })
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            key,
+            &admin,
+            json!({
+                "verify":false, "tls_client_key_bytes":canary, "token":key_token
+            })
+        )
+        .status,
+        204
+    );
+    let before = Zeroizing::new(serde_json::to_vec(
+        &service.state.as_ref().ok_or("state")?.engines,
+    )?);
+    let anonymous = call(&mut service, "GET", config, "", json!({}));
+    assert_eq!(anonymous.status, 403);
+    assert!(anonymous.body.get("data").is_none());
+    let denied_reader = limited_token(
+        &mut service,
+        &admin,
+        r#"path "sys/external-keys/configs/other" { capabilities = ["read"] }"#,
+    )?;
+    let denied = call(&mut service, "GET", config, &denied_reader, json!({}));
+    assert_eq!(denied.status, 403);
+    assert!(denied.body.get("data").is_none());
+    for (path, expected_token) in [(config, "(redacted)"), (key, key_token)] {
+        let reader = limited_token(
+            &mut service,
+            &admin,
+            r#"path "sys/external-keys/configs/client-key*" { capabilities = ["read"] }"#,
+        )?;
+        let response = call(&mut service, "GET", path, &reader, json!({}));
+        assert_eq!(response.status, 200);
+        assert!(response.body["data"]["tls_client_key_bytes"].as_str() == Some(canary));
+        assert!(response.body["data"]["token"].as_str() == Some(expected_token));
+        let spent = call(&mut service, "GET", path, &reader, json!({}));
+        assert_eq!(spent.status, 403);
+        assert!(spent.body.get("data").is_none());
+    }
+    assert!(
+        before.as_slice() == serde_json::to_vec(&service.state.as_ref().ok_or("state")?.engines)?,
+        "authorized or denied read changed engine owner"
+    );
     Ok(())
 }
 

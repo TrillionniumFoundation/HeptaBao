@@ -6,6 +6,7 @@ operation is claimed. Credentials remain in memory, never in report rows.
 """
 from pathlib import Path
 import copy
+import hashlib
 
 from bao_http import Client
 from core_isolation import ScenarioFailure, main as compare
@@ -55,7 +56,17 @@ class Trace:
         row = {"case": "externalkeys270." + name, "status": response.status,
                "passed": response.status == expected}
         if data is not _UNSET:
-            row["passed"] &= response.body.get("data") == data
+            observed_data = response.body.get("data")
+            row["passed"] &= observed_data == data
+            if isinstance(data, dict) and "tls_client_key_bytes" in data:
+                value = observed_data.get("tls_client_key_bytes", _UNSET) if isinstance(observed_data, dict) else _UNSET
+                encoded = value.encode("utf-8") if isinstance(value, str) else None
+                row["raw_field_projection"] = {
+                    "present": value is not _UNSET,
+                    "string": isinstance(value, str),
+                    "bytes": len(encoded) if encoded is not None else None,
+                    "SHA256": hashlib.sha256(encoded).hexdigest() if encoded is not None else None,
+                }
         if errors is not _UNSET:
             row["passed"] &= response.body.get("errors") == errors
         self.rows.append(row)
@@ -64,15 +75,15 @@ class Trace:
         return response.body
 
 
-def config_data(*, client_key="(redacted)"):
+def config_data():
     return {"plugin": "transit", "address": "https://127.0.0.1:1",
             "token": "(redacted)", "mount_path": "remote-transit",
-            "tls_client_key_bytes": client_key,
+            "tls_client_key_bytes": PRIVATE_TLS_CANARY,
             "tls_client_cert_bytes": "synthetic-public-client-certificate",
             "tls_ca_cert_bytes": "synthetic-public-ca"}
 
 
-def run_scenarios(client: Client, results: list[dict] | None = None, *, expected_client_key="(redacted)"):
+def run_scenarios(client: Client, results: list[dict] | None = None):
     rows = [] if results is None else results
     t = Trace(client, rows)
     t.call("empty", "LIST", CONFIGS, 404, errors=[])
@@ -86,13 +97,13 @@ def run_scenarios(client: Client, results: list[dict] | None = None, *, expected
          "tls_client_cert_bytes": "synthetic-public-client-certificate",
          "tls_ca_cert_bytes": "synthetic-public-ca"})
     t.call("config_read", "GET", CONFIG, 200,
-        data={**config_data(client_key=expected_client_key), "mount_path": "transit", "namespace": ""})
+        data={**config_data(), "mount_path": "transit", "namespace": ""})
     t.call("config_list", "LIST", CONFIGS, 200, data={"keys": ["demo"]})
     t.call("config_patch", "PATCH", CONFIG, 204,
         {"verify": False, "mount_path": "remote-transit", "namespace": "team/"})
-    t.call("config_after_patch", "GET", CONFIG, 200, data={**config_data(client_key=expected_client_key), "namespace": "team/"})
+    t.call("config_after_patch", "GET", CONFIG, 200, data={**config_data(), "namespace": "team/"})
     t.call("config_remove_field", "PATCH", CONFIG, 204, {"verify": False, "namespace": None})
-    t.call("config_after_remove", "GET", CONFIG, 200, data=config_data(client_key=expected_client_key))
+    t.call("config_after_remove", "GET", CONFIG, 200, data=config_data())
     t.call("keys_empty", "LIST", CONFIG + "/keys", 404, errors=[])
     t.call("key_missing", "GET", KEY, 400, errors=['key "key1" not found'])
     t.call("key_no_config", "POST", CONFIGS + "/missing/keys/k", 400, {"verify": False})
@@ -110,12 +121,12 @@ def run_scenarios(client: Client, results: list[dict] | None = None, *, expected
     t.call("grant_list_unchanged", "LIST", GRANTS, 200, data={"keys": ["pki/"]})
     t.call("alias_write", "POST", CONFIGS + "demo", 404, {"plugin": "transit", "verify": False})
     t.call("alias_read", "GET", CONFIGS + "demo", 404)
-    t.call("canonical_unchanged", "GET", CONFIG, 200, data=config_data(client_key=expected_client_key))
+    t.call("canonical_unchanged", "GET", CONFIG, 200, data=config_data())
     policy = 'path "sys/external-keys/*" { capabilities = ["read", "list"] }'
     t.call("policy", "PUT", "sys/policies/acl/externalkeys-reader", 204, {"policy": policy})
     reader = t.call("reader_create", "POST", "auth/token/create", 200,
         {"policies": ["externalkeys-reader"], "no_default_policy": True, "num_uses": 2})["auth"]["client_token"]
-    t.call("reader_read", "GET", CONFIG, 200, token=reader, data=config_data(client_key=expected_client_key))
+    t.call("reader_read", "GET", CONFIG, 200, token=reader, data=config_data())
     t.call("denied_write", "POST", CONFIGS + "/denied", 403,
         {"plugin": "transit", "verify": False, "token": "must-not-persist"}, token=reader)
     t.call("denied_absent", "GET", CONFIGS + "/denied", 400)
@@ -130,23 +141,17 @@ def run_scenarios(client: Client, results: list[dict] | None = None, *, expected
     t.call("team_config_not_root", "GET", CONFIGS + "/team-key", 400)
     t.call("root_key_unchanged", "GET", KEY, 200, data={"name": "remote", "version": 4})
     require_sequence(rows, PRE_CASES)
-    _RESTART_STATE[id(rows)] = {"reader": reader, "expected_client_key": expected_client_key}
+    _RESTART_STATE[id(rows)] = {"reader": reader}
     return rows
 
 
-def run_oracle_scenarios(client: Client, results: list[dict] | None = None):
-    return run_scenarios(client, results, expected_client_key=PRIVATE_TLS_CANARY)
-
-
-def run_after_restart(client: Client, rows: list[dict], *, expected_client_key="(redacted)"):
+def run_after_restart(client: Client, rows: list[dict]):
     state = _RESTART_STATE.pop(id(rows), None)
     if state is None:
         raise ScenarioFailure("externalkeys270.restart_context_missing")
-    if state.get("expected_client_key") != expected_client_key:
-        raise ScenarioFailure("externalkeys270.restart_contract_mismatch")
     require_sequence(rows, PRE_CASES)
     t = Trace(client, rows)
-    t.call("restart_config", "GET", CONFIG, 200, data=config_data(client_key=expected_client_key))
+    t.call("restart_config", "GET", CONFIG, 200, data=config_data())
     t.call("restart_key", "GET", KEY, 200, data={"name": "remote", "version": 4})
     t.call("restart_grant", "LIST", GRANTS, 200, data={"keys": ["pki/"]})
     t.call("restart_spent", "LIST", CONFIGS, 403, token=state["reader"])
@@ -170,20 +175,13 @@ def run_after_restart(client: Client, rows: list[dict], *, expected_client_key="
     require_sequence(rows, PRE_CASES + RESTART_CASES)
 
 
-def run_oracle_after_restart(client: Client, rows: list[dict]):
-    return run_after_restart(client, rows, expected_client_key=PRIVATE_TLS_CANARY)
-
-
 def main():
     return compare(scenario_runner=run_scenarios,
-        oracle_scenario_runner=run_oracle_scenarios,
+        oracle_scenario_runner=run_scenarios,
         restart_runner=run_after_restart,
-        oracle_restart_runner=run_oracle_after_restart,
+        oracle_restart_runner=run_after_restart,
         profile="external-keys270", required_oracle_version="2.7.0",
-        scope="verify_false_registry_crud_patch_grants_acl_namespace_restart_and_explicit_tls_private_key_projection_divergence_not_provider_key_use",
-        contract_divergences=(
-            "OpenBao 2.7.0 echoes tls_client_key_bytes while HeptaBao redacts it; normalized observations require each exact side contract",
-        ),
+        scope="verify_false_registry_crud_patch_grants_acl_namespace_restart_and_default_builtin_transit_exact_raw_field_projection_not_dynamic_metadata_or_provider_key_use",
         runner_path=Path(__file__))
 
 
