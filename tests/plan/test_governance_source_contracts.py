@@ -253,5 +253,40 @@ class GovernanceSourceContractTests(unittest.TestCase):
             archived_document_reference(root, relative, record)
 
 
+    def test_leaf_error_call_optional_trailing_comma_preserves_owned_contract(self) -> None:
+        root = self.descriptor_candidate()
+        self.mutate(
+            root, LEAF,
+            '"guarded leaf is not a singly-linked regular file",\n',
+            '"guarded leaf is not a singly-linked regular file"\n',
+        )
+        self.assertEqual(descriptor_provider_errors(root, "store"), [])
+        self.assertEqual(descriptor_provider_errors(root, "journal"), [])
+        self.mutate(root, LEAF, "!metadata.is_file() || metadata.nlink() != 1",
+                    "!metadata.is_file()")
+        self.assert_descriptor_rejected(root, "descriptor leaf source")
+
+    def test_read_only_job_scopes_keep_write_none_and_unknown_scope_denials(self) -> None:
+        changes = (
+            ("      actions: read\n", "      actions: write\n"),
+            ("      actions: read\n", "      actions: none\n"),
+            ("      actions: read\n", "      actions: null\n"),
+            ("      pull-requests: read\n", "      pull-requests: write\n"),
+            ("      pull-requests: read\n", "      pull-requests: none\n"),
+            ("      pull-requests: read\n", "      pull-requests: null\n"),
+            ("      pull-requests: read\n", "      packages: read\n"),
+            ("    permissions:\n      contents: read\n",
+             "    permissions:\n      contents: none\n"),
+            ("    permissions:\n      contents: read\n", "    permissions:\n"),
+        )
+        for old, new in changes:
+            with self.subTest(change=new):
+                root = self.candidate(CANONICAL)
+                self.assertEqual(retired_workflow_errors(root, CANONICAL), [])
+                self.mutate(root, CANONICAL, old, new)
+                self.assertIn("workflow job gained write permission",
+                              retired_workflow_errors(root, CANONICAL))
+
+
 if __name__ == "__main__":
     unittest.main()
