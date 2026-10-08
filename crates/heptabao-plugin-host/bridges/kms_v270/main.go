@@ -78,7 +78,12 @@ type library struct {
 	Path   string `json:"path"`
 	SHA256 string `json:"sha256"`
 }
+type darwinBootstrapDeployment struct {
+    Image string `json:"image"`
+    ImageSHA256 string `json:"image_sha256"`
+}
 type deployment struct {
+    DarwinBootstrap *darwinBootstrapDeployment `json:"darwin_bootstrap,omitempty"`
 	Implementation deploymentImplementation `json:"implementation,omitempty"`
 	Provider       string                   `json:"provider"`
 	Image          string                   `json:"image"`
@@ -121,6 +126,7 @@ func loadDeployment(path, digest string) (deployment, *pinnedFile, error) {
 		return deployment{}, nil, err
 	}
 	d.Implementation = implementation
+	if err := validatePlatformDeployment(d); err != nil { return deployment{}, nil, err }
 	keep = true
 	return d, pin, nil
 }
@@ -510,4 +516,7 @@ func run() int {
 	}
 	return 0
 }
-func main() { os.Exit(run()) }
+func main() {
+    if handled, code := platformBootstrap(); handled { os.Exit(code) }
+    os.Exit(run())
+}

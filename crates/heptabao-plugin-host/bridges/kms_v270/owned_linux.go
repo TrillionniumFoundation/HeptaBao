@@ -179,6 +179,7 @@ type ownedRunner struct {
 }
 
 func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, ctx context.Context) (r *ownedRunner, err error) {
+	if err := validatePlatformDeployment(d); err != nil { return nil, err }
 	if !filepath.IsAbs(ownedTemp) || filepath.Clean(ownedTemp) != ownedTemp ||
 		len(socketDir) > 90 {
 		return nil, errors.New("invalid owned socket directory")
@@ -224,7 +225,7 @@ func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, c
 		}
 		r.pins = append(r.pins, p)
 		files = append(files, p.file)
-		aliases[lib.Alias] = "/proc/self/fd/" + strconv.Itoa(2+len(files))
+		aliases[lib.Alias] = heldLibraryDescriptor(len(files)-2)
 	}
 	args, err := providerArguments(d, aliases)
 	if err != nil {
@@ -504,3 +505,9 @@ func monotonicNanos() (int64, error) {
 	}
 	return ts.Sec*1_000_000_000 + ts.Nsec, nil
 }
+
+func validatePlatformDeployment(d deployment) error {
+    if d.DarwinBootstrap != nil { return errors.New("Darwin bootstrap is not a Linux deployment") }
+    return nil
+}
+func platformBootstrap() (bool, int) { return false, 0 }

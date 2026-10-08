@@ -335,6 +335,34 @@ fn operator_implementation(
         _ => Err("genuine KMS operator implementation is invalid".into()),
     }
 }
+fn platform_bootstrap_pins(
+    object: &serde_json::Map<String, Value>,
+) -> Result<Vec<OperatorPin>, String> {
+    #[cfg(target_os = "macos")]
+    {
+        let bootstrap = object
+            .get("darwin_bootstrap")
+            .and_then(Value::as_object)
+            .ok_or("Darwin KMS requires an operator-pinned bootstrap")?;
+        if bootstrap.len() != 2
+            || bootstrap.keys().any(|k| !matches!(k.as_str(), "image" | "image_sha256"))
+        {
+            return Err("Darwin KMS bootstrap provenance is invalid".into());
+        }
+        let path = bootstrap.get("image").and_then(Value::as_str)
+            .ok_or("Darwin KMS bootstrap image is invalid")?;
+        let sha = bootstrap.get("image_sha256").and_then(Value::as_str)
+            .ok_or("Darwin KMS bootstrap digest is invalid")?;
+        Ok(vec![OperatorPin::open(path, digest(sha)?, true)?])
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        if object.contains_key("darwin_bootstrap") {
+            return Err("Darwin bootstrap is not a deployment for this platform".into());
+        }
+        Ok(Vec::new())
+    }
+}
 fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, String> {
     let deployment = OperatorPin::open(path, digest(sha)?, false)?;
     let mut v = deployment.deployment()?;
@@ -343,10 +371,11 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
             .as_object()
             .ok_or("genuine KMS deployment must be an object")?;
         if object.len() != 5 + usize::from(object.contains_key("implementation"))
+            + usize::from(object.contains_key("darwin_bootstrap"))
             || object.keys().any(|k| {
                 !matches!(
                     k.as_str(),
-                    "provider" | "image" | "image_sha256" | "args" | "libraries" | "implementation"
+                    "provider" | "image" | "image_sha256" | "args" | "libraries" | "implementation" | "darwin_bootstrap"
                 )
             })
             || object.get("provider").and_then(Value::as_str) != Some(id)
@@ -386,6 +415,7 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
             return Err("genuine KMS library aliases require a sealed implementation".into());
         }
         let mut pins = vec![OperatorPin::open(image, digest(image_sha)?, true)?];
+        pins.extend(platform_bootstrap_pins(object)?);
         let mut names = BTreeSet::new();
         for lib in libs {
             let m = lib
@@ -575,6 +605,25 @@ pub(super) fn prepare(
         generation,
         invocation,
     }))
+}
+
+#[cfg(test)]
+mod platform_bootstrap_policy_tests {
+    use super::*;
+    #[test]
+    fn bootstrap_is_explicit_closed_operator_provenance() {
+        let empty = serde_json::Map::new();
+        assert_eq!(platform_bootstrap_pins(&empty).is_err(), cfg!(target_os = "macos"));
+        for value in [
+            Value::Null,
+            serde_json::json!({"image":"/operator/bootstrap"}),
+            serde_json::json!({"image":"/operator/bootstrap","image_sha256":"invalid","extra":true}),
+        ] {
+            let mut deployment = serde_json::Map::new();
+            deployment.insert("darwin_bootstrap".into(), value);
+            assert!(platform_bootstrap_pins(&deployment).is_err());
+        }
+    }
 }
 
 #[cfg(all(test, target_os = "linux"))]

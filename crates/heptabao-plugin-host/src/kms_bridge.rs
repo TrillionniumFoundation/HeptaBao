@@ -153,6 +153,7 @@ impl Invocation {
             .get("lifecycle")
             .and_then(Value::as_object)
             .ok_or(PluginHostError::MalformedResponse)?;
+        let original_owner_field = if cfg!(target_os = "macos") { "audit_selector_bound" } else { "pidfd_bound" };
         let life_fields = [
             "started",
             "pid",
@@ -166,17 +167,20 @@ impl Invocation {
             "forced",
             "group_retired",
             "pins_unchanged",
-            "pidfd_bound",
+            original_owner_field,
             "qualified",
         ];
-        if life.len() != life_fields.len()
-            || life.keys().any(|k| !life_fields.contains(&k.as_str()))
+        if life.len() != life_fields.len() + usize::from(cfg!(target_os = "macos"))
+            || life.keys().any(|k| !life_fields.contains(&k.as_str())
+                && !(cfg!(target_os = "macos") && k == "bootstrap_bound"))
+            || cfg!(target_os = "macos")
+                && life.get("bootstrap_bound").and_then(Value::as_bool) != Some(true)
             || [
                 "started",
                 "original_wait",
                 "group_retired",
                 "pins_unchanged",
-                "pidfd_bound",
+                original_owner_field,
                 "qualified",
             ]
             .iter()
@@ -190,6 +194,7 @@ impl Invocation {
                 .and_then(Value::as_u64)
                 .is_some_and(|n| n > 0)
             || life.get("pid") != life.get("pgid")
+            || cfg!(target_os = "macos") && life.get("pid") != life.get("sid")
             || !life
                 .get("sid")
                 .and_then(Value::as_u64)
@@ -374,10 +379,44 @@ mod tests {
             .map_err(PluginHostError::Domain)
     }
     fn reply(inv: &Invocation, result: Value) -> Value {
-        json!({"version":1,"nonce":inv.nonce,"operation":inv.operation.wire(),"status":"completed",
+        let mut value = json!({"version":1,"nonce":inv.nonce,"operation":inv.operation.wire(),"status":"completed",
             "phase":if inv.operation==Operation::Metadata {"metadata"} else {"crypto"},"result":result,"lifecycle":{"started":true,"pid":42,"birth":"123",
             "pgid":42,"sid":41,"original_wait":true,"exit_code":0,"identity_gap":false,
-            "signal_error":false,"forced":false,"group_retired":true,"pins_unchanged":true,"pidfd_bound":true,"qualified":true}})
+            "signal_error":false,"forced":false,"group_retired":true,"pins_unchanged":true,"qualified":true}});
+        let owner = if cfg!(target_os = "macos") { "audit_selector_bound" } else { "pidfd_bound" };
+        value["lifecycle"][owner] = json!(true);
+        if cfg!(target_os = "macos") {
+            value["lifecycle"]["bootstrap_bound"] = json!(true);
+            value["lifecycle"]["sid"] = json!(42);
+        }
+        value
+    }
+    #[test]
+    fn genuine_kms_lifecycle_rejects_foreign_platform_owner_and_missing_bootstrap()
+    -> Result<(), PluginHostError> {
+        let inv = Invocation::new(Operation::Metadata, &secret(json!({}))?)?;
+        let positive = reply(&inv, json!({"sensitive_kms_fields":[],"sensitive_key_fields":[]}));
+        let owner = if cfg!(target_os = "macos") { "audit_selector_bound" } else { "pidfd_bound" };
+        let foreign = if cfg!(target_os = "macos") { "pidfd_bound" } else { "audit_selector_bound" };
+        let mut wrong = positive.clone();
+        wrong["lifecycle"].as_object_mut().unwrap().remove(owner);
+        wrong["lifecycle"][foreign] = json!(true);
+        assert!(inv.decode(&secret(wrong)?).is_err());
+        let mut missing = positive.clone();
+        missing["lifecycle"][owner] = json!(false);
+        assert!(inv.decode(&secret(missing)?).is_err());
+        let mut bootstrap = positive.clone();
+        bootstrap["lifecycle"]["bootstrap_bound"] = json!(false);
+        assert!(inv.decode(&secret(bootstrap)?).is_err());
+        if cfg!(target_os = "macos") {
+            let mut missing = positive.clone();
+            missing["lifecycle"].as_object_mut().unwrap().remove("bootstrap_bound");
+            assert!(inv.decode(&secret(missing)?).is_err());
+            let mut session = positive;
+            session["lifecycle"]["sid"] = json!(41);
+            assert!(inv.decode(&secret(session)?).is_err());
+        }
+        Ok(())
     }
     #[test]
     fn genuine_kms_crypto_result_cannot_be_replaced_by_verification_ack()
@@ -433,6 +472,7 @@ mod tests {
             "image",
             "image_sha256",
             "libraries",
+            "darwin_bootstrap",
             "env",
             "timeout_ms",
             "deadline_monotonic_ns",
