@@ -214,14 +214,14 @@ fn finish_fast(
     Ok(service.complete_ordinary_kv_delivery(owner, response, "lookup-real-audit"))
 }
 fn auth_bytes(service: &Service) -> TestResult<Zeroizing<Vec<u8>>> {
-    Ok(Zeroizing::new(owner_store::serialize_owner(
+    Ok(owner_store::serialize_owner(
         &service.state.as_ref().ok_or("state")?.auth,
-    )?))
+    )?)
 }
 fn state_bytes(service: &Service) -> TestResult<Zeroizing<Vec<u8>>> {
-    Ok(Zeroizing::new(owner_store::serialize_owner(
+    Ok(owner_store::serialize_owner(
         service.state.as_ref().ok_or("state")?,
-    )?))
+    )?)
 }
 fn fingerprint_state(
     service: &Service,
