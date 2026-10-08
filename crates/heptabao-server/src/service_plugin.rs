@@ -1285,6 +1285,38 @@ impl Service {
         Ok(PublicationGeneration { local, raft })
     }
 
+    // Same PublicationGeneration contract, while a caller retains the actual HA lock.
+    // This avoids reopening the mutex between the last frontier check and delivery.
+    pub(super) fn external_effect_generation_with_retained_ha(
+        &self,
+        process: &HaProcess,
+    ) -> Result<PublicationGeneration, Response> {
+        let local = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external effect durable owner is unavailable"))?
+            .generation();
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external effect state owner is unavailable"))?;
+        if process.cluster_id() != state.cluster_id {
+            return Err(Response::error(503, "external effect HA cluster changed"));
+        }
+        let observed = process
+            .leader_status()
+            .map_err(|_| Response::error(503, "external effect HA frontier is unavailable"))?;
+        let raft = Some(
+            observed
+                .committed_index
+                .zip(observed.applied_index)
+                .ok_or_else(|| {
+                    Response::error(503, "external effect HA frontier is unavailable")
+                })?,
+        );
+        Ok(PublicationGeneration { local, raft })
+    }
+
     pub(super) fn stage_external_key_verification(
         &mut self,
         state: State,

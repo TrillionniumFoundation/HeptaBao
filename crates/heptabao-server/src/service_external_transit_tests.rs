@@ -2494,3 +2494,271 @@ fn external_transit270_wrapped_optional_host_disable_after_audit_vetoes_delivery
     assert_eq!(remote.calls()?, 1);
     Ok(())
 }
+
+// The HA fixture runs three real OpenRaft nodes; the provider remains the
+// independent HTTPS Transit Service. No multi-process/provider-oracle claim.
+fn wrapping_ha(
+    root: &Root,
+    service: &mut Service,
+) -> TestResult<crate::ha::snapshot_test_support::Cluster> {
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(
+        &root.path.join("wrapped-transit-raft"),
+        &cluster_id,
+    )?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service
+        .sync_from_ha()
+        .map_err(|_| "actual wrapped Transit HA seed")?;
+    Ok(cluster)
+}
+
+fn wrapping_return_to_original_leader(
+    cluster: &crate::ha::snapshot_test_support::Cluster,
+) -> TestResult<u64> {
+    let next = cluster.processes[0]
+        .lock()
+        .map_err(|_| "original mutex")?
+        .step_down()?;
+    assert_ne!(next, 1);
+    let returned = cluster.processes[(next - 1) as usize]
+        .lock()
+        .map_err(|_| "successor mutex")?
+        .step_down()?;
+    assert_eq!(returned, 1);
+    let actual = cluster.processes[0]
+        .lock()
+        .map_err(|_| "returned mutex")?
+        .leader_status()?;
+    assert!(actual.local_is_leader && actual.leader == Some(1));
+    Ok(actual.term)
+}
+
+#[test]
+fn external_transit270_wrapped_original_ha_role_stable_publication_and_delivery() -> TestResult {
+    let remote = RemoteTransit::new()?;
+    let (root, mut service, _unseal, admin) = remote.fixture()?;
+    let cluster = wrapping_ha(&root, &mut service)?;
+    let original = cluster.processes[0]
+        .lock()
+        .map_err(|_| "role mutex")?
+        .leader_status()?;
+    let _ingress = crate::auth::IngressReplyScope::listener(&[0x7b; 16]);
+    let pending = wrapping_staged_path(
+        &mut service,
+        &admin,
+        "consumer/encrypt/local",
+        json!({"plaintext":BASE64.encode(b"stable actual HA wrapped result")}),
+        Some(60),
+    )?;
+    let result = pending.execute();
+    let response = service.finish_external_request(pending, result);
+    let wrapper = wrapping_reply_token(&response)?;
+    let actual = cluster.processes[0]
+        .lock()
+        .map_err(|_| "role mutex")?
+        .leader_status()?;
+    assert!(
+        actual.local_is_leader
+            && (actual.local_id, actual.term) == (original.local_id, original.term)
+    );
+    let envelope = wrapping_unwrap_envelope(&mut service, &admin, &wrapper)?;
+    assert!(envelope["request_id"] == crate::crypto::uuid_from_bytes(&[0x7b; 16]));
+    let decrypted = call(
+        &mut service,
+        "POST",
+        "consumer/decrypt/local",
+        &admin,
+        json!({"ciphertext":envelope["data"]["ciphertext"]}),
+    );
+    assert_eq!(decrypted.status, 200);
+    assert!(
+        decrypted.body["data"]["plaintext"] == BASE64.encode(b"stable actual HA wrapped result")
+    );
+    assert_eq!(remote.calls()?, 2);
+    Ok(())
+}
+
+#[test]
+fn external_transit270_wrapped_actual_returned_leader_new_term_vetoes_all_phases() -> TestResult {
+    let remote = RemoteTransit::new()?;
+    for phase in [
+        "before-entry",
+        "post-stage-before-publish",
+        "after-response-audit",
+    ] {
+        let (root, mut service, _unseal, admin) = remote.fixture()?;
+        let cluster = wrapping_ha(&root, &mut service)?;
+        let original_term = cluster.processes[0]
+            .lock()
+            .map_err(|_| "role mutex")?
+            .leader_status()?
+            .term;
+        let _ingress = crate::auth::IngressReplyScope::listener(&[0x7c; 16]);
+        let pending = wrapping_staged_path(
+            &mut service,
+            &admin,
+            "consumer/encrypt/local",
+            json!({"plaintext":BASE64.encode(b"original term may not be rearmed")}),
+            Some(60),
+        )?;
+        let before = remote.calls()?;
+        if phase == "before-entry" {
+            assert!(wrapping_return_to_original_leader(&cluster)? > original_term);
+            let effect = pending.execute();
+            let ExternalEffectResult::ExternalTransit(Err(cause)) = &effect else {
+                return Err("actual new term must veto provider entry".into());
+            };
+            assert_eq!(cause.status, 503);
+            assert!(
+                cause.body["errors"][0]
+                    .as_str()
+                    .ok_or("fixed error")?
+                    .contains("original HA role changed")
+            );
+            assert_eq!(remote.calls()?, before);
+            let response = service.finish_external_request(pending, effect);
+            assert_eq!(response.status, 503);
+            assert!(
+                response.body.get("data").is_none() && response.body.get("wrap_info").is_none()
+            );
+            assert!(
+                !service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .auth
+                    .has_raw_wrapped_reply_state()
+            );
+            continue;
+        }
+        let effect = pending.execute();
+        let ExternalEffectPlan::ExternalTransit(mut plan) = pending.effect else {
+            return Err("actual external Transit plan".into());
+        };
+        let ExternalEffectResult::ExternalTransit(result) = effect else {
+            return Err("actual external Transit observation".into());
+        };
+        if phase == "post-stage-before-publish" {
+            let identity = service.current_state_identity().map_err(|_| "identity")?;
+            let generation = service.durable.as_ref().ok_or("durable")?.generation();
+            let entered = Arc::new(AtomicBool::new(false));
+            let observed = Arc::clone(&entered);
+            let processes = cluster.processes.clone();
+            service.native_record_role_hook = Some(Box::new(move |process| {
+                let next = process
+                    .step_down()
+                    .expect("actual post-Stage first handoff");
+                assert_ne!(next, 1);
+                let returned = processes[(next - 1) as usize]
+                    .lock()
+                    .expect("actual successor mutex")
+                    .step_down()
+                    .expect("actual post-Stage return handoff");
+                assert_eq!(returned, 1);
+                observed.store(true, Ordering::Release);
+            }));
+            let response = service.finalize_external_transit(&mut plan, result);
+            service.native_record_role_hook = None;
+            assert_eq!(response.status, 503);
+            assert!(entered.load(Ordering::Acquire));
+            let actual = cluster.processes[0]
+                .lock()
+                .map_err(|_| "role mutex")?
+                .leader_status()?;
+            assert!(
+                actual.local_is_leader && actual.leader == Some(1) && actual.term > original_term
+            );
+            assert!(service.current_state_identity().map_err(|_| "identity")? == identity);
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation
+            );
+            assert!(
+                response.body.get("data").is_none() && response.body.get("wrap_info").is_none()
+            );
+            assert!(
+                !service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .auth
+                    .has_raw_wrapped_reply_state()
+            );
+        } else {
+            let response = service.finalize_external_transit(&mut plan, result);
+            let _wrapper = wrapping_reply_token(&response)?;
+            let audited = service.audit_external_transit_response(
+                &mut plan,
+                &pending.fingerprint,
+                (pending.now, pending.token_clock),
+                response,
+            );
+            assert_eq!(audited.status, 200);
+            assert!(wrapping_return_to_original_leader(&cluster)? > original_term);
+            let response = service.complete_external_transit_delivery(
+                &mut plan,
+                audited,
+                &pending.fingerprint,
+            );
+            assert_eq!(response.status, 503);
+            assert!(
+                response.body["errors"][0]
+                    .as_str()
+                    .ok_or("fixed error")?
+                    .contains("original HA role changed")
+            );
+            assert!(
+                response.body.get("data").is_none() && response.body.get("wrap_info").is_none()
+            );
+            assert!(
+                service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .auth
+                    .has_raw_wrapped_reply_state()
+            );
+        }
+        assert_eq!(remote.calls()?, before + 1);
+    }
+    Ok(())
+}
+
+#[test]
+fn external_transit270_wrapped_original_ha_owner_cannot_be_detached_after_audit() -> TestResult {
+    let remote = RemoteTransit::new()?;
+    let (root, mut service, _unseal, admin) = remote.fixture()?;
+    let _cluster = wrapping_ha(&root, &mut service)?;
+    let _ingress = crate::auth::IngressReplyScope::listener(&[0x7d; 16]);
+    let pending = wrapping_staged_path(
+        &mut service,
+        &admin,
+        "consumer/encrypt/local",
+        json!({"plaintext":BASE64.encode(b"retained actual HA owner")}),
+        Some(60),
+    )?;
+    let effect = pending.execute();
+    let ExternalEffectPlan::ExternalTransit(mut plan) = pending.effect else {
+        return Err("actual external Transit plan".into());
+    };
+    let ExternalEffectResult::ExternalTransit(result) = effect else {
+        return Err("actual external Transit observation".into());
+    };
+    let response = service.finalize_external_transit(&mut plan, result);
+    let _wrapper = wrapping_reply_token(&response)?;
+    let audited = service.audit_external_transit_response(
+        &mut plan,
+        &pending.fingerprint,
+        (pending.now, pending.token_clock),
+        response,
+    );
+    assert_eq!(audited.status, 200);
+    service.ha = None;
+    let response =
+        service.complete_external_transit_delivery(&mut plan, audited, &pending.fingerprint);
+    assert_eq!(response.status, 503);
+    assert!(response.body.get("data").is_none() && response.body.get("wrap_info").is_none());
+    assert_eq!(remote.calls()?, 1);
+    Ok(())
+}

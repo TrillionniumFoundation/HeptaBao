@@ -24,6 +24,9 @@ pub(super) struct ExternalTransitPlan {
     expected_identity: crate::state_record_root::StateIdentity,
     expected_generation: plugin::PublicationGeneration,
     authority: PluginResponseAuthority,
+    // The original HA owner and role cannot be replaced by a new frontier.
+    ha_admission: Option<ExternalTransitHaAdmission>,
+    deadline: Option<std::time::Instant>,
     wrapping_ttl: Option<u64>,
     creation_path: String,
     publication_clock: super::external_pki::PublicationClock,
@@ -34,6 +37,47 @@ pub(super) struct ExternalTransitPlan {
         plugin::PublicationGeneration,
     )>,
     wrapped_token: Option<Zeroizing<String>>,
+}
+
+struct ExternalTransitHaAdmission {
+    process: Arc<Mutex<HaProcess>>,
+    role: (u64, u64),
+}
+impl ExternalTransitHaAdmission {
+    fn check_role(&self, process: &HaProcess) -> Result<(), Response> {
+        let role = process
+            .leader_status()
+            .map_err(|_| Response::error(503, "external Transit original HA role unavailable"))?;
+        if !role.local_is_leader
+            || role.leader != Some(role.local_id)
+            || (role.local_id, role.term) != self.role
+        {
+            return Err(Response::error(
+                503,
+                "external Transit original HA role changed; no blind retry",
+            ));
+        }
+        Ok(())
+    }
+
+    fn lock_original(
+        &self,
+        identity: crate::state_record_root::StateIdentity,
+    ) -> Result<std::sync::MutexGuard<'_, HaProcess>, Response> {
+        let process = self.process.lock_for_request().map_err(|_| {
+            Response::error(503, "external Transit original HA role lock unavailable")
+        })?;
+        self.check_role(&process)?;
+        process.ensure_application_identity(identity).map_err(|_| {
+            Response::error(
+                503,
+                "external Transit original HA root changed; no blind retry",
+            )
+        })?;
+        // ReadIndex itself can observe an election. Retain the same role afterward.
+        self.check_role(&process)?;
+        Ok(process)
+    }
 }
 
 struct SensitiveJson(Value);
@@ -67,7 +111,30 @@ fn provider_binding_matches(left: &KmsKeyBinding, right: &KmsKeyBinding) -> bool
 }
 
 impl ExternalTransitPlan {
+    fn original_ha_binding_current(&self, current: &Option<Arc<Mutex<HaProcess>>>) -> bool {
+        match (&self.ha_admission, current) {
+            (None, None) => true,
+            (Some(admission), Some(current)) => Arc::ptr_eq(&admission.process, current),
+            _ => false,
+        }
+    }
+
+    fn lock_original_ha(
+        &self,
+        identity: crate::state_record_root::StateIdentity,
+    ) -> Result<Option<std::sync::MutexGuard<'_, HaProcess>>, Response> {
+        self.ha_admission
+            .as_ref()
+            .map(|admission| admission.lock_original(identity))
+            .transpose()
+    }
+
     pub(super) fn execute(&self) -> Result<Observation, Response> {
+        let _deadline_scope = self
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        // Only the original leader may enter the unlocked external RPC.
+        drop(self.lock_original_ha(self.expected_identity)?);
         if self.authority.deadline_expired() {
             return Err(Response::error(
                 503,
@@ -318,6 +385,36 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let ha_admission = match &self.ha {
+            None => None,
+            Some(ha) => {
+                let process = match ha.lock_for_request() {
+                    Ok(process) => process,
+                    Err(_) => {
+                        return Response::error(
+                            503,
+                            "external Transit HA admission lock unavailable",
+                        );
+                    }
+                };
+                if process
+                    .ensure_application_identity(expected_identity)
+                    .is_err()
+                {
+                    return Response::error(503, "external Transit HA admission root unavailable");
+                }
+                let role = match process.leader_status() {
+                    Ok(role) if role.local_is_leader && role.leader == Some(role.local_id) => role,
+                    _ => {
+                        return Response::error(503, "external Transit HA admission is not leader");
+                    }
+                };
+                Some(ExternalTransitHaAdmission {
+                    process: Arc::clone(ha),
+                    role: (role.local_id, role.term),
+                })
+            }
+        };
         self.pending_external_transit = Some(ExternalTransitPlan {
             request: plan.request,
             operation: plan.operation,
@@ -330,6 +427,8 @@ impl Service {
             provider_binding,
             expected_identity,
             expected_generation,
+            ha_admission,
+            deadline: crate::request_deadline::current(),
             wrapping_ttl: request.wrap_ttl_seconds.filter(|ttl| *ttl > 0),
             creation_path: request.path.into(),
             publication_clock: super::external_pki::PublicationClock::capture(),
@@ -352,12 +451,24 @@ impl Service {
         plan: &mut ExternalTransitPlan,
         result: Result<Observation, Response>,
     ) -> Response {
+        let _deadline_scope = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
         let mut observation = match result {
             Ok(value) => value,
             Err(error) => return error,
         };
         if let Err(error) = self.validate_plugin_response(&mut plan.authority) {
             return error;
+        }
+        if !plan.original_ha_binding_current(&self.ha) {
+            return Response::error(
+                503,
+                "external Transit original HA owner changed; no blind retry",
+            );
+        }
+        if let Err(cause) = plan.lock_original_ha(plan.expected_identity) {
+            return cause;
         }
         let provider_current = match (
             &plan.provider_binding,
@@ -385,7 +496,8 @@ impl Service {
                 plan.mount_incarnation,
             )
         });
-        if !provider_current
+        if !plan.original_ha_binding_current(&self.ha)
+            || !provider_current
             || !state_current
             || !generation_current
             || !mount_current
@@ -433,6 +545,9 @@ impl Service {
         plan: &mut ExternalTransitPlan,
         response: &mut Response,
     ) -> Result<(), Response> {
+        let _deadline_scope = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
         let Some(ttl) = plan.wrapping_ttl else {
             return Ok(());
         };
@@ -469,9 +584,10 @@ impl Service {
         candidate.validate_format()?;
         let record_plan = self.prepare_record_plan(&mut candidate)?;
         self.validate_plugin_response(&mut plan.authority)?;
-        if !self
-            .current_state_identity()
-            .is_ok_and(|identity| identity == plan.expected_identity)
+        if !plan.original_ha_binding_current(&self.ha)
+            || !self
+                .current_state_identity()
+                .is_ok_and(|identity| identity == plan.expected_identity)
             || !self
                 .external_effect_generation()
                 .is_ok_and(|generation| generation == plan.expected_generation)
@@ -533,9 +649,11 @@ impl Service {
             ));
         }
         plan.authority.validate_live_auth(&candidate.auth)?;
-        self.commit_record_plan_with_before_publish(
+        drop(plan.lock_original_ha(plan.expected_identity)?);
+        self.commit_record_plan_with_native_role(
             &candidate,
             record_plan,
+            plan.ha_admission.as_ref().map(|admission| admission.role),
             |auth| plan.authority.validate_live_auth(auth),
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             None,
@@ -551,6 +669,9 @@ impl Service {
         request_clock: (u64, Option<RequestClock>),
         response: Response,
     ) -> Response {
+        let _deadline_scope = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
         let (response, receipt) = self.audit_completed_response_with_clock_receipt(
             fingerprint,
             request_clock,
@@ -602,10 +723,28 @@ impl Service {
         plan: &mut ExternalTransitPlan,
         mut response: Response,
     ) -> Response {
+        let _deadline_scope = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
         if !(200..300).contains(&response.status) {
             return response;
         }
         if let Err(cause) = self.validate_plugin_response(&mut plan.authority) {
+            erase_json(&mut response.body);
+            return cause;
+        }
+        if !plan.original_ha_binding_current(&self.ha) {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "external Transit original HA owner changed; no blind retry",
+            );
+        }
+        let Some((identity, _)) = plan.delivery_checkpoint.as_ref() else {
+            erase_json(&mut response.body);
+            return Response::error(503, "external Transit delivery root unavailable");
+        };
+        if let Err(cause) = plan.lock_original_ha(*identity) {
             erase_json(&mut response.body);
             return cause;
         }
@@ -656,7 +795,8 @@ impl Service {
                             .external_effect_generation()
                             .is_ok_and(|current| current == *generation)
                 });
-        if !provider_current
+        if !plan.original_ha_binding_current(&self.ha)
+            || !provider_current
             || !checkpoint_current
             || !self.state.as_ref().is_some_and(|state| {
                 state.engines.external_transit_mount_current(
@@ -701,6 +841,47 @@ impl Service {
                     "external Transit committed wrapper no longer live before delivery; no blind retry",
                 );
             }
+        }
+        let Some((identity, expected_generation)) = plan.delivery_checkpoint.as_ref() else {
+            erase_json(&mut response.body);
+            return Response::error(503, "external Transit delivery root unavailable");
+        };
+        // Acquire only after the ordinary identity/frontier reads; retaining this
+        // lock through return fences the same original term at actual delivery.
+        let _original_ha_guard = match plan.lock_original_ha(*identity) {
+            Ok(guard) => guard,
+            Err(cause) => {
+                erase_json(&mut response.body);
+                return cause;
+            }
+        };
+        let final_generation = match _original_ha_guard.as_ref() {
+            Some(process) => self.external_effect_generation_with_retained_ha(process),
+            None => self.external_effect_generation(),
+        };
+        if !final_generation.is_ok_and(|current| current == *expected_generation) {
+            erase_json(&mut response.body);
+            return Response::error(
+                503,
+                "external Transit final HA frontier changed; no blind retry",
+            );
+        }
+        // Lock/ReadIndex waits spend the original clock and deadline.
+        if let Err(cause) = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external Transit delivery owner unavailable"))
+            .and_then(|state| plan.authority.validate_live_auth(&state.auth))
+        {
+            erase_json(&mut response.body);
+            return cause;
+        }
+        if let (Some(admission), Some(process)) =
+            (plan.ha_admission.as_ref(), _original_ha_guard.as_ref())
+            && let Err(cause) = admission.check_role(process)
+        {
+            erase_json(&mut response.body);
+            return cause;
         }
         response
     }
