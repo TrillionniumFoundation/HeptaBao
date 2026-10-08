@@ -2,6 +2,7 @@
 use super::tests::{Root, bootstrap_unmounted};
 use super::*;
 use ssh_key::{Certificate, HashAlg, PublicKey};
+use std::time::{Duration, Instant};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 fn owned(
