@@ -749,30 +749,81 @@ fn approle_lookup_fixed_ha_owner_rejects_same_node_returned_in_a_real_higher_ter
 fn approle_lookup_historical_owner_retains_legacy_projection_without_record_grant() -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
-    assert_eq!(
-        write(
-            &mut service,
-            &admin,
+    let (key, admin) = crate::service::tests::bootstrap_unmounted(&mut service)?;
+    assert!(service.record_root.is_none());
+    // Explicit historical V4 writer input. Current Service mount mutations
+    // publish a record graph, so use actual Auth routes to produce the old
+    // payload before its normal authenticated AEAD publication and reopen.
+    // The existing root token authenticates this producer; no principal or
+    // record grant is synthesized and no current record owner is discarded.
+    let mut historical = service.state.clone().ok_or("historical V4 state")?;
+    assert!(historical.engines.record_root().is_none());
+    let principal = historical
+        .auth
+        .authenticate(&admin, 100)
+        .map_err(|_| "historical producer authentication")?;
+    for (path, body) in [
+        ("sys/auth/lookup", json!({"type":"approle"})),
+        ("auth/lookup/role/owner", json!({"secret_id_ttl":0})),
+    ] {
+        let result = historical
+            .auth
+            .handle(Some(&principal), "", "POST", path, &body, 100)
+            .map_err(|_| "historical authenticated Auth route")?
+            .ok_or("historical Auth route response")?;
+        assert_eq!(result.status, 204);
+        assert!(result.changed);
+    }
+    let mut issued = historical
+        .auth
+        .handle(
+            Some(&principal),
             "",
-            "sys/auth/lookup",
-            json!({"type":"approle"})
+            "POST",
+            "auth/lookup/role/owner/secret-id",
+            &json!({"ttl":0,"metadata":r#"{"build":"lookup-owner"}"#}),
+            100,
+        )
+        .map_err(|_| "historical actual SID producer")?
+        .ok_or("historical SID response")?;
+    assert_eq!(issued.status, 200);
+    assert!(issued.changed);
+    let pair = (
+        issued.body["data"]["secret_id"]
+            .as_str()
+            .ok_or("historical actual SID")?
+            .to_owned(),
+        issued.body["data"]["secret_id_accessor"]
+            .as_str()
+            .ok_or("historical actual accessor")?
+            .to_owned(),
+    );
+    erase_json(&mut issued.body);
+    historical
+        .validate_format()
+        .map_err(|_| "historical V4 format")?;
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &historical)
+        .map_err(|_| "historical authenticated V4 publication")?;
+    service.state = Some(historical);
+    assert!(service.record_root.is_none());
+    drop(service);
+    let mut service = files.service()?;
+    assert_eq!(
+        request(
+            &mut service,
+            100,
+            Operation {
+                namespace: "",
+                token: "",
+                method: "PUT",
+                path: "sys/unseal",
+                body: json!({"key":key}),
+                wrap: None,
+            },
         )?
         .status,
-        204
+        200
     );
-    assert_eq!(
-        write(
-            &mut service,
-            &admin,
-            "",
-            "auth/lookup/role/owner",
-            json!({"secret_id_ttl":0})
-        )?
-        .status,
-        204
-    );
-    let pair = issue(&mut service, &admin, "", 0)?;
     assert!(service.record_root.is_none());
     let before = auth_bytes(&service)?;
     let identity = fingerprint_state(&service)?;
