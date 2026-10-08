@@ -10,9 +10,15 @@ import re
 import secrets
 import socket
 import ssl
-import owned_process
 import subprocess
 import sys
+
+# Direct script execution starts with qa/single-node on sys.path.
+# Use the same module name as the canonical acceptance runners.
+_ACCEPTANCE_PATH = Path(__file__).resolve().parents[1] / "openbao-acceptance"
+if str(_ACCEPTANCE_PATH) not in sys.path:
+    sys.path.insert(0, str(_ACCEPTANCE_PATH))
+import owned_process
 import time
 import urllib.error
 import urllib.request
