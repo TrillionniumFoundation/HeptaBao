@@ -227,23 +227,32 @@ fn merge_patch(target: &mut Value, patch: &Value) {
     }
 }
 
-fn redacted(_plugin: &str, values: &SecretJson) -> Result<Value> {
+enum ParameterReadKind {
+    Config,
+    Key,
+}
+
+fn redacted(plugin: &str, values: &SecretJson, kind: ParameterReadKind) -> Result<Value> {
     let object = values
         .as_object()
         .ok_or_else(|| error(503, "invalid external key parameter state"))?;
-    let sensitive = [
-        "token",
-        "tls_client_key",
-        // OpenBao 2.7 Transit External Keys uses this exact parameter name.
-        "tls_client_key_bytes",
-        "pin",
-        "password",
-        "secret",
-        "private_key",
-        "client_secret",
-    ];
-    // Project before cloning: never allocate a plaintext copy of a sensitive
-    // parameter merely to overwrite and drop it in a response object.
+    // OpenBao 2.7.0 builtin Transit metadata distinguishes KMS configuration
+    // fields from key fields. Metadata for external plugins is separate.
+    let sensitive: &[&str] = match (plugin, kind) {
+        ("transit", ParameterReadKind::Config) => &["token"],
+        ("transit", ParameterReadKind::Key) => &[],
+        _ => &[
+            "token",
+            "tls_client_key",
+            "tls_client_key_bytes",
+            "pin",
+            "password",
+            "secret",
+            "private_key",
+            "client_secret",
+        ],
+    };
+    // Project before cloning fields classified as sensitive by this metadata.
     Ok(Value::Object(
         object
             .iter()
@@ -671,7 +680,7 @@ impl Registry {
                     .configs
                     .get(name)
                     .ok_or_else(|| error(400, &format!("config \"{name}\" not found")))?;
-                let mut data = redacted(&entry.plugin, &entry.values)?;
+                let mut data = redacted(&entry.plugin, &entry.values, ParameterReadKind::Config)?;
                 data.as_object_mut()
                     .ok_or_else(|| error(503, "invalid external key config state"))?
                     .insert("plugin".into(), json!(entry.plugin));
@@ -772,7 +781,10 @@ impl Registry {
                     .get(config_name)
                     .ok_or_else(|| error(400, &format!("key \"{key_name}\" not found")))?
                     .plugin;
-                Ok(ok(redacted(plugin, &key.values)?, false))
+                Ok(ok(
+                    redacted(plugin, &key.values, ParameterReadKind::Key)?,
+                    false,
+                ))
             }
             "POST" | "PUT" => {
                 reject_provider_verification(body)?;
@@ -1090,18 +1102,21 @@ mod tests {
     }
 
     #[test]
-    fn external_keys270_tls_client_key_bytes_are_redacted_without_changing_stored_values()
+    fn external_keys270_builtin_transit_config_and_key_metadata_preserve_authorized_values()
     -> TestResult {
         let mut registry = Registry::default();
         let config = "sys/external-keys/configs/client-auth";
         let key = "sys/external-keys/configs/client-auth/keys/mapped";
         let secret = "synthetic-external-client-private-key-canary";
+        let config_token = "synthetic-external-config-token-canary";
+        let key_token = "synthetic-external-key-arbitrary-token-field";
         call(
             &mut registry,
             "POST",
             config,
             json!({
-                "plugin":"transit", "verify":false, "tls_client_key_bytes":secret,
+                "plugin":"transit", "verify":false, "token":config_token,
+                "tls_client_key_bytes":secret,
                 "tls_client_cert_bytes":"synthetic-public-certificate",
                 "tls_ca_cert_bytes":"synthetic-public-ca"
             }),
@@ -1110,20 +1125,30 @@ mod tests {
             &mut registry,
             "POST",
             key,
-            json!({"verify":false,"tls_client_key_bytes":secret}),
+            json!({"verify":false,"tls_client_key_bytes":secret,"token":key_token}),
         )?;
         let stored = Zeroizing::new(serde_json::to_vec(&registry)?);
-        for path in [config, key] {
+        for (path, expected_token) in [(config, "(redacted)"), (key, key_token)] {
             for method in ["GET", "HEAD"] {
                 let response = call(&mut registry, method, path, json!({}))?;
+                assert_eq!(response.status, 200);
                 assert!(
-                    response.body["data"]["tls_client_key_bytes"] == "(redacted)",
-                    "private client key field was not redacted"
+                    response.body["data"]["tls_client_key_bytes"].as_str() == Some(secret),
+                    "builtin Transit changed an authorized TLS field"
                 );
                 assert!(
-                    !serde_json::to_string(&response.body)?.contains(secret),
-                    "response contains synthetic private key"
+                    response.body["data"]["token"].as_str() == Some(expected_token),
+                    "config and key metadata were conflated"
                 );
+                if path == config {
+                    let encoded = Zeroizing::new(serde_json::to_vec(&response.body)?);
+                    assert!(
+                        !encoded
+                            .windows(config_token.len())
+                            .any(|w| w == config_token.as_bytes()),
+                        "config response exposed its redacted token"
+                    );
+                }
             }
         }
         let response = call(&mut registry, "GET", config, json!({}))?;
@@ -1140,21 +1165,22 @@ mod tests {
             "read changed registry state"
         );
         let mut reopened: Registry = serde_json::from_slice(&stored)?;
-        assert!(
-            call(&mut reopened, "GET", config, json!({}))?.body["data"]["tls_client_key_bytes"]
-                == "(redacted)"
-        );
-        call(
-            &mut reopened,
-            "PATCH",
-            config,
-            json!({"verify":false,"tls_client_key_bytes":null}),
-        )?;
-        assert!(
-            call(&mut reopened, "GET", config, json!({}))?.body["data"]
-                .get("tls_client_key_bytes")
-                .is_none()
-        );
+        let response = call(&mut reopened, "GET", config, json!({}))?;
+        assert!(response.body["data"]["tls_client_key_bytes"].as_str() == Some(secret));
+        assert!(response.body["data"]["token"].as_str() == Some("(redacted)"));
+        for path in [config, key] {
+            call(
+                &mut reopened,
+                "PATCH",
+                path,
+                json!({"verify":false,"tls_client_key_bytes":null}),
+            )?;
+            assert!(
+                call(&mut reopened, "GET", path, json!({}))?.body["data"]
+                    .get("tls_client_key_bytes")
+                    .is_none()
+            );
+        }
         Ok(())
     }
 }

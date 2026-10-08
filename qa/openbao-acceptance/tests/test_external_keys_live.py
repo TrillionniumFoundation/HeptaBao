@@ -43,40 +43,66 @@ class ExternalKeysTests(unittest.TestCase):
         self.assertFalse(rows[0]["passed"])
         self.assertNotIn("private-", json.dumps(rows))
 
-    def test_standard_client_key_field_cannot_pass_or_leak_a_report(self):
-        private = "synthetic-private-client-key-canary"
+    def test_redacted_or_different_client_key_cannot_pass_or_leak_a_report(self):
         expected = external.config_data()
-        self.assertEqual(expected["tls_client_key_bytes"], "(redacted)")
-        rows = []
-        with self.assertRaises(external.ScenarioFailure):
-            external.Trace(Client(200, {"data": {**expected, "tls_client_key_bytes": private}}), rows).call(
-                "tls-key", "GET", external.CONFIG, 200, data=expected)
-        self.assertFalse(rows[0]["passed"])
-        self.assertNotIn(private, json.dumps(rows))
+        self.assertEqual(expected["tls_client_key_bytes"], external.PRIVATE_TLS_CANARY)
+        for actual in ("(redacted)", "synthetic-different-client-key"):
+            rows = []
+            with self.assertRaises(external.ScenarioFailure):
+                external.Trace(Client(200, {"data": {**expected, "tls_client_key_bytes": actual}}), rows).call(
+                    "tls-key", "GET", external.CONFIG, 200, data=expected)
+            self.assertFalse(rows[0]["passed"])
+            self.assertTrue(rows[0]["raw_field_projection"]["string"])
+            self.assertNotIn(external.PRIVATE_TLS_CANARY, json.dumps(rows))
+            self.assertNotIn(actual, json.dumps(rows))
 
-    def test_oracle_plaintext_contract_does_not_weaken_candidate_projection(self):
-        self.assertEqual(external.config_data()["tls_client_key_bytes"], "(redacted)")
-        self.assertEqual(
-            external.config_data(client_key=external.PRIVATE_TLS_CANARY)["tls_client_key_bytes"],
-            external.PRIVATE_TLS_CANARY,
-        )
+    def test_shared_original_client_key_contract_records_only_exact_digest(self):
+        expected = external.config_data()
+        self.assertEqual(expected["token"], "(redacted)")
         rows = []
-        external.Trace(Client(200, {"data": external.config_data(
-            client_key=external.PRIVATE_TLS_CANARY)}), rows).call(
-                "oracle-tls-key", "GET", external.CONFIG, 200,
-                data=external.config_data(client_key=external.PRIVATE_TLS_CANARY))
+        external.Trace(Client(200, {"data": expected}), rows).call(
+            "tls-key", "GET", external.CONFIG, 200, data=expected)
         self.assertTrue(rows[0]["passed"])
+        self.assertEqual(rows[0]["raw_field_projection"], {
+            "present": True,
+            "string": True,
+            "bytes": len(external.PRIVATE_TLS_CANARY.encode("utf-8")),
+            "SHA256": external.hashlib.sha256(
+                external.PRIVATE_TLS_CANARY.encode("utf-8")).hexdigest(),
+        })
         self.assertNotIn(external.PRIVATE_TLS_CANARY, json.dumps(rows))
 
-    def test_main_binds_distinct_exact_side_contracts(self):
+    def test_main_binds_identical_exact_side_contracts(self):
         with patch.object(external, "compare", return_value=0) as compare:
             self.assertEqual(external.main(), 0)
         arguments = compare.call_args.kwargs
         self.assertIs(arguments["scenario_runner"], external.run_scenarios)
-        self.assertIs(arguments["oracle_scenario_runner"], external.run_oracle_scenarios)
+        self.assertIs(arguments["oracle_scenario_runner"], external.run_scenarios)
         self.assertIs(arguments["restart_runner"], external.run_after_restart)
-        self.assertIs(arguments["oracle_restart_runner"], external.run_oracle_after_restart)
-        self.assertTrue(arguments["contract_divergences"])
+        self.assertIs(arguments["oracle_restart_runner"], external.run_after_restart)
+        self.assertNotIn("contract_divergences", arguments)
+
+    def test_missing_or_nonstring_client_key_cannot_pass_shared_contract(self):
+        expected = external.config_data()
+        for actual in (None, 7, [external.PRIVATE_TLS_CANARY], {"value": external.PRIVATE_TLS_CANARY}):
+            data = {**expected, "tls_client_key_bytes": actual}
+            rows = []
+            with self.assertRaises(external.ScenarioFailure):
+                external.Trace(Client(200, {"data": data}), rows).call(
+                    "tls-key", "GET", external.CONFIG, 200, data=expected)
+            self.assertFalse(rows[0]["passed"])
+            self.assertFalse(rows[0]["raw_field_projection"]["string"])
+            self.assertIsNone(rows[0]["raw_field_projection"]["SHA256"])
+            self.assertNotIn(external.PRIVATE_TLS_CANARY, json.dumps(rows))
+        data = dict(expected)
+        del data["tls_client_key_bytes"]
+        rows = []
+        with self.assertRaises(external.ScenarioFailure):
+            external.Trace(Client(200, {"data": data}), rows).call(
+                "tls-key", "GET", external.CONFIG, 200, data=expected)
+        self.assertFalse(rows[0]["passed"])
+        self.assertFalse(rows[0]["raw_field_projection"]["present"])
+        self.assertNotIn(external.PRIVATE_TLS_CANARY, json.dumps(rows))
 
     def test_namespace_and_patch_transport_are_explicit(self):
         client = Client(204)
