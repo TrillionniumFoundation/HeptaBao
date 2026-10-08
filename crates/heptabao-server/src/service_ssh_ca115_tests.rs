@@ -239,7 +239,7 @@ fn ssh115_invalid_subject_does_not_publish_and_low_schema_or_missing_marker_reje
         .as_object_mut()
         .ok_or("engine object")?
         .remove("ssh_ca_format");
-    let absent: engines::EngineState = serde_json::from_value(value)?;
+    let absent: crate::engines::EngineState = serde_json::from_value(value)?;
     assert!(absent.validate_ssh_ca_format().is_err());
     Ok(())
 }

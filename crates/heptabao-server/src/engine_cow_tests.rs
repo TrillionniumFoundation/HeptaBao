@@ -40,6 +40,7 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
             external_keys: external_keys::Registry::default(),
         };
         let mut state = EngineState {
+            ssh_ca_format: None,
             sdk_catalog: sdk::Catalog::default(),
             records: None,
             namespace_record_owners: BTreeMap::new(),
