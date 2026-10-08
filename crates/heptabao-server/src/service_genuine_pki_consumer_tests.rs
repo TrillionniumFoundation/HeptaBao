@@ -347,7 +347,8 @@ fn genuine_pki_original_tbs_signing_options_match_ed_and_ecdsa_without_transit_r
                     &pair.public_key_to_der()?,
                 )?)?;
         for tbs in material.tbs_parts() {
-            let request = genuine_pki_sign_request(&plan.request, &material, tbs)?;
+            let request = genuine_pki_sign_request(&plan.request, &material, tbs)
+                .map_err(|_| "cfg genuine PKI signing request")?;
             let input = SensitiveJson(crate::auth::parse_strict_json(request.expose())?);
             let actual =
                 Zeroizing::new(BASE64.decode(input.0["data"].as_str().ok_or("signing input")?)?);
@@ -495,7 +496,9 @@ fn genuine_pki_next_operation_keeps_original_operator_admission_and_generation()
         return Err("PKI plan".into());
     };
     let original = plan.genuine.as_ref().ok_or("original KMS admission")?;
-    let signing = original.for_operation(Operation::Sign, &plan.request)?;
+    let signing = original
+        .for_operation(Operation::Sign, &plan.request)
+        .map_err(|_| "cfg genuine PKI next operation")?;
     assert!(Arc::ptr_eq(original.host_ref(), signing.host_ref()));
     let host = original.host();
     let guard = host.try_lock().map_err(|_| "cfg original host lock")?;
