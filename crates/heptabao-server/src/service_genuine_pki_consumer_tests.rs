@@ -60,11 +60,12 @@ impl Fixture {
             .open(&deployment)?;
         f.write_all(&encoded)?;
         drop(f);
-        let socket = SocketDirectory(std::env::temp_dir().join(format!(
-            "p-{}",
-            &uuid::Uuid::new_v4().simple().to_string()[..8]
-        )));
-        fs::create_dir(&socket.0)?;
+        let mut socket_nonce = [0u8; 4];
+        getrandom::fill(&mut socket_nonce)
+            .map_err(|_| std::io::Error::other("fixture socket entropy failed"))?;
+        let socket_path = std::env::temp_dir().join(format!("p-{}", hex(&socket_nonce)));
+        fs::create_dir(&socket_path)?;
+        let socket = SocketDirectory(socket_path);
         fs::set_permissions(&socket.0, fs::Permissions::from_mode(0o700))?;
         service.install_external_kms_plugins(vec![external_kms::PluginExternalKmsConfig {
             id: "pkcs11".into(),
