@@ -459,12 +459,17 @@ class Owner:
                     except OSError as error:
                         self.gap(child, "pidfd_close", error)
                     child.pidfd = None
+        finished_ns = time.monotonic_ns()
+        # Cleanup is part of the original process-method deadline. A business
+        # return before it cannot qualify originals that only close afterward.
+        if finished_ns >= self.deadline_ns:
+            self.failed = True
         self.receipt = {
             "schema": "heptabao.qa.original-process.v1", "profile": self.profile,
             "profile_seconds": PROFILE_SECONDS, "original_deadline_ns": self.deadline_ns,
             "external_original_deadline": self.external_deadline,
             "started_ns": self.started_ns, "business_finished_ns": self.business_finished_ns,
-            "finished_ns": time.monotonic_ns(), "controls": self.controls,
+            "finished_ns": finished_ns, "controls": self.controls,
             "children": [child.row for child in self.children],
             "same_originals_closed": all(child._done for child in self.children),
             "passed_process_method": not self.failed and all(

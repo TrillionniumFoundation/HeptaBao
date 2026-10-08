@@ -253,7 +253,7 @@ class OriginalProcessControls(unittest.TestCase):
         result = owned.run([sys.executable, "-c", "print('synthetic')"],
                            label="standalone.utility", capture_output=True, timeout=5)
         self.assertEqual(result.returncode, 0)
-        self.assertEqual(result.stdout, b"synthetic\\n")
+        self.assertEqual(result.stdout, b"synthetic\n")
         self.assertIsNone(owned._CURRENT)
 
     def test_shared_standalone_server_first_poll_error_still_original_wait(self):
@@ -287,6 +287,32 @@ class OriginalProcessControls(unittest.TestCase):
         self.assertEqual(survivors, [])
         self.assertEqual(gaps, [])
         self.assertIsNone(owned._CURRENT)
+
+
+    def test_real_cleanup_after_original_deadline_closes_but_cannot_qualify(self):
+        class SlowCleanupOwner(owned.Owner):
+            def close(self, child, **kwargs):
+                if not child._done:
+                    while time.monotonic_ns() <= self.deadline_ns + 20_000_000:
+                        time.sleep(.005)
+                return super().close(child, **kwargs)
+        deadline_ns = time.monotonic_ns() + 2_000_000_000
+        owner = SlowCleanupOwner(self.work, deadline_ns=deadline_ns)
+        self.owners.append(owner)
+        with owned.activated(owner):
+            child = owned.popen([sys.executable, "-c", "import time;time.sleep(30)"],
+                                label="deadline.original.cleanup", stop_timeout=1)
+            self.assertLess(time.monotonic_ns(), deadline_ns)
+            self.assertEqual(owner.deadline_ns, deadline_ns)
+        self.assertLess(owner.receipt["business_finished_ns"], deadline_ns)
+        self.assertGreaterEqual(owner.receipt["finished_ns"], deadline_ns)
+        self.assertFalse(owner.receipt["passed_process_method"])
+        self.assertTrue(child.row["same_original_Popen_wait"])
+        self.assertEqual(child.row["completed_original_wait_count"], 1)
+        self.assertTrue(child.row["original_SID_retired_observed"])
+        self.assertFalse(child.row["fallback"])
+        self.assertEqual(child.row["gaps"], [])
+        self.assertEqual(owner.deadline_ns, deadline_ns)
 
 
 if __name__ == "__main__":
