@@ -118,12 +118,18 @@ class PlanV146HostileTests(unittest.TestCase):
         )
 
     def test_owner_only_file_mode_removal_is_rejected(self) -> None:
+        def add_group_read(path: Path) -> None:
+            source = path.read_text(encoding="utf-8")
+            owner_mode = "Mode::RUSR | Mode::WUSR"
+            self.assertEqual(source.count(owner_mode), 1)
+            changed = source.replace(owner_mode, owner_mode + " | Mode::RGRP", 1)
+            self.assertNotEqual(changed, source)
+            self.assertIn(owner_mode + " | Mode::RGRP", changed)
+            path.write_text(changed, encoding="utf-8")
+
         self.assert_rejected(
-            "crates/heptabao-single-node-store/src/lib.rs",
-            lambda path: path.write_text(
-                path.read_text(encoding="utf-8").replace("options.mode(0o600);", ""),
-                encoding="utf-8",
-            ),
+            "crates/heptabao-filesystem-guard/src/relative.rs",
+            add_group_read,
         )
 
     def test_filesystem_guard_test_isolation_removal_is_rejected(self) -> None:
