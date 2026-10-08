@@ -1274,7 +1274,7 @@ impl CleanupPublication {
         self.view.check_current(service)?;
         self.check_original()
     }
-    pub(in crate::service) fn installed(self, service: &Service) -> Result<State, Response> {
+    pub(in crate::service) fn installed(self, _service: &Service) -> Result<State, Response> {
         self.check_original()?;
         let mut keys = self.view.maintenance.lock().map_err(|_| failed())?;
         for (actual, next) in &self.owners {

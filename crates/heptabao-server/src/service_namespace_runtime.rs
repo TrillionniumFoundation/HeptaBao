@@ -2595,22 +2595,24 @@ impl State {
     pub(super) fn sdk_namespace_ciphertext_owner(
         &self,
         actual: &str,
-    ) -> Result<auth::sdk_namespace_custody::CiphertextOwner, Response> {
+    ) -> Result<crate::auth::sdk_namespace_custody::CiphertextOwner, Response> {
         let owner = Owner::actual(self, actual)?;
         let binding = self.namespaces.custody_binding(&self.cluster_id, actual)?;
         if owner.binding() != &binding {
             return Err(unavailable());
         }
         let bytes = match &owner {
-            Owner::Independent(value) => {
-                owner_store::serialize_owner(&(b"heptabao-sdk-auth-independent-owner-114", value))
-            }
-            Owner::Inherited(value) => {
-                owner_store::serialize_owner(&(b"heptabao-sdk-auth-inherited-owner-114", value))
-            }
+            Owner::Independent(value) => owner_store::serialize_owner(&(
+                b"heptabao-sdk-auth-independent-owner-114".as_slice(),
+                value,
+            )),
+            Owner::Inherited(value) => owner_store::serialize_owner(&(
+                b"heptabao-sdk-auth-inherited-owner-114".as_slice(),
+                value,
+            )),
         }
         .map_err(state_serialization_error)?;
-        Ok(auth::sdk_namespace_custody::CiphertextOwner {
+        Ok(crate::auth::sdk_namespace_custody::CiphertextOwner {
             binding,
             key_epoch: owner.key_epoch(),
             seal_frontier: owner.seal_frontier(),

@@ -160,7 +160,7 @@ impl AuthState {
                 .transpose(),
             Some(custody) => Ok(Some(Mirror {
                 digest: hash(&(
-                    b"heptabao-sdk-auth-custody-mirror-114",
+                    b"heptabao-sdk-auth-custody-mirror-114".as_slice(),
                     &self.sdk_auth_retirements,
                     custody,
                 ))?,

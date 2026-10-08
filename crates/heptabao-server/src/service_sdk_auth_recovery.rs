@@ -20,6 +20,9 @@ fn unavailable() -> Response {
     Response::error(503, "SDK Auth native retirement owner unavailable")
 }
 impl Authority {
+    pub(in crate::service) fn selected_for_custody(&self) -> &RecoverySelection {
+        &self.selected
+    }
     pub(in crate::service) fn role_for_custody(&self) -> Option<(u64, u64)> {
         self.role
     }

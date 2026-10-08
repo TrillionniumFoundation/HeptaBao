@@ -92,7 +92,7 @@ impl Parcel {
             boundary: boundary.clone(),
             namespace_owner: self.namespace_owner.clone(),
             enclosures: Vec::new(),
-            parcel: digest(&(b"heptabao-sdk-auth-namespace-parcel-114", self))?,
+            parcel: digest(&(b"heptabao-sdk-auth-namespace-parcel-114".as_slice(), self))?,
             ciphertext_owner: None,
             credentials,
             retirements,

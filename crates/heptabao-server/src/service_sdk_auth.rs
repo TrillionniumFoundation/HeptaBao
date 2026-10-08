@@ -2828,7 +2828,7 @@ impl Service {
                     .native
                     .as_ref()
                     .ok_or_else(|| Response::error(503, "SDK retirement native owner absent"))?;
-                view.native_removal_publication(self, &native.selected)?
+                view.native_removal_publication(self, native.selected_for_custody())?
             };
             drop(caller);
             let closed = self
