@@ -15,6 +15,7 @@ import re
 from pathlib import Path
 import shutil
 import socket
+import owned_process
 import subprocess
 import sys
 import tempfile
@@ -205,6 +206,7 @@ def select_scenario_runner(default_runner, version, versioned_runners=None):
     return versioned_runners.get(version, default_runner)
 
 
+@owned_process.profile_main
 def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
          oracle_scenario_runner=None, oracle_restart_runner=None,
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None,
@@ -265,9 +267,9 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
               "cargo_lock_sha256": file_hash(ROOT / "Cargo.lock"),
               "runner_sha256": file_hash(runner_path),
               "launcher_harness_sha256": file_hash(Path(__file__)),
-              "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(),
-              "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
+              "source_commit": owned_process.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, label="core_isolation.268").strip(),
+              "source_tree": owned_process.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True, label="core_isolation.269").strip(),
+              "source_worktree_dirty": bool(owned_process.check_output(["git", "status", "--porcelain"], cwd=ROOT, label="core_isolation.270")),
               "started_at_unix": time.time(), "cases": {}, "scope": scope,
               "contract_divergences": list(contract_divergences)}
     if profile == "audit-file-management":
@@ -357,16 +359,18 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         result["safe_failure_code"] = "unexpected_" + type(error).__name__
         retain_transport_failure(result, "top_level", phase, error)
     finally:
-        instance.stop()
-        result["candidate_response_write_observations"] = bounded_response_write_observations(
-            instance.root / "server.log")
-        if oracle is not None:
-            stop_oracle(oracle)
-            shutil.rmtree(oracle["root"])
-        shutil.rmtree(private_root)
-        result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
-        result["finished_at_unix"] = time.time()
-        private_write(output, result)
+        owned_process.close_all([
+            instance.stop,
+            lambda: result.__setitem__("candidate_response_write_observations",
+                bounded_response_write_observations(instance.root / "server.log")),
+            lambda: stop_oracle(oracle) if oracle is not None else None,
+            lambda: shutil.rmtree(oracle["root"]) if oracle is not None else None,
+            lambda: shutil.rmtree(private_root),
+            lambda: result.__setitem__("candidate_binary_unchanged",
+                file_hash(binary) == result["candidate_binary_sha256"]),
+            lambda: result.__setitem__("finished_at_unix", time.time()),
+            lambda: private_write(output, result),
+        ])
     # These are fixed synthetic scenario labels already retained in the safe
     # report, never a request body, HTTP parser line, or server error text.
     last_cases = {}

@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import shutil
 import socket
+import owned_process
 import subprocess
 import tempfile
 import time
@@ -167,8 +168,8 @@ def run_scenarios(client, rows, cli_env, cli_binary):
             environment = dict(cli_env)
             for prefix in ("BAO", "VAULT"):
                 environment[prefix + "_TOKEN"] = tokens[name]
-            result = subprocess.run([str(cli_binary), *arguments], env=environment, capture_output=True,
-                                    input=None if payload is None else json.dumps(payload).encode(), timeout=15)
+            result = owned_process.run([str(cli_binary), *arguments], env=environment, capture_output=True,
+                                    input=None if payload is None else json.dumps(payload).encode(), timeout=15, label="mount_discovery_live.170")
             expected = 2 if name == "exact" and label != "get" else 0
             found = MARKER.encode() in result.stdout
             t.check("cli." + name + "." + label, result.returncode == expected
@@ -180,7 +181,7 @@ def run_scenarios(client, rows, cli_env, cli_binary):
         ("field", ["kv", "get", "-field=value", "-mount=discovery-v2", "item"]),
         ("version", ["kv", "get", "-format=json", "-version=1", "-mount=discovery-v2", "item"]),
     ):
-        result = subprocess.run([str(cli_binary), *arguments], env=cli_env, capture_output=True, timeout=15)
+        result = owned_process.run([str(cli_binary), *arguments], env=cli_env, capture_output=True, timeout=15, label="mount_discovery_live.183")
         found = MARKER.encode() in result.stdout
         t.check("cli.root." + label, result.returncode == 0 and found
                 and b"preflight" not in result.stderr.lower(), exit=result.returncode, marker_readback=found)
@@ -194,7 +195,7 @@ def file_hash(path):
 
 def source_identity():
     def git(*arguments):
-        return subprocess.check_output(["git", *arguments], cwd=ROOT, text=True).strip()
+        return owned_process.check_output(["git", *arguments], cwd=ROOT, text=True, label="mount_discovery_live.197").strip()
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"),
             "dirty": bool(git("status", "--porcelain"))}
 
@@ -205,6 +206,7 @@ def free_port():
         return stream.getsockname()[1]
 
 
+@owned_process.profile_main
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)

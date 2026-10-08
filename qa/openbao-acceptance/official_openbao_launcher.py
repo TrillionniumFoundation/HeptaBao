@@ -11,6 +11,7 @@ import json
 import os
 import platform
 from pathlib import Path
+import owned_process
 import subprocess
 import tarfile
 import tempfile
@@ -155,23 +156,18 @@ def certificates(root):
     ]
     private_text(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
     for command in commands:
-        subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        owned_process.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, label="official_openbao_launcher.158")
     for path in (root / "ca.key", root / "tls.key"):
         path.chmod(0o600)
 
 
 def stop_oracle(oracle):
     process = oracle.get("process")
-    if process is not None and process.poll() is None:
-        process.terminate()
-        try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait(timeout=5)
     log = oracle.get("log")
-    if log is not None and not log.closed:
-        log.close()
+    owned_process.close_all([
+        lambda: owned_process.stop(process, action="TERM", timeout=5, expected_codes=(0,)),
+        lambda: log.close() if log is not None and not log.closed else None,
+    ])
 
 
 def restart_oracle(oracle):
@@ -191,43 +187,45 @@ def restart_oracle(oracle):
     if not token or not key:
         raise BaoError("official_oracle_restart_secret_missing")
     oracle["log"] = open(root / "server.log", "ab")
-    oracle["process"] = subprocess.Popen(
+    oracle["process"] = owned_process.popen(
         [str(binary), "server", "-config=" + str(root / "server.json")],
-        stdout=oracle["log"], stderr=oracle["log"], env=oracle_environment(root),
-    )
-    client = Client(oracle["address"], oracle["ca_file"], token, timeout=2)
-    observed_health = None
-    for _ in range(100):
-        if oracle["process"].poll() is not None:
-            raise BaoError("official_oracle_exited_during_restart")
-        try:
-            response = client.request("GET", "/v1/sys/health")
-            if response.status in (200, 429, 503):
-                observed_health = response.body
-                break
-        except BaoError:
-            pass
-        time.sleep(0.05)
-    else:
-        stop_oracle(oracle)
-        raise BaoError("official_oracle_restart_timeout")
-    if not isinstance(observed_health, dict) or observed_health.get("initialized") is not True:
-        stop_oracle(oracle)
-        raise BaoError("official_oracle_restart_health_invalid")
-    if observed_health.get("sealed") is True:
-        if client.request("POST", "/v1/sys/unseal", {"key": key}).status != 200:
+        stdout=oracle["log"], stderr=oracle["log"], env=oracle_environment(root), label="official_openbao_launcher.194", action="TERM", stop_timeout=5)
+    try:
+        client = Client(oracle["address"], oracle["ca_file"], token, timeout=2)
+        observed_health = None
+        for _ in range(100):
+            if oracle["process"].poll() is not None:
+                raise BaoError("official_oracle_exited_during_restart")
+            try:
+                response = client.request("GET", "/v1/sys/health")
+                if response.status in (200, 429, 503):
+                    observed_health = response.body
+                    break
+            except BaoError:
+                pass
+            time.sleep(0.05)
+        else:
             stop_oracle(oracle)
-            raise BaoError("official_oracle_restart_unseal_failed")
-    health = client.health()
-    if health["version"] != version:
-        stop_oracle(oracle)
-        raise BaoError("official_oracle_restart_version_mismatch")
-    expected_cluster = oracle.get("cluster_id")
-    if expected_cluster is not None and health["cluster_id"] != expected_cluster:
-        stop_oracle(oracle)
-        raise BaoError("official_oracle_restart_cluster_identity_changed")
-    oracle["cluster_id"] = health["cluster_id"]
-    return oracle
+            raise BaoError("official_oracle_restart_timeout")
+        if not isinstance(observed_health, dict) or observed_health.get("initialized") is not True:
+            stop_oracle(oracle)
+            raise BaoError("official_oracle_restart_health_invalid")
+        if observed_health.get("sealed") is True:
+            if client.request("POST", "/v1/sys/unseal", {"key": key}).status != 200:
+                stop_oracle(oracle)
+                raise BaoError("official_oracle_restart_unseal_failed")
+        health = client.health()
+        if health["version"] != version:
+            stop_oracle(oracle)
+            raise BaoError("official_oracle_restart_version_mismatch")
+        expected_cluster = oracle.get("cluster_id")
+        if expected_cluster is not None and health["cluster_id"] != expected_cluster:
+            stop_oracle(oracle)
+            raise BaoError("official_oracle_restart_cluster_identity_changed")
+        oracle["cluster_id"] = health["cluster_id"]
+        return oracle
+    except BaseException as error:
+        owned_process.abort(error, [lambda: stop_oracle(oracle)])
 
 
 def storage_configuration(root, *, version=VERSION, raft_storage=False):
@@ -325,10 +323,9 @@ def start_oracle(port, *, audit_file=False, raft_storage=False, version=VERSION)
         private_text(root / "server.json", json.dumps(config))
         oracle["log"] = open(root / "server.log", "ab")
         # Configuration contains no credential. Never use -dev or a token argument.
-        oracle["process"] = subprocess.Popen(
+        oracle["process"] = owned_process.popen(
             [str(binary), "server", "-config=" + str(root / "server.json")],
-            stdout=oracle["log"], stderr=oracle["log"], env=oracle_environment(root),
-        )
+            stdout=oracle["log"], stderr=oracle["log"], env=oracle_environment(root), label="official_openbao_launcher.328", action="TERM", stop_timeout=5)
         client = Client(oracle["address"], oracle["ca_file"], "synthetic-uninitialized-client", timeout=2)
         for _ in range(100):
             if oracle["process"].poll() is not None:
@@ -371,8 +368,7 @@ def start_oracle(port, *, audit_file=False, raft_storage=False, version=VERSION)
         oracle["identity_file"] = str(root / "oracle-identity.json")
         oracle["cluster_id"] = health["cluster_id"]
         return oracle
-    except Exception:
-        stop_oracle(oracle)
-        raise
+    except BaseException as error:
+        owned_process.abort(error, [lambda: stop_oracle(oracle)])
     finally:
         os.umask(old_mask)

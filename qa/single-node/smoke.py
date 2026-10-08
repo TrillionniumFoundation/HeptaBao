@@ -10,6 +10,7 @@ import re
 import secrets
 import socket
 import ssl
+import owned_process
 import subprocess
 import sys
 import time
@@ -54,24 +55,24 @@ class Instance:
         root.mkdir(mode=0o700, parents=True, exist_ok=False)
         self.port = free_loopback_port()
         self.address = f"https://127.0.0.1:{self.port}"
-        subprocess.run([
+        owned_process.run([
             "openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
             "-keyout", str(root / "ca.key"), "-out", str(root / "ca.crt"),
             "-subj", "/CN=HeptaBao Synthetic Test CA", "-addext", "basicConstraints=critical,CA:TRUE",
             "-addext", "keyUsage=critical,keyCertSign,cRLSign",
             "-addext", "subjectKeyIdentifier=hash",
             "-addext", "authorityKeyIdentifier=keyid:always",
-        ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(["openssl", "req", "-new", "-newkey", "rsa:2048", "-nodes",
+        ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, label="smoke.57")
+        owned_process.run(["openssl", "req", "-new", "-newkey", "rsa:2048", "-nodes",
                         "-keyout", str(root / "tls.key"), "-out", str(root / "tls.csr"),
-                        "-subj", "/CN=localhost"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        "-subj", "/CN=localhost"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, label="smoke.65")
         # Do not depend on the host openssl/LibreSSL default extension policy.
         # Python 3.13+ verifies RFC 5280 identifiers strictly by default.
         private_write(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid:always\n")
-        subprocess.run(["openssl", "x509", "-req", "-in", str(root / "tls.csr"),
+        owned_process.run(["openssl", "x509", "-req", "-in", str(root / "tls.csr"),
                         "-CA", str(root / "ca.crt"), "-CAkey", str(root / "ca.key"), "-CAcreateserial",
                         "-out", str(root / "tls.crt"), "-days", "2", "-sha256", "-extfile", str(root / "leaf.ext")],
-                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, label="smoke.71")
         (root / "ca.key").chmod(0o600)
         (root / "tls.key").chmod(0o600)
         # OpenSSL inherits the caller's umask for public certificates. A
@@ -92,30 +93,37 @@ class Instance:
 
     def start(self):
         self.log = open(self.root / "server.log", "ab")
-        self.process = subprocess.Popen([str(self.binary), "--config", str(self.root / "server.json")],
-                                        stdout=self.log, stderr=self.log)
-        for _ in range(100):
-            if self.process.poll() is not None:
-                raise RuntimeError("server exited during startup; inspect redacted server.log")
-            try:
-                status, _ = self.call("GET", "sys/health")
-                if status in (200, 501, 503):
-                    return
-            except ssl.SSLCertVerificationError:
-                raise RuntimeError("TLS certificate verification failed during startup") from None
-            except urllib.error.URLError as error:
-                if isinstance(error.reason, ssl.SSLCertVerificationError):
+        self.process = owned_process.popen([str(self.binary), "--config", str(self.root / "server.json")],
+                                        stdout=self.log, stderr=self.log, label="smoke.95", action="KILL", stop_timeout=5)
+        try:
+            for _ in range(100):
+                if self.process.poll() is not None:
+                    raise RuntimeError("server exited during startup; inspect redacted server.log")
+                try:
+                    status, _ = self.call("GET", "sys/health")
+                    if status in (200, 501, 503):
+                        return
+                except ssl.SSLCertVerificationError:
                     raise RuntimeError("TLS certificate verification failed during startup") from None
-            except OSError:
-                pass
-            time.sleep(0.05)
-        raise RuntimeError("TLS listener did not become ready")
+                except urllib.error.URLError as error:
+                    if isinstance(error.reason, ssl.SSLCertVerificationError):
+                        raise RuntimeError("TLS certificate verification failed during startup") from None
+                except OSError:
+                    pass
+                time.sleep(0.05)
+            raise RuntimeError("TLS listener did not become ready")
+        except BaseException as error:
+            owned_process.abort(error, [self.stop])
 
     def stop(self):
-        if self.process is not None:
-            self.process.kill()
-            self.process.wait(timeout=5)
-            self.log.close()
+        process = self.process
+        log = getattr(self, "log", None)
+        try:
+            owned_process.close_all([
+                lambda: owned_process.stop(process, action="KILL", timeout=5, expected_codes=(-9,)),
+                lambda: log.close() if log is not None and not log.closed else None,
+            ])
+        finally:
             self.process = None
 
     def raw_tls_request(self, payload: bytes):
