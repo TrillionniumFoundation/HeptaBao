@@ -177,7 +177,7 @@ pub(super) fn import(text: &str) -> Result<PrivateMaterial> {
 }
 impl PrivateMaterial {
     pub(super) fn key(&self) -> Result<PKey<Private>> {
-        PKey::private_key_from_pem(self.0.as_bytes()).map_err(|_| invalid())
+        PKey::private_key_from_pem(self.pem().as_bytes()).map_err(|_| invalid())
     }
     pub(super) fn public(&self) -> Result<PublicKey> {
         public(&self.key()?)
