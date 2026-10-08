@@ -1300,6 +1300,9 @@ impl Service {
                     .status(&state, &target)
                     .unwrap_or_else(|error| error);
             }
+            if state.namespace_is_tainted(&target) {
+                return Response::error(400, "unable to seal tainted namespace");
+            }
             if state.namespaces.custody_owner(&target).is_some() {
                 if !state.namespaces.entries[&target].sealed {
                     if state.engines.record_root().is_some() {

@@ -2312,11 +2312,61 @@ fn assert_original_sdk_and_storage(
 }
 
 #[test]
-fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen() -> TestResult {
+fn namespace109_authenticated_inherited_seal_keeps_actual_auth_retirement_attempt_and_live_sdk_on_reopen()
+-> TestResult {
     let mut f = fixture()?;
-    begin(&mut f)?;
+    let plugins = f.directory.path.join("actual-retirement-plugins");
+    let runtime = f.directory.path.join("actual-retirement-runtime");
+    private_directory(&plugins)?;
+    private_directory(&runtime)?;
+    f.service
+        .install_sdk_backend(Some(crate::service::SdkBackendConfig {
+            plugin_directory: plugins,
+            runtime_directory: runtime,
+            companion: f
+                .directory
+                .path
+                .join("intentionally-absent-retirement-companion"),
+            companion_sha256: "a".repeat(64),
+            timeout_ms: 5_000,
+        }))?;
+    let execution = f.service.begin_request_before(
+        ServiceRequest {
+            method: "DELETE",
+            path: "sys/auth/credential",
+            namespace: NS,
+            token: &f.token,
+            body: json!({}),
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    let RequestExecution::External(pending) = execution else {
+        return Err("actual live namespace Auth retirement did not produce owned work".into());
+    };
+    assert!(matches!(&pending.effect, ExternalEffectPlan::SdkAuth(_)));
+    // The real DELETE commits accepted and Attempted before staging this Plan.
+    // This typed-model test does not execute it or claim external Setup/Revoke.
+    drop(pending);
     let before = f.service.state.as_ref().ok_or("actual original graph")?;
-    let jobs = before.namespaces.deletions.clone();
+    assert!(!before.namespace_is_tainted(NS));
+    let jobs = before.auth.sdk_auth_retirement_jobs_for_test();
+    assert_eq!(jobs.len(), 1);
+    let (job_id, job) = &jobs[0];
+    assert!(job.binding() == &f.credential.backend && !job.completed());
+    assert!(
+        job.phase(&f.credential.id) == Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+    );
+    assert!(
+        before
+            .auth
+            .sdk_auth_retirement_recovery_selections()?
+            .is_empty()
+    );
+    let namespace_jobs = before.namespaces.deletions.clone();
     let logical = before
         .engines
         .sdk_lease(NS, &f.logical.id)
@@ -2327,7 +2377,7 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
         .sdk_credential_record(NS, &f.credential.id)
         .ok_or("actual original credential")?
         .clone();
-    assert!(logical.phase == Phase::PendingRevoke && credential.phase == Phase::PendingRevoke);
+    assert!(logical.phase == Phase::Active && credential.phase == Phase::PendingRevoke);
     let credential_bytes = Zeroizing::new(
         crate::secret_serde::to_vec(&credential, 4 * 1024 * 1024)
             .map_err(|_| "original retained credential snapshot rejected")?,
@@ -2342,7 +2392,12 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
     assert_eq!(sealed.status, 204);
     assert!(!f.service.namespace_runtime.is_loaded(NS));
     let closed = f.service.state.as_ref().ok_or("actual installed closed")?;
-    assert!(closed.namespace_is_sealed(NS));
+    assert!(closed.namespaces.custody_owner(NS).is_none());
+    assert!(!closed.namespace_is_tainted(NS));
+    match f.service.namespace_runtime.status(closed, NS) {
+        Err(error) => assert_eq!(error.status, 400),
+        Ok(_) => return Err("ordinary namespace acquired independent seal status".into()),
+    }
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
     let retained = closed
         .auth
@@ -2359,7 +2414,14 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
             .map_err(|_| "closed retained credential snapshot rejected")?,
     );
     assert!(&*retained_bytes == &*credential_bytes);
-    assert!(closed.namespaces.deletions == jobs);
+    assert!(closed.namespaces.deletions == namespace_jobs);
+    assert!(closed.auth.sdk_auth_retirement_jobs_for_test() == jobs);
+    assert!(
+        closed
+            .auth
+            .sdk_auth_retirement_job(job_id)
+            .is_some_and(|actual| actual == job)
+    );
     let bytes = owner_store::serialize_owner(closed)?;
     for marker in [
         b"finite-logical-owned".as_slice(),
@@ -2382,13 +2444,15 @@ fn namespace109_authenticated_inherited_seal_keeps_sdk_jobs_and_encrypted_reopen
         200
     );
     let state = reopened.state.as_ref().ok_or("actual reopened graph")?;
-    assert!(state.namespaces.deletions == jobs);
+    assert!(!state.namespace_is_tainted(NS));
+    assert!(state.namespaces.deletions == namespace_jobs);
+    assert!(state.auth.sdk_auth_retirement_jobs_for_test() == jobs);
     assert_original_sdk_and_storage(state, &logical, &credential)?;
     assert!(
         state
             .engines
             .sdk_lease(NS, &logical.id)
-            .is_some_and(|record| record.phase == Phase::PendingRevoke)
+            .is_some_and(|record| record.phase == Phase::Active)
     );
     assert!(
         state
@@ -2923,5 +2987,175 @@ fn namespace109_authenticated_seal_rejects_original_captured_deadline_after_proo
     assert!(
         f.service.pending_sdk_request.is_none() && f.service.pending_sdk_auth_request.is_none()
     );
+    Ok(())
+}
+
+// This direct route control excludes the general HTTP terminal-clock audit.
+// It tests that the seal operation itself cannot protect/publish/unload taint.
+fn namespace_route_with_original_clock(
+    f: &mut Fixture,
+    path: &str,
+    body: &Value,
+) -> TestResult<Response> {
+    let original = clock()?;
+    let state = f.service.state.clone().ok_or("actual route state")?;
+    let mut entrance_auth = state.auth.clone();
+    let principal = entrance_auth.authenticate_from_observed(
+        &f.token,
+        AuthorityTime::Precise(original.observed_at()?),
+        None,
+    )?;
+    let started = original.started();
+    let _deadline =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
+    let _publication = external_pki::PublicationClockScope::enter(
+        original.admitted_at().duration_since_epoch(),
+        started,
+    );
+    let request = RequestView {
+        method: "POST",
+        path,
+        namespace: "",
+        token: &f.token,
+        body,
+        now: original.admitted_at().duration_since_epoch().as_secs(),
+        admission_started: started,
+        token_clock: Some(original),
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    Ok(f.service.namespace_route(state, Some(principal), &request))
+}
+#[test]
+fn namespace109_public_tainted_seal400_preserves_full_sdk_jobs_owner_slots_and_durable_root()
+-> TestResult {
+    for independent in [false, true] {
+        let (mut f, _) = fixture_with_owner(independent)?;
+        begin(&mut f)?;
+        let state = f.service.state.as_ref().ok_or("actual tainted original")?;
+        assert!(state.namespace_is_tainted(NS));
+        let full = owner_store::serialize_owner(state)?;
+        let identity = f
+            .service
+            .current_state_identity()
+            .map_err(|_| "actual original identity")?;
+        let generation = f
+            .service
+            .durable
+            .as_ref()
+            .ok_or("actual durable")?
+            .generation();
+        let loaded = f.service.namespace_runtime.is_loaded(NS);
+        let progress = f.service.namespace_runtime.status(state, NS);
+        let response =
+            namespace_route_with_original_clock(&mut f, "sys/namespaces/retire/seal", &json!({}))?;
+        assert_eq!(response.status, 400);
+        assert_eq!(
+            response.body["errors"][0],
+            "unable to seal tainted namespace"
+        );
+        let current = f.service.state.as_ref().ok_or("actual preserved state")?;
+        let after = owner_store::serialize_owner(current)?;
+        assert!(&*after == &*full);
+        assert!(
+            f.service
+                .current_state_identity()
+                .map_err(|_| "actual preserved identity")?
+                == identity
+        );
+        assert_eq!(
+            f.service
+                .durable
+                .as_ref()
+                .ok_or("actual durable")?
+                .generation(),
+            generation
+        );
+        assert!(f.service.namespace_runtime.is_loaded(NS) == loaded);
+        let after_progress = f.service.namespace_runtime.status(current, NS);
+        match (progress, after_progress) {
+            (Ok(before), Ok(after)) => {
+                assert!(before.status == after.status && before.body == after.body)
+            }
+            (Err(before), Err(after)) => {
+                assert!(before.status == after.status && before.body == after.body)
+            }
+            _ => return Err("actual namespace progress owner changed".into()),
+        }
+        assert_original_sdk_and_storage(current, &f.logical, &f.credential)?;
+        current
+            .validate_format()
+            .map_err(|_| "actual preserved full graph")?;
+    }
+    Ok(())
+}
+
+#[test]
+fn namespace109_ordinary_unseal_keeps_primary_nonempty400_and_emptykey500_without_publication()
+-> TestResult {
+    let mut f = fixture()?;
+    assert!(
+        !f.service
+            .state
+            .as_ref()
+            .ok_or("actual live namespace")?
+            .namespace_is_tainted(NS)
+    );
+    let actual_root_key = f.key.clone();
+    for (body, status, fixed_error) in [
+        (
+            json!({"key": actual_root_key}),
+            400,
+            "namespace is not sealable",
+        ),
+        (json!({}), 500, "provided key is empty"),
+    ] {
+        let before = f.service.state.as_ref().ok_or("actual inherited source")?;
+        let full = owner_store::serialize_owner(before)?;
+        let identity = f
+            .service
+            .current_state_identity()
+            .map_err(|_| "actual original identity")?;
+        let generation = f
+            .service
+            .durable
+            .as_ref()
+            .ok_or("actual durable")?
+            .generation();
+        let loaded = f.service.namespace_runtime.is_loaded(NS);
+        let response =
+            namespace_route_with_original_clock(&mut f, "sys/namespaces/retire/unseal", &body)?;
+        assert_eq!(response.status, status);
+        assert_eq!(response.body["errors"][0], fixed_error);
+        let current = f
+            .service
+            .state
+            .as_ref()
+            .ok_or("actual unchanged inherited graph")?;
+        let after = owner_store::serialize_owner(current)?;
+        assert!(&*after == &*full);
+        assert!(
+            f.service
+                .current_state_identity()
+                .map_err(|_| "actual unchanged identity")?
+                == identity
+        );
+        assert_eq!(
+            f.service
+                .durable
+                .as_ref()
+                .ok_or("actual durable")?
+                .generation(),
+            generation
+        );
+        assert!(f.service.namespace_runtime.is_loaded(NS) == loaded);
+        assert_original_sdk_and_storage(current, &f.logical, &f.credential)?;
+        current
+            .validate_format()
+            .map_err(|_| "actual unchanged graph")?;
+    }
     Ok(())
 }

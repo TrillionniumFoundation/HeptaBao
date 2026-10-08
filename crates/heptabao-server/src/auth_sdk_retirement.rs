@@ -773,6 +773,19 @@ impl AuthState {
 
 #[cfg(test)]
 impl AuthState {
+    pub(crate) fn sdk_auth_retirement_jobs_for_test(&self) -> Vec<(String, Job)> {
+        self.sdk_auth_retirements
+            .as_ref()
+            .map(|registry| {
+                registry
+                    .jobs
+                    .iter()
+                    .map(|(id, job)| (id.clone(), job.clone()))
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
     pub(crate) fn sdk_auth_retirement_tamper_for_test(
         &mut self,
         id: &str,
