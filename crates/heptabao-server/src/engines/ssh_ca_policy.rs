@@ -353,6 +353,152 @@ impl CaRole {
             "public key type does not satisfy the role key policy"
         }))
     }
+    pub(super) fn needs_authenticated_request(&self) -> bool {
+        self.default_user_template
+            || self.allowed_users_template
+            || self.allowed_domains_template
+            || self.default_extensions_template
+            || self.algorithm_signer == "ssh-rsa"
+    }
+
+    pub(super) fn authenticated_template_sources(&self, body: &Value) -> Result<Vec<String>> {
+        let user = text(body, "cert_type", "user")? != "host";
+        let mut result = Vec::new();
+        if user {
+            if self.default_user_template {
+                result.push(self.default_user.clone());
+            }
+            if self.allowed_users_template {
+                result.push(self.allowed_users.clone());
+            }
+        } else if self.allowed_domains_template {
+            result.push(self.allowed_domains.clone());
+        }
+        if self.default_extensions_template && string_map(body, "extensions")?.is_empty() {
+            result.extend(self.default_extensions.values().cloned());
+        }
+        Ok(result)
+    }
+
+    pub(super) fn signing_policy_authenticated(
+        &self,
+        body: &Value,
+        public: &PublicKey,
+        context: &SigningContext<'_>,
+        identity: &super::ssh_templates::RequestIdentity,
+    ) -> Result<(SigningPolicy, bool)> {
+        self.validate()?;
+        if !body.is_object() {
+            return Err(bad("SSH signing body must be an object"));
+        }
+        self.validate_public_key(public)?;
+        let kind = match text(body, "cert_type", "user")?.as_str() {
+            "user" if self.allow_user_certificates => CertType::User,
+            "host" if self.allow_host_certificates => CertType::Host,
+            "user" | "host" => return Err(bad("certificate type is not allowed by this role")),
+            _ => return Err(bad("invalid certificate type")),
+        };
+        let user = kind == CertType::User;
+        let default_user = if user && self.default_user_template {
+            identity
+                .render(&self.default_user, true)
+                .map_err(|_| error(500, "SSH default user template cannot be rendered"))?
+        } else if user {
+            self.default_user.clone()
+        } else {
+            String::new()
+        };
+        let original_allowed = if user {
+            &self.allowed_users
+        } else {
+            &self.allowed_domains
+        };
+        let enabled = if user {
+            self.allowed_users_template
+        } else {
+            self.allowed_domains_template
+        };
+        let allowed = if enabled {
+            identity.render(original_allowed, self.allow_commas_in_identity_templates)?
+        } else {
+            original_allowed.clone()
+        };
+        let requested = text(body, "valid_principals", "")?;
+        let principals = csv(if body.get("valid_principals").is_some() {
+            &requested
+        } else {
+            &default_user
+        });
+        if principals.is_empty() {
+            if !self.allow_empty_principals && original_allowed != "*" {
+                return Err(bad("empty valid principals are not allowed by this role"));
+            }
+        } else if original_allowed != "*" {
+            let permitted = csv(&allowed);
+            if principals.iter().any(|principal| {
+                !permitted.iter().any(|entry| {
+                    if user {
+                        principal == entry
+                    } else {
+                        self.allow_bare_domains && principal == entry
+                            || self.allow_subdomains && principal.ends_with(&format!(".{entry}"))
+                    }
+                })
+            }) {
+                return Err(bad("valid principal is not allowed by this role"));
+            }
+        }
+        let mut warning = false;
+        let explicit_extensions = string_map(body, "extensions")?;
+        let extensions = if explicit_extensions.is_empty() && self.default_extensions_template {
+            let mut rendered = BTreeMap::new();
+            for (name, value) in &self.default_extensions {
+                if super::ssh_templates::matched_template(value) && !identity.has_entity() {
+                    warning = true;
+                    continue;
+                }
+                rendered.insert(name.clone(), identity.render(value, true)?);
+            }
+            rendered
+        } else {
+            options(
+                body,
+                "extensions",
+                &self.default_extensions,
+                &self.allowed_extensions,
+                true,
+            )?
+        };
+        let ttl = self.resolve_ttl(body, context.default_ttl, context.max_ttl)?;
+        let valid_after = context
+            .now
+            .checked_sub(self.not_before_duration)
+            .ok_or_else(|| bad("SSH CA not-before time precedes the supported epoch"))?;
+        let valid_before = context
+            .now
+            .checked_add(ttl)
+            .ok_or_else(|| bad("SSH CA expiry overflow"))?;
+        Ok((
+            SigningPolicy {
+                kind,
+                principals,
+                key_id: self.key_id(body, public, context.role_name, context.display_name)?,
+                valid_after,
+                valid_before,
+                critical_options: options(
+                    body,
+                    "critical_options",
+                    &self.default_critical_options,
+                    &self.allowed_critical_options,
+                    false,
+                )?,
+                extensions,
+                issuer_ref: self.issuer_ref.clone(),
+                algorithm_signer: self.algorithm_signer.clone(),
+            },
+            warning,
+        ))
+    }
 }
 
 fn positive_bits(value: &ssh_key::Mpint) -> Result<i64> {

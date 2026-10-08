@@ -119,6 +119,10 @@ mod token_policies;
 #[path = "auth_token_roles.rs"]
 mod token_roles;
 
+pub(crate) fn ssh_identity_template_duration(raw: &str) -> Result<i64, AuthError> {
+    token_duration::parse_duration(raw).map_err(|_| bad("invalid SSH identity time duration"))
+}
+
 pub(crate) fn framework_duration_seconds(body: &Value, field: &str) -> Result<u64, AuthError> {
     token_roles::framework_duration_seconds(body, field)
 }

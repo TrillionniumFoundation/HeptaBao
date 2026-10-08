@@ -81,6 +81,21 @@ fn encode_public(key: &PublicKey) -> Result<String> {
     text.push('\n');
     Ok(text)
 }
+fn signing_public_key(text: &str) -> Result<PublicKey> {
+    let public = PublicKey::from_openssh(text).map_err(|_| bad("invalid SSH public key"))?;
+    // OpenBao's x/crypto parser accepts these known plain key types and rejects unknowns.
+    // ssh-key also accepts opaque Other keys, which must not enter either certificate builder.
+    match public.key_data() {
+        ssh_key::public::KeyData::Dsa(_)
+        | ssh_key::public::KeyData::Ecdsa(_)
+        | ssh_key::public::KeyData::Ed25519(_)
+        | ssh_key::public::KeyData::Rsa(_)
+        | ssh_key::public::KeyData::SkEcdsaSha2NistP256(_)
+        | ssh_key::public::KeyData::SkEd25519(_) => Ok(public),
+        _ => Err(bad("unsupported SSH public key algorithm")),
+    }
+}
+
 impl CaState {
     pub(super) fn roles(&self) -> impl Iterator<Item = &String> {
         self.roles.keys()
@@ -466,7 +481,7 @@ impl CaState {
                 if text.is_empty() || text.len() > 16384 {
                     return Err(bad("invalid SSH public key"));
                 }
-                PublicKey::from_openssh(text).map_err(|_| bad("invalid SSH public key"))?
+                signing_public_key(text)?
             }
         };
         let policy = role.signing_policy(body, &public, context)?;
@@ -535,6 +550,126 @@ impl CaState {
             data["private_key_type"] = json!(text(body, "key_type", "rsa")?);
         }
         Ok(ok(data, true))
+    }
+    pub(super) fn needs_authenticated_request(&self, name: &str) -> bool {
+        self.roles
+            .get(name)
+            .is_some_and(CaRole::needs_authenticated_request)
+    }
+    pub(super) fn authenticated_template_sources(
+        &self,
+        name: &str,
+        body: &Value,
+    ) -> Result<Vec<String>> {
+        self.roles
+            .get(name)
+            .ok_or_else(not_found)?
+            .authenticated_template_sources(body)
+    }
+
+    pub(super) fn sign_authenticated(
+        &mut self,
+        body: &Value,
+        context: &SigningContext<'_>,
+        issue: bool,
+        identity: &super::ssh_templates::RequestIdentity,
+    ) -> Result<EngineResponse> {
+        crypto_key::deadline()?;
+        let role = self.roles.get(context.role_name).ok_or_else(not_found)?;
+        let issued_key = if issue {
+            Some(crypto_key::generate(
+                text(body, "key_type", "rsa")?,
+                bits(body)?,
+            )?)
+        } else {
+            None
+        };
+        let public = match &issued_key {
+            Some(key) => key.public()?,
+            None => {
+                let text = string(body, "public_key")?;
+                if text.is_empty() || text.len() > 16384 {
+                    return Err(bad("invalid SSH public key"));
+                }
+                signing_public_key(text)?
+            }
+        };
+        let (policy, template_warning) =
+            role.signing_policy_authenticated(body, &public, context, identity)?;
+        let id = self.resolve(&policy.issuer_ref)?;
+        let issuer = self.issuers.get(&id).ok_or_else(not_found)?;
+        let serial = u64::from_be_bytes(
+            crate::crypto::random::<8>()
+                .map_err(|_| error(503, "secure randomness unavailable"))?,
+        );
+        let nonce = crate::crypto::random::<32>()
+            .map_err(|_| error(503, "secure randomness unavailable"))?;
+        let mut signed = if policy.algorithm_signer == "ssh-rsa" {
+            super::ssh_ca_legacy::sign(&issuer.private, &public, &policy, serial, &nonce)?
+        } else {
+            let signer = crypto_key::CaSigner::new(&issuer.private, &policy.algorithm_signer)?;
+            let mut builder = Builder::new(
+                nonce.to_vec(),
+                public.key_data().clone(),
+                policy.valid_after,
+                policy.valid_before,
+            )
+            .map_err(|_| bad("invalid SSH certificate validity"))?;
+            builder
+                .serial(serial)
+                .map_err(|_| bad("invalid SSH certificate serial"))?;
+            builder
+                .cert_type(policy.kind)
+                .map_err(|_| bad("invalid SSH certificate type"))?;
+            builder
+                .key_id(policy.key_id)
+                .map_err(|_| bad("invalid SSH certificate key ID"))?;
+            if policy.principals.is_empty() {
+                builder
+                    .all_principals_valid()
+                    .map_err(|_| bad("invalid empty SSH principal policy"))?;
+            } else {
+                for principal in policy.principals {
+                    builder
+                        .valid_principal(principal)
+                        .map_err(|_| bad("invalid SSH principal"))?;
+                }
+            }
+            for (k, v) in policy.critical_options {
+                builder
+                    .critical_option(k, v)
+                    .map_err(|_| bad("invalid SSH critical option"))?;
+            }
+            for (k, v) in policy.extensions {
+                builder
+                    .extension(k, v)
+                    .map_err(|_| bad("invalid SSH extension"))?;
+            }
+            let cert = builder
+                .sign(&signer)
+                .map_err(|_| error(503, "SSH certificate signing failed"))?;
+            cert.to_openssh()
+                .map_err(|_| error(503, "SSH certificate encoding failed"))?
+        };
+        signed.push('\n');
+        crypto_key::deadline()?;
+        self.signatures = self
+            .signatures
+            .checked_add(1)
+            .ok_or_else(|| error(507, "SSH signature publication capacity exhausted"))?;
+        let mut data =
+            json!({"serial_number":format!("{serial:x}"),"signed_key":signed,"issuer_id":id});
+        if let Some(key) = issued_key {
+            data["private_key"] = json!(key.issued_pem()?.as_str());
+            data["private_key_type"] = json!(text(body, "key_type", "rsa")?);
+        }
+        let mut response = ok(data, true);
+        if template_warning {
+            response.body["warnings"] = json!([
+                "default_extension templating enabled with at least one extension requiring identity templating. However, this request lacked identity entity information, causing one or more extensions to be skipped from the generated certificate."
+            ]);
+        }
+        Ok(response)
     }
 }
 
@@ -621,3 +756,7 @@ impl EngineState {
 #[cfg(test)]
 #[path = "ssh_ca_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "ssh_ca_known_keys_tests.rs"]
+mod known_key_tests;
