@@ -188,6 +188,7 @@ impl Service {
             Ok(Some(mut result)) => Response {
                 response_headers: Default::default(),
                 consistency_index: None,
+                unwrapped_json: None,
                 status: result.status,
                 body: std::mem::take(&mut result.body),
             },
