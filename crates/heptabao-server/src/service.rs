@@ -2185,8 +2185,25 @@ impl Service {
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
             }
-            (ExternalEffectPlan::ExternalKey(plan), ExternalEffectResult::ExternalKey(result)) => {
-                self.finalize_external_key(plan, result)
+            (
+                ExternalEffectPlan::ExternalKey(mut plan),
+                ExternalEffectResult::ExternalKey(result),
+            ) => {
+                let response = self.finalize_external_key(&mut plan, result);
+                if plan.is_genuine() {
+                    let response = self.audit_external_key_response(
+                        &mut plan,
+                        &pending.fingerprint,
+                        (pending.now, pending.token_clock),
+                        response,
+                    );
+                    return self.complete_external_key_delivery(
+                        &mut plan,
+                        response,
+                        &pending.fingerprint,
+                    );
+                }
+                response
             }
             (
                 ExternalEffectPlan::ExternalTransit(mut plan),

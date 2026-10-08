@@ -80,7 +80,7 @@ impl ExternalTransitHaAdmission {
         self.role
     }
 
-    fn check_role(&self, process: &HaProcess) -> Result<(), Response> {
+    pub(super) fn check_role(&self, process: &HaProcess) -> Result<(), Response> {
         let role = process
             .leader_status()
             .map_err(|_| Response::error(503, "external Transit original HA role unavailable"))?;
