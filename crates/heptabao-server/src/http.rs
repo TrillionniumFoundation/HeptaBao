@@ -2519,7 +2519,26 @@ mod tests {
             duplicate.len(),
             duplicate
         );
-        assert!(read_request(&mut wire.as_bytes(), Duration::from_secs(1)).is_err());
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("primary duplicate map input"))?;
+        assert_eq!(request.path, "sys/wrapping/wrap");
+        let tree = request
+            .lexical_wrapping_body
+            .as_ref()
+            .ok_or("actual listener tree")?;
+        let crate::auth::LexicalJson::Object(fields) = tree else {
+            return Err("actual listener object".into());
+        };
+        assert_eq!(fields.len(), 1);
+        assert!(matches!(
+            fields.get("number"), Some(crate::auth::LexicalJson::Number(number)) if number == "2"
+        ));
+        assert_eq!(request.body.0["number"].as_i64(), Some(2));
+        tree.validate_wrapping_view(&request.body.0)?;
+        let mut forged_string = request.body.0.clone();
+        forged_string["number"] = json!("2");
+        assert!(tree.validate_wrapping_view(&forged_string).is_err());
+        crate::service::erase_json(&mut forged_string);
         Ok(())
     }
 
