@@ -243,7 +243,7 @@ fn ssh115_role_limit_combines_ca_and_otp_and_same_name_replacement_remains_legal
     engine.handle_role(
         "POST",
         "roles/r0",
-        &json!({"key_type":"ca","allowed_users":"alice"}),
+        &json!({"key_type":"ca","allowed_users":"alice","allow_user_certificates":true}),
         100,
         "",
     )?;
