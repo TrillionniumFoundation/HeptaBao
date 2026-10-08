@@ -353,10 +353,15 @@ impl Parser<'_> {
                 loop {
                     let mut key = Zeroizing::new(self.string()?);
                     self.take(b':')?;
-                    if values.contains_key(key.as_str()) {
-                        return Err(bad("duplicate lexical JSON key"));
+                    let value = self.value(depth + 1)?;
+                    // encoding/json v1 Decode into map[string]any processes
+                    // members in input order. A duplicate replaces the whole
+                    // prior value, preserving the final Number/String type.
+                    if let Some(previous) = values.get_mut(key.as_str()) {
+                        *previous = value;
+                    } else {
+                        values.insert(std::mem::take(&mut *key), value);
                     }
-                    values.insert(std::mem::take(&mut *key), self.value(depth + 1)?);
                     self.whitespace();
                     if self.bytes.get(self.position) == Some(&b'}') {
                         self.position += 1;
@@ -423,7 +428,7 @@ mod tests {
         parsed.validate().unwrap();
     }
     #[test]
-    fn raw113_actual_malformed_duplicate_deep_and_forged_number_claims_are_rejected() {
+    fn raw113_actual_malformed_deep_and_forged_number_claims_are_rejected() {
         for invalid in [
             b"01".as_slice(),
             b"1.",
@@ -433,8 +438,6 @@ mod tests {
             b"1e+",
             b"NaN",
             b"1]null",
-            br#"{"a":1,"a":2}"#,
-            br#"{"nest":{"a":1,"a":2}}"#,
         ] {
             assert!(LexicalJson::parse_listener(invalid).is_err());
         }
@@ -444,5 +447,28 @@ mod tests {
             let forged = LexicalJson::Number(claim.to_owned());
             assert!(forged.encode(65536).is_err());
         }
+    }
+
+    #[test]
+    fn raw113_actual_primary_duplicate_map_members_keep_last_typed_value_in_input_order()
+    -> Result<(), AuthError> {
+        for (input, expected) in [
+            (br#"{"a":1,"a":2.0}"#.as_slice(), br#"{"a":2.0}"#.as_slice()),
+            (br#"{"a":"discard","a":1.0}"#, br#"{"a":1.0}"#),
+            (br#"{"a":1.0,"a":"1.0"}"#, br#"{"a":"1.0"}"#),
+            (br#"{"a":1,"\u0061":-0.0}"#, br#"{"a":-0.0}"#),
+            (
+                br#"{"nest":{"a":1},"nest":{"b":2.0}}"#,
+                br#"{"nest":{"b":2.0}}"#,
+            ),
+            (br#"{"nest":{"a":1,"a":2.0}}"#, br#"{"nest":{"a":2.0}}"#),
+        ] {
+            let actual = LexicalJson::parse_listener(input)?;
+            let expected = LexicalJson::parse_listener(expected)?;
+            assert!(actual == expected, "actual last member typed tree");
+            actual.validate()?;
+            assert!(actual.encode(65536)?.as_slice() == expected.encode(65536)?.as_slice());
+        }
+        Ok(())
     }
 }
