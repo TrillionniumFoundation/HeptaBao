@@ -64,8 +64,14 @@ def _read_only_errors(text: str, value: dict) -> list[str]:
         for job in jobs.values():
             if not isinstance(job, dict):
                 errors.append("workflow job is not a mapping")
-            elif "permissions" in job and job["permissions"] != {"contents": "read"}:
-                errors.append("workflow job gained write permission")
+            elif "permissions" in job:
+                permissions = job["permissions"]
+                if (not isinstance(permissions, dict)
+                        or permissions.get("contents") != "read"
+                        or not set(permissions).issubset(
+                            {"contents", "actions", "pull-requests"})
+                        or any(level != "read" for level in permissions.values())):
+                    errors.append("workflow job gained write permission")
     if "persist-credentials: false" not in text:
         errors.append("workflow lacks explicit checkout credential erasure")
     for token in ("contents: write", "git push", "git commit", "update-ref",
@@ -150,7 +156,10 @@ def _function(source: str, name: str) -> str:
         cursor += 1
     if depth:
         return ""
-    return re.sub(r"\s+", "", source[start:cursor])
+    body = re.sub(r"\s+", "", source[start:cursor])
+    # Rust permits a trailing comma on this one-argument error constructor.
+    # Only normalize that exact call after _rust_code erased its string.
+    return body.replace('io::Error::other("",)', 'io::Error::other("")')
 
 
 def _need(errors: list[str], body: str, tokens: tuple[str, ...], label: str) -> None:
