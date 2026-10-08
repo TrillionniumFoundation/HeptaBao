@@ -935,7 +935,10 @@ fn raw112_actual_sticky_floor_consume_retire_reopen_and_snapshot_cow_veto() -> T
     assert_eq!(live.writer_schema(), RAW_PKI_HTTP_REPLY_STATE_SCHEMA);
     assert!(live.auth.has_pki_raw_http_reply_state());
     assert!(supported_reader_schema(RAW_PKI_HTTP_REPLY_STATE_SCHEMA));
-    assert!(!supported_reader_schema(111));
+    assert!(supported_reader_schema(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA));
+    for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
+        assert!(!supported_reader_schema(schema));
+    }
     let encoded = Zeroizing::new(serde_json::to_vec(&live.auth)?);
     for schema in [108, 110, 111] {
         assert!(AuthState::predecode_raw_reply_owner(&encoded, schema).is_err());
@@ -1353,7 +1356,11 @@ fn raw113_actual_generic_floor_cow_snapshot_consume_revoke_encrypted_reopen() ->
     assert!(
         live.auth.has_general_wrapped_reply_state() && !live.auth.has_pki_raw_http_reply_state()
     );
-    assert!(supported_reader_schema(113) && !supported_reader_schema(111));
+    assert!(supported_reader_schema(GENERAL_WRAPPED_REPLY_STATE_SCHEMA));
+    assert!(supported_reader_schema(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA));
+    for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
+        assert!(!supported_reader_schema(schema));
+    }
     for schema in [108, 110, 111, 112] {
         let mut lower = live.clone();
         lower.schema = schema;
