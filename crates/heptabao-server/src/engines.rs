@@ -478,11 +478,13 @@ pub(crate) struct ExternalTransitRequest {
 }
 
 pub(crate) struct ExternalPkiRelatedRequest {
+    pub(crate) genuine_provider: Option<String>,
     pub(crate) request: SecretValue,
     pub(crate) template: ExternalPkiTemplate,
 }
 
 pub(crate) struct ExternalPkiRequest {
+    pub(crate) genuine_provider: Option<String>,
     pub(crate) request: SecretValue,
     pub(crate) template: ExternalPkiTemplate,
     pub(crate) related: Vec<ExternalPkiRelatedRequest>,
@@ -1100,6 +1102,25 @@ impl EngineState {
         body: &Value,
         context: PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiRequest>> {
+        self.prepare_external_pki_with_providers(
+            namespace,
+            method,
+            path,
+            body,
+            context,
+            &BTreeSet::new(),
+        )
+    }
+
+    pub(crate) fn prepare_external_pki_with_providers(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+        providers: &BTreeSet<String>,
+    ) -> Result<Option<ExternalPkiRequest>> {
         let context = self.with_pki_revocation_floor(context)?;
         let time = context.observed_time(self.lease_clock)?;
         let now = time.seconds();
@@ -1127,6 +1148,21 @@ impl EngineState {
                 .map_err(|_| error(403, "credential owner scope mismatch"))?;
         }
         let relative = &path[mount_path.len()..];
+        if matches!(method, "POST" | "PUT")
+            && matches!(
+                relative,
+                "root/generate/kms"
+                    | "intermediate/generate/kms"
+                    | "intermediate/generate/kms-remote"
+            )
+            && (body.get("key_type").is_some() || body.get("key_bits").is_some())
+            && let Some(reference) = body.get("external_key_ref").and_then(Value::as_str)
+            && providers.contains(state.external_keys.consumer_plugin(reference, mount_path)?)
+        {
+            return Err(bad(
+                "key_type and key_bits cannot be supplied for an external key",
+            ));
+        }
         let template = engine
             .prepare_external(method, relative, body, now)?
             .or(engine.prepare_external_consumption(
@@ -1139,22 +1175,50 @@ impl EngineState {
         let Some(template) = template else {
             return Ok(None);
         };
-        // This is an admitted plan, not a provider signature or an entered call.
-        let request = state
-            .external_keys
-            .transit_consumer_request(
-                &template.reference,
-                mount_path,
-                "sign",
-                SecretJson(json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"})),
-            )
-            .map_err(|cause| {
-                if cause.status == 500 && !template.is_consumption() {
-                    error(400, "external PKI reference or grant is unavailable")
-                } else {
-                    cause
-                }
-            })?;
+        // Each signer is chosen from the actual stored reference and mount
+        // grant. Only operator-installed providers can select the genuine lane.
+        let request_for = |template: &ExternalPkiTemplate| -> Result<_> {
+            let plugin = state
+                .external_keys
+                .consumer_plugin(&template.reference, mount_path)?;
+            if providers.contains(plugin) {
+                Ok((
+                    Some(plugin.to_owned()),
+                    state
+                        .external_keys
+                        .genuine_pki_request(&template.reference, mount_path)?,
+                ))
+            } else {
+                Ok((
+                    None,
+                    state.external_keys.transit_consumer_request(
+                        &template.reference,
+                        mount_path,
+                        "sign",
+                        SecretJson(
+                            json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"}),
+                        ),
+                    )?,
+                ))
+            }
+        };
+        let (genuine_provider, request) = request_for(&template).map_err(|cause| {
+            if cause.status == 500 && !template.is_consumption() {
+                error(400, "external PKI reference or grant is unavailable")
+            } else {
+                cause
+            }
+        })?;
+        // The pinned genuine kms/existing API rejects either supplied parameter.
+        // The legacy native-only compatibility branch retains its original contract.
+        if genuine_provider.is_some()
+            && !template.is_consumption()
+            && (body.get("key_type").is_some() || body.get("key_bits").is_some())
+        {
+            return Err(bad(
+                "key_type and key_bits cannot be supplied for an external key",
+            ));
+        }
         let related = engine
             .prepare_related_external_crls(
                 &template,
@@ -1163,18 +1227,16 @@ impl EngineState {
             )?
             .into_iter()
             .map(|template| {
-                let request = state.external_keys.transit_consumer_request(
-                    &template.reference,
-                    mount_path,
-                    "sign",
-                    SecretJson(
-                        json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"}),
-                    ),
-                )?;
-                Ok(ExternalPkiRelatedRequest { request, template })
+                let (genuine_provider, request) = request_for(&template)?;
+                Ok(ExternalPkiRelatedRequest {
+                    genuine_provider,
+                    request,
+                    template,
+                })
             })
             .collect::<Result<Vec<_>>>()?;
         Ok(Some(ExternalPkiRequest {
+            genuine_provider,
             request,
             template,
             related,

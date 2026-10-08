@@ -303,6 +303,51 @@ fn invalid_public() -> EngineError {
 }
 
 impl ExternalPkiPublicKey {
+    /// Genuine KMS ExportPublic is x509.MarshalPKIXPublicKey DER. Reject
+    /// trailing bytes, private encodings and unsupported algorithms before TBS.
+    pub(crate) fn from_spki(der: &[u8]) -> Result<Self> {
+        if der.is_empty() || der.len() > MAX_SPKI {
+            return Err(invalid_public());
+        }
+        let key = PKey::public_key_from_der(der).map_err(|_| invalid_public())?;
+        if key.public_key_to_der().map_err(|_| invalid_public())? != der {
+            return Err(invalid_public());
+        }
+        let kind = match key.id() {
+            Id::ED25519 => {
+                let bytes = key.raw_public_key().map_err(|_| invalid_public())?;
+                let public = Self::Ed25519(bytes.try_into().map_err(|_| invalid_public())?);
+                if public.spki()? != der {
+                    return Err(invalid_public());
+                }
+                return Ok(public);
+            }
+            Id::EC => {
+                let ec = key.ec_key().map_err(|_| invalid_public())?;
+                ec.check_key().map_err(|_| invalid_public())?;
+                match ec.group().curve_name() {
+                    Some(Nid::X9_62_PRIME256V1) => "ecdsa-p256",
+                    Some(Nid::SECP384R1) => "ecdsa-p384",
+                    Some(Nid::SECP521R1) => "ecdsa-p521",
+                    _ => return Err(error(501, "external PKI key algorithm is unsupported")),
+                }
+            }
+            Id::RSA => match key.bits() {
+                2048 => "rsa-2048",
+                3072 => "rsa-3072",
+                4096 => "rsa-4096",
+                _ => return Err(error(501, "external PKI key algorithm is unsupported")),
+            },
+            _ => return Err(error(501, "external PKI key algorithm is unsupported")),
+        };
+        let public = Self::Asymmetric(AsymmetricPublic {
+            kind: kind.into(),
+            spki_der: der.to_vec(),
+        });
+        public.validate()?;
+        Ok(public)
+    }
+
     pub(crate) fn from_metadata(kind: &str, text: &str) -> Result<Self> {
         if kind == "ed25519" {
             if text.len() != 44 {

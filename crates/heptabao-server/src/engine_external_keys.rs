@@ -429,6 +429,25 @@ impl Registry {
         }
         Ok(&config.plugin)
     }
+    // PKI uses the genuine key's ExportPublic and Sign interfaces, not Transit
+    // request preprocessing. Resolve the exact mount grant before secret cloning.
+    pub(super) fn genuine_pki_request(&self, reference: &str, mount: &str) -> Result<SecretValue> {
+        self.consumer_plugin(reference, mount)?;
+        let (name, key_name) = reference
+            .split_once(':')
+            .ok_or_else(|| bad("external_key_ref must be config:key"))?;
+        let config = self
+            .configs
+            .get(name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        let key = config
+            .keys
+            .get(key_name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        let input = SecretJson(json!({"config":*config.values,"key":*key.values}));
+        encode_provider_request(&*input)
+    }
+
     pub(super) fn genuine_consumer_request(
         &self,
         reference: &str,
