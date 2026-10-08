@@ -318,6 +318,23 @@ impl OperatorPin {
         Err("genuine KMS requires sealed Unix operator files".into())
     }
 }
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum OperatorImplementation {
+    OpaqueKmsV1,
+    OpenBaoPkcs11AliasesV1,
+}
+fn operator_implementation(
+    object: &serde_json::Map<String, Value>,
+) -> Result<OperatorImplementation, String> {
+    match object.get("implementation") {
+        None => Ok(OperatorImplementation::OpaqueKmsV1),
+        Some(Value::String(s)) if s == "opaque-kms-v1" => Ok(OperatorImplementation::OpaqueKmsV1),
+        Some(Value::String(s)) if s == "openbao-pkcs11-aliases-v1" => {
+            Ok(OperatorImplementation::OpenBaoPkcs11AliasesV1)
+        }
+        _ => Err("genuine KMS operator implementation is invalid".into()),
+    }
+}
 fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, String> {
     let deployment = OperatorPin::open(path, digest(sha)?, false)?;
     let mut v = deployment.deployment()?;
@@ -325,11 +342,11 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
         let object = v
             .as_object()
             .ok_or("genuine KMS deployment must be an object")?;
-        if object.len() != 5
+        if object.len() != 5 + usize::from(object.contains_key("implementation"))
             || object.keys().any(|k| {
                 !matches!(
                     k.as_str(),
-                    "provider" | "image" | "image_sha256" | "args" | "libraries"
+                    "provider" | "image" | "image_sha256" | "args" | "libraries" | "implementation"
                 )
             })
             || object.get("provider").and_then(Value::as_str) != Some(id)
@@ -356,7 +373,6 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
         {
             return Err("genuine KMS provider arguments are invalid".into());
         }
-        let mut pins = vec![OperatorPin::open(image, digest(image_sha)?, true)?];
         let libs = object
             .get("libraries")
             .and_then(Value::as_array)
@@ -364,6 +380,12 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
         if libs.len() > 32 {
             return Err("genuine KMS library count exceeds bound".into());
         }
+        if operator_implementation(object)? == OperatorImplementation::OpaqueKmsV1
+            && !libs.is_empty()
+        {
+            return Err("genuine KMS library aliases require a sealed implementation".into());
+        }
+        let mut pins = vec![OperatorPin::open(image, digest(image_sha)?, true)?];
         let mut names = BTreeSet::new();
         for lib in libs {
             let m = lib
@@ -553,4 +575,146 @@ pub(super) fn prepare(
         generation,
         invocation,
     }))
+}
+
+#[cfg(all(test, target_os = "linux"))]
+mod sealed_library_policy_tests {
+    use super::super::tests::Root;
+    use super::*;
+    use sha2::{Digest, Sha256};
+    use std::io::Write;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    struct Fixture {
+        root: Root,
+        image: std::path::PathBuf,
+        library: std::path::PathBuf,
+        next: usize,
+    }
+    impl Fixture {
+        fn new() -> TestResult<Self> {
+            let root = Root::new();
+            let image = root.path.join("operator-image");
+            let library = root.path.join("operator-library");
+            for (path, mode, bytes) in [
+                (&image, 0o700, b"operator image: never invoked".as_slice()),
+                (
+                    &library,
+                    0o600,
+                    b"operator library: never loaded".as_slice(),
+                ),
+            ] {
+                let mut f = std::fs::OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .mode(mode)
+                    .open(path)?;
+                f.write_all(bytes)?;
+            }
+            Ok(Self {
+                root,
+                image,
+                library,
+                next: 0,
+            })
+        }
+        fn deployment(
+            &mut self,
+            implementation: Option<Value>,
+            libraries: bool,
+            provider: &str,
+        ) -> TestResult<(std::path::PathBuf, String)> {
+            let mut value = serde_json::json!({
+                "provider": provider,
+                "image": self.image.to_str().ok_or("image path")?,
+                "image_sha256": hex(&Sha256::digest(std::fs::read(&self.image)?)),
+                "args": [],
+                "libraries": []
+            });
+            if libraries {
+                value["libraries"] = serde_json::json!([{
+                    "alias": "token",
+                    "path": self.library.to_str().ok_or("library path")?,
+                    "sha256": hex(&Sha256::digest(std::fs::read(&self.library)?))
+                }]);
+            }
+            if let Some(kind) = implementation {
+                value["implementation"] = kind;
+            }
+            let path = self
+                .root
+                .path
+                .join(format!("deployment-{}.json", self.next));
+            self.next += 1;
+            let bytes = serde_json::to_vec(&value)?;
+            let mut f = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .open(&path)?;
+            f.write_all(&bytes)?;
+            Ok((path, hex(&Sha256::digest(&bytes))))
+        }
+    }
+
+    #[test]
+    fn pkcs11_operator_class_is_explicit_and_not_inferred_from_provider_name() -> TestResult {
+        let mut fixture = Fixture::new()?;
+        for name in ["transit", "arbitrary-operator-name"] {
+            let (path, sha) = fixture.deployment(
+                Some(Value::String("openbao-pkcs11-aliases-v1".into())),
+                true,
+                name,
+            )?;
+            let pins = operator_pins(path.to_str().ok_or("deployment path")?, &sha, name)?;
+            assert_eq!(pins.len(), 3);
+            assert!(pins.iter().all(OperatorPin::unchanged));
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn pkcs11_operator_unknown_or_unclassified_libraries_fail_admission() -> TestResult {
+        let mut fixture = Fixture::new()?;
+        let (path, sha) = fixture.deployment(None, false, "transit")?;
+        assert_eq!(
+            operator_pins(path.to_str().ok_or("deployment path")?, &sha, "transit")?.len(),
+            2
+        );
+        for kind in [
+            None,
+            Some(Value::String("opaque-kms-v1".into())),
+            Some(Value::String("pkcs11".into())),
+            Some(Value::String(String::new())),
+            Some(Value::Null),
+            Some(Value::Bool(true)),
+        ] {
+            let (path, sha) = fixture.deployment(kind, true, "transit")?;
+            assert!(
+                operator_pins(path.to_str().ok_or("deployment path")?, &sha, "transit").is_err()
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn pkcs11_operator_library_or_classification_change_vetoes_original_held_pins() -> TestResult {
+        let mut fixture = Fixture::new()?;
+        let (path, sha) = fixture.deployment(
+            Some(Value::String("openbao-pkcs11-aliases-v1".into())),
+            true,
+            "transit",
+        )?;
+        let pins = operator_pins(path.to_str().ok_or("deployment path")?, &sha, "transit")?;
+        assert!(pins.iter().all(OperatorPin::unchanged));
+        std::fs::write(&fixture.library, b"replacement library bytes")?;
+        assert!(!pins[2].unchanged());
+        let mut deployment: Value = serde_json::from_slice(&std::fs::read(&path)?)?;
+        deployment["implementation"] = Value::String("opaque-kms-v1".into());
+        std::fs::write(&path, serde_json::to_vec(&deployment)?)?;
+        assert!(!pins[0].unchanged());
+        Ok(())
+    }
 }

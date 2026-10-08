@@ -79,11 +79,12 @@ type library struct {
 	SHA256 string `json:"sha256"`
 }
 type deployment struct {
-	Provider    string    `json:"provider"`
-	Image       string    `json:"image"`
-	ImageSHA256 string    `json:"image_sha256"`
-	Args        []string  `json:"args"`
-	Libraries   []library `json:"libraries"`
+	Implementation deploymentImplementation `json:"implementation,omitempty"`
+	Provider       string                   `json:"provider"`
+	Image          string                   `json:"image"`
+	ImageSHA256    string                   `json:"image_sha256"`
+	Args           []string                 `json:"args"`
+	Libraries      []library                `json:"libraries"`
 }
 
 // Deployment is read only from an operator-pinned regular file, never request JSON.
@@ -115,6 +116,11 @@ func loadDeployment(path, digest string) (deployment, *pinnedFile, error) {
 			return deployment{}, nil, errors.New("deployment invalid")
 		}
 	}
+	implementation, err := implementationPolicy(d)
+	if err != nil {
+		return deployment{}, nil, err
+	}
+	d.Implementation = implementation
 	keep = true
 	return d, pin, nil
 }
