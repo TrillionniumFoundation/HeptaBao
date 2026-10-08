@@ -368,7 +368,10 @@ impl SealPublication {
                 .namespace_record_cells(&binding)
                 .map_err(|_| unavailable())?;
             let (_, first) = actual.iter_mut().next().ok_or_else(unavailable)?;
-            let byte = first.first_mut().ok_or_else(unavailable)?;
+            if !first.starts_with(b"HBA1") || first.len() <= 32 {
+                return Err(unavailable());
+            }
+            let byte = first.last_mut().ok_or_else(unavailable)?;
             *byte ^= 1;
             self.closed
                 .engines
