@@ -166,6 +166,7 @@ impl Invocation {
             "forced",
             "group_retired",
             "pins_unchanged",
+            "pidfd_bound",
             "qualified",
         ];
         if life.len() != life_fields.len()
@@ -175,6 +176,7 @@ impl Invocation {
                 "original_wait",
                 "group_retired",
                 "pins_unchanged",
+                "pidfd_bound",
                 "qualified",
             ]
             .iter()
@@ -375,7 +377,7 @@ mod tests {
         json!({"version":1,"nonce":inv.nonce,"operation":inv.operation.wire(),"status":"completed",
             "phase":if inv.operation==Operation::Metadata {"metadata"} else {"crypto"},"result":result,"lifecycle":{"started":true,"pid":42,"birth":"123",
             "pgid":42,"sid":41,"original_wait":true,"exit_code":0,"identity_gap":false,
-            "signal_error":false,"forced":false,"group_retired":true,"pins_unchanged":true,"qualified":true}})
+            "signal_error":false,"forced":false,"group_retired":true,"pins_unchanged":true,"pidfd_bound":true,"qualified":true}})
     }
     #[test]
     fn genuine_kms_crypto_result_cannot_be_replaced_by_verification_ack()
@@ -469,6 +471,7 @@ mod tests {
             ("forced", json!(true)),
             ("group_retired", json!(false)),
             ("pins_unchanged", json!(false)),
+            ("pidfd_bound", json!(false)),
         ] {
             let mut bad = positive.clone();
             bad["lifecycle"][key] = value;

@@ -36,6 +36,7 @@ type childReceipt struct {
 	Forced        bool   `json:"forced"`
 	GroupRetired  bool   `json:"group_retired"`
 	PinsUnchanged bool   `json:"pins_unchanged"`
+	PidfdBound    bool   `json:"pidfd_bound"`
 	Qualified     bool   `json:"qualified"`
 }
 type birthIdentity struct {
@@ -93,7 +94,7 @@ func pinFile(path, digest string, executable bool) (*pinnedFile, error) {
 	if err != nil || len(expected) != 32 || digest != hex.EncodeToString(expected) || !filepath.IsAbs(path) || filepath.Clean(path) != path {
 		return nil, errors.New("invalid operator pin")
 	}
-	fd, err := unix.Open(path, unix.O_RDONLY|unix.O_CLOEXEC|unix.O_NOFOLLOW, 0)
+	fd, err := unix.Open(path, unix.O_RDONLY|unix.O_CLOEXEC|unix.O_NOFOLLOW|unix.O_NONBLOCK, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -169,6 +170,7 @@ type ownedRunner struct {
 	ctx            context.Context
 	mu             sync.Mutex
 	started        bool
+	pidfd          int
 	birth          birthIdentity
 	receipt        childReceipt
 	waitOnce       sync.Once
@@ -178,7 +180,7 @@ type ownedRunner struct {
 
 func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, ctx context.Context) (r *ownedRunner, err error) {
 	if !filepath.IsAbs(ownedTemp) || filepath.Clean(ownedTemp) != ownedTemp ||
-		!(strings.HasPrefix(ownedTemp, "/data/") || strings.HasPrefix(ownedTemp, "/home/qian/")) || len(socketDir) > 90 {
+		len(socketDir) > 90 {
 		return nil, errors.New("invalid owned socket directory")
 	}
 	st, err := os.Lstat(ownedTemp)
@@ -189,7 +191,7 @@ func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, c
 	if !ok || !st.IsDir() || st.Mode().Perm() != 0700 || raw.Uid != uint32(os.Getuid()) {
 		return nil, errors.New("invalid owned socket directory")
 	}
-	r = &ownedRunner{ctx: ctx, socketDir: socketDir, waitDone: make(chan struct{}), receipt: childReceipt{ExitCode: -999}}
+	r = &ownedRunner{ctx: ctx, socketDir: socketDir, pidfd: -1, waitDone: make(chan struct{}), receipt: childReceipt{ExitCode: -999}}
 	defer func() {
 		if err != nil {
 			for _, p := range r.pins {
@@ -231,7 +233,7 @@ func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, c
 	cmd.Env = append([]string{}, spec.Env...)
 	cmd.Env = append(cmd.Env, "TMPDIR="+ownedTemp, "BAO_PKCS11_ALIASES="+strings.Join(aliases, ","))
 	cmd.Stdin = nil
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGKILL}
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGKILL, PidFD: &r.pidfd}
 	r.cmd = cmd
 	r.stdout, err = cmd.StdoutPipe()
 	if err != nil {
@@ -264,6 +266,13 @@ func (r *ownedRunner) Start(ctx context.Context) error {
 	r.started = true
 	r.receipt.Started = true
 	r.receipt.PID = r.cmd.Process.Pid
+	// CLONE_PIDFD binds this independently retained fd to the original child at birth.
+	// Process.Kill may otherwise fall back to a reusable numeric PID on Linux.
+	if r.pidfd < 0 {
+		r.receipt.IdentityGap = true
+		return errors.New("native child pidfd missing")
+	}
+	r.receipt.PidfdBound = true
 	id, err := identity(r.cmd.Process.Pid)
 	if err != nil || id.PPID != os.Getpid() || id.UID != os.Getuid() || id.PGID != id.PID {
 		r.receipt.IdentityGap = true
@@ -308,23 +317,21 @@ func (r *ownedRunner) Kill(context.Context) error {
 		return nil
 	}
 	r.receipt.Forced = true
-	id, err := identity(r.cmd.Process.Pid)
-	if err == nil && id == r.birth && id.PGID == id.PID {
-		// Group signaling is authorized only while the retained original leader identity matches.
-		err = syscall.Kill(-id.PGID, syscall.SIGKILL)
-		if err == nil || errors.Is(err, syscall.ESRCH) {
-			return nil
-		}
+	// The fd was returned by this original exec.Cmd's CLONE_PIDFD, never opened by PID lookup.
+	// Metadata failure is not a cleanup permission check. No numeric PID/group fallback is used.
+	if r.pidfd < 0 {
+		r.receipt.IdentityGap = true
+		r.receipt.SignalError = true
+		return errors.New("original native child pidfd unavailable")
 	}
-	// Metadata is not a precondition for cleaning up the exact original child.
-	r.receipt.IdentityGap = true
-	err = r.cmd.Process.Kill()
-	if err != nil && !errors.Is(err, os.ErrProcessDone) {
+	err := unix.PidfdSendSignal(r.pidfd, syscall.SIGKILL, nil, 0)
+	if err != nil && !errors.Is(err, syscall.ESRCH) {
 		r.receipt.SignalError = true
 		return err
 	}
 	return nil
 }
+
 func groupRetired(id birthIdentity) bool {
 	if id.PID == 0 {
 		return false
@@ -417,6 +424,10 @@ func (r *ownedRunner) cleanupOwnedMembers() {
 
 func (r *ownedRunner) closeOriginal(graceful bool) childReceipt {
 	defer func() {
+		if r.pidfd >= 0 {
+			_ = unix.Close(r.pidfd)
+			r.pidfd = -1
+		}
 		for _, p := range r.pins {
 			p.file.Close()
 		}
@@ -452,7 +463,7 @@ func (r *ownedRunner) closeOriginal(graceful bool) childReceipt {
 			r.receipt.PinsUnchanged = false
 		}
 	}
-	r.receipt.Qualified = r.receipt.Started && r.receipt.OriginalWait && r.receipt.ExitCode == 0 &&
+	r.receipt.Qualified = r.receipt.Started && r.receipt.PidfdBound && r.receipt.OriginalWait && r.receipt.ExitCode == 0 &&
 		!r.receipt.IdentityGap && !r.receipt.SignalError && !r.receipt.Forced && r.receipt.GroupRetired && r.receipt.PinsUnchanged
 	return r.receipt
 }

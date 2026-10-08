@@ -399,6 +399,34 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
     Ok(pins)
 }
 
+fn validate_owned_temp(path: &str) -> Result<(), String> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let p = std::path::Path::new(path);
+        if !p.is_absolute()
+            || p.components().any(|c| {
+                matches!(
+                    c,
+                    std::path::Component::ParentDir | std::path::Component::CurDir
+                )
+            })
+        {
+            return Err("genuine KMS socket directory is not canonical".into());
+        }
+        let m =
+            std::fs::symlink_metadata(p).map_err(|_| "genuine KMS socket directory unavailable")?;
+        // SAFETY: geteuid only observes this process identity.
+        let uid = unsafe { libc::geteuid() };
+        if !m.is_dir() || m.mode() & 0o7777 != 0o700 || m.uid() != uid {
+            return Err("genuine KMS socket directory must be operator-owned mode0700".into());
+        }
+        Ok(())
+    }
+    #[cfg(not(unix))]
+    Err("genuine KMS requires an owned Unix socket directory".into())
+}
+
 pub(super) fn admit(configs: Vec<PluginExternalKmsConfig>) -> Result<Bindings, String> {
     if configs.len() > 16 {
         return Err("genuine KMS provider count exceeds bound".into());
@@ -413,11 +441,10 @@ pub(super) fn admit(configs: Vec<PluginExternalKmsConfig>) -> Result<Bindings, S
             .map_err(|_| "invalid genuine KMS deployment path")?;
         let temp = CanonicalPath::parse(c.owned_temp)
             .map_err(|_| "invalid genuine KMS socket directory")?;
-        if !(temp.as_str().starts_with("/data/") || temp.as_str().starts_with("/home/qian/"))
-            || temp.as_str().len() > 60
-        {
-            return Err("genuine KMS socket directory requires an owned short data path".into());
+        if temp.as_str().len() > 60 {
+            return Err("genuine KMS socket directory exceeds its Unix socket bound".into());
         }
+        validate_owned_temp(temp.as_str())?;
         let pins = operator_pins(deployment.as_str(), &c.deployment_sha256, id.as_str())?;
         let descriptor = PluginDescriptor::new(
             id.clone(),
