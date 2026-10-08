@@ -132,17 +132,10 @@ impl Admitted {
 fn monotonic_nanos() -> Result<u64, Response> {
     #[cfg(unix)]
     {
-        let mut ts = libc::timespec {
-            tv_sec: 0,
-            tv_nsec: 0,
-        };
-        // SAFETY: clock_gettime writes only this valid, initialized timespec.
-        if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut ts) } != 0 {
-            return Err(Response::error(
-                503,
-                "genuine KMS monotonic clock unavailable",
-            ));
-        }
+        let ts = rustix::time::clock_gettime_dynamic(rustix::time::DynamicClockId::Known(
+            rustix::time::ClockId::Monotonic,
+        ))
+        .map_err(|_| Response::error(503, "genuine KMS monotonic clock unavailable"))?;
         u64::try_from(i128::from(ts.tv_sec) * 1_000_000_000 + i128::from(ts.tv_nsec))
             .map_err(|_| Response::error(503, "genuine KMS monotonic clock unavailable"))
     }
@@ -213,8 +206,7 @@ impl OperatorPin {
             .metadata()
             .map_err(|_| "genuine KMS operator pin unavailable")?;
         // Only this owned/root regular inode may authorize the deployment.
-        // SAFETY: geteuid has no pointer arguments and only observes this process identity.
-        let uid = unsafe { libc::geteuid() };
+        let uid = rustix::process::geteuid().as_raw();
         if !m.is_file()
             || m.nlink() != 1
             || !(m.uid() == uid || m.uid() == 0)
@@ -416,8 +408,7 @@ fn validate_owned_temp(path: &str) -> Result<(), String> {
         }
         let m =
             std::fs::symlink_metadata(p).map_err(|_| "genuine KMS socket directory unavailable")?;
-        // SAFETY: geteuid only observes this process identity.
-        let uid = unsafe { libc::geteuid() };
+        let uid = rustix::process::geteuid().as_raw();
         if !m.is_dir() || m.mode() & 0o7777 != 0o700 || m.uid() != uid {
             return Err("genuine KMS socket directory must be operator-owned mode0700".into());
         }
