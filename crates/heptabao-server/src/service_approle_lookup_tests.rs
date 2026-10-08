@@ -772,7 +772,7 @@ fn approle_lookup_historical_owner_retains_legacy_projection_without_record_gran
             .map_err(|_| "historical authenticated Auth route")?
             .ok_or("historical Auth route response")?;
         assert_eq!(result.status, 204);
-        assert!(result.changed);
+        assert!(result.mutated);
     }
     let mut issued = historical
         .auth
@@ -787,7 +787,7 @@ fn approle_lookup_historical_owner_retains_legacy_projection_without_record_gran
         .map_err(|_| "historical actual SID producer")?
         .ok_or("historical SID response")?;
     assert_eq!(issued.status, 200);
-    assert!(issued.changed);
+    assert!(issued.mutated);
     let pair = (
         issued.body["data"]["secret_id"]
             .as_str()
