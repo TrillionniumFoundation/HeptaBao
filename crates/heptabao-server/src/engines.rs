@@ -63,7 +63,11 @@ mod ssh;
 mod ssh_ca;
 pub(crate) use ssh_ca::SshPublicKeyTransport;
 mod ssh_ca_crypto;
+#[path = "engines/ssh_ca_legacy.rs"]
+mod ssh_ca_legacy;
 mod ssh_ca_policy;
+#[path = "engine_ssh_templates.rs"]
+mod ssh_templates;
 mod totp;
 mod transit;
 
@@ -2794,6 +2798,27 @@ impl EngineState {
         now: u64,
         display_name: &str,
     ) -> Result<Option<EngineResponse>> {
+        self.handle_in_identity_namespace_with_ssh_principal(
+            scope,
+            method,
+            path,
+            body,
+            now,
+            display_name,
+            None,
+        )
+    }
+
+    pub(crate) fn handle_in_identity_namespace_with_ssh_principal(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        display_name: &str,
+        ssh_principal: Option<&crate::auth::Principal>,
+    ) -> Result<Option<EngineResponse>> {
         let namespace = scope.path;
         let (path, query) = path.split_once('?').unwrap_or((path, ""));
         let path = path.trim_start_matches('/');
@@ -2919,6 +2944,13 @@ impl EngineState {
                 .external_keys
                 .consumer_plugin(reference, &mount_path)?;
         }
+        let ssh_identity = match (&mount.backend, ssh_principal) {
+            (Backend::Ssh(engine), Some(principal)) => engine
+                .authenticated_ca_sources(method, relative, &params)?
+                .map(|sources| self.ssh_request_identity(namespace, principal, &sources))
+                .transpose()?,
+            _ => None,
+        };
         let pki_request = matches!(mount.backend, Backend::Pki(_));
         let response = match &mut mount.backend {
             Backend::Database | Backend::RabbitMq => {
@@ -2955,9 +2987,17 @@ impl EngineState {
             Backend::Pki(engine) => {
                 engine.handle_admin(method, relative, &params, now.max(self.lease_clock))?
             }
-            Backend::Ssh(engine) => {
-                engine.handle_role(method, relative, &params, now, display_name)?
-            }
+            Backend::Ssh(engine) => match &ssh_identity {
+                Some(identity) => engine.handle_role_authenticated(
+                    method,
+                    relative,
+                    &params,
+                    now,
+                    display_name,
+                    identity,
+                )?,
+                None => engine.handle_role(method, relative, &params, now, display_name)?,
+            },
         };
         if response.mutated {
             if matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()) {

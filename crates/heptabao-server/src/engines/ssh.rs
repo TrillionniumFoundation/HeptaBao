@@ -274,6 +274,64 @@ impl SshOtp {
         }
         Ok(())
     }
+
+    pub(super) fn authenticated_ca_sources(
+        &self,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<Option<Vec<String>>> {
+        let Some(name) = path
+            .strip_prefix("sign/")
+            .or_else(|| path.strip_prefix("issue/"))
+        else {
+            return Ok(None);
+        };
+        if !write_method(method) {
+            return Ok(None);
+        }
+        valid_name(name)?;
+        let Some(ca) = &self.ca else {
+            return Ok(None);
+        };
+        if !ca.needs_authenticated_request(name) {
+            return Ok(None);
+        }
+        ca.authenticated_template_sources(name, body).map(Some)
+    }
+
+    pub(super) fn handle_role_authenticated(
+        &mut self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        display_name: &str,
+        identity: &super::ssh_templates::RequestIdentity,
+    ) -> Result<EngineResponse> {
+        let name = path
+            .strip_prefix("sign/")
+            .or_else(|| path.strip_prefix("issue/"))
+            .ok_or_else(not_found)?;
+        if !write_method(method) {
+            return Err(unsupported());
+        }
+        valid_name(name)?;
+        let ca = self.ca.as_mut().ok_or_else(not_found)?;
+        ca.sign_authenticated(
+            body,
+            &super::ssh_ca_policy::SigningContext {
+                role_name: name,
+                display_name,
+                now,
+                default_ttl: self.default_ttl,
+                max_ttl: self.max_ttl,
+            },
+            path.starts_with("issue/"),
+            identity,
+        )
+    }
+
     pub(super) fn handle_role(
         &mut self,
         method: &str,

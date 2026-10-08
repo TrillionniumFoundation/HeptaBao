@@ -5028,13 +5028,14 @@ impl Service {
                 id: None,
             }
         };
-        match engines.handle_in_identity_namespace_with_ssh_display(
+        match engines.handle_in_identity_namespace_with_ssh_principal(
             identity_scope,
             method,
             path,
             engine_body,
             now,
             principal.display_name(),
+            Some(principal),
         ) {
             Ok(Some(mut response)) => {
                 if let Err(error) = Self::project_kv1_read_lease(
@@ -9973,3 +9974,6 @@ mod raw_wrapped_reply110_tests;
 #[cfg(test)]
 #[path = "service_ssh_ca115_tests.rs"]
 mod ssh_ca115_tests;
+#[cfg(test)]
+#[path = "service_ssh_template115_tests.rs"]
+mod ssh_template115_tests;

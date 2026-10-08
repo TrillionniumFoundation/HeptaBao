@@ -16,6 +16,8 @@ const MAX_GROUP_DEPTH: usize = 32;
 mod acl_templates;
 #[path = "identity_runtime.rs"]
 mod runtime;
+#[path = "identity_ssh_templates.rs"]
+mod ssh_templates;
 #[cfg(test)]
 #[path = "identity_uuid_tests.rs"]
 mod uuid_tests;
