@@ -82,9 +82,27 @@ fn encode_public(key: &PublicKey) -> Result<String> {
     Ok(text)
 }
 fn signing_public_key(text: &str) -> Result<PublicKey> {
-    let public = PublicKey::from_openssh(text).map_err(|_| bad("invalid SSH public key"))?;
-    // OpenBao's x/crypto parser accepts these known plain key types and rejects unknowns.
-    // ssh-key also accepts opaque Other keys, which must not enter either certificate builder.
+    use base64::Engine as _;
+    if text.len() > 16384 {
+        return Err(bad("SSH public key exceeds bound"));
+    }
+    // OpenBao selects the second literal-space field, or the whole bare base64 input.
+    // Its StdEncoding ignores CR/LF and permits non-zero unused final quantum bits.
+    let payload = text.split(' ').nth(1).unwrap_or(text);
+    let encoded: Vec<u8> = payload
+        .bytes()
+        .filter(|byte| !matches!(byte, b'\r' | b'\n'))
+        .collect();
+    let decoder = base64::engine::general_purpose::GeneralPurpose::new(
+        &base64::alphabet::STANDARD,
+        base64::engine::general_purpose::GeneralPurposeConfig::new()
+            .with_decode_allow_trailing_bits(true),
+    );
+    let raw = decoder
+        .decode(encoded)
+        .map_err(|_| bad("invalid SSH public key"))?;
+    let public = PublicKey::from_bytes(&raw).map_err(|_| bad("invalid SSH public key"))?;
+    // Decoding format adds no authority: unknown opaque algorithms remain rejected.
     match public.key_data() {
         ssh_key::public::KeyData::Dsa(_)
         | ssh_key::public::KeyData::Ecdsa(_)
@@ -233,8 +251,7 @@ impl CaState {
         };
         let derived = material.public()?;
         if !public.is_empty() {
-            let submitted =
-                PublicKey::from_openssh(public).map_err(|_| bad("invalid SSH public key"))?;
+            let submitted = signing_public_key(public)?;
             if submitted.key_data() != derived.key_data() {
                 return Err(bad("SSH private and public keys do not match"));
             }

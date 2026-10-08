@@ -255,9 +255,12 @@ fn ssh115_malformed_known_wire_and_expired_original_request_keep_both_entry_veto
         .into_iter()
         .find(|line| line.starts_with("ssh-ed25519 "))
         .ok_or("known ED fixture")?;
-    let mismatch = valid.replacen("ssh-ed25519", "ssh-rsa", 1);
-    assert!(PublicKey::from_openssh(&mismatch).is_err());
-    reject_both_without_mutation(&mut normal, &mut legacy, &mismatch, 400)?;
+    // A text algorithm label is not an upstream rejection: validate a real binary tail instead.
+    let mut trailing = PublicKey::from_openssh(valid)?.to_bytes()?;
+    trailing.push(0x41);
+    assert!(PublicKey::from_bytes(&trailing).is_err());
+    let trailing = STANDARD.encode(trailing);
+    reject_both_without_mutation(&mut normal, &mut legacy, &trailing, 400)?;
     let original = std::time::Instant::now() - std::time::Duration::from_millis(1);
     let _original = crate::request_deadline::RequestDeadlineScope::enter(original);
     let _later = crate::request_deadline::RequestDeadlineScope::enter(
@@ -282,4 +285,172 @@ fn known_public_fixtures() -> [&'static str; 8] {
         "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBIELQJ2DgvaX1yQlKFokfWM2suuaCFI2qp0eJodHyg6O4ifxc3XpRKd1OS8dNYQtE/YjdXSrA+AOnMF5ns2Nkx4AAAAEc3NoOg==",
         "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICFo/k5LU8863u66YC9eUO2170QduohPURkQnbLa/dczAAAABHNzaDo=",
     ]
+}
+
+#[test]
+fn ssh115_primary_bare_base64_and_literal_space_payload_keep_both_real_signature_paths()
+-> TestResult {
+    let mut normal = configured("rsa-sha2-256")?;
+    let mut legacy = configured("ssh-rsa")?;
+    let normal_issuer = PublicKey::from_openssh(normal.public_key("default")?)?;
+    let legacy_issuer = PublicKey::from_openssh(legacy.public_key("default")?)?;
+    let trust = normal_issuer.fingerprint(HashAlg::Sha256);
+    let mut count = 0;
+    for line in known_public_fixtures() {
+        let public = PublicKey::from_openssh(line)?;
+        let payload = line.split(' ').nth(1).ok_or("public payload")?;
+        let split = payload.len() / 2;
+        let mut forms = vec![
+            payload.to_owned(),
+            format!("ignored-tag {payload} public-comment"),
+            format!(" {payload}"),
+            format!("{}\r\n{}", &payload[..split], &payload[split..]),
+        ];
+        if payload.ends_with('=') {
+            let mut unusual = payload.as_bytes().to_vec();
+            let at = payload.trim_end_matches('=').len() - 1;
+            let alphabet = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            let digit = alphabet
+                .iter()
+                .position(|byte| *byte == unusual[at])
+                .ok_or("base64 digit")?;
+            unusual[at] = alphabet[digit | 1];
+            forms.push(String::from_utf8(unusual)?);
+        }
+        for text in forms {
+            assert_eq!(signing_public_key(&text)?.key_data(), public.key_data());
+            let response = normal.sign(&json!({"public_key":text}), &context(), false)?;
+            assert_eq!(response.status, 200);
+            let certificate = Certificate::from_openssh(
+                response.body["data"]["signed_key"]
+                    .as_str()
+                    .ok_or("normal cert")?,
+            )?;
+            certificate.validate_at(context().now, [&trust])?;
+            assert_eq!(certificate.public_key(), public.key_data());
+            assert_eq!(certificate.signature().algorithm().as_str(), "rsa-sha2-256");
+            let response = legacy.sign_authenticated(
+                &json!({"public_key":text}),
+                &context(),
+                false,
+                &super::super::ssh_templates::RequestIdentity::absent(),
+            )?;
+            assert_eq!(response.status, 200);
+            verify_legacy(
+                response.body["data"]["signed_key"]
+                    .as_str()
+                    .ok_or("legacy cert")?,
+                &public,
+                &legacy_issuer,
+            )?;
+            count += 1;
+        }
+    }
+    assert_eq!(normal.signatures, count);
+    assert_eq!(legacy.signatures, count);
+    normal.validate()?;
+    legacy.validate()?;
+    Ok(())
+}
+
+#[test]
+fn ssh115_primary_bare_issuer_import_keeps_real_private_public_pair_and_duplicate_identity()
+-> TestResult {
+    let material = crypto_key::generate("rsa", 2048)?;
+    let public = material.public()?;
+    let payload = STANDARD.encode(public.to_bytes()?);
+    let encoded = zeroize::Zeroizing::new(serde_json::to_vec(&material)?);
+    let private = zeroize::Zeroizing::new(serde_json::from_slice::<String>(&encoded)?);
+    let mut ca = CaState::default();
+    let mut id = None;
+    for text in [
+        payload.clone(),
+        format!("ignored-tag {payload} comment"),
+        format!("{payload}\r\n"),
+    ] {
+        let before = zeroize::Zeroizing::new(serde_json::to_vec(&ca)?);
+        let mut body =
+            json!({"generate_signing_key":false,"private_key":private.as_str(),"public_key":text});
+        let response = ca.handle_admin("POST", "config/ca", &body);
+        if let Some(Value::String(value)) = body.get_mut("private_key") {
+            zeroize::Zeroize::zeroize(value);
+        }
+        let response = response?.ok_or("issuer response")?;
+        assert_eq!(response.status, 200);
+        let actual_id = response.body["data"]["issuer_id"]
+            .as_str()
+            .ok_or("issuer id")?
+            .to_owned();
+        if let Some(ref original) = id {
+            assert_eq!(&actual_id, original);
+            assert!(!response.mutated);
+            assert!(
+                zeroize::Zeroizing::new(serde_json::to_vec(&ca)?).as_slice() == before.as_slice()
+            );
+        } else {
+            assert!(response.mutated);
+            id = Some(actual_id);
+        }
+        assert_eq!(
+            PublicKey::from_openssh(ca.public_key("default")?)?.key_data(),
+            public.key_data()
+        );
+        assert_eq!(ca.issuers.len(), 1);
+        ca.validate()?;
+    }
+    let before = zeroize::Zeroizing::new(serde_json::to_vec(&ca)?);
+    let unrelated = known_public_fixtures()
+        .into_iter()
+        .find(|line| line.starts_with("ssh-ed25519 "))
+        .ok_or("ED fixture")?;
+    let mut body = json!({"generate_signing_key":false,"private_key":private.as_str(),"public_key":unrelated.split(' ').nth(1).ok_or("ED payload")?});
+    let response = ca.handle_admin("POST", "config/ca", &body);
+    if let Some(Value::String(value)) = body.get_mut("private_key") {
+        zeroize::Zeroize::zeroize(value);
+    }
+    assert_eq!(
+        response.err().ok_or("pair mismatch must reject")?.status,
+        400
+    );
+    assert!(zeroize::Zeroizing::new(serde_json::to_vec(&ca)?).as_slice() == before.as_slice());
+    ca.validate()?;
+    Ok(())
+}
+
+#[test]
+fn ssh115_primary_base64_decoder_still_rejects_binary_tail_unknown_overlong_and_original_expiry()
+-> TestResult {
+    let mut normal = configured("rsa-sha2-256")?;
+    let mut legacy = configured("ssh-rsa")?;
+    let line = known_public_fixtures()
+        .into_iter()
+        .find(|line| line.starts_with("ecdsa-sha2-nistp256 "))
+        .ok_or("EC fixture")?;
+    let payload = line.split(' ').nth(1).ok_or("EC payload")?;
+    let mut trailing = PublicKey::from_openssh(line)?.to_bytes()?;
+    trailing.push(0x41);
+    for input in [
+        format!("ssh-ecdsa  {payload}"),
+        format!("ssh-ecdsa\t{payload}"),
+        format!("  {payload}"),
+        payload.trim_end_matches('=').to_owned(),
+        format!("{payload}#"),
+        STANDARD.encode(trailing),
+        "A".repeat(16385),
+        public_line("ssh-future@heptabao.example", &[0x42; 32])?
+            .split(' ')
+            .nth(1)
+            .ok_or("opaque payload")?
+            .to_owned(),
+    ] {
+        reject_both_without_mutation(&mut normal, &mut legacy, &input, 400)?;
+    }
+    let original = std::time::Instant::now() - std::time::Duration::from_millis(1);
+    let _original = crate::request_deadline::RequestDeadlineScope::enter(original);
+    let _later = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(15),
+    );
+    assert_eq!(crate::request_deadline::current(), Some(original));
+    reject_both_without_mutation(&mut normal, &mut legacy, payload, 503)?;
+    Ok(())
 }
