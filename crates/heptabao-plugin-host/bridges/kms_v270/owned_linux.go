@@ -211,7 +211,7 @@ func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, c
 	}
 	r.pins = append(r.pins, image)
 	files := []*os.File{image.file}
-	aliases := []string{}
+	aliases := map[string]string{}
 	seen := map[string]bool{}
 	for _, lib := range d.Libraries {
 		if lib.Alias == "" || len(lib.Alias) > 128 || strings.ContainsAny(lib.Alias, "=,\x00\r\n") || seen[lib.Alias] {
@@ -224,14 +224,19 @@ func newOwnedRunner(spec *exec.Cmd, d deployment, socketDir, ownedTemp string, c
 		}
 		r.pins = append(r.pins, p)
 		files = append(files, p.file)
-		aliases = append(aliases, lib.Alias+"=/proc/self/fd/"+strconv.Itoa(2+len(files)))
+		aliases[lib.Alias] = "/proc/self/fd/" + strconv.Itoa(2+len(files))
+	}
+	args, err := providerArguments(d, aliases)
+	if err != nil {
+		return r, err
 	}
 	// No request-supplied executable, path, environment or library mapping is used.
-	cmd := exec.Command("/proc/self/fd/3", d.Args...)
+	cmd := exec.Command("/proc/self/fd/3", args...)
 	cmd.Args[0] = d.Image
 	cmd.ExtraFiles = files
 	cmd.Env = append([]string{}, spec.Env...)
-	cmd.Env = append(cmd.Env, "TMPDIR="+ownedTemp, "BAO_PKCS11_ALIASES="+strings.Join(aliases, ","))
+	// Alias flags below bind only held descriptors. No ambient alias path competes.
+	cmd.Env = append(cmd.Env, "TMPDIR="+ownedTemp, "BAO_PKCS11_ALIASES=")
 	cmd.Stdin = nil
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGKILL, PidFD: &r.pidfd}
 	r.cmd = cmd
