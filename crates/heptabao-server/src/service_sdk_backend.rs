@@ -2012,15 +2012,15 @@ impl Service {
             ));
         }
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
-        let view = permit.open(self)?;
+        let view = namespace_diagnostic!("logical.private_view.open", permit.open(self))?;
         let authority = plan
             .authority
             .lock()
             .map_err(|_| Response::error(503, "SDK cleanup authority unavailable"))?;
-        self.validate_sdk_private_cleanup_authority(&authority, &view)?;
-        self.sdk_binding_private_gate(plan, view.state())
-            .map_err(bridge_failure)?;
-        view.check_current(self)?;
+        namespace_diagnostic!("logical.private_view.authority", self.validate_sdk_private_cleanup_authority(&authority, &view))?;
+        namespace_diagnostic!("logical.private_view.backend", self.sdk_binding_private_gate(plan, view.state())
+            .map_err(bridge_failure))?;
+        namespace_diagnostic!("logical.private_view.current", view.check_current(self))?;
         Ok(Some(view))
     }
     pub(super) fn sdk_binding_private_gate(

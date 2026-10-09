@@ -843,6 +843,38 @@ impl RetirementPublication {
         namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
         if wire(&restored)? != wire(&self.logical)? {
             #[cfg(test)]
+            {
+                // Fixed component equality only. No values or paths are emitted.
+                for (stage, equal) in [
+                    ("custody.component.schema", restored.schema == self.logical.schema),
+                    ("custody.component.replay", restored.replay_epoch == self.logical.replay_epoch),
+                    ("custody.component.cluster", restored.cluster_id == self.logical.cluster_id),
+                    ("custody.component.auth", wire(&restored.auth).and_then(|a| wire(&self.logical.auth).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.engines", wire(&restored.engines).and_then(|a| wire(&self.logical.engines).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.database", wire(&restored.database).and_then(|a| wire(&self.logical.database).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.raft_admin", wire(&restored.raft_admin).and_then(|a| wire(&self.logical.raft_admin).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.namespaces", wire(&restored.namespaces).and_then(|a| wire(&self.logical.namespaces).map(|b| a == b)).unwrap_or(false)),
+                ] {
+                    crate::service::namespace_diagnostics::record_status(stage, if equal { 200 } else { 503 });
+                }
+                for actual in self.owners.keys() {
+                    let pair = Owner::actual(&restored, actual).and_then(|new| Owner::actual(&self.logical, actual).map(|old| (new, old)));
+                    if let Ok((new, old)) = pair {
+                        for (stage, equal) in [
+                            ("custody.component.owner_equal", new == old),
+                            ("custody.component.owner_binding", new.binding() == old.binding()),
+                            ("custody.component.owner_epoch", new.key_epoch() == old.key_epoch()),
+                            ("custody.component.owner_frontier", new.seal_frontier() == old.seal_frontier()),
+                            ("custody.component.owner_parent", new.parent() == old.parent()),
+                        ] {
+                            crate::service::namespace_diagnostics::record_status(stage, if equal { 200 } else { 503 });
+                        }
+                    } else {
+                        crate::service::namespace_diagnostics::record_status("custody.component.owner_lookup", 503);
+                    }
+                }
+            }
+            #[cfg(test)]
             crate::service::namespace_diagnostics::record_status("custody.proof.restored_equal", 503);
             return Err(failed());
         }
@@ -1271,6 +1303,38 @@ impl CleanupPublication {
         drop(keys);
         namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
         if wire(&restored)? != wire(&self.logical)? {
+            #[cfg(test)]
+            {
+                // Fixed component equality only. No values or paths are emitted.
+                for (stage, equal) in [
+                    ("custody.component.schema", restored.schema == self.logical.schema),
+                    ("custody.component.replay", restored.replay_epoch == self.logical.replay_epoch),
+                    ("custody.component.cluster", restored.cluster_id == self.logical.cluster_id),
+                    ("custody.component.auth", wire(&restored.auth).and_then(|a| wire(&self.logical.auth).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.engines", wire(&restored.engines).and_then(|a| wire(&self.logical.engines).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.database", wire(&restored.database).and_then(|a| wire(&self.logical.database).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.raft_admin", wire(&restored.raft_admin).and_then(|a| wire(&self.logical.raft_admin).map(|b| a == b)).unwrap_or(false)),
+                    ("custody.component.namespaces", wire(&restored.namespaces).and_then(|a| wire(&self.logical.namespaces).map(|b| a == b)).unwrap_or(false)),
+                ] {
+                    crate::service::namespace_diagnostics::record_status(stage, if equal { 200 } else { 503 });
+                }
+                for actual in self.owners.keys() {
+                    let pair = Owner::actual(&restored, actual).and_then(|new| Owner::actual(&self.logical, actual).map(|old| (new, old)));
+                    if let Ok((new, old)) = pair {
+                        for (stage, equal) in [
+                            ("custody.component.owner_equal", new == old),
+                            ("custody.component.owner_binding", new.binding() == old.binding()),
+                            ("custody.component.owner_epoch", new.key_epoch() == old.key_epoch()),
+                            ("custody.component.owner_frontier", new.seal_frontier() == old.seal_frontier()),
+                            ("custody.component.owner_parent", new.parent() == old.parent()),
+                        ] {
+                            crate::service::namespace_diagnostics::record_status(stage, if equal { 200 } else { 503 });
+                        }
+                    } else {
+                        crate::service::namespace_diagnostics::record_status("custody.component.owner_lookup", 503);
+                    }
+                }
+            }
             #[cfg(test)]
             crate::service::namespace_diagnostics::record_status("custody.proof.restored_equal", 503);
             return Err(failed());

@@ -364,22 +364,24 @@ impl Service {
         plan: &Plan,
         mut response: Option<Value>,
     ) -> Response {
+        #[cfg(test)]
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
         let result = (|| {
-            let mut private_view = self.sdk_logical_cleanup_private_view(plan)?;
+            let mut private_view = namespace_diagnostic!("logical.finalize.private_view", self.sdk_logical_cleanup_private_view(plan))?;
             let mut authority = plan
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
             if let Some(view) = private_view.as_ref() {
-                self.validate_sdk_private_cleanup_authority(&authority, view)?;
+                namespace_diagnostic!("logical.finalize.private_authority", self.validate_sdk_private_cleanup_authority(&authority, view))?;
             } else {
-                self.validate_sdk_authority(&mut authority)?;
+                namespace_diagnostic!("logical.finalize.ordinary_authority", self.validate_sdk_authority(&mut authority))?;
             }
             if let Some(view) = private_view.as_ref() {
-                self.sdk_binding_private_gate(plan, view.state())
-                    .map_err(bridge_failure)?;
+                namespace_diagnostic!("logical.finalize.private_backend", self.sdk_binding_private_gate(plan, view.state())
+                    .map_err(bridge_failure))?;
             } else {
-                self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                namespace_diagnostic!("logical.finalize.ordinary_backend", self.sdk_binding_gate(plan).map_err(bridge_failure))?;
             }
             let mut transaction = plan
                 .transaction
@@ -399,7 +401,7 @@ impl Service {
                     .is_none_or(|value| value.get("secret").is_some_and(Value::is_null));
             let publication_identity = self.current_state_identity()?;
             let identity_changed = publication_identity != transaction.identity;
-            let namespace_role = authority
+            let namespace_role = namespace_diagnostic!("logical.finalize.native_role", authority
                 .namespace_work()
                 .map(|work| {
                     if let Some(view) = private_view.as_ref() {
@@ -414,8 +416,10 @@ impl Service {
                         work.logical_native_role(self, &plan.namespace, &plan.mount, &plan.owner)
                     }
                 })
-                .transpose()?;
+                .transpose())?;
             if plan.namespace_cleanup != namespace_role.is_some() {
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record_status("logical.finalize.reject.00", 503);
                 return Err(Response::error(
                     503,
                     "namespace SDK Storage authority scope changed",
@@ -424,6 +428,8 @@ impl Service {
             match (&transaction.namespace_original, &namespace_role) {
                 (Some(_), Some(_)) | (None, None) => {}
                 _ => {
+                    #[cfg(test)]
+                    crate::service::namespace_diagnostics::record_status("logical.finalize.reject.01", 503);
                     return Err(Response::error(
                         503,
                         "namespace SDK Storage cut scope changed",
@@ -435,6 +441,8 @@ impl Service {
                 && !authority.admitted_data()
                 && namespace_role.is_none()
             {
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record_status("logical.finalize.reject.02", 503);
                 return Err(Response::error(
                     503,
                     "SDK transaction snapshot changed before publication",
@@ -485,6 +493,8 @@ impl Service {
                     )
                     .map_err(Response::from_engine_error)?
                 {
+                    #[cfg(test)]
+                    crate::service::namespace_diagnostics::record_status("logical.finalize.reject.03", 503);
                     return Err(Response::error(
                         503,
                         "SDK original mount Storage observation changed",
@@ -495,8 +505,8 @@ impl Service {
             } else {
                 state.engines = transaction.engines.clone();
             }
-            let changed_clock = authority.observe_candidate_time_changed(&mut state)?;
-            let at = expiry::precise(&authority, &state)?;
+            let changed_clock = namespace_diagnostic!("logical.finalize.clock_changed", authority.observe_candidate_time_changed(&mut state))?;
+            let at = namespace_diagnostic!("logical.finalize.precise_clock", expiry::precise(&authority, &state))?;
             let sdk_clock_changed = state.engines.observe_sdk_lease_clock(at);
             let mut changed = transaction.changed || changed_clock || sdk_clock_changed;
             let mut status = if plan.operation == "read" { 404 } else { 204 };
@@ -511,6 +521,8 @@ impl Service {
                     .any(|key| value.get(*key).is_none_or(|v| !v.is_null()))
                     || value.get("redirect").is_none_or(|v| v.as_str() != Some(""))
                 {
+                    #[cfg(test)]
+                    crate::service::namespace_diagnostics::record_status("logical.finalize.reject.04", 501);
                     return Err(Response::error(
                         501,
                         "SDK auth, redirect and wrapping are not implemented",
@@ -570,6 +582,8 @@ impl Service {
                     || current.cluster != state.cluster_id
                     || !current.same_backend(&plan.owner)
                 {
+                    #[cfg(test)]
+                    crate::service::namespace_diagnostics::record_status("logical.finalize.reject.05", 503);
                     return Err(Response::error(503, "SDK lease callback owner changed"));
                 }
                 let mut lease = current;
@@ -582,6 +596,8 @@ impl Service {
                             .parent_cleanup_required(&state.auth, at)
                             .map_err(Response::from_engine_error)?
                     {
+                        #[cfg(test)]
+                        crate::service::namespace_diagnostics::record_status("logical.finalize.reject.06", 400);
                         return Err(Response::error(
                             400,
                             "SDK lease owner expired during callback",
@@ -598,6 +614,8 @@ impl Service {
                     status = 200;
                 } else {
                     if !secret.is_null() {
+                        #[cfg(test)]
+                        crate::service::namespace_diagnostics::record_status("logical.finalize.reject.07", 502);
                         return Err(Response::error(
                             502,
                             "SDK revoke returned an unexpected Secret",
@@ -611,7 +629,7 @@ impl Service {
                     .engines
                     .store_sdk_lease(lease.clone())
                     .map_err(Response::from_engine_error)?;
-                authority.finish_namespace_logical(&mut state, &lease)?;
+                namespace_diagnostic!("logical.finalize.namespace_finish", authority.finish_namespace_logical(&mut state, &lease))?;
                 changed = true;
             } else if !secret.is_null() {
                 let at =
@@ -719,17 +737,19 @@ impl Service {
                 state.schema = state.writer_schema();
                 let publication = self.prepare_record_plan(&mut state)?;
                 if let Some(view) = private_view.as_ref() {
-                    self.validate_sdk_private_cleanup_authority(&authority, view)?;
+                    namespace_diagnostic!("logical.finalize.private_authority", self.validate_sdk_private_cleanup_authority(&authority, view))?;
                 } else {
-                    self.validate_sdk_authority(&mut authority)?;
+                    namespace_diagnostic!("logical.finalize.ordinary_authority", self.validate_sdk_authority(&mut authority))?;
                 }
                 if let Some(view) = private_view.as_ref() {
                     self.sdk_binding_private_gate(plan, view.state())
                         .map_err(bridge_failure)?;
                 } else {
-                    self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                    namespace_diagnostic!("logical.finalize.ordinary_backend", self.sdk_binding_gate(plan).map_err(bridge_failure))?;
                 }
                 if self.current_state_identity()? != publication_identity {
+                    #[cfg(test)]
+                    crate::service::namespace_diagnostics::record_status("logical.finalize.reject.08", 503);
                     return Err(Response::error(
                         503,
                         "SDK transaction changed before publication",
@@ -774,15 +794,15 @@ impl Service {
                 transaction.changed = false;
             }
             if let Some(view) = private_view.as_ref() {
-                self.validate_sdk_private_cleanup_authority(&authority, view)?;
+                namespace_diagnostic!("logical.finalize.private_authority", self.validate_sdk_private_cleanup_authority(&authority, view))?;
             } else {
-                self.validate_sdk_authority(&mut authority)?;
+                namespace_diagnostic!("logical.finalize.ordinary_authority", self.validate_sdk_authority(&mut authority))?;
             }
             if let Some(view) = private_view.as_ref() {
-                self.sdk_binding_private_gate(plan, view.state())
-                    .map_err(bridge_failure)?;
+                namespace_diagnostic!("logical.finalize.private_backend", self.sdk_binding_private_gate(plan, view.state())
+                    .map_err(bridge_failure))?;
             } else {
-                self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                namespace_diagnostic!("logical.finalize.ordinary_backend", self.sdk_binding_gate(plan).map_err(bridge_failure))?;
             }
             Ok(Response {
                 status,
@@ -792,6 +812,8 @@ impl Service {
                 consistency_index: None,
             })
         })();
+        #[cfg(test)]
+        crate::service::namespace_diagnostics::record("logical.finalize.result", &result);
         if let Some(value) = response.as_mut() {
             erase_json(value);
         }

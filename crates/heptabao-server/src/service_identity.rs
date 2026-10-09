@@ -197,14 +197,16 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
-        self.namespace_leases.validate()?;
-        self.engines
+        namespace_diagnostic!("publication.guard.validate.00", self.namespace_leases.validate())?;
+        namespace_diagnostic!("publication.guard.validate_transit_byok_state.01", self.engines
             .validate_transit_byok_state()
-            .map_err(|_| Response::error(503, "invalid Transit imported key state"))?;
+            .map_err(|_| Response::error(503, "invalid Transit imported key state")))?;
         if self.schema < MLDSA_IMPORT_STATE_SCHEMA
             && (self.engines.has_mldsa_import_state()
                 || previous.is_some_and(|state| state.schema >= MLDSA_IMPORT_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.00", 503);
             return Err(Response::error(503, "ML-DSA imports require schema 116"));
         }
         if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
@@ -212,19 +214,23 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= MOUNT_LISTING_VISIBILITY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.01", 503);
             return Err(Response::error(
                 503,
                 "mount listing visibility requires schema 111",
             ));
         }
-        self.engines
+        namespace_diagnostic!("publication.guard.validate_ssh_ca_format.02", self.engines
             .validate_ssh_ca_format()
-            .map_err(Response::from_engine_error)?;
+            .map_err(Response::from_engine_error))?;
         if self.engines.has_ssh_ca_state() && self.schema < SSH_CA_STATE_SCHEMA
             || previous.is_some_and(|state| {
                 state.schema == SSH_CA_STATE_SCHEMA || state.engines.has_ssh_ca_state()
             }) && (self.schema < SSH_CA_STATE_SCHEMA || !self.engines.has_ssh_ca_state())
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.02", 503);
             return Err(Response::error(503, "SSH CA custody cannot regress"));
         }
         let protected = self.protected_state()?;
@@ -233,6 +239,8 @@ impl State {
                 || previous
                     .is_some_and(|old| old.schema >= SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.03", 503);
             return Err(Response::error(
                 503,
                 "SDK Auth namespace custody requires schema 114",
@@ -261,21 +269,25 @@ impl State {
                 );
             }
         }
-        protected
+        namespace_diagnostic!("publication.guard.validate_ssh_ca_format.03", protected
             .engines
             .validate_ssh_ca_format()
-            .map_err(Response::from_engine_error)?;
+            .map_err(Response::from_engine_error))?;
         if protected.engines.has_ssh_ca_state() != self.engines.has_ssh_ca_state() {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.04", 503);
             return Err(Response::error(503, "SSH CA owner marker disagrees"));
         }
-        protected
+        namespace_diagnostic!("publication.guard.validate_raw_wrapped_reply_state.04", protected
             .auth
             .validate_raw_wrapped_reply_state()
-            .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))?;
+            .map_err(|_| Response::error(503, "invalid original wrapped reply custody")))?;
         if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             && (protected.auth.has_general_wrapped_reply_state()
                 || previous.is_some_and(|state| state.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.05", 503);
             return Err(Response::error(
                 503,
                 "general reply custody requires schema 113",
@@ -285,6 +297,8 @@ impl State {
             && (protected.auth.has_pki_raw_http_reply_state()
                 || previous.is_some_and(|state| state.schema >= RAW_PKI_HTTP_REPLY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.06", 503);
             return Err(Response::error(
                 503,
                 "PKI raw HTTP custody requires schema 112",
@@ -294,6 +308,8 @@ impl State {
             && (protected.auth.has_raw_wrapped_reply_state()
                 || previous.is_some_and(|state| state.schema >= RAW_WRAPPED_REPLY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.07", 503);
             return Err(Response::error(
                 503,
                 "original wrapped reply custody requires schema 110",
@@ -311,6 +327,8 @@ impl State {
             && (self.engines.has_pki_rsa8192_state()
                 || previous.is_some_and(|state| state.schema >= PKI_RSA8192_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.08", 503);
             return Err(Response::error(
                 503,
                 "PKI RSA8192 ownership requires schema 108",
@@ -321,6 +339,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.09", 503);
             return Err(Response::error(
                 503,
                 "PKI ordinary revocation ownership requires schema 105",
@@ -330,86 +350,96 @@ impl State {
             && (self.engines.has_pki_key_policy_state()
                 || previous.is_some_and(|state| state.schema >= PKI_KEY_POLICY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.10", 503);
             return Err(Response::error(
                 503,
                 "PKI subject key policy requires schema 104",
             ));
         }
-        self.auth
+        namespace_diagnostic!("publication.guard.validate_auth_mount_options_state.05", self.auth
             .validate_auth_mount_options_state()
-            .map_err(|e| Response::error(e.status, &e.message))?;
+            .map_err(|e| Response::error(e.status, &e.message)))?;
         if self.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA
             && (self.auth.has_auth_mount_options_state()
                 || previous.is_some_and(|state| state.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.11", 503);
             return Err(Response::error(
                 503,
                 "auth mount options require schema 103",
             ));
         }
-        self.validate_namespace_batch_state()?;
-        self.validate_namespace_deletion_state()?;
-        self.engines
+        namespace_diagnostic!("publication.guard.validate_namespace_batch_state.06", self.validate_namespace_batch_state())?;
+        namespace_diagnostic!("publication.guard.validate_namespace_deletion_state.07", self.validate_namespace_deletion_state())?;
+        namespace_diagnostic!("publication.guard.validate_acme_state.08", self.engines
             .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
-            .map_err(|error| Response::error(503, &error.message))?;
+            .map_err(|error| Response::error(503, &error.message)))?;
         if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA && self.engines.has_pki_acme_state() {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.12", 503);
             return Err(Response::error(
                 503,
                 "ACME durable account ownership requires schema 99",
             ));
         }
-        self.auth
+        namespace_diagnostic!("publication.guard.validate_sdk_credential_state.09", self.auth
             .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
                 self.namespaces.incarnation(ns)
             })
-            .map_err(|e| Response::error(e.status, &e.message))?;
-        self.auth
+            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!("publication.guard.validate_sdk_auth_state.10", self.auth
             .validate_sdk_auth_state()
-            .map_err(|e| Response::error(e.status, &e.message))?;
-        self.auth
+            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!("publication.guard.validate_sdk_auth_clock.11", self.auth
             .validate_sdk_auth_clock(previous.map(|state| &*state.auth))
-            .map_err(|e| Response::error(e.status, &e.message))?;
-        self.auth
+            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!("publication.guard.validate_sdk_credential_state.12", self.auth
             .validate_sdk_credential_state(
                 previous.map(|state| &*state.auth),
                 &self.cluster_id,
                 |ns| self.namespaces.incarnation(ns),
             )
-            .map_err(|e| Response::error(e.status, &e.message))?;
-        self.auth
+            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!("publication.guard.validate_sdk_auth_retirement_state.13", self.auth
             .validate_sdk_auth_retirement_state(
                 previous.map(|state| &*state.auth),
                 &self.cluster_id,
                 |ns| self.namespaces.incarnation(ns),
             )
-            .map_err(|e| Response::error(e.status, &e.message))?;
+            .map_err(|e| Response::error(e.status, &e.message)))?;
         if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
             && (self.auth.has_sdk_auth_retirement_state()
                 || previous.is_some_and(|old| old.auth.has_sdk_auth_retirement_state()))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.13", 503);
             return Err(Response::error(
                 503,
                 "SDK Auth retirement ownership requires format 107",
             ));
         }
         let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
-        self.auth
+        namespace_diagnostic!("publication.guard.validate_sdk_auth_epoch_floor.14", self.auth
             .validate_sdk_auth_epoch_floor(floor.as_ref())
-            .map_err(|e| Response::error(e.status, &e.message))?;
+            .map_err(|e| Response::error(e.status, &e.message)))?;
         if self.schema < SDK_AUTH_STATE_SCHEMA
             && (self.auth.has_sdk_auth_state()
                 || previous.is_some_and(|state| state.schema >= SDK_AUTH_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.14", 503);
             return Err(Response::error(
                 503,
                 "SDK Auth ownership requires format 100",
             ));
         }
 
-        self.protected_state()?
+        namespace_diagnostic!("publication.guard.validate_public_origin_state.15", self.protected_state()?
             .auth
             .validate_public_origin_state()
-            .map_err(|_| Response::error(503, "invalid public origin protected owner"))?;
+            .map_err(|_| Response::error(503, "invalid public origin protected owner")))?;
         if let Some(previous) = previous {
             self.auth
                 .validate_namespace_deletion_successor(&previous.auth, &self.cluster_id)
@@ -417,6 +447,8 @@ impl State {
             if self.schema < NAMESPACE_DELETION_STATE_SCHEMA
                 && previous.has_namespace_deletion_state()
             {
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record_status("publication.reject.15", 503);
                 return Err(Response::error(
                     503,
                     "namespace deletion writer floor cannot decrease",
@@ -436,47 +468,53 @@ impl State {
         }
 
         if !supported_reader_schema(self.schema) {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.16", 503);
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
             ));
         }
-        self.engines
+        namespace_diagnostic!("publication.guard.validate_acme_successor.16", self.engines
             .validate_acme_successor(previous.map(|state| &*state.engines), |namespace| {
                 previous.is_some_and(|old| {
                     self.namespaces
                         .retires_namespace_incarnation(&old.namespaces, namespace)
                 })
             })
-            .map_err(|error| Response::error(503, &error.message))?;
+            .map_err(|error| Response::error(503, &error.message)))?;
         if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA
             && (self.engines.has_pki_acme_state()
                 || previous.is_some_and(|s| s.schema >= PKI_ACME_ACCOUNT_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.17", 503);
             return Err(Response::error(
                 503,
                 "ACME durable account ownership requires schema 99",
             ));
         }
-        self.engines
+        namespace_diagnostic!("publication.guard.validate_sdk_registration_namespace.17", self.engines
             .validate_sdk_registration_namespace(|namespace| self.namespaces.incarnation(namespace))
-            .map_err(|error| Response::error(503, &error.message))?;
-        self.engines
+            .map_err(|error| Response::error(503, &error.message)))?;
+        namespace_diagnostic!("publication.guard.validate_sdk_lease_clock.18", self.engines
             .validate_sdk_lease_clock(previous.map(|state| &*state.engines))
-            .map_err(|error| Response::error(503, &error.message))?;
-        self.engines
+            .map_err(|error| Response::error(503, &error.message)))?;
+        namespace_diagnostic!("publication.guard.validate_pki_revocation_clock.19", self.engines
             .validate_pki_revocation_clock(previous.map(|state| &*state.engines))
-            .map_err(|error| Response::error(503, &error.message))?;
-        self.engines
+            .map_err(|error| Response::error(503, &error.message)))?;
+        namespace_diagnostic!("publication.guard.validate_kubernetes_artifact_clock.20", self.engines
             .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
-            .map_err(|error| Response::error(503, &error.message))?;
-        self.auth
+            .map_err(|error| Response::error(503, &error.message)))?;
+        namespace_diagnostic!("publication.guard.validate_token_api_clock_floor.21", self.auth
             .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
-            .map_err(|error| Response::error(503, &error.message))?;
+            .map_err(|error| Response::error(503, &error.message)))?;
         if self.schema < NAMESPACE_BATCH_STATE_SCHEMA
             && (self.has_namespace_batch_state()
                 || previous.is_some_and(|old| old.schema >= NAMESPACE_BATCH_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.18", 503);
             return Err(Response::error(
                 503,
                 "namespace batch lifecycle requires schema 91",
@@ -489,6 +527,8 @@ impl State {
                         || state.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
                 }))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.19", 503);
             return Err(Response::error(
                 503,
                 "Token API precise lease publication requires schema 82",
@@ -499,6 +539,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.20", 503);
             return Err(Response::error(
                 503,
                 "opaque Kubernetes artifact ownership requires schema 87",
@@ -508,6 +550,8 @@ impl State {
             && (self.engines.has_pki_url_state()
                 || previous.is_some_and(|state| state.schema >= PKI_URLS_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.21", 503);
             return Err(Response::error(503, "PKI URL ownership requires schema 97"));
         }
         if self.schema < EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
@@ -515,6 +559,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.22", 503);
             return Err(Response::error(
                 503,
                 "external full-DN CRL semantics require schema 98",
@@ -525,6 +571,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.23", 503);
             return Err(Response::error(
                 503,
                 "external PKI signer history requires schema 94",
@@ -534,6 +582,8 @@ impl State {
             && (self.engines.has_pki_role_names_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_NAMES_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.24", 503);
             return Err(Response::error(
                 503,
                 "PKI role name ownership requires schema 93",
@@ -545,6 +595,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.25", 503);
             return Err(Response::error(
                 503,
                 "batch or credential SDK Secret ownership requires schema 102",
@@ -554,6 +606,8 @@ impl State {
             && (self.engines.has_sdk_registration_state()
                 || previous.is_some_and(|state| state.schema >= SDK_ACCEPTED_SECRET_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.26", 503);
             return Err(Response::error(
                 503,
                 "accepted SDK Secret registration requires schema 101",
@@ -563,6 +617,8 @@ impl State {
             && (self.engines.has_sdk_lease_state()
                 || previous.is_some_and(|state| state.schema >= SDK_SECRET_LEASE_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.27", 503);
             return Err(Response::error(
                 503,
                 "SDK secret lease ownership requires schema 96",
@@ -572,6 +628,8 @@ impl State {
             && (self.engines.has_sdk_response_header_state()
                 || previous.is_some_and(|state| state.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.28", 503);
             return Err(Response::error(
                 503,
                 "SDK response header ownership requires schema 95",
@@ -581,6 +639,8 @@ impl State {
             && (self.engines.has_sdk_state()
                 || previous.is_some_and(|state| state.schema >= SDK_STORAGE_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.29", 503);
             return Err(Response::error(
                 503,
                 "SDK catalog and storage ownership requires schema 92",
@@ -590,6 +650,8 @@ impl State {
             && (self.engines.has_pki_signed_role_time_state()
                 || previous.is_some_and(|state| state.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.30", 503);
             return Err(Response::error(
                 503,
                 "PKI signed role time ownership requires schema 90",
@@ -599,6 +661,8 @@ impl State {
             && (self.engines.has_pki_role_time_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_TIME_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.31", 503);
             return Err(Response::error(
                 503,
                 "PKI role time ownership requires schema 89",
@@ -608,6 +672,8 @@ impl State {
             && (self.engines.has_pki_role_leaf_profile_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.32", 503);
             return Err(Response::error(
                 503,
                 "PKI role leaf profiles require schema 88",
@@ -617,6 +683,8 @@ impl State {
             && (self.engines.has_pki_role_wildcard_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.33", 503);
             return Err(Response::error(
                 503,
                 "PKI wildcard ownership requires schema 85",
@@ -626,6 +694,8 @@ impl State {
             && (self.engines.has_pki_role_bare_domain_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.34", 503);
             return Err(Response::error(
                 503,
                 "PKI base-domain ownership requires schema 84",
@@ -635,6 +705,8 @@ impl State {
             && (self.engines.has_pki_role_any_name_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.35", 503);
             return Err(Response::error(
                 503,
                 "PKI allow_any_name ownership requires schema 83",
@@ -644,6 +716,8 @@ impl State {
             && (self.auth.has_public_origin_state()
                 || previous.is_some_and(|state| state.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.36", 503);
             return Err(Response::error(
                 503,
                 "native public origin requires schema 86",
@@ -654,6 +728,8 @@ impl State {
                 || self.engines.has_namespace_record_custody()
                 || previous.is_some_and(|state| state.schema >= NAMESPACE_CUSTODY_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.37", 503);
             return Err(Response::error(
                 503,
                 "independent namespace custody requires schema 81",
@@ -663,6 +739,8 @@ impl State {
             && (self.auth.has_token_api_schema80_state()
                 || previous.is_some_and(|state| state.schema >= TOKEN_ROLE_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.38", 503);
             return Err(Response::error(
                 503,
                 "Token API role ownership requires schema 80",
@@ -673,6 +751,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.39", 503);
             return Err(Response::error(
                 503,
                 "local PKI intermediate ownership requires schema 79",
@@ -682,6 +762,8 @@ impl State {
             && (self.engines.has_local_pki_crl_state()
                 || previous.is_some_and(|state| state.schema >= LOCAL_PKI_CRL_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.40", 503);
             return Err(Response::error(
                 503,
                 "local PKI CRL state requires schema 78",
@@ -692,6 +774,8 @@ impl State {
                 || previous
                     .is_some_and(|state| state.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.41", 503);
             return Err(Response::error(
                 503,
                 "local PKI issuer ownership requires schema 77",
@@ -701,6 +785,8 @@ impl State {
             && (self.engines.has_local_pki_root_fields_state()
                 || previous.is_some_and(|state| state.schema >= LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.42", 503);
             return Err(Response::error(
                 503,
                 "local PKI root fields require schema 76",
@@ -710,6 +796,8 @@ impl State {
             && (self.auth.has_recovery_state()
                 || previous.is_some_and(|state| state.schema >= RECOVERY_CREDENTIAL_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.43", 503);
             return Err(Response::error(
                 503,
                 "protected recovery credential requires schema 73",
@@ -719,6 +807,8 @@ impl State {
             && (self.engines.has_local_pki_identifier_state()
                 || previous.is_some_and(|state| state.schema >= LOCAL_PKI_IDENTIFIER_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.44", 503);
             return Err(Response::error(
                 503,
                 "local PKI identifiers require schema 75",
@@ -728,14 +818,16 @@ impl State {
             && (self.auth.has_indexed_recovery_wire()
                 || previous.is_some_and(|state| state.schema >= INDEXED_RECOVERY_WIRE_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.45", 503);
             return Err(Response::error(
                 503,
                 "indexed recovery wire requires schema 74",
             ));
         }
-        self.auth
+        namespace_diagnostic!("publication.guard.validate_recovery_credential.22", self.auth
             .validate_recovery_credential(&self.cluster_id)
-            .map_err(|_| Response::error(503, "invalid protected recovery credential"))?;
+            .map_err(|_| Response::error(503, "invalid protected recovery credential")))?;
         if let Some(previous) = previous {
             self.auth
                 .validate_recovery_publication(&previous.auth, &self.cluster_id)
@@ -745,6 +837,8 @@ impl State {
             && (self.engines.has_local_typed_pki_state()
                 || previous.is_some_and(|state| state.schema >= LOCAL_TYPED_PKI_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.46", 503);
             return Err(Response::error(
                 503,
                 "typed local PKI keys require schema 72",
@@ -754,6 +848,8 @@ impl State {
             && (self.engines.has_issuer_path_pki_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ISSUER_PATH_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.47", 503);
             return Err(Response::error(
                 503,
                 "PKI issuer-path leases require schema 71",
@@ -763,6 +859,8 @@ impl State {
             && (self.engines.has_transit_byok_state()
                 || previous.is_some_and(|state| state.schema >= TRANSIT_BYOK_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.48", 503);
             return Err(Response::error(
                 503,
                 "Transit imports and wrapping keys require schema 70",
@@ -772,12 +870,16 @@ impl State {
             && (self.auth.has_jwt_pem_keyset_state()
                 || previous.is_some_and(|state| state.schema >= JWT_PEM_KEYSET_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.49", 503);
             return Err(Response::error(503, "JWT PEM keyset requires schema 69"));
         }
         if self.schema < JWT_USER_CLAIM_STATE_SCHEMA
             && (self.auth.has_jwt_user_claim_state()
                 || previous.is_some_and(|state| state.schema >= JWT_USER_CLAIM_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.50", 503);
             return Err(Response::error(
                 503,
                 "custom JWT identity claims require schema 68",
@@ -787,6 +889,8 @@ impl State {
             && (self.engines.has_typed_external_pki_state()
                 || previous.is_some_and(|state| state.schema >= TYPED_PKI_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.51", 503);
             return Err(Response::error(
                 503,
                 "typed external PKI public keys require schema 67",
@@ -796,6 +900,8 @@ impl State {
             && (self.engines.has_aad_bound_convergent_state()
                 || previous.is_some_and(|state| state.schema >= AAD_BOUND_STATE_SCHEMA))
         {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.52", 503);
             return Err(Response::error(
                 503,
                 "AAD-bound convergent keys require schema 66",
@@ -804,6 +910,8 @@ impl State {
         if previous.is_some_and(|state| {
             !supported_reader_schema(state.schema) || self.schema < state.schema
         }) {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.53", 503);
             return Err(Response::error(
                 503,
                 "identity state schema cannot decrease",
