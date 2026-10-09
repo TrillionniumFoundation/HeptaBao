@@ -2,6 +2,39 @@
 //! identity substitutions as data authorization. It never grants a capability.
 use super::*;
 
+// The official UI uses these finite API prefixes for top and side navigation.
+// Its glob matcher understands prefix globs, but not ACL segment wildcards.
+// Evaluate concrete navigation paths with the real ACL evaluator; keep the
+// original segment patterns for metadata consumers that understand them.
+const NAVIGATION_PATHS: &[&str] = &[
+    "sys/auth",
+    "identity/mfa/method",
+    "identity/oidc/client",
+    "identity/entity/id",
+    "identity/group/id",
+    "sys/leases/lookup",
+    "sys/namespaces",
+    "sys/policies/acl",
+    "sys/wrapping/wrap",
+    "sys/wrapping/lookup",
+    "sys/wrapping/unwrap",
+    "sys/wrapping/rewrap",
+    "sys/tools/random",
+    "sys/tools/hash",
+    "sys/seal",
+    "sys/storage/raft/configuration",
+    "sys/internal/counters/activity",
+    "sys/internal/counters/config",
+];
+
+fn qualified_path(namespace: &str, path: &str) -> String {
+    if namespace.is_empty() {
+        path.to_owned()
+    } else {
+        format!("{namespace}/{path}")
+    }
+}
+
 #[derive(Default)]
 struct ProjectedRule {
     capabilities: BTreeSet<String>,
@@ -114,6 +147,16 @@ impl AuthState {
                 rules.entry(rendered).or_default().merge(rule);
             }
         }
+        let segment_navigation: BTreeSet<&str> = rules
+            .keys()
+            .filter(|pattern| pattern.split('/').any(|part| part == "+"))
+            .flat_map(|pattern| {
+                NAVIGATION_PATHS
+                    .iter()
+                    .copied()
+                    .filter(move |path| path_matches(pattern, path))
+            })
+            .collect();
         let mut exact = serde_json::Map::new();
         let mut glob = serde_json::Map::new();
         for (pattern, rule) in rules {
@@ -126,12 +169,34 @@ impl AuthState {
             } else {
                 (pattern.as_str(), &mut exact)
             };
-            let path = if namespace.is_empty() {
-                path.to_owned()
-            } else {
-                format!("{namespace}/{path}")
-            };
-            target.insert(path, rule.json());
+            target.insert(qualified_path(namespace, path), rule.json());
+        }
+        for path in segment_navigation {
+            let mut capabilities = Vec::new();
+            for capability in CAPABILITIES
+                .iter()
+                .copied()
+                .filter(|capability| *capability != "deny")
+            {
+                if self.policy_allows(
+                    namespace,
+                    path,
+                    capability,
+                    token.policies(),
+                    &principal.identity_policies,
+                    &principal.identity_templates,
+                )? {
+                    capabilities.push(capability);
+                }
+            }
+            capabilities.sort_unstable();
+            if capabilities.is_empty() {
+                capabilities.push("deny");
+            }
+            let projection = exact
+                .entry(qualified_path(namespace, path))
+                .or_insert_with(|| json!({}));
+            projection["capabilities"] = json!(capabilities);
         }
         Ok(response(
             json!({"root":false,"exact_paths":exact,"glob_paths":glob}),

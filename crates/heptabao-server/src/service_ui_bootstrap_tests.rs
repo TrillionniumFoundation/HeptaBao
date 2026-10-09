@@ -335,3 +335,143 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
     assert_eq!(discovered.body["data"]["keys"], json!([]));
     Ok(())
 }
+
+#[test]
+fn ui_segment_navigation_uses_actual_acl_specificity_and_preserves_api_denials()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    let entity = call(
+        &mut service,
+        "POST",
+        "identity/entity",
+        &admin,
+        json!({"name":"synthetic-ui-segment"}),
+    );
+    assert_eq!(entity.status, 200);
+    let entity_id = entity.body["data"]["id"].as_str().ok_or("entity id")?;
+    let policy = r#"path "sys/internal/ui/resultant-acl" { capabilities=["read"] }
+path "identity/+/id" { capabilities=["list"] }
+path "identity/group/id" { capabilities=["deny"] }"#;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/ui-segments",
+            &admin,
+            json!({"policy":policy}),
+        )
+        .status,
+        204
+    );
+    let bearer = token(
+        &mut service,
+        &admin,
+        "",
+        json!({"policies":["ui-segments"],"no_default_policy":true,"ttl":300}),
+    )?;
+    let acl = call(
+        &mut service,
+        "GET",
+        "sys/internal/ui/resultant-acl",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(acl.status, 200);
+    // The official UI asks for "list" at this exact navigation prefix.
+    assert_eq!(
+        acl.body["data"]["exact_paths"]["identity/entity/id"]["capabilities"],
+        json!(["list"])
+    );
+    assert_eq!(
+        acl.body["data"]["exact_paths"]["identity/group/id"]["capabilities"],
+        json!(["deny"])
+    );
+    assert_eq!(
+        acl.body["data"]["glob_paths"]["identity/+/id"]["capabilities"],
+        json!(["list"])
+    );
+    let listed = call(
+        &mut service,
+        "LIST",
+        "identity/entity/id",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(listed.status, 200);
+    assert_eq!(listed.body["data"]["keys"], json!([entity_id]));
+    assert_eq!(
+        call(
+            &mut service,
+            "LIST",
+            "identity/group/id",
+            &bearer,
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            &format!("identity/entity/id/{entity_id}"),
+            &bearer,
+            json!({}),
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "identity/entity",
+            &bearer,
+            json!({"name":"synthetic-denied"}),
+        )
+        .status,
+        403
+    );
+    // A narrower live rule wins over the segment wildcard in both discovery
+    // and real requests, even for an already-issued token.
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/ui-segments",
+            &admin,
+            json!({"policy":format!(
+                r#"{policy}
+            path "identity/entity/id" {{ capabilities=["deny"] }}"#
+            )}),
+        )
+        .status,
+        204
+    );
+    let acl = call(
+        &mut service,
+        "GET",
+        "sys/internal/ui/resultant-acl",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(acl.status, 200);
+    assert_eq!(
+        acl.body["data"]["exact_paths"]["identity/entity/id"]["capabilities"],
+        json!(["deny"])
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "LIST",
+            "identity/entity/id",
+            &bearer,
+            json!({})
+        )
+        .status,
+        403
+    );
+    Ok(())
+}

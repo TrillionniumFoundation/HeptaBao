@@ -779,7 +779,8 @@ fn process_parsed_request(
             };
             (reply, head, String::new())
         }
-        Ok(ParsedRequest::Api(mut request)) => {
+        Ok(ParsedRequest::Api(request)) => {
+            let mut request = *request;
             let _raw_reply_ingress = crate::auth::IngressReplyScope::listener_wrapping(
                 attempt_id,
                 request.lexical_wrapping_body.take(),
@@ -1168,7 +1169,7 @@ impl Drop for SecretJson {
     }
 }
 enum ParsedRequest {
-    Api(Request),
+    Api(Box<Request>),
     Ui(ui::Request),
 }
 struct Request {
@@ -1287,7 +1288,7 @@ fn read_request_mode(
     native_wire: bool,
 ) -> Result<Request, ParseError> {
     match read_request_with_ui(reader, timeout, native_wire, false)? {
-        ParsedRequest::Api(request) => Ok(request),
+        ParsedRequest::Api(request) => Ok(*request),
         ParsedRequest::Ui(_) => Err(bad("request must use /v1/ API")),
     }
 }
@@ -1602,7 +1603,7 @@ fn read_request_with_ui(
         {
             return Err(bad("ambiguous encoded paths are not supported"));
         }
-        return Ok(ParsedRequest::Api(Request {
+        return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
@@ -1613,7 +1614,7 @@ fn read_request_with_ui(
             body: SecretJson(body),
             wrap_ttl_seconds,
             client_certificates: None,
-        }));
+        })));
     }
     // Public UI preflight has no PATCH operation. Its JSON media boundary is
     // still evaluated before dispatch, after ordinary framing/size fences.
@@ -1638,7 +1639,7 @@ fn read_request_with_ui(
     }
     if leader_route {
         leader::validate_selectors(&method, &target)?;
-        return Ok(ParsedRequest::Api(Request {
+        return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
@@ -1649,7 +1650,7 @@ fn read_request_with_ui(
             body: SecretJson(json!({})),
             wrap_ttl_seconds: None,
             client_certificates: None,
-        }));
+        })));
     }
     // OpenBao reads fields for these operations from the query string only.
     // Still consume and bound the complete body above so ignored bytes cannot
@@ -1828,7 +1829,7 @@ fn read_request_with_ui(
             .bind_transport_fields(&body.0)
             .map_err(|_| bad("invalid lexical transport body"))?;
     }
-    Ok(ParsedRequest::Api(Request {
+    Ok(ParsedRequest::Api(Box::new(Request {
         lexical_wrapping_body,
         consistency,
         native_snapshot,
@@ -1839,7 +1840,7 @@ fn read_request_with_ui(
         body,
         wrap_ttl_seconds,
         client_certificates: None,
-    }))
+    })))
 }
 
 fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
