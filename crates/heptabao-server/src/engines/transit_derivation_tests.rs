@@ -31,7 +31,8 @@ fn derivation127_context_ed25519_matches_independent_sdk_and_rejects_changed_con
     let mut t = Transit::default();
     assert!(call(&mut t, "POST", "keys/context", json!({"type":"ed25519","derived":true,"allow_plaintext_backup":true,"exportable":true}))?.status == 200);
     assert!(t.has_derived_ed_state());
-    let descriptor = call(&mut t, "GET", "keys/context", json!({}))?.body;
+    let descriptor_response = call(&mut t, "GET", "keys/context", json!({}))?;
+    let descriptor = &descriptor_response.body;
     assert!(descriptor["data"]["keys"]["1"]["public_key"] == "");
     assert!(descriptor["data"]["keys"]["1"]["name"] == "ed25519" && descriptor["data"]["keys"]["1"]["certificate_chain"] == "");
     assert!(descriptor["data"]["supports_derivation"] == true && descriptor["data"]["kdf"] == "hkdf_sha256");
@@ -90,7 +91,8 @@ fn derivation127_context_ed25519_matches_independent_sdk_and_rejects_changed_con
     let message = b"new independent context signature vector";
     let mut signatures = Vec::new();
     for context in [b"tenant-one".as_slice(), b"tenant-two".as_slice(), &[0, 1, 0xff]] {
-        let result = call(&mut t, "POST", "sign/context", json!({"input":BASE64.encode(message),"context":BASE64.encode(context)}))?.body;
+        let result_response = call(&mut t, "POST", "sign/context", json!({"input":BASE64.encode(message),"context":BASE64.encode(context)}))?;
+        let result = &result_response.body;
         let seed = independent_hkdf(&master, context, 32)?;
         let sdk = PKey::private_key_from_raw_bytes(&seed, Id::ED25519).map_err(|_| "SDK Ed seed")?;
         let public = sdk.raw_public_key().map_err(|_| "SDK Ed public")?;
@@ -191,23 +193,27 @@ fn derivation127_ecdh_three_curves_four_aead_keys_match_independent_hkdf_and_ato
                 && derived_config.body["data"]["type"] == kind
                 && derived_config.body["data"]["exportable"] == true
                 && derived_config.body["data"]["latest_version"] == 1);
-            let exported = call(&mut t,"GET",&format!("export/encryption-key/{name}"),json!({}))?.body;
+            let exported_response = call(&mut t,"GET",&format!("export/encryption-key/{name}"),json!({}))?;
+            let exported = &exported_response.body;
             let expected = independent_hkdf(&shared,&[],symmetric::key_len(kind))?;
             assert!(decoded(&exported["data"]["keys"]["1"])?.as_slice() == expected.as_slice());
             let plaintext = BASE64.encode(format!("novel reciprocal vector {name}").as_bytes());
-            let encrypted = call(&mut t,"POST",&format!("encrypt/{name}"),json!({"plaintext":plaintext}))?.body;
+            let encrypted_response = call(&mut t,"POST",&format!("encrypt/{name}"),json!({"plaintext":plaintext}))?;
+            let encrypted = &encrypted_response.body;
             assert!(call(&mut t,"POST",&format!("decrypt/{name}"),json!({"ciphertext":encrypted["data"]["ciphertext"]}))?.body["data"]["plaintext"] == plaintext);
-            let old_hmac = call(&mut t,"POST",&format!("hmac/{name}"),json!({"input":"ZWNkaCBhcmNoaXZl","key_version":1}))?.body;
+            let old_hmac_response = call(&mut t,"POST",&format!("hmac/{name}"),json!({"input":"ZWNkaCBhcmNoaXZl","key_version":1}))?;
+            let old_hmac = &old_hmac_response.body;
             let old_key = t.keys[&name].versions[&1].material.clone();
             let second_peer = PKey::from_ec_key(EcKey::generate(&group).map_err(|_| "SDK second peer")?).map_err(|_| "SDK second PKey")?;
             let second_public = String::from_utf8(second_peer.public_key_to_pem().map_err(|_| "SDK second PEM")?).map_err(|_| "SDK second UTF8")?;
             let mut second_request = body.clone();second_request["peer_public_key"] = json!(second_public);
             assert!(call(&mut t,"POST",&format!("derive-key/{name}"),second_request)?.status == 204);
-            let descriptor = call(&mut t,"GET",&format!("keys/{name}"),json!({}))?.body;
+            let descriptor_response = call(&mut t,"GET",&format!("keys/{name}"),json!({}))?;
+            let descriptor = &descriptor_response.body;
             assert!(descriptor["data"]["latest_version"] == 2 && descriptor["data"]["imported_key"] == true
                 && descriptor["data"]["imported_key_allow_rotation"] == false && descriptor["data"]["derived"] == false);
             assert!(t.keys[&name].versions[&1].material == old_key);
-            assert!(call(&mut t,"POST",&format!("hmac/{name}"),json!({"input":"ZWNkaCBhcmNoaXZl","key_version":1}))?.body == old_hmac);
+            assert!(&call(&mut t,"POST",&format!("hmac/{name}"),json!({"input":"ZWNkaCBhcmNoaXZl","key_version":1}))?.body == old_hmac);
             let mut second_agreement = Deriver::new(&second_peer).map_err(|_| "SDK second reciprocal")?;
             second_agreement.set_peer(&own_public).map_err(|_| "SDK second reciprocal peer")?;
             let second_shared = Zeroizing::new(second_agreement.derive_to_vec().map_err(|_| "SDK second reciprocal result")?);
@@ -235,7 +241,8 @@ fn derivation127_ecdh_three_curves_four_aead_keys_match_independent_hkdf_and_ato
         assert!(!t.keys.contains_key("wrong-curve") && state(&t)?.as_slice() == before.as_slice());
         let default_name = format!("{base}-default");
         assert!(call(&mut t,"POST",&format!("derive-key/{default_name}"),json!({"base_key_name":base,"peer_public_key":public}))?.status == 204);
-        let default = call(&mut t,"GET",&format!("keys/{default_name}"),json!({}))?.body;
+        let default_response = call(&mut t,"GET",&format!("keys/{default_name}"),json!({}))?;
+        let default = &default_response.body;
         assert!(default["data"]["type"] == "aes256-gcm96" && default["data"]["latest_version"] == 1
             && default["data"]["imported_key"] == true && default["data"]["supports_derivation"] == true);
     }
