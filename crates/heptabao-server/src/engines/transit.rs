@@ -17,6 +17,8 @@ const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
 #[path = "transit_asymmetric.rs"]
 mod asymmetric;
+#[path = "transit_asymmetric_byok.rs"]
+mod asymmetric_byok;
 #[path = "transit_byok.rs"]
 mod byok;
 #[path = "transit_external.rs"]
@@ -222,11 +224,24 @@ impl Key {
             if symmetric::is_kind(&self.kind) && *number < self.min_decryption_version {
                 continue;
             }
-            let value = if self.kind == "ed25519" {
+            let value = if let Some(public) = version.public_key_only.as_ref().filter(|_| asymmetric_byok::is_kind(&self.kind)) {
+                let public = asymmetric_byok::descriptor_public(&self.kind, &stored_material(public)?)?;
+                json!({"creation_time":timestamp(version.created_at),"public_key":public,
+                    "name":"", "certificate_chain":Value::Null})
+            } else if self.kind == "ed25519" {
                 let material = stored_material(&version.material)?;
-                let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                    .map_err(|_| error(500, "stored signing key is invalid"))?;
-                json!({"creation_time":timestamp(version.created_at),"public_key":BASE64.encode(pair.public_key().as_ref())})
+                let pair = if self.byok.is_some() {
+                    asymmetric_byok::ed25519_pair(&material)?
+                } else {
+                    signature::Ed25519KeyPair::from_pkcs8(&material)
+                        .map_err(|_| error(500, "stored signing key is invalid"))?
+                };
+                let mut value = json!({"creation_time":timestamp(version.created_at),"public_key":BASE64.encode(pair.public_key().as_ref())});
+                if self.byok.is_some() {
+                    value["name"] = json!("");
+                    value["certificate_chain"] = Value::Null;
+                }
+                value
             } else if asymmetric::is_kind(&self.kind) {
                 json!({"creation_time":timestamp(version.created_at),
                     "public_key":asymmetric::public(&stored_material(&version.material)?)?,
@@ -245,16 +260,18 @@ impl Key {
             };
             versions.insert(number.to_string(), value);
         }
-        if asymmetric::is_kind(&self.kind) {
+        if asymmetric::is_kind(&self.kind) || (self.kind == "ed25519" && self.byok.is_some()) {
             let encryption = asymmetric::is_rsa(&self.kind);
-            return Ok(
-                json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
+            let mut descriptor = json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
                 "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
                 "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
-                "derived":false,"supports_derivation":false,"supports_encryption":encryption,
-                "supports_decryption":encryption,"supports_signing":true,"imported_key":false,
-                "auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0}),
-            );
+                "derived":false,"supports_derivation":self.kind == "ed25519","supports_encryption":encryption,
+                "supports_decryption":encryption,"supports_signing":true,"imported_key":byok::imported_key(self),
+                "auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0});
+            if let Some(allowed) = byok::imported_key_allow_rotation(self) {
+                descriptor["imported_key_allow_rotation"] = json!(allowed);
+            }
+            return Ok(descriptor);
         }
         let encryption = matches!(
             self.kind.as_str(),
@@ -772,7 +789,7 @@ impl Transit {
                     },
                 )?;
                 key.alive()?;
-                byok::rotation_allowed(key)?;
+                byok::rotation_allowed_named(key, name)?;
                 let requested_mode = symmetric::requested_mode(body)?;
                 let previous_mode = key
                     .versions
@@ -933,7 +950,9 @@ impl Transit {
                 } else if let Some(public) = value.public_key_only.as_ref() {
                     if public_export {
                         let der = stored_material(public)?;
-                        if standard_asymmetric {
+                        if asymmetric_byok::is_kind(&key.kind) {
+                            asymmetric_byok::export_public(&key.kind, &der, format)?
+                        } else if standard_asymmetric {
                             mldsa::export_public(&key.kind, &der, format)?.to_string()
                         } else {
                             BASE64.encode(mldsa::public_only(&key.kind, &der)?)
@@ -1318,8 +1337,12 @@ fn handle_crypto(
                     mldsa::sign(&key.kind, &material, &input)?
                 }
             } else {
-                let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                    .map_err(|_| error(500, "stored signing key is invalid"))?;
+                let pair = if key.byok.is_some() {
+                    asymmetric_byok::ed25519_pair(&material)?
+                } else {
+                    signature::Ed25519KeyPair::from_pkcs8(&material)
+                        .map_err(|_| error(500, "stored signing key is invalid"))?
+                };
                 pair.sign(&input).as_ref().to_vec()
             };
             json!({"signature":format!("vault:v{version}:{}", signature_encoding(body)?.encode(signature)),"key_version":version})
@@ -1349,7 +1372,11 @@ fn handle_crypto(
                     parse_wrapped_with(string(body, "signature")?, signature_encoding(body)?)?;
                 let version = key.decrypt_version(version)?;
                 if let Some(public) = version.public_key_only.as_ref() {
-                    mldsa::verify_public(&key.kind, &stored_material(public)?, &input, &bytes)?
+                    if asymmetric_byok::is_kind(&key.kind) {
+                        asymmetric::verify_public(&key.kind, &stored_material(public)?, body, algorithm, &input, &bytes)?
+                    } else {
+                        mldsa::verify_public(&key.kind, &stored_material(public)?, &input, &bytes)?
+                    }
                 } else {
                     let material = stored_material(&version.material)?;
                     if asymmetric::is_kind(&key.kind) {
@@ -1357,8 +1384,12 @@ fn handle_crypto(
                     } else if mldsa::is_kind(&key.kind) {
                         mldsa::verify(&key.kind, &material, &input, &bytes)?
                     } else {
-                        let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                            .map_err(|_| error(500, "stored signing key is invalid"))?;
+                        let pair = if key.byok.is_some() {
+                            asymmetric_byok::ed25519_pair(&material)?
+                        } else {
+                            signature::Ed25519KeyPair::from_pkcs8(&material)
+                                .map_err(|_| error(500, "stored signing key is invalid"))?
+                        };
                         signature::UnparsedPublicKey::new(
                             &signature::ED25519,
                             pair.public_key().as_ref(),
@@ -1589,7 +1620,11 @@ fn encrypt(
                 "key version reached its encryption limit; rotate the key",
             ));
         }
-        let ciphertext = asymmetric::encrypt(&stored_material(&version.material)?, plaintext)?;
+        let ciphertext = if let Some(public) = version.public_key_only.as_ref() {
+            asymmetric::encrypt_public(&key.kind, &stored_material(public)?, plaintext)?
+        } else {
+            asymmetric::encrypt(&stored_material(&version.material)?, plaintext)?
+        };
         version.encryptions += 1;
         return Ok(
             json!({"ciphertext":format!("vault:v{number}:{}",BASE64.encode(ciphertext)),"key_version":number}),

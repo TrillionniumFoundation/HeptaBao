@@ -742,6 +742,11 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_standard_asymmetric_import_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_standard_asymmetric_import_state())))
+    }
+
     pub(crate) fn validate_transit_byok_state(&self) -> Result<()> {
         for namespace in self.namespaces.values() {
             for mount in namespace.mounts.values() {

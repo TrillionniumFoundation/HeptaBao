@@ -106,7 +106,7 @@ pub(super) fn export(kind: &str, material: &[u8], public_key: bool) -> Result<Ze
 fn export_private(kind: &str, material: &[u8]) -> Result<PKey<Private>> {
     let pair = private(material)?;
     if kind == "ed25519" {
-        let original = signature::Ed25519KeyPair::from_pkcs8(material)
+        let original = asymmetric_byok::ed25519_pair(material)
             .map_err(|_| error(500, "stored Ed25519 signing key is invalid"))?;
         if pair.id() != openssl::pkey::Id::ED25519
             || pair.raw_public_key().map_err(provider_failure)?.as_slice()
@@ -391,6 +391,18 @@ pub(super) fn verify(
         padding,
     } = signing_input(kind, body, path, input)?;
     let pair = private(material)?;
+    verify_pair(kind, &pair, body, digest, md, padding, signature)
+}
+
+fn verify_pair<T: openssl::pkey::HasPublic>(
+    kind: &str,
+    pair: &openssl::pkey::PKeyRef<T>,
+    body: &Value,
+    digest: Zeroizing<Vec<u8>>,
+    md: Option<&'static MdRef>,
+    padding: Padding,
+    signature: &[u8],
+) -> Result<bool> {
     if !is_rsa(kind) {
         let signature = if body.get("marshaling_algorithm").and_then(Value::as_str) == Some("jws") {
             let width = jws_width(kind)?;
@@ -411,7 +423,7 @@ pub(super) fn verify(
         let ec_key = pair.ec_key().map_err(provider_failure)?;
         return Ok(signature.verify(&digest, &ec_key).unwrap_or(false));
     }
-    let mut ctx = PkeyCtx::new(&pair).map_err(provider_failure)?;
+    let mut ctx = PkeyCtx::new(pair).map_err(provider_failure)?;
     ctx.verify_init().map_err(provider_failure)?;
     ctx.set_rsa_padding(padding).map_err(provider_failure)?;
     if let Some(md) = md {
@@ -434,9 +446,34 @@ pub(super) fn verify(
     Ok(ctx.verify(&digest, signature).unwrap_or(false))
 }
 
+pub(super) fn verify_public(
+    kind: &str, der: &[u8], body: &Value, path: &str, input: &[u8], signature: &[u8],
+) -> Result<bool> {
+    let pair = asymmetric_byok::public_pair(kind, der)?;
+    if kind == "ed25519" {
+        let public = pair.raw_public_key().map_err(provider_failure)?;
+        return Ok(signature::UnparsedPublicKey::new(&signature::ED25519, public)
+            .verify(input, signature).is_ok());
+    }
+    let SigningInput { md, digest, padding } = signing_input(kind, body, path, input)?;
+    verify_pair(kind, &pair, body, digest, md, padding, signature)
+}
+
 pub(super) fn encrypt(material: &[u8], plaintext: &[u8]) -> Result<Vec<u8>> {
     let pair = private(material)?;
-    let mut ctx = Encrypter::new(&pair).map_err(provider_failure)?;
+    encrypt_pair(&pair, plaintext)
+}
+
+pub(super) fn encrypt_public(kind: &str, der: &[u8], plaintext: &[u8]) -> Result<Vec<u8>> {
+    if !is_rsa(kind) { return Err(bad("key type does not support encryption")); }
+    let pair = asymmetric_byok::public_pair(kind, der)?;
+    encrypt_pair(&pair, plaintext)
+}
+
+fn encrypt_pair<T: openssl::pkey::HasPublic>(
+    pair: &openssl::pkey::PKeyRef<T>, plaintext: &[u8],
+) -> Result<Vec<u8>> {
+    let mut ctx = Encrypter::new(pair).map_err(provider_failure)?;
     ctx.set_rsa_padding(Padding::PKCS1_OAEP)
         .map_err(provider_failure)?;
     ctx.set_rsa_oaep_md(MessageDigest::sha256())

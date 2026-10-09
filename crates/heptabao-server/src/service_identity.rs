@@ -190,6 +190,9 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_standard_asymmetric_import_state() {
+            required.max(STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA)
+        } else { required };
         self.schema.max(required)
     }
 
@@ -201,6 +204,12 @@ impl State {
         namespace_diagnostic!("publication.guard.validate_transit_byok_state.01", self.engines
             .validate_transit_byok_state()
             .map_err(|_| Response::error(503, "invalid Transit imported key state")))?;
+        if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+            && (self.engines.has_standard_asymmetric_import_state()
+                || previous.is_some_and(|state| state.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "standard asymmetric imports require schema 117"));
+        }
         if self.schema < MLDSA_IMPORT_STATE_SCHEMA
             && (self.engines.has_mldsa_import_state()
                 || previous.is_some_and(|state| state.schema >= MLDSA_IMPORT_STATE_SCHEMA))
@@ -1329,6 +1338,9 @@ impl State {
                 503,
                 "PKI issuer-path leases require schema 71",
             ));
+        }
+        if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA && self.engines.has_standard_asymmetric_import_state() {
+            return Err(Response::error(503, "standard asymmetric imports require schema 117"));
         }
         if self.schema < MLDSA_IMPORT_STATE_SCHEMA && self.engines.has_mldsa_import_state() {
             return Err(Response::error(503, "ML-DSA imports require schema 116"));

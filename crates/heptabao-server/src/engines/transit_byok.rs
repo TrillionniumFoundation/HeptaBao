@@ -142,11 +142,15 @@ impl Transit {
                 .versions
                 .values()
                 .any(|version| version.public_key_only.is_some())
-                && (key.byok.is_none() || !mldsa::is_kind(&key.kind))
+                && (key.byok.is_none() || !(mldsa::is_kind(&key.kind) || asymmetric_byok::is_kind(&key.kind)))
             {
                 return Err(bad("public-only versions require an imported ML-DSA owner"));
             }
             if let Some(policy) = key.byok.as_ref() {
+                if asymmetric_byok::is_kind(&key.kind) {
+                    validate_standard_imported_key(key, policy)?;
+                    continue;
+                }
                 let mldsa_key = mldsa::is_kind(&key.kind);
                 let length = if mldsa_key {
                     32
@@ -263,6 +267,9 @@ impl Transit {
         if mldsa::is_kind(kind) {
             return self.import_mldsa(name, kind, body, now);
         }
+        if asymmetric_byok::is_kind(kind) {
+            return self.import_standard_asymmetric(name, kind, body, now);
+        }
         target_length(kind)?;
         if optional_bool(body, "derived")?.unwrap_or(false) {
             return Err(error(501, "derived key imports are not implemented"));
@@ -314,7 +321,7 @@ impl Transit {
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
         if !imported_key(key) {
-            return Err(if mldsa::is_kind(&key.kind) {
+            return Err(if mldsa::is_kind(&key.kind) || asymmetric_byok::is_kind(&key.kind) {
                 openbao_compatibility_error(
                     "the import_version endpoint can only be used with an imported key",
                 )
@@ -324,6 +331,9 @@ impl Transit {
         }
         if mldsa::is_kind(&key.kind) {
             return self.import_mldsa_version(name, body, now);
+        }
+        if asymmetric_byok::is_kind(&key.kind) {
+            return self.import_standard_asymmetric_version(name, body, now);
         }
         if body.get("version").is_some() {
             return Err(error(501, "explicit import versions are not implemented"));
@@ -455,14 +465,18 @@ impl Transit {
             .transpose()?;
         let mut imported = self.mldsa_imported_version(body, &key.kind, now)?;
         let private = imported.public_key_only.is_none();
-        let destination = explicit.or_else(|| {
-            (private
-                && key
-                    .versions
-                    .get(&key.latest_version)
-                    .is_some_and(|version| version.public_key_only.is_some()))
-            .then_some(key.latest_version)
-        });
+        let matching_latest = if explicit.is_none() && private {
+            if let Some(public) = key.versions.get(&key.latest_version)
+                .and_then(|version| version.public_key_only.as_ref())
+            {
+                let actual = mldsa::export_standard(&key.kind,
+                    &stored_material(&imported.material)?, true, "der")?;
+                let actual = BASE64.decode(actual.as_bytes())
+                    .map_err(|_| bad("invalid derived ML-DSA public key"))?;
+                actual.as_slice() == stored_material(public)?.as_slice()
+            } else { false }
+        } else { false };
+        let destination = explicit.or_else(|| matching_latest.then_some(key.latest_version));
         let (number, append) = if let Some(number) = destination {
             let existing = key
                 .versions
@@ -518,6 +532,169 @@ impl Transit {
     }
 }
 
+
+const MAX_STANDARD_ENVELOPE_BASE64: usize = 11_616;
+
+pub(super) fn rotation_allowed_named(key: &Key, name: &str) -> Result<()> {
+    if asymmetric_byok::is_kind(&key.kind)
+        && key.byok.as_ref().is_some_and(|policy| !policy.allow_rotation)
+    {
+        return Err(openbao_compatibility_error(&format!(
+            "imported key {name} does not allow rotation within Vault"
+        )));
+    }
+    rotation_allowed(key)
+}
+
+fn validate_standard_imported_key(key: &Key, policy: &ImportPolicy) -> Result<()> {
+    if key.derived || key.convergent_encryption || key.convergent_write_min_version != 0
+        || (!policy.imported_key && !policy.allow_rotation)
+        || (!policy.allow_rotation && key.auto_rotate_period != 0)
+        || key.versions.is_empty()
+        || key.versions.keys().next_back() != Some(&key.latest_version)
+    {
+        return Err(bad("invalid standard asymmetric imported key policy"));
+    }
+    for version in key.versions.values() {
+        if stored_material(&version.hmac_material)?.len() != 32
+            || version.external_key_ref.is_some()
+            || version.heptabao_convergent_version.is_some()
+            || (!asymmetric::is_rsa(&key.kind) && version.encryptions != 0)
+            || version.encryptions > MAX_ENCRYPTIONS_PER_VERSION
+        {
+            return Err(bad("invalid standard asymmetric imported key version"));
+        }
+        if let Some(public) = version.public_key_only.as_ref() {
+            if !version.material.is_empty() {
+                return Err(bad("public-only versions cannot contain private material"));
+            }
+            asymmetric_byok::validate_public(&key.kind, &stored_material(public)?)?;
+        } else {
+            asymmetric_byok::validate_private(&key.kind, &stored_material(&version.material)?)?;
+        }
+    }
+    Ok(())
+}
+
+fn standard_explicit_version(body: &Value) -> Result<Option<u64>> {
+    let value = match body.get("version") {
+        None => return Ok(None),
+        Some(Value::Number(number)) => number.as_u64()
+            .ok_or_else(|| bad("version must be a nonnegative integer"))?,
+        Some(Value::String(number)) => number.parse::<u64>().map_err(|_| bad(
+            "Field validation failed: error converting input for field \"version\": '' cannot parse value as 'int': strconv.ParseInt: invalid syntax"
+        ))?,
+        _ => return Err(bad("version must be a nonnegative integer")),
+    };
+    Ok((value != 0).then_some(value))
+}
+
+impl Transit {
+    pub(in crate::engines) fn has_standard_asymmetric_import_state(&self) -> bool {
+        self.keys.values().any(|key| asymmetric_byok::is_kind(&key.kind) && key.byok.is_some())
+    }
+
+    fn standard_imported_version(&self, body: &Value, kind: &str, now: u64) -> Result<KeyVersion> {
+        if let Some(value) = body.get("ciphertext") {
+            let value = value.as_str().ok_or_else(|| bad("ciphertext must be a string"))?;
+            if value.len() > MAX_STANDARD_ENVELOPE_BASE64 {
+                return Err(error(500, "wrapped key material is invalid"));
+            }
+            let ciphertext = BASE64.decode(value).map(Zeroizing::new)
+                .map_err(|_| error(500, "wrapped key material is invalid"))?;
+            let private = self.wrapping_key.as_ref()
+                .ok_or_else(|| error(500, "wrapping key is unavailable"))?.private()?;
+            let pkcs8 = envelope::unwrap_standard_pkcs8_envelope(&private, &ciphertext, digest(body)?)
+                .map_err(|_| error(500, "wrapped key material is invalid"))?;
+            return imported_version(asymmetric_byok::import_private(kind, &pkcs8)?, now);
+        }
+        let der = asymmetric_byok::import_public_pem(kind, string(body, "public_key")?)?;
+        Ok(KeyVersion {
+            material: String::new(),
+            hmac_material: BASE64.encode(Zeroizing::new(random_bytes(32)?)),
+            public_key_only: Some(BASE64.encode(der)),
+            created_at: now,
+            encryptions: 0,
+            external_key_ref: None,
+            heptabao_convergent_version: None,
+        })
+    }
+
+    fn import_standard_asymmetric(&mut self, name: &str, kind: &str, body: &Value, now: u64)
+        -> Result<EngineResponse>
+    {
+        if optional_bool(body, "derived")?.unwrap_or(false) {
+            return Err(error(501, "derived key imports are not implemented"));
+        }
+        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
+            return Err(error(501, "plaintext key backups are not implemented"));
+        }
+        let allow_rotation = optional_bool(body, "allow_rotation")?.unwrap_or(false);
+        let period = auto_rotate_period(body.get("auto_rotate_period"))?;
+        if period != 0 && !allow_rotation {
+            return Err(openbao_compatibility_error(&format!(
+                "imported key {name} does not allow rotation within Vault"
+            )));
+        }
+        let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
+        let version = self.standard_imported_version(body, kind, now)?;
+        self.keys.insert(name.into(), Key {
+            kind: kind.into(), derived: false, convergent_encryption: false,
+            convergent_write_min_version: 0, latest_version: 1, min_decryption_version: 1,
+            min_encryption_version: 0, deletion_allowed: false, exportable,
+            auto_rotate_period: period, deleted: false,
+            versions: BTreeMap::from([(1, version)]),
+            byok: Some(ImportPolicy { allow_rotation, imported_key: true }),
+        });
+        Ok(empty(true))
+    }
+
+    fn import_standard_asymmetric_version(&mut self, name: &str, body: &Value, now: u64)
+        -> Result<EngineResponse>
+    {
+        let key = self.keys.get(name).ok_or_else(not_found)?;
+        let explicit = standard_explicit_version(body)?;
+        let mut imported = self.standard_imported_version(body, &key.kind, now)?;
+        let private = imported.public_key_only.is_none();
+        let public = if private {
+            Some(asymmetric_byok::private_public_der(&key.kind, &stored_material(&imported.material)?)?)
+        } else {
+            None
+        };
+        let matching_latest = if let Some(public) = public.as_ref() {
+            key.versions.get(&key.latest_version)
+                .and_then(|version| version.public_key_only.as_ref())
+                .map(|expected| stored_material(expected).map(|expected| expected.as_slice() == public.as_slice()))
+                .transpose()?.unwrap_or(false)
+        } else { false };
+        let destination = explicit.or_else(|| matching_latest.then_some(key.latest_version));
+        let (number, append) = if let Some(number) = destination {
+            let existing = key.versions.get(&number)
+                .ok_or_else(|| bad("requested public-only version does not exist"))?;
+            let expected = existing.public_key_only.as_ref()
+                .ok_or_else(|| bad("only public-only versions can be completed"))?;
+            if !private {
+                return Err(bad("a public-only version requires matching private material"));
+            }
+            if public.as_deref() != Some(stored_material(expected)?.as_slice()) {
+                return Err(openbao_compatibility_error("cannot import key, key pair does not match"));
+            }
+            imported.created_at = existing.created_at;
+            imported.hmac_material.clone_from(&existing.hmac_material);
+            imported.encryptions = existing.encryptions;
+            (number, false)
+        } else {
+            if key.versions.len() >= 10_000 {
+                return Err(bad("key version retention limit reached"));
+            }
+            (key.latest_version.checked_add(1).ok_or_else(|| bad("key version limit reached"))?, true)
+        };
+        let key = self.keys.get_mut(name).ok_or_else(not_found)?;
+        key.versions.insert(number, imported);
+        if append { key.latest_version = number; }
+        Ok(empty(true))
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1196,6 +1373,51 @@ mod mldsa_import_tests {
         assert!(transit.validate_byok_state().is_err() && transit.validate_mldsa_state().is_err());
         Ok(())
     }
+    #[test]
+    fn mldsa270_omitted_different_private_appends_and_explicit_mismatch_is_atomic() -> TestResult {
+        let mut base = Transit::default();
+        call(&mut base, "GET", "wrapping_key", json!({})).map_err(|_| "wrapping_failed")?;
+        for kind in ["mldsa-44", "mldsa-65", "mldsa-87"] {
+            let mut transit = base.clone();
+            let first = [0x50; 32]; let second = [0x51; 32];
+            let pem = public_pem(kind, &first)?;
+            call(&mut transit, "POST", "keys/key/import",
+                json!({"type":kind,"public_key":pem.as_str(),"exportable":true}))
+                .map_err(|_| "public_import_failed")?;
+            let original = transit.keys["key"].versions[&1].clone();
+            let private = private_der(kind, &second)?;
+            let cipher = wrap(&transit, &private)?;
+            let before = encoded(&transit)?;
+            let rejected = call(&mut transit, "POST", "keys/key/import_version",
+                json!({"ciphertext":cipher,"version":1})).err().ok_or("explicit_mismatch_accepted")?;
+            assert!(rejected.status == 500 && rejected.message.contains("key pair does not match"));
+            assert!(encoded(&transit)?.as_slice() == before.as_slice());
+            let appended = call(&mut transit, "POST", "keys/key/import_version",
+                json!({"ciphertext":cipher})).map_err(|_| "different_private_append_failed")?;
+            assert!(appended.status == 204 && transit.keys["key"].latest_version == 2);
+            assert!(transit.keys["key"].versions[&1].public_key_only == original.public_key_only
+                && transit.keys["key"].versions[&1].hmac_material == original.hmac_material
+                && transit.keys["key"].versions[&1].material.is_empty());
+            assert!(transit.keys["key"].versions[&2].public_key_only.is_none());
+            assert!(stored_material(&transit.keys["key"].versions[&2].material)
+                .map_err(|_| "appended_material_failed")?.as_slice() == second);
+            let signed = call(&mut transit, "POST", "sign/key", json!({
+                "input":BASE64.encode(b"different omitted private"),"key_version":2}))
+                .map_err(|_| "appended_private_sign_failed")?;
+            let signature = signed.body["data"]["signature"].as_str()
+                .and_then(|v| v.strip_prefix("vault:v2:")).ok_or("wrong_signature_version")?;
+            let bytes = BASE64.decode(signature).map_err(|_| "signature_decoding_failed")?;
+            assert!(mldsa::verify(kind, &second, b"different omitted private", &bytes)
+                .map_err(|_| "fresh_source_verify_failed")?);
+            assert!(!mldsa::verify(kind, &first, b"different omitted private", &bytes)
+                .map_err(|_| "wrong_source_verify_failed")?);
+            assert!(!mldsa::verify(kind, &second, b"changed message", &bytes)
+                .map_err(|_| "changed_message_verify_failed")?);
+            assert!(transit.validate_byok_state().is_ok());
+        }
+        Ok(())
+    }
+
 }
 
 #[cfg(test)]

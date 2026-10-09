@@ -1078,3 +1078,89 @@ fn mldsa270_existing115_ssh_history_survives_upgrade_to116_and_mount_retirement(
     );
     Ok(())
 }
+
+#[test]
+fn asymmetric270_public_import_real_restart_private_completion_and_retirement_keep117() -> TestResult {
+    use openssl::sign::{Signer, Verifier};
+    let root = Root::new();
+    let mut service = root.service().map_err(|_| "service_failed")?;
+    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let unseal = Zeroizing::new(unseal);
+    let admin = Zeroizing::new(admin);
+    assert!(call(&mut service, "", "POST", "sys/mounts/imported", &admin, json!({"type":"transit"})).status == 204);
+    let old = Zeroizing::new(service.durable.as_ref().ok_or("durable_missing")?
+        .export_backup().map_err(|_| "old_backup_failed")?);
+    let pair = PKey::generate_ed25519().map_err(|_| "Ed_generation_failed")?;
+    let private = Zeroizing::new(pair.private_key_to_pkcs8().map_err(|_| "private_PKCS8_failed")?);
+    let public = String::from_utf8(pair.public_key_to_pem().map_err(|_| "public_PEM_failed")?).map_err(|_| "PEM_UTF8_failed")?;
+    let message = b"standard public fixture";
+    let signature = Signer::new_without_digest(&pair).map_err(|_| "independent_signer_failed")?
+        .sign_oneshot_to_vec(message).map_err(|_| "independent_sign_failed")?;
+    let wrapped_signature = format!("vault:v1:{}", BASE64.encode(&signature));
+    assert!(call(&mut service, "", "POST", "imported/keys/key/import", &admin,
+        json!({"type":"ed25519","public_key":public,"exportable":true})).status == 204);
+    let state = service.state.as_ref().ok_or("state_missing")?;
+    assert!(state.schema == STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+        && state.writer_schema() == STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+        && state.engines.has_standard_asymmetric_import_state());
+    assert!(state.validate_format().is_ok());
+    for schema in [CURRENT_STATE_SCHEMA, TRANSIT_BYOK_STATE_SCHEMA, MLDSA_IMPORT_STATE_SCHEMA] {
+        let mut lower = state.clone(); lower.schema = schema;
+        assert!(lower.validate_format().is_err());
+        assert!(lower.validate_publication_schema(Some(state)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(state, &lower).is_err());
+    }
+    assert!(service.prepare_snapshot_restore(&old).err().is_some_and(|e| e.status == 400));
+    let hmac = call(&mut service, "", "POST", "imported/hmac/key/sha2-256", &admin,
+        json!({"input":BASE64.encode(message)}));
+    assert!(hmac.status == 200);
+    let hmac_tag = hmac.body["data"]["hmac"].as_str().ok_or("HMAC_missing")?.to_owned();
+    drop(service);
+    let mut service = root.service().map_err(|_| "reopen_failed")?;
+    assert!(call(&mut service, "", "POST", "sys/unseal", "", json!({"key":unseal.as_str()})).status == 200);
+    let verified = call(&mut service, "", "POST", "imported/verify/key/none", &admin,
+        json!({"input":BASE64.encode(message),"signature":wrapped_signature}));
+    assert!(verified.status == 200 && verified.body["data"]["valid"] == json!(true));
+    let wrapping = call(&mut service, "", "GET", "imported/wrapping_key", &admin, json!({}));
+    assert!(wrapping.status == 200);
+    let public_wrapping = wrapping.body["data"]["public_key"].as_str().ok_or("wrapping_missing")?;
+    let ciphertext = wrap(public_wrapping, &private)?;
+    assert!(call(&mut service, "", "POST", "imported/keys/key/import_version", &admin,
+        json!({"ciphertext":ciphertext,"version":1})).status == 204);
+    let descriptor = call(&mut service, "", "GET", "imported/keys/key", &admin, json!({}));
+    assert!(descriptor.status == 200 && descriptor.body["data"]["latest_version"] == json!(1));
+    assert!(descriptor.body["data"]["keys"]["1"]["public_key"] == json!(BASE64.encode(pair.raw_public_key().map_err(|_| "public_raw_failed")?)));
+    let signed = call(&mut service, "", "POST", "imported/sign/key/none", &admin,
+        json!({"input":BASE64.encode(message)}));
+    assert!(signed.status == 200);
+    let signature = signed.body["data"]["signature"].as_str().and_then(|v| v.strip_prefix("vault:v1:")).ok_or("signature_missing")?;
+    let signature = BASE64.decode(signature).map_err(|_| "signature_decode_failed")?;
+    assert!(Verifier::new_without_digest(&pair).map_err(|_| "independent_verifier_failed")?
+        .verify_oneshot(&signature, message).map_err(|_| "independent_verify_failed")?);
+    let after_hmac = call(&mut service, "", "POST", "imported/verify/key/sha2-256", &admin,
+        json!({"input":BASE64.encode(message),"hmac":hmac_tag}));
+    assert!(after_hmac.status == 200 && after_hmac.body["data"]["valid"] == json!(true));
+    assert!(service.state.as_ref().ok_or("completed_state_missing")?.validate_format().is_ok());
+    drop(service);
+    let mut service = root.service().map_err(|_| "private_reopen_failed")?;
+    assert!(call(&mut service, "", "POST", "sys/unseal", "", json!({"key":unseal.as_str()})).status == 200);
+    assert!(call(&mut service, "", "POST", "imported/sign/key/none", &admin,
+        json!({"input":BASE64.encode(message)})).status == 200);
+    assert!(call(&mut service, "", "DELETE", "sys/mounts/imported", &admin, json!({})).status == 204);
+    let retired = service.state.as_ref().ok_or("retired_missing")?.clone();
+    assert!(!retired.engines.has_standard_asymmetric_import_state()
+        && retired.schema == STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA);
+    assert!(retired.validate_format().is_ok());
+    let identity = service.current_state_identity().map_err(|_| "identity_failed")?;
+    let mut lower = retired.clone(); lower.schema = MLDSA_IMPORT_STATE_SCHEMA;
+    assert!(lower.validate_publication_schema(Some(&retired)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&retired, &lower).is_err());
+    assert!(service.commit_state(&mut lower).is_err());
+    assert!(service.prepare_snapshot_restore(&old).err().is_some_and(|e| e.status == 400));
+    assert!(service.current_state_identity().map_err(|_| "after_identity_failed")? == identity);
+    drop(service);
+    let mut service = root.service().map_err(|_| "retired_reopen_failed")?;
+    assert!(call(&mut service, "", "POST", "sys/unseal", "", json!({"key":unseal.as_str()})).status == 200);
+    assert!(service.state.as_ref().ok_or("retired_state_missing")?.schema == STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA);
+    Ok(())
+}

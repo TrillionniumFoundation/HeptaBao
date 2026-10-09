@@ -188,6 +188,37 @@ pub fn unwrap_mldsa_envelope(
     Ok(material)
 }
 
+
+/// Authenticate a bounded standard PKCS8 envelope without changing AES or ML-DSA profiles.
+pub fn unwrap_standard_pkcs8_envelope(
+    private_pkcs8: &[u8],
+    envelope: &[u8],
+    digest: OaepDigest,
+) -> Result<Zeroizing<Vec<u8>>, CryptoError> {
+    let wrapped_length = envelope.len().checked_sub(RSA_BYTES)
+        .filter(|length| (24..=8200).contains(length) && length.is_multiple_of(8))
+        .ok_or(CryptoError::InvalidEnvelope)?;
+    let key = wrapping_key(private_pkcs8)?;
+    let mut decrypter = Decrypter::new(&key).map_err(|_| CryptoError::ProviderUnavailable)?;
+    decrypter.set_rsa_padding(Padding::PKCS1_OAEP).map_err(|_| CryptoError::ProviderUnavailable)?;
+    decrypter.set_rsa_oaep_md(digest.provider()).map_err(|_| CryptoError::ProviderUnavailable)?;
+    decrypter.set_rsa_mgf1_md(digest.provider()).map_err(|_| CryptoError::ProviderUnavailable)?;
+    let mut kek = Zeroizing::new(vec![0; RSA_BYTES]);
+    let length = decrypter.decrypt(&envelope[..RSA_BYTES], &mut kek)
+        .map_err(|_| CryptoError::EnvelopeAuthenticationFailed)?;
+    if length != KEK_BYTES { return Err(CryptoError::EnvelopeAuthenticationFailed); }
+    kek.truncate(length);
+    let kwp = AesKek::new(&AES_256, &kek).map_err(|_| CryptoError::ProviderUnavailable)?;
+    let mut material = Zeroizing::new(vec![0; wrapped_length]);
+    let length = kwp.unwrap_with_padding(&envelope[RSA_BYTES..], &mut material)
+        .map_err(|_| CryptoError::EnvelopeAuthenticationFailed)?.len();
+    if !(16..=8192).contains(&length) {
+        return Err(CryptoError::EnvelopeAuthenticationFailed);
+    }
+    material.truncate(length);
+    Ok(material)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

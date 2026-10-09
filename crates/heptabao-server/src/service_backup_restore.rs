@@ -771,6 +771,11 @@ impl Service {
                 "snapshot would downgrade PKI issuer-path leases",
             ));
         }
+        if current.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+            && incoming.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade standard asymmetric imported key state"));
+        }
         if current.schema >= MLDSA_IMPORT_STATE_SCHEMA
             && incoming.schema < MLDSA_IMPORT_STATE_SCHEMA
         {
