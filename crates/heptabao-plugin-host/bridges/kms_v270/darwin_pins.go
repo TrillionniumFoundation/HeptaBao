@@ -25,6 +25,8 @@ type pinnedFile struct {
 	file         *os.File
 	path, digest string
 	stat         syscall.Stat_t
+    ancestors []*os.File
+    pathRetired bool
 }
 
 func openPinned(path, digest string, executable bool) (*os.File, error) {
@@ -32,13 +34,26 @@ func openPinned(path, digest string, executable bool) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
+	for _, f := range p.ancestors { f.Close() }
+    p.ancestors=nil
 	return p.file, nil
 }
 func pinFile(path, digest string, executable bool) (*pinnedFile, error) {
+    return pinDarwinFile(path,digest,executable,false)
+}
+func pinRootBroker(path,digest string) (*pinnedFile,error) {
+    return pinDarwinFile(path,digest,true,true)
+}
+func pinDarwinFile(path, digest string, executable, broker bool) (*pinnedFile, error) {
 	expected, err := hex.DecodeString(digest)
 	if err != nil || len(expected) != 32 || digest != hex.EncodeToString(expected) || !filepath.IsAbs(path) || filepath.Clean(path) != path {
 		return nil, errors.New("invalid operator pin")
 	}
+	if !onT5(path) { return nil, errors.New("Darwin operator files require T5") }
+    ancestors, err := sealedAncestors(filepath.Dir(path))
+    if err != nil { return nil, err }
+    holdAncestors := false
+    defer func() { if !holdAncestors { for _, f := range ancestors { f.Close() } } }()
 	fd, err := unix.Open(path, unix.O_RDONLY|unix.O_CLOEXEC|unix.O_NOFOLLOW|unix.O_NONBLOCK, 0)
 	if err != nil {
 		return nil, err
@@ -55,10 +70,12 @@ func pinFile(path, digest string, executable bool) (*pinnedFile, error) {
 		return nil, err
 	}
 	raw, ok := st.Sys().(*syscall.Stat_t)
-	if !ok || !st.Mode().IsRegular() || raw.Nlink != 1 || (raw.Uid != uint32(os.Getuid()) && raw.Uid != 0) || st.Mode().Perm()&0022 != 0 || raw.Mode&(syscall.S_ISUID|syscall.S_ISGID) != 0 ||
+	if !ok || !st.Mode().IsRegular() || raw.Nlink != 1 || raw.Uid != 0 || st.Mode().Perm()&0022 != 0 || (raw.Mode&syscall.S_ISGID != 0 || !broker && raw.Mode&syscall.S_ISUID != 0) ||
 		(executable && st.Mode().Perm()&0100 == 0) {
 		return nil, errors.New("operator image owner")
 	}
+	if !errors.Is(unix.Faccessat(unix.AT_FDCWD,path,unix.W_OK,0),syscall.EACCES) { return nil, errors.New("caller-writable operator file") }
+    if broker && (st.Mode().Perm()&0222 != 0 || raw.Mode&syscall.S_ISUID != 0 && raw.Mode&07777 != 04555) { return nil, errors.New("external root broker mode") }
 	h := sha256.New()
 	if _, err = io.Copy(h, f); err != nil {
 		return nil, err
@@ -78,7 +95,8 @@ func pinFile(path, digest string, executable bool) (*pinnedFile, error) {
 		return nil, err
 	}
 	keep = true
-	return &pinnedFile{file: f, path: path, digest: digest, stat: *raw}, nil
+    holdAncestors = true
+	return &pinnedFile{file: f, path: path, digest: digest, stat: *raw, ancestors:ancestors}, nil
 }
 func (p *pinnedFile) unchanged() bool {
 	st, err := p.file.Stat()
@@ -90,13 +108,13 @@ func (p *pinnedFile) unchanged() bool {
 		return false
 	}
 	pathStat, err := os.Lstat(p.path)
-	if err != nil {
-		return false
-	}
-	pathRaw, ok := pathStat.Sys().(*syscall.Stat_t)
-	if !ok || !sameFileStat(pathRaw, &p.stat) {
-		return false
-	}
+    if p.pathRetired {
+        if !errors.Is(err,os.ErrNotExist) || raw.Nlink!=0 { return false }
+    } else {
+        if err!=nil { return false }
+        pathRaw,ok:=pathStat.Sys().(*syscall.Stat_t)
+        if !ok || !sameFileStat(pathRaw,&p.stat) { return false }
+    }
 	if _, err = p.file.Seek(0, io.SeekStart); err != nil {
 		return false
 	}
@@ -112,6 +130,7 @@ type privateDirectory struct {
     path, parentPath string
     stat, parentStat syscall.Stat_t
     assets []string
+    guestGID uint32
     closeOnce sync.Once
 }
 func directoryIdentity(file *os.File, path string, original *syscall.Stat_t) bool {
@@ -119,7 +138,7 @@ func directoryIdentity(file *os.File, path string, original *syscall.Stat_t) boo
     if err != nil { return false }
     raw, ok := st.Sys().(*syscall.Stat_t)
     if !ok || raw.Dev != original.Dev || raw.Ino != original.Ino ||
-        raw.Uid != original.Uid || raw.Mode != original.Mode || !st.IsDir() { return false }
+        raw.Uid != original.Uid || raw.Gid != original.Gid || raw.Mode != original.Mode || !st.IsDir() { return false }
     ps, err := os.Lstat(path)
     if err != nil || !ps.IsDir() || !os.SameFile(st, ps) { return false }
     return true
@@ -135,7 +154,7 @@ func newPrivateDirectory(ownedTemp string) (d *privateDirectory, err error) {
         st, e := file.Stat()
         if e != nil { file.Close(); return nil, syscall.Stat_t{}, e }
         raw, ok := st.Sys().(*syscall.Stat_t)
-        if !ok || !st.IsDir() || st.Mode().Perm() != 0700 ||
+        if !ok || !st.IsDir() || (st.Mode().Perm() != 0700 && st.Mode().Perm() != 0711) ||
             raw.Uid != uint32(os.Geteuid()) || raw.Mode&(syscall.S_ISUID|syscall.S_ISGID|syscall.S_ISVTX) != 0 {
             file.Close(); return nil, syscall.Stat_t{}, errors.New("invalid private directory owner")
         }
@@ -171,13 +190,16 @@ func (d *privateDirectory) copyPinned(original *pinnedFile, name string, executa
     if _, err = io.Copy(writer, original.file); err != nil { return nil, err }
     if err = writer.Sync(); err != nil { return nil, err }
     mode := os.FileMode(0400)
-    if executable { mode = 0500 }
+    if executable {
+        mode = 0510
+        if err = writer.Chown(0,int(d.guestGID)); err != nil { return nil,err }
+    }
     if err = writer.Chmod(mode); err != nil { return nil, err }
     if err = writer.Close(); err != nil { return nil, err }
     if !original.unchanged() || !d.unchanged() { return nil, errors.New("private image source changed") }
     pin, err = pinFile(path, original.digest, executable)
     if err != nil { return nil, err }
-    if !d.unchanged() { pin.file.Close(); return nil, errors.New("private image directory changed") }
+    if !d.unchanged() { pin.close(); return nil, errors.New("private image directory changed") }
     return pin, nil
 }
 func (d *privateDirectory) close() {
@@ -191,4 +213,35 @@ func (d *privateDirectory) close() {
         if samePath { _ = os.Remove(d.path) }
         if d.parent != nil { d.parent.Close() }
     })
+}
+
+func (p *pinnedFile) close() {
+    if p==nil { return }; p.file.Close(); for _,f:=range p.ancestors { f.Close() }
+}
+func closePlatformPin(p *pinnedFile) { p.close() }
+func (d *privateDirectory) setGuestMode(mode os.FileMode) error {
+    if !d.unchanged() { return errors.New("original private directory changed") }
+    if err:=d.file.Chown(0,int(d.guestGID)); err!=nil { return err }
+    if err:=d.file.Chmod(mode); err!=nil { return err }
+    st,err:=d.file.Stat(); if err!=nil { return err }
+    raw,ok:=st.Sys().(*syscall.Stat_t); if !ok { return errors.New("original private directory stat") }
+    d.stat=*raw
+    if !d.unchanged() { return errors.New("original private directory replaced") }; return nil
+}
+func (d *privateDirectory) allowGuest() error { return d.setGuestMode(0710) }
+func (d *privateDirectory) sealGuest() error { return d.setGuestMode(0700) }
+
+func (p *pinnedFile) retireOriginalPath(d *privateDirectory) error {
+    if p.pathRetired || !p.unchanged() || !d.unchanged() || filepath.Dir(p.path)!=d.path { return errors.New("original exec pathname custody") }
+    before:=p.stat
+    if err:=unix.Unlinkat(int(d.file.Fd()),filepath.Base(p.path),0); err!=nil { return err }
+    st,err:=p.file.Stat(); if err!=nil { return err }
+    raw,ok:=st.Sys().(*syscall.Stat_t)
+    if !ok || raw.Dev!=before.Dev || raw.Ino!=before.Ino || raw.Uid!=0 ||
+        raw.Gid!=before.Gid || raw.Mode!=before.Mode || raw.Size!=before.Size ||
+        raw.Mtimespec!=before.Mtimespec || raw.Birthtimespec!=before.Birthtimespec ||
+        raw.Flags!=before.Flags || raw.Nlink!=0 { return errors.New("original exec inode changed during unlink") }
+    p.stat=*raw;p.pathRetired=true
+    if !p.unchanged() { return errors.New("original unlinked exec pin changed") }
+    return nil
 }

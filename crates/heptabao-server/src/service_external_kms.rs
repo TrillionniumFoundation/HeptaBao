@@ -201,6 +201,9 @@ fn file_identity(m: &std::fs::Metadata) -> [i128; 8] {
 #[cfg(unix)]
 impl OperatorPin {
     fn open(path: &str, expected: [u8; 32], executable: bool) -> Result<Self, String> {
+        Self::open_role(path, expected, executable, false)
+    }
+    fn open_role(path: &str, expected: [u8;32], executable: bool, darwin_broker: bool) -> Result<Self,String> {
         use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
         if !std::path::Path::new(path).is_absolute()
             || std::path::Path::new(path).components().any(|c| {
@@ -224,8 +227,9 @@ impl OperatorPin {
         let uid = rustix::process::geteuid().as_raw();
         if !m.is_file()
             || m.nlink() != 1
-            || !(m.uid() == uid || m.uid() == 0)
-            || m.mode() & 0o6022 != 0
+            || !(if cfg!(target_os="macos") {m.uid()==0} else {m.uid()==uid || m.uid()==0})
+            || m.mode() & (if darwin_broker && cfg!(target_os="macos") { 0o2022 } else { 0o6022 }) != 0
+            || darwin_broker && (m.uid()!=0 || m.mode() & 0o222 !=0 || m.mode() & 0o4000 !=0 && m.mode() & 0o7777 !=0o4555)
             || executable && m.mode() & 0o100 == 0
             || m.size() > 512 * 1024 * 1024
         {
@@ -353,11 +357,34 @@ fn platform_bootstrap_pins(
             .ok_or("Darwin KMS bootstrap image is invalid")?;
         let sha = bootstrap.get("image_sha256").and_then(Value::as_str)
             .ok_or("Darwin KMS bootstrap digest is invalid")?;
-        Ok(vec![OperatorPin::open(path, digest(sha)?, true)?])
+        let role = object.get("darwin_root").and_then(Value::as_object)
+            .ok_or("Darwin KMS requires an external root-envelope deployment")?;
+        const FIELDS: [&str;7] = ["broker_image","broker_image_sha256","caller_uid","guest_uid","guest_gid","envelope_root","owned_temp"];
+        if role.len()!=FIELDS.len() || role.keys().any(|k| !FIELDS.contains(&k.as_str())) {
+            return Err("Darwin root-envelope deployment is invalid".into());
+        }
+        let caller=role.get("caller_uid").and_then(Value::as_u64).ok_or("Darwin caller UID invalid")?;
+        let guest=role.get("guest_uid").and_then(Value::as_u64).ok_or("Darwin guest UID invalid")?;
+        let gid=role.get("guest_gid").and_then(Value::as_u64).ok_or("Darwin guest GID invalid")?;
+        if caller==0 || caller!=u64::from(rustix::process::getuid().as_raw()) ||
+            guest==0 || guest==caller || guest>u64::from(u32::MAX) || gid==0 || gid>u64::from(u32::MAX) {
+            return Err("Darwin root-envelope identity is invalid".into());
+        }
+        for field in ["envelope_root","owned_temp"] {
+            let path=role.get(field).and_then(Value::as_str).ok_or("Darwin root directory invalid")?;
+            if field=="envelope_root" && path!="/Volumes/T5/.hbk" || !path.starts_with("/Volumes/T5/") || path.len()>60 ||
+                std::path::Path::new(path).components().any(|c| matches!(c,std::path::Component::ParentDir|std::path::Component::CurDir)) {
+                return Err("Darwin root directories require bounded T5 paths".into());
+            }
+        }
+        let broker=role.get("broker_image").and_then(Value::as_str).ok_or("Darwin broker image invalid")?;
+        let broker_sha=role.get("broker_image_sha256").and_then(Value::as_str).ok_or("Darwin broker digest invalid")?;
+        Ok(vec![OperatorPin::open(path,digest(sha)?,true)?,
+            OperatorPin::open_role(broker,digest(broker_sha)?,true,true)?])
     }
     #[cfg(not(target_os = "macos"))]
     {
-        if object.contains_key("darwin_bootstrap") {
+        if object.contains_key("darwin_bootstrap") || object.contains_key("darwin_root") {
             return Err("Darwin bootstrap is not a deployment for this platform".into());
         }
         Ok(Vec::new())
@@ -371,11 +398,11 @@ fn operator_pins(path: &str, sha: &str, id: &str) -> Result<Vec<OperatorPin>, St
             .as_object()
             .ok_or("genuine KMS deployment must be an object")?;
         if object.len() != 5 + usize::from(object.contains_key("implementation"))
-            + usize::from(object.contains_key("darwin_bootstrap"))
+            + usize::from(object.contains_key("darwin_bootstrap")) + usize::from(object.contains_key("darwin_root"))
             || object.keys().any(|k| {
                 !matches!(
                     k.as_str(),
-                    "provider" | "image" | "image_sha256" | "args" | "libraries" | "implementation" | "darwin_bootstrap"
+                    "provider" | "image" | "image_sha256" | "args" | "libraries" | "implementation" | "darwin_bootstrap" | "darwin_root"
                 )
             })
             || object.get("provider").and_then(Value::as_str) != Some(id)
@@ -476,8 +503,11 @@ fn validate_owned_temp(path: &str) -> Result<(), String> {
         let m =
             std::fs::symlink_metadata(p).map_err(|_| "genuine KMS socket directory unavailable")?;
         let uid = rustix::process::geteuid().as_raw();
-        if !m.is_dir() || m.mode() & 0o7777 != 0o700 || m.uid() != uid {
-            return Err("genuine KMS socket directory must be operator-owned mode0700".into());
+        let valid_owner = if cfg!(target_os="macos") { m.uid()==0 && m.mode() & 0o7777==0o711 }
+            else { m.uid()==uid && m.mode() & 0o7777==0o700 };
+        if !m.is_dir() || !valid_owner {
+            return Err(if cfg!(target_os="macos") { "Darwin root KMS socket directory must be root-owned mode0711" }
+                else { "genuine KMS socket directory must be operator-owned mode0700" }.into());
         }
         Ok(())
     }
@@ -504,6 +534,18 @@ pub(super) fn admit(configs: Vec<PluginExternalKmsConfig>) -> Result<Bindings, S
         }
         validate_owned_temp(temp.as_str())?;
         let pins = operator_pins(deployment.as_str(), &c.deployment_sha256, id.as_str())?;
+        #[cfg(target_os="macos")]
+        {
+            let role = pins[0].deployment()?;
+            let role = role.get("darwin_root").and_then(Value::as_object).ok_or("Darwin root role missing")?;
+            if role.get("broker_image").and_then(Value::as_str)!=Some(c.command.as_str()) ||
+                role.get("broker_image_sha256").and_then(Value::as_str)!=Some(c.command_sha256.as_str()) ||
+                role.get("owned_temp").and_then(Value::as_str)!=Some(temp.as_str()) ||
+                c.sandbox_command!=c.command || c.sandbox_command_sha256!=c.command_sha256 ||
+                c.sandbox_profile_id!="darwin-root-kms-v1" {
+                return Err("Darwin broker command/temp differ from original root role".into());
+            }
+        }
         let descriptor = PluginDescriptor::new(
             id.clone(),
             PluginKind::Kms,

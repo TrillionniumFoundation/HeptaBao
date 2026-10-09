@@ -18,6 +18,8 @@ import (
     "syscall"
     "time"
 
+    "golang.org/x/sys/unix"
+
 )
 const darwinBootstrapMarker = "--heptabao-owned-darwin-bootstrap-v1"
 
@@ -62,6 +64,13 @@ func platformBootstrap() (bool, int) {
     if e != nil || now >= absolute { return true, 2 }
     deadline := observed.Add(time.Duration(absolute-now))
     if e = gate.SetDeadline(deadline); e != nil { return true, 2 }
+    // Check permissions as the actual isolated guest, including inherited ACLs.
+    // The root parent checks the distinct real caller independently.
+    for heldFD:=3; heldFD<fd; heldFD++ {
+        heldPath, failure:=originalFDPath(heldFD)
+        if failure!=nil || !guestWriteBoundary(heldPath) { return true,2 }
+    }
+    if !guestWriteBoundary(os.Args[0]) || installForkBarrier() != nil || installExecBarrier(path) != nil { return true, 2 }
     if _, e = gate.Write([]byte{1}); e != nil { return true, 2 }
     var release [1]byte
     if _, e = io.ReadFull(gate, release[:]); e != nil || release[0] != 2 { return true, 2 }
@@ -79,9 +88,9 @@ func platformBootstrap() (bool, int) {
     if syscall.Exec(path, append([]string{os.Args[6]}, os.Args[7:]...), env) != nil { return true, 2 }
     return true, 2
 }
-// This closes replacement during gate waiting. Darwin still lacks proved
-// atomic held-FD exec; the final pathname check-to-exec interval is an explicit
-// SourceOnly entry blocker, not a claimed Linux /proc/self/fd equivalent.
+// Same original FD and externally supplied digest. The root-held envelope
+// prevents caller/guest pathname replacement; no /dev/fd exec equivalence is
+// asserted. Root releases the provider only from its second kernel exec stop.
 func verifyBootstrapImage(image *os.File, path, externalDigest string) bool {
     decoded, err := hex.DecodeString(externalDigest)
     if err != nil || len(decoded) != sha256.Size ||
@@ -89,9 +98,9 @@ func verifyBootstrapImage(image *os.File, path, externalDigest string) bool {
     st, err := image.Stat()
     pst, pathErr := os.Lstat(path)
     if err != nil || pathErr != nil || !st.Mode().IsRegular() || !pst.Mode().IsRegular() ||
-        !os.SameFile(st, pst) || pst.Mode().Perm() != 0500 { return false }
+        !os.SameFile(st, pst) || pst.Mode().Perm() != 0510 { return false }
     before, ok := st.Sys().(*syscall.Stat_t)
-    if !ok || before.Nlink != 1 || before.Uid != uint32(os.Geteuid()) { return false }
+    if !ok || before.Nlink != 1 || before.Uid != 0 || before.Gid != uint32(os.Getegid()) { return false }
     if _, err = image.Seek(0, io.SeekStart); err != nil { return false }
     hash := sha256.New()
     if _, err = io.Copy(hash, image); err != nil ||
@@ -115,4 +124,19 @@ func bootstrapDeadline(ctx context.Context) (int64, time.Time, error) {
         return 0, time.Time{}, errors.New("original bootstrap deadline")
     }
     return now + int64(left), deadline, nil
+}
+
+func guestWriteBoundary(path string) bool {
+    if !onT5(path) || os.Getuid()==0 || os.Geteuid()!=os.Getuid() { return false }
+    prefixes:=[]string{"/"};current:=""
+    for _,part:=range strings.Split(strings.TrimPrefix(path,"/"),"/") {
+        current+="/"+part;prefixes=append(prefixes,current)
+    }
+    for _,prefix:=range prefixes {
+        st,err:=os.Lstat(prefix)
+        if err!=nil || st.Mode()&os.ModeSymlink!=0 { return false }
+        raw,ok:=st.Sys().(*syscall.Stat_t)
+        if !ok || raw.Uid!=0 || !errors.Is(unix.Faccessat(unix.AT_FDCWD,prefix,unix.W_OK,0),syscall.EACCES) { return false }
+    }
+    return true
 }

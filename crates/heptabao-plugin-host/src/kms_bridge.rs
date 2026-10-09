@@ -170,11 +170,11 @@ impl Invocation {
             original_owner_field,
             "qualified",
         ];
-        if life.len() != life_fields.len() + usize::from(cfg!(target_os = "macos"))
+        if life.len() != life_fields.len() + 6 * usize::from(cfg!(target_os = "macos"))
             || life.keys().any(|k| !life_fields.contains(&k.as_str())
-                && !(cfg!(target_os = "macos") && k == "bootstrap_bound"))
+                && !(cfg!(target_os = "macos") && ["bootstrap_bound","task_control_bound","trace_bound","root_envelope_bound","fork_limit_bound","sandbox_bound"].contains(&k.as_str())))
             || cfg!(target_os = "macos")
-                && life.get("bootstrap_bound").and_then(Value::as_bool) != Some(true)
+                && ["bootstrap_bound","task_control_bound","trace_bound","root_envelope_bound","fork_limit_bound","sandbox_bound"].iter().any(|k| life.get(*k).and_then(Value::as_bool)!=Some(true))
             || [
                 "started",
                 "original_wait",
@@ -386,7 +386,9 @@ mod tests {
         let owner = if cfg!(target_os = "macos") { "audit_selector_bound" } else { "pidfd_bound" };
         value["lifecycle"][owner] = json!(true);
         if cfg!(target_os = "macos") {
-            value["lifecycle"]["bootstrap_bound"] = json!(true);
+            for field in ["bootstrap_bound","task_control_bound","trace_bound","root_envelope_bound","fork_limit_bound","sandbox_bound"] {
+                value["lifecycle"][field] = json!(true);
+            }
             value["lifecycle"]["sid"] = json!(42);
         }
         value
@@ -409,9 +411,13 @@ mod tests {
         bootstrap["lifecycle"]["bootstrap_bound"] = json!(false);
         assert!(inv.decode(&secret(bootstrap)?).is_err());
         if cfg!(target_os = "macos") {
-            let mut missing = positive.clone();
-            missing["lifecycle"].as_object_mut().unwrap().remove("bootstrap_bound");
-            assert!(inv.decode(&secret(missing)?).is_err());
+            for field in ["bootstrap_bound","task_control_bound","trace_bound","root_envelope_bound","fork_limit_bound","sandbox_bound"] {
+                let mut missing=positive.clone();
+                missing["lifecycle"].as_object_mut().unwrap().remove(field);
+                assert!(inv.decode(&secret(missing)?).is_err());
+                let mut denied=positive.clone();denied["lifecycle"][field]=json!(false);
+                assert!(inv.decode(&secret(denied)?).is_err());
+            }
             let mut session = positive;
             session["lifecycle"]["sid"] = json!(41);
             assert!(inv.decode(&secret(session)?).is_err());
@@ -473,6 +479,7 @@ mod tests {
             "image_sha256",
             "libraries",
             "darwin_bootstrap",
+            "darwin_root",
             "env",
             "timeout_ms",
             "deadline_monotonic_ns",

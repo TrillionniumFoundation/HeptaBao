@@ -50,3 +50,19 @@ func monotonicNanos() (int64, error) {
 
 func validatePlatformDeployment(deployment) error { return errors.New("native KMS platform ownership unavailable; Darwin requires CGO") }
 func platformBootstrap() (bool, int) { return false, 0 }
+
+func platformInvocationGuard() (func(), error) { return func() {}, nil }
+func closePlatformPin(pin *pinnedFile) { pin.file.Close() }
+
+type darwinRootDeployment struct {
+    BrokerImage string `json:"broker_image"`
+    BrokerImageSHA256 string `json:"broker_image_sha256"`
+    CallerUID uint32 `json:"caller_uid"`
+    GuestUID uint32 `json:"guest_uid"`
+    GuestGID uint32 `json:"guest_gid"`
+    EnvelopeRoot string `json:"envelope_root"`
+    OwnedTemp string `json:"owned_temp"`
+}
+
+func platformProviderOpened(*ownedRunner) {}
+func platformProviderClosed(*ownedRunner) {}

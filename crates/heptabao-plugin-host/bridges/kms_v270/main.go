@@ -83,6 +83,7 @@ type darwinBootstrapDeployment struct {
     ImageSHA256 string `json:"image_sha256"`
 }
 type deployment struct {
+    DarwinRoot *darwinRootDeployment `json:"darwin_root,omitempty"`
     DarwinBootstrap *darwinBootstrapDeployment `json:"darwin_bootstrap,omitempty"`
 	Implementation deploymentImplementation `json:"implementation,omitempty"`
 	Provider       string                   `json:"provider"`
@@ -102,7 +103,7 @@ func loadDeployment(path, digest string) (deployment, *pinnedFile, error) {
 	keep := false
 	defer func() {
 		if !keep {
-			pin.file.Close()
+			closePlatformPin(pin)
 		}
 	}()
 	b, err := io.ReadAll(io.LimitReader(pin.file, maxFrame+1))
@@ -348,11 +349,12 @@ func call(ctx context.Context, q request, d deployment, ownedTemp string, startT
 		providerFailure(&out, "open", err)
 		return
 	}
+	platformProviderOpened(owned)
 	defer func() {
 		// Close is required after successful Open; the original operation context is not rearmed.
 		if err := provider.Close(ctx); err != nil {
 			providerFailure(&out, "close", err)
-		}
+		} else { platformProviderClosed(owned) }
 	}()
 	if q.Operation == "validate_config" {
 		out.Status = "completed"
@@ -462,6 +464,9 @@ func writeResponse(w io.Writer, out response) error {
 	return err
 }
 func run() int {
+    stopGuard, guardError := platformInvocationGuard()
+    if guardError != nil { return 2 }
+    defer stopGuard()
 	deploymentPath := flag.String("deployment", os.Getenv("HEPTABAO_KMS_DEPLOYMENT"), "operator deployment file")
 	deploymentSHA := flag.String("deployment-sha256", os.Getenv("HEPTABAO_KMS_DEPLOYMENT_SHA256"), "operator deployment SHA256")
 	temp := flag.String("owned-temp", os.Getenv("HEPTABAO_KMS_TEMP"), "operator-owned short socket directory")
@@ -478,7 +483,7 @@ func run() int {
 	if err != nil {
 		return 2
 	}
-	defer operatorPin.file.Close()
+	defer closePlatformPin(operatorPin)
 	if expected := os.Getenv("HEPTABAO_KMS_PROVIDER"); expected != "" && expected != d.Provider {
 		return 2
 	}

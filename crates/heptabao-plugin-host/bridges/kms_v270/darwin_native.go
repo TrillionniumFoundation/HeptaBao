@@ -63,7 +63,7 @@ static int hbp_signal_original(const struct hbp_identity *birth) {
     if (e) return e;
     // Exec changes pidversion and Mach task, but preserves process uniqueid.
     // The observed full original birth/group/owner identity must still match.
-    if (now.uniqueid != birth->uniqueid || now.start_sec != birth->start_sec ||
+    if (now.idversion != birth->idversion || now.uniqueid != birth->uniqueid || now.start_sec != birth->start_sec ||
         now.start_usec != birth->start_usec || now.uid != birth->uid ||
         now.ruid != birth->ruid || now.ppid != birth->ppid ||
         now.pgid != birth->pgid || now.sid != birth->sid)
@@ -73,7 +73,7 @@ static int hbp_signal_original(const struct hbp_identity *birth) {
     // checks current-caller MAC policy and cansignal credentials in kernel.
     audit_token_t selector = {{0}};
     selector.val[5] = (uint32_t)now.pid;
-    selector.val[7] = (uint32_t)now.idversion;
+    selector.val[7] = (uint32_t)birth->idversion;
     // No kill(pid), killpg, Process.Kill or numeric-only fallback exists.
     return proc_signal_with_audittoken(&selector, SIGKILL);
 }
