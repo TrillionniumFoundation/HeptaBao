@@ -52,6 +52,8 @@ pub(crate) struct OwnerStateManifest {
     storage_format: String,
     manifest_schema: u32,
     state_schema: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    global_lossless_json_format: Option<u32>,
     revision: String,
     cluster_id: String,
     replay_epoch: u64,
@@ -235,6 +237,8 @@ impl OwnerStateManifest {
         if self.storage_format != STATE_STORAGE_FORMAT
             || self.manifest_schema != 4
             || self.state_schema == 0
+            || self.global_lossless_json_format.is_some_and(|format| format != 1
+                || self.state_schema < crate::service::GLOBAL_LOSSLESS_JSON_STATE_SCHEMA)
             || self.cluster_id.is_empty()
             || self.cluster_id.len() > 256
             || self.cluster_id.bytes().any(|byte| byte.is_ascii_control())
@@ -295,6 +299,10 @@ impl OwnerStateManifest {
 
     pub(crate) fn state_schema(&self) -> u32 {
         self.state_schema
+    }
+
+    pub(crate) fn global_lossless_json_format(&self) -> Option<u32> {
+        self.global_lossless_json_format
     }
 
     pub(crate) fn cluster_id(&self) -> &str {
@@ -554,6 +562,7 @@ impl OwnerWritePlan {
             storage_format: STATE_STORAGE_FORMAT.to_owned(),
             manifest_schema: 4,
             state_schema,
+            global_lossless_json_format: None,
             revision: hex(&crypto::digest(operation_id.as_bytes())),
             cluster_id: cluster_id.to_owned(),
             replay_epoch,
@@ -592,6 +601,17 @@ impl OwnerWritePlan {
             manifest_bytes,
             write_set,
         })
+    }
+
+    /// Bind the exact State metadata before the existing publication binding.
+    pub(crate) fn with_global_lossless_json_format(mut self, format: Option<u32>) -> Result<Self, OwnerStoreError> {
+        let mut manifest = decode_manifest(&self.manifest_bytes)?
+            .ok_or(OwnerStoreError::InvalidManifest)?;
+        manifest.global_lossless_json_format = format;
+        manifest.validate()?;
+        self.manifest_bytes = serde_json::to_vec(&manifest)
+            .map_err(|_| OwnerStoreError::Serialization)?;
+        Ok(self)
     }
 
     pub(crate) fn required_mutations(&self) -> usize {

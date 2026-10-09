@@ -140,6 +140,7 @@ const STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA: u32 = 117;
 const CONTROL_GROUP_STATE_SCHEMA: u32 = crate::auth::control_groups::STATE_SCHEMA;
 const SYMMETRIC_BACKUP_STATE_SCHEMA: u32 = 119;
 const KV2_LOSSLESS_STATE_SCHEMA: u32 = 120;
+pub(crate) const GLOBAL_LOSSLESS_JSON_STATE_SCHEMA: u32 = 120;
 #[path = "service_kv2_import.rs"]
 mod kv2_import;
 #[cfg(test)]
@@ -244,6 +245,8 @@ mod ha_step_down;
 mod help_delivery;
 #[path = "service_identity.rs"]
 mod identity;
+#[path = "service_lossless_json_state.rs"]
+mod lossless_json_state;
 #[path = "service_kubernetes_secrets.rs"]
 mod kubernetes_secret;
 #[path = "service_leader.rs"]
@@ -610,6 +613,8 @@ where
 #[serde(deny_unknown_fields)]
 struct State {
     schema: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    global_lossless_json_format: Option<u32>,
     cluster_id: String,
     /// Cluster-visible replay generation. Epoch changes are ordinary replicated
     /// application-state transitions; each node retires its local detailed
@@ -5212,6 +5217,7 @@ impl Service {
             previous_owner.as_ref(),
             legacy_deletes,
         )
+        .and_then(|plan| plan.with_global_lossless_json_format(state.global_lossless_json_format))
         .map_err(|error| match error {
             owner_store::OwnerStoreError::StateTooLarge => ServiceError::RequestCapacityExhausted,
             _ => ServiceError::CorruptState,
@@ -5819,6 +5825,7 @@ impl Service {
             Vec::new()
         };
         let mut state = State {
+            global_lossless_json_format: None,
             namespace_protected: None,
             namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,

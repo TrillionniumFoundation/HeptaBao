@@ -3703,6 +3703,19 @@ impl EngineState {
                     })
             })
     }
+
+    pub(crate) fn has_non_kv2_lossless_json_state(&self) -> bool {
+        self.records.as_ref().is_some_and(|runtime| runtime.observed_lossless_json)
+            || self.sdk_retired_logical.as_ref().is_some_and(|history| history.has_lossless_json_state())
+            || self.namespaces.values().any(|namespace| {
+                namespace.sdk_leases.values().any(sdk_lease::Lease::has_lossless_json_state)
+                    || namespace.mounts.values().any(|mount| match &mount.backend {
+                        Backend::Kv1(entries) => entries.values().any(|data| heptabao_domain::json::requires_lossless_format(data.expose())),
+                        Backend::Kv2(_) => false,
+                        _ => false,
+                    })
+            })
+    }
 }
 
 #[cfg(test)]

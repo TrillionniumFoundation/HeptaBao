@@ -325,6 +325,7 @@ impl Service {
             )
         })?;
         let mut state = State {
+            global_lossless_json_format: root.global_lossless_json_format,
             namespace_protected: None,
             namespace_leases: namespace_runtime::Leases::default(),
             schema: root.state_schema,
@@ -440,6 +441,7 @@ impl Service {
             kv1,
             *key.expose(),
         )
+        .and_then(|root| root.with_global_lossless_json_format(state.global_lossless_json_format))
         .map_err(root_error)?;
         let bytes = root.encode().map_err(root_error)?;
         let identity = root.identity().map_err(root_error)?;
@@ -747,6 +749,7 @@ impl Service {
         publication.validate(self)?;
         plan.validate_precise_auth_owner(state)?;
         if state.schema != plan.root.state_schema
+            || state.global_lossless_json_format != plan.root.global_lossless_json_format
             || state.cluster_id != plan.root.cluster_id
             || state.replay_epoch != plan.root.replay_epoch
             || state.engines.record_root().as_ref() != Some(&plan.root.kv1)

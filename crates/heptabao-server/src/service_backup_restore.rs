@@ -151,6 +151,7 @@ impl Service {
                 Response::error(503, "original wrapped reply incoming owner header rejected")
             })?;
             let state = State {
+                global_lossless_json_format: manifest.global_lossless_json_format(),
                 namespace_protected: None,
                 namespace_leases: namespace_runtime::Leases::default(),
                 schema: manifest.state_schema(),
@@ -335,6 +336,8 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        incoming.validate_global_lossless_json_state(Some(current))
+            .map_err(|_| Response::error(400, "snapshot would downgrade global lossless JSON custody"))?;
         if (current.schema == SSH_CA_STATE_SCHEMA || current.engines.has_ssh_ca_state())
             && (incoming.schema < SSH_CA_STATE_SCHEMA || !incoming.engines.has_ssh_ca_state())
         {

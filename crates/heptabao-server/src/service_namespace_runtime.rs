@@ -1605,6 +1605,7 @@ impl Clone for State {
     fn clone(&self) -> Self {
         Self {
             schema: self.schema,
+            global_lossless_json_format: self.global_lossless_json_format,
             cluster_id: self.cluster_id.clone(),
             replay_epoch: self.replay_epoch,
             namespaces: self.namespaces.clone(),
@@ -1624,6 +1625,8 @@ impl Clone for State {
 #[derive(Serialize)]
 struct Wire<'a> {
     schema: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    global_lossless_json_format: Option<u32>,
     cluster_id: &'a str,
     #[serde(skip_serializing_if = "replay_epoch_is_zero")]
     replay_epoch: u64,
@@ -1645,6 +1648,7 @@ impl Serialize for State {
         })?;
         Wire {
             schema: state.schema,
+            global_lossless_json_format: state.global_lossless_json_format,
             cluster_id: &state.cluster_id,
             replay_epoch: state.replay_epoch,
             namespaces: &state.namespaces,
@@ -1712,6 +1716,7 @@ impl Service {
     }
 
     pub(super) fn prepare_namespace_publication(&self, state: &mut State) -> Result<(), Response> {
+        state.prepare_global_lossless_json_state(self.state.as_ref())?;
         self.namespace_runtime.prepare(state)
     }
 }

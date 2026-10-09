@@ -1486,7 +1486,7 @@ mod tests {
 
     #[test]
     fn jwt_signed_numeric_dates_keep_objects_and_reject_private_transport_magic() {
-        let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes()).unwrap();
+        let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes::<32>()).unwrap();
         let verifier = verifier(&pair);
         let claims = r#"{"iss":"https://issuer.example","sub":"alice","aud":"heptabao","iat":1000,"nbf":1000,"exp":1300,"jti":"type-boundary","heptabao_namespace":"team-a"}"#;
         let time = NativeJwtTimePolicy {
@@ -1552,7 +1552,7 @@ mod tests {
 
     #[test]
     fn jwt_unique_claim_boundary_preserves_outer_duplicates_and_nested_lastwins() {
-        let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes()).unwrap();
+        let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes::<32>()).unwrap();
         let verifier = verifier(&pair);
         let claims = r#"{"iss":"https://issuer.example","sub":"alice","aud":"heptabao","iat":1000,"nbf":1000,"exp":1300,"jti":"unique-boundary","heptabao_namespace":"team-a"}"#;
         let time = NativeJwtTimePolicy {

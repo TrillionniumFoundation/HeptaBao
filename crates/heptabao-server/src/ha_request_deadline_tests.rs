@@ -62,6 +62,7 @@ pub(crate) fn process_with_api(
         Duration::from_millis(50),
     )?;
     Ok(HaProcess {
+        storage_dir: path.to_path_buf(),
         record_commits_since_gc: AtomicU64::new(0),
         bootstrap_ready: AtomicBool::new(true),
         bootstrap_voters: None,

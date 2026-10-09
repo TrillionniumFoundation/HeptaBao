@@ -122,6 +122,7 @@ impl Cluster {
                 Duration::from_millis(50),
             )?;
             processes.push(Arc::new(Mutex::new(HaProcess {
+                storage_dir: path.join(id.to_string()),
                 record_commits_since_gc: AtomicU64::new(0),
                 bootstrap_ready: AtomicBool::new(true),
                 bootstrap_voters: None,

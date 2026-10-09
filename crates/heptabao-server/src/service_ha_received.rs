@@ -1863,6 +1863,7 @@ mod tests {
     fn protected(generation: u64, shares: u8, threshold: u8) -> Result<State, std::io::Error> {
         let (auth, _) = AuthState::bootstrap(1).map_err(|_| std::io::Error::other("bootstrap"))?;
         let mut state = State {
+            global_lossless_json_format: None,
             schema: INDEXED_RECOVERY_WIRE_STATE_SCHEMA,
             cluster_id: "received-ha-test-cluster".into(),
             replay_epoch: 0,

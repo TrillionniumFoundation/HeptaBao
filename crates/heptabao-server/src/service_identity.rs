@@ -216,6 +216,13 @@ impl State {
         } else {
             required
         };
+        let required = if self.global_lossless_json_format.is_some()
+            || self.has_global_lossless_json_state()
+        {
+            required.max(GLOBAL_LOSSLESS_JSON_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -223,6 +230,7 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
+        self.validate_global_lossless_json_state(previous)?;
         self.namespaces.workflows.validate()?;
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             && (self.auth.has_fractional_control_group_state()
@@ -1003,11 +1011,13 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.validate_global_lossless_json_state(None)?;
         self.engines
             .validate_kv2_lossless_state(None)
             .map_err(Response::from_engine_error)?;
         if self.schema < KV2_LOSSLESS_STATE_SCHEMA && self.engines.has_kv2_lossless_state()
             || self.schema == KV2_LOSSLESS_STATE_SCHEMA && !self.engines.has_kv2_lossless_state()
+                && self.global_lossless_json_format != Some(1)
         {
             return Err(Response::error(503, "KV2 lossless custody requires schema 120"));
         }
@@ -2373,6 +2383,7 @@ mod recovery_state_tests {
     fn state() -> Result<State, crate::auth::AuthError> {
         let (auth, _) = AuthState::bootstrap(1)?;
         Ok(State {
+            global_lossless_json_format: None,
             namespace_protected: None,
             namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,
@@ -2543,6 +2554,7 @@ mod kubernetes_artifact_floor_tests {
     -> Result<(), Box<dyn std::error::Error>> {
         let (auth, _) = AuthState::bootstrap(1).map_err(|_| "bootstrap")?;
         let current = State {
+            global_lossless_json_format: None,
             schema: KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA,
             cluster_id: "opaque-artifact-floor-test".into(),
             replay_epoch: 0,

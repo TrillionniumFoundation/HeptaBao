@@ -1259,6 +1259,7 @@ mod tests {
         let (auth, _) =
             AuthState::bootstrap(1).map_err(|_| std::io::Error::other("bootstrap failed"))?;
         let mut state = State {
+            global_lossless_json_format: None,
             namespace_protected: None,
             namespace_leases: namespace_runtime::Leases::default(),
             schema: INDEXED_RECOVERY_WIRE_STATE_SCHEMA,
