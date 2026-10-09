@@ -316,12 +316,12 @@ impl State {
             ));
         }
         if let Some(previous) = previous {
-            protected
+            namespace_diagnostic!("publication.nested.validate_raw_wrapped_reply_successor", protected
                 .auth
                 .validate_raw_wrapped_reply_successor(&previous.protected_state()?.auth)
                 .map_err(|_| {
                     Response::error(503, "original wrapped reply custody cannot regress")
-                })?;
+                }))?;
         }
         if self.schema < PKI_RSA8192_STATE_SCHEMA
             && (self.engines.has_pki_rsa8192_state()
@@ -441,9 +441,9 @@ impl State {
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin protected owner")))?;
         if let Some(previous) = previous {
-            self.auth
+            namespace_diagnostic!("publication.nested.validate_namespace_deletion_successor", self.auth
                 .validate_namespace_deletion_successor(&previous.auth, &self.cluster_id)
-                .map_err(|e| Response::error(e.status, &e.message))?;
+                .map_err(|e| Response::error(e.status, &e.message)))?;
             if self.schema < NAMESPACE_DELETION_STATE_SCHEMA
                 && previous.has_namespace_deletion_state()
             {
@@ -454,17 +454,17 @@ impl State {
                     "namespace deletion writer floor cannot decrease",
                 ));
             }
-            self.protected_state()?
+            namespace_diagnostic!("publication.nested.validate_namespace_batch_successor", self.protected_state()?
                 .auth
                 .validate_namespace_batch_successor(&previous.protected_state()?.auth)
-                .map_err(|error| Response::error(error.status, &error.message))?;
-            self.protected_state()?
+                .map_err(|error| Response::error(error.status, &error.message)))?;
+            namespace_diagnostic!("publication.nested.validate_public_origin_successor", self.protected_state()?
                 .auth
                 .validate_public_origin_successor(&previous.protected_state()?.auth)
-                .map_err(|_| Response::error(503, "public origin floor cannot retire"))?;
-            self.protected_state()?
+                .map_err(|_| Response::error(503, "public origin floor cannot retire")))?;
+            namespace_diagnostic!("publication.nested.validate_custody_successor", self.protected_state()?
                 .namespaces
-                .validate_custody_successor(&previous.protected_state()?.namespaces)?;
+                .validate_custody_successor(&previous.protected_state()?.namespaces))?;
         }
 
         if !supported_reader_schema(self.schema) {
@@ -829,9 +829,9 @@ impl State {
             .validate_recovery_credential(&self.cluster_id)
             .map_err(|_| Response::error(503, "invalid protected recovery credential")))?;
         if let Some(previous) = previous {
-            self.auth
+            namespace_diagnostic!("publication.nested.validate_recovery_publication", self.auth
                 .validate_recovery_publication(&previous.auth, &self.cluster_id)
-                .map_err(|_| Response::error(503, "recovery authority publication rejected"))?;
+                .map_err(|_| Response::error(503, "recovery authority publication rejected")))?;
         }
         if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
             && (self.engines.has_local_typed_pki_state()
