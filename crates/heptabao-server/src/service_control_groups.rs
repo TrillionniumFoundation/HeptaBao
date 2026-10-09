@@ -458,7 +458,10 @@ impl Service {
                     Err(error) => return Some(error),
                 };
                 if approved(state, owner, time) {
-                    None
+                    // A live quorum cannot renew an expired requester. Reject
+                    // before authenticating the one-use wrapping token so a
+                    // failed resume keeps the deferred owner reviewable.
+                    state.auth.control_group_actor(owner, time).err().map(auth_error)
                 } else {
                     Some(Response::error(
                         400,
