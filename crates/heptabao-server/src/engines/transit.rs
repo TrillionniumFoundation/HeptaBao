@@ -585,7 +585,11 @@ impl Transit {
             return self.handle_key(method, rest, body, now);
         }
         if let Some(rest) = path.strip_prefix("export/") {
-            return self.export(method, rest, body);
+            return if body.get("format").is_none() {
+                self.export(method, rest)
+            } else {
+                self.export_with_format(method, rest, body)
+            };
         }
         let (operation, rest) = path.split_once('/').unwrap_or((path, ""));
         if !write_method(method) {
@@ -810,7 +814,11 @@ impl Transit {
         }
     }
 
-    fn export(&self, method: &str, rest: &str, body: &Value) -> Result<EngineResponse> {
+    fn export(&self, method: &str, rest: &str) -> Result<EngineResponse> {
+        self.export_with_format(method, rest, &json!({}))
+    }
+
+    fn export_with_format(&self, method: &str, rest: &str, body: &Value) -> Result<EngineResponse> {
         if method != "GET" {
             return Err(unsupported());
         }
