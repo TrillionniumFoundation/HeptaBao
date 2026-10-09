@@ -6,7 +6,7 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
 
-This package owns a fail-closed process boundary between HeptaBao and an externally installed sandbox provider, plus the repository-side issue, renew, revoke and reconciliation state machine for dynamic-secret leases. It never executes a plugin directly and does not claim that a particular operating-system sandbox, database provider or production deployment has been qualified.
+This package owns a fail-closed process boundary between HeptaBao and an externally installed sandbox provider, plus the repository-side issue, renew, revoke and reconciliation state machine for dynamic-secret leases. The host always invokes an enrolled execution provider. The optional sealed-exec KMS provider below is a trusted functional handoff, and supplies no OS containment. This package does not claim that a particular operating-system sandbox, database provider or production deployment has been qualified.
 
 ## Public API and ownership
 
@@ -197,3 +197,41 @@ This is a fixture race correction, not a change to the production sandbox runner
 ## Independent module closure dossier
 
 The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-plugin-host.md).
+
+## Functional KMS sealed-exec profile
+
+The Linux binary `heptabao-kms-sealed-exec` accepts only provider ID
+`sealed_exec_adapter`, profile `kms_sealed_exec_v1`, HBP1 protocol 1 and
+operation `read`. Deploy it through the existing `external_kms`
+configuration: the command remains the digest-pinned genuine bridge, and
+`sandbox_command` is this separately digest-pinned executable. Operator
+deployment metadata still pins the maintained Transit provider image and its
+implementation. No new durable state, trust anchor or configuration field is
+introduced.
+
+The adapter accepts exactly the parent-owned `/proc/<pid>/fd/<fd>` capability.
+It retains the parent proc directory, checks same effective UID and stable
+PID/start time, verifies that the parent remains its parent, opens and retains
+the image, and checks the original proc-FD still resolves to the same inode.
+Only an anonymous, mode-0500 regular file of at most 64 MiB with all
+write/grow/shrink/exec/seal seals and an ELF header for the native supported
+64-bit architecture is accepted. Scripts, ordinary pathname execution and
+missing seals are rejected. The kernel loader and installed dynamic loader
+remain trusted platform dependencies.
+
+Only the host's seven fixed KMS/operator environment names are accepted;
+duplicate, missing, inherited loader variables or unknown names are rejected.
+The original absolute monotonic deadline is checked before the handoff and is
+passed through unchanged. The adapter never reads stdin, produces a success
+frame, spawns a replacement child, retries a request, or extends that deadline.
+It executes the retained local FD in the same process. The host's original
+pipes, process group, HBP1/HBR1 limits, unknown-outcome fence and terminal wait
+remain in force.
+
+This profile is deliberately a **functional trusted-code adapter**, not an OS
+sandbox. It does not restrict filesystem/network/syscalls, contain escaped
+descendants, attest loaders, or prove absence of nested bridge forced cleanup.
+Any StageB functionality evidence must report OS-sandbox qualification
+separately and keep the full replacement claim false while containment remains
+open. Same-UID parent trust and genuine kernel procfs are deployment assumptions.
+SourceOnly tests and a test ELF handoff are not real provider or StageB evidence.

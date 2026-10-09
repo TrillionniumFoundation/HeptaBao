@@ -202,7 +202,7 @@ modules:
   source: crates/heptabao-linux-parent-death/src/lib.rs
   guide: docs/modules/heptabao-linux-parent-death.md
 - crate: heptabao-plugin-host
-  domain: durable sandbox-wrapper invocation and dynamic lease lifecycle
+  domain: durable sandbox-wrapper invocation, bounded trusted KMS sealed-exec handoff (no OS containment), and dynamic lease lifecycle
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-plugin-host/src/lib.rs
