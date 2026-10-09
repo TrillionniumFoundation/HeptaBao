@@ -783,6 +783,13 @@ impl Service {
         {
             return Err(Response::error(400, "snapshot would downgrade standard asymmetric imported key state"));
         }
+        incoming.engines.validate_transit_rotation_precision_state(Some(&current.engines))
+            .map_err(Response::from_engine_error)?;
+        if current.schema >= TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+            && incoming.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade precise transit rotation"));
+        }
         if current.schema >= SYMMETRIC_BACKUP_STATE_SCHEMA
             && incoming.schema < SYMMETRIC_BACKUP_STATE_SCHEMA
         {

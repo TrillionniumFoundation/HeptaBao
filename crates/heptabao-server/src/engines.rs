@@ -761,6 +761,26 @@ impl EngineState {
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_symmetric_backup_state())))
     }
 
+    pub(crate) fn has_transit_rotation_precision_state(&self) -> bool {
+        self.namespaces.values().any(|state| state.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_rotation_precision_state())))
+    }
+
+    pub(crate) fn validate_transit_rotation_precision_state(&self, previous: Option<&Self>) -> Result<()> {
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let prior = previous.and_then(|old| old.namespaces.get(namespace_name))
+                        .and_then(|old| old.mounts.get(mount_name))
+                        .filter(|old| old.incarnation == mount.incarnation)
+                        .and_then(|old| if let Backend::Transit(engine) = &old.backend { Some(engine) } else { None });
+                    engine.validate_rotation_precision_state(prior)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_standard_asymmetric_import_state(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_standard_asymmetric_import_state())))
@@ -2756,6 +2776,21 @@ impl EngineState {
         Ok(changed)
     }
 
+    pub(crate) fn maintain_auto_rotation_precise(&mut self, at: crate::auth::Timestamp) -> Result<bool> {
+        if at.duration_since_epoch().subsec_nanos() == 0 {
+            return self.maintain_auto_rotation(at.seconds());
+        }
+        let mut changed = false;
+        for state in self.namespaces.values_mut() {
+            for mount in state.mounts.values_mut() {
+                if let Backend::Transit(engine) = &mut mount.backend {
+                    changed |= engine.maintain_auto_rotation_precise(at)?;
+                }
+            }
+        }
+        Ok(changed)
+    }
+
     pub(crate) fn has_mount_listing_visibility_state(&self) -> bool {
         self.namespaces.values().any(|state| {
             state
@@ -3120,8 +3155,11 @@ impl EngineState {
             }
             Backend::Kv2(engine) => engine.handle_precise(method, relative, &params, at)?,
             Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
-            Backend::Transit(engine) => {
+            Backend::Transit(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
                 engine.handle(namespace, &mount_path, method, relative, &params, now)?
+            }
+            Backend::Transit(engine) => {
+                engine.handle_precise(namespace, &mount_path, method, relative, &params, at)?
             }
             Backend::Pki(engine) => {
                 engine.handle_admin(method, relative, &params, now.max(self.lease_clock))?

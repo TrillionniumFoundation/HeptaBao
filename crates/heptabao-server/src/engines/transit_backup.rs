@@ -13,6 +13,8 @@ pub(super) struct Metadata {
     pub(super) kdf: u8,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     hmac_key_size: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    auto_rotate_period_nanoseconds: Option<i64>,
     archive_min_version: u64,
     min_available_version: u64,
     version_template: String,
@@ -97,8 +99,8 @@ struct Policy {
     version_template: String,
     #[serde(default)]
     storage_prefix: String,
-    #[serde(default)]
-    auto_rotate_period: u64,
+    #[serde(default, deserialize_with = "native_rotation_duration")]
+    auto_rotate_period: i64,
     #[serde(default, rename = "Imported")]
     imported: bool,
     #[serde(default, rename = "AllowImportedKeyRotation")]
@@ -206,13 +208,73 @@ fn time_seconds(value: &str) -> Result<u64> {
     u64::try_from(t.timestamp()).map_err(|_| bad("invalid backup timestamp"))
 }
 
-// The measured native backup uses Go Duration nanoseconds; ordinary API durations stay strings.
-fn restored_rotation_period(nanoseconds: u64) -> Result<u64> {
-    if nanoseconds % 1_000_000_000 != 0 {
-        return Err(bad("backup auto_rotate_period requires whole-second precision"));
+// Native backups carry Go's signed Duration, independently of public configuration validation.
+fn native_rotation_duration<'de, D: serde::Deserializer<'de>>(d: D) -> std::result::Result<i64, D::Error> {
+    i64::deserialize(d).map_err(|_| serde::de::Error::custom("invalid native rotation duration"))
+}
+
+fn restored_rotation_period(nanoseconds: i64) -> u64 {
+    u64::try_from(nanoseconds / 1_000_000_000).unwrap_or(0)
+}
+
+pub(super) fn rotation_nanoseconds(key: &Key) -> Result<i64> {
+    if let Some(nanos) = key.backup_metadata.as_ref().and_then(|m| m.auto_rotate_period_nanoseconds) {
+        return Ok(nanos);
     }
-    let seconds = nanoseconds / 1_000_000_000;
-    auto_rotate_period(Some(&json!(format!("{seconds}s"))))
+    i64::try_from(key.auto_rotate_period)
+        .ok().and_then(|seconds| seconds.checked_mul(1_000_000_000))
+        .ok_or_else(|| bad("transit rotation duration overflow"))
+}
+
+pub(super) fn has_positive_rotation_period(key: &Key) -> bool {
+    key.backup_metadata.as_ref().and_then(|m| m.auto_rotate_period_nanoseconds)
+        .map_or(key.auto_rotate_period != 0, |nanos| nanos > 0)
+}
+
+pub(super) fn configure_rotation_period(key: &mut Key, seconds: u64) -> Result<()> {
+    let nanoseconds = i64::try_from(seconds).ok()
+        .and_then(|v| v.checked_mul(1_000_000_000))
+        .ok_or_else(|| bad("transit rotation duration overflow"))?;
+    if let Some(m) = &mut key.backup_metadata
+        && m.auto_rotate_period_nanoseconds.is_some()
+    {
+        m.auto_rotate_period_nanoseconds = Some(nanoseconds);
+    }
+    key.auto_rotate_period = seconds;
+    Ok(())
+}
+
+pub(super) fn creation_nanoseconds(key: &Key, number: u64) -> Result<u128> {
+    let version = key.versions.get(&number).ok_or_else(|| error(500, "transit version missing"))?;
+    if let Some(value) = key.backup_metadata.as_ref().and_then(|m| m.version_times.get(&number)) {
+        let at = DateTime::parse_from_rfc3339(value).map_err(|_| bad("invalid backup timestamp"))?;
+        let seconds = u64::try_from(at.timestamp()).map_err(|_| bad("invalid backup timestamp"))?;
+        if seconds != version.created_at {
+            return Err(bad("backup timestamp and creation time disagree"));
+        }
+        return Ok(u128::from(seconds) * 1_000_000_000 + u128::from(at.timestamp_subsec_nanos()));
+    }
+    Ok(u128::from(version.created_at) * 1_000_000_000)
+}
+
+pub(super) fn record_rotation_creation(key: &mut Key, number: u64, at: crate::auth::Timestamp) -> Result<()> {
+    let period = rotation_nanoseconds(key)?;
+    if key.backup_metadata.as_ref().is_some_and(|m| m.auto_rotate_period_nanoseconds.is_some())
+        || (at.duration_since_epoch().subsec_nanos() != 0
+            && is_kind(&key.kind) && !byok::imported_key(key) && !key.convergent_encryption
+            && key.convergent_write_min_version == 0
+            && key.versions.values().all(|v| v.public_key_only.is_none()))
+    {
+        let mut m = metadata(key);
+        m.auto_rotate_period_nanoseconds = Some(period);
+        m.version_times.insert(number, at.rfc3339());
+        key.backup_metadata = Some(m);
+    }
+    Ok(())
+}
+
+pub(super) fn has_rotation_precision(key: &Key) -> bool {
+    key.backup_metadata.as_ref().is_some_and(|m| m.auto_rotate_period_nanoseconds.is_some())
 }
 
 fn stamp_valid(value: &Option<Stamp>, latest: u64) -> Result<()> {
@@ -292,6 +354,7 @@ pub(super) fn native_hmac_metadata(size: u64) -> Metadata {
     Metadata {
         kdf: 0,
         hmac_key_size: Some(size),
+        auto_rotate_period_nanoseconds: None,
         archive_min_version: 0,
         min_available_version: 0,
         version_template: String::new(),
@@ -325,6 +388,9 @@ pub(super) fn min_available_version(key: &Key) -> u64 {
 }
 
 pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
+    if let Some(nanoseconds) = key.backup_metadata.as_ref().and_then(|m| m.auto_rotate_period_nanoseconds) {
+        descriptor["auto_rotate_period"] = json!(nanoseconds / 1_000_000_000);
+    }
     if key.kind == "hmac"
         && key
             .backup_metadata
@@ -355,6 +421,7 @@ fn metadata(key: &Key) -> Metadata {
             symmetric::is_kind(&key.kind) && !key.legacy_counter_kdf && key.byok.is_none(),
         ),
         hmac_key_size: None,
+        auto_rotate_period_nanoseconds: None,
         archive_min_version: 0,
         min_available_version: 0,
         version_template: String::new(),
@@ -443,6 +510,9 @@ pub(super) fn validate_key(key: &Key) -> Result<()> {
             || m.version_times.len() > MAX_VERSIONS as usize
         {
             return Err(bad("invalid symmetric backup metadata"));
+        }
+        if m.auto_rotate_period_nanoseconds.is_some_and(|nanos| restored_rotation_period(nanos) != key.auto_rotate_period) {
+            return Err(bad("rotation duration and legacy projection disagree"));
         }
         stamp_valid(&m.backup_info, key.latest_version)?;
         stamp_valid(&m.restore_info, key.latest_version)?;
@@ -561,8 +631,7 @@ impl Transit {
                 allow_plaintext_backup: key.allow_plaintext_backup,
                 version_template: m.version_template.clone(),
                 storage_prefix: m.storage_prefix.clone(),
-                auto_rotate_period: key.auto_rotate_period.checked_mul(1_000_000_000)
-                .ok_or_else(|| bad("backup auto_rotate_period overflow"))?,
+                auto_rotate_period: rotation_nanoseconds(key)?,
                 imported: byok::imported_key(key),
                 allow_imported_rotation: byok::rotation_permission(key),
                 soft_deleted: key.deleted,
@@ -606,8 +675,13 @@ impl Transit {
         if raw.len() > MAX_BACKUP_BYTES {
             return Err(error(413, "backup exceeds supported size"));
         }
-        let wire: Backup =
-            serde_json::from_slice(&raw).map_err(|_| bad("invalid or ambiguous backup JSON"))?;
+        let wire: Backup = serde_json::from_slice(&raw).map_err(|reason| {
+            if reason.to_string().contains("invalid native rotation duration") {
+                openbao_compatibility_error("invalid native rotation duration")
+            } else {
+                bad("invalid or ambiguous backup JSON")
+            }
+        })?;
         let p = &wire.policy;
         valid_path(&p.name)?;
         if p.name.is_empty() || p.name.contains('/') {
@@ -636,7 +710,7 @@ impl Transit {
             )));
         }
         let kind = kind_name(p.kind)?;
-        let auto_rotate_period = restored_rotation_period(p.auto_rotate_period)?;
+        let auto_rotate_period = restored_rotation_period(p.auto_rotate_period);
         if p.latest_version == 0
             || p.latest_version > MAX_VERSIONS
             || p.archive_version != p.latest_version
@@ -658,7 +732,7 @@ impl Transit {
             || p.convergent_version != 0
             || !p.version_template.is_empty()
             || p.storage_prefix.len() > 256
-            || (p.imported && !p.allow_imported_rotation && p.auto_rotate_period != 0)
+            || (p.imported && !p.allow_imported_rotation && p.auto_rotate_period > 0)
             || wire.archived_keys.keys.len() as u64 != p.latest_version - p.archive_min_version + 1
         {
             return Err(bad("invalid or unsupported symmetric backup policy"));
@@ -702,6 +776,11 @@ impl Transit {
         let metadata = Metadata {
             kdf: p.kdf,
             hmac_key_size: p.key_size,
+            auto_rotate_period_nanoseconds: (p.auto_rotate_period < 0
+                || p.auto_rotate_period % 1_000_000_000 != 0
+                || self.keys.get(name).is_some_and(has_rotation_precision)
+                || (p.auto_rotate_period > 0 && times.values().any(|value| DateTime::parse_from_rfc3339(value).is_ok_and(|at| at.timestamp_subsec_nanos() != 0))))
+                .then_some(p.auto_rotate_period),
             archive_min_version: p.archive_min_version,
             min_available_version: p.min_available_version,
             version_template: p.version_template.clone(),

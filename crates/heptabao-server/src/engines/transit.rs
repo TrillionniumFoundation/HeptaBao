@@ -499,26 +499,27 @@ impl Key {
             if period != 0 {
                 byok::rotation_allowed(self)?;
             }
-            self.auto_rotate_period = period;
+            backup::configure_rotation_period(self, period)?;
         }
         Ok(())
     }
 
     fn auto_rotate(&mut self, now: u64) -> Result<bool> {
-        if self.deleted || self.auto_rotate_period == 0 || self.versions.len() >= 10_000 {
+        let at = crate::auth::Timestamp::whole(now).map_err(|_| bad("invalid transit rotation clock"))?;
+        self.auto_rotate_precise(at)
+    }
+
+    fn auto_rotate_precise(&mut self, at: crate::auth::Timestamp) -> Result<bool> {
+        let period = backup::rotation_nanoseconds(self)?;
+        if self.deleted || period <= 0 || self.versions.len() >= 10_000 {
             return Ok(false);
         }
-        let created = self
-            .versions
-            .get(&self.latest_version)
-            .ok_or_else(|| error(500, "latest transit key version is missing"))?
-            .created_at;
-        let due = created
-            .checked_add(self.auto_rotate_period)
-            .ok_or_else(|| error(500, "transit rotation deadline overflow"))?;
-        if now < due {
+        let created = backup::creation_nanoseconds(self, self.latest_version)?;
+        let due = created + period as u128;
+        if at.duration_since_epoch().as_nanos() < due {
             return Ok(false);
         }
+        let now = at.seconds();
         byok::rotation_allowed(self)?;
         let next = self
             .latest_version
@@ -534,15 +535,23 @@ impl Key {
         self.versions.insert(next, version);
         self.latest_version = next;
         byok::native_rotation_completed(self);
+        backup::record_rotation_creation(self, next, at)?;
         Ok(true)
     }
 }
 
 fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
-    let period = value.map(duration_seconds).transpose()?.unwrap_or(0);
+    let seconds = match value {
+        None => 0,
+        Some(Value::String(raw)) if raw.len() <= 256 => crate::auth::transit_rotation_duration(raw)
+            .map_err(|_| bad("invalid auto_rotate_period"))? / 1_000_000_000,
+        Some(value) => value.as_i64().ok_or_else(|| bad("auto_rotate_period must be integer seconds or a duration string"))?,
+    };
+    let period = u64::try_from(seconds).map_err(|_| bad("auto_rotate_period must be at least 1h or 0"))?;
     if period != 0 && period < 3600 {
         return Err(bad("auto_rotate_period must be at least 1h or 0"));
     }
+    seconds.checked_mul(1_000_000_000).ok_or_else(|| bad("auto_rotate_period overflow"))?;
     Ok(period)
 }
 
@@ -637,7 +646,7 @@ impl Transit {
     pub(super) fn has_auto_rotate_keys(&self) -> bool {
         self.keys
             .values()
-            .any(|key| key.auto_rotate_period != 0 && !key.deleted)
+            .any(|key| backup::has_positive_rotation_period(key) && !key.deleted)
     }
 
     pub(super) fn maintain_auto_rotation(&mut self, now: u64) -> Result<bool> {
@@ -646,6 +655,51 @@ impl Transit {
             changed |= key.auto_rotate(now)?;
         }
         Ok(changed)
+    }
+
+    pub(super) fn has_rotation_precision_state(&self) -> bool {
+        self.keys.values().any(backup::has_rotation_precision)
+    }
+
+    pub(super) fn validate_rotation_precision_state(&self, previous: Option<&Self>) -> Result<()> {
+        for (name, key) in &self.keys {
+            backup::validate_key(key)?;
+            if previous.and_then(|old| old.keys.get(name)).is_some_and(backup::has_rotation_precision)
+                && !backup::has_rotation_precision(key)
+            {
+                return Err(error(503, "transit rotation precision cannot be erased"));
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn maintain_auto_rotation_precise(&mut self, at: crate::auth::Timestamp) -> Result<bool> {
+        if at.duration_since_epoch().subsec_nanos() == 0 {
+            return self.maintain_auto_rotation(at.seconds());
+        }
+        let mut changed = false;
+        for key in self.keys.values_mut() {
+            changed |= key.auto_rotate_precise(at)?;
+        }
+        Ok(changed)
+    }
+
+    pub(super) fn handle_precise(
+        &mut self, namespace: &str, mount: &str, method: &str, path: &str,
+        body: &Value, at: crate::auth::Timestamp,
+    ) -> Result<EngineResponse> {
+        let before: BTreeMap<_, _> = self.keys.iter().map(|(name, key)| (name.clone(), key.latest_version)).collect();
+        let response = self.handle(namespace, mount, method, path, body, at.seconds())?;
+        // Restored versions retain their source timestamp; the request clock never replaces it.
+        if response.mutated && path != "restore" && !path.starts_with("restore/") {
+            for (name, key) in &mut self.keys {
+                if before.get(name) != Some(&key.latest_version) {
+                    let number = key.latest_version;
+                    backup::record_rotation_creation(key, number, at)?;
+                }
+            }
+        }
+        Ok(response)
     }
 
     pub(super) fn handle(

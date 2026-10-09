@@ -148,6 +148,7 @@ mod kv2_import;
 mod kv2_import_tests;
 const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
 const WORKFLOW_DYNAMIC_STATE_SCHEMA: u32 = 123;
+const TRANSIT_ROTATION_PRECISION_STATE_SCHEMA: u32 = 124;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -156,7 +157,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = WORKFLOW_DYNAMIC_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_ROTATION_PRECISION_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -204,6 +205,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | KV2_LOSSLESS_STATE_SCHEMA
                 | WORKFLOW_PROFILE_STATE_SCHEMA
                 | WORKFLOW_DYNAMIC_STATE_SCHEMA
+                | TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -9984,6 +9986,9 @@ mod transit_byok_tests;
 #[cfg(test)]
 #[path = "service_symmetric_backup_tests.rs"]
 mod symmetric_backup_tests;
+#[cfg(test)]
+#[path = "service_transit_rotation_precision_tests.rs"]
+mod transit_rotation_precision_tests;
 
 #[cfg(test)]
 #[path = "service_default_mount_tests.rs"]

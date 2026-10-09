@@ -1020,12 +1020,29 @@ fn symmetric270_backup_rotation_nanoseconds_restore_and_atomic_boundaries() -> T
             == BASE64.encode(b"nonzero backup period keeps real AES material")
     );
 
-    for (index, seconds) in [0u64, 3_600, 604_800, 315_360_000].into_iter().enumerate() {
+    // Official R03/R04/R05: native wire is signed nanoseconds; public configuration has different rules.
+    for (index, nanoseconds) in [
+        0i64,
+        1,
+        -1,
+        i64::MIN,
+        i64::MAX,
+        3_599_999_999_999,
+        3_600_000_000_001,
+        3_600_500_000_000,
+        604_800_000_000_000,
+        315_360_001_000_000_000,
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let name = format!("period-{index}");
         let mut input = wire_fixture("aes256-gcm96", 0, false)?;
-        input["policy"]["auto_rotate_period"] = json!(seconds * 1_000_000_000);
-        restore_wire(&mut t, &format!("period-{index}"), &input)?;
-        assert!(t.keys[&format!("period-{index}")].auto_rotate_period == seconds);
-        let output = call(&mut t, "GET", &format!("backup/period-{index}"), &json!({}))?;
+        input["policy"]["auto_rotate_period"] = json!(nanoseconds);
+        restore_wire(&mut t, &name, &input)?;
+        let descriptor = call(&mut t, "GET", &format!("keys/{name}"), &json!({}))?;
+        assert!(descriptor.body["data"]["auto_rotate_period"] == nanoseconds / 1_000_000_000);
+        let output = call(&mut t, "GET", &format!("backup/{name}"), &json!({}))?;
         let raw = Zeroizing::new(
             BASE64
                 .decode(
@@ -1036,16 +1053,29 @@ fn symmetric270_backup_rotation_nanoseconds_restore_and_atomic_boundaries() -> T
                 .map_err(|_| "backup_decode_failed")?,
         );
         let output: Value = serde_json::from_slice(&raw).map_err(|_| "backup_parse_failed")?;
-        assert!(output["policy"]["auto_rotate_period"] == seconds * 1_000_000_000);
+        assert!(output["policy"]["auto_rotate_period"] == nanoseconds);
+        assert!(output["policy"]["keys"] == input["policy"]["keys"]);
+        assert!(output["archived_keys"] == input["archived_keys"]);
+        if nanoseconds <= 0 {
+            let old = encoded(&t)?;
+            assert!(
+                !t.keys
+                    .get_mut(&name)
+                    .ok_or("key_missing")?
+                    .auto_rotate(10_000)
+                    .map_err(|_| "rotation_failed")?
+            );
+            assert!(encoded(&t)?.as_slice() == old.as_slice());
+        }
     }
-    let before = encoded(&t)?;
-    for nanoseconds in [
-        3_599_000_000_000,
-        315_360_001_000_000_000,
-        u64::MAX,
+    for value in [
+        json!(u64::MAX),
+        json!(9_223_372_036_854_775_808u64),
+        json!(3_600_000_000_000.5),
     ] {
+        let before = encoded(&t)?;
         let mut input = wire_fixture("aes256-gcm96", 0, false)?;
-        input["policy"]["auto_rotate_period"] = json!(nanoseconds);
+        input["policy"]["auto_rotate_period"] = value;
         let raw = Zeroizing::new(serde_json::to_vec(&input).map_err(|_| "wire_encoding_failed")?);
         let failure = t
             .handle(
@@ -1058,24 +1088,219 @@ fn symmetric270_backup_rotation_nanoseconds_restore_and_atomic_boundaries() -> T
             )
             .err()
             .ok_or("invalid_period_accepted")?;
-        assert!(failure.status == 400);
+        assert!(failure.status == 500);
         assert!(
             encoded(&t)?.as_slice() == before.as_slice(),
-            "precision, duration bounds and overflow failures cannot replace any live key"
+            "invalid signed wire cannot replace any live key or secret"
         );
     }
+    for (input, seconds) in [
+        (json!("3600.5s"), 3600u64),
+        (json!("1h1ns"), 3600),
+        (json!(3600), 3600),
+        (json!(604800), 604800),
+        (json!(315360001), 315360001),
+        (json!(0), 0),
+    ] {
+        assert!(
+            call(
+                &mut t,
+                "POST",
+                "keys/rotation-source/config",
+                &json!({"auto_rotate_period":input})
+            )?
+            .status
+                == 200
+        );
+        assert!(t.keys["rotation-source"].auto_rotate_period == seconds);
+        let output = call(&mut t, "GET", "backup/rotation-source", &json!({}))?;
+        let raw = Zeroizing::new(
+            BASE64
+                .decode(
+                    output.body["data"]["backup"]
+                        .as_str()
+                        .ok_or("backup_missing")?,
+                )
+                .map_err(|_| "backup_decode_failed")?,
+        );
+        let output: Value = serde_json::from_slice(&raw).map_err(|_| "backup_parse_failed")?;
+        assert!(output["policy"]["auto_rotate_period"] == seconds * 1_000_000_000);
+    }
+    for input in [
+        json!(3600.5),
+        json!(-1),
+        json!(3599),
+        json!("3599.999s"),
+        json!(9_223_372_037u64),
+    ] {
+        let before = encoded(&t)?;
+        let failure = t
+            .handle(
+                "team",
+                "transit",
+                "POST",
+                "keys/rotation-source/config",
+                &json!({"auto_rotate_period":input}),
+                100,
+            )
+            .err()
+            .ok_or("invalid_public_period_accepted")?;
+        assert!(failure.status == 400);
+        assert!(encoded(&t)?.as_slice() == before.as_slice());
+    }
+    Ok(())
+}
+
+#[test]
+fn rotation124_exact_original_creation_and_one_nanosecond_deadline_survive_reload() -> TestResult {
+    let mut t = fixture()?;
+    let mut wire = wire_fixture("aes256-gcm96", 0, false)?;
+    wire["policy"]["auto_rotate_period"] = json!(3_600_000_000_001i64);
+    let raw = Zeroizing::new(serde_json::to_vec(&wire).map_err(|_| "wire_encoding_failed")?);
+    let restored_at =
+        crate::auth::Timestamp::checked(999, 456_789_123).map_err(|_| "clock_failed")?;
     assert!(
-        t.handle(
+        t.handle_precise(
             "team",
             "transit",
             "POST",
-            "keys/rotation-source/config",
-            &json!({"auto_rotate_period":604_800}),
-            100
+            "restore/precise",
+            &json!({"backup":BASE64.encode(raw.as_slice())}),
+            restored_at
         )
-        .is_err(),
-        "backup integer units do not relax the existing public duration API"
+        .map_err(|_| "precise_restore_failed")?
+        .status
+            == 204
+    );
+    assert!(
+        creation_nanoseconds(&t.keys["precise"], 2).map_err(|_| "creation_failed")?
+            == 100_987_654_321u128
+    );
+    let original = t.keys["precise"].versions[&2].clone();
+    let raw = encoded(&t)?;
+    t = serde_json::from_slice(&raw).map_err(|_| "reload_failed")?;
+    t.validate_rotation_precision_state(None)
+        .map_err(|_| "precision_validation_failed")?;
+    let before = encoded(&t)?;
+    let before_due =
+        crate::auth::Timestamp::checked(3700, 987_654_321).map_err(|_| "clock_failed")?;
+    assert!(
+        !t.maintain_auto_rotation_precise(before_due)
+            .map_err(|_| "rotation_failed")?
     );
     assert!(encoded(&t)?.as_slice() == before.as_slice());
+    let due = crate::auth::Timestamp::checked(3700, 987_654_322).map_err(|_| "clock_failed")?;
+    assert!(
+        t.maintain_auto_rotation_precise(due)
+            .map_err(|_| "rotation_failed")?
+    );
+    assert!(t.keys["precise"].latest_version == 3);
+    assert!(
+        t.keys["precise"].versions[&2].material == original.material
+            && t.keys["precise"].versions[&2].hmac_material == original.hmac_material
+    );
+    assert!(
+        creation_nanoseconds(&t.keys["precise"], 3).map_err(|_| "creation_failed")?
+            == due.duration_since_epoch().as_nanos()
+    );
+    let before = encoded(&t)?;
+    assert!(
+        !t.maintain_auto_rotation_precise(due)
+            .map_err(|_| "rotation_failed")?
+    );
+    assert!(encoded(&t)?.as_slice() == before.as_slice());
+    // Manual rotation records the same caller-owned clock, without replacing it with wall time.
+    let manual = crate::auth::Timestamp::checked(4000, 123_456_789).map_err(|_| "clock_failed")?;
+    assert!(
+        t.handle_precise(
+            "team",
+            "transit",
+            "POST",
+            "keys/precise/rotate",
+            &json!({}),
+            manual
+        )
+        .map_err(|_| "manual_rotation_failed")?
+        .status
+            == 200
+    );
+    assert!(
+        creation_nanoseconds(&t.keys["precise"], 4).map_err(|_| "creation_failed")?
+            == manual.duration_since_epoch().as_nanos()
+    );
+    let before_due =
+        crate::auth::Timestamp::checked(7600, 123_456_789).map_err(|_| "clock_failed")?;
+    assert!(
+        !t.maintain_auto_rotation_precise(before_due)
+            .map_err(|_| "rotation_failed")?
+    );
+    let due = crate::auth::Timestamp::checked(7600, 123_456_790).map_err(|_| "clock_failed")?;
+    assert!(
+        t.maintain_auto_rotation_precise(due)
+            .map_err(|_| "rotation_failed")?
+    );
+    assert!(t.keys["precise"].latest_version == 5);
+    let raw = encoded(&t)?;
+    t = serde_json::from_slice(&raw).map_err(|_| "reload_failed")?;
+    assert!(
+        creation_nanoseconds(&t.keys["precise"], 5).map_err(|_| "creation_failed")?
+            == due.duration_since_epoch().as_nanos()
+    );
+    // A later enable operation uses genuine native creation time, without resetting at config.
+    let created = crate::auth::Timestamp::checked(10, 123_456_789).map_err(|_| "clock_failed")?;
+    assert!(
+        t.handle_precise(
+            "team",
+            "transit",
+            "POST",
+            "keys/later-enable",
+            &json!({"type":"aes256-gcm96"}),
+            created
+        )
+        .map_err(|_| "native_creation_failed")?
+        .status
+            == 200
+    );
+    assert!(has_rotation_precision(&t.keys["later-enable"]));
+    let config = crate::auth::Timestamp::checked(20, 999_999_999).map_err(|_| "clock_failed")?;
+    assert!(
+        t.handle_precise(
+            "team",
+            "transit",
+            "POST",
+            "keys/later-enable/config",
+            &json!({"auto_rotate_period":3600}),
+            config
+        )
+        .map_err(|_| "native_config_failed")?
+        .status
+            == 200
+    );
+    assert!(
+        creation_nanoseconds(&t.keys["later-enable"], 1).map_err(|_| "creation_failed")?
+            == created.duration_since_epoch().as_nanos()
+    );
+    let before_due =
+        crate::auth::Timestamp::checked(3610, 123_456_788).map_err(|_| "clock_failed")?;
+    assert!(
+        !t.keys
+            .get_mut("later-enable")
+            .ok_or("key_missing")?
+            .auto_rotate_precise(before_due)
+            .map_err(|_| "rotation_failed")?
+    );
+    let due = crate::auth::Timestamp::checked(3610, 123_456_789).map_err(|_| "clock_failed")?;
+    assert!(
+        t.keys
+            .get_mut("later-enable")
+            .ok_or("key_missing")?
+            .auto_rotate_precise(due)
+            .map_err(|_| "rotation_failed")?
+    );
+    assert!(t.keys["later-enable"].latest_version == 2);
+    // Ordinary historical/coarse AES retains its serialized fields.
+    let ordinary = Key::new(&json!({"type":"aes256-gcm96"}), 100).map_err(|_| "ordinary_failed")?;
+    let raw = serde_json::to_string(&ordinary).map_err(|_| "ordinary_encoding_failed")?;
+    assert!(ordinary.backup_metadata.is_none() && !raw.contains("auto_rotate_period_nanoseconds"));
     Ok(())
 }

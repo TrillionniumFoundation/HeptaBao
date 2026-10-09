@@ -64,10 +64,10 @@ impl Service {
         let changed = Self::reconcile_lease_owners_observed(&mut next, time)
             .map_err(|_| "lease and PKI CRL maintenance failed")?
             | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now))
-            | next
-                .engines
-                .maintain_auto_rotation(now)
-                .map_err(|_| "transit auto-rotation failed")?;
+            | match time {
+                AuthorityTime::Precise(at) => next.engines.maintain_auto_rotation_precise(at),
+                AuthorityTime::Coarse(seconds) => next.engines.maintain_auto_rotation(seconds),
+            }.map_err(|_| "transit auto-rotation failed")?;
         if !changed {
             return Ok(false);
         }
