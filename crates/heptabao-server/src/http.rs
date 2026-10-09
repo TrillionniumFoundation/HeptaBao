@@ -1,5 +1,5 @@
-//! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
-//! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
+//! Bounded HTTP/1.1 and multiplexed HTTP/2 over verified Rustls TLS.
+//! Both transports share logical request admission and fixed request deadlines.
 use crate::request_deadline::{LockWaitError, RequestDeadlineScope, lock_until};
 use crate::{
     Response, Service, ServiceRequest, crypto,
@@ -26,6 +26,9 @@ use std::{
 
 #[path = "http_h2.rs"]
 mod h2_transport;
+#[cfg(test)]
+#[path = "http_api_alpn_tests.rs"]
+mod api_alpn_tests;
 #[path = "http_logical.rs"]
 mod logical;
 use zeroize::{Zeroize, Zeroizing};
@@ -274,6 +277,10 @@ pub fn serve_with_ha_fixture(
     serve_inner(config, Some(ha), Some(fixture))
 }
 
+fn configure_api_alpn(tls: &mut ServerConfig) {
+    tls.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
+}
+
 fn serve_inner(
     config: Config,
     ha: Option<Arc<Mutex<HaProcess>>>,
@@ -368,7 +375,7 @@ fn serve_inner(
             .with_single_cert(certificates, key)
             .map_err(|_| "TLS key and certificate do not match")?,
     };
-    tls.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
+    configure_api_alpn(&mut tls);
     let tls = Arc::new(tls);
     #[cfg(feature = "fixture-capacity-limit")]
     let fixture_opaque_owner_limit_bytes = config.fixture_opaque_owner_limit_bytes;
