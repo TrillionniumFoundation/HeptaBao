@@ -103,7 +103,7 @@ impl AuthState {
         Ok(())
     }
 
-    fn ui_resultant_acl(
+    pub(super) fn ui_resultant_acl(
         &self,
         principal: Option<&Principal>,
         namespace: &str,
@@ -144,7 +144,7 @@ impl AuthState {
                 else {
                     continue;
                 };
-                rules.entry(rendered).or_default().merge(rule);
+                rules.entry(rendered.into_owned()).or_default().merge(rule);
             }
         }
         let segment_navigation: BTreeSet<&str> = rules
