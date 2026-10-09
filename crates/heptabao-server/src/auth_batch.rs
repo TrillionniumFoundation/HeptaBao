@@ -333,8 +333,18 @@ impl BatchClaims {
         {
             return Err(BatchError::InvalidClaims);
         }
+        // SDK precision is owned by its authenticated native binding, not by
+        // the Token API policy-name grammar or auth/token/create path family.
+        let sdk_precision_owner = self.public_origin.as_ref()
+            .and_then(super::public_origin::BatchOrigin::sdk_binding)
+            .is_some_and(|binding| {
+                binding.namespace == self.namespace
+                    && self.path.starts_with(&format!("auth/{}/", binding.mount))
+                    && self.entity_id.is_some()
+                    && self.token_role.is_none()
+            });
         if let Some(lease) = &self.token_api_precision
-            && (!self.token_api_policy_names
+            && ((!self.token_api_policy_names && !sdk_precision_owner)
                 || lease.validate(self.issued_at, self.expires_at).is_err())
         {
             return Err(BatchError::InvalidClaims);

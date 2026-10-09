@@ -204,8 +204,13 @@ fn sdk126_batch_sealing_requires_entity_and_keeps_authenticated_cidr_namespace_a
         "bound_cidrs":["127.0.0.0/8"], "metadata":{"source":"SDK"}
     });
     let tokens_before = auth.tokens.len();
+    assert!(auth.batch_authority.is_some());
+    let authority_before = crate::secret_serde::to_vec(&auth.batch_authority, 16 * 1024 * 1024)
+        .map_err(|_| "batch authority before rejection")?;
     let mut unbound = auth.finish_sdk_auth_login(&binding, "login", &payload, at)?;
     assert!(unbound.body["auth"].get("client_token").is_none());
+    let state_before_rejection = crate::secret_serde::to_vec(&auth, 16 * 1024 * 1024)
+        .map_err(|_| "Auth state before unbound batch rejection")?;
     assert!(
         auth.finish_pending_batch_observed(
             &mut unbound,
@@ -215,7 +220,11 @@ fn sdk126_batch_sealing_requires_entity_and_keeps_authenticated_cidr_namespace_a
         )
         .is_err()
     );
-    assert!(auth.batch_authority.is_none());
+    assert!(auth.batch_authority.is_some());
+    assert!(crate::secret_serde::to_vec(&auth.batch_authority, 16 * 1024 * 1024)
+        .map_err(|_| "batch authority after rejection")?.as_slice() == authority_before.as_slice());
+    assert!(crate::secret_serde::to_vec(&auth, 16 * 1024 * 1024)
+        .map_err(|_| "Auth state after unbound batch rejection")?.as_slice() == state_before_rejection.as_slice());
     assert_eq!(auth.tokens.len(), tokens_before);
     let mut response = auth.finish_sdk_auth_login(&binding, "login", &payload, at)?;
     auth.bind_issued_entity(
@@ -235,13 +244,56 @@ fn sdk126_batch_sealing_requires_entity_and_keeps_authenticated_cidr_namespace_a
     assert_eq!(response.body["auth"]["renewable"], json!(false));
     assert_eq!(response.body["auth"]["accessor"], json!(""));
     assert_eq!(auth.tokens.len(), tokens_before);
+    // Private synthetic claims use the real SDK mount binding. A precise
+    // claim without that owner cannot borrow the Token API precision gate.
+    let mut authority = auth.batch_authority.as_ref().ok_or("batch authority")?.clone();
+    for invalid_owner in 0..5 {
+        let mut claims = crate::auth::batch::BatchClaims {
+            namespace_binding: None,
+            token_api_precision: Some(token_precision::BatchPrecision {
+                granted_ttl: token_precision::DurationNanos::from_seconds(5)?,
+                expires_at: Timestamp::whole(105)?,
+            }),
+            token_role: None,
+            token_api_policy_names: false,
+            public_origin: Some(crate::auth::public_origin::BatchOrigin::sdk(binding.clone())),
+            namespace: String::new(),
+            policies: BTreeSet::from(["default".to_owned()]),
+            metadata: BTreeMap::new(),
+            display_name: "plugin-advanced_probe".into(),
+            path: "auth/sdk/login".into(),
+            bound_cidrs: vec!["127.0.0.0/8".into()],
+            issued_at: 100,
+            expires_at: 105,
+            parent: None,
+            entity_id: Some("e-00000000000000000000000000000001".into()),
+        };
+        match invalid_owner {
+            0 => claims.public_origin = None,
+            1 => claims.namespace = "other".into(),
+            2 => claims.path = "auth/foreign/login".into(),
+            3 => claims.entity_id = None,
+            _ => claims.token_api_policy_names = true,
+        }
+        let authority_before = crate::secret_serde::to_vec(&authority, 16 * 1024 * 1024)
+            .map_err(|_| "batch authority before wrong-owner seal")?;
+        assert!(authority.seal(claims, 100).is_err());
+        assert!(crate::secret_serde::to_vec(&authority, 16 * 1024 * 1024)
+            .map_err(|_| "batch authority after wrong-owner seal")?.as_slice() == authority_before.as_slice());
+    }
     let mut restored = reopen(&auth)?;
     let peer = "127.0.0.1".parse()?;
-    let actor = restored.authenticate_from_observed(
+    let mut actor = restored.authenticate_from_observed(
         &bearer,
         AuthorityTime::Precise(at.observed_at()?),
         Some(peer),
     )?;
+    assert!(restored.admitted_standard_sdk_lease_issuer_observed(
+        &actor, "", AuthorityTime::Precise(at.observed_at()?)
+    ).is_err());
+    // This standalone Auth fixture has no EngineState. Its explicit entity
+    // projection has no policies; actual Service projection is tested below.
+    actor.bind_identity_policies(BTreeSet::new());
     let issuer = restored
         .admitted_standard_sdk_lease_issuer_observed(
             &actor,

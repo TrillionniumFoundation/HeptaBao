@@ -320,11 +320,16 @@ fn sdk126_sdk_batch_secret_registration_wrap_reopen_and_native_mount_retirement_
     )?;
     let raw = bearer(&issued)?;
     let accepted = original.observed_at()?;
-    let actor = candidate.auth.authenticate_from_observed(
+    let mut actor = candidate.auth.authenticate_from_observed(
         &raw,
         AuthorityTime::Precise(accepted),
         Some("127.0.0.1".parse()?),
     )?;
+    assert!(candidate.auth.admitted_standard_sdk_lease_issuer_observed(
+        &actor, "", AuthorityTime::Precise(accepted)
+    ).is_err());
+    Service::bind_identity_principal(&candidate, &mut actor, "")
+        .map_err(|_| "actual SDK batch principal identity projection")?;
     let entry = candidate
         .auth
         .admitted_standard_sdk_lease_issuer_observed(&actor, "", AuthorityTime::Precise(accepted))?
