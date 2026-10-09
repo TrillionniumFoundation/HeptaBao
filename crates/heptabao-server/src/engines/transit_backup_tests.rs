@@ -1298,6 +1298,45 @@ fn rotation124_exact_original_creation_and_one_nanosecond_deadline_survive_reloa
             .map_err(|_| "rotation_failed")?
     );
     assert!(t.keys["later-enable"].latest_version == 2);
+    // Restored period0 retains the old shape, then enabling rotation must advertise precision124.
+    let zero_wire = wire_fixture("aes256-gcm96", 0, false)?;
+    restore_wire(&mut t, "zero-then-enable", &zero_wire)?;
+    assert!(!has_rotation_precision(&t.keys["zero-then-enable"]));
+    assert!(
+        creation_nanoseconds(&t.keys["zero-then-enable"], 2).map_err(|_| "creation_failed")?
+            == 100_987_654_321u128
+    );
+    assert!(
+        call(
+            &mut t,
+            "POST",
+            "keys/zero-then-enable/config",
+            &json!({"auto_rotate_period":3600})
+        )?
+        .status
+            == 200
+    );
+    assert!(has_rotation_precision(&t.keys["zero-then-enable"]));
+    let before_due =
+        crate::auth::Timestamp::checked(3700, 987_654_320).map_err(|_| "clock_failed")?;
+    let before = encoded(&t)?;
+    assert!(
+        !t.keys
+            .get_mut("zero-then-enable")
+            .ok_or("key_missing")?
+            .auto_rotate_precise(before_due)
+            .map_err(|_| "rotation_failed")?
+    );
+    assert!(encoded(&t)?.as_slice() == before.as_slice());
+    let due = crate::auth::Timestamp::checked(3700, 987_654_321).map_err(|_| "clock_failed")?;
+    assert!(
+        t.keys
+            .get_mut("zero-then-enable")
+            .ok_or("key_missing")?
+            .auto_rotate_precise(due)
+            .map_err(|_| "rotation_failed")?
+    );
+    assert!(t.keys["zero-then-enable"].latest_version == 3);
     // Ordinary historical/coarse AES retains its serialized fields.
     let ordinary = Key::new(&json!({"type":"aes256-gcm96"}), 100).map_err(|_| "ordinary_failed")?;
     let raw = serde_json::to_string(&ordinary).map_err(|_| "ordinary_encoding_failed")?;

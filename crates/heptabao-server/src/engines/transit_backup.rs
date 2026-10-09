@@ -236,7 +236,11 @@ pub(super) fn configure_rotation_period(key: &mut Key, seconds: u64) -> Result<(
         .and_then(|v| v.checked_mul(1_000_000_000))
         .ok_or_else(|| bad("transit rotation duration overflow"))?;
     if let Some(m) = &mut key.backup_metadata
-        && m.auto_rotate_period_nanoseconds.is_some()
+        && (m.auto_rotate_period_nanoseconds.is_some()
+            || (seconds > 0 && m.version_times.values().any(|value| {
+                DateTime::parse_from_rfc3339(value)
+                    .is_ok_and(|at| at.timestamp_subsec_nanos() != 0)
+            })))
     {
         m.auto_rotate_period_nanoseconds = Some(nanoseconds);
     }
