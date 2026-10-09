@@ -1,3 +1,5 @@
+/data/hb270-current1e28-ControlGroups-duration-units-product-sourceonly-r01/source/crates/heptabao-server/src/auth_control_groups.rs:
+
 //! Durable pre-execution approval owners, separate from already executed response wrapping.
 use super::*;
 use std::cmp::Ordering;
@@ -102,6 +104,17 @@ pub(crate) fn auth_mount_route(path: &str) -> Result<(&str, bool, String), AuthE
     Ok((mount, tune, route))
 }
 
+fn control_duration_seconds(raw: &str) -> Result<i64, AuthError> {
+    let nanos = token_duration::parse_duration(raw)
+        .map_err(|_| bad("invalid control group TTL duration"))?;
+    // The durable owner clock/expiry are whole seconds. Never interpret a
+    // nanosecond duration as seconds or silently extend a fractional deadline.
+    if nanos % 1_000_000_000 != 0 {
+        return Err(bad("control group TTL requires whole seconds"));
+    }
+    Ok(nanos / 1_000_000_000)
+}
+
 impl PolicyControl {
     pub(super) fn parse(value: &Value, capabilities: &BTreeSet<String>) -> Result<Self, AuthError> {
         reject_unknown(value, &["ttl", "factor"])?;
@@ -111,8 +124,7 @@ impl PolicyControl {
                 let raw = v
                     .as_str()
                     .ok_or_else(|| bad("control group TTL must be a duration string"))?;
-                token_duration::parse_duration(raw)
-                    .map_err(|_| bad("invalid control group TTL duration"))
+                control_duration_seconds(raw)
             })
             .transpose()?;
         let mut ttl = explicit_ttl.unwrap_or(MAX_TTL as i64);
@@ -143,7 +155,7 @@ impl PolicyControl {
                 ],
             )?;
             if let Some(v) = identity.get("ttl") {
-                let duration = token_duration::parse_duration(
+                let duration = control_duration_seconds(
                     v.as_str()
                         .ok_or_else(|| bad("identity factor TTL must be a duration string"))?,
                 )

@@ -396,3 +396,23 @@ fn cg270_namespace_partition_keeps_deferred_payload_private_and_expiry_floor_sti
     restored.validate_control_group_state()?;
     Ok(())
 }
+
+#[test]
+fn cg270_duration_units_bind_second_clock_and_identity_ttl_minimum() -> TestResult {
+    let parsed = parse_policy(&Value::String(policy("60s", "\"update\"")))?;
+    assert_eq!(parsed.control_groups["secret/data/+"][0].control.ttl, 60);
+    for raw in ["60", "1m", "60000ms", "1m0s"] {
+        let parsed = parse_policy(&Value::String(policy(raw, "\"update\"")))?;
+        assert_eq!(parsed.control_groups["secret/data/+"][0].control.ttl, 60, "{raw}");
+    }
+    let identity = policy("60s", "\"update\"").replace(
+        "group_names = [\"cg-team\"]", "ttl = \"10s\" group_names = [\"cg-team\"]");
+    let parsed = parse_policy(&Value::String(identity))?;
+    assert_eq!(parsed.control_groups["secret/data/+"][0].control.ttl, 10);
+    for raw in ["0s", "-1s", "1.5s", "999ms", "9223372036854775807s"] {
+        assert!(parse_policy(&Value::String(policy(raw, "\"update\""))).is_err(), "{raw}");
+    }
+    assert_eq!(super::token_duration::parse_duration("60s")?, 60_000_000_000);
+    assert_eq!(control_duration_seconds("60s")?, 60);
+    Ok(())
+}
