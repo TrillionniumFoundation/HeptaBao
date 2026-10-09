@@ -324,7 +324,7 @@ fn sdk126_group_aliases_use_actual_mount_and_sdk_service_cidr_keeps_native_admis
     assert_eq!(groups.alias, "alice");
     assert_eq!(groups.names, BTreeSet::from(["operators".to_owned()]));
     let bearer = raw(&response)?;
-    let restored = reopen(&auth)?;
+    let mut restored = reopen(&auth)?;
     restored.validate_sdk_auth_state()?;
     assert!(
         restored

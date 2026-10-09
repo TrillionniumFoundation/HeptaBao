@@ -2,6 +2,7 @@
 //! represented as a maintained provider process.
 use super::durable_tests::{mount, publish};
 use super::*;
+use crate::auth::AuthResponse;
 use crate::engines::sdk_lease::{Binding as LeaseBinding, Grant, Lease};
 use crate::engines::sdk_registration::Registration;
 use crate::service::tests::{Root, bootstrap, call};

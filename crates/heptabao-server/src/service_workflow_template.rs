@@ -133,9 +133,9 @@ impl TemplateSource {
                 shared
                     .template_bytes(value.len())
                     .map_err(|_| template_error())?;
-                Ok(gotmpl::Value::String(Arc::from(crypto::digest(
+                Ok(gotmpl::Value::String(Arc::from(crate::service::hex(&crypto::digest(
                     value.as_bytes(),
-                ))))
+                )))))
             })
             .parse(&self.source)
             .map_err(|_| failed())?;
