@@ -35,6 +35,14 @@ func onT5(path string) bool {
     return filepath.IsAbs(path) && filepath.Clean(path) == path &&
         strings.HasPrefix(path, "/Volumes/T5/") && !strings.ContainsAny(path, "\x00\r\n")
 }
+// The kernel may reject writes on a read-only mount before its ACL check.
+// EROFS is accepted only with an independent live MNT_RDONLY observation on
+// this same held ancestor FD. No pathname, caller field or unknown errno grants it.
+func callerWriteDenied(fd int) bool {
+    failure := unix.Faccessat(fd, ".", unix.W_OK, 0)
+    return errors.Is(failure, syscall.EACCES) ||
+        errors.Is(failure, syscall.EROFS) && readonlyMount(fd)
+}
 func sealedAncestors(path string) (held []*os.File, err error) {
     defer func() { if err != nil { for _, f := range held { f.Close() } } }()
     prefixes := []string{"/"}
@@ -52,9 +60,8 @@ func sealedAncestors(path string) (held []*os.File, err error) {
         if !ok || !st.IsDir() || raw.Uid != 0 || st.Mode().Perm()&0002 != 0 ||
             raw.Mode&(syscall.S_ISUID|syscall.S_ISGID) != 0 { return held, errors.New("unsealed root ancestor") }
         if failure = ownershipEnabled(fd); failure != nil { return held, failure }
-        // flags zero checks the real caller identity, including ACLs.
-        failure = unix.Faccessat(fd, ".", unix.W_OK, 0)
-        if !errors.Is(failure, syscall.EACCES) { return held, errors.New("caller-writable root ancestor or failed access proof") }
+        // flags zero checks the real caller; EROFS needs the same held mount proof.
+        if !callerWriteDenied(fd) { return held, errors.New("caller-writable root ancestor or failed access proof") }
     }
     return held, nil
 }
@@ -65,7 +72,7 @@ func (e *rootEnvelope) unchanged() bool {
         if err != nil || pe != nil || !os.SameFile(st, ps) || !st.IsDir() { return false }
         raw, ok := st.Sys().(*syscall.Stat_t)
         if !ok || raw.Uid != 0 || st.Mode().Perm()&0002 != 0 || ownershipEnabled(int(f.Fd())) != nil ||
-            !errors.Is(unix.Faccessat(int(f.Fd()), ".", unix.W_OK, 0), syscall.EACCES) { return false }
+            !callerWriteDenied(int(f.Fd())) { return false }
     }
     return true
 }

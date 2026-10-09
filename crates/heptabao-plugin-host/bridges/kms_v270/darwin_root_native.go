@@ -93,6 +93,11 @@ static int hbp_mount_owner(int fd) {
     if (fstatfs(fd, &fs)) return errno;
     return fs.f_flags & MNT_IGNORE_OWNERSHIP ? EPERM : 0;
 }
+static int hbp_mount_readonly(int fd) {
+    struct statfs fs = {0};
+    if (fstatfs(fd, &fs)) return 0;
+    return (fs.f_flags & MNT_RDONLY) != 0;
+}
 static int hbp_guest_empty(unsigned uid) {
     int pids[2] = {0};
     errno = 0;
@@ -141,6 +146,7 @@ func installForkBarrier() error {
 func ownershipEnabled(fd int) error {
     if e := C.hbp_mount_owner(C.int(fd)); e != 0 { return syscall.Errno(e) }; return nil
 }
+func readonlyMount(fd int) bool { return C.hbp_mount_readonly(C.int(fd)) == 1 }
 func guestAbsent(uid uint32) error {
     if e := C.hbp_guest_empty(C.uint(uid)); e != 0 { return syscall.Errno(e) }; return nil
 }

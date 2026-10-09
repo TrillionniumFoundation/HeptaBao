@@ -1357,21 +1357,6 @@ impl EngineState {
             None => Ok(None),
         }
     }
-    pub(crate) fn prepare_external_transit(
-        &self,
-        namespace: &str,
-        method: &str,
-        path: &str,
-        body: &Value,
-    ) -> Result<Option<ExternalTransitRequest>> {
-        self.prepare_external_transit_with_providers(
-            namespace,
-            method,
-            path,
-            body,
-            &BTreeSet::new(),
-        )
-    }
     pub(crate) fn prepare_external_transit_with_providers(
         &self,
         namespace: &str,

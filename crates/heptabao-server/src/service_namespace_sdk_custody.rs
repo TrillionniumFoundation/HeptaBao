@@ -232,9 +232,6 @@ impl RetirementView {
     pub(in crate::service) fn state(&self) -> &State {
         &self.private
     }
-    pub(in crate::service) fn base(&self) -> crate::state_record_root::StateIdentity {
-        self.base
-    }
     pub(in crate::service) fn role(&self) -> Option<(u64, u64)> {
         self.original.role
     }
@@ -1051,9 +1048,6 @@ impl CleanupView {
         )
     }
 
-    pub(in crate::service) fn base(&self) -> crate::state_record_root::StateIdentity {
-        self.base
-    }
     pub(in crate::service) fn role(&self) -> Option<(u64, u64)> {
         self.original.captured.role()
     }
