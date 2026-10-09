@@ -989,6 +989,7 @@ impl State {
         self.namespaces.entries.keys().filter_map(|path| {
             let relative = relative_path(base, path)?;
             if relative.is_empty()
+                || relative.contains('/')
                 || self.namespaces.deletions.as_ref().is_some_and(|ledger| ledger.is_tainted(path))
             {
                 None

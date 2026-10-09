@@ -140,7 +140,7 @@ fn ui_resultant_acl_keeps_default_policy_finite_use_and_revocation()
         &mut service,
         &admin,
         "",
-        json!({"policies":[],"num_uses":1,"ttl":300}),
+        json!({"policies":["default"],"num_uses":1,"ttl":300}),
     )?;
     let acl = call(
         &mut service,
@@ -150,6 +150,7 @@ fn ui_resultant_acl_keeps_default_policy_finite_use_and_revocation()
         json!({}),
     );
     assert_eq!(acl.status, 200);
+    assert_eq!(acl.body["data"]["root"], false);
     assert_eq!(
         acl.body["data"]["exact_paths"]["auth/token/lookup-self"]["capabilities"],
         json!(["read"])
@@ -165,7 +166,12 @@ fn ui_resultant_acl_keeps_default_policy_finite_use_and_revocation()
         .status,
         403
     );
-    let revoked = token(&mut service, &admin, "", json!({"policies":[],"ttl":300}))?;
+    let revoked = token(
+        &mut service,
+        &admin,
+        "",
+        json!({"policies":["default"],"ttl":300}),
+    )?;
     assert_eq!(
         call(
             &mut service,
@@ -248,10 +254,7 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
         json!({}),
     );
     assert_eq!(all.status, 200);
-    assert_eq!(
-        all.body["data"]["keys"],
-        json!(["other/", "team/", "team/child/"])
-    );
+    assert_eq!(all.body["data"]["keys"], json!(["other/", "team/"]));
     let scoped = service.handle_at(
         "GET",
         "sys/internal/ui/namespaces",
@@ -290,7 +293,18 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
         100,
     );
     assert_eq!(scoped.status, 200);
-    assert_eq!(scoped.body["data"]["keys"], json!(["child/"]));
+    assert_eq!(scoped.body["data"], json!({}));
+    // UI namespace access and registry metadata LIST are distinct controls.
+    let registry = service.handle_at(
+        "LIST",
+        "sys/namespaces",
+        "team",
+        &scoped_token,
+        json!({}),
+        100,
+    );
+    assert_eq!(registry.status, 200);
+    assert_eq!(registry.body["data"]["keys"], json!(["child/"]));
     assert_eq!(
         service
             .handle_at(
@@ -321,7 +335,7 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
         &mut service,
         &admin,
         "team",
-        json!({"policies":[],"ttl":300}),
+        json!({"policies":["default"],"ttl":300}),
     )?;
     let discovered = service.handle_at(
         "GET",
@@ -332,7 +346,185 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
         100,
     );
     assert_eq!(discovered.status, 200);
-    assert_eq!(discovered.body["data"]["keys"], json!([]));
+    assert_eq!(discovered.body["data"], json!({}));
+    // Removing LIST changes the real registry API, never the empty picker.
+    assert_eq!(
+        service
+            .handle_at(
+                "PUT",
+                "sys/policies/acl/ui-list",
+                "team",
+                &admin,
+                json!({"policy":r#"path "sys/namespaces" { capabilities=["deny"] }"#}),
+                100,
+            )
+            .status,
+        204
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "LIST",
+                "sys/namespaces",
+                "team",
+                &scoped_token,
+                json!({}),
+                100
+            )
+            .status,
+        403
+    );
+    let withdrawn = service.handle_at(
+        "GET",
+        "sys/internal/ui/namespaces",
+        "team",
+        &scoped_token,
+        json!({}),
+        100,
+    );
+    assert_eq!(withdrawn.status, 200);
+    assert_eq!(withdrawn.body["data"], json!({}));
+    let revoked = token(
+        &mut service,
+        &admin,
+        "team",
+        json!({"policies":["default"],"ttl":300}),
+    )?;
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/token/revoke",
+                "team",
+                &admin,
+                json!({"token":revoked}),
+                100,
+            )
+            .status,
+        204
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "GET",
+                "sys/internal/ui/namespaces",
+                "team",
+                &revoked,
+                json!({}),
+                100
+            )
+            .status,
+        403
+    );
+    let expiring = token(
+        &mut service,
+        &admin,
+        "team",
+        json!({"policies":["default"],"ttl":1}),
+    )?;
+    let live = service.handle_at(
+        "GET",
+        "sys/internal/ui/namespaces",
+        "team",
+        &expiring,
+        json!({}),
+        100,
+    );
+    assert_eq!(live.status, 200);
+    assert_eq!(live.body["data"], json!({}));
+    assert_eq!(
+        service
+            .handle_at(
+                "GET",
+                "sys/internal/ui/namespaces",
+                "team",
+                &expiring,
+                json!({}),
+                102
+            )
+            .status,
+        403
+    );
+    // Begin a real native deletion with an actual nonempty KV owner. Do not
+    // manufacture taint or run cleanup to make the registry assertion pass.
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/retire-ui",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/payload",
+                "retire-ui",
+                &admin,
+                json!({"type":"kv","options":{"version":"1"}}),
+                100,
+            )
+            .status,
+        204
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "payload/item",
+                "retire-ui",
+                &admin,
+                json!({"payload":"synthetic-retiring-owner"}),
+                100,
+            )
+            .status,
+        204
+    );
+    let execution = service.begin_request_before(
+        ServiceRequest {
+            method: "DELETE",
+            path: "sys/namespaces/retire-ui",
+            namespace: "",
+            token: &admin,
+            body: json!({}),
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        std::time::Instant::now() + std::time::Duration::from_secs(15),
+        false,
+    );
+    let deleting = service.finish_synchronous_request(execution);
+    assert_eq!(deleting.status, 200);
+    assert_eq!(deleting.body["data"]["status"], "in-progress");
+    let state = service.state.as_ref().ok_or("native namespace taint")?;
+    assert!(state.namespace_exists("retire-ui"));
+    assert!(state.namespace_is_tainted("retire-ui"));
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_secs();
+    let root_picker = service.handle_at(
+        "GET",
+        "sys/internal/ui/namespaces",
+        "",
+        &admin,
+        json!({}),
+        now,
+    );
+    assert_eq!(root_picker.status, 200);
+    assert_eq!(root_picker.body["data"]["keys"], json!(["other/", "team/"]));
+    let root_registry = service.handle_at("LIST", "sys/namespaces", "", &admin, json!({}), now);
+    assert_eq!(root_registry.status, 200);
+    assert!(
+        root_registry.body["data"]["keys"]
+            .as_array()
+            .ok_or("root registry keys")?
+            .contains(&json!("retire-ui/"))
+    );
     Ok(())
 }
 

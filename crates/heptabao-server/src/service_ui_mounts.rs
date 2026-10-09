@@ -22,15 +22,13 @@ impl Service {
         if let Err(error) = state.auth.ui_discovery_actor(principal, namespace, time) {
             return Response::error(error.status, &error.message);
         }
-        // The current credential model confines nonroot tokens to their issuing
-        // namespace. Reveal descendants only when that actor can already list
-        // the namespace registry; never use UI metadata to widen actor scope.
-        match state.auth.authorize_request_observed(
-            principal, namespace, "sys/namespaces", "list", time,
-        ) {
-            Ok(()) => Response::ok(json!({"data":{"keys":state.ui_namespace_keys(namespace)}})),
-            Err(error) if error.status == 403 => Response::ok(json!({"data":{"keys":[]}})),
-            Err(error) => Response::error(error.status, &error.message),
+        // Listing registry metadata does not authorize entering a child.
+        // Nonroot actors are confined to their issuing namespace, so their
+        // picker has no other accessible namespace, even with registry LIST.
+        if principal.is_root() {
+            Response::ok(json!({"data":{"keys":state.ui_namespace_keys(namespace)}}))
+        } else {
+            Response::ok(json!({"data":{}}))
         }
     }
 
