@@ -25,6 +25,8 @@ mod backup;
 mod byok;
 #[path = "transit_external.rs"]
 mod external;
+#[path = "transit_derivation.rs"]
+mod derivation;
 #[path = "transit_mldsa.rs"]
 mod mldsa;
 #[path = "transit_symmetric.rs"]
@@ -43,6 +45,8 @@ pub(super) struct Transit {
     disable_upsert: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     wrapping_key: Option<byok::WrappingKey>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    derived_ed_format: Option<derivation::Format>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -169,7 +173,8 @@ impl Key {
         if convergent_encryption && !derived {
             return Err(bad("convergent encryption requires key derivation"));
         }
-        if (derived || convergent_encryption) && !symmetric::is_kind(kind) {
+        if (derived || convergent_encryption) && !symmetric::is_kind(kind)
+            && !(kind == "ed25519" && derived && !convergent_encryption) {
             return Err(error(
                 if kind == "ed25519" && !convergent_encryption {
                     501
@@ -209,7 +214,9 @@ impl Key {
             if body.get("external_key_ref").is_some() {
                 return Err(bad("external_key_ref requires type external-key"));
             }
-            KeyVersion::generate(kind, now)?
+            if kind == "ed25519" && derived {
+                derivation::generate_ed_version(now)?
+            } else { KeyVersion::generate(kind, now)? }
         };
         if kind == "external-key" && (exportable || auto_rotate_period != 0) {
             return Err(bad(
@@ -266,6 +273,9 @@ impl Key {
                     asymmetric_byok::descriptor_public(&self.kind, &stored_material(public)?)?;
                 json!({"creation_time":timestamp(version.created_at),"public_key":public,
                     "name":"", "certificate_chain":Value::Null})
+            } else if derivation::is_ed(self) {
+                derivation::validate_ed_master(&stored_material(&version.material)?)?;
+                json!({"creation_time":timestamp(version.created_at),"public_key":"","name":"ed25519","certificate_chain":""})
             } else if self.kind == "ed25519" {
                 let material = stored_material(&version.material)?;
                 let pair = if self.byok.is_some() || self.backup_metadata.is_some() {
@@ -325,6 +335,11 @@ impl Key {
         descriptor["imported_key"] = json!(byok::imported_key(self));
         if let Some(allowed) = byok::imported_key_allow_rotation(self) {
             descriptor["imported_key_allow_rotation"] = json!(allowed);
+        }
+        if derivation::is_ed(self) {
+            descriptor["supports_derivation"] = json!(true);
+            descriptor["kdf"] = json!("hkdf_sha256");
+            if let Some(fields) = descriptor.as_object_mut() { fields.remove("supports_hmac"); }
         }
         if symmetric::is_kind(&self.kind) {
             let fields = descriptor
@@ -416,6 +431,8 @@ impl Key {
                 "exportable",
                 "allow_plaintext_backup",
                 "auto_rotate_period",
+                // Observed 2.7 configuration accepts this field without restricting ECDH.
+                "min_derivation_version",
             ],
         )?;
         if self.kind == "external-key"
@@ -711,6 +728,9 @@ impl Transit {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let Some(output) = path.strip_prefix("derive-key/") {
+            return self.derive_key(method, output, body, now);
+        }
         if path == "wrapping_key" {
             return self.wrapping(method, body);
         }
@@ -724,7 +744,7 @@ impl Transit {
             reject_unknown(body, &["disable_upsert"])?;
             self.disable_upsert = optional_bool(body, "disable_upsert")?
                 .ok_or_else(|| bad("disable_upsert is required"))?;
-            return Ok(empty(true));
+            return Ok(ok(json!({"disable_upsert":self.disable_upsert}), true));
         }
         if path == "keys" || path == "keys/" {
             if method != "LIST" {
@@ -901,14 +921,11 @@ impl Transit {
                 }
                 return Ok(ok(key.descriptor(name)?, false));
             }
-            self.keys.insert(name.into(), Key::new(body, now)?);
-            return Ok(ok(
-                self.keys
-                    .get(name)
-                    .ok_or_else(not_found)?
-                    .descriptor(name)?,
-                true,
-            ));
+            let key = Key::new(body, now)?;
+            let descriptor = key.descriptor(name)?;
+            if derivation::is_ed(&key) { self.derived_ed_format = Some(derivation::Format::V1); }
+            self.keys.insert(name.into(), key);
+            return Ok(ok(descriptor, true));
         }
         if !write_method(method) && !(operation == "soft-delete" && method == "DELETE") {
             return Err(unsupported());
@@ -1096,6 +1113,8 @@ impl Transit {
             .map(|(version, value)| {
                 let encoded = if kind == "hmac-key" {
                     backup::hmac_material(key, value).into()
+                } else if derivation::is_ed(key) {
+                    derivation::export_ed(value, public_export, format)?.to_string()
                 } else if let Some(public) = value.public_key_only.as_ref() {
                     if public_export {
                         let der = stored_material(public)?;
@@ -1482,7 +1501,9 @@ fn handle_crypto(
                     mldsa::sign(&key.kind, &material, &input)?
                 }
             } else {
-                let pair = if key.byok.is_some() || key.backup_metadata.is_some() {
+                let pair = if derivation::is_ed(key) {
+                    derivation::ed_pair(key, selected, body)?
+                } else if key.byok.is_some() || key.backup_metadata.is_some() {
                     asymmetric_byok::ed25519_pair(&material)?
                 } else {
                     signature::Ed25519KeyPair::from_pkcs8(&material)
@@ -1490,7 +1511,11 @@ fn handle_crypto(
                 };
                 pair.sign(&input).as_ref().to_vec()
             };
-            json!({"signature":format!("vault:v{version}:{}", signature_encoding(body)?.encode(signature)),"key_version":version})
+            let mut result = json!({"signature":format!("vault:v{version}:{}", signature_encoding(body)?.encode(signature)),"key_version":version});
+            if derivation::is_ed(key) {
+                result["public_key"] = json!(BASE64.encode(derivation::ed_pair(key, selected, body)?.public_key().as_ref()));
+            }
+            result
         }
         "verify" => {
             let input = decode_field(body, "input")?;
@@ -1536,7 +1561,9 @@ fn handle_crypto(
                     } else if mldsa::is_kind(&key.kind) {
                         mldsa::verify(&key.kind, &material, &input, &bytes)?
                     } else {
-                        let pair = if key.byok.is_some() || key.backup_metadata.is_some() {
+                        let pair = if derivation::is_ed(key) {
+                            derivation::ed_pair(key, version, body)?
+                        } else if key.byok.is_some() || key.backup_metadata.is_some() {
                             asymmetric_byok::ed25519_pair(&material)?
                         } else {
                             signature::Ed25519KeyPair::from_pkcs8(&material)

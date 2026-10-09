@@ -1164,3 +1164,68 @@ fn asymmetric270_public_import_real_restart_private_completion_and_retirement_ke
     assert!(service.state.as_ref().ok_or("retired_state_missing")?.schema == STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA);
     Ok(())
 }
+
+#[test]
+fn transit270_global_key_config_write_returns_observed_descriptor_with_namespace_acl_and_encrypted_restart() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service().map_err(|_| "test_service_failed")?;
+    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "test_bootstrap_failed")?;
+    let unseal = Zeroizing::new(unseal);
+    let admin = Zeroizing::new(admin);
+    assert_eq!(call(&mut service, "", "POST", "sys/namespaces/team", &admin, json!({})).status, 200);
+    for namespace in ["", "team"] {
+        assert_eq!(call(&mut service, namespace, "POST", "sys/mounts/global", &admin, json!({"type":"transit"})).status, 204);
+        let initial = call(&mut service, namespace, "GET", "global/config/keys", &admin, json!({}));
+        assert_eq!(initial.status, 200);
+        assert_eq!(initial.body["data"], json!({"disable_upsert":false}));
+    }
+    let changed = call(&mut service, "", "POST", "global/config/keys", &admin, json!({"disable_upsert":true}));
+    assert_eq!(changed.status, 200);
+    assert_eq!(changed.body["data"], json!({"disable_upsert":true}));
+    let current = call(&mut service, "", "GET", "global/config/keys", &admin, json!({}));
+    assert_eq!(current.status, 200);
+    assert_eq!(current.body["data"], changed.body["data"]);
+    let child = call(&mut service, "team", "GET", "global/config/keys", &admin, json!({}));
+    assert_eq!(child.status, 200);
+    assert_eq!(child.body["data"], json!({"disable_upsert":false}));
+
+    assert_eq!(call(&mut service, "", "PUT", "sys/policies/acl/global-read", &admin, json!({
+        "policy":r#"path "global/config/keys" { capabilities = ["read"] }"#
+    })).status, 204);
+    let issued = call(&mut service, "", "POST", "auth/token/create", &admin, json!({
+        "policies":["global-read"],"no_default_policy":true,"ttl":"1h"
+    }));
+    assert_eq!(issued.status, 200);
+    let reader = Zeroizing::new(issued.body["auth"]["client_token"].as_str().ok_or("test_token_missing")?.to_owned());
+    let read = call(&mut service, "", "GET", "global/config/keys", &reader, json!({}));
+    assert_eq!(read.status, 200);
+    assert_eq!(read.body["data"], json!({"disable_upsert":true}));
+    let before = service.current_state_identity().map_err(|_| "test_identity_failed")?;
+    let state_before = Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("test_state_missing")?).map_err(|_| "test_state_encoding_failed")?);
+    assert_eq!(call(&mut service, "", "POST", "global/config/keys", &reader, json!({"disable_upsert":false})).status, 403);
+    assert!(service.current_state_identity().map_err(|_| "test_identity_failed")? == before);
+    let state_after = Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("test_state_missing")?).map_err(|_| "test_state_encoding_failed")?);
+    assert!(state_after.as_slice() == state_before.as_slice());
+    let before = service.current_state_identity().map_err(|_| "test_identity_failed")?;
+    assert_eq!(call(&mut service, "", "POST", "global/config/keys", &admin, json!({"disable_upsert":"false"})).status, 400);
+    assert!(service.current_state_identity().map_err(|_| "test_identity_failed")? == before);
+    assert_eq!(call(&mut service, "", "GET", "global/config/keys", &admin, json!({})).body["data"], json!({"disable_upsert":true}));
+
+    drop(service);
+    let mut service = root.service().map_err(|_| "test_reopen_failed")?;
+    assert_eq!(call(&mut service, "", "POST", "sys/unseal", "", json!({"key":unseal.as_str()})).status, 200);
+    let reopened = call(&mut service, "", "GET", "global/config/keys", &admin, json!({}));
+    assert_eq!(reopened.status, 200);
+    assert_eq!(reopened.body["data"], json!({"disable_upsert":true}));
+    let child = call(&mut service, "team", "GET", "global/config/keys", &admin, json!({}));
+    assert_eq!(child.status, 200);
+    assert_eq!(child.body["data"], json!({"disable_upsert":false}));
+    let changed = call(&mut service, "", "POST", "global/config/keys", &admin, json!({"disable_upsert":false}));
+    assert_eq!(changed.status, 200);
+    assert_eq!(changed.body["data"], json!({"disable_upsert":false}));
+    let current = call(&mut service, "", "GET", "global/config/keys", &admin, json!({}));
+    assert_eq!(current.status, 200);
+    assert_eq!(current.body["data"], changed.body["data"]);
+    assert!(service.state.as_ref().ok_or("test_state_missing")?.validate_format().is_ok());
+    Ok(())
+}

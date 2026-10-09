@@ -55,6 +55,10 @@ pub(super) struct ImportPolicy {
     imported_key: bool,
 }
 
+pub(super) fn ecdh_import_policy() -> ImportPolicy {
+    ImportPolicy { allow_rotation: false, imported_key: true }
+}
+
 pub(super) fn rotation_allowed(key: &Key) -> Result<()> {
     if key
         .byok

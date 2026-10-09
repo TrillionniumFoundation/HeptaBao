@@ -763,6 +763,26 @@ impl EngineState {
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_symmetric_backup_state())))
     }
 
+    pub(crate) fn has_transit_derived_ed_state(&self) -> bool {
+        self.namespaces.values().any(|state| state.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_derived_ed_state())))
+    }
+
+    pub(crate) fn validate_transit_derived_ed_state(&self, previous: Option<&Self>) -> Result<()> {
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let prior = previous.and_then(|old| old.namespaces.get(namespace_name))
+                        .and_then(|old| old.mounts.get(mount_name))
+                        .filter(|old| old.incarnation == mount.incarnation)
+                        .and_then(|old| if let Backend::Transit(engine) = &old.backend { Some(engine) } else { None });
+                    engine.validate_derived_ed_state(prior)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_transit_rotation_precision_state(&self) -> bool {
         self.namespaces.values().any(|state| state.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_rotation_precision_state())))

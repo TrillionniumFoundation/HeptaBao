@@ -151,6 +151,7 @@ const WORKFLOW_DYNAMIC_STATE_SCHEMA: u32 = 123;
 const TRANSIT_ROTATION_PRECISION_STATE_SCHEMA: u32 = 124;
 const WORKFLOW_EXPRESSION_STATE_SCHEMA: u32 = 125;
 const SDK_ADVANCED_STATE_SCHEMA: u32 = 126;
+const TRANSIT_DERIVED_ED_STATE_SCHEMA: u32 = 127;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -159,7 +160,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_ADVANCED_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_DERIVED_ED_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -210,6 +211,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
                 | WORKFLOW_EXPRESSION_STATE_SCHEMA
                 | SDK_ADVANCED_STATE_SCHEMA
+                | TRANSIT_DERIVED_ED_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -4377,6 +4379,7 @@ impl Service {
             || admitted.engines.has_ssh_ca_state()
             || admitted.auth.has_control_group_state()
             || admitted.engines.has_symmetric_backup_state()
+                        || admitted.engines.has_transit_derived_ed_state()
             || admitted.engines.has_kv2_lossless_state()
         {
             admitted.schema = admitted.writer_schema();
@@ -10047,3 +10050,7 @@ mod ssh_ca115_tests;
 #[cfg(test)]
 #[path = "service_ssh_template115_tests.rs"]
 mod ssh_template115_tests;
+
+#[cfg(test)]
+#[path = "service_transit_derivation_tests.rs"]
+mod transit_derivation_tests;

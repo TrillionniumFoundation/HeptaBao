@@ -116,7 +116,12 @@ pub(super) fn from_version(key: &Key, v: &KeyVersion, time: String) -> Result<En
     out.hmac_key = Some(v.hmac_material.clone());
     out.creation_time = v.created_at;
     out.time = time;
-    if symmetric::is_kind(&key.kind) {
+    if derivation::is_ed(key) {
+        let master = stored_material(&v.material)?;
+        derivation::validate_ed_master(&master)?;
+        out.key = Some(v.material.clone());
+        out.public_key = BASE64.encode(&master[32..]);
+    } else if symmetric::is_kind(&key.kind) {
         out.key = Some(v.material.clone());
     } else if key.kind == "hmac" {
         // Legacy unmarked HMAC keys retain their existing MAC material.
@@ -349,7 +354,9 @@ pub(super) fn validate_version(key: &Key, v: &KeyVersion) -> Result<()> {
         return Err(bad("invalid complete backup version"));
     }
     let raw = stored_material(&v.material)?;
-    if symmetric::is_kind(&key.kind) {
+    if derivation::is_ed(key) {
+        derivation::validate_ed_master(&raw)?;
+    } else if symmetric::is_kind(&key.kind) {
         if raw.len() != symmetric::key_len(&key.kind) {
             return Err(bad("invalid symmetric backup key length"));
         }

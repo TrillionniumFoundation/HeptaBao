@@ -312,8 +312,14 @@ impl Entry {
     fn empty_exact(&self) -> bool {
         self == &Self::empty()
     }
-    fn version(&self, kind: &str, key_size: Option<u64>) -> Result<KeyVersion> {
-        let material = crypto::material(self, kind, key_size)?;
+    fn version(&self, kind: &str, key_size: Option<u64>, derived: bool) -> Result<KeyVersion> {
+        let mut material = crypto::material(self, kind, key_size)?;
+        if kind == "ed25519" && derived {
+            let raw = self.key.as_deref().ok_or_else(|| bad("derived signing master missing"))?;
+            derivation::validate_ed_master(&stored_material(raw)?)?;
+            material.zeroize();
+            material = raw.into();
+        }
         Ok(KeyVersion {
             material,
             hmac_material: self
@@ -369,7 +375,8 @@ pub(super) fn native_hmac_metadata(size: u64) -> Metadata {
     }
 }
 pub(super) fn generate_version(key: &Key, now: u64) -> Result<KeyVersion> {
-    let mut v = KeyVersion::generate(&key.kind, now)?;
+    let mut v = if derivation::is_ed(key) { derivation::generate_ed_version(now)? }
+        else { KeyVersion::generate(&key.kind, now)? };
     if key.kind == "hmac"
         && key
             .backup_metadata
@@ -422,7 +429,8 @@ pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
 fn metadata(key: &Key) -> Metadata {
     key.backup_metadata.clone().unwrap_or_else(|| Metadata {
         kdf: u8::from(
-            symmetric::is_kind(&key.kind) && !key.legacy_counter_kdf && key.byok.is_none(),
+            (symmetric::is_kind(&key.kind) && !key.legacy_counter_kdf && key.byok.is_none())
+                || derivation::is_ed(key),
         ),
         hmac_key_size: None,
         auto_rotate_period_nanoseconds: None,
@@ -506,7 +514,8 @@ pub(super) fn validate_key(key: &Key) -> Result<()> {
             || m.archive_min_version > m.min_available_version
             || m.min_available_version > key.min_decryption_version
             || key.legacy_counter_kdf != (key.derived && m.kdf == 0)
-            || (!symmetric::is_kind(&key.kind) && (key.derived || m.kdf != 0))
+            || (!symmetric::is_kind(&key.kind) && !derivation::is_ed(key) && (key.derived || m.kdf != 0))
+            || (derivation::is_ed(key) && (m.kdf != 1 || key.byok.is_some()))
             || m.hmac_key_size
                 .is_some_and(|n| key.kind != "hmac" || !(32..=512).contains(&n))
             || !m.version_template.is_empty()
@@ -719,7 +728,7 @@ impl Transit {
             || p.latest_version > MAX_VERSIONS
             || p.archive_version != p.latest_version
             || p.kdf > 1
-            || (!symmetric::is_kind(kind) && (p.derived || p.kdf != 0))
+            || (!symmetric::is_kind(kind) && !(kind == "ed25519" && p.derived && p.kdf == 1 && !p.imported) && (p.derived || p.kdf != 0))
             || if kind == "hmac" {
                 p.key_size.is_none_or(|n| !(32..=512).contains(&n))
             } else {
@@ -774,7 +783,7 @@ impl Transit {
         let mut versions = BTreeMap::new();
         let mut times = BTreeMap::new();
         for (n, e) in entries {
-            versions.insert(n, e.version(kind, p.key_size)?);
+            versions.insert(n, e.version(kind, p.key_size, p.derived)?);
             times.insert(n, e.time.clone());
         }
         let metadata = Metadata {
@@ -835,8 +844,10 @@ impl Transit {
         if let Some(w) = wrapping {
             prepared.wrapping_key = Some(w);
         }
+        if derivation::is_ed(&restored) { prepared.derived_ed_format = Some(derivation::Format::V1); }
         prepared.keys.insert(name.into(), restored);
         prepared.validate_byok_state()?;
+        prepared.validate_derived_ed_state(Some(self))?;
         *self = prepared;
         Ok(empty(true))
     }
