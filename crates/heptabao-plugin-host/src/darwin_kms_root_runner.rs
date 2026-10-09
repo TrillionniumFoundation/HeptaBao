@@ -241,6 +241,17 @@ fn identity(m:&std::fs::Metadata)->[i128;9] {
 fn readonly_caller(fd:&impl AsFd,path:&str)->bool {
     rustix::fs::accessat(fd,path,Access::WRITE_OK,AtFlags::empty())==Err(rustix::io::Errno::ACCESS)
 }
+// Only a held directory inode may qualify EROFS. Darwin's existing
+// ST_RDONLY and MNT_RDONLY are both bit 1; rustix 1.1.4 exposes that
+// constant as StatVfsMountFlags and fstatfs returns libc's StatFs.
+fn readonly_ancestor(fd:&impl AsFd)->bool {
+    match rustix::fs::accessat(fd,".",Access::WRITE_OK,AtFlags::empty()) {
+        Err(rustix::io::Errno::ACCESS)=>true,
+        Err(rustix::io::Errno::ROFS)=>rustix::fs::fstatfs(fd).is_ok_and(|fs|
+            u64::from(fs.f_flags)&rustix::fs::StatVfsMountFlags::RDONLY.bits()!=0),
+        _=>false,
+    }
+}
 impl RootBrokerPin {
     fn open(m:&PluginManifest)->Result<Self,SandboxFailure> {
         let d=m.descriptor();let s=m.sandbox();
@@ -266,7 +277,7 @@ impl RootBrokerPin {
             let file=File::from(rustix::fs::open(&prefix,OFlags::RDONLY|OFlags::DIRECTORY|OFlags::NOFOLLOW|OFlags::CLOEXEC,Mode::empty())
                 .map_err(|_| SandboxFailure::BeforeEntry)?);
             let meta=file.metadata().map_err(|_| SandboxFailure::BeforeEntry)?;
-            if !meta.is_dir() || meta.uid()!=0 || meta.mode()&0o2!=0 || !readonly_caller(&file,".") {
+            if !meta.is_dir() || meta.uid()!=0 || meta.mode()&0o2!=0 || !readonly_ancestor(&file) {
                 return Err(SandboxFailure::BeforeEntry);
             }
             ancestors.push((file,prefix.clone()));
@@ -288,7 +299,7 @@ impl RootBrokerPin {
             let Ok(meta)=file.metadata() else {return false};
             let Ok(named)=std::fs::symlink_metadata(path) else {return false};
             if !named.is_dir() || meta.dev()!=named.dev() || meta.ino()!=named.ino() ||
-                meta.uid()!=0 || meta.mode()&0o2!=0 || !readonly_caller(file,".") {return false}
+                meta.uid()!=0 || meta.mode()&0o2!=0 || !readonly_ancestor(file) {return false}
         }
         let Ok(meta)=self.file.metadata() else {return false};
         let Ok(named)=std::fs::symlink_metadata(&self.path) else {return false};

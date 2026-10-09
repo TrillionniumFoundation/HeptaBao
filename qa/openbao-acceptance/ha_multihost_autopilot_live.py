@@ -38,6 +38,7 @@ from ha_multihost_live import (
     openssl,
     parse_binary_source,
     parse_node,
+    provision_seed_kv2,
     read_exact,
     remote_start,
     remote_stop,
@@ -396,6 +397,7 @@ hostname
         unseal_key = keys[0]
         status, _ = api(context, seed, "POST", "sys/unseal", {"key": unseal_key})
         check("seed_unsealed", status == 200)
+        report["fixture_mount_setup"] = provision_seed_kv2(context, seed, root_token)
         status, health = api(context, seed, "GET", "sys/health")
         cluster_id = health.get("cluster_id")
         check(

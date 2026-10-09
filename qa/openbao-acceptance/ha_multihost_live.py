@@ -28,6 +28,8 @@ import time
 import urllib.error
 import urllib.request
 
+from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
+
 MAX_BODY = 32 * 1024 * 1024
 TAILNET = ipaddress.ip_network("100.64.0.0/10")
 FORBIDDEN_REPORT_KEYS = frozenset({
@@ -180,14 +182,27 @@ def sha256_file(path: Path) -> str:
         return hashlib.file_digest(source, "sha256").hexdigest()
 
 
+def admitted_storage_prefix(alias: str, path: str, *, binary_source: bool = False) -> bool:
+    """Preserve canonical checks while respecting known host storage boundaries."""
+    if alias == "desktop-ts":
+        return path.startswith("/data/")
+    if alias == "x230-ts":
+        return path.startswith("/home/qian/")
+    if alias in ("mac-ts", "macbook-pro"):
+        return path.startswith("/Volumes/T5/")
+    # Local Data is the existing desktop producer location. Other hosts retain
+    # their original home admission; this does not grant a host or ABI identity.
+    return path.startswith("/home/") or (binary_source and alias == "local" and path.startswith("/data/"))
+
+
 def parse_binary_source(value: str) -> tuple[str, str]:
     alias, separator, path = value.partition(":")
     if (not separator or re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", alias) is None
-            or not path.startswith("/home/") or "//" in path
+            or not admitted_storage_prefix(alias, path, binary_source=True) or "//" in path
             or any(part in ("", ".", "..") for part in Path(path).parts[1:])
             or any(character.isspace() or ord(character) < 0x20 for character in path)):
         raise argparse.ArgumentTypeError(
-            "binary source must be local:/home/... or ssh-alias:/home/..."
+            "binary source must use its host admitted absolute private storage"
         )
     return alias, path
 
@@ -685,13 +700,31 @@ def create_fixture_node_certificate(node: Node, directory: Path,
     return key, cert
 
 
+def provision_seed_kv2(context: ssl.SSLContext, node: Node, token: str) -> dict:
+    """Submit the fresh fixture mount once, then verify its public inventory."""
+    def submit(method, path, body=None, **request_options):
+        return api(context, node, method, path, body, token, **request_options)
+    provision_secret_kv2(submit, error_type=FixtureError, timeout=12)
+    status, body = api(context, node, "GET", "sys/mounts", token=token, timeout=12)
+    mounts = body.get("data") if isinstance(body, dict) else None
+    mount = mounts.get("secret/") if isinstance(mounts, dict) else None
+    options = mount.get("options") if isinstance(mount, dict) else None
+    if (type(status) is not int or status != 200 or not isinstance(mount, dict)
+            or mount.get("type") != "kv" or not isinstance(options, dict)
+            or options.get("version") != "2"):
+        raise FixtureError("fixture_exact_kv2_inventory_failed")
+    metadata = completed_kv2_mount_metadata()
+    metadata["inventory_confirmed"] = True
+    return metadata
+
+
 def parse_node(text: str, node_id: int, api_port: int, raft_port: int) -> Node:
     parts = text.split(",", 2)
     if len(parts) != 3:
         raise argparse.ArgumentTypeError("node must be alias,ip,absolute-root")
     alias, raw_ip, root = parts
     if (re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", alias) is None
-            or not root.startswith("/home/") or "//" in root
+            or not admitted_storage_prefix(alias, root) or "//" in root
             or any(part in ("", ".", "..") for part in Path(root).parts[1:])
             or any(character.isspace() or ord(character) < 0x20 for character in root)):
         raise argparse.ArgumentTypeError("invalid node alias or canonical private root")
@@ -889,6 +922,7 @@ hostname
         unseal_key = keys[0]
         status, _ = api(context, seed, "POST", "sys/unseal", {"key": unseal_key})
         check("seed_unsealed", status == 200)
+        report["fixture_mount_setup"] = provision_seed_kv2(context, seed, root_token)
         status, health = api(context, seed, "GET", "sys/health")
         cluster_id = health.get("cluster_id")
         check("seed_cluster_identity", status == 200 and isinstance(cluster_id, str) and bool(cluster_id))

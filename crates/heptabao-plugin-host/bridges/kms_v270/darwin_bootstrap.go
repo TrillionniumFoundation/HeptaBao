@@ -136,7 +136,27 @@ func guestWriteBoundary(path string) bool {
         st,err:=os.Lstat(prefix)
         if err!=nil || st.Mode()&os.ModeSymlink!=0 { return false }
         raw,ok:=st.Sys().(*syscall.Stat_t)
-        if !ok || raw.Uid!=0 || !errors.Is(unix.Faccessat(unix.AT_FDCWD,prefix,unix.W_OK,0),syscall.EACCES) { return false }
+        if !ok || raw.Uid!=0 { return false }
+        failure:=unix.Faccessat(unix.AT_FDCWD,prefix,unix.W_OK,0)
+        if errors.Is(failure,syscall.EACCES) { continue }
+        // Keep the original denied-access path for guest-only searchable
+        // directories and executable files. Only EROFS directories get an
+        // extra read-only FD; a failed open or regular-file EROFS stays False.
+        if !errors.Is(failure,syscall.EROFS) || !st.IsDir() { return false }
+        fd,failure:=unix.Open(prefix,unix.O_RDONLY|unix.O_DIRECTORY|unix.O_NOFOLLOW|unix.O_CLOEXEC,0)
+        if failure!=nil { return false }
+        held:=os.NewFile(uintptr(fd),prefix)
+        denied:=readonlyMount(fd) && callerWriteDenied(fd)
+        observed,statError:=held.Stat(); named,namedError:=os.Lstat(prefix)
+        same:=false
+        if statError==nil && namedError==nil {
+            observedRaw,observedOK:=observed.Sys().(*syscall.Stat_t)
+            namedRaw,namedOK:=named.Sys().(*syscall.Stat_t)
+            same=observedOK && namedOK && observed.IsDir() && named.IsDir() &&
+                sameFileStat(raw,observedRaw) && sameFileStat(observedRaw,namedRaw)
+        }
+        closeError:=held.Close()
+        if !denied || !same || closeError!=nil { return false }
     }
     return true
 }
