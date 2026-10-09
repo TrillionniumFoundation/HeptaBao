@@ -260,6 +260,15 @@ impl State {
                     .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
                     .map_err(|e| Response::error(e.status, &e.message)))?
             {
+                // This raw custody change is already inadmissible. Classify a
+                // torn SDK registration/clock using its existing read-only
+                // validator before reporting the remaining typed-proof failure.
+                namespace_diagnostic!(
+                    "publication.sdk_raw_classification",
+                    self.engines
+                        .validate_sdk_lease_clock(Some(&*previous.engines))
+                        .map_err(|error| Response::error(503, &error.message))
+                )?;
                 return namespace_diagnostic!(
                     "publication.sdk_raw_change",
                     Err(Response::error(
