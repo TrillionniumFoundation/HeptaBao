@@ -778,6 +778,13 @@ impl Service {
                 "snapshot would downgrade PKI issuer-path leases",
             ));
         }
+        incoming.auth.validate_sdk_advanced_state(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= SDK_ADVANCED_STATE_SCHEMA
+            && incoming.schema < SDK_ADVANCED_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade SDK advanced custody"));
+        }
         if current.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
             && incoming.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
         {
@@ -809,6 +816,12 @@ impl Service {
             .engines
             .validate_kv2_lossless_state(Some(&current.engines))
             .map_err(Response::from_engine_error)?;
+        if (current.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA
+            || current.namespaces.workflows.has_expression_profiles())
+            && incoming.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade workflow expressions"));
+        }
         if (current.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA
             || current.namespaces.workflows.has_dynamic_profiles())
             && incoming.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA

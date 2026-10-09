@@ -1,6 +1,6 @@
 [workspace]
 members = ["crates/*"]
-exclude = ["vendor/bcrypt-0.19.3"]
+exclude = ["vendor/bcrypt-0.19.3", "third_party/workflow-gotmpl"]
 resolver = "3"
 
 [workspace.package]

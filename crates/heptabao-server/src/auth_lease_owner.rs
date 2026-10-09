@@ -54,6 +54,8 @@ pub(crate) struct BatchLeaseClaims {
     entity_id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_api_precision: Option<super::token_precision::BatchPrecision>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_issuer: Option<super::sdk::advanced::BatchIssuer>,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
@@ -78,6 +80,8 @@ struct BatchOwnerWire {
     entity_id: Option<String>,
     #[serde(default)]
     token_api_precision: Option<super::token_precision::BatchPrecision>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_issuer: Option<super::sdk::advanced::BatchIssuer>,
 }
 
 impl TryFrom<BatchOwnerWire> for BatchLeaseClaims {
@@ -95,6 +99,7 @@ impl TryFrom<BatchOwnerWire> for BatchLeaseClaims {
             parent: value.parent,
             entity_id: value.entity_id,
             token_api_precision: value.token_api_precision,
+            sdk_issuer: value.sdk_issuer,
         };
         claims.validate()?;
         Ok(claims)
@@ -124,6 +129,8 @@ impl BatchLeaseClaims {
             parent: claims.parent().map(str::to_owned),
             entity_id: claims.entity_id().map(str::to_owned),
             token_api_precision: claims.precision().cloned(),
+            sdk_issuer: claims.public_origin().and_then(super::public_origin::BatchOrigin::sdk_binding)
+                .map(super::sdk::advanced::BatchIssuer::from_binding),
         }
     }
 
@@ -142,6 +149,7 @@ impl BatchLeaseClaims {
         {
             return Err(BatchError::InvalidClaims);
         }
+        if let Some(issuer) = &self.sdk_issuer { issuer.validate(&self.namespace)?; }
         if !self.authority_id.is_valid()
             || !self.key_id.is_valid()
             || !valid_digest(&self.token_digest)
@@ -156,6 +164,7 @@ impl BatchLeaseClaims {
             self.entity_id.as_deref(),
         )
     }
+    pub(super) fn sdk_issuer(&self) -> Option<&super::sdk::advanced::BatchIssuer> { self.sdk_issuer.as_ref() }
     pub(crate) fn namespace_binding(&self) -> Option<&super::batch_namespace::Binding> {
         self.namespace_binding.as_deref()
     }

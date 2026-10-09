@@ -1,5 +1,9 @@
 //! Typed dynamic data stays request-local; the Service interpreter owns effects.
 use super::*;
+#[path = "service_workflow_cel.rs"]
+mod cel_consumer;
+#[path = "service_workflow_template.rs"]
+mod template_consumer;
 
 #[derive(Clone, Copy)]
 enum Kind {
@@ -90,8 +94,18 @@ enum Expr {
     Object(BTreeMap<String, Expr>),
     Array(Vec<Expr>),
     Source(Kind, Source),
+    Cel(Kind, cel_consumer::CelSource),
+    Template(Kind, template_consumer::TemplateSource, Box<Expr>),
 }
 impl Expr {
+    fn has_expression_sources(&self) -> bool {
+        match self {
+            Self::Cel(..) | Self::Template(..) => true,
+            Self::Object(values) => values.values().any(Self::has_expression_sources),
+            Self::Array(values) => values.iter().any(Self::has_expression_sources),
+            _ => false,
+        }
+    }
     fn compile(
         value: &Value,
         fields: &BTreeMap<String, Field>,
@@ -132,10 +146,20 @@ impl Expr {
                         "response_name",
                         "field_selector",
                     ],
+                    "cel" => &["eval_source", "eval_type", "expression", "variables"],
+                    "template" => &["eval_source", "eval_type", "template", "data"],
                     _ => return Err(bad_profile("workflow source requires a separate consumer")),
                 };
                 if object.keys().any(|key| !allowed.contains(&key.as_str())) {
                     return Err(bad_profile("unknown dynamic workflow source attribute"));
+                }
+                if source == "cel" {
+                    return Ok(Self::Cel(kind, cel_consumer::CelSource::compile(object)?));
+                }
+                if source == "template" {
+                    let data = object.get("data").cloned().unwrap_or_else(empty_object);
+                    let data = Self::compile(&data, fields, prior, feature, depth + 1)?;
+                    return Ok(Self::Template(kind, template_consumer::TemplateSource::compile(object)?, Box::new(data)));
                 }
                 let source = if source == "input" {
                     let field = object
@@ -218,7 +242,7 @@ impl Expr {
     }
     fn needs_history(&self) -> bool {
         match self {
-            Self::Source(_, Source::Request(..) | Source::Response(..)) => true,
+            Self::Source(_, Source::Request(..) | Source::Response(..)) | Self::Cel(..) | Self::Template(..) => true,
             Self::Object(object) => object.values().any(Self::needs_history),
             Self::Array(array) => array.iter().any(Self::needs_history),
             _ => false,
@@ -226,6 +250,16 @@ impl Expr {
     }
     fn validate_inputs(&self, context: &Context) -> Result<(), Response> {
         match self {
+            Self::Template(_, source, data) => {
+                source.preflight(&context.meter)?;
+                data.validate_inputs(context)?;
+            }
+            Self::Cel(kind, source) => {
+                let (input, requests, responses) = context.expression_bindings();
+                if let Some(value) = source.preflight(&input, &requests, &responses, &context.meter)? {
+                    kind.value(&value).map_err(|_| Response::error(500, "workflow expression result type rejected"))?;
+                }
+            }
             Self::Source(kind, Source::Input(name)) => {
                 let value = context
                     .input
@@ -254,6 +288,17 @@ impl Expr {
             ));
         }
         match self {
+            Self::Template(kind, source, data) => {
+                let (input, requests, responses) = context.expression_bindings();
+                let data = data.resolve(context, depth + 1)?;
+                let value = source.evaluate(&input, &requests, &responses, &data, &context.meter)?;
+                kind.value(&value).map_err(|_| Response::error(500, "workflow template result type rejected"))
+            }
+            Self::Cel(kind, source) => {
+                let (input, requests, responses) = context.expression_bindings();
+                let value = source.evaluate(&input, &requests, &responses, &context.meter)?;
+                kind.value(&value).map_err(|_| Response::error(500, "workflow expression result type rejected"))
+            }
             Self::Literal(value) => Ok(value.clone()),
             Self::Object(object) => object
                 .iter()
@@ -475,8 +520,12 @@ pub(super) struct Context {
     input: BTreeMap<String, Value>,
     requests: BTreeMap<String, Value>,
     responses: BTreeMap<String, Value>,
+    meter: std::sync::Arc<cel_consumer::Meter>,
 }
 impl Program {
+    pub(super) fn has_expression_sources(&self) -> bool {
+        self.output.has_expression_sources() || self.steps.iter().any(|step| [&step.flow_when, &step.when, &step.operation, &step.path, &step.body, &step.allow_failure].iter().any(|value| value.has_expression_sources()))
+    }
     pub(super) fn compile(document: &str) -> Result<Option<Self>, Response> {
         if document.is_empty() || document.len() > MAX_PROFILE_BYTES {
             return Err(bad_profile("workflow profile text is outside bounds"));
@@ -668,7 +717,11 @@ impl Program {
             output,
         }))
     }
+    #[cfg(test)]
     pub(super) fn context(&self, body: &Value) -> Result<Context, Response> {
+        self.context_at(body, std::time::Instant::now())
+    }
+    pub(super) fn context_at(&self, body: &Value, started: std::time::Instant) -> Result<Context, Response> {
         let supplied = body
             .as_object()
             .ok_or_else(|| bad_profile("workflow input must be an object"))?;
@@ -697,6 +750,7 @@ impl Program {
             input,
             requests: BTreeMap::new(),
             responses: BTreeMap::new(),
+            meter: cel_consumer::Meter::new(started),
         };
         for step in &self.steps {
             for value in [
@@ -830,6 +884,19 @@ impl Step {
     }
 }
 impl Context {
+    fn expression_bindings(&self) -> (Value, Value, Value) {
+        fn nested(history: &BTreeMap<String, Value>) -> Value {
+            let mut flows = serde_json::Map::new();
+            for (key, value) in history {
+                if let Some((flow, name)) = key.split_once('/') {
+                    let flow = flows.entry(flow.to_owned()).or_insert_with(empty_object);
+                    if let Some(flow) = flow.as_object_mut() { flow.insert(name.to_owned(), value.clone()); }
+                }
+            }
+            Value::Object(flows)
+        }
+        (Value::Object(self.input.clone().into_iter().collect()), nested(&self.requests), nested(&self.responses))
+    }
     pub(super) fn record(&mut self, resolved: Resolved, response: Value) {
         self.requests
             .insert(resolved.step.name.clone(), resolved.history);

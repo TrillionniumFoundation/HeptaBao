@@ -6,6 +6,8 @@ use crate::engines::sdk::{Catalog, Descriptor};
 #[path = "auth_sdk_renew.rs"]
 mod renewal;
 pub(crate) use renewal::RenewalTarget;
+#[path = "auth_sdk_advanced.rs"]
+pub(crate) mod advanced;
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Cell {
@@ -332,6 +334,7 @@ impl AuthState {
     }
     pub(crate) fn validate_sdk_auth_state(&self) -> Result<(), AuthError> {
         self.validate_sdk_auth_clock(None)?;
+        self.validate_sdk_advanced_state(None)?;
         if let Some(catalog) = &self.sdk_auth_catalog {
             catalog
                 .validate()
@@ -406,12 +409,7 @@ impl AuthState {
                             Some(origin.lease.previous_grant.ceil_seconds()),
                         )
                         .is_err()
-                    || token.max_expires_at != origin.maximum.ceil_seconds().ok()
-                    || origin.maximum
-                        < origin
-                            .lease
-                            .expires_at
-                            .ok_or_else(|| err(503, "SDK Auth saved expiry absent"))?
+                    || origin.validate_sdk_lifetime(token).is_err()
                     || !crate::login_metadata::within_limit(&origin.metadata)
                 {
                     return Err(err(503, "SDK Auth saved token owner rejected"));
@@ -741,7 +739,11 @@ impl AuthState {
 pub(super) struct TokenOrigin {
     binding: Binding,
     lease: token_precision::ServicePrecision,
-    maximum: Timestamp,
+    maximum: Option<Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    advanced: Option<advanced::Format>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    identity_alias: Option<String>,
     metadata: BTreeMap<String, String>,
     #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     internal_data: Value,
@@ -788,6 +790,14 @@ impl AuthState {
         let at = clock
             .observed_at()
             .map_err(|_| err(503, "SDK Auth original clock unavailable"))?;
+        if raw.starts_with("hvb.") {
+            let authority = self.batch_authority.as_ref().ok_or_else(denied)?;
+            let claims = authority.open_authenticated_observed(raw, AuthorityTime::Precise(at)).map_err(|_| denied())?;
+            let binding = claims.public_origin().and_then(public_origin::BatchOrigin::sdk_binding)
+                .ok_or_else(denied)?;
+            self.check_batch_claims_observed(&claims, &binding.namespace, AuthorityTime::Precise(at))?;
+            return self.validate_sdk_batch_binding(binding);
+        }
         let token = self.active_token_observed(&hash(raw), AuthorityTime::Precise(at), false)?;
         if !matches!(token.auth_provenance, Some(TokenAuthProvenance::Sdk { .. })) {
             return Err(denied());
@@ -809,27 +819,7 @@ impl AuthState {
             v.as_bool()
                 .ok_or_else(|| bad("SDK renewable requires bool"))
         })?;
-        let unsupported = object
-            .get("period")
-            .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
-            || object
-                .get("explicit_max_ttl")
-                .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
-            || object
-                .get("token_type")
-                .is_some_and(|v| !matches!(v.as_u64(), Some(0 | 1)))
-            || object
-                .get("group_aliases")
-                .is_some_and(|v| !v.is_null() && v.as_array().is_none_or(|a| !a.is_empty()))
-            || object
-                .get("bound_cidrs")
-                .is_some_and(|v| !v.is_null() && v.as_array().is_none_or(|a| !a.is_empty()));
-        if unsupported {
-            return Err(err(
-                501,
-                "SDK Auth period, batch, group and CIDR responses are not implemented",
-            ));
-        }
+        let options = advanced::Options::parse(object, &binding.owner)?;
         let alias = object
             .get("alias")
             .and_then(|v| v.get("name"))
@@ -887,7 +877,15 @@ impl AuthState {
                 .map_err(|_| bad("SDK Auth maximum rejected"))?
                 .min(mount_max)
         };
-        let ttl = ttl.min(max);
+        let ttl = if options.period.is_zero() { ttl } else { options.period };
+        let maximum_duration = if options.period.is_zero() {
+            Some(if options.explicit_max.is_zero() { max } else { max.min(options.explicit_max) })
+        } else if options.explicit_max.is_zero() {
+            None
+        } else {
+            Some(options.explicit_max)
+        };
+        let ttl = maximum_duration.map_or(ttl.min(mount_max), |limit| ttl.min(mount_max).min(limit));
         if ttl.is_zero() {
             return Err(bad("SDK Auth positive lease required"));
         }
@@ -919,9 +917,34 @@ impl AuthState {
         let end = at
             .checked_add(ttl)
             .map_err(|_| bad("SDK Auth expiry overflow"))?;
-        let maximum = at
-            .checked_add(max)
-            .map_err(|_| bad("SDK Auth maximum overflow"))?;
+        let maximum = maximum_duration.map(|maximum| at.checked_add(maximum))
+            .transpose().map_err(|_| bad("SDK Auth maximum overflow"))?;
+        if options.batch {
+            let end = Timestamp::whole(at.seconds())
+                .and_then(|start| start.checked_add(ttl))
+                .map_err(|_| bad("SDK batch expiry overflow"))?;
+            let mut response = batch_issuance::PendingBatchGrant::response(batch::BatchClaims {
+                namespace_binding: None,
+                token_api_precision: Some(token_precision::BatchPrecision { granted_ttl: ttl, expires_at: end }),
+                token_role: None, token_api_policy_names: false,
+                public_origin: Some(public_origin::BatchOrigin::sdk(binding.clone())),
+                namespace: binding.namespace.clone(), policies, metadata: metadata.clone(),
+                display_name: format!("plugin-{}", binding.descriptor.name),
+                path: format!("auth/{}/{}", binding.mount, path),
+                bound_cidrs: options.cidrs.clone().unwrap_or_default(),
+                issued_at: at.seconds(), expires_at: end.ceil_seconds()
+                    .map_err(|_| bad("SDK batch expiry projection"))?,
+                parent: None, entity_id: None,
+            }, Some(binding.mount.clone()));
+            response.login_identity = Some(LoginIdentity {
+                token_api_alias: false, metadata: None,
+                mount: binding.mount.clone(), alias: alias.into(),
+            });
+            options.project_groups(&mut response, binding, alias);
+            self.mark_sdk_advanced_state();
+            self.observe_sdk_auth_clock(at);
+            return Ok(response);
+        }
         let now = at.seconds();
         let mut token = login_token(
             &binding.namespace,
@@ -938,11 +961,10 @@ impl AuthState {
             end.ceil_seconds()
                 .map_err(|_| bad("SDK Auth expiry projection"))?,
         );
-        token.max_expires_at = Some(
-            maximum
-                .ceil_seconds()
-                .map_err(|_| bad("SDK Auth maximum projection"))?,
-        );
+        token.max_expires_at = maximum.map(Timestamp::ceil_seconds)
+            .transpose().map_err(|_| bad("SDK Auth maximum projection"))?;
+        token.period = options.period.ceil_seconds();
+        token.bound_cidrs = options.cidrs.clone().unwrap_or_default();
         let lease = token_precision::ServicePrecision {
             issued_at: at,
             grant_started_at: at,
@@ -950,16 +972,16 @@ impl AuthState {
             last_renewed_at: None,
             previous_grant: ttl,
             creation_grant: ttl,
-            requested_period: token_precision::DurationNanos::checked(0)
-                .map_err(|_| bad("SDK Auth period"))?,
-            requested_explicit_max: token_precision::DurationNanos::checked(0)
-                .map_err(|_| bad("SDK Auth maximum"))?,
+            requested_period: options.period,
+            requested_explicit_max: options.explicit_max,
         };
         token.auth_provenance = Some(TokenAuthProvenance::Sdk {
             origin: Box::new(TokenOrigin {
                 binding: binding.clone(),
                 lease,
                 maximum,
+                advanced: options.active().then_some(advanced::Format::V1),
+                identity_alias: options.groups.as_ref().map(|_| alias.to_owned()),
                 metadata: metadata.clone(),
                 internal_data,
                 renewal: if renewable {
@@ -978,6 +1000,8 @@ impl AuthState {
             mount: binding.mount.clone(),
             alias: alias.into(),
         });
+        options.project_groups(&mut response, binding, alias);
+        if options.active() { self.mark_sdk_advanced_state(); }
         self.observe_sdk_auth_clock(at);
         self.store_token(id, token);
         Ok(response)

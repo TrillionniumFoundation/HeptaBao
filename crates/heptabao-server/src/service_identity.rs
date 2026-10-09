@@ -231,6 +231,12 @@ impl State {
         let required = if self.engines.has_transit_rotation_precision_state() {
             required.max(TRANSIT_ROTATION_PRECISION_STATE_SCHEMA)
         } else { required };
+        let required = if self.namespaces.workflows.has_expression_profiles() {
+            required.max(WORKFLOW_EXPRESSION_STATE_SCHEMA)
+        } else { required };
+        let required = if self.auth.has_sdk_advanced_state() {
+            required.max(SDK_ADVANCED_STATE_SCHEMA)
+        } else { required };
         self.schema.max(required)
     }
 
@@ -239,6 +245,14 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
+        self.auth.validate_sdk_advanced_state(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < SDK_ADVANCED_STATE_SCHEMA
+            && (self.auth.has_sdk_advanced_state()
+                || previous.is_some_and(|state| state.schema >= SDK_ADVANCED_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "SDK advanced custody requires schema 126"));
+        }
         self.engines.validate_transit_rotation_precision_state(previous.map(|state| &*state.engines))
             .map_err(Response::from_engine_error)?;
         if self.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
@@ -248,6 +262,12 @@ impl State {
             return Err(Response::error(503, "precise transit rotation requires schema 124"));
         }
         self.namespaces.workflows.validate()?;
+        if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
+            && (self.namespaces.workflows.has_expression_profiles()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "workflow expressions require schema 125"));
+        }
         if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
             && (self.namespaces.workflows.has_dynamic_profiles()
                 || previous.is_some_and(|state| state.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA))
@@ -1135,6 +1155,13 @@ impl State {
         self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth.validate_sdk_advanced_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < SDK_ADVANCED_STATE_SCHEMA && self.auth.has_sdk_advanced_state()
+            || self.schema == SDK_ADVANCED_STATE_SCHEMA && !self.auth.has_sdk_advanced_state()
+        {
+            return Err(Response::error(503, "SDK advanced custody requires schema 126"));
+        }
         if self.schema < SDK_AUTH_STATE_SCHEMA && self.auth.has_sdk_auth_state() {
             return Err(Response::error(
                 503,
@@ -1456,6 +1483,9 @@ impl State {
         }
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA && self.auth.has_fractional_control_group_state() {
             return Err(Response::error(503, "fractional control groups require schema 122"));
+        }
+        if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA && self.namespaces.workflows.has_expression_profiles() {
+            return Err(Response::error(503, "workflow expressions require schema 125"));
         }
         if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA && self.namespaces.workflows.has_dynamic_profiles() {
             return Err(Response::error(503, "dynamic workflow sources require schema 123"));
@@ -2211,6 +2241,7 @@ impl State {
             | WORKFLOW_PROFILE_STATE_SCHEMA
             | WORKFLOW_DYNAMIC_STATE_SCHEMA
             | TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+            | SDK_ADVANCED_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA

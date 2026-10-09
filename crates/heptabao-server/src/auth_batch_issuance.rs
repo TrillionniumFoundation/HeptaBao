@@ -288,6 +288,16 @@ impl AuthState {
             return Ok(());
         };
         let precision = pending.claims.token_api_precision.as_ref();
+        let sdk = pending.claims.public_origin.as_ref()
+            .and_then(public_origin::BatchOrigin::sdk_binding);
+        if let Some(binding) = sdk {
+            self.validate_sdk_batch_binding(binding)?;
+            if binding.namespace != namespace || pending.login_mount.as_deref() != Some(binding.mount.as_str()) {
+                return Err(denied());
+            }
+            let at = time.exact().ok_or_else(denied)?;
+            if precision.is_none_or(|lease| at >= lease.expires_at) { return Err(denied()); }
+        }
         let issuance_seconds = if precision.is_some() {
             pending.claims.issued_at
         } else {
@@ -315,7 +325,7 @@ impl AuthState {
         {
             return Err(bad("batch tokens cannot have root policy"));
         }
-        if precision.is_some() {
+        if precision.is_some() && sdk.is_none() {
             let proof = pending
                 .token_api_publication
                 .as_ref()

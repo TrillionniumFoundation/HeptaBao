@@ -4293,3 +4293,6 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
     );
     Ok(())
 }
+
+#[path = "service_workflow_expression_tests.rs"]
+mod expression_tests;

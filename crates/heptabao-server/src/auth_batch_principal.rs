@@ -199,6 +199,7 @@ impl AuthState {
         namespace: &str,
     ) -> Result<(), AuthError> {
         self.validate_batch_namespace_owner_structure(claims.namespace_binding(), namespace)?;
+        if let Some(issuer) = claims.sdk_issuer() { issuer.validate_history(self, namespace)?; }
         self.batch_authority
             .as_ref()
             .ok_or_else(|| err(503, "missing batch lease key authority"))?
@@ -243,6 +244,10 @@ impl AuthState {
             .check_verified_observed(claims, namespace, time)
             .map_err(|_| denied())?;
         self.batch_parent_expiry_observed(claims.parent(), namespace, time)?;
+        if let Some(binding) = claims.public_origin().and_then(public_origin::BatchOrigin::sdk_binding) {
+            self.validate_sdk_batch_binding(binding)?;
+            if binding.namespace != namespace { return Err(denied()); }
+        }
         Ok(())
     }
     pub(super) fn batch_principal_observed(
@@ -392,10 +397,7 @@ impl AuthState {
         }
         let time = self.token_api_observed_time(time);
         let mut expires_at = token.expires_at;
-        let mut precise_expires_at = token
-            .token_api_precision
-            .as_ref()
-            .and_then(|lease| lease.expires_at);
+        let mut precise_expires_at = token.issuer_precise_expiry();
         let mut seen = BTreeSet::new();
         let mut current = Some(digest);
         while let Some(id) = current {
@@ -413,10 +415,7 @@ impl AuthState {
             if let Some(end) = parent.expires_at {
                 expires_at = Some(expires_at.map_or(end, |old| old.min(end)));
             }
-            if let Some(end) = parent
-                .token_api_precision
-                .as_ref()
-                .and_then(|lease| lease.expires_at)
+            if let Some(end) = parent.issuer_precise_expiry()
             {
                 precise_expires_at = Some(precise_expires_at.map_or(end, |old| old.min(end)));
             }
@@ -447,10 +446,7 @@ impl AuthState {
                 issuer: ResolvedLeaseOwner {
                     owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
                     expires_at: token.expires_at,
-                    precise_expires_at: token
-                        .token_api_precision
-                        .as_ref()
-                        .and_then(|lease| lease.expires_at),
+                    precise_expires_at: token.issuer_precise_expiry(),
                     entity_id: token.entity_id.clone(),
                 },
                 instance: Self::sdk_token_instance(token)?,
@@ -494,10 +490,7 @@ impl AuthState {
             CheckedCredential::Service(token) => Ok(ResolvedLeaseOwner {
                 owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
                 expires_at: token.expires_at,
-                precise_expires_at: token
-                    .token_api_precision
-                    .as_ref()
-                    .and_then(|lease| lease.expires_at),
+                precise_expires_at: token.issuer_precise_expiry(),
                 entity_id: token.entity_id.clone(),
             }),
             CheckedCredential::Batch(_) => self.typed_lease_issuer_observed(actor, namespace, time),
@@ -531,6 +524,7 @@ impl AuthState {
             });
         }
         let claims = owner.batch_claims()?;
+        if claims.sdk_issuer().is_some_and(|issuer| !issuer.live(self)) { return None; }
         self.check_batch_namespace_binding(claims.namespace_binding(), namespace)
             .ok()?;
         self.batch_authority

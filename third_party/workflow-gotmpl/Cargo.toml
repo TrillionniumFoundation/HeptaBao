@@ -1,0 +1,25 @@
+[package]
+name = "heptabao-workflow-template"
+version = "0.6.1"
+edition = "2024"
+rust-version = "1.89"
+license = "MIT"
+authors = ["Pierre-Henri Symoneaux"]
+description = "Pinned maintained gotmpl Rust consumer with request execution hooks"
+publish = false
+[workspace]
+[lib]
+name = "gotmpl"
+path = "src/lib.rs"
+[features]
+default = ["std"]
+std = ["serde?/std"]
+html = []
+serde = ["dep:serde"]
+glob = ["std", "dep:glob"]
+go-crosscheck = []
+[dependencies]
+smol_str = { version = "=0.3.6", default-features = false }
+thiserror = "=2.0.20"
+serde = { version = "=1.0.229", features = ["alloc"], optional = true, default-features = false }
+glob = { version = "=0.3.4", optional = true }

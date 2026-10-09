@@ -48,6 +48,9 @@ fn step_key(flow: &str, name: &str) -> String {
 }
 
 impl Profile {
+    pub(super) fn has_expression_sources(&self) -> bool {
+        self.dynamic_program().ok().flatten().is_some_and(|program| program.has_expression_sources())
+    }
     pub(super) fn dynamic_program(&self) -> Result<Option<dynamic::Program>, Response> {
         if self.description.len() > MAX_JSON_STRING_BYTES {
             return Err(bad_profile("workflow description is outside bounds"));
@@ -609,7 +612,7 @@ impl Service {
             Ok(Some(program)) => program,
             _ => return bad_profile("persisted dynamic workflow program is unavailable"),
         };
-        let mut context = match program.context(outer.body) {
+        let mut context = match program.context_at(outer.body, outer.admission_started) {
             Ok(context) => context,
             Err(error) => return error,
         };

@@ -143,6 +143,13 @@ impl UnwrappedJson {
 const MAX_WRAPPED_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_LIVE_WRAPPERS: usize = 256;
 
+pub(crate) fn validate_sdk_wrap_ttl(ttl: u64) -> Result<(), AuthError> {
+    if ttl == 0 || ttl > MAX_TTL {
+        return Err(bad("wrapping TTL exceeds supported bounds"));
+    }
+    Ok(())
+}
+
 /// Opaque wrapping credentials can release or discard only their own response.
 /// Keep execution and capability introspection on the same exact-path contract.
 pub(super) fn allows_token_operation(path: &str, capability: &str) -> bool {
@@ -178,11 +185,14 @@ pub(super) struct WrappedResponse {
     response: Value,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     stored_reply: Option<StoredWrappedReply>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_format: Option<sdk::advanced::Format>,
     creation_path: String,
     creation_ttl: u64,
     wrapped_accessor: Option<String>,
 }
 impl WrappedResponse {
+    pub(super) fn has_sdk_origin(&self) -> bool { self.sdk_format.is_some() }
     pub(super) fn has_creation_stamp(&self) -> bool {
         self.creation_stamp.is_some()
     }
@@ -302,6 +312,37 @@ impl AuthState {
         self.wrap_response_with_stored(namespace, path, ttl, response, now, stored_reply)
     }
 
+    pub(crate) fn wrap_sdk_response(
+        &mut self, namespace: &str, path: &str, ttl: u64, response: &Value, now: u64,
+        context: Option<&IngressReplyContext>,
+    ) -> Result<AuthResponse, AuthError> {
+        let stored = context.map(|context| StoredWrappedReply::capture(response, context, path))
+            .transpose()?;
+        let response = self.wrap_response_with_stored(namespace, path, ttl, response, now, stored)?;
+        let raw = response.body["wrap_info"]["token"].as_str()
+            .ok_or_else(|| err(503, "SDK wrapper producer missing native token"))?;
+        let token = self.tokens.get_mut(&hash(raw)).ok_or_else(|| err(503, "SDK wrapper producer missing native owner"))?;
+        token.wrapping.as_mut().ok_or_else(|| err(503, "SDK wrapper producer missing response owner"))?
+            .sdk_format = Some(sdk::advanced::Format::V1);
+        self.mark_sdk_advanced_state();
+        Ok(response)
+    }
+    pub(crate) fn sdk_wrapped_auth_token<'a>(
+        &'a self, raw: &str, namespace: &str, path: &str, time: AuthorityTime,
+    ) -> Result<Option<&'a str>, AuthError> {
+        if !self.has_sdk_advanced_state() { return Err(denied()); }
+        let token = self.active_token_observed(&hash(raw), time, false)?;
+        let wrapped = token.wrapping.as_ref().ok_or_else(denied)?;
+        if token.namespace != namespace || wrapped.creation_path != path || !wrapped.has_sdk_origin() {
+            return Err(denied());
+        }
+        if let Some(stored) = &wrapped.stored_reply {
+            stored.validate_owner(&wrapped.response, path)?;
+        }
+        Ok(wrapped.response.get("auth").and_then(|auth| auth.get("client_token"))
+            .and_then(Value::as_str))
+    }
+
     /// A sealed actual PKI producer supplies the HTTP special logical fields.
     /// The private ingress carrier captures the dedicated raw HTTP variant once;
     /// historical callers keep their original Value-only representation.
@@ -369,6 +410,7 @@ impl AuthState {
             creation_stamp: creation_stamp.clone(),
             response: response.clone(),
             stored_reply,
+            sdk_format: None,
             creation_path: path.into(),
             creation_ttl: ttl,
             wrapped_accessor: wrapped_accessor.clone(),

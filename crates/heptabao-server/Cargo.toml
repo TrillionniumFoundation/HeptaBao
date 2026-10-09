@@ -58,6 +58,10 @@ mime = "=0.3.17"
 # Maintained safe AES-KWP API; OAEP continues through the existing OpenSSL/AWS-LC bridge.
 aws-lc-rs = { version = "=1.18.1", default-features = false, features = ["non-fips"] }
 
+# Maintained CEL parser/evaluator; consumer owns execution and material bounds.
+cel = { version = "=0.13.0", default-features = false }
+gotmpl = { package = "heptabao-workflow-template", path = "../../third_party/workflow-gotmpl", default-features = false, features = ["std"] }
+
 [target.'cfg(target_os = "linux")'.dependencies]
 cross-krb5 = { version = "=0.5.0", default-features = false }
 heptabao-linux-parent-death = { path = "../heptabao-linux-parent-death" }

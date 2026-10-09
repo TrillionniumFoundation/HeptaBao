@@ -109,6 +109,7 @@ struct Transaction {
 }
 pub(in crate::service) struct Plan {
     context: Context,
+    wrapping: Option<sdk_wrapping::Owner>,
     binding: Binding,
     paths: Option<Paths>,
     caller: Mutex<Option<plugin::PluginResponseAuthority>>,
@@ -627,9 +628,6 @@ impl Service {
         if login && root_path {
             return Response::error(400, "cannot access root path in unauthenticated request");
         }
-        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
-            return Response::error(501, "SDK Auth response wrapping is not implemented");
-        }
         let capability = match request.method {
             "GET" | "HEAD" => "read",
             "LIST" | "SCAN" => "list",
@@ -1094,6 +1092,10 @@ impl Service {
         } else if state.auth.sdk_auth_retirement_tainted(&binding) {
             return Response::error(409, "SDK Auth durable retirement is in progress");
         }
+        let wrapping = match sdk_wrapping::Owner::capture(request) {
+            Ok(wrapping) => wrapping,
+            Err(error) => return error,
+        };
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK Auth runtime absent");
         };
@@ -1262,6 +1264,7 @@ impl Service {
             Err(error) => return error,
         };
         self.pending_sdk_auth_request = Some(Plan {
+            wrapping,
             context,
             binding,
             paths,
@@ -1675,6 +1678,11 @@ impl Service {
                 .auth
                 .finish_sdk_renewal(target, auth, plan.context.clock)
                 .map_err(auth_error)?;
+            Self::finish_identity_response_observed(
+                &mut candidate.auth, &mut candidate.engines, &mut renewed,
+                &candidate.namespaces, &plan.context.namespace, at.seconds(),
+                AuthorityTime::Precise(at),
+            )?;
             Response {
                 status: renewed.status,
                 body: std::mem::take(&mut renewed.body),
@@ -1767,6 +1775,14 @@ impl Service {
         } else {
             empty_response()
         };
+        if let Some(wrapping) = &plan.wrapping {
+            if response.status == 200 {
+                let wrapped = wrapping.apply(&mut candidate.auth, &plan.context.namespace, &response.body, at)?;
+                erase_json(&mut response.body);
+                response.body = wrapped;
+                response.response_headers.clear();
+            }
+        }
         let publication = (|| {
             candidate.schema = candidate.writer_schema();
             let publication = self.prepare_record_plan(&mut candidate)?;
@@ -1860,11 +1876,20 @@ impl Service {
         fingerprint: &str,
     ) -> Response {
         let gate = self.sdk_auth_gate(plan).and_then(|()| {
+            let auth = &self.state.as_ref()
+                .ok_or_else(|| Response::error(503, "SDK Auth delivery state unavailable"))?.auth;
+            let wrapped_raw = match &plan.wrapping {
+                Some(wrapping) => wrapping.check_delivery(auth, &plan.context.namespace, &response,
+                    AuthorityTime::Precise(plan.context.clock.observed_at()
+                        .map_err(|_| Response::error(503, "SDK original wrapping clock unavailable"))?))?,
+                None => None,
+            };
             if let Some(raw) = response
                 .body
                 .get("auth")
                 .and_then(|auth| auth.get("client_token"))
                 .and_then(Value::as_str)
+                .or(wrapped_raw)
             {
                 let auth = &self
                     .state
@@ -3080,3 +3105,7 @@ impl Service {
         Ok(response)
     }
 }
+
+#[cfg(test)]
+#[path = "service_sdk_advanced_tests.rs"]
+mod advanced_tests;

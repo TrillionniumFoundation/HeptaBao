@@ -132,6 +132,10 @@ impl WorkflowState {
         })
     }
 
+    pub(super) fn has_expression_profiles(&self) -> bool {
+        self.by_namespace.values().flat_map(BTreeMap::values).any(|stored| stored.definition.profile.as_ref().is_some_and(profiles::Profile::has_expression_sources))
+    }
+
     pub(super) fn has_dynamic_profiles(&self) -> bool {
         self.by_namespace.values().flat_map(BTreeMap::values)
             .any(|stored| stored.definition.dynamic_sources)

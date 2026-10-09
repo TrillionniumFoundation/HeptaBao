@@ -317,6 +317,7 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         crate::secret_serde::to_vec(&record, 512 * 1024).map_err(|_| "fixture record encoding")?,
     );
     let plan = super::super::Plan {
+        wrapping: None,
         context,
         binding,
         paths: None,

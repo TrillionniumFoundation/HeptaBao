@@ -176,6 +176,7 @@ pub(crate) use ldap_renewal::{LdapRenewalObservation, LdapRenewalPlan};
 use provider_renewal::ProviderCredential;
 pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
+pub(crate) use wrapping::validate_sdk_wrap_ttl;
 pub(crate) use wrapping::{
     IngressReplyContext, IngressReplyScope, LexicalJson, StoredWrappedReply, UnwrappedJson,
     current_ingress, encode_http_envelope, logical_envelope,
@@ -251,6 +252,8 @@ pub struct AuthState {
     sdk_auth_catalog: Option<crate::engines::sdk::Catalog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_auth_clock: Option<Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_advanced_format: Option<sdk::advanced::Format>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_credential_leases: Option<sdk_credential::Registry>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2519,6 +2522,7 @@ impl AuthState {
             public_origin_floor: None,
             sdk_auth_catalog: None,
             sdk_auth_clock: None,
+            sdk_advanced_format: None,
             sdk_credential_leases: None,
             sdk_auth_retirements: None,
             sdk_namespace_custody: None,
@@ -8788,6 +8792,9 @@ fn login_token(
 }
 fn token_info_observed(token: &Token, time: AuthorityTime) -> Result<Value, AuthError> {
     let mut info = token_info(token, time.seconds());
+    if let Some(TokenAuthProvenance::Sdk { origin }) = &token.auth_provenance {
+        origin.project_lookup(&mut info, time)?;
+    }
     if let Some(lease) = &token.token_api_precision {
         let now = time.exact().ok_or_else(denied)?;
         info["issue_time"] = json!(lease.issued_at.local_rfc3339()?);

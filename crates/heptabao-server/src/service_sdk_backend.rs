@@ -384,6 +384,7 @@ pub(super) struct Plan {
     private_cleanup: Mutex<Option<namespace_runtime::CleanupPermit>>,
     transaction: Mutex<StorageTransaction>,
     pub(in crate::service) deadline: Instant,
+    wrapping: Option<sdk_wrapping::Owner>,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -1539,9 +1540,6 @@ impl Service {
             "delete" => "delete",
             _ => "update",
         };
-        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
-            return Response::error(501, "SDK response wrapping is not implemented");
-        }
         let mut authority = plugin::PluginResponseAuthority::new(
             principal,
             &state,
@@ -1582,6 +1580,10 @@ impl Service {
             path,
             lease,
         } = target;
+        let wrapping = match sdk_wrapping::Owner::capture(request) {
+            Ok(wrapping) => wrapping,
+            Err(error) => return error,
+        };
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK runtime is not configured");
         };
@@ -1709,6 +1711,7 @@ impl Service {
         };
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
+            wrapping,
             mount,
             owner,
             descriptor,
@@ -1861,6 +1864,14 @@ impl Service {
                             drop(transaction);
                             self.validate_sdk_authority(&mut authority)?;
                             self.sdk_binding_gate(plan).map_err(bridge_failure)?;
+                        }
+                        Ok(())
+                    })
+                    .and_then(|()| {
+                        if let Some(wrapping) = &plan.wrapping {
+                            let auth = &self.state.as_ref()
+                                .ok_or_else(|| Response::error(503, "SDK wrapper delivery state unavailable"))?.auth;
+                            wrapping.check_delivery(auth, &plan.namespace, &response, authority.token_time()?)?;
                         }
                         Ok(())
                     })

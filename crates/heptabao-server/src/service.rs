@@ -149,6 +149,8 @@ mod kv2_import_tests;
 const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
 const WORKFLOW_DYNAMIC_STATE_SCHEMA: u32 = 123;
 const TRANSIT_ROTATION_PRECISION_STATE_SCHEMA: u32 = 124;
+const WORKFLOW_EXPRESSION_STATE_SCHEMA: u32 = 125;
+const SDK_ADVANCED_STATE_SCHEMA: u32 = 126;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -157,7 +159,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_ROTATION_PRECISION_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_ADVANCED_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -206,6 +208,8 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | WORKFLOW_PROFILE_STATE_SCHEMA
                 | WORKFLOW_DYNAMIC_STATE_SCHEMA
                 | TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+                | WORKFLOW_EXPRESSION_STATE_SCHEMA
+                | SDK_ADVANCED_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -320,6 +324,9 @@ pub use external_kms::PluginExternalKmsConfig;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
 #[path = "service_external_kms.rs"]
 mod external_kms;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_sdk_wrapping.rs"]
+mod sdk_wrapping;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 #[path = "service_sdk_backend.rs"]
 mod sdk_backend;
