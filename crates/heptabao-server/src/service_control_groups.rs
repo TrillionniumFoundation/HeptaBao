@@ -213,7 +213,8 @@ fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Resp
     let namespace =
         request_normalization::token_namespace(&normalized.path, Some(owner.namespace.as_str()))
             .unwrap_or(transport_namespace);
-    if namespace != owner.namespace
+    if transport_namespace != owner.namespace
+        || namespace != owner.namespace
         || normalized.method != owner.method
         || normalized.path != owner.path
         || normalized.body.0 != owner.body
@@ -791,6 +792,15 @@ impl Service {
         let Some((policy, requires_sudo)) = selected_policy(admitted, actor, request, time)? else {
             return Ok(None);
         };
+        // Ordinary self-token routing may select the authenticated token's
+        // namespace. A durable controlled request must also originate in that
+        // exact namespace; a root or sibling header cannot acquire its owner.
+        if transport.namespace != namespace {
+            return Err(Response::error(
+                403,
+                "control group request namespace mismatch",
+            ));
+        }
         authorize_action(admitted, actor, request, cap, requires_sudo, time)?;
 
         // Structural self-route validation precedes durable deferral.
