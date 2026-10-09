@@ -233,7 +233,7 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
-    for path in ["team", "team/child", "other"] {
+    for path in ["team", "other"] {
         assert_eq!(
             call(
                 &mut service,
@@ -246,6 +246,19 @@ fn ui_namespace_discovery_preserves_registry_permission_and_actor_scope()
             200
         );
     }
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/namespaces/child",
+                "team",
+                &admin,
+                json!({}),
+                100,
+            )
+            .status,
+        200
+    );
     let all = call(
         &mut service,
         "GET",

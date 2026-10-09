@@ -418,7 +418,7 @@ impl Service {
     ) -> Response {
         let run = (|| {
             let actor = actor.ok_or_else(|| Response::error(403, "permission denied"))?;
-            crate::request_deadline::current().ok_or_else(|| {
+            let original_deadline = crate::request_deadline::current().ok_or_else(|| {
                 Response::error(503, "native remount original HTTP deadline required")
             })?;
             let status_route = request.path.starts_with("sys/remount/status/");
@@ -573,8 +573,7 @@ impl Service {
                 cas,
                 owner,
                 clock,
-                deadline: request.admission_started
-                    + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET,
+                deadline: original_deadline,
                 nonce: self.unseal_nonce.clone(),
                 seal: seal_digest(self)?,
                 barrier: barrier_digest(self)?,
@@ -736,3 +735,56 @@ pub(crate) fn start_worker(service: &Arc<Mutex<Service>>) -> Result<Worker, Stri
 #[cfg(test)]
 #[path = "service_native_remount_tests.rs"]
 pub(in crate::service) mod tests;
+
+
+#[cfg(test)]
+mod original_deadline_tests {
+    use super::*;
+    use crate::service::tests::{Root, bootstrap};
+
+    #[test]
+    fn native_move_inherits_http_deadline_without_reanchoring_reused_token_clock()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_, admin) = bootstrap(&mut service)?;
+        assert_eq!(
+            service.handle_at("POST", "sys/mounts/from-clock", "", &admin, json!({"type":"kv"}), 100).status,
+            204
+        );
+        let original_anchor = Instant::now().checked_sub(Duration::from_secs(2)).ok_or("anchor")?;
+        let clock = RequestClock::anchored(Duration::new(100, 1), original_anchor)?;
+        let original_deadline = Instant::now() + Duration::from_secs(4);
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(original_deadline);
+        let request = |to| RequestDispatch {
+            method: "POST",
+            path: "sys/remount",
+            namespace: "",
+            token: &admin,
+            body: json!({"from":"from-clock","to":to}),
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        };
+        let execution = service.begin_at_mode_precise(request("to-clock"), clock);
+        let acknowledged = service.finish_synchronous_request(execution);
+        assert_eq!(acknowledged.status, 200, "{}", acknowledged.body);
+        assert_eq!(service.native_remount_jobs.len(), 1);
+        let task = service.native_remount_jobs.front().ok_or("queued task")?;
+        assert_eq!(task.deadline, original_deadline);
+        assert_eq!(task.clock.started(), original_anchor);
+        let original_id = task.id.clone();
+        let expired = Instant::now().checked_sub(Duration::from_millis(1)).ok_or("expired")?;
+        let _expired_scope = crate::request_deadline::RequestDeadlineScope::enter(expired);
+        let execution = service.begin_at_mode_precise(request("expired-target"), clock);
+        let rejected = service.finish_synchronous_request(execution);
+        assert_eq!(rejected.status, 503, "{}", rejected.body);
+        assert_eq!(service.native_remount_jobs.len(), 1);
+        assert_eq!(service.native_remount_jobs.front().ok_or("original task")?.id, original_id);
+        assert_eq!(service.native_remount_jobs.front().ok_or("original task")?.deadline, original_deadline);
+        Ok(())
+    }
+}
