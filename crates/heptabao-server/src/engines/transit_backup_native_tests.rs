@@ -94,7 +94,7 @@ fn backup270_native_seven_standard_and_hmac_restore_exact_private_versions_and_i
         if kind == "hmac" {
             creation["key_size"] = json!(32);
         }
-        assert!(call(&mut t, "POST", &format!("keys/{kind}"), &creation)?.status == 204);
+        assert!(call(&mut t, "POST", &format!("keys/{kind}"), &creation)?.status == 200);
         assert!(call(&mut t, "POST", &format!("keys/{kind}/rotate"), &json!({}))?.status == 200);
         let category = if kind == "hmac" {
             "hmac-key"
@@ -209,7 +209,7 @@ fn backup270_native_mldsa_seeds_reconstruct_complete_private_signers_and_exact_p
                 &json!({"type":kind,"exportable":true,"allow_plaintext_backup":true})
             )?
             .status
-                == 204
+                == 200
         );
         assert!(call(&mut t, "POST", &format!("keys/{kind}/rotate"), &json!({}))?.status == 200);
         let before = export(&mut t, kind, "signing-key", "der")?;
