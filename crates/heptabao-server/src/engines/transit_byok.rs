@@ -1203,7 +1203,7 @@ mod hmac_export270_tests {
     use super::*;
     #[test]
     fn asymmetric270_hmac_raw_exports_real_material_and_private_permission_precedes_format() -> Result<()> {
-        for kind in ["rsa-2048","ecdsa-p256"] {
+        for kind in ["rsa-2048","rsa-3072","rsa-4096","ecdsa-p256","ecdsa-p384","ecdsa-p521","ed25519"] {
             let mut transit = Transit::default();
             transit.handle("","transit","POST","keys/key",&json!({"type":kind,"exportable":true}),100)?;
             let input = BASE64.encode(b"asymmetric HMAC fixture");

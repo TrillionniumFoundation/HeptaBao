@@ -866,13 +866,13 @@ impl Transit {
             && kind != "hmac-key"
             && matches!(format, "der" | "pem");
         if !key.exportable && !public_export {
-            return Err(if mldsa_key || asymmetric_key {
+            return Err(if mldsa_key || asymmetric_key || ed25519_key {
                 bad("private key material is not exportable")
             } else {
                 error(403, "key is not exportable")
             });
         }
-        if kind == "hmac-key" && (mldsa_key || asymmetric_key)
+        if kind == "hmac-key" && (mldsa_key || asymmetric_key || ed25519_key)
             && matches!(format, "der" | "pem")
         {
             return Err(openbao_compatibility_error(

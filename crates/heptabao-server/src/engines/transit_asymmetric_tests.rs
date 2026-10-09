@@ -387,7 +387,7 @@ fn asymmetric270_standard_export_and_ed25519_raw_enforce_permission_and_versions
                     &json!({"format":format}),
                     100,
                 ),
-                Err(EngineError { status, .. }) if status == if kind == "ed25519" {403} else {400}
+                Err(EngineError { status, .. }) if status == 400
             ));
         }
         assert_eq!(serde_json::to_vec(&transit)?, before);
