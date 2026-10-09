@@ -585,7 +585,7 @@ impl Transit {
             return self.handle_key(method, rest, body, now);
         }
         if let Some(rest) = path.strip_prefix("export/") {
-            return self.export(method, rest);
+            return self.export(method, rest, body);
         }
         let (operation, rest) = path.split_once('/').unwrap_or((path, ""));
         if !write_method(method) {
@@ -810,9 +810,17 @@ impl Transit {
         }
     }
 
-    fn export(&self, method: &str, rest: &str) -> Result<EngineResponse> {
+    fn export(&self, method: &str, rest: &str, body: &Value) -> Result<EngineResponse> {
         if method != "GET" {
             return Err(unsupported());
+        }
+        let format = body
+            .get("format")
+            .map(|value| value.as_str().ok_or_else(|| bad("format must be a string")))
+            .transpose()?
+            .unwrap_or("");
+        if !matches!(format, "" | "raw" | "der" | "pem") {
+            return Err(bad("unsupported key export format"));
         }
         let parts: Vec<_> = rest.split('/').collect();
         if !(2..=3).contains(&parts.len()) {
@@ -831,6 +839,16 @@ impl Transit {
         let mldsa_key = mldsa::is_kind(&key.kind);
         let asymmetric_key = asymmetric::is_kind(&key.kind);
         let public_export = (mldsa_key || asymmetric_key) && kind == "public-key";
+        let standard_mldsa = mldsa_key && kind != "hmac-key" && matches!(format, "der" | "pem");
+        if matches!(format, "der" | "pem") && !standard_mldsa {
+            return Err(error(
+                501,
+                "standard export is unsupported for this key type",
+            ));
+        }
+        if format == "raw" && asymmetric_key {
+            return Err(bad("raw export is unsupported for this key type"));
+        }
         if !key.exportable && !public_export {
             return Err(error(403, "key is not exportable"));
         }
@@ -871,7 +889,15 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                let encoded = if asymmetric_key && kind != "hmac-key" {
+                let encoded = if standard_mldsa {
+                    mldsa::export_standard(
+                        &key.kind,
+                        &stored_material(&value.material)?,
+                        public_export,
+                        format,
+                    )?
+                    .to_string()
+                } else if asymmetric_key && kind != "hmac-key" {
                     asymmetric::export(
                         &key.kind,
                         &stored_material(&value.material)?,

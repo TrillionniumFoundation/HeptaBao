@@ -2392,6 +2392,35 @@ impl EngineState {
             })
     }
 
+    // URL fields are admitted only after namespace and longest actual mount
+    // selection. A path named "transit" does not grant another backend formats.
+    pub(crate) fn is_actual_transit_export_query_owner(&self, namespace: &str, path: &str) -> bool {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .filter(|(mount, _)| path.starts_with(mount.as_str()))
+                    .max_by_key(|(mount, _)| mount.len())
+            })
+            .is_some_and(|(mount, owner)| {
+                if !matches!(owner.backend, Backend::Transit(_)) {
+                    return false;
+                }
+                let Some(relative) = path[mount.len()..].strip_prefix("export/") else {
+                    return false;
+                };
+                let parts: Vec<_> = relative.split('/').collect();
+                matches!(parts.len(), 2 | 3)
+                    && parts.iter().all(|part| !part.is_empty())
+                    && matches!(
+                        parts[0],
+                        "public-key" | "signing-key" | "encryption-key" | "hmac-key"
+                    )
+            })
+    }
+
     pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {
         self.public_pki_mount(namespace, path)
             .is_some_and(|(engine, relative)| engine.public_read_route(method, relative).is_some())

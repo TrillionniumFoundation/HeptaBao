@@ -4187,3 +4187,176 @@ mod raw113_terminal_media_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod transit_export_query_tests {
+    use super::*;
+    use base64::{Engine as _, engine::general_purpose::STANDARD};
+    use ml_dsa::pkcs8::{DecodePrivateKey, DecodePublicKey};
+    type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    struct Directory(PathBuf);
+    impl Drop for Directory {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+    fn wire(
+        service: &mut Service,
+        root: &str,
+        method: &str,
+        path: &str,
+        body: Value,
+    ) -> TestResult<Response> {
+        let payload = Zeroizing::new(serde_json::to_vec(&body)?);
+        let header = format!(
+            "{method} /v1/{path} HTTP/1.1\r\nHost: localhost\r\nX-Vault-Token: {root}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
+            payload.len()
+        );
+        let mut bytes = Zeroizing::new(header.into_bytes());
+        bytes.extend_from_slice(&payload);
+        let mut request = match read_request(&mut bytes.as_slice(), Duration::from_secs(1)) {
+            Ok(request) => request,
+            Err(error) => return Ok(Response::error(error.status, error.message)),
+        };
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)?
+            .as_secs();
+        Ok(service.handle_at(
+            &request.method,
+            &request.path,
+            &request.namespace,
+            request.token.as_str(),
+            std::mem::take(&mut request.body.0),
+            now,
+        ))
+    }
+
+    #[test]
+    fn mldsa270_http_query_standard_export_reaches_actual_nested_transit_owner() -> TestResult {
+        let directory = Directory(std::env::temp_dir().join(format!(
+            "heptabao-mldsa-http-export-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?)
+        )));
+        std::fs::create_dir(&directory.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&directory.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let mut service = Service::new(directory.0.join("data"), &directory.0.join("audit.jsonl"))?;
+        let initialized = wire(
+            &mut service,
+            "",
+            "POST",
+            "sys/init",
+            json!({"secret_shares":1,"secret_threshold":1}),
+        )?;
+        assert_eq!(initialized.status, 200);
+        let root = initialized.body["root_token"]
+            .as_str()
+            .ok_or("root token")?
+            .to_owned();
+        let key = initialized.body["keys_base64"][0]
+            .as_str()
+            .ok_or("unseal key")?
+            .to_owned();
+        assert_eq!(
+            wire(&mut service, "", "POST", "sys/unseal", json!({"key":key}))?.status,
+            200
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "POST",
+                "sys/mounts/nested/crypto",
+                json!({"type":"transit"})
+            )?
+            .status,
+            204
+        );
+        let created = wire(
+            &mut service,
+            &root,
+            "POST",
+            "nested/crypto/keys/key",
+            json!({"type":"mldsa-44","exportable":true}),
+        )?;
+        assert_eq!(created.status, 200);
+        assert_eq!(created.body["data"]["type"], "mldsa-44");
+        assert_eq!(created.body["data"]["latest_version"], 1);
+        assert_eq!(
+            created.body["data"]["keys"]
+                .as_object()
+                .ok_or("public descriptor")?
+                .keys()
+                .map(String::as_str)
+                .collect::<Vec<_>>(),
+            vec!["1"]
+        );
+        let public = wire(
+            &mut service,
+            &root,
+            "GET",
+            "nested/crypto/export/public-key/key/latest?%66ormat=%64er",
+            // The actual GET parser ignores this framed body and uses the URL.
+            json!({"format":"pem"}),
+        )?;
+        assert_eq!(public.status, 200);
+        let public = STANDARD.decode(public.body["data"]["keys"]["1"].as_str().ok_or("SPKI")?)?;
+        let public = ml_dsa::VerifyingKey::<ml_dsa::MlDsa44>::from_public_key_der(&public)
+            .map_err(|_| "actual HTTP SPKI")?;
+        assert_eq!(public.encode().len(), 1312);
+        let private = wire(
+            &mut service,
+            &root,
+            "GET",
+            "nested/crypto/export/signing-key/key/1?format=der",
+            json!({}),
+        )?;
+        assert_eq!(private.status, 200);
+        let private = Zeroizing::new(
+            STANDARD.decode(private.body["data"]["keys"]["1"].as_str().ok_or("PKCS8")?)?,
+        );
+        let private = ml_dsa::SigningKey::<ml_dsa::MlDsa44>::from_pkcs8_der(&private)
+            .map_err(|_| "actual HTTP PKCS8")?;
+        use ml_dsa::Keypair as _;
+        assert_eq!(private.verifying_key().encode(), public.encode());
+        for path in [
+            "nested/crypto/export/public-key/key?format=unknown",
+            "nested/crypto/export/public-key/key?format=der&format=pem",
+            "nested/crypto/keys/key?format=der",
+        ] {
+            assert_eq!(
+                wire(&mut service, &root, "GET", path, json!({}))?.status,
+                400
+            );
+        }
+        // A nonexistent mount cannot use a transit-shaped suffix to admit format.
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "GET",
+                "unknown/export/public-key/key?format=der",
+                json!({})
+            )?
+            .status,
+            400
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "POST",
+                "nested/crypto/export/public-key/key?format=der",
+                json!({})
+            )?
+            .status,
+            400
+        );
+        Ok(())
+    }
+}

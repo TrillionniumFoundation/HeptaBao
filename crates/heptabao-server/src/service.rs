@@ -3347,8 +3347,19 @@ impl Service {
                 Ok(binding) => binding.flatten().is_some(),
                 Err(error) => return Response::error(error.status, &error.message),
             };
+            let actual_transit_export = method == "GET"
+                && self.state.as_ref().is_some_and(|state| {
+                    state
+                        .engines
+                        .is_actual_transit_export_query_owner(namespace, path)
+                });
+            let resolved = if actual_transit_export {
+                carrier.resolve_transit_export()
+            } else {
+                carrier.resolve(actual_kv || actual_ocsp || actual_sdk_auth)
+            };
             ordinary_get = Some(
-                match carrier.resolve(actual_kv || actual_ocsp || actual_sdk_auth) {
+                match resolved {
                     Ok((method, body)) => (
                         match method {
                             "LIST" => "LIST",

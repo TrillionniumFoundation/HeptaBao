@@ -195,6 +195,44 @@ pub(crate) fn query_request<'a>(
 }
 
 impl QueryRequest<'_> {
+    // Service calls this only for the synchronized actual Transit export owner.
+    // Keep existing query validation and duplicate handling for every other field.
+    pub(crate) fn resolve_transit_export(&self) -> Result<(&str, CarrierBody), Response> {
+        if self.wire_method != "GET"
+            || get_query_method(self.query)
+                .map_err(|error| Response::error(error.status, error.message))?
+                != "GET"
+        {
+            return Err(Response::error(405, "unsupported key export operation"));
+        }
+        let mut body = CarrierBody(json!({}));
+        for pair in self.query.split('&').filter(|pair| !pair.is_empty()) {
+            let (key, value) = pair
+                .split_once('=')
+                .ok_or_else(|| Response::error(400, "query parameters require values"))?;
+            let key =
+                decode_query(key).map_err(|error| Response::error(error.status, error.message))?;
+            if key == "format" {
+                let value = Zeroizing::new(
+                    decode_query(value)
+                        .map_err(|error| Response::error(error.status, error.message))?,
+                );
+                let object = body
+                    .0
+                    .as_object_mut()
+                    .ok_or_else(|| Response::error(400, "JSON object required"))?;
+                if object.contains_key(&key) {
+                    return Err(Response::error(400, "duplicate body/query parameter"));
+                }
+                object.insert(key, Value::String(value.to_string()));
+            } else {
+                merge_query_fields(self.wire_method, self.path, pair, &mut body.0)
+                    .map_err(|error| Response::error(error.status, error.message))?;
+            }
+        }
+        Ok(("GET", body))
+    }
+
     pub(crate) fn resolve(
         &self,
         actual_native_query: bool,

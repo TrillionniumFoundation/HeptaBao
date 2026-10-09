@@ -910,3 +910,229 @@ fn non_rsa_salt_length_validates_api_syntax_and_ignores_rsa_pss_semantics() -> T
     }
     Ok(())
 }
+
+fn standard_export_roundtrip<P>(kind: &str, public_length: usize) -> TestResult
+where
+    P: ml_dsa::MlDsaParams
+        + ml_dsa::pkcs8::AssociatedAlgorithmIdentifier<Params = ml_dsa::pkcs8::der::AnyRef<'static>>,
+{
+    use ml_dsa::Keypair as _;
+    use ml_dsa::pkcs8::{DecodePrivateKey, DecodePublicKey};
+    let mut transit = Transit::default();
+    transit.handle(
+        "",
+        "transit",
+        "POST",
+        "keys/standard",
+        &json!({"type":kind,"exportable":true}),
+        100,
+    )?;
+    let input = b"synthetic exported ML-DSA key interoperability";
+    let signed = transit.handle(
+        "",
+        "transit",
+        "POST",
+        "sign/standard",
+        &json!({"input":BASE64.encode(input)}),
+        101,
+    )?;
+    let encoded_signature = signed.body["data"]["signature"]
+        .as_str()
+        .ok_or("signature")?
+        .strip_prefix("vault:v1:")
+        .ok_or("signature version")?;
+    let signature = ml_dsa::Signature::<P>::try_from(BASE64.decode(encoded_signature)?.as_slice())
+        .map_err(|_| "signature encoding")?;
+    let before = serde_json::to_vec(&transit)?;
+    let raw = transit.handle(
+        "",
+        "transit",
+        "GET",
+        "export/signing-key/standard/1",
+        &json!({}),
+        102,
+    )?;
+    let seed = BASE64.decode(raw.body["data"]["keys"]["1"].as_str().ok_or("seed")?)?;
+    assert_eq!(seed.len(), 32);
+    for target in ["signing-key", "public-key"] {
+        let legacy = transit.handle(
+            "",
+            "transit",
+            "GET",
+            &format!("export/{target}/standard/1"),
+            &json!({}),
+            102,
+        )?;
+        let explicit_raw = transit.handle(
+            "",
+            "transit",
+            "GET",
+            &format!("export/{target}/standard/1"),
+            &json!({"format":"raw"}),
+            102,
+        )?;
+        assert_eq!(explicit_raw.body, legacy.body);
+        assert!(!legacy.mutated && !explicit_raw.mutated);
+    }
+    for format in ["der", "pem"] {
+        let mut documents = Vec::new();
+        for target in ["public-key", "signing-key"] {
+            let exported = transit.handle(
+                "",
+                "transit",
+                "GET",
+                &format!("export/{target}/standard/latest"),
+                &json!({"format":format}),
+                102,
+            )?;
+            assert!(!exported.mutated);
+            let text = exported.body["data"]["keys"]["1"]
+                .as_str()
+                .ok_or("export")?;
+            let bytes = if format == "der" {
+                BASE64.decode(text)?
+            } else {
+                let label = if target == "public-key" {
+                    "PUBLIC KEY"
+                } else {
+                    "PRIVATE KEY"
+                };
+                assert!(text.starts_with(&format!("-----BEGIN {label}-----\n")));
+                assert!(text.ends_with(&format!("-----END {label}-----\n")));
+                let encoded: String = text
+                    .lines()
+                    .filter(|line| !line.starts_with("-----"))
+                    .collect();
+                BASE64.decode(encoded)?
+            };
+            documents.push(bytes);
+        }
+        let public = ml_dsa::VerifyingKey::<P>::from_public_key_der(&documents[0])
+            .map_err(|_| "standard exported SPKI")?;
+        let private = ml_dsa::SigningKey::<P>::from_pkcs8_der(&documents[1])
+            .map_err(|_| "standard exported PKCS8")?;
+        assert_eq!(public.encode().len(), public_length);
+        assert_eq!(private.as_seed().as_slice(), seed.as_slice());
+        assert_eq!(private.verifying_key().encode(), public.encode());
+        assert!(public.verify_with_context(input, b"", &signature));
+        assert!(!public.verify_with_context(b"changed", b"", &signature));
+    }
+    assert_eq!(serde_json::to_vec(&transit)?, before);
+    Ok(())
+}
+
+#[test]
+fn mldsa270_explicit_der_and_pem_exports_are_real_pkcs8_and_spki() -> TestResult {
+    standard_export_roundtrip::<ml_dsa::MlDsa44>("mldsa-44", 1312)?;
+    standard_export_roundtrip::<ml_dsa::MlDsa65>("mldsa-65", 1952)?;
+    standard_export_roundtrip::<ml_dsa::MlDsa87>("mldsa-87", 2592)?;
+    Ok(())
+}
+
+#[test]
+fn mldsa270_standard_export_preserves_public_export_permission_and_private_denial() -> TestResult {
+    let mut transit = Transit::default();
+    transit.handle(
+        "",
+        "transit",
+        "POST",
+        "keys/nonexportable",
+        &json!({"type":"mldsa-44"}),
+        100,
+    )?;
+    let before = serde_json::to_vec(&transit)?;
+    for format in ["der", "pem"] {
+        let public = transit.handle(
+            "",
+            "transit",
+            "GET",
+            "export/public-key/nonexportable",
+            &json!({"format":format}),
+            101,
+        )?;
+        assert!(!public.mutated);
+        assert!(public.body["data"]["keys"]["1"].as_str().is_some());
+        assert!(matches!(
+            transit.handle(
+                "",
+                "transit",
+                "GET",
+                "export/signing-key/nonexportable",
+                &json!({"format":format}),
+                101
+            ),
+            Err(EngineError { status: 403, .. })
+        ));
+    }
+    assert_eq!(serde_json::to_vec(&transit)?, before);
+    Ok(())
+}
+
+#[test]
+fn mldsa270_standard_export_enforces_version_and_closed_format_selection() -> TestResult {
+    let mut transit = Transit::default();
+    transit.handle(
+        "",
+        "transit",
+        "POST",
+        "keys/versions",
+        &json!({"type":"mldsa-65","exportable":true}),
+        100,
+    )?;
+    transit.handle(
+        "",
+        "transit",
+        "POST",
+        "keys/versions/rotate",
+        &json!({}),
+        101,
+    )?;
+    transit.handle(
+        "",
+        "transit",
+        "POST",
+        "keys/versions/config",
+        &json!({"min_decryption_version":2}),
+        102,
+    )?;
+    let before = serde_json::to_vec(&transit)?;
+    for format in ["der", "pem"] {
+        assert!(
+            transit
+                .handle(
+                    "",
+                    "transit",
+                    "GET",
+                    "export/signing-key/versions/1",
+                    &json!({"format":format}),
+                    103
+                )
+                .is_err()
+        );
+        let latest = transit.handle(
+            "",
+            "transit",
+            "GET",
+            "export/signing-key/versions/latest",
+            &json!({"format":format}),
+            103,
+        )?;
+        assert!(latest.body["data"]["keys"]["1"].is_null());
+        assert!(latest.body["data"]["keys"]["2"].as_str().is_some());
+    }
+    for format in [json!(false), json!("unknown")] {
+        assert!(matches!(
+            transit.handle(
+                "",
+                "transit",
+                "GET",
+                "export/public-key/versions",
+                &json!({"format":format}),
+                103
+            ),
+            Err(EngineError { status: 400, .. })
+        ));
+    }
+    assert_eq!(serde_json::to_vec(&transit)?, before);
+    Ok(())
+}

@@ -1,6 +1,9 @@
 //! FIPS 204 through RustCrypto's pinned implementation, not a second key owner.
 //! Persist only the 32-byte seed in the existing encrypted Transit version.
 use super::*;
+use ml_dsa::pkcs8::{
+    AssociatedAlgorithmIdentifier, EncodePrivateKey, EncodePublicKey, der::AnyRef,
+};
 use ml_dsa::{Keypair as _, MlDsa44, MlDsa65, MlDsa87, MlDsaParams, Seed, SigningKey};
 
 pub(super) fn is_kind(kind: &str) -> bool {
@@ -128,4 +131,54 @@ impl Transit {
         }
         Ok(())
     }
+}
+
+// Standard formats are explicitly selected. The default Transit private export
+// remains the 32-byte seed; public export remains the raw encoded public key.
+fn export_standard_for<P>(
+    material: &[u8],
+    public_key: bool,
+    format: &str,
+) -> Result<Zeroizing<String>>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    let pair = signing_key::<P>(material)?;
+    let (bytes, label) = if public_key {
+        let document = pair
+            .verifying_key()
+            .to_public_key_der()
+            .map_err(|_| error(500, "ML-DSA public encoding failed"))?;
+        (Zeroizing::new(document.as_bytes().to_vec()), "PUBLIC KEY")
+    } else {
+        let document = pair
+            .to_pkcs8_der()
+            .map_err(|_| error(500, "ML-DSA private encoding failed"))?;
+        (Zeroizing::new(document.as_bytes().to_vec()), "PRIVATE KEY")
+    };
+    let encoded = Zeroizing::new(BASE64.encode(bytes.as_slice()));
+    if format == "der" {
+        return Ok(encoded);
+    }
+    if format != "pem" {
+        return Err(bad("unsupported standard ML-DSA export format"));
+    }
+    let mut pem = Zeroizing::new(format!("-----BEGIN {label}-----\n"));
+    for line in encoded.as_bytes().chunks(64) {
+        pem.push_str(
+            std::str::from_utf8(line).map_err(|_| error(500, "ML-DSA PEM encoding failed"))?,
+        );
+        pem.push('\n');
+    }
+    pem.push_str(&format!("-----END {label}-----\n"));
+    Ok(pem)
+}
+
+pub(super) fn export_standard(
+    kind: &str,
+    material: &[u8],
+    public_key: bool,
+    format: &str,
+) -> Result<Zeroizing<String>> {
+    dispatch!(kind, export_standard_for, material, public_key, format)
 }
