@@ -49,7 +49,11 @@ impl NamespacePartition<'_> {
         self.closed
             .auth
             .bind_sdk_namespace_ciphertext(&self.binding, stamp)
-            .map_err(|_| failed())?;
+            .map_err(|_error| {
+                #[cfg(test)]
+                namespace_diagnostics::record_status("assets.finish.bind_ciphertext", _error.status);
+                failed()
+            })?;
         self.closed.schema = self.closed.writer_schema();
         let actual = self.binding.namespace();
         if !self.key.matches_binding(&self.binding)
@@ -86,10 +90,12 @@ impl NamespacePartition<'_> {
             serde_json::from_slice(&opened).map_err(|_| failed())?;
         // Restore the actual MAC-opened graph into an exclusive verification view.
         // No key slot, callback, route grant or durable publication is installed.
-        self.closed
-            .restore_namespace_assets(actual, self.key, authenticated, &actual_cells)?;
+        namespace_diagnostic!(
+            "assets.finish.restore",
+            self.closed.restore_namespace_assets(actual, self.key, authenticated, &actual_cells)
+        )?;
         self.closed.schema = self.closed.writer_schema();
-        self.closed.validate_format()?;
+        namespace_diagnostic!("assets.finish.format", self.closed.validate_format())?;
         Ok(self.closed)
     }
 }
@@ -138,7 +144,7 @@ impl State {
         actual: &str,
         key: &'key Key,
     ) -> Result<NamespacePartition<'key>, Response> {
-        self.validate_format()?;
+        namespace_diagnostic!("assets.partition.source_format", self.validate_format())?;
         let binding = self.namespaces.custody_binding(&self.cluster_id, actual)?;
         if actual.is_empty() || !key.matches_binding(&binding) {
             return Err(failed());
@@ -156,11 +162,19 @@ impl State {
             let auth = candidate
                 .auth
                 .detach_namespace(&namespace)
-                .map_err(|_| failed())?;
+                .map_err(|_error| {
+                    #[cfg(test)]
+                    namespace_diagnostics::record_status("assets.partition.detach_auth", _error.status);
+                    failed()
+                })?;
             candidate
                 .auth
                 .install_sdk_namespace_custody(&namespace, &binding, &auth)
-                .map_err(|_| failed())?;
+                .map_err(|_error| {
+                    #[cfg(test)]
+                    namespace_diagnostics::record_status("assets.partition.install_custody", _error.status);
+                    failed()
+                })?;
             let (engines, private_cells) = candidate
                 .engines
                 .detach_namespace(&namespace, key)
@@ -224,7 +238,11 @@ impl State {
         let inner = self
             .auth
             .sdk_namespace_custody_opening_owners(actual, &stamp)
-            .map_err(|_| failed())?;
+            .map_err(|_error| {
+                #[cfg(test)]
+                namespace_diagnostics::record_status("assets.restore.opening_owners", _error.status);
+                failed()
+            })?;
         let mut candidate = self.clone();
         candidate
             .namespaces
@@ -237,7 +255,11 @@ impl State {
         candidate
             .auth
             .remove_sdk_namespace_enclosure(actual, &stamp)
-            .map_err(|_| failed())?;
+            .map_err(|_error| {
+                #[cfg(test)]
+                namespace_diagnostics::record_status("assets.restore.remove_enclosure", _error.status);
+                failed()
+            })?;
         let expected = candidate
             .namespaces
             .partition_paths(actual)?
@@ -256,7 +278,11 @@ impl State {
             candidate
                 .auth
                 .attach_namespace(&owned.namespace, owned.auth)
-                .map_err(|_| failed())?;
+                .map_err(|_error| {
+                    #[cfg(test)]
+                    namespace_diagnostics::record_status("assets.restore.attach_auth", _error.status);
+                    failed()
+                })?;
             candidate
                 .engines
                 .attach_namespace(&owned.namespace, key, owned.engines, |name| {
@@ -277,7 +303,7 @@ impl State {
         if seen != expected {
             return Err(failed());
         }
-        candidate.validate_format()?;
+        namespace_diagnostic!("assets.restore.format", candidate.validate_format())?;
         Ok(candidate)
     }
 }

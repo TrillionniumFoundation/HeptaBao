@@ -422,14 +422,33 @@ fn external_keys270_rejections_are_atomic_acl_bound_and_namespace_isolated() -> 
         .status,
         204
     );
-    let root_config = call(
-        &mut service,
-        "GET",
-        "sys/external-keys/configs/root-key",
-        &admin,
-        json!({}),
+    let before_metadata = zeroize::Zeroizing::new(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
     );
-    assert_eq!(root_config.body["data"]["pin"], "(redacted)");
+    for method in ["GET", "HEAD"] {
+        let root_config = call(
+            &mut service,
+            method,
+            "sys/external-keys/configs/root-key",
+            &admin,
+            json!({}),
+        );
+        assert_eq!(root_config.status, 501);
+        assert!(
+            root_config.body
+                == json!({"errors":["external KMS metadata requires an admitted genuine provider"]}),
+            "unenrolled provider metadata must fail without returning parameters"
+        );
+        assert!(root_config.body.get("data").is_none());
+        assert!(
+            !serde_json::to_string(&root_config.body)?.contains("synthetic-pin"),
+            "unenrolled provider refusal leaked a private parameter"
+        );
+        assert!(
+            serde_json::to_vec(service.state.as_ref().ok_or("state")?)? == *before_metadata,
+            "unenrolled provider metadata read changed the registry"
+        );
+    }
 
     assert_eq!(
         call(

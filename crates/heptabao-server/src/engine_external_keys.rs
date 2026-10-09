@@ -429,10 +429,32 @@ impl Registry {
         }
         Ok(&config.plugin)
     }
+    // Provider selection must preserve the selected operation's refusal class.
+    // This remains a grant check only and confers no provider-entry authority.
+    pub(super) fn consumer_plugin_for_operation(
+        &self,
+        reference: &str,
+        mount: &str,
+        operation: &str,
+    ) -> Result<&str> {
+        self.consumer_plugin(reference, mount)
+            .map_err(|cause| Self::consumer_error(operation, cause))
+    }
+
+    fn consumer_error(operation: &str, cause: EngineError) -> EngineError {
+        if matches!(operation, "sign" | "verify") && cause.status == 400 {
+            // Official external signing wraps unavailable mapping/grant as an
+            // operation error. Authorization still fails before provider entry.
+            error(500, "external signing reference or grant is unavailable")
+        } else {
+            cause
+        }
+    }
+
     // PKI uses the genuine key's ExportPublic and Sign interfaces, not Transit
     // request preprocessing. Resolve the exact mount grant before secret cloning.
     pub(super) fn genuine_pki_request(&self, reference: &str, mount: &str) -> Result<SecretValue> {
-        self.consumer_plugin(reference, mount)?;
+        self.consumer_plugin_for_operation(reference, mount, "sign")?;
         let (name, key_name) = reference
             .split_once(':')
             .ok_or_else(|| bad("external_key_ref must be config:key"))?;
@@ -455,7 +477,7 @@ impl Registry {
         operation: &str,
         mut body: SecretJson,
     ) -> Result<SecretValue> {
-        let _plugin = self.consumer_plugin(reference, mount)?;
+        let _plugin = self.consumer_plugin_for_operation(reference, mount, operation)?;
         let (name, key_name) = reference
             .split_once(':')
             .ok_or_else(|| bad("external_key_ref must be config:key"))?;
@@ -541,15 +563,9 @@ impl Registry {
         operation: &str,
         mut body: SecretJson,
     ) -> Result<SecretValue> {
-        let (config, key) = self.require_consumer(reference, mount).map_err(|cause| {
-            if matches!(operation, "sign" | "verify") && cause.status == 400 {
-                // Official external signing wraps an unavailable mapping/grant
-                // as an operation error; authorization still fails before entry.
-                error(500, "external signing reference or grant is unavailable")
-            } else {
-                cause
-            }
-        })?;
+        let (config, key) = self
+            .require_consumer(reference, mount)
+            .map_err(|cause| Self::consumer_error(operation, cause))?;
         reject_unknown(
             config,
             &[
@@ -1052,6 +1068,64 @@ mod tests {
         body: Value,
     ) -> Result<EngineResponse> {
         registry.handle(method, path, &body)
+    }
+
+    #[test]
+    fn provider_selection_preserves_operation_refusal_and_registry_bytes() -> TestResult {
+        for plugin in ["transit", "pkcs11"] {
+            let mut registry = Registry::default();
+            call(
+                &mut registry,
+                "POST",
+                "sys/external-keys/configs/selected",
+                json!({"plugin":plugin,"verify":false}),
+            )?;
+            call(
+                &mut registry,
+                "POST",
+                "sys/external-keys/configs/selected/keys/key",
+                json!({"verify":false}),
+            )?;
+            let before = Zeroizing::new(serde_json::to_vec(&registry)?);
+            for reference in ["selected:key", "missing:key", "selected:missing", "malformed"] {
+                for (operation, expected) in [
+                    ("sign", 500),
+                    ("verify", 500),
+                    ("encrypt", 400),
+                    ("decrypt", 400),
+                    ("create", 400),
+                ] {
+                    let refusal = registry
+                        .consumer_plugin_for_operation(reference, "pki", operation)
+                        .err()
+                        .ok_or("provider selection must reject the unavailable mount grant")?;
+                    assert_eq!(refusal.status, expected);
+                    assert!(!refusal.message.is_empty());
+                }
+            }
+            assert!(
+                serde_json::to_vec(&registry)? == *before,
+                "provider selection rejection changed the registry"
+            );
+            call(
+                &mut registry,
+                "POST",
+                "sys/external-keys/configs/selected/keys/key/grants/pki",
+                json!({}),
+            )?;
+            for operation in ["sign", "verify", "encrypt", "decrypt", "create"] {
+                assert!(
+                    registry.consumer_plugin_for_operation("selected:key", "pki", operation)?
+                        == plugin,
+                    "selected provider must retain the exact stored grant"
+                );
+            }
+            assert!(
+                registry.consumer_plugin_for_operation("selected:key", "other", "sign").is_err(),
+                "a grant to one mount cannot authorize another"
+            );
+        }
+        Ok(())
     }
 
     #[test]

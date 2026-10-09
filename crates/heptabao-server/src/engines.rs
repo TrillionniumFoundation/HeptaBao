@@ -1190,7 +1190,7 @@ impl EngineState {
         let request_for = |template: &ExternalPkiTemplate| -> Result<_> {
             let plugin = state
                 .external_keys
-                .consumer_plugin(&template.reference, mount_path)?;
+                .consumer_plugin_for_operation(&template.reference, mount_path, "sign")?;
             if providers.contains(plugin) {
                 Ok((
                     Some(plugin.to_owned()),
@@ -1408,7 +1408,7 @@ impl EngineState {
         };
         let provider = state
             .external_keys
-            .consumer_plugin(&plan.reference, mount_path)?;
+            .consumer_plugin_for_operation(&plan.reference, mount_path, plan.operation)?;
         let genuine_provider = admitted.contains(provider).then(|| provider.to_owned());
         let plan = if genuine_provider.is_none() {
             engine

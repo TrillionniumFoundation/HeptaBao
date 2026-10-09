@@ -2980,6 +2980,7 @@ fn namespace109_authenticated_seal_rejects_preserved_header_same_generation_reso
 
 #[test]
 fn namespace109_authenticated_seal_rejects_original_captured_deadline_after_proof() -> TestResult {
+    let _diagnostic = namespace_diagnostics::Scope::enter();
     let (mut f, _) = fixture_with_owner(true)?;
     begin(&mut f)?;
     assert!(crate::request_deadline::current().is_none());
@@ -4022,6 +4023,7 @@ fn namespace114_logical_late_ack_after_inherited_parent_seal_keeps_original_atte
 #[test]
 fn namespace114_credential_late_ack_after_inherited_parent_seal_keeps_original_attempt_and_sibling_queued()
 -> TestResult {
+    let _diagnostic = namespace_diagnostics::Scope::enter();
     model_late_ack114(Kind::Credential, false)
 }
 #[test]
@@ -4199,8 +4201,13 @@ fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_reje
     let mut downgraded: State=serde_json::from_value(value.clone())?;
     downgraded.schema=GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
     assert!(downgraded.validate_format().is_err());
-    assert!(Service::validate_snapshot_protected_floor(&downgraded,
-        f.service.state.as_ref().ok_or("actual sticky114 source")?).is_err());
+    assert!(
+        Service::validate_snapshot_protected_floor(
+            f.service.state.as_ref().ok_or("actual sticky114 source")?,
+            &downgraded
+        )
+        .is_err()
+    );
     let mut erased=value.clone();
     erased["auth"]["sdk_namespace_custody"]=Value::Null;
     let erased:State=serde_json::from_value(erased)?;

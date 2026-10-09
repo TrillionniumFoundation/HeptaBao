@@ -178,15 +178,41 @@ fn ssh_role_cidr_exclusions_user_and_family_boundaries_are_enforced() -> TestRes
         .status,
         400
     );
+    let before_ca = zeroize::Zeroizing::new(snapshot(&s)?);
+    let invalid_ca = call(
+        &mut s,
+        &root,
+        "ssh/roles/bad",
+        json!({"key_type":"ca","default_user":"deploy","cidr_list":"127.0.0.1/32"}),
+    );
+    assert_eq!(invalid_ca.status, 400);
+    assert!(
+        invalid_ca.body
+            == json!({"errors":["Either allow_user_certificates or allow_host_certificates must be true"]}),
+        "CA role without a certificate class must report its exact validation error"
+    );
+    assert!(invalid_ca.body.get("data").is_none());
+    assert!(
+        snapshot(&s)? == *before_ca,
+        "rejected CA role changed the accepted SSH state"
+    );
     assert_eq!(
         call(
             &mut s,
             &root,
-            "ssh/roles/bad",
-            json!({"key_type":"ca","default_user":"deploy","cidr_list":"127.0.0.1/32"})
+            "ssh/roles/valid-ca",
+            json!({"key_type":"ca","allow_user_certificates":true,
+                "allowed_users":"deploy","default_user":"deploy"}),
         )
         .status,
-        501
+        204
+    );
+    let valid_ca = s.handle_at("GET", "ssh/roles/valid-ca", "", &root, json!({}), 100);
+    assert_eq!(valid_ca.status, 200);
+    assert!(
+        valid_ca.body["data"]["key_type"] == "ca"
+            && valid_ca.body["data"]["allow_user_certificates"] == true,
+        "accepted CA role must read back its actual certificate class"
     );
     Ok(())
 }

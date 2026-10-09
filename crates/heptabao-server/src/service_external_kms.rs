@@ -596,6 +596,7 @@ mod sealed_library_policy_tests {
     impl Fixture {
         fn new() -> TestResult<Self> {
             let root = Root::new();
+            private_directory(&root.path)?;
             let image = root.path.join("operator-image");
             let library = root.path.join("operator-library");
             for (path, mode, bytes) in [

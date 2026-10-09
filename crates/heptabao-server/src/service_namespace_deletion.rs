@@ -516,11 +516,11 @@ impl Service {
             let expected = self.current_state_identity()?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             let mut sdk_hosts = self.reserve_namespace_sdk_hosts(&state, binding.namespace())?;
-            state.begin_namespace_deletion(binding.clone())?;
+            namespace_diagnostic!("delete.begin", state.begin_namespace_deletion(binding.clone()))?;
             #[cfg(not(any(target_os = "linux", target_os = "macos")))]
             state.sync_namespace_deletion_ledger()?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
-            state.queue_namespace_sdk_deletion(&binding)?;
+            namespace_diagnostic!("delete.queue_sdk", state.queue_namespace_sdk_deletion(&binding))?;
             // Every response binding is captured before publication with the
             // original affine admission, never rebuilt from completed state.
             let authority = AcceptedDelete::capture(actor, self, &state, request, binding.clone())?;
@@ -531,8 +531,8 @@ impl Service {
                 caller_incarnation,
                 &binding,
             )?;
-            self.prepare_namespace_deletion_record_root(&mut state)?;
-            let publication = self.prepare_record_plan(&mut state)?;
+            namespace_diagnostic!("delete.record_root", self.prepare_namespace_deletion_record_root(&mut state))?;
+            let publication = namespace_diagnostic!("delete.record_plan", self.prepare_record_plan(&mut state))?;
             authority.check_state(self, &state)?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_hosts.check()?;
@@ -580,7 +580,7 @@ impl Service {
             self.pending_namespace_deletion = Some(authority);
             Ok(Response::ok(json!({"data":{"status":"in-progress"}})))
         })();
-        run.unwrap_or_else(|error| error)
+        namespace_diagnostic!("delete.result", run).unwrap_or_else(|error| error)
     }
 
     /// Current finite task supports actual native account/token/identity/KV owners.

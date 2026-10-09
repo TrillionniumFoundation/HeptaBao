@@ -303,17 +303,17 @@ pub(super) struct SealPublication {
 }
 impl SealPublication {
     fn logical_validation(&self) -> Result<State, Response> {
-        self.check_original_custody()?;
+        namespace_diagnostic!("seal.logical.original_custody", self.check_original_custody())?;
         let mut logical = self.closed.clone();
         // This exclusive view is only for full validation. Original real
         // leases are checked separately and no new runtime slot is installed.
         logical.namespace_leases = Leases::default();
         for cut in &self.cuts {
-            logical = cut.restore(&logical)?;
+            logical = namespace_diagnostic!("seal.logical.restore_cut", cut.restore(&logical))?;
         }
         logical.namespace_leases = Leases::default();
         logical.namespace_protected = None;
-        logical.validate_format()?;
+        namespace_diagnostic!("seal.logical.format", logical.validate_format())?;
         Ok(logical)
     }
     pub(super) fn check_original_custody(&self) -> Result<(), Response> {
@@ -345,10 +345,10 @@ impl SealPublication {
         {
             return Err(unavailable());
         }
-        let logical = self.logical_validation()?;
-        logical.validate_publication_schema(previous)?;
+        let logical = namespace_diagnostic!("seal.proof.logical", self.logical_validation())?;
+        namespace_diagnostic!("seal.proof.publication_schema", logical.validate_publication_schema(previous))?;
         let physical = self.closed.protected_state()?;
-        physical.validate_format()?;
+        namespace_diagnostic!("seal.proof.physical_format", physical.validate_format())?;
         if let Some(previous) = previous {
             physical
                 .namespaces
@@ -945,13 +945,13 @@ impl Runtime {
         native_role: Option<(u64, u64)>,
     ) -> Result<SealPublication, Response> {
         request_live()?;
-        state.validate_format()?;
+        namespace_diagnostic!("seal.source_format", state.validate_format())?;
         let (mut closed, fresh) = if state.namespaces.custody_owner(actual).is_some() {
-            (self.closed_candidate(state, actual)?, None)
+            (namespace_diagnostic!("seal.close_independent", self.closed_candidate(state, actual))?, None)
         } else {
-            self.inherited_closed_candidate_with_key(state, actual, root_key)?
+            namespace_diagnostic!("seal.close_inherited", self.inherited_closed_candidate_with_key(state, actual, root_key))?
         };
-        self.prepare(&mut closed)?;
+        namespace_diagnostic!("seal.prepare_closed", self.prepare(&mut closed))?;
         let prefix = format!("{actual}/");
         let mut paths = self
             .loaded
@@ -1003,7 +1003,7 @@ impl Runtime {
         }
         // No hydrated State leaves this scope. Recreate the complete graph at
         // each validation boundary from the final authenticated descriptors.
-        proof.logical_validation()?;
+        namespace_diagnostic!("seal.complete_logical", proof.logical_validation())?;
         proof.closed.protected_state()?.validate_format()?;
         Ok(proof)
     }
@@ -1417,7 +1417,7 @@ impl Runtime {
         pending: &BTreeMap<String, Lease>,
     ) -> Result<(), Response> {
         let loaded = |actual: &str| pending.get(actual).or_else(|| self.loaded.get(actual));
-        state.namespace_leases.validate()?;
+        namespace_diagnostic!("runtime.loaded_leases", state.namespace_leases.validate())?;
         if state.namespace_leases.is_empty() {
             state.namespace_protected = None;
             return Ok(());
@@ -1448,7 +1448,7 @@ impl Runtime {
                 .namespaces
                 .custody_binding(&protected.cluster_id, actual)?;
             let lease = loaded(actual).ok_or_else(unavailable)?;
-            protected = lease.with_key(&descriptor, |key| {
+            protected = namespace_diagnostic!("runtime.partition", lease.with_key(&descriptor, |key| {
                 protected
                     .partition_namespace_assets(actual, key)?
                     .finish_with_owner(|next, assets, cells| {
@@ -1470,7 +1470,7 @@ impl Runtime {
                         next_descriptor.install(next, actual)?;
                         Ok(())
                     })
-            })?;
+            }))?;
         }
         protected.namespace_leases = Leases::default();
         protected.namespace_protected = None;
@@ -1494,7 +1494,7 @@ impl Runtime {
                     .engines
                     .namespace_record_cells(&binding)
                     .map_err(|_| unavailable())?;
-                let mut next = logical.restore_namespace_assets(actual, key, assets, &cells)?;
+                let mut next = namespace_diagnostic!("runtime.restore_assets", logical.restore_namespace_assets(actual, key, assets, &cells))?;
                 next.namespaces.set_sealed(actual, false)?;
                 Ok(next)
             })?;
@@ -1650,15 +1650,15 @@ impl Service {
             }
         };
         let root_key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
-        let proof = self.namespace_runtime.seal_publication(
+        let proof = namespace_diagnostic!("seal.prepare", self.namespace_runtime.seal_publication(
             state,
             actual,
             root_key,
             base,
             self.ha.clone(),
             native_role,
-        )?;
-        proof.validate(self.state.as_ref(), base, &self.ha)?;
+        ))?;
+        namespace_diagnostic!("seal.prepared_proof", proof.validate(self.state.as_ref(), base, &self.ha))?;
         Ok(proof)
     }
 

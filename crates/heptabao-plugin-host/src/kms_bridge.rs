@@ -302,7 +302,7 @@ fn canonical_base64(s: &str) -> bool {
     if b.is_empty() {
         return true;
     }
-    if b.len() % 4 != 0 {
+    if !b.len().is_multiple_of(4) {
         return false;
     }
     let pad = b.iter().rev().take_while(|&&c| c == b'=').count();

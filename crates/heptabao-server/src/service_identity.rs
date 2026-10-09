@@ -225,9 +225,12 @@ impl State {
             ));
         }
         if let Some(previous) = previous {
-            self.auth
-                .validate_sdk_namespace_custody_successor(&previous.auth)
-                .map_err(|e| Response::error(e.status, &e.message))?;
+            namespace_diagnostic!(
+                "publication.sdk_successor",
+                self.auth
+                    .validate_sdk_namespace_custody_successor(&previous.auth)
+                    .map_err(|e| Response::error(e.status, &e.message))
+            )?;
             if self.namespace_protected.is_none()
                 && self.namespace_leases.is_empty()
                 && !self
@@ -235,10 +238,13 @@ impl State {
                     .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
                     .map_err(|e| Response::error(e.status, &e.message))?
             {
-                return Err(Response::error(
-                    503,
-                    "SDK namespace ciphertext requires actual typed publication proof",
-                ));
+                return namespace_diagnostic!(
+                    "publication.sdk_raw_change",
+                    Err(Response::error(
+                        503,
+                        "SDK namespace ciphertext requires actual typed publication proof",
+                    ))
+                );
             }
         }
         protected

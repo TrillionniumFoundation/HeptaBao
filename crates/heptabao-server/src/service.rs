@@ -28,6 +28,27 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+// SourceOnly q09 test diagnostics. The non-test branch is the original result
+// expression; it grants no publication authority and never reads response data.
+macro_rules! namespace_diagnostic {
+    ($stage:literal, $result:expr) => {{
+        #[cfg(test)]
+        {
+            let result = $result;
+            crate::service::namespace_diagnostics::record($stage, &result);
+            result
+        }
+        #[cfg(not(test))]
+        {
+            $result
+        }
+    }};
+}
+
+#[cfg(test)]
+#[path = "service_namespace_diagnostics.rs"]
+mod namespace_diagnostics;
+
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
