@@ -34,9 +34,9 @@ const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 const MAX_ENVIRONMENT_ENTRIES: usize = 64;
 const MAX_ENVIRONMENT_VALUE_BYTES: usize = 16 * 1024;
 const MAX_LEASE_TTL: u64 = 366 * 24 * 60 * 60;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 const REQUEST_MAGIC: &[u8; 4] = b"HBP1";
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 const RESPONSE_MAGIC: &[u8; 4] = b"HBR1";
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -279,11 +279,13 @@ pub use command_runner::OwnedExecutableImage;
 #[cfg(target_os = "macos")]
 mod darwin_sdk_image;
 #[cfg(target_os = "macos")]
+mod darwin_kms_root_runner;
+#[cfg(target_os = "macos")]
 pub use darwin_sdk_image::OwnedExecutableImage;
 
 // No path-execution fallback: other platforms need equivalent sealed image and
 // nonblocking process I/O backends before this runner may admit any plugin.
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 impl SandboxRunner for CommandSandboxRunner {
     fn admit(&self, _manifest: &PluginManifest) -> Result<(), SandboxFailure> {
         Err(SandboxFailure::BeforeEntry)
@@ -300,7 +302,7 @@ impl SandboxRunner for CommandSandboxRunner {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn encode_request(
     protocol_version: u16,
     operation: PluginOperation,
@@ -316,7 +318,7 @@ fn encode_request(
     Ok(frame)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn decode_response(bytes: &[u8], maximum: usize) -> Result<SecretValue, PluginHostError> {
     if bytes.len() < 8 || &bytes[..4] != RESPONSE_MAGIC {
         return Err(PluginHostError::MalformedResponse);

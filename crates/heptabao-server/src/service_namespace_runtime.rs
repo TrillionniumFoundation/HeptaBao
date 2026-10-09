@@ -316,6 +316,44 @@ impl SealPublication {
         namespace_diagnostic!("seal.logical.format", logical.validate_format())?;
         Ok(logical)
     }
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pub(super) fn terminal_sdk_history_candidate(
+        &self,
+        binding: &crate::namespace_custody::Binding,
+    ) -> Result<(State, Option<Vec<crate::engines::sdk_lease::Lease>>), Response> {
+        // Open the complete real MAC graph under the original affine key slots.
+        // Keep engine assets/record cells closed; only completed SDK history moves.
+        let logical = self.logical_validation()?;
+        let actual = binding.namespace();
+        if logical.namespaces.custody_binding(&logical.cluster_id, actual)? != *binding
+            || !logical.namespace_sdk_deletion_terminal(actual)?
+        {
+            return Err(unavailable());
+        }
+        let history = if logical
+            .engines
+            .sdk_logical_history_projection()
+            .map_err(Response::from_engine_error)?
+            .is_some()
+        {
+            Some(
+                logical
+                    .engines
+                    .sdk_logical_history_source(binding)
+                    .map_err(Response::from_engine_error)?,
+            )
+        } else {
+            None
+        };
+        let mut candidate = self.closed.clone();
+        candidate
+            .auth
+            .restore_terminal_sdk_namespace_history(binding, &logical.auth)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        candidate.validate_format()?;
+        self.check_original_custody()?;
+        Ok((candidate, history))
+    }
     pub(super) fn check_original_custody(&self) -> Result<(), Response> {
         request_live()?;
         if self

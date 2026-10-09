@@ -291,6 +291,41 @@ impl AuthState {
             .ok_or_else(|| err(503, "SDK namespace custody locator absent"))?;
         self.update_sdk_auth_retirement_mirror()
     }
+    /// Restore history only from complete, authenticated logical Records.
+    /// The original locator digest/collision/enclosure checks still govern the
+    /// full Parcel transfer. No index can manufacture a Record or execution grant.
+    pub(crate) fn restore_terminal_sdk_namespace_history(
+        &mut self,
+        binding: &CustodyBinding,
+        authenticated: &AuthState,
+    ) -> Result<(), AuthError> {
+        let actual = binding.namespace();
+        let mut owned = authenticated.clone();
+        if owned
+            .namespace_sdk_saved_credential_records(actual)?
+            .iter()
+            .any(|record| record.phase != crate::engines::sdk_lease::Phase::Revoked)
+        {
+            return Err(err(503, "namespace terminal credential history is not revoked"));
+        }
+        let parcel = owned.detach_sdk_namespace(actual)?;
+        if let Some(parcel) = &parcel {
+            if parcel.namespace_owner.incarnation() != binding.incarnation()
+                || parcel
+                    .retirements
+                    .as_ref()
+                    .map(|jobs| jobs.namespace_index(actual))
+                    .transpose()?
+                    .is_some_and(|jobs| jobs.values().any(|job| !job.completed()))
+                || parcel.logical_cleanup.values().any(|record| {
+                    !matches!(record.stage(), namespace_sdk_cleanup::Stage::Terminal { .. })
+                })
+            {
+                return Err(err(503, "namespace terminal SDK history lacks actual completion"));
+            }
+        }
+        self.attach_sdk_namespace(actual, parcel)
+    }
     pub(super) fn custody_credential_records(&self) -> Vec<&sdk_credential::CustodyRecord> {
         self.sdk_namespace_custody
             .as_ref()

@@ -15,7 +15,7 @@ func aliasTestDeployment() deployment {
 		Libraries:      []library{{Alias: "token", Path: "/operator/libpkcs11.so"}},
 	}
 }
-func aliasTestHeld() map[string]string { return map[string]string{"token": "/proc/self/fd/4"} }
+func aliasTestHeld() map[string]string { return map[string]string{"token": heldLibraryDescriptor(0)} }
 
 func TestPKCS11AliasFourSpellingsBindOriginalHeldLibrary(t *testing.T) {
 	for _, args := range [][]string{
@@ -27,7 +27,7 @@ func TestPKCS11AliasFourSpellingsBindOriginalHeldLibrary(t *testing.T) {
 		d := aliasTestDeployment()
 		d.Args = args
 		got, err := providerArguments(d, aliasTestHeld())
-		if err != nil || !reflect.DeepEqual(got, []string{"--alias=token=/proc/self/fd/4"}) {
+		if err != nil || !reflect.DeepEqual(got, []string{"--alias=token="+heldLibraryDescriptor(0)}) {
 			t.Fatal("a standard alias spelling lost its original held owner")
 		}
 	}
@@ -36,7 +36,7 @@ func TestPKCS11RepeatedAliasesHonorOnlyFinalAssignment(t *testing.T) {
 	d := aliasTestDeployment()
 	d.Args = []string{"--alias=token=/foreign.so", "-alias", "token=/operator/libpkcs11.so"}
 	got, err := providerArguments(d, aliasTestHeld())
-	if err != nil || !reflect.DeepEqual(got, []string{"--alias=token=/proc/self/fd/4"}) {
+	if err != nil || !reflect.DeepEqual(got, []string{"--alias=token="+heldLibraryDescriptor(0)}) {
 		t.Fatal("repeat-last-write semantics changed")
 	}
 	d.Args = []string{"-alias=token=/operator/libpkcs11.so", "--alias=token=/foreign.so"}
@@ -63,7 +63,7 @@ func TestPKCS11TerminatorAndPositionalTailsStayLiteral(t *testing.T) {
 			t.Fatal("an ignored tail was treated as an active alias")
 		}
 		effective, tail, terminated, err := parsePKCS11AliasArguments(got)
-		if err != nil || effective["token"] != "/proc/self/fd/4" ||
+		if err != nil || effective["token"] != heldLibraryDescriptor(0) ||
 			!reflect.DeepEqual(tail, c.tail) || terminated != c.terminated {
 			t.Fatal("the standard parser observed a changed tail or descriptor")
 		}
@@ -102,8 +102,8 @@ func TestPKCS11DeclaredAliasesRetainExactOriginalFDOrder(t *testing.T) {
 		{Alias: "z", Path: "/operator/z.so"},
 		{Alias: "a", Path: "/operator/a.so"},
 	}
-	got, err := providerArguments(d, map[string]string{"z": "/proc/self/fd/4", "a": "/proc/self/fd/5"})
-	if err != nil || !reflect.DeepEqual(got, []string{"--alias=a=/proc/self/fd/5", "--alias=z=/proc/self/fd/4"}) {
+	got, err := providerArguments(d, map[string]string{"z": heldLibraryDescriptor(0), "a": heldLibraryDescriptor(1)})
+	if err != nil || !reflect.DeepEqual(got, []string{"--alias=a="+heldLibraryDescriptor(1), "--alias=z="+heldLibraryDescriptor(0)}) {
 		t.Fatal("sorting changed the corresponding original ExtraFiles owner")
 	}
 }
@@ -139,7 +139,7 @@ func TestImplementationJSONRejectsNullEmptyUnknownAndNonStrings(t *testing.T) {
 func TestPKCS11HeldDescriptorSetCannotGainOrLoseOwners(t *testing.T) {
 	for _, held := range []map[string]string{
 		nil, {"token": "/proc/self/fd/5"}, {"token": "/operator/libpkcs11.so"},
-		{"token": "/proc/self/fd/4", "extra": "/proc/self/fd/5"},
+		{"token": heldLibraryDescriptor(0), "extra": "/proc/self/fd/5"},
 	} {
 		if _, err := providerArguments(aliasTestDeployment(), held); err == nil {
 			t.Fatal("a mismatched descriptor set acquired library authority")

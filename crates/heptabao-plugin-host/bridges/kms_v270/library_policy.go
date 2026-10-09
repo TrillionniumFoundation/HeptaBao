@@ -9,7 +9,6 @@ import (
 	"io"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -99,7 +98,7 @@ func providerArguments(d deployment, heldAliases map[string]string) ([]string, e
 		if _, exists := declared[lib.Alias]; exists {
 			return nil, errors.New("duplicate declared library alias")
 		}
-		if heldAliases[lib.Alias] != "/proc/self/fd/"+strconv.Itoa(4+i) {
+		if heldAliases[lib.Alias] != heldLibraryDescriptor(i) {
 			return nil, errors.New("invalid original held library descriptor")
 		}
 		declared[lib.Alias] = lib.Path

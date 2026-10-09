@@ -643,8 +643,24 @@ impl Service {
         self.audit_event("namespace-cleanup-request", &fingerprint, now, None)
             .map_err(|_| Response::error(503, "namespace cleanup audit unavailable"))?;
         let result = (|| {
+            let mut next = source.clone();
             #[cfg(any(target_os = "linux", target_os = "macos"))]
-            let history = if source
+            let terminal_proof = if source
+                .namespaces
+                .deletions
+                .as_ref()
+                .is_some_and(|ledger| ledger.sdk_cleanup().is_some())
+            {
+                Some(self.prepare_namespace_seal_publication(&source, actual)?)
+            } else {
+                None
+            };
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let history = if let Some(proof) = &terminal_proof {
+                let (closed, history) = proof.terminal_sdk_history_candidate(&binding)?;
+                next = closed;
+                history
+            } else if source
                 .engines
                 .sdk_logical_history_projection()
                 .map_err(Response::from_engine_error)?
@@ -659,8 +675,11 @@ impl Service {
             } else {
                 None
             };
-            let mut next = source.clone();
-            if self.namespace_runtime.has_loaded_within(actual) {
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let close_native = terminal_proof.is_none();
+            #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+            let close_native = true;
+            if close_native && self.namespace_runtime.has_loaded_within(actual) {
                 next = self.namespace_runtime.closed_candidate(&next, actual)?;
             }
             if next.namespaces.custody_owner(actual).is_none()
@@ -744,10 +763,25 @@ impl Service {
                     "namespace cleanup source changed before publication",
                 ));
             }
-            self.commit_record_plan_with_before_publish(
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            if let Some(proof) = &terminal_proof {
+                proof.validate(self.state.as_ref(), self.current_state_identity()?, &self.ha)?;
+            }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let native_role = terminal_proof.as_ref().and_then(|proof| proof.native_role());
+            #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+            let native_role = None;
+            self.commit_record_plan_with_native_role(
                 &next,
                 publication,
-                |_| authority.check_terminal(&next, Some(&retired_floor)),
+                native_role,
+                |_| {
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    if let Some(proof) = &terminal_proof {
+                        proof.check_original_custody()?;
+                    }
+                    authority.check_terminal(&next, Some(&retired_floor))
+                },
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
             )?;
