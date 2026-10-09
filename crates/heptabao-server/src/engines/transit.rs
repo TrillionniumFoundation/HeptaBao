@@ -28,6 +28,11 @@ mod symmetric;
 const MAX_BATCH: usize = 256;
 const MAX_ENCRYPTIONS_PER_VERSION: u64 = 1 << 32;
 
+// Match the measured OpenBao 2.7 error envelope at these compatibility gates.
+fn openbao_compatibility_error(message: &str) -> EngineError {
+    error(500, &format!("1 error occurred:\n\t* {message}\n\n"))
+}
+
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub(super) struct Transit {
     keys: BTreeMap<String, Key>,
@@ -860,21 +865,31 @@ impl Transit {
         let standard_asymmetric = (mldsa_key || asymmetric_key || ed25519_key)
             && kind != "hmac-key"
             && matches!(format, "der" | "pem");
+        if !key.exportable && !public_export {
+            return Err(if mldsa_key || asymmetric_key {
+                bad("private key material is not exportable")
+            } else {
+                error(403, "key is not exportable")
+            });
+        }
+        if kind == "hmac-key" && (mldsa_key || asymmetric_key)
+            && matches!(format, "der" | "pem")
+        {
+            return Err(openbao_compatibility_error(
+                "unknown format for HMAC key; supported values are `` or `raw`",
+            ));
+        }
         if matches!(format, "der" | "pem") && !standard_asymmetric {
             return Err(error(
                 501,
                 "standard export is unsupported for this key type",
             ));
         }
-        if format == "raw" && asymmetric_key {
+        if format == "raw" && asymmetric_key && kind != "hmac-key" {
             let algorithm = if asymmetric::is_rsa(&key.kind) { "rsa" } else { "ec" };
-            return Err(error(
-                500,
+            return Err(openbao_compatibility_error(
                 &format!("unknown key format for {algorithm} key; supported values are ``, `der`, or `pem`"),
             ));
-        }
-        if !key.exportable && !public_export {
-            return Err(error(403, "key is not exportable"));
         }
         if asymmetric_key && kind == "encryption-key" && !asymmetric::is_rsa(&key.kind) {
             return Err(bad("key type does not support encryption key export"));
@@ -913,17 +928,18 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                let encoded = if let Some(public) = value.public_key_only.as_ref() {
-                    if !public_export {
-                        return Err(bad(
-                            "public-only key version has no private or HMAC material",
-                        ));
-                    }
-                    let der = stored_material(public)?;
-                    if standard_asymmetric {
-                        mldsa::export_public(&key.kind, &der, format)?.to_string()
+                let encoded = if kind == "hmac-key" {
+                    value.hmac_material.clone()
+                } else if let Some(public) = value.public_key_only.as_ref() {
+                    if public_export {
+                        let der = stored_material(public)?;
+                        if standard_asymmetric {
+                            mldsa::export_public(&key.kind, &der, format)?.to_string()
+                        } else {
+                            BASE64.encode(mldsa::public_only(&key.kind, &der)?)
+                        }
                     } else {
-                        BASE64.encode(mldsa::public_only(&key.kind, &der)?)
+                        String::new()
                     }
                 } else if standard_asymmetric {
                     let material = stored_material(&value.material)?;
@@ -1266,15 +1282,6 @@ fn handle_crypto(
         "hmac" => {
             let version = key.selected_version(body)?;
             let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
-            if key
-                .versions
-                .get(&version)
-                .ok_or_else(not_found)?
-                .public_key_only
-                .is_some()
-            {
-                return Err(bad("public-only key version cannot generate an HMAC"));
-            }
             let material = stored_material(
                 &key.versions
                     .get(&version)
@@ -1298,7 +1305,9 @@ fn handle_crypto(
             };
             let selected = key.versions.get(&version).ok_or_else(not_found)?;
             if selected.public_key_only.is_some() {
-                return Err(bad("public-only key version cannot sign"));
+                return Err(openbao_compatibility_error(
+                    "requested version for signing does not contain a private part",
+                ));
             }
             let material = stored_material(&selected.material)?;
             let input = decode_field(body, "input")?;
@@ -1326,9 +1335,6 @@ fn handle_crypto(
                 let (version, tag) =
                     parse_wrapped(mac.as_str().ok_or_else(|| bad("hmac must be a string"))?)?;
                 let version = key.decrypt_version(version)?;
-                if version.public_key_only.is_some() {
-                    return Err(bad("public-only key version cannot verify an HMAC"));
-                }
                 let material = stored_material(&version.hmac_material)?;
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
                 hmac_verify(algorithm, &material, &input, &tag)?

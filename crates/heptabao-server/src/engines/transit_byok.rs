@@ -168,7 +168,7 @@ impl Transit {
                     if let Some(public) = version.public_key_only.as_ref() {
                         if !mldsa_key
                             || !version.material.is_empty()
-                            || !version.hmac_material.is_empty()
+                            || stored_material(&version.hmac_material)?.len() != 32
                             || version.encryptions != 0
                         {
                             return Err(bad("invalid public-only imported key version"));
@@ -314,7 +314,13 @@ impl Transit {
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
         if !imported_key(key) {
-            return Err(error(500, "key does not permit imported versions"));
+            return Err(if mldsa::is_kind(&key.kind) {
+                openbao_compatibility_error(
+                    "the import_version endpoint can only be used with an imported key",
+                )
+            } else {
+                error(500, "key does not permit imported versions")
+            });
         }
         if mldsa::is_kind(&key.kind) {
             return self.import_mldsa_version(name, body, now);
@@ -371,9 +377,10 @@ impl Transit {
         }
         let public = string(body, "public_key")?;
         let der = mldsa::import_public_pem(kind, public)?;
+        let hmac_material = Zeroizing::new(random_bytes(32)?);
         Ok(KeyVersion {
             material: String::new(),
-            hmac_material: String::new(),
+            hmac_material: BASE64.encode(hmac_material),
             public_key_only: Some(BASE64.encode(der)),
             created_at: now,
             encryptions: 0,
@@ -483,12 +490,13 @@ impl Transit {
                 .as_slice()
                 != expected.as_slice()
             {
-                return Err(bad(
-                    "imported private key does not match the existing public key",
+                return Err(openbao_compatibility_error(
+                    "cannot import key, key pair does not match",
                 ));
             }
-            // Completion retains the original version identity and creation time.
+            // Completion retains the version, creation time, and independent HMAC owner.
             imported.created_at = existing.created_at;
+            imported.hmac_material.clone_from(&existing.hmac_material);
             (number, false)
         } else {
             if key.versions.len() >= 10_000 {
@@ -824,7 +832,7 @@ mod mldsa_import_tests {
     }
 
     #[test]
-    fn mldsa270_public_only_import_verifies_real_signatures_without_seed_or_hmac() -> TestResult {
+    fn mldsa270_public_only_import_preserves_independent_hmac_without_private_seed() -> TestResult {
         for kind in ["mldsa-44", "mldsa-65", "mldsa-87"] {
             let seed = [0x50; 32];
             let mut transit = Transit::default();
@@ -841,7 +849,8 @@ mod mldsa_import_tests {
             let version = &transit.keys["key"].versions[&1];
             assert!(
                 version.material.is_empty()
-                    && version.hmac_material.is_empty()
+                    && stored_material(&version.hmac_material)
+                        .map_err(|_| "public_hmac_invalid")?.len() == 32
                     && version.public_key_only.is_some()
             );
             let before = encoded(&transit)?;
@@ -861,28 +870,49 @@ mod mldsa_import_tests {
                 .map_err(|_| "public_verify_failed")?;
                 assert!(response.body["data"]["valid"] == valid);
             }
-            for (method, path, body) in [
-                (
-                    "POST",
-                    "sign/key",
-                    json!({"input":BASE64.encode(b"public fixture")}),
-                ),
-                (
-                    "POST",
-                    "hmac/key",
-                    json!({"input":BASE64.encode(b"public fixture")}),
-                ),
-                (
-                    "POST",
-                    "verify/key",
-                    json!({"input":BASE64.encode(b"public fixture"),"hmac":"vault:v1:AA=="}),
-                ),
-                ("GET", "export/signing-key/key", json!({})),
-                ("GET", "export/hmac-key/key", json!({})),
-                ("GET", "export/signing-key/key", json!({"format":"der"})),
-            ] {
-                assert!(call(&mut transit, method, path, body).is_err());
+            let input = BASE64.encode(b"public fixture");
+            assert!(matches!(call(&mut transit,"POST","sign/key",json!({"input":input})),
+                Err(EngineError {status:500,..})));
+            let mac = call(&mut transit,"POST","hmac/key",json!({"input":input}))
+                .map_err(|_| "public_hmac_failed")?.body["data"]["hmac"].clone();
+            for (message,valid) in [(b"public fixture".as_slice(),true),(b"changed".as_slice(),false)] {
+                let verified = call(&mut transit,"POST","verify/key",
+                    json!({"input":BASE64.encode(message),"hmac":mac}))
+                    .map_err(|_| "public_hmac_verify_failed")?;
+                assert!(verified.status == 200 && verified.body["data"]["valid"] == valid);
             }
+            for format in ["","raw","der","pem"] {
+                let private = call(&mut transit,"GET","export/signing-key/key",json!({"format":format}))
+                    .map_err(|_| "public_private_export_failed")?;
+                assert!(private.status == 200 && private.body["data"]["keys"]["1"] == "");
+                let exported = call(&mut transit,"GET","export/hmac-key/key",json!({"format":format}));
+                if matches!(format,""|"raw") {
+                    let exported = exported.map_err(|_| "public_hmac_export_failed")?;
+                    let material = BASE64.decode(exported.body["data"]["keys"]["1"].as_str()
+                        .ok_or("missing_hmac_key")?).map_err(|_| "invalid_hmac_base64")?;
+                    assert!(material.len() == 32);
+                    let mut independent = <Hmac<Sha256> as Mac>::new_from_slice(&material)
+                        .map_err(|_| "independent_hmac_failed")?;
+                    Mac::update(&mut independent,b"public fixture");
+                    let tag = Mac::finalize(independent).into_bytes();
+                    assert!(mac == format!("vault:v1:{}",BASE64.encode(tag)));
+                } else {
+                    assert!(matches!(exported,Err(EngineError {status:500,..})));
+                }
+            }
+            let mut locked = Transit::default();
+            call(&mut locked,"POST","keys/locked/import",json!({"type":kind,"public_key":public.as_str()}))
+                .map_err(|_| "locked_public_import_failed")?;
+            assert!(call(&mut locked,"POST","hmac/locked",json!({"input":input}))
+                .map_err(|_| "locked_public_hmac_failed")?.status == 200);
+            for path in ["export/signing-key/locked","export/hmac-key/locked"] {
+                for format in ["","raw","der","pem"] {
+                    assert!(matches!(call(&mut locked,"GET",path,json!({"format":format})),
+                        Err(EngineError {status:400,..})));
+                }
+            }
+            assert!(call(&mut locked,"GET","export/public-key/locked",json!({}))
+                .map_err(|_| "locked_public_export_failed")?.status == 200);
             let raw = call(&mut transit, "GET", "export/public-key/key", json!({}))
                 .map_err(|_| "public_raw_export_failed")?;
             assert!(
@@ -1017,6 +1047,12 @@ mod mldsa_import_tests {
             json!({"public_key":second.as_str()}),
         )
         .map_err(|_| "next_public_failed")?;
+        let input = BASE64.encode(b"public completion HMAC owner");
+        let original_hmacs: Vec<Value> = [1,2].into_iter().map(|version| {
+            call(&mut transit,"POST","hmac/key",json!({"input":input,"key_version":version}))
+                .map(|response| response.body["data"]["hmac"].clone())
+                .map_err(|_| "initial_public_hmac_failed")
+        }).collect::<TestResult<Vec<Value>>>()?;
         let wrong = wrap(&transit, &private_der(kind, &[0x51; 32])?)?;
         let before = encoded(&transit)?;
         for body in [
@@ -1054,6 +1090,11 @@ mod mldsa_import_tests {
                 == 204
         );
         assert!(transit.keys["key"].latest_version == 2 && transit.keys["key"].versions.len() == 2);
+        for mac in original_hmacs {
+            let verified = call(&mut transit,"POST","verify/key",json!({"input":input,"hmac":mac}))
+                .map_err(|_| "completed_original_hmac_verify_failed")?;
+            assert!(verified.status == 200 && verified.body["data"]["valid"] == true);
+        }
         let before = encoded(&transit)?;
         assert!(
             call(
@@ -1153,6 +1194,44 @@ mod mldsa_import_tests {
             .ok_or("version_missing")?;
         version.material = BASE64.encode([0x50; 32]);
         assert!(transit.validate_byok_state().is_err() && transit.validate_mldsa_state().is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod hmac_export270_tests {
+    use super::*;
+    #[test]
+    fn asymmetric270_hmac_raw_exports_real_material_and_private_permission_precedes_format() -> Result<()> {
+        for kind in ["rsa-2048","ecdsa-p256"] {
+            let mut transit = Transit::default();
+            transit.handle("","transit","POST","keys/key",&json!({"type":kind,"exportable":true}),100)?;
+            let input = BASE64.encode(b"asymmetric HMAC fixture");
+            let mac = transit.handle("","transit","POST","hmac/key",&json!({"input":input}),100)?
+                .body["data"]["hmac"].clone();
+            for format in ["","raw","der","pem"] {
+                let exported = transit.handle("","transit","GET","export/hmac-key/key/1",&json!({"format":format}),100);
+                if matches!(format,""|"raw") {
+                    let exported = exported?;
+                    let material = BASE64.decode(exported.body["data"]["keys"]["1"].as_str().expect("HMAC key"))
+                        .expect("base64 HMAC key");
+                    assert_eq!(material.len(),32);
+                    let mut independent = <Hmac<Sha256> as Mac>::new_from_slice(&material).expect("HMAC material");
+                    Mac::update(&mut independent,b"asymmetric HMAC fixture");
+                    let tag = Mac::finalize(independent).into_bytes();
+                    assert_eq!(mac,format!("vault:v1:{}",BASE64.encode(tag)));
+                } else {
+                    assert!(matches!(exported,Err(EngineError {status:500,..})));
+                }
+            }
+            transit.handle("","transit","POST","keys/locked",&json!({"type":kind}),100)?;
+            for family in ["signing-key","hmac-key"] {
+                for format in ["","raw","der","pem"] {
+                    assert!(matches!(transit.handle("","transit","GET",&format!("export/{family}/locked"),
+                        &json!({"format":format}),100),Err(EngineError {status:400,..})));
+                }
+            }
+        }
         Ok(())
     }
 }

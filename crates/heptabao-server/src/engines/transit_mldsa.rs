@@ -126,7 +126,7 @@ impl Transit {
                 if let Some(public) = version.public_key_only.as_ref() {
                     if key.byok.is_none()
                         || !version.material.is_empty()
-                        || !version.hmac_material.is_empty()
+                        || stored_material(&version.hmac_material)?.len() != 32
                     {
                         return Err(bad("invalid ML-DSA public-only state"));
                     }
