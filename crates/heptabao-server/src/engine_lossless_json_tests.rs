@@ -1,7 +1,7 @@
 //! Real inline and independent KV1 record candidates, without a new clock.
 use super::*;
 use crate::state_records::AddressKey;
-type TestResult = Result<(), Box<dyn std::error::Error>>;
+type TestResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 fn call(
     state: &mut EngineState,
     method: &str,

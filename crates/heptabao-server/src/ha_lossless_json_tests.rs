@@ -1,5 +1,6 @@
 //! All four real frame body types retain number tokens and ordinary maps.
 use super::*;
+use serde_json::json;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 #[test]
 fn ha_lossless_all_current_and_legacy_body_fields_keep_exact_tokens() -> TestResult {

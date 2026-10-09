@@ -764,10 +764,21 @@ impl<'de> Deserialize<'de> for UniqueObject {
                 A: MapAccess<'de>,
             {
                 let mut values = BTreeMap::new();
-                while let Some((key, value)) = map.next_entry::<String, Value>()? {
-                    if values.insert(key, value).is_some() {
+                while let Some((key, raw)) =
+                    map.next_entry::<String, Box<serde_json::value::RawValue>>()?
+                {
+                    if values.contains_key(&key) {
                         return Err(de::Error::custom("duplicate JSON member"));
                     }
+                    // Decode original tokens before serde's private Number/RawValue
+                    // transport can reinterpret a user object. Top-level members
+                    // remain unique; nested ordinary claims retain last-key wins.
+                    let value = heptabao_domain::json::decode_with_policy(
+                        raw.get().as_bytes(),
+                        heptabao_domain::json::DuplicatePolicy::LastWins,
+                    )
+                    .map_err(de::Error::custom)?;
+                    values.insert(key, value);
                 }
                 Ok(UniqueObject(values))
             }
@@ -1470,5 +1481,116 @@ mod tests {
                     .is_err()
             );
         }
+    }
+
+
+    #[test]
+    fn jwt_signed_numeric_dates_keep_objects_and_reject_private_transport_magic() {
+        let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes()).unwrap();
+        let verifier = verifier(&pair);
+        let claims = r#"{"iss":"https://issuer.example","sub":"alice","aud":"heptabao","iat":1000,"nbf":1000,"exp":1300,"jti":"type-boundary","heptabao_namespace":"team-a"}"#;
+        let time = NativeJwtTimePolicy {
+            clock_skew_seconds: 0,
+            legacy_strict_expiry: true,
+            expiration_leeway: 0,
+            not_before_leeway: 0,
+            maximum_token_lifetime_seconds: Some(600),
+        };
+        let signed = token(&pair, claims);
+        let principal = verifier.verify(&signed, 1050).unwrap();
+        assert_eq!((principal.issued_at, principal.expires_at), (1000, 1300));
+        assert_eq!(
+            verifier
+                .verify_native(&signed, 1050, time, None)
+                .unwrap()
+                .subject,
+            "alice"
+        );
+        for (field, number) in [("exp", "1300"), ("nbf", "1000"), ("iat", "1000")] {
+            for marker in [
+                "$serde_json::private::Number",
+                "$serde_json::private::RawValue",
+            ] {
+                let object = format!(r#"{{"{marker}":"{number}"}}"#);
+                let bad = claims.replace(
+                    &format!(r#""{field}":{number}"#),
+                    &format!(r#""{field}":{object}"#),
+                );
+                assert_ne!(bad, claims);
+                let signed = token(&pair, &bad);
+                // The actual signature must authenticate the original object
+                // before either time profile rejects its non-numeric type.
+                let (parsed, _) = verifier.verified_claims(&signed).unwrap();
+                assert!(parsed[field].is_object());
+                assert_eq!(parsed[field][marker].as_str(), Some(number));
+                assert_eq!(
+                    verifier.verify(&signed, 1050),
+                    Err(AuthError::InvalidClaim),
+                    "{field} {marker}"
+                );
+                assert_eq!(
+                    verifier.verify_native(&signed, 1050, time, None),
+                    Err(AuthError::InvalidClaim),
+                    "{field} {marker}"
+                );
+            }
+        }
+        let fractional = claims
+            .replace("\"iat\":1000", "\"iat\":1000.75")
+            .replace("\"nbf\":1000", "\"nbf\":1000.25")
+            .replace("\"exp\":1300", "\"exp\":1300.5");
+        let signed = token(&pair, &fractional);
+        assert_eq!(verifier.verify(&signed, 1050), Err(AuthError::InvalidClaim));
+        assert_eq!(
+            verifier
+                .verify_native(&signed, 1050, time, None)
+                .unwrap()
+                .subject,
+            "alice"
+        );
+    }
+
+    #[test]
+    fn jwt_unique_claim_boundary_preserves_outer_duplicates_and_nested_lastwins() {
+        let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes()).unwrap();
+        let verifier = verifier(&pair);
+        let claims = r#"{"iss":"https://issuer.example","sub":"alice","aud":"heptabao","iat":1000,"nbf":1000,"exp":1300,"jti":"unique-boundary","heptabao_namespace":"team-a"}"#;
+        let time = NativeJwtTimePolicy {
+            clock_skew_seconds: 0,
+            legacy_strict_expiry: true,
+            expiration_leeway: 0,
+            not_before_leeway: 0,
+            maximum_token_lifetime_seconds: Some(600),
+        };
+        let duplicate = claims.replace("\"exp\":1300", "\"exp\":1299,\"exp\":1300");
+        let signed = token(&pair, &duplicate);
+        assert_eq!(
+            verifier.verify(&signed, 1050),
+            Err(AuthError::DuplicateJsonKey)
+        );
+        assert_eq!(
+            verifier.verify_native(&signed, 1050, time, None),
+            Err(AuthError::DuplicateJsonKey)
+        );
+        let nested = format!(
+            r#"{}, "profile":{{"scope":"first","scope":"last","typed":{{"$serde_json::private::Number":"1300"}}}}}}"#,
+            claims.trim_end_matches('}')
+        );
+        let signed = token(&pair, &nested);
+        let (parsed, _) = verifier.verified_claims(&signed).unwrap();
+        assert_eq!(parsed["profile"]["scope"], "last");
+        assert!(parsed["profile"]["typed"].is_object());
+        assert_eq!(
+            parsed["profile"]["typed"]["$serde_json::private::Number"],
+            "1300"
+        );
+        assert_eq!(verifier.verify(&signed, 1050).unwrap().subject, "alice");
+        assert_eq!(
+            verifier
+                .verify_native(&signed, 1050, time, None)
+                .unwrap()
+                .subject,
+            "alice"
+        );
     }
 }

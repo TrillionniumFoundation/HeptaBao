@@ -3221,7 +3221,7 @@ fn fractional_call(
     method: &str,
     path: &str,
     body: Value,
-    at: crate::auth::token_precision::Timestamp,
+    at: crate::auth::Timestamp,
 ) -> TestResult<Response> {
     let encoded = Zeroizing::new(serde_json::to_vec(&body)?);
     let mut wire = Zeroizing::new(format!(
@@ -3251,7 +3251,7 @@ fn fractional_call(
 fn fractional_approve(
     fixture: &mut Fixture,
     accessor: &str,
-    at: crate::auth::token_precision::Timestamp,
+    at: crate::auth::Timestamp,
 ) -> TestResult {
     for token in [&fixture.first.token, &fixture.second.token] {
         let response = fractional_call(
@@ -3268,7 +3268,7 @@ fn fractional_approve(
 }
 #[test]
 fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effects() -> TestResult {
-    use crate::auth::token_precision::{DurationNanos, Timestamp};
+    use crate::auth::Timestamp;
     for (raw, nanos, wire_ttl) in [
         ("1500ms", 1_500_000_000_u64, 1_u64),
         ("500ms", 500_000_000, 0),
@@ -3387,7 +3387,7 @@ fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effec
             .ok_or("precise deadline")?;
         let before = exact
             .issued_at
-            .checked_add(DurationNanos::checked(nanos - 1)?)?;
+            .checked_add((nanos - 1).try_into()?)?;
         assert!(
             current
                 .auth

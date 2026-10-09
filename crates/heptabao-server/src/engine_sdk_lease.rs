@@ -603,7 +603,7 @@ impl<B: Backend> Metadata<B> {
 
 impl<B: Backend> Lease<B> {
     pub(super) fn has_lossless_json_state(&self) -> bool {
-        heptabao_domain::json::requires_lossless_format(self.secret.expose())
-            || heptabao_domain::json::requires_lossless_format(self.data.expose())
+        heptabao_domain::json::requires_lossless_format(&self.secret.0)
+            || heptabao_domain::json::requires_lossless_format(&self.data.0)
     }
 }

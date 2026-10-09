@@ -50,7 +50,8 @@ fn engine_bytes(service: &Service) -> TestResult<Vec<u8>> {
     Ok(crate::secret_serde::to_vec(
         &*service.state.as_ref().ok_or("state")?.engines,
         crate::MAX_APPLICATION_STATE_BYTES,
-    )?
+    )
+    .map_err(|_| "KV2 engine state encoding failed")?
     .to_vec())
 }
 
@@ -251,7 +252,9 @@ fn kv2_import_service_durable_reopen_preserves_all_history_counters_and_secret_n
     imported(&mut service, &token)?;
     let state = service.state.as_ref().ok_or("state")?;
     assert_eq!(state.schema, KV2_LOSSLESS_STATE_SCHEMA);
-    state.validate_format()?;
+    state
+        .validate_format()
+        .map_err(|_| "KV2 state format validation failed")?;
     let before = engine_bytes(&service)?;
     let current = call(&mut service, "GET", "secret/data/item", &token, json!({}));
     assert_eq!(current.status, 200);
@@ -394,7 +397,9 @@ fn kv2_import_service_snapshot_recovery_keeps_precise_payload_and_sticky_schema(
     assert_eq!(engine_bytes(&service)?, original);
     let state = service.state.as_ref().ok_or("restored")?;
     assert_eq!(state.schema, KV2_LOSSLESS_STATE_SCHEMA);
-    state.validate_format()?;
+    state
+        .validate_format()
+        .map_err(|_| "KV2 state format validation failed")?;
     Ok(())
 }
 
@@ -486,8 +491,12 @@ fn kv2_import_schema_floor_survives_mount_retirement_and_rejects_torn_marker() -
     let retired = service.state.as_ref().ok_or("retired")?.clone();
     assert_eq!(retired.schema, KV2_LOSSLESS_STATE_SCHEMA);
     assert!(retired.engines.has_kv2_lossless_state());
-    retired.validate_format()?;
-    retired.validate_publication_schema(Some(&previous))?;
+    retired
+        .validate_format()
+        .map_err(|_| "retired KV2 state format validation failed")?;
+    retired
+        .validate_publication_schema(Some(&previous))
+        .map_err(|_| "retired KV2 publication validation failed")?;
     let mut wire = serde_json::to_value(&*retired.engines)?;
     wire.as_object_mut()
         .ok_or("engine object")?

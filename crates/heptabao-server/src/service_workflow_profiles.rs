@@ -592,7 +592,9 @@ mod tests {
             description: "synthetic".into(),
             cas_required: false,
         };
-        let compiled = profile.compile().expect("actual static HCL shape");
+        let compiled = profile
+            .compile()
+            .unwrap_or_else(|_| panic!("actual static HCL shape"));
         assert_eq!(compiled.steps.len(), 1);
         assert_eq!(compiled.steps[0].method, "POST");
         assert_eq!(compiled.steps[0].body, json!({"data":{"value":"after"}}));
@@ -601,7 +603,8 @@ mod tests {
             json!({"wrap_info":{"ttl":60,"token":"synthetic"}}),
         )]);
         assert_eq!(
-            evaluate_output(&compiled.output, &responses).expect("response mapping"),
+            evaluate_output(&compiled.output, &responses)
+                .unwrap_or_else(|_| panic!("response mapping")),
             json!({"marker":"controlled-workflow-completed","wrapping":{"ttl":60,"token":"synthetic"}})
         );
         for text in [
