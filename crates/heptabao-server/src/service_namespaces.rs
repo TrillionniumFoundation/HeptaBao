@@ -1444,6 +1444,14 @@ impl Service {
             Ok(path) => path,
             Err(error) => return error,
         };
+        // An asynchronous deletion keeps the old binding visible until the
+        // original native cleanup publishes terminal retirement. It cannot
+        // authorize metadata changes or be treated as a fresh incarnation.
+        if matches!(request.method, "POST" | "PUT" | "PATCH")
+            && state.namespace_is_tainted(&target)
+        {
+            return Response::error(400, "namespace deletion is in progress");
+        }
         match request.method {
             "GET" | "HEAD" => {
                 if request.body.as_object().is_none_or(|body| !body.is_empty()) {

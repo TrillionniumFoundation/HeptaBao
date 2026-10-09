@@ -2736,6 +2736,53 @@ fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -
         .status,
         200
     );
+    let pending_binding = n
+        .service
+        .state
+        .as_ref()
+        .and_then(|state| state.namespaces.deletions.as_ref())
+        .and_then(|ledger| ledger.pending().get("cg-child"))
+        .cloned()
+        .ok_or("populated namespace deletion must retain its original pending binding")?;
+    for method in ["POST", "PUT", "PATCH"] {
+        assert_eq!(
+            call(
+                &mut n.service,
+                &admin,
+                method,
+                "sys/namespaces/cg-child",
+                json!({"custom_metadata":{"pending_owner":"cannot-change"}}),
+                100
+            )
+            .status,
+            400
+        );
+        let state = n.service.state.as_ref().ok_or("pending namespace state")?;
+        assert!(state.namespace_is_tainted("cg-child"));
+        assert!(
+            state
+                .namespaces
+                .deletions
+                .as_ref()
+                .and_then(|ledger| ledger.pending().get("cg-child"))
+                == Some(&pending_binding)
+        );
+        let pending_namespace = call(
+            &mut n.service,
+            &admin,
+            "GET",
+            "sys/namespaces/cg-child",
+            json!({}),
+            100,
+        );
+        assert_eq!(pending_namespace.status, 200);
+        assert_eq!(text(&pending_namespace.body, "/data/id")?, first_id);
+    }
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut n.service,
+        "cg-child",
+        std::time::Duration::from_secs(100),
+    )?;
     assert_eq!(
         call(
             &mut n.service,
@@ -3974,6 +4021,18 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
     );
     definition["profile"]["document"] = json!(old_document);
     let mut decoded: State = serde_json::from_value(encoded)?;
+    assert!(decoded.validate_format().is_ok());
+    assert!(!decoded.namespaces.workflows.has_dynamic_profiles());
+    assert_eq!(decoded.writer_schema(), WORKFLOW_PROFILE_STATE_SCHEMA);
+    // Runtime record handles are authenticated by the existing Service and
+    // deliberately excluded from the old durable JSON owner wire.
+    let persisted_engines = serde_json::to_value(&decoded.engines)?;
+    assert!(serde_json::to_value(&old.engines)? == persisted_engines);
+    assert!(old.engines.record_root().is_some());
+    assert!(decoded.engines.record_root().is_none());
+    decoded.engines = old.engines.clone();
+    assert!(decoded.engines.record_root() == old.engines.record_root());
+    assert!(serde_json::to_value(&decoded.engines)? == persisted_engines);
     assert!(decoded.validate_format().is_ok());
     assert!(!decoded.namespaces.workflows.has_dynamic_profiles());
     assert_eq!(decoded.writer_schema(), WORKFLOW_PROFILE_STATE_SCHEMA);
