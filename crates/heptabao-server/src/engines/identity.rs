@@ -18,6 +18,8 @@ mod acl_templates;
 mod control_groups;
 #[path = "identity_runtime.rs"]
 mod runtime;
+#[path = "identity_api.rs"]
+pub(super) mod api;
 #[path = "identity_ssh_templates.rs"]
 mod ssh_templates;
 #[cfg(test)]

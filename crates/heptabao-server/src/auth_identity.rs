@@ -120,6 +120,24 @@ impl AuthState {
             .any(|entry| entry.accessor.as_deref() == Some(accessor))
     }
 
+    /// Read-only actual mount identity, never inferred from an Alias record.
+    pub(crate) fn identity_alias_mount(
+        &self,
+        namespace: &str,
+        accessor: &str,
+    ) -> Option<(String, String)> {
+        self.effective_auth_mounts(namespace)
+            .into_iter()
+            .find(|(_, entry)| entry.accessor.as_deref() == Some(accessor))
+            .map(|(name, entry)| (format!("auth/{name}/"), entry.kind))
+    }
+
+    pub(crate) fn identity_alias_mount_is_foreign(&self, namespace: &str, accessor: &str) -> bool {
+        std::iter::once("")
+            .chain(self.auth_mounts.keys().map(String::as_str))
+            .any(|other| other != namespace && self.has_mount_accessor(other, accessor))
+    }
+
     pub(crate) fn bind_issued_entity(
         &mut self,
         response: &mut AuthResponse,

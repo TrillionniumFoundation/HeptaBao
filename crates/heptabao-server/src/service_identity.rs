@@ -2411,23 +2411,86 @@ impl Service {
 
     pub(super) fn validate_identity_alias_mount(
         auth: &AuthState,
+        engines: &crate::engines::EngineState,
         namespace: &str,
         path: &str,
         body: &Value,
     ) -> Result<(), Response> {
-        let alias_route = path == "identity/entity-alias"
-            || path.starts_with("identity/entity-alias/id/")
-            || path == "identity/group-alias"
-            || path.starts_with("identity/group-alias/id/");
-        if alias_route && let Some(accessor) = body.get("mount_accessor") {
-            let accessor = accessor
-                .as_str()
-                .ok_or_else(|| Response::error(400, "invalid mount accessor"))?;
-            if !auth.has_mount_accessor(namespace, accessor) {
-                return Err(Response::error(400, "unknown auth mount accessor"));
+        // Resolve omitted fields from the actual namespace-local Alias owner.
+        // The public metadata no-op still must pass the live mount fence.
+        let accessor = engines
+            .identity_api_alias_accessor(namespace, path, body)
+            .map_err(Response::from_engine_error)?;
+        let base = path.split_once('?').map_or(path, |(base, _)| base);
+        let group_alias_route =
+            base == "identity/group-alias" || base.starts_with("identity/group-alias/id/");
+        let accessor = match accessor {
+            Some(accessor) => Some(accessor),
+            None if group_alias_route => body
+                .get("mount_accessor")
+                .map(|value| {
+                    value
+                        .as_str()
+                        .map(str::to_owned)
+                        .ok_or_else(|| Response::error(400, "invalid mount accessor"))
+                })
+                .transpose()?,
+            None => None,
+        };
+        if let Some(accessor) = accessor
+            && !auth.has_mount_accessor(namespace, &accessor)
+        {
+            if auth.identity_alias_mount_is_foreign(namespace, &accessor) {
+                return Err(Response::error(
+                    403,
+                    "matching mount is in a different namespace than request",
+                ));
             }
+            return Err(Response::error(400, "unknown auth mount accessor"));
         }
         Ok(())
+    }
+
+    pub(super) fn project_identity_alias_mounts(
+        auth: &AuthState,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &mut Value,
+    ) {
+        let base = path.split_once('?').map_or(path, |(base, _)| base);
+        let alias_route = [
+            "identity/entity-alias",
+            "identity/alias",
+            "identity/persona",
+        ]
+        .iter()
+        .any(|root| {
+            base.strip_prefix(root)
+                .is_some_and(|rest| rest == "/id" || rest.starts_with("/id/"))
+        });
+        if !alias_route || !matches!(method, "GET" | "HEAD" | "LIST") {
+            return;
+        }
+        let project = |data: &mut Value| {
+            let descriptor = data
+                .get("mount_accessor")
+                .and_then(Value::as_str)
+                .and_then(|accessor| auth.identity_alias_mount(namespace, accessor));
+            if let Some((path, kind)) = descriptor {
+                data["mount_path"] = json!(path);
+                data["mount_type"] = json!(kind);
+            }
+        };
+        if let Some(data) = body.get_mut("data") {
+            if data.get("mount_accessor").is_some() {
+                project(data);
+            } else if let Some(info) = data.get_mut("key_info").and_then(Value::as_object_mut) {
+                for value in info.values_mut() {
+                    project(value);
+                }
+            }
+        }
     }
 }
 
@@ -2672,3 +2735,7 @@ mod kubernetes_artifact_floor_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_identity_legacy_api_tests.rs"]
+mod legacy_api_tests;

@@ -5045,7 +5045,7 @@ impl Service {
         }
         if matches!(method, "POST" | "PUT" | "PATCH")
             && let Err(error) =
-                Self::validate_identity_alias_mount(&state.auth, namespace, path, body)
+                Self::validate_identity_alias_mount(&state.auth, &state.engines, namespace, path, body)
         {
             return error;
         }
@@ -5071,17 +5071,29 @@ impl Service {
             Ok(at) => at,
             Err(error) => return error,
         };
-        match engines.handle_in_identity_namespace_with_ssh_principal_precise(
-            identity_scope,
-            method,
-            path,
-            engine_body,
-            now,
-            principal.display_name(),
-            Some(principal),
-            at,
-        ) {
+        if at.seconds() < now {
+            return Response::error(503, "KV2 accepted request clock precedes its floor");
+        }
+        let engine_result =
+            match engines.handle_identity_api(&identity_scope, method, path, engine_body, now) {
+                Ok(Some(response)) => Ok(Some(response)),
+                Ok(None) => engines.handle_in_identity_namespace_with_ssh_principal_precise(
+                    identity_scope,
+                    method,
+                    path,
+                    engine_body,
+                    now,
+                    principal.display_name(),
+                    Some(principal),
+                    at,
+                ),
+                Err(error) => Err(error),
+            };
+        match engine_result {
             Ok(Some(mut response)) => {
+                Self::project_identity_alias_mounts(
+                    &state.auth, namespace, method, path, &mut response.body,
+                );
                 if let Err(error) = Self::project_kv1_read_lease(
                     state,
                     namespace,

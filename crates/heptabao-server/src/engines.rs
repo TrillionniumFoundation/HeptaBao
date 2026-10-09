@@ -21,6 +21,8 @@ mod external_keys;
 mod identity;
 #[path = "engine_identity.rs"]
 mod identity_projection;
+#[path = "engine_identity_api.rs"]
+mod identity_api_runtime;
 pub(crate) use identity_projection::IdentityNamespace;
 use identity_projection::IdentityProjection;
 #[path = "engine_query_owner.rs"]
