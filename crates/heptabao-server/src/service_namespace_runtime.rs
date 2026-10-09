@@ -652,6 +652,79 @@ impl Drop for Runtime {
 }
 
 impl Runtime {
+
+    // This fixture has no in-progress unseal shares. Fail rather than project
+    // those private progress objects into an incomplete custody snapshot.
+    #[cfg(test)]
+    pub(super) fn erased_wrapper_fixture_runtime(
+        &self,
+        state: &State,
+    ) -> Result<Zeroizing<Vec<u8>>, Response> {
+        if !self.progress.is_empty() {
+            return Err(unavailable());
+        }
+        let capture = |lease: &Lease| -> Result<Zeroizing<Vec<u8>>, Response> {
+            let slot = lease.0.lock().map_err(|_| unavailable())?;
+            let keyed_identity = slot
+                .key
+                .as_ref()
+                .map(|key| {
+                    key.record_address_key(slot.binding.namespace())
+                        .map_err(|_| unavailable())?
+                        .digest(b"erased-wrapper-fixture-custody", b"key-present")
+                        .map_err(|_| unavailable())
+                })
+                .transpose()?;
+            serde_json::to_vec(&(
+                Arc::as_ptr(&lease.0) as usize,
+                &slot.binding,
+                slot.key_epoch,
+                slot.frontier,
+                &slot.parent,
+                keyed_identity,
+            ))
+            .map(Zeroizing::new)
+            .map_err(|_| unavailable())
+        };
+        let loaded = self
+            .loaded
+            .iter()
+            .map(|(name, lease)| capture(lease).map(|bytes| (name.as_str(), bytes)))
+            .collect::<Result<Vec<_>, _>>()?;
+        let leases = state
+            .namespace_leases
+            .0
+            .iter()
+            .map(capture)
+            .collect::<Result<Vec<_>, _>>()?;
+        let loaded = loaded
+            .iter()
+            .map(|(name, bytes)| (*name, bytes.as_slice()))
+            .collect::<Vec<_>>();
+        let leases = leases
+            .iter()
+            .map(|bytes| bytes.as_slice())
+            .collect::<Vec<_>>();
+        let retirements = self
+            .sdk_retirements
+            .iter()
+            .map(|owner| (owner.as_ptr() as usize, owner.strong_count()))
+            .collect::<Vec<_>>();
+        let cleanups = self
+            .sdk_cleanups
+            .iter()
+            .map(|owner| (owner.as_ptr() as usize, owner.strong_count()))
+            .collect::<Vec<_>>();
+        serde_json::to_vec(&(
+            loaded,
+            leases,
+            state.namespace_protected.as_ref().map(|owner| Arc::as_ptr(owner) as usize),
+            retirements,
+            cleanups,
+        ))
+        .map(Zeroizing::new)
+        .map_err(|_| unavailable())
+    }
     pub(super) fn clear(&mut self) {
         self.retire_sdk_handoffs();
         for lease in self.loaded.values() {

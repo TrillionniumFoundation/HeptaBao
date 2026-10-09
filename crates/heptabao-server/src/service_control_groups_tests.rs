@@ -19,6 +19,59 @@ struct Fixture {
     outsider: Login,
     group: String,
 }
+
+// Compare the closed durable view and the actual loaded typed owners separately.
+// Buffers stay in memory, are zeroized, and are never formatted on failure.
+fn erased_wrapper_fixture_state(f: &Fixture) -> TestResult<Vec<Zeroizing<Vec<u8>>>> {
+    let state = f.service.state.as_ref().ok_or("fixture state is unavailable")?;
+    let mut parts = vec![
+        Zeroizing::new(serde_json::to_vec(state)?),
+        Zeroizing::new(serde_json::to_vec(&(
+            state.schema,
+            state.global_lossless_json_format,
+            &state.cluster_id,
+            state.replay_epoch,
+            &state.namespaces,
+            &state.auth,
+            &state.engines,
+            &state.database,
+            &state.raft_admin,
+        ))?),
+        state.auth.erased_wrapper_fixture_runtime().map_err(|_| "auth custody snapshot")?,
+        f.service.namespace_runtime.erased_wrapper_fixture_runtime(state)
+            .map_err(|_| "namespace custody snapshot")?,
+        Zeroizing::new(serde_json::to_vec(&(
+            f.service.state_digest,
+            f.service.record_writes_since_gc,
+            state.engines.record_root(),
+        ))?),
+    ];
+    parts.push(match &f.service.record_root {
+        Some(root) => root.encode()?,
+        None => Zeroizing::new(Vec::new()),
+    });
+    if state.engines.record_root().is_some() {
+        let mut graph = Vec::new();
+        state.engines.visit_record_objects(|object| {
+            graph.push(Zeroizing::new(
+                serde_json::to_vec(&(object.reference(), object.children(), object.bytes()))
+                    .map_err(|_| crate::state_records::RecordError::Invalid)?,
+            ));
+            Ok(())
+        }).map_err(|_| "record graph custody snapshot")?;
+        parts.push(Zeroizing::new(serde_json::to_vec(
+            &graph.iter().map(|bytes| bytes.as_slice()).collect::<Vec<_>>(),
+        )?));
+        let pending = state.engines.record_objects().map_err(|_| "record staging custody snapshot")?;
+        parts.push(Zeroizing::new(serde_json::to_vec(
+            &pending.iter().map(|object| (
+                object.reference(), object.children(), object.bytes()
+            )).collect::<Vec<_>>(),
+        )?));
+    }
+    Ok(parts)
+}
+
 fn call(
     service: &mut Service,
     token: &str,
@@ -2821,19 +2874,37 @@ fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -
         .status,
         403
     );
-    assert_eq!(
-        scoped_call(
-            &mut n,
-            "cg-child",
-            &old_wrapper,
-            "POST",
-            "sys/wrapping/unwrap",
-            json!({}),
-            100
-        )
-        .status,
-        403
+    let before = erased_wrapper_fixture_state(&n)?;
+    {
+        let state = n.service.state.as_ref().ok_or("retired wrapper fixture state")?;
+        assert!(!state.auth.erased_wrapper_fixture_token_present(&old_wrapper));
+        assert!(!state.auth.is_control_group_token(&old_wrapper));
+        assert!(!state.auth.control_group_owners()
+            .any(|owner| owner.request_accessor == accessor));
+    }
+    let retired = scoped_call(
+        &mut n,
+        "cg-child",
+        &old_wrapper,
+        "POST",
+        "sys/wrapping/unwrap",
+        json!({}),
+        100,
     );
+    assert_eq!(retired.status, 400);
+    assert_eq!(
+        retired.body["errors"],
+        json!(["wrapping token is not valid or does not exist"])
+    );
+    let after = erased_wrapper_fixture_state(&n)?;
+    assert_eq!(before.len(), after.len());
+    assert!(before.iter().zip(&after).all(|(a, b)| a.as_slice() == b.as_slice()));
+    {
+        let state = n.service.state.as_ref().ok_or("retired wrapper fixture state")?;
+        assert!(!state.auth.erased_wrapper_fixture_token_present(&old_wrapper));
+        assert!(!state.auth.control_group_owners()
+            .any(|owner| owner.request_accessor == accessor));
+    }
     let fresh = scoped_call(
         &mut n,
         "cg-child",

@@ -2119,6 +2119,27 @@ fn certificate_metadata_extensions(body: &Value, field: &str) -> Result<Vec<Stri
 }
 
 impl AuthState {
+
+    // Test-only direct RAM custody observation. It never grants an actor.
+    #[cfg(test)]
+    pub(crate) fn erased_wrapper_fixture_token_present(&self, raw: &str) -> bool {
+        self.tokens.contains_key(&hash(raw))
+    }
+
+    #[cfg(test)]
+    pub(crate) fn erased_wrapper_fixture_runtime(
+        &self,
+    ) -> Result<Zeroizing<Vec<u8>>, AuthError> {
+        let remount = self.native_remount_epochs.iter().collect::<Vec<_>>();
+        let tidy = self.approle_tidy_epochs.iter().collect::<Vec<_>>();
+        serde_json::to_vec(&(
+            remount,
+            tidy,
+            std::sync::Arc::as_ptr(&self.native_remount_control) as usize,
+        ))
+        .map(Zeroizing::new)
+        .map_err(|_| bad("test custody snapshot could not be encoded"))
+    }
     #[cfg(test)]
     pub(crate) fn has_recovery_credential(&self) -> bool {
         self.recovery_credential.is_some()
