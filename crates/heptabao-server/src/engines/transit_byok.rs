@@ -35,7 +35,7 @@ impl WrappingKey {
         stored_material(&self.material)
     }
 
-    fn public_pem(&self) -> Result<String> {
+    pub(super) fn public_pem(&self) -> Result<String> {
         let public = envelope::wrapping_public_pem(&self.private()?)
             .map_err(|_| error(500, "stored wrapping key is invalid"))?;
         String::from_utf8(public).map_err(|_| error(500, "wrapping public key encoding failed"))

@@ -574,7 +574,15 @@ fn prepare_bootstrap_admission(
     Ok((admission, state))
 }
 
+pub(crate) struct StorageBinding {
+    pub(crate) directory: PathBuf,
+    pub(crate) name: String,
+    pub(crate) cluster_address: Option<String>,
+    pub(crate) api_address: Option<String>,
+}
+
 pub struct HaProcess {
+    storage_dir: PathBuf,
     record_commits_since_gc: AtomicU64,
     bootstrap_ready: AtomicBool,
     bootstrap_voters: Option<BTreeSet<u64>>,
@@ -1000,6 +1008,7 @@ impl HaProcess {
         }
 
         Ok(Self {
+            storage_dir: config.raft_dir,
             record_commits_since_gc: AtomicU64::new(0),
             bootstrap_ready: AtomicBool::new(bootstrap_ready),
             bootstrap_voters: Some(bootstrap_voters),
@@ -1302,6 +1311,21 @@ impl HaProcess {
             .as_ref()
             .map(ProcessRaftNode::id)
             .ok_or_else(|| "HA process is shut down".into())
+    }
+
+    pub(crate) fn storage_binding(&self) -> Result<StorageBinding, String> {
+        let id = self.local_id()?;
+        let name = self
+            .peers
+            .get(&id)
+            .ok_or("running HA local peer is not enrolled")?
+            .to_string();
+        Ok(StorageBinding {
+            directory: self.storage_dir.clone(),
+            name,
+            cluster_address: self.cluster_address(id).map(str::to_owned),
+            api_address: self.api_address(id).map(str::to_owned),
+        })
     }
 
     pub fn cluster_id(&self) -> &str {

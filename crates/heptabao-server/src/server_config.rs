@@ -2,8 +2,8 @@
 //!
 //! JSON retains its original strict serde decoder. HCL supports literal
 //! attributes, arrays, objects and unlabelled native blocks. A single TCP
-//! listener has explicit aliases. Storage blocks remain rejected until a real
-//! corresponding storage owner is available; no backend is silently substituted.
+//! listener has explicit aliases. Storage selectors bind existing native durable,
+//! PostgreSQL and enrolled Raft consumers; unsupported options remain explicit.
 //! Expressions, repeated listeners and unmapped official settings fail closed.
 //! Runtime TLS, audit, filesystem and HA admission are unchanged.
 
@@ -11,6 +11,11 @@ use crate::{ha::HaProcessConfig, http::Config};
 use serde::de::DeserializeOwned;
 use serde_json::{Map, Number, Value};
 use zeroize::{Zeroize, Zeroizing};
+
+#[path = "server_storage.rs"]
+mod storage;
+pub use storage::StorageConfig;
+pub use storage::{validate_storage, validate_storage_running, validate_storage_runtime};
 
 const MAX_BYTES: usize = 65_536;
 const MAX_DEPTH: usize = 32;
@@ -389,6 +394,7 @@ fn optional_listener_bool(
 
 fn normalize_server(value: &mut Value) -> Result<(), Invalid> {
     let root = value.as_object_mut().ok_or(())?;
+    storage::normalize(root)?;
     if let Some(listener) = root.remove("listener") {
         let mut listener = Tree(listener);
         let labelled = listener.0.as_object_mut().ok_or(())?;

@@ -1,7 +1,7 @@
 //! Actual Service publication, encrypted restart, snapshot and retirement fences for schema119.
 use super::tests::{Root, bootstrap};
 use super::*;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::engine::general_purpose::STANDARD as BASE64;
 use zeroize::Zeroizing;
 
 type TestResult<T = ()> = Result<T, &'static str>;

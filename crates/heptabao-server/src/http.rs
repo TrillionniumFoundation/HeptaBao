@@ -84,6 +84,9 @@ pub struct Config {
     pub disable_unauthed_rekey_endpoints: bool,
     pub listen: SocketAddr,
     pub data_dir: PathBuf,
+    /// Deployment-owned storage selector, checked before filesystem or HA effects.
+    #[serde(default)]
+    pub storage: Option<crate::configuration::StorageConfig>,
     pub audit_file: PathBuf,
     #[serde(default)]
     pub audit: crate::AuditConfig,
@@ -295,6 +298,11 @@ fn serve_inner(
         crate::fixture_native_restore::NativeRestoreFaultGate,
     >,
 ) -> Result<(), String> {
+    crate::configuration::validate_storage_runtime(&config, ha.is_some())?;
+    if let Some(ha) = ha.as_ref() {
+        let consumer = ha.lock().map_err(|_| "HA process lock is unavailable")?;
+        crate::configuration::validate_storage_running(&config, &consumer)?;
+    }
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
