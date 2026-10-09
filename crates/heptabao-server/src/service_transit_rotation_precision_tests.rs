@@ -1,7 +1,7 @@
 //! Precise native Transit durations use the existing writer, encrypted restart and snapshot fences.
 use super::tests::{Root, bootstrap};
 use super::*;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::engine::general_purpose::STANDARD as BASE64;
 use zeroize::Zeroizing;
 type TestResult = Result<(), &'static str>;
 

@@ -47,7 +47,7 @@ fn erased_wrapper_fixture_state(f: &Fixture) -> TestResult<Vec<Zeroizing<Vec<u8>
         ))?),
     ];
     parts.push(match &f.service.record_root {
-        Some(root) => root.encode()?,
+        Some(root) => root.encode().map_err(|_| "record root custody snapshot")?,
         None => Zeroizing::new(Vec::new()),
     });
     if state.engines.record_root().is_some() {
