@@ -4090,6 +4090,13 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
         "value = \"after\"",
         "value = { eval_source = \"literal-payload-not-a-consumer\" eval_type = \"map\" }",
     );
+    // This legacy dispatch uses the admin actor, so the inner write is an
+    // ordinary successful request and has data rather than approval wrap_info.
+    // Keep the old response mapping and select its actual data envelope.
+    let old_document = old_document.replace(
+        "field_selector = [\"wrap_info\"]",
+        "field_selector = [\"data\"]",
+    );
     definition["profile"]["document"] = json!(old_document);
     let mut decoded: State = serde_json::from_value(encoded)?;
     assert!(decoded.validate_format().is_ok());
@@ -4114,18 +4121,20 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
         .control_group_publish(&mut decoded)
         .map_err(|_| "legacy literal publication")?;
     legacy = restart(legacy, 100)?;
-    assert_eq!(
-        call(
-            &mut legacy.service,
-            &legacy.admin,
-            "POST",
-            "sys/workflows/execute/cg-wire",
-            json!({}),
-            100
-        )
-        .status,
-        200
+    let executed = call(
+        &mut legacy.service,
+        &legacy.admin,
+        "POST",
+        "sys/workflows/execute/cg-wire",
+        json!({}),
+        100,
     );
+    assert_eq!(executed.status, 200);
+    assert_eq!(
+        executed.body["data"]["marker"],
+        "controlled-workflow-completed"
+    );
+    assert_eq!(executed.body["data"]["wrapping"]["version"], 2);
     let literal = call(
         &mut legacy.service,
         &legacy.admin,
