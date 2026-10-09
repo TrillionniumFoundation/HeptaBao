@@ -32,6 +32,8 @@ fn owner(namespace: &str) -> DeferredRequest {
         actor_accessor: "a.synthetic-requester".into(),
         actor_entity_id: "synthetic-entity".into(),
         actor_entity: json!({"ID":"synthetic-entity","name":"synthetic","namespace_id":namespace_id,"aliases":[]}),
+        request_accessor: String::new(),
+        credential: None,
         method: "POST".into(),
         path: "secret/data/key".into(),
         capability: "update".into(),

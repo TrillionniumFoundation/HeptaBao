@@ -15,6 +15,10 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_control_group_credential.rs"]
+mod control_group_credential;
+pub(crate) use control_group_credential::{CredentialCapsule, CredentialKind};
+
 pub(crate) const MAX_BATCH_CLAIMS_BYTES: usize = 8 * 1024;
 pub(crate) const MAX_BATCH_TOKEN_BYTES: usize = 16 * 1024;
 pub(crate) const MAX_BATCH_KEYS: usize = 8;
@@ -584,6 +588,18 @@ impl BatchKeyAuthority {
         raw: &str,
         time: super::AuthorityTime,
     ) -> Result<VerifiedBatchClaims, BatchError> {
+        let claims = self.open_authenticated_payload(raw)?;
+        check_time_observed(
+            claims.precision(),
+            claims.issued_at(),
+            claims.expires_at(),
+            time,
+        )?;
+        Ok(claims)
+    }
+
+    // MAC/canonical ownership only, private to the issuer and its custody child.
+    fn open_authenticated_payload(&self, raw: &str) -> Result<VerifiedBatchClaims, BatchError> {
         self.validate()?;
         if raw.len() > MAX_BATCH_TOKEN_BYTES {
             return Err(BatchError::Capacity);
@@ -632,12 +648,6 @@ impl BatchKeyAuthority {
         if claims.issued_at < key.created_at {
             return Err(BatchError::InvalidToken);
         }
-        check_time_observed(
-            claims.token_api_precision.as_ref(),
-            claims.issued_at,
-            claims.expires_at,
-            time,
-        )?;
         Ok(VerifiedBatchClaims {
             claims,
             authority_id: authority,

@@ -3,7 +3,13 @@ use super::*;
 use crate::auth::control_groups::{
     Approval, DeferredRequest, PolicyControl, ResolvedFactor, ResourceBinding,
 };
+#[cfg(test)]
 use std::collections::BTreeSet;
+
+pub(super) struct ControlGroupResume {
+    pub(super) actor: Principal,
+    pub(super) echo: Option<Zeroizing<String>>,
+}
 
 #[derive(Clone, Copy)]
 pub(super) struct TransportRequest<'a> {
@@ -338,7 +344,7 @@ fn approval_live(
 ) -> bool {
     let Ok(mut actor) = state
         .auth
-        .control_group_approval_actor(approval, &owner.namespace, time)
+        .control_group_approval_actor(owner, approval, time)
     else {
         return false;
     };
@@ -615,12 +621,10 @@ impl Service {
                     .as_str()
                     .ok_or_else(|| Response::error(503, "control group entity name unavailable"))?
                     .to_owned();
-                admitted
+                let approval = admitted
                     .auth
-                    .control_group_authorize(
-                        accessor,
-                        namespace,
-                        now,
+                    .capture_control_group_approval(
+                        &owner,
                         Approval {
                             entity_id,
                             entity_name,
@@ -628,8 +632,16 @@ impl Service {
                             token_accessor,
                             request_accessor: accessor.to_owned(),
                             origin_peer: request.origin_peer,
+                            credential: None,
                         },
+                        actor,
+                        request.token,
+                        time,
                     )
+                    .map_err(auth_error)?;
+                admitted
+                    .auth
+                    .control_group_authorize(accessor, namespace, now, approval)
                     .map_err(auth_error)?;
                 self.control_group_publish(admitted)?;
                 let owner = admitted
@@ -735,13 +747,17 @@ impl Service {
                         "control group operation ownership has changed",
                     ));
                 }
+                let echo = admitted
+                    .auth
+                    .control_group_echo(&owner)
+                    .map_err(auth_error)?;
                 let owner = admitted
                     .auth
                     .claim_control_group(raw, namespace, now)
                     .map_err(auth_error)?;
                 self.control_group_publish(admitted)?;
                 // Only this private affine Principal can resume a claimed owner.
-                // Current outer deadline/clock survives; no bearer token is stored.
+                // Preserve the outer deadline/clock and keep sealed raw custody out of transport.
                 let resumed = RequestView {
                     method: &owner.transport_method,
                     path: &owner.transport_path,
@@ -757,7 +773,10 @@ impl Service {
                     origin_peer: owner.origin_peer,
                     client_certificates: owner.client_certificates.as_deref(),
                 };
-                return Ok(Some(self.handle_inner_control_group(resumed, Some(actor))));
+                return Ok(Some(self.handle_inner_control_group(
+                    resumed,
+                    Some(ControlGroupResume { actor, echo }),
+                )));
             }
             return Ok(None);
         }
@@ -773,14 +792,19 @@ impl Service {
         };
         authorize_action(admitted, actor, request, cap, requires_sudo, time)?;
 
-        // These self-token replies echo the original raw bearer. The durable
-        // approval owner intentionally retains only its digest; reject until a
-        // separately sealed issuer-owned echo capsule is implemented.
-        if matches!(path, "auth/token/lookup-self" | "auth/token/renew-self") {
-            return Err(Response::error(
-                400,
-                "controlled self-token raw credential replies are not supported",
-            ));
+        // Structural self-route validation precedes durable deferral.
+        if path == "auth/token/lookup-self" {
+            if !matches!(request.method, "GET" | "POST") {
+                return Err(Response::error(405, "method not allowed"));
+            }
+            crate::auth::control_groups::validate_self_echo_request(actor, path, request.body)
+                .map_err(auth_error)?;
+        } else if path == "auth/token/renew-self" {
+            if !matches!(request.method, "POST" | "PUT") {
+                return Err(Response::error(405, "method not allowed"));
+            }
+            crate::auth::control_groups::validate_self_echo_request(actor, path, request.body)
+                .map_err(auth_error)?;
         }
         let (actor_digest, actor_accessor, actor_entity_id) = admitted
             .auth
@@ -806,6 +830,8 @@ impl Service {
             actor_accessor,
             actor_entity_id,
             actor_entity,
+            request_accessor: String::new(),
+            credential: None,
             method: request.method.to_owned(),
             path: path.to_owned(),
             capability: cap.to_owned(),
@@ -827,7 +853,7 @@ impl Service {
         validate_transport(admitted, &owner)?;
         let mut response = admitted
             .auth
-            .issue_control_group(owner)
+            .issue_control_group_admitted(owner, actor, request.token, time)
             .map_err(auth_error)?;
         self.control_group_publish(admitted)?;
         Ok(Some(Response {

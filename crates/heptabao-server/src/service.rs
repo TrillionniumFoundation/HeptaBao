@@ -2977,9 +2977,13 @@ impl Service {
     fn handle_inner_control_group(
         &mut self,
         request: RequestView<'_>,
-        resume: Option<Principal>,
+        resume: Option<control_groups::ControlGroupResume>,
     ) -> Response {
         let resumed_control_group = resume.is_some();
+        let (resume, control_group_echo) = match resume {
+            Some(resume) => (Some(resume.actor), resume.echo),
+            None => (None, None),
+        };
         let original_transport = control_groups::TransportRequest {
             method: request.method,
             path: request.path,
@@ -4108,7 +4112,11 @@ impl Service {
         // no bearer is reconstructed from an accessor or stored in plaintext.
         if response.status == 200 && matches!(path, "auth/token/renew-self" | "auth/token/renew") {
             let renewed = if path == "auth/token/renew-self" {
-                Some(token)
+                Some(
+                    control_group_echo
+                        .as_ref()
+                        .map_or(token, |raw| raw.as_str()),
+                )
             } else {
                 body.get("token").and_then(Value::as_str)
             };
@@ -4124,7 +4132,11 @@ impl Service {
         // response-only value outside AuthState and inside optional wrapping.
         if response.status == 200 {
             let looked_up = match path {
-                "auth/token/lookup-self" => Some(token),
+                "auth/token/lookup-self" => Some(
+                    control_group_echo
+                        .as_ref()
+                        .map_or(token, |raw| raw.as_str()),
+                ),
                 "auth/token/lookup" => Some(
                     body.get("token")
                         .and_then(Value::as_str)

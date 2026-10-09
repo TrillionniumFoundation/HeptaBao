@@ -201,6 +201,213 @@ fn setup() -> TestResult<Fixture> {
         group,
     })
 }
+fn batch_login(f: &mut Fixture, name: &str, policy: &str, ttl: &str) -> TestResult<Login> {
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "POST",
+            &format!("auth/cg-login/users/{name}"),
+            json!({"password":"synthetic-cg-password","token_policies":[policy],
+            "token_no_default_policy":true,"token_type":"batch","token_ttl":ttl,
+            "token_max_ttl":ttl}),
+            100
+        )
+        .status,
+        204
+    );
+    let response = call(
+        &mut f.service,
+        "",
+        "POST",
+        &format!("auth/cg-login/login/{name}"),
+        json!({"password":"synthetic-cg-password"}),
+        100,
+    );
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body["auth"]["token_type"], "batch");
+    let token = Zeroizing::new(text(&response.body, "/auth/client_token")?);
+    assert!(token.starts_with("hvb."));
+    Ok(Login {
+        token,
+        entity: text(&response.body, "/auth/entity_id")?,
+    })
+}
+fn assert_raw_absent(f: &Fixture, raw: &str) -> TestResult {
+    let encoded = Zeroizing::new(serde_json::to_vec(
+        f.service.state.as_ref().ok_or("state")?,
+    )?);
+    assert!(
+        !encoded
+            .windows(raw.len())
+            .any(|window| window == raw.as_bytes()),
+        "CG persistent state must contain only issuer ciphertext, never the raw credential"
+    );
+    Ok(())
+}
+fn scoped_call(
+    f: &mut Fixture,
+    namespace: &str,
+    token: &str,
+    method: &str,
+    path: &str,
+    body: Value,
+    now: u64,
+) -> Response {
+    f.service
+        .handle_at(method, path, namespace, token, body, now)
+}
+fn scoped_credentials(f: &mut Fixture, namespace: &str) -> TestResult<(Login, Login, Login)> {
+    let admin = Zeroizing::new(f.admin.to_string());
+    assert_eq!(
+        scoped_call(
+            f,
+            namespace,
+            &admin,
+            "POST",
+            "sys/auth/cg-login",
+            json!({"type":"userpass"}),
+            100
+        )
+        .status,
+        204
+    );
+    let policy = r#"path "auth/token/lookup-self" {
+      capabilities = ["read"] control_group = { ttl = "60s" factor "review" {
+        identity { group_names = ["cg-team"] approvals = 2 }
+      } }
+    }"#;
+    for (name, body) in [
+        ("cg-requester", policy),
+        (
+            "cg-approver",
+            r#"path "sys/control-group/request" { capabilities = ["update"] }
+          path "sys/control-group/authorize" { capabilities = ["update"] }"#,
+        ),
+    ] {
+        assert_eq!(
+            scoped_call(
+                f,
+                namespace,
+                &admin,
+                "POST",
+                &format!("sys/policies/acl/{name}"),
+                json!({"policy":body}),
+                100
+            )
+            .status,
+            204
+        );
+    }
+    let mut logins = Vec::new();
+    for (name, role, kind) in [
+        ("requester", "cg-requester", "batch"),
+        ("first", "cg-approver", "service"),
+        ("second", "cg-approver", "service"),
+    ] {
+        assert_eq!(
+            scoped_call(
+                f,
+                namespace,
+                &admin,
+                "POST",
+                &format!("auth/cg-login/users/{name}"),
+                json!({"password":"synthetic-cg-password","token_policies":[role],
+                "token_no_default_policy":true,"token_type":kind,
+                "token_ttl":"60s","token_max_ttl":"60s"}),
+                100
+            )
+            .status,
+            204
+        );
+        let response = scoped_call(
+            f,
+            namespace,
+            "",
+            "POST",
+            &format!("auth/cg-login/login/{name}"),
+            json!({"password":"synthetic-cg-password"}),
+            100,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["auth"]["token_type"], kind);
+        logins.push(Login {
+            token: Zeroizing::new(text(&response.body, "/auth/client_token")?),
+            entity: text(&response.body, "/auth/entity_id")?,
+        });
+    }
+    let second = logins.pop().ok_or("second")?;
+    let first = logins.pop().ok_or("first")?;
+    let requester = logins.pop().ok_or("requester")?;
+    assert!(requester.token.starts_with("hvb."));
+    assert_eq!(
+        scoped_call(
+            f,
+            namespace,
+            &admin,
+            "POST",
+            "identity/group",
+            json!({"name":"cg-team","type":"internal","member_entity_ids":[
+            requester.entity, first.entity, second.entity]}),
+            100
+        )
+        .status,
+        200
+    );
+    Ok((requester, first, second))
+}
+fn scoped_approvals(
+    f: &mut Fixture,
+    namespace: &str,
+    accessor: &str,
+    first: &Login,
+    second: &Login,
+) {
+    for token in [&first.token, &second.token] {
+        assert_eq!(
+            scoped_call(
+                f,
+                namespace,
+                token,
+                "POST",
+                "sys/control-group/authorize",
+                json!({"accessor":accessor}),
+                100
+            )
+            .status,
+            200
+        );
+    }
+    let admin = Zeroizing::new(f.admin.to_string());
+    let reviewed = scoped_call(
+        f,
+        namespace,
+        &admin,
+        "POST",
+        "sys/control-group/request",
+        json!({"accessor":accessor}),
+        100,
+    );
+    assert_eq!(reviewed.status, 200);
+    assert_eq!(reviewed.body["data"]["approved"], true);
+}
+fn restart(mut f: Fixture, now: u64) -> TestResult<Fixture> {
+    drop(f.service);
+    f.service = f.root.service()?;
+    assert_eq!(
+        call(
+            &mut f.service,
+            "",
+            "POST",
+            "sys/unseal",
+            json!({"key":f.key.as_str()}),
+            now
+        )
+        .status,
+        200
+    );
+    Ok(f)
+}
 fn create(f: &mut Fixture) {
     let created = call(
         &mut f.service,
@@ -1686,9 +1893,9 @@ fn cg270_denied_parameter_and_capability_never_create_deferred_request_or_write_
 }
 
 // The deferred owner grants only the action already admitted by its requester.
-// Batch request/approval custody remains unsupported and must never write data.
+// Batch request/approval and self echo use sealed issuer custody, never public authority.
 #[test]
-fn cg270_last_use_request_authority_resumes_once_and_batch_requesters_fail_closed() -> TestResult {
+fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -> TestResult {
     let mut f = setup()?;
     assert_eq!(
         call(
@@ -1768,61 +1975,381 @@ fn cg270_last_use_request_authority_resumes_once_and_batch_requesters_fail_close
         400
     );
 
-    for (name, policy, requester) in [
-        ("batch-requester", "cg-requester", true),
-        ("batch-approver", "cg-approver", false),
-    ] {
-        assert_eq!(call(&mut f.service, &f.admin, "POST", &format!("auth/cg-login/users/{name}"),
-            json!({"password":"synthetic-cg-password","token_policies":[policy],"token_no_default_policy":true,"token_type":"batch"}), 100).status, 204);
-        let login = call(
-            &mut f.service,
-            "",
-            "POST",
-            &format!("auth/cg-login/login/{name}"),
-            json!({"password":"synthetic-cg-password"}),
-            100,
+    for origin in ["native", "parented"] {
+        for requester in [true, false] {
+            for cause in ["success", "policy", "entity", "expiry", "parent", "group"] {
+                if cause == "group" && requester {
+                    continue;
+                }
+                if origin == "native" && cause == "parent" {
+                    continue;
+                }
+                let mut b = setup()?;
+                create(&mut b);
+                let role = if requester {
+                    "cg-requester"
+                } else {
+                    "cg-approver"
+                };
+                let parent = Zeroizing::new(if requester {
+                    b.requester.token.to_string()
+                } else {
+                    b.first.token.to_string()
+                });
+                let expected_entity = if requester {
+                    b.requester.entity.clone()
+                } else {
+                    b.first.entity.clone()
+                };
+                let ttl = if cause == "expiry" { "10s" } else { "60s" };
+                let batch = if origin == "native" {
+                    batch_login(
+                        &mut b,
+                        if requester { "requester" } else { "first" },
+                        role,
+                        ttl,
+                    )?
+                } else {
+                    let policy = if requester {
+                        format!(
+                            "{}\npath \"auth/token/create\" {{ capabilities = [\"update\"] }}",
+                            requester_policy("60s", "")
+                        )
+                    } else {
+                        r#"path "sys/control-group/request" { capabilities = ["update"] }
+                        path "sys/control-group/authorize" { capabilities = ["update"] }
+                        path "sys/wrapping/unwrap" { capabilities = ["update"] }
+                        path "auth/token/create" { capabilities = ["update"] }"#
+                            .into()
+                    };
+                    policy_write(&mut b.service, &b.admin, role, &policy);
+                    let response = call(
+                        &mut b.service,
+                        &parent,
+                        "POST",
+                        "auth/token/create",
+                        json!({"type":"batch","policies":[role],"no_default_policy":true,"ttl":ttl}),
+                        100,
+                    );
+                    assert_eq!(response.status, 200);
+                    assert_eq!(response.body["auth"]["token_type"], "batch");
+                    let token = Zeroizing::new(text(&response.body, "/auth/client_token")?);
+                    assert!(token.starts_with("hvb."));
+                    Login {
+                        token,
+                        entity: text(&response.body, "/auth/entity_id")?,
+                    }
+                };
+                assert_eq!(batch.entity, expected_entity);
+                let raw = Zeroizing::new(batch.token.to_string());
+                if requester {
+                    b.requester = batch;
+                } else {
+                    b.first = batch;
+                }
+                let (wrapper, accessor) = pending(&mut b)?;
+                read(&mut b, 1, "before", 100);
+                assert_raw_absent(&b, &raw)?;
+                assert_eq!(
+                    call(
+                        &mut b.service,
+                        &wrapper,
+                        "POST",
+                        "sys/wrapping/unwrap",
+                        json!({}),
+                        100
+                    )
+                    .status,
+                    400
+                );
+                approve_two(&mut b, &accessor);
+                read(&mut b, 1, "before", 100);
+                assert_raw_absent(&b, &raw)?;
+                match cause {
+                    "policy" => policy_write(
+                        &mut b.service,
+                        &b.admin,
+                        role,
+                        if requester {
+                            r#"path "secret/data/cg/*" { capabilities = ["read"] }"#
+                        } else {
+                            r#"path "sys/control-group/request" { capabilities = ["update"] }"#
+                        },
+                    ),
+                    "entity" => assert_eq!(
+                        call(
+                            &mut b.service,
+                            &b.admin,
+                            "POST",
+                            &format!("identity/entity/id/{expected_entity}"),
+                            json!({"disabled":true}),
+                            100
+                        )
+                        .status,
+                        204
+                    ),
+                    "parent" => assert_eq!(
+                        call(
+                            &mut b.service,
+                            &b.admin,
+                            "POST",
+                            "auth/token/revoke",
+                            json!({"token":parent.as_str()}),
+                            100
+                        )
+                        .status,
+                        204
+                    ),
+                    "group" => {
+                        let remaining = [b.requester.entity.clone(), b.second.entity.clone()];
+                        assert_eq!(
+                            call(
+                                &mut b.service,
+                                &b.admin,
+                                "POST",
+                                &format!("identity/group/id/{}", b.group),
+                                json!({"member_entity_ids":remaining}),
+                                100
+                            )
+                            .status,
+                            204
+                        );
+                        let reviewed = review_request(&mut b, &accessor);
+                        assert_eq!(reviewed.status, 200);
+                        assert_eq!(reviewed.body["data"]["approved"], false);
+                    }
+                    "expiry" => {
+                        let reviewed = call(
+                            &mut b.service,
+                            &b.admin,
+                            "POST",
+                            "sys/control-group/request",
+                            json!({"accessor":accessor}),
+                            111,
+                        );
+                        assert_eq!(reviewed.status, 200);
+                        assert_eq!(reviewed.body["data"]["approved"], requester);
+                        assert_eq!(
+                            b.service
+                                .state
+                                .as_ref()
+                                .ok_or("state")?
+                                .auth
+                                .control_group_time(105),
+                            111
+                        );
+                    }
+                    "success" => {}
+                    _ => return Err("unknown batch CG cause".into()),
+                }
+                b = restart(b, if cause == "expiry" { 105 } else { 100 })?;
+                let executed = call(
+                    &mut b.service,
+                    &wrapper,
+                    "POST",
+                    "sys/wrapping/unwrap",
+                    json!({}),
+                    if cause == "expiry" { 105 } else { 100 },
+                );
+                if cause == "success" {
+                    assert_eq!(executed.status, 200);
+                    assert_eq!(executed.body["data"]["version"], 2);
+                    read(&mut b, 2, "after", 100);
+                    assert_eq!(
+                        call(
+                            &mut b.service,
+                            &wrapper,
+                            "POST",
+                            "sys/wrapping/unwrap",
+                            json!({}),
+                            100
+                        )
+                        .status,
+                        400
+                    );
+                    read(&mut b, 2, "after", 100);
+                } else {
+                    assert_eq!(executed.status, if requester { 403 } else { 400 });
+                    assert!(executed.body.get("wrap_info").is_none());
+                    read(
+                        &mut b,
+                        1,
+                        "before",
+                        if cause == "expiry" { 111 } else { 100 },
+                    );
+                }
+            }
+        }
+    }
+
+    // Current full-state loading/publication rejects both cipher edits and
+    // swapping sealed batch authority between two distinct real CG owners.
+    let mut b = setup()?;
+    create(&mut b);
+    b.requester = batch_login(&mut b, "requester", "cg-requester", "60s")?;
+    let (wrapper, _) = pending(&mut b)?;
+    let second = call(
+        &mut b.service,
+        &b.requester.token,
+        "POST",
+        "secret/data/cg/key",
+        json!({"data":{"value":"different"}}),
+        100,
+    );
+    assert_eq!(second.status, 200);
+    assert!(second.body["wrap_info"].is_object());
+    let original = Zeroizing::new(serde_json::to_vec(
+        b.service.state.as_ref().ok_or("state")?,
+    )?);
+    for tamper in ["ciphertext", "transplant", "actor", "transport"] {
+        let mut forged: Value = serde_json::from_slice(&original)?;
+        let owners = forged["auth"]["control_groups"]["requests"]
+            .as_object_mut()
+            .ok_or("owners")?;
+        assert_eq!(owners.len(), 2);
+        let ids = owners.keys().cloned().collect::<Vec<_>>();
+        let other = owners[&ids[1]]["credential"].clone();
+        let owner = owners.get_mut(&ids[0]).ok_or("owner")?;
+        match tamper {
+            "ciphertext" => {
+                let bytes = owner["credential"]["ciphertext"]
+                    .as_array_mut()
+                    .ok_or("ciphertext")?;
+                let byte = bytes[0].as_u64().ok_or("byte")? as u8;
+                bytes[0] = json!(byte ^ 1);
+            }
+            "transplant" => owner["credential"] = other,
+            "actor" => owner["actor_digest"] = json!("f".repeat(43)),
+            "transport" => owner["transport_body"] = json!({"data":{"value":"forged"}}),
+            _ => return Err("unknown capsule tamper".into()),
+        }
+        let mut forged: State = serde_json::from_value(forged)?;
+        assert_eq!(
+            forged
+                .validate_format()
+                .err()
+                .ok_or("capsule format")?
+                .status,
+            503
         );
-        assert_eq!(login.status, 200);
-        let token = Zeroizing::new(text(&login.body, "/auth/client_token")?);
-        let batch_entity = text(&login.body, "/auth/entity_id")?;
-        assert!(token.starts_with("hvb."));
-        assert_eq!(call(&mut f.service, &f.admin, "POST", &format!("identity/group/id/{}", f.group),
-            json!({"member_entity_ids":[batch_entity,f.requester.entity,f.first.entity,f.second.entity]}), 100).status, 204);
-        if requester {
-            let denied = call(
-                &mut f.service,
-                &token,
+        assert_eq!(
+            forged
+                .validate_publication_schema(b.service.state.as_ref())
+                .err()
+                .ok_or("capsule publication")?
+                .status,
+            503
+        );
+        assert_eq!(
+            b.service
+                .commit_state(&mut forged)
+                .err()
+                .ok_or("capsule commit")?
+                .status,
+            503
+        );
+        read(&mut b, 1, "before", 100);
+    }
+    // Admission runs through the full persistent State decoder, not a
+    // standalone capsule parser or a public response-shaped authority.
+    for malformed in ["unknown-field", "oversize"] {
+        let mut forged: Value = serde_json::from_slice(&original)?;
+        let owners = forged["auth"]["control_groups"]["requests"]
+            .as_object_mut()
+            .ok_or("owners")?;
+        let credential = &mut owners.values_mut().next().ok_or("owner")?["credential"];
+        if malformed == "unknown-field" {
+            credential["unrecognized_custody"] = json!(true);
+        } else {
+            // Batch wire bound 16384 plus the real AEAD tag 16, then one byte.
+            credential["ciphertext"] = json!(vec![0_u8; 16 * 1024 + 16 + 1]);
+        }
+        let encoded = Zeroizing::new(serde_json::to_vec(&forged)?);
+        assert!(serde_json::from_value::<State>(forged).is_err());
+        assert!(serde_json::from_slice::<State>(&encoded).is_err());
+        read(&mut b, 1, "before", 100);
+    }
+    assert_eq!(
+        call(
+            &mut b.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
+
+    for operation in ["lookup-self", "renew-self"] {
+        for cause in ["success", "revoked", "policy"] {
+            let mut e = setup()?;
+            let policy = format!(
+                r#"path "auth/token/{operation}" {{
+              capabilities = ["read","update"] control_group = {{ ttl = "60s" factor "review" {{
+                identity {{ group_names = ["cg-team"] approvals = 2 }}
+              }} }}
+            }}"#
+            );
+            policy_write(&mut e.service, &e.admin, "cg-requester", &policy);
+            let before = call(
+                &mut e.service,
+                &e.admin,
                 "POST",
-                "secret/data/cg/key",
-                json!({"data":{"value":"batch-after"}}),
+                "auth/token/lookup",
+                json!({"token":e.requester.token.as_str()}),
                 100,
             );
-            assert_eq!(denied.status, 403);
-            assert!(denied.body.get("wrap_info").is_none());
-            read(&mut f, 2, "after", 100);
-        } else {
-            let (wrapper, accessor) = pending(&mut f)?;
+            assert_eq!(before.status, 200);
+            if operation == "renew-self" {
+                for malformed in [json!({"increment":{}}), json!({"increment":"-1s"})] {
+                    let rejected = call(
+                        &mut e.service,
+                        &e.requester.token,
+                        "POST",
+                        "auth/token/renew-self",
+                        malformed,
+                        100,
+                    );
+                    assert_eq!(rejected.status, 400);
+                    assert!(rejected.body.get("wrap_info").is_none());
+                    assert_eq!(
+                        e.service
+                            .state
+                            .as_ref()
+                            .ok_or("state")?
+                            .auth
+                            .control_group_request_count_for_test(),
+                        0
+                    );
+                }
+            }
+            let body = if operation == "renew-self" {
+                json!({"increment":"120s"})
+            } else {
+                json!({})
+            };
+            let deferred = call(
+                &mut e.service,
+                &e.requester.token,
+                if operation == "lookup-self" {
+                    "GET"
+                } else {
+                    "POST"
+                },
+                &format!("auth/token/{operation}"),
+                body,
+                100,
+            );
+            assert_eq!(deferred.status, 200);
+            assert!(deferred.body["data"].is_null());
+            let wrapper = Zeroizing::new(text(&deferred.body, "/wrap_info/token")?);
+            let accessor = text(&deferred.body, "/wrap_info/accessor")?;
+            assert_raw_absent(&e, &e.requester.token)?;
             assert_eq!(
                 call(
-                    &mut f.service,
-                    &token,
-                    "POST",
-                    "sys/control-group/authorize",
-                    json!({"accessor":accessor}),
-                    100
-                )
-                .status,
-                403
-            );
-            assert_eq!(
-                review_request(&mut f, &accessor).body["data"]["authorizations"],
-                json!([])
-            );
-            read(&mut f, 2, "after", 100);
-            approve_two(&mut f, &accessor);
-            assert_eq!(
-                call(
-                    &mut f.service,
+                    &mut e.service,
                     &wrapper,
                     "POST",
                     "sys/wrapping/unwrap",
@@ -1830,40 +2357,474 @@ fn cg270_last_use_request_authority_resumes_once_and_batch_requesters_fail_close
                     100
                 )
                 .status,
-                200
+                400
             );
-            read(&mut f, 3, "after", 100);
+            let untouched = call(
+                &mut e.service,
+                &e.admin,
+                "POST",
+                "auth/token/lookup",
+                json!({"token":e.requester.token.as_str()}),
+                100,
+            );
+            assert_eq!(untouched.status, 200);
+            assert_eq!(untouched.body["data"]["ttl"], before.body["data"]["ttl"]);
+            approve_two(&mut e, &accessor);
+            if cause == "revoked" {
+                assert_eq!(
+                    call(
+                        &mut e.service,
+                        &e.admin,
+                        "POST",
+                        "auth/token/revoke",
+                        json!({"token":e.requester.token.as_str()}),
+                        100
+                    )
+                    .status,
+                    204
+                );
+            } else if cause == "policy" {
+                policy_write(
+                    &mut e.service,
+                    &e.admin,
+                    "cg-requester",
+                    r#"path "auth/token/lookup-self" { capabilities = ["deny"] }"#,
+                );
+            }
+            e = restart(e, 100)?;
+            let response = call(
+                &mut e.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100,
+            );
+            if cause == "success" {
+                assert_eq!(response.status, 200);
+                if operation == "lookup-self" {
+                    assert_eq!(response.body["data"]["id"], e.requester.token.as_str());
+                } else {
+                    assert_eq!(
+                        response.body["auth"]["client_token"],
+                        e.requester.token.as_str()
+                    );
+                    assert_eq!(response.body["auth"]["lease_duration"], 120);
+                }
+                assert_eq!(
+                    call(
+                        &mut e.service,
+                        &wrapper,
+                        "POST",
+                        "sys/wrapping/unwrap",
+                        json!({}),
+                        100
+                    )
+                    .status,
+                    400
+                );
+            } else {
+                assert_eq!(response.status, 403);
+                let encoded = Zeroizing::new(serde_json::to_vec(&response.body)?);
+                assert!(
+                    !encoded
+                        .windows(e.requester.token.len())
+                        .any(|window| window == e.requester.token.as_bytes())
+                );
+            }
         }
     }
+    let mut e = setup()?;
+    e.requester = batch_login(&mut e, "requester", "cg-requester", "60s")?;
     policy_write(
-        &mut f.service,
-        &f.admin,
+        &mut e.service,
+        &e.admin,
         "cg-requester",
         r#"
       path "auth/token/lookup-self" { capabilities = ["read"]
         control_group = { ttl = "60s" factor "review" {
           identity { group_names = ["cg-team"] approvals = 2 }
         } }
+      }
+      path "auth/token/renew-self" { capabilities = ["update"]
+        control_group = { ttl = "60s" factor "review" {
+          identity { group_names = ["cg-team"] approvals = 2 }
+        } }
       }"#,
     );
-    let unavailable = call(
-        &mut f.service,
-        &f.requester.token,
-        "GET",
-        "auth/token/lookup-self",
-        json!({}),
+    let not_renewable = call(
+        &mut e.service,
+        &e.requester.token,
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":"60s"}),
         100,
     );
-    assert_eq!(unavailable.status, 400);
-    assert!(unavailable.body.get("wrap_info").is_none());
+    assert_eq!(not_renewable.status, 400);
+    assert!(not_renewable.body.get("wrap_info").is_none());
     assert_eq!(
-        f.service
+        e.service
             .state
             .as_ref()
             .ok_or("state")?
             .auth
             .control_group_request_count_for_test(),
         0
+    );
+    let deferred = call(
+        &mut e.service,
+        &e.requester.token,
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        100,
+    );
+    assert_eq!(deferred.status, 200);
+    let wrap = Zeroizing::new(text(&deferred.body, "/wrap_info/token")?);
+    let access = text(&deferred.body, "/wrap_info/accessor")?;
+    assert_raw_absent(&e, &e.requester.token)?;
+    approve_two(&mut e, &access);
+    e = restart(e, 100)?;
+    let response = call(
+        &mut e.service,
+        &wrap,
+        "POST",
+        "sys/wrapping/unwrap",
+        json!({}),
+        100,
+    );
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body["data"]["type"], "batch");
+    assert_eq!(response.body["data"]["id"], e.requester.token.as_str());
+    assert_eq!(
+        call(
+            &mut e.service,
+            &wrap,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
+    // A short ordinary requester cannot be revived for self echo or renewal
+    // by a coarse or precise clock rollback after a real observed expiry.
+    for operation in ["lookup-self", "renew-self"] {
+        for precise in [false, true] {
+            let mut e = setup()?;
+            let previous_entity = e.requester.entity.clone();
+            e.requester = short_login(&mut e, "requester", "cg-requester")?;
+            assert_eq!(e.requester.entity, previous_entity);
+            policy_write(
+                &mut e.service,
+                &e.admin,
+                "cg-requester",
+                &format!(
+                    r#"path "auth/token/{operation}" {{
+                  capabilities = ["read","update"] control_group = {{ ttl = "60s" factor "review" {{
+                    identity {{ group_names = ["cg-team"] approvals = 2 }}
+                  }} }}
+                }}"#
+                ),
+            );
+            let before = call(
+                &mut e.service,
+                &e.admin,
+                "POST",
+                "auth/token/lookup",
+                json!({"token":e.requester.token.as_str()}),
+                100,
+            );
+            assert_eq!(before.status, 200);
+            assert_eq!(before.body["data"]["ttl"], 10);
+            let method = if operation == "lookup-self" {
+                "GET"
+            } else {
+                "POST"
+            };
+            let body = if operation == "lookup-self" {
+                json!({})
+            } else {
+                json!({"increment":"120s"})
+            };
+            let deferred = observed_call(
+                &mut e.service,
+                &e.requester.token,
+                method,
+                &format!("auth/token/{operation}"),
+                body,
+                100,
+                precise,
+            )?;
+            assert_eq!(deferred.status, 200);
+            assert!(deferred.body["data"].is_null());
+            let wrapper = Zeroizing::new(text(&deferred.body, "/wrap_info/token")?);
+            let accessor = text(&deferred.body, "/wrap_info/accessor")?;
+            assert_raw_absent(&e, &e.requester.token)?;
+            assert_eq!(
+                observed_call(
+                    &mut e.service,
+                    &wrapper,
+                    "POST",
+                    "sys/wrapping/unwrap",
+                    json!({}),
+                    100,
+                    precise
+                )?
+                .status,
+                400
+            );
+            let untouched = call(
+                &mut e.service,
+                &e.admin,
+                "POST",
+                "auth/token/lookup",
+                json!({"token":e.requester.token.as_str()}),
+                100,
+            );
+            assert_eq!(untouched.status, 200);
+            assert_eq!(untouched.body["data"]["ttl"], 10);
+            approve_two(&mut e, &accessor);
+            let reviewed = observed_call(
+                &mut e.service,
+                &e.admin,
+                "POST",
+                "sys/control-group/request",
+                json!({"accessor":accessor}),
+                111,
+                precise,
+            )?;
+            assert_eq!(reviewed.status, 200);
+            assert_eq!(reviewed.body["data"]["approved"], true);
+            assert_eq!(
+                e.service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .auth
+                    .control_group_time(105),
+                111
+            );
+            e = restart(e, 105)?;
+            let denied = observed_call(
+                &mut e.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                105,
+                precise,
+            )?;
+            assert_eq!(denied.status, 403);
+            let encoded = Zeroizing::new(serde_json::to_vec(&denied.body)?);
+            assert!(
+                !encoded
+                    .windows(e.requester.token.len())
+                    .any(|window| window == e.requester.token.as_bytes())
+            );
+            assert_eq!(
+                call(
+                    &mut e.service,
+                    &e.admin,
+                    "POST",
+                    "auth/token/lookup",
+                    json!({"token":e.requester.token.as_str()}),
+                    105
+                )
+                .status,
+                403
+            );
+            assert_raw_absent(&e, &e.requester.token)?;
+        }
+    }
+
+    // Real namespace publication owns a private batch requester capsule.
+    // A sibling scope and a recreated namespace cannot inherit its approval.
+    let mut n = setup()?;
+    let admin = Zeroizing::new(n.admin.to_string());
+    for path in ["cg-child", "cg-sibling"] {
+        assert_eq!(
+            call(
+                &mut n.service,
+                &admin,
+                "POST",
+                &format!("sys/namespaces/{path}"),
+                json!({}),
+                100
+            )
+            .status,
+            200
+        );
+    }
+    let first_namespace = call(
+        &mut n.service,
+        &admin,
+        "GET",
+        "sys/namespaces/cg-child",
+        json!({}),
+        100,
+    );
+    assert_eq!(first_namespace.status, 200);
+    let first_id = text(&first_namespace.body, "/data/id")?;
+    let (child, first, second) = scoped_credentials(&mut n, "cg-child")?;
+    let deferred = scoped_call(
+        &mut n,
+        "cg-child",
+        &child.token,
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        100,
+    );
+    assert_eq!(deferred.status, 200);
+    assert!(deferred.body["data"].is_null());
+    let old_wrapper = Zeroizing::new(text(&deferred.body, "/wrap_info/token")?);
+    let accessor = text(&deferred.body, "/wrap_info/accessor")?;
+    assert_raw_absent(&n, &child.token)?;
+    assert_eq!(
+        scoped_call(
+            &mut n,
+            "cg-child",
+            &old_wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
+    scoped_approvals(&mut n, "cg-child", &accessor, &first, &second);
+    for scope in ["", "cg-sibling"] {
+        assert_eq!(
+            scoped_call(
+                &mut n,
+                scope,
+                &child.token,
+                "GET",
+                "auth/token/lookup-self",
+                json!({}),
+                100
+            )
+            .status,
+            403
+        );
+        assert_eq!(
+            scoped_call(
+                &mut n,
+                scope,
+                &old_wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            403
+        );
+    }
+    assert_eq!(
+        call(
+            &mut n.service,
+            &admin,
+            "DELETE",
+            "sys/namespaces/cg-child",
+            json!({}),
+            100
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut n.service,
+            &admin,
+            "POST",
+            "sys/namespaces/cg-child",
+            json!({}),
+            100
+        )
+        .status,
+        200
+    );
+    let next_namespace = call(
+        &mut n.service,
+        &admin,
+        "GET",
+        "sys/namespaces/cg-child",
+        json!({}),
+        100,
+    );
+    assert_eq!(next_namespace.status, 200);
+    assert_ne!(text(&next_namespace.body, "/data/id")?, first_id);
+    let (next, first, second) = scoped_credentials(&mut n, "cg-child")?;
+    assert_ne!(next.entity, child.entity);
+    n = restart(n, 100)?;
+    assert_eq!(
+        scoped_call(
+            &mut n,
+            "cg-child",
+            &child.token,
+            "GET",
+            "auth/token/lookup-self",
+            json!({}),
+            100
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        scoped_call(
+            &mut n,
+            "cg-child",
+            &old_wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        403
+    );
+    let fresh = scoped_call(
+        &mut n,
+        "cg-child",
+        &next.token,
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        100,
+    );
+    assert_eq!(fresh.status, 200);
+    let fresh_wrapper = Zeroizing::new(text(&fresh.body, "/wrap_info/token")?);
+    let fresh_accessor = text(&fresh.body, "/wrap_info/accessor")?;
+    assert_ne!(fresh_accessor, accessor);
+    scoped_approvals(&mut n, "cg-child", &fresh_accessor, &first, &second);
+    let allowed = scoped_call(
+        &mut n,
+        "cg-child",
+        &fresh_wrapper,
+        "POST",
+        "sys/wrapping/unwrap",
+        json!({}),
+        100,
+    );
+    assert_eq!(allowed.status, 200);
+    assert_eq!(allowed.body["data"]["id"], next.token.as_str());
+    assert_eq!(allowed.body["data"]["type"], "batch");
+    assert_eq!(
+        scoped_call(
+            &mut n,
+            "cg-child",
+            &fresh_wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
     );
     Ok(())
 }

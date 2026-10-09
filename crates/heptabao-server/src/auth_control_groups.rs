@@ -13,6 +13,35 @@ fn valid_digest(value: &str) -> bool {
         .is_ok_and(|v| v.len() == 32 && URL_SAFE_NO_PAD.encode(&v) == value)
 }
 
+pub(crate) fn validate_self_echo_request(
+    actor: &Principal,
+    path: &str,
+    body: &Value,
+) -> Result<(), AuthError> {
+    match path {
+        "auth/token/lookup-self" => reject_unknown(body, &[]),
+        "auth/token/renew-self" => {
+            reject_unknown(body, &["increment"])?;
+            let token = actor.require_service("batch tokens cannot be renewed")?;
+            if token.token_api_precision.is_some()
+                && matches!(
+                    token.auth_provenance,
+                    Some(TokenAuthProvenance::TokenApi { .. })
+                )
+            {
+                token_precise_ttl::renew_increment(body)?;
+            } else {
+                duration(body, "increment", 0)?;
+            }
+            if !token.renewable {
+                return Err(bad("token is not renewable"));
+            }
+            Ok(())
+        }
+        _ => Err(bad("invalid self-token echo route")),
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Factor {
@@ -54,7 +83,7 @@ fn names(value: Option<&Value>) -> Result<BTreeSet<String>, AuthError> {
     }
     Ok(out)
 }
-pub(super) fn auth_mount_route(path: &str) -> Result<(&str, bool, String), AuthError> {
+pub(crate) fn auth_mount_route(path: &str) -> Result<(&str, bool, String), AuthError> {
     let suffix = path
         .strip_prefix("sys/auth")
         .ok_or_else(|| bad("invalid auth mount path"))?;
@@ -339,6 +368,8 @@ pub(crate) struct Approval {
     pub(crate) token_accessor: String,
     pub(crate) request_accessor: String,
     pub(crate) origin_peer: Option<std::net::IpAddr>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) credential: Option<batch::CredentialCapsule>,
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -352,6 +383,10 @@ pub(crate) struct DeferredRequest {
     pub(crate) actor_accessor: String,
     pub(crate) actor_entity_id: String,
     pub(crate) actor_entity: Value,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub(crate) request_accessor: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) credential: Option<batch::CredentialCapsule>,
     pub(crate) method: String,
     pub(crate) path: String,
     pub(crate) capability: String,
@@ -381,6 +416,87 @@ impl Drop for DeferredRequest {
                 certificate.zeroize();
             }
         }
+    }
+}
+#[derive(Serialize)]
+struct CredentialContext<'a> {
+    cluster_id: &'a str,
+    namespace: &'a str,
+    namespace_id: &'a str,
+    namespace_incarnation: u64,
+    request_accessor: &'a str,
+    resource_binding: &'a ResourceBinding,
+    actor_digest: &'a str,
+    actor_accessor: &'a str,
+    actor_entity_id: &'a str,
+    actor_entity: &'a Value,
+    method: &'a str,
+    path: &'a str,
+    capability: &'a str,
+    requires_sudo: bool,
+    body: &'a Value,
+    transport_method: &'a str,
+    transport_path: &'a str,
+    transport_namespace: &'a str,
+    transport_body: &'a Value,
+    wrap_ttl_seconds: Option<u64>,
+    origin_peer: Option<std::net::IpAddr>,
+    client_certificates: &'a Option<Vec<Vec<u8>>>,
+    created_at: u64,
+    expires_at: u64,
+    creation_time: &'a str,
+    factors: &'a [ResolvedFactor],
+}
+impl DeferredRequest {
+    fn credential_context(&self) -> Result<[u8; 32], AuthError> {
+        let context = CredentialContext {
+            cluster_id: &self.cluster_id,
+            namespace: &self.namespace,
+            namespace_id: &self.namespace_id,
+            namespace_incarnation: self.namespace_incarnation,
+            request_accessor: &self.request_accessor,
+            resource_binding: &self.resource_binding,
+            actor_digest: &self.actor_digest,
+            actor_accessor: &self.actor_accessor,
+            actor_entity_id: &self.actor_entity_id,
+            actor_entity: &self.actor_entity,
+            method: &self.method,
+            path: &self.path,
+            capability: &self.capability,
+            requires_sudo: self.requires_sudo,
+            body: &self.body,
+            transport_method: &self.transport_method,
+            transport_path: &self.transport_path,
+            transport_namespace: &self.transport_namespace,
+            transport_body: &self.transport_body,
+            wrap_ttl_seconds: self.wrap_ttl_seconds,
+            origin_peer: self.origin_peer,
+            client_certificates: &self.client_certificates,
+            created_at: self.created_at,
+            expires_at: self.expires_at,
+            creation_time: &self.creation_time,
+            factors: &self.factors,
+        };
+        let bytes = crate::secret_serde::to_vec(&context, 1024 * 1024)
+            .map_err(|_| bad("control group credential context exceeds bound"))?;
+        Ok(crate::crypto::digest(&bytes))
+    }
+    fn approval_context(&self, approval: &Approval) -> Result<[u8; 32], AuthError> {
+        let bytes = crate::secret_serde::to_vec(
+            &(
+                "control-group-approval-v1",
+                self.credential_context()?,
+                &approval.entity_id,
+                &approval.entity_name,
+                &approval.token_digest,
+                &approval.token_accessor,
+                &approval.request_accessor,
+                approval.origin_peer,
+            ),
+            64 * 1024,
+        )
+        .map_err(|_| bad("control group approval context exceeds bound"))?;
+        Ok(crate::crypto::digest(&bytes))
     }
 }
 #[derive(Clone, Default, Serialize, Deserialize)]
@@ -657,9 +773,109 @@ impl AuthState {
         &self,
         actor: &Principal,
     ) -> Result<(String, String, String), AuthError> {
-        let token = actor.service_token().ok_or_else(|| denied())?;
-        let entity = token.entity_id.as_ref().ok_or_else(denied)?;
-        Ok((actor.digest.clone(), token.accessor.clone(), entity.clone()))
+        match &actor.credential {
+            batch_principal::VerifiedCredential::Service(token) => {
+                let entity = token.entity_id.as_ref().ok_or_else(denied)?;
+                Ok((actor.digest.clone(), token.accessor.clone(), entity.clone()))
+            }
+            batch_principal::VerifiedCredential::Batch(claims) => {
+                let entity = claims.entity_id().ok_or_else(denied)?;
+                Ok((actor.digest.clone(), String::new(), entity.to_owned()))
+            }
+        }
+    }
+    fn capture_credential(
+        &mut self,
+        actor: &Principal,
+        raw: &str,
+        namespace: &str,
+        binding: [u8; 32],
+        expires_at: u64,
+        time: AuthorityTime,
+    ) -> Result<batch::CredentialCapsule, AuthError> {
+        let time = self.control_group_authority_time(actor.request_authority_time(time)?)?;
+        self.check_principal_observed(actor, namespace, time)?;
+        if hash(raw) != actor.digest {
+            return Err(denied());
+        }
+        let kind = match &actor.credential {
+            batch_principal::VerifiedCredential::Service(_) => batch::CredentialKind::ServiceEchoV1,
+            batch_principal::VerifiedCredential::Batch(claims) => {
+                let opened = self.batch_principal_observed(raw, time, actor.origin_peer)?;
+                let batch_principal::VerifiedCredential::Batch(reopened) = &opened.credential
+                else {
+                    return Err(denied());
+                };
+                if LeaseOwner::from_batch(claims) != LeaseOwner::from_batch(reopened) {
+                    return Err(denied());
+                }
+                batch::CredentialKind::BatchResumeV1
+            }
+        };
+        let mut authority = match &self.batch_authority {
+            Some(authority) => authority.clone(),
+            None => batch::BatchKeyAuthority::new(time.seconds())
+                .map_err(|_| err(503, "control group issuer unavailable"))?,
+        };
+        let capsule = authority
+            .capture_control_group_credential(raw, kind, binding, time.seconds(), expires_at)
+            .map_err(|_| err(503, "control group issuer custody unavailable"))?;
+        self.batch_authority = Some(authority);
+        Ok(capsule)
+    }
+    fn open_credential(
+        &self,
+        capsule: &batch::CredentialCapsule,
+        binding: [u8; 32],
+        digest: &str,
+        namespace: &str,
+        entity_id: &str,
+    ) -> Result<Zeroizing<String>, AuthError> {
+        let authority = self.batch_authority.as_ref().ok_or_else(denied)?;
+        let raw = authority
+            .open_control_group_credential(capsule, binding)
+            .map_err(|_| bad("control group issuer custody authentication failed"))?;
+        if hash(&raw) != digest {
+            return Err(bad("control group credential digest mismatch"));
+        }
+        if capsule.kind().is_batch() {
+            authority
+                .validate_control_group_batch_raw(&raw, namespace, entity_id)
+                .map_err(|_| bad("control group batch issuer ownership mismatch"))?;
+        }
+        Ok(raw)
+    }
+    pub(crate) fn capture_control_group_approval(
+        &mut self,
+        owner: &DeferredRequest,
+        mut approval: Approval,
+        actor: &Principal,
+        raw: &str,
+        time: AuthorityTime,
+    ) -> Result<Approval, AuthError> {
+        let (digest, accessor, entity) = self.control_group_actor_binding(actor)?;
+        if digest != approval.token_digest
+            || accessor != approval.token_accessor
+            || entity != approval.entity_id
+            || actor.namespace() != owner.namespace
+            || (!owner.request_accessor.is_empty()
+                && owner.request_accessor != approval.request_accessor)
+        {
+            return Err(denied());
+        }
+        self.check_principal_observed(actor, &owner.namespace, time)?;
+        if actor.service_token().is_none() {
+            let context = owner.approval_context(&approval)?;
+            approval.credential = Some(self.capture_credential(
+                actor,
+                raw,
+                &owner.namespace,
+                context,
+                owner.expires_at,
+                time,
+            )?);
+        }
+        Ok(approval)
     }
     pub(crate) fn control_group_actor(
         &self,
@@ -667,6 +883,25 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<Principal, AuthError> {
         let time = self.control_group_authority_time(time)?;
+        if let Some(capsule) = &owner.credential {
+            let raw = self.open_credential(
+                capsule,
+                owner.credential_context()?,
+                &owner.actor_digest,
+                &owner.namespace,
+                &owner.actor_entity_id,
+            )?;
+            if capsule.kind().is_batch() {
+                let actor = self.batch_principal_observed(&raw, time, owner.origin_peer)?;
+                if actor.namespace() != owner.namespace
+                    || actor.credential.entity_id() != Some(owner.actor_entity_id.as_str())
+                    || !owner.actor_accessor.is_empty()
+                {
+                    return Err(denied());
+                }
+                return Ok(actor);
+            }
+        }
         let token = self.active_token_observed(&owner.actor_digest, time, false)?;
         if token.accessor != owner.actor_accessor
             || token.entity_id.as_deref() != Some(owner.actor_entity_id.as_str())
@@ -687,15 +922,34 @@ impl AuthState {
     }
     pub(crate) fn control_group_approval_actor(
         &self,
+        owner: &DeferredRequest,
         approval: &Approval,
-        namespace: &str,
         time: AuthorityTime,
     ) -> Result<Principal, AuthError> {
         let time = self.control_group_authority_time(time)?;
+        if let Some(capsule) = &approval.credential {
+            if !capsule.kind().is_batch() || !approval.token_accessor.is_empty() {
+                return Err(denied());
+            }
+            let raw = self.open_credential(
+                capsule,
+                owner.approval_context(approval)?,
+                &approval.token_digest,
+                &owner.namespace,
+                &approval.entity_id,
+            )?;
+            let actor = self.batch_principal_observed(&raw, time, approval.origin_peer)?;
+            if actor.namespace() != owner.namespace
+                || actor.credential.entity_id() != Some(approval.entity_id.as_str())
+            {
+                return Err(denied());
+            }
+            return Ok(actor);
+        }
         let token = self.active_token_observed(&approval.token_digest, time, false)?;
         if token.accessor != approval.token_accessor
             || token.entity_id.as_deref() != Some(approval.entity_id.as_str())
-            || token.namespace != namespace
+            || token.namespace != owner.namespace
         {
             return Err(denied());
         }
@@ -709,6 +963,26 @@ impl AuthState {
                 finite_use_consumed: false,
             },
         ))
+    }
+    pub(crate) fn control_group_echo(
+        &self,
+        owner: &DeferredRequest,
+    ) -> Result<Option<Zeroizing<String>>, AuthError> {
+        if !matches!(
+            owner.path.as_str(),
+            "auth/token/lookup-self" | "auth/token/renew-self"
+        ) {
+            return Ok(None);
+        }
+        let capsule = owner.credential.as_ref().ok_or_else(denied)?;
+        self.open_credential(
+            capsule,
+            owner.credential_context()?,
+            &owner.actor_digest,
+            &owner.namespace,
+            &owner.actor_entity_id,
+        )
+        .map(Some)
     }
     pub(crate) fn is_control_group_token(&self, raw: &str) -> bool {
         raw.len() <= 256
@@ -816,20 +1090,63 @@ impl AuthState {
             .insert(approval.entity_id.clone(), approval);
         Ok(())
     }
+    #[cfg(test)]
     pub(crate) fn issue_control_group(
         &mut self,
         owner: DeferredRequest,
     ) -> Result<AuthResponse, AuthError> {
+        self.issue_control_group_owned(owner, None)
+    }
+    pub(crate) fn issue_control_group_admitted(
+        &mut self,
+        owner: DeferredRequest,
+        actor: &Principal,
+        raw: &str,
+        time: AuthorityTime,
+    ) -> Result<AuthResponse, AuthError> {
+        self.issue_control_group_owned(owner, Some((actor, raw, time)))
+    }
+    fn issue_control_group_owned(
+        &mut self,
+        mut owner: DeferredRequest,
+        capture: Option<(&Principal, &str, AuthorityTime)>,
+    ) -> Result<AuthResponse, AuthError> {
         if self.control_groups.requests.len() >= MAX_PENDING {
             return Err(err(503, "control group capacity exhausted"));
         }
-        owner.validate()?;
         let raw = Zeroizing::new(random_id("hvs.")?);
         let id = hash(&raw);
         if self.tokens.contains_key(&id) {
             return Err(err(503, "control group token collision"));
         }
         let accessor = random_id("a.")?;
+        if let Some((actor, bearer, time)) = capture {
+            let (digest, actor_accessor, entity) = self.control_group_actor_binding(actor)?;
+            if digest != owner.actor_digest
+                || actor_accessor != owner.actor_accessor
+                || entity != owner.actor_entity_id
+                || actor.namespace() != owner.namespace
+            {
+                return Err(denied());
+            }
+            owner.request_accessor = accessor.clone();
+            if actor.service_token().is_none()
+                || matches!(
+                    owner.path.as_str(),
+                    "auth/token/lookup-self" | "auth/token/renew-self"
+                )
+            {
+                owner.credential = Some(self.capture_credential(
+                    actor,
+                    bearer,
+                    &owner.namespace,
+                    owner.credential_context()?,
+                    owner.expires_at,
+                    time,
+                )?);
+            }
+        }
+        owner.validate()?;
         let ttl = owner.expires_at - owner.created_at;
         let token = Token {
             token_api_precision: None,
@@ -962,6 +1279,26 @@ impl AuthState {
         }
         for (id, owner) in &registry.requests {
             owner.validate()?;
+            if let Some(capsule) = &owner.credential {
+                self.open_credential(
+                    capsule,
+                    owner.credential_context()?,
+                    &owner.actor_digest,
+                    &owner.namespace,
+                    &owner.actor_entity_id,
+                )?;
+            }
+            for approval in owner.authorizations.values() {
+                if let Some(capsule) = &approval.credential {
+                    self.open_credential(
+                        capsule,
+                        owner.approval_context(approval)?,
+                        &approval.token_digest,
+                        &owner.namespace,
+                        &approval.entity_id,
+                    )?;
+                }
+            }
             if !valid_digest(id) || owner.created_at > registry.clock {
                 return Err(bad("invalid control group owner identity or clock"));
             }
@@ -978,6 +1315,7 @@ impl AuthState {
                     || t.policies != BTreeSet::from(["control-group".into()])
                     || t.namespace != owner.namespace
                     || t.created_at != owner.created_at
+                    || (!owner.request_accessor.is_empty() && owner.request_accessor != t.accessor)
                     || t.expires_at != Some(owner.expires_at)
                     || t.max_expires_at != t.expires_at
                     || owner
@@ -998,7 +1336,11 @@ impl DeferredRequest {
         validate_path(&self.path, false)?;
         if self.cluster_id.is_empty()
             || !valid_digest(&self.actor_digest)
-            || self.actor_accessor.is_empty()
+            || (self.actor_accessor.is_empty()
+                != self
+                    .credential
+                    .as_ref()
+                    .is_some_and(|c| c.kind().is_batch()))
             || self.actor_entity_id.is_empty()
             || self.namespace_id.is_empty()
             || self.expires_at <= self.created_at
@@ -1025,6 +1367,29 @@ impl DeferredRequest {
             return Err(bad("invalid deferred control group request"));
         }
 
+        if let Some(capsule) = &self.credential {
+            capsule
+                .validate()
+                .map_err(|_| bad("invalid control group credential capsule"))?;
+            if self.request_accessor.is_empty()
+                || (!capsule.kind().is_batch()
+                    && !matches!(
+                        self.path.as_str(),
+                        "auth/token/lookup-self" | "auth/token/renew-self"
+                    ))
+            {
+                return Err(bad(
+                    "control group credential request accessor or purpose is invalid",
+                ));
+            }
+        }
+        if matches!(
+            self.path.as_str(),
+            "auth/token/lookup-self" | "auth/token/renew-self"
+        ) && self.credential.is_none()
+        {
+            return Err(bad("controlled self-token echo custody is missing"));
+        }
         let entity = self
             .actor_entity
             .as_object()
@@ -1073,12 +1438,26 @@ impl DeferredRequest {
             }
         }
         for (id, approval) in &self.authorizations {
+            if let Some(capsule) = &approval.credential {
+                capsule
+                    .validate()
+                    .map_err(|_| bad("invalid control group approval capsule"))?;
+                if !capsule.kind().is_batch() {
+                    return Err(bad("control group approval capsule kind is invalid"));
+                }
+            }
             if id != &approval.entity_id
                 || id.is_empty()
                 || approval.entity_name.is_empty()
                 || !valid_digest(&approval.token_digest)
-                || approval.token_accessor.is_empty()
+                || (approval.token_accessor.is_empty()
+                    != approval
+                        .credential
+                        .as_ref()
+                        .is_some_and(|c| c.kind().is_batch()))
                 || approval.request_accessor.is_empty()
+                || (!self.request_accessor.is_empty()
+                    && approval.request_accessor != self.request_accessor)
             {
                 return Err(bad("invalid control group authorization"));
             }
