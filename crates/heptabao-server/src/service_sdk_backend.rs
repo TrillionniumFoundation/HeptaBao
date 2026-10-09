@@ -1802,12 +1802,30 @@ impl Service {
         fingerprint: &str,
     ) -> Response {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
-        let gate = match plan.authority.lock() {
-            Ok(mut authority) => {
+        let private_view = namespace_diagnostic!(
+            "logical.delivery.private_view",
+            self.sdk_logical_cleanup_private_view(plan)
+        );
+        let gate = match (plan.authority.lock(), private_view) {
+            (Ok(mut authority), Ok(private_view)) => {
                 let original_now = authority.now();
-                self.validate_sdk_authority(&mut authority)
+                let authority_gate = if let Some(view) = private_view.as_ref() {
+                    namespace_diagnostic!(
+                        "logical.delivery.private_authority",
+                        self.validate_sdk_private_cleanup_authority(&authority, view)
+                    )
+                } else {
+                    self.validate_sdk_authority(&mut authority)
+                };
+                authority_gate
                     .and_then(|()| {
-                        if plan.retirement.is_some() {
+                        if let Some(view) = private_view.as_ref() {
+                            namespace_diagnostic!(
+                                "logical.delivery.private_backend",
+                                self.sdk_binding_private_gate(plan, view.state())
+                                    .map_err(bridge_failure)
+                            )
+                        } else if plan.retirement.is_some() {
                             self.sdk_retirement_delivery_gate(plan)
                         } else {
                             self.sdk_binding_gate(plan).map_err(bridge_failure)
@@ -1848,7 +1866,8 @@ impl Service {
                     })
                     .map_err(|error| (error, original_now))
             }
-            Err(_) => {
+            (Ok(authority), Err(error)) => Err((error, authority.now())),
+            (Err(_), _) => {
                 #[cfg(test)]
                 crate::service::namespace_diagnostics::record_status("logical.delivery.capsule", 503);
                 plan.control.retire();
@@ -1873,12 +1892,27 @@ impl Service {
             Err(e) => return e,
         };
         let gate = (|| {
+            let private_view = namespace_diagnostic!(
+                "logical.request.private_view",
+                self.sdk_logical_cleanup_private_view(plan)
+            )?;
             let mut authority = plan
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
-            namespace_diagnostic!("logical.request.authority", self.validate_sdk_authority(&mut authority))?;
-            namespace_diagnostic!("logical.request.backend", self.sdk_binding_gate(plan).map_err(bridge_failure))
+            if let Some(view) = private_view.as_ref() {
+                namespace_diagnostic!(
+                    "logical.request.private_authority",
+                    self.validate_sdk_private_cleanup_authority(&authority, view)
+                )?;
+                namespace_diagnostic!(
+                    "logical.request.private_backend",
+                    self.sdk_binding_private_gate(plan, view.state()).map_err(bridge_failure)
+                )
+            } else {
+                namespace_diagnostic!("logical.request.authority", self.validate_sdk_authority(&mut authority))?;
+                namespace_diagnostic!("logical.request.backend", self.sdk_binding_gate(plan).map_err(bridge_failure))
+            }
         })();
         if let Err(e) = gate {
             #[cfg(test)]
