@@ -1672,6 +1672,8 @@ impl Service {
         state: &State,
         actual: &str,
     ) -> Result<SealPublication, Response> {
+        #[cfg(test)]
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
         let base = self.current_state_identity()?;
         let native_role = match &self.ha {
             None => None,

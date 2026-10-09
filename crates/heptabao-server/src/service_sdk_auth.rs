@@ -2753,18 +2753,18 @@ impl Service {
         let published_auth = candidate.auth.clone();
         let mut published = false;
         let result = (|| {
-            let proof = view.callback_publication(self, candidate, &transaction.auth, at)?;
-            let closed = self
-                .commit_namespace_sdk_retirement_publication(proof, |auth| plan.live_auth(auth))?;
+            let proof = namespace_diagnostic!("auth.retirement.callback.factory", view.callback_publication(self, candidate, &transaction.auth, at))?;
+            let closed = namespace_diagnostic!("auth.retirement.callback.commit", self
+                .commit_namespace_sdk_retirement_publication(proof, |auth| plan.live_auth(auth)))?;
             published = true;
             self.state = Some(closed);
             transaction.identity = self.current_state_identity()?;
             // These original post-Publish receipts consume only the complete
             // logical Auth whose exact ciphertext was just physically committed.
-            credential::after_publication(plan, &published_auth)?;
-            plan.retirement_native_after_callback(&published_auth, at)?;
+            namespace_diagnostic!("auth.retirement.callback.after_publish", credential::after_publication(plan, &published_auth))?;
+            namespace_diagnostic!("auth.retirement.callback.native_after", plan.retirement_native_after_callback(&published_auth, at))?;
             transaction.auth = published_auth;
-            self.sdk_auth_gate(plan)
+            namespace_diagnostic!("auth.retirement.callback.final_gate", self.sdk_auth_gate(plan))
         })();
         if let Err(error) = result {
             erase_json(&mut response.body);
@@ -3045,7 +3045,7 @@ impl Service {
         let published = candidate.clone();
         let mut committed = false;
         let result = (|| {
-            let proof = view.callback_publication(self, candidate, &incoming, at)?;
+            let proof = namespace_diagnostic!("auth.cleanup.callback.factory", view.callback_publication(self, candidate, &incoming, at))?;
             let closed = {
                 let cleanup = plan
                     .cleanup
@@ -3055,16 +3055,16 @@ impl Service {
                     .as_ref()
                     .and_then(credential::Cleanup::namespace_work)
                     .ok_or_else(|| Response::error(503, "SDK original task absent"))?;
-                self.commit_namespace_sdk_cleanup_publication(proof, |state| {
+                namespace_diagnostic!("auth.cleanup.callback.commit", self.commit_namespace_sdk_cleanup_publication(proof, |state| {
                     work.check_auth(&state.auth)
-                })?
+                }))?
             };
             committed = true;
             self.state = Some(closed);
             transaction.identity = self.current_state_identity()?;
-            credential::after_publication(plan, &published.auth)?;
+            namespace_diagnostic!("auth.cleanup.callback.after_publish", credential::after_publication(plan, &published.auth))?;
             transaction.auth = published.auth;
-            self.sdk_auth_gate(plan)
+            namespace_diagnostic!("auth.cleanup.callback.final_gate", self.sdk_auth_gate(plan))
         })();
         if let Err(error) = result {
             erase_json(&mut response.body);

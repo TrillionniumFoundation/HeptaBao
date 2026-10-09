@@ -967,8 +967,6 @@ impl Transit {
                         &key.kind,
                         &stored_material(&value.material)?,
                     )?)
-                } else if kind == "hmac-key" {
-                    value.hmac_material.clone()
                 } else {
                     value.material.clone()
                 };

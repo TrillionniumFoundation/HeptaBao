@@ -5327,11 +5327,13 @@ impl Service {
     }
 
     fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
-        self.prepare_namespace_publication(state)?;
-        state.validate_format()?;
+        #[cfg(test)]
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
+        namespace_diagnostic!("commit.namespace_prepare", self.prepare_namespace_publication(state))?;
+        namespace_diagnostic!("commit.format", state.validate_format())?;
         if state.engines.record_root().is_some() {
-            let plan = self.prepare_record_plan(state)?;
-            return self.commit_record_plan(state, plan);
+            let plan = namespace_diagnostic!("commit.record_plan", self.prepare_record_plan(state))?;
+            return namespace_diagnostic!("commit.record_publish", self.commit_record_plan(state, plan));
         }
         if self.record_root.is_some() {
             return Err(Response::error(

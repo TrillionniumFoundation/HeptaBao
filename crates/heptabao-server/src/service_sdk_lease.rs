@@ -675,13 +675,13 @@ impl Service {
                     .engines
                     .sdk_lease_clock_floor()
                     .ok_or_else(|| Response::error(503, "SDK private original floor absent"))?;
-                let proof = view.callback_publication(self, state.clone(), &incoming, at)?;
-                let closed = self.commit_namespace_sdk_cleanup_publication(proof, |logical| {
+                let proof = namespace_diagnostic!("logical.callback.factory", view.callback_publication(self, state.clone(), &incoming, at))?;
+                let closed = namespace_diagnostic!("logical.callback.commit", self.commit_namespace_sdk_cleanup_publication(proof, |logical| {
                     authority.validate_live_auth(&logical.auth)
-                })?;
+                }))?;
                 self.state = Some(closed);
                 let post = (|| {
-                    authority.after_lease_commit(&state)?;
+                    namespace_diagnostic!("logical.callback.after_publish", authority.after_lease_commit(&state))?;
                     transaction.identity = self.current_state_identity()?;
                     let permit = plan
                         .private_cleanup
@@ -706,6 +706,8 @@ impl Service {
                     private_view = Some(view);
                     Ok::<(), Response>(())
                 })();
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record("logical.callback.post", &post);
                 if let Err(error) = post {
                     self.recovery_required = true;
                     self.ha_activation = None;

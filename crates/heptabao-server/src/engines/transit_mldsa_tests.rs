@@ -1062,7 +1062,8 @@ fn mldsa270_standard_export_preserves_public_export_permission_and_private_denia
                 &json!({"format":format}),
                 101
             ),
-            Err(EngineError { status: 403, .. })
+            Err(EngineError { status: 400, message })
+                if message == "private key material is not exportable"
         ));
     }
     assert_eq!(serde_json::to_vec(&transit)?, before);

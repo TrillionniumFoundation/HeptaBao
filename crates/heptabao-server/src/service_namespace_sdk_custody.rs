@@ -567,9 +567,9 @@ impl RetirementView {
         candidate: State,
         at: crate::auth::Timestamp,
     ) -> Result<RetirementPublication, Response> {
-        self.check_current(service)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
         self.check_storage()?;
-        self.original.check_observation(&self.private.auth, at)?;
+        namespace_diagnostic!("retirement.callback.clock", self.original.check_observation(&self.private.auth, at))?;
         let mut expected = self.private.auth.clone();
         expected.observe_sdk_auth_clock(at);
         self.close_publication(service, candidate, &expected)
@@ -581,11 +581,11 @@ impl RetirementView {
         incoming: &AuthState,
         at: crate::auth::Timestamp,
     ) -> Result<RetirementPublication, Response> {
-        self.check_current(service)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
         self.check_storage()?;
-        self.original.check_observation(&self.private.auth, at)?;
+        namespace_diagnostic!("retirement.callback.clock", self.original.check_observation(&self.private.auth, at))?;
         let mut expected = self.private.auth.clone();
-        self.merge_storage(&mut expected, incoming)?;
+        namespace_diagnostic!("retirement.callback.storage_merge", self.merge_storage(&mut expected, incoming))?;
         let mut record = expected
             .sdk_credential_record(&self.original.binding.namespace, &self.original.resource)
             .ok_or_else(failed)?;
@@ -607,7 +607,7 @@ impl RetirementView {
         service: &Service,
         selected: &crate::auth::sdk_retirement::RecoverySelection,
     ) -> Result<RetirementPublication, Response> {
-        self.check_current(service)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
         selected
             .check(&self.private.auth)
             .map_err(|e| Response::error(e.status, &e.message))?;
@@ -633,7 +633,7 @@ impl RetirementView {
         caller: &mut plugin::PluginResponseAuthority,
         body: &Value,
     ) -> Result<RetirementPublication, Response> {
-        self.check_current(service)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
         let job = self
             .private
             .auth
@@ -683,8 +683,10 @@ impl RetirementView {
         mut logical: State,
         expected: &AuthState,
     ) -> Result<RetirementPublication, Response> {
-        self.check_current(service)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
         if wire(&logical.auth)? != wire(expected)? {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("retirement.callback.auth_equal", 503);
             return Err(failed());
         }
         // The only permissible application delta is the factory's exact Auth
@@ -695,13 +697,15 @@ impl RetirementView {
         unchanged.namespace_leases = Leases::default();
         unchanged.namespace_protected = None;
         if wire(&unchanged)? != wire(&self.private)? {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("retirement.callback.other_owner_equal", 503);
             return Err(failed());
         }
         logical.schema = logical.writer_schema();
         logical.namespace_leases = Leases::default();
         logical.namespace_protected = None;
-        logical.validate_publication_schema(Some(&self.private))?;
-        logical.validate_format()?;
+        namespace_diagnostic!("custody.logical.publication", logical.validate_publication_schema(Some(&self.private)))?;
+        namespace_diagnostic!("custody.logical.format", logical.validate_format())?;
         let mut closed = logical.clone();
         let keys = self.maintenance.lock().map_err(|_| failed())?;
         let mut paths = keys.keys.keys().cloned().collect::<Vec<_>>();
@@ -751,14 +755,14 @@ impl RetirementView {
             .ok_or_else(failed)?
             .namespace_leases
             .clone();
-        service.namespace_runtime.prepare(&mut closed)?;
+        namespace_diagnostic!("custody.closed.prepare", service.namespace_runtime.prepare(&mut closed))?;
         let proof = RetirementPublication {
             view: self,
             logical,
             closed,
             owners,
         };
-        proof.validate(service)?;
+        namespace_diagnostic!("custody.proof.validate", proof.validate(service))?;
         Ok(proof)
     }
 }
@@ -796,12 +800,12 @@ impl RetirementPublication {
     }
     pub(in crate::service) fn validate(&self, service: &Service) -> Result<(), Response> {
         self.view.check_current(service)?;
-        self.check_original()?;
+        namespace_diagnostic!("custody.original", self.check_original())?;
         self.logical
             .validate_publication_schema(Some(&self.view.private))?;
-        self.logical.validate_format()?;
+        namespace_diagnostic!("custody.proof.logical_format", self.logical.validate_format())?;
         let physical = self.closed.protected_state()?;
-        physical.validate_format()?;
+        namespace_diagnostic!("custody.proof.physical_format", physical.validate_format())?;
         physical.namespaces.validate_custody_successor(
             &service
                 .state
@@ -836,15 +840,17 @@ impl RetirementPublication {
             restored.namespaces.set_sealed(&actual, false)?;
         }
         drop(keys);
-        restored.validate_format()?;
+        namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
         if wire(&restored)? != wire(&self.logical)? {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("custody.proof.restored_equal", 503);
             return Err(failed());
         }
         self.view.check_current(service)?;
         self.check_original()
     }
     pub(in crate::service) fn installed(self, service: &Service) -> Result<State, Response> {
-        self.check_original()?;
+        namespace_diagnostic!("custody.original", self.check_original())?;
         let mut keys = self.view.maintenance.lock().map_err(|_| failed())?;
         for (actual, next) in &self.owners {
             keys.keys.get_mut(actual).ok_or_else(failed)?.0 = next.clone();
@@ -977,7 +983,7 @@ impl CleanupPermit {
             .is_some())
     }
     pub(in crate::service) fn open(&self, service: &Service) -> Result<CleanupView, Response> {
-        self.original.captured.check_service(service)?;
+        namespace_diagnostic!("cleanup.private.service", self.original.captured.check_service(service))?;
         let maintenance = self
             .original
             .handoff
@@ -1012,7 +1018,7 @@ impl CleanupPermit {
         drop(keys);
         private.validate_format()?;
         self.original.captured.check_graph(&private)?;
-        self.original.captured.check_service(service)?;
+        namespace_diagnostic!("cleanup.private.service", self.original.captured.check_service(service))?;
         Ok(CleanupView {
             private,
             base: service.current_state_identity()?,
@@ -1058,8 +1064,8 @@ impl CleanupView {
         self.original.captured.matches_authority(work)
     }
     pub(in crate::service) fn check_current(&self, service: &Service) -> Result<(), Response> {
-        self.original.captured.check_service(service)?;
-        self.original.captured.check_graph(&self.private)?;
+        namespace_diagnostic!("cleanup.private.service", self.original.captured.check_service(service))?;
+        namespace_diagnostic!("cleanup.private.graph", self.original.captured.check_graph(&self.private))?;
         if service.current_state_identity()? != self.base {
             return Err(failed());
         }
@@ -1079,8 +1085,8 @@ impl CleanupView {
         service: &Service,
         at: crate::auth::Timestamp,
     ) -> Result<CleanupPublication, Response> {
-        self.check_current(service)?;
-        self.original.captured.check_storage(&self.private)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
+        namespace_diagnostic!("cleanup.private.storage", self.original.captured.check_storage(&self.private))?;
         let logical = self.original.captured.clock_candidate(&self.private, at)?;
         self.close_publication(service, logical)
     }
@@ -1091,17 +1097,19 @@ impl CleanupView {
         incoming: &State,
         at: crate::auth::Timestamp,
     ) -> Result<CleanupPublication, Response> {
-        self.check_current(service)?;
-        self.original.captured.check_storage(&self.private)?;
-        let expected = self
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
+        namespace_diagnostic!("cleanup.private.storage", self.original.captured.check_storage(&self.private))?;
+        let expected = namespace_diagnostic!("cleanup.callback.factory", self
             .original
             .captured
-            .callback_candidate(&self.private, incoming, at)?;
+            .callback_candidate(&self.private, incoming, at))?;
         let mut actual = candidate;
         actual.schema = expected.writer_schema();
         let mut expected = expected;
         expected.schema = actual.schema;
         if wire(&actual)? != wire(&expected)? {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("cleanup.callback.full_candidate_equal", 503);
             return Err(failed());
         }
         self.close_publication(service, actual)
@@ -1120,12 +1128,12 @@ impl CleanupView {
         service: &Service,
         mut logical: State,
     ) -> Result<CleanupPublication, Response> {
-        self.check_current(service)?;
+        namespace_diagnostic!("custody.view.current", self.check_current(service))?;
         logical.schema = logical.writer_schema();
         logical.namespace_leases = Leases::default();
         logical.namespace_protected = None;
-        logical.validate_publication_schema(Some(&self.private))?;
-        logical.validate_format()?;
+        namespace_diagnostic!("custody.logical.publication", logical.validate_publication_schema(Some(&self.private)))?;
+        namespace_diagnostic!("custody.logical.format", logical.validate_format())?;
         let mut closed = logical.clone();
         let keys = self.maintenance.lock().map_err(|_| failed())?;
         let mut paths = keys.keys.keys().cloned().collect::<Vec<_>>();
@@ -1175,14 +1183,14 @@ impl CleanupView {
             .ok_or_else(failed)?
             .namespace_leases
             .clone();
-        service.namespace_runtime.prepare(&mut closed)?;
+        namespace_diagnostic!("custody.closed.prepare", service.namespace_runtime.prepare(&mut closed))?;
         let proof = CleanupPublication {
             view: self,
             logical,
             closed,
             owners,
         };
-        proof.validate(service)?;
+        namespace_diagnostic!("custody.proof.validate", proof.validate(service))?;
         Ok(proof)
     }
 }
@@ -1221,12 +1229,12 @@ impl CleanupPublication {
     }
     pub(in crate::service) fn validate(&self, service: &Service) -> Result<(), Response> {
         self.view.check_current(service)?;
-        self.check_original()?;
+        namespace_diagnostic!("custody.original", self.check_original())?;
         self.logical
             .validate_publication_schema(Some(&self.view.private))?;
-        self.logical.validate_format()?;
+        namespace_diagnostic!("custody.proof.logical_format", self.logical.validate_format())?;
         let physical = self.closed.protected_state()?;
-        physical.validate_format()?;
+        namespace_diagnostic!("custody.proof.physical_format", physical.validate_format())?;
         physical.namespaces.validate_custody_successor(
             &service
                 .state
@@ -1261,21 +1269,23 @@ impl CleanupPublication {
             restored.namespaces.set_sealed(&actual, false)?;
         }
         drop(keys);
-        restored.validate_format()?;
+        namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
         if wire(&restored)? != wire(&self.logical)? {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("custody.proof.restored_equal", 503);
             return Err(failed());
         }
         self.view.check_current(service)?;
         self.check_original()
     }
     pub(in crate::service) fn installed(self, _service: &Service) -> Result<State, Response> {
-        self.check_original()?;
+        namespace_diagnostic!("custody.original", self.check_original())?;
         let mut keys = self.view.maintenance.lock().map_err(|_| failed())?;
         for (actual, next) in &self.owners {
             keys.keys.get_mut(actual).ok_or_else(failed)?.0 = next.clone();
         }
         drop(keys);
-        self.view.original.captured.installed(&self.logical)?;
+        namespace_diagnostic!("cleanup.installed.receipt", self.view.original.captured.installed(&self.logical))?;
         Ok(self.closed)
     }
 }

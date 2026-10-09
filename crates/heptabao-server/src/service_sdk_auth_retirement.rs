@@ -364,6 +364,8 @@ impl Service {
         context: Context,
         deadline: Instant,
     ) -> Response {
+        #[cfg(test)]
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
         let result = (|| {
             let records = state
                 .auth
@@ -395,6 +397,8 @@ impl Service {
                 )
                 .map_err(auth_error)?;
             if response.is_none_or(|response| response.status != 204) {
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record_status("retirement.stage.native_preflight", 503);
                 return Err(Response::error(
                     503,
                     "SDK retirement native preflight unavailable",
@@ -463,7 +467,7 @@ impl Service {
                         fingerprint,
                     )
                     .map_err(auth_error)?;
-                self.sdk_auth_commit_control(&mut state, &mut caller, &expected, context.clock)?;
+                namespace_diagnostic!("retirement.stage.initial_publish", self.sdk_auth_commit_control(&mut state, &mut caller, &expected, context.clock))?;
                 self.state = Some(state.clone());
                 if let Some(first) = remaining.front() {
                     // start_worker_typed may call external Setup. Attempted is durable first.
@@ -472,12 +476,12 @@ impl Service {
                         .auth
                         .attempt_sdk_auth_retirement_resource(&job, &first.id, at)
                         .map_err(auth_error)?;
-                    self.sdk_auth_commit_control(
+                    namespace_diagnostic!("retirement.stage.attempt_publish", self.sdk_auth_commit_control(
                         &mut state,
                         &mut caller,
                         &expected,
                         context.clock,
-                    )?;
+                    ))?;
                     self.state = Some(state.clone());
                     let path = first
                         .path
@@ -509,6 +513,8 @@ impl Service {
                         },
                     );
                     if self.pending_sdk_auth_request.is_none() {
+                        #[cfg(test)]
+                        crate::service::namespace_diagnostics::record_status("retirement.stage.external_absent", response.status);
                         return Err(response);
                     }
                     Ok(empty_response())
@@ -560,7 +566,7 @@ impl Service {
             }
             publish
         })();
-        result.unwrap_or_else(|error| error)
+        namespace_diagnostic!("retirement.stage.result", result).unwrap_or_else(|error| error)
     }
     fn prepare_sdk_auth_retirement_attempt(
         &mut self,

@@ -9,6 +9,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const NS: &str = "retire";
 fn native(service: &mut Service, method: &str, path: &str, token: &str) -> Response {
+    let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
     let execution = service.begin_request_before(
         ServiceRequest {
             method,
@@ -226,8 +227,15 @@ fn begin(f: &mut Fixture) -> TestResult {
     assert_eq!(response.body["data"]["status"], "in-progress");
     let state = f.service.state.as_ref().ok_or("pending")?;
     assert!(state.namespace_is_tainted(NS));
-    assert_eq!(state.schema, NAMESPACE_SDK_CLEANUP_STATE_SCHEMA);
-    state.validate_format().map_err(|_| "actual109 format")?;
+    let auth = serde_json::from_slice::<Value>(&owner_store::serialize_owner(&state.auth)?)?;
+    if state.auth.has_sdk_namespace_custody() {
+        assert_eq!(state.schema, SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA);
+        assert!(auth.get("sdk_namespace_custody").is_some_and(Value::is_object));
+    } else {
+        assert_eq!(state.schema, NAMESPACE_SDK_CLEANUP_STATE_SCHEMA);
+        assert!(auth.get("sdk_namespace_custody").is_none());
+    }
+    state.validate_format().map_err(|_| "actual namespace custody format")?;
     Ok(())
 }
 fn keys(state: &State) -> TestResult<Vec<String>> {
@@ -631,6 +639,9 @@ fn namespace109_true_terminal_namespace_retirement_preserves_empty_registry_and_
         .ok_or("credential")?;
     credential.revoke();
     state.auth.store_sdk_credential(credential)?;
+    let original_history = owner_store::serialize_owner(
+        &state.auth.sdk_credential_record(NS, &f.credential.id).ok_or("original full history")?,
+    )?;
     publish(&mut f.service, state)?;
     begin(&mut f)?;
     let pending = f.service.state.as_ref().ok_or("state")?;
@@ -677,7 +688,15 @@ fn namespace109_true_terminal_namespace_retirement_preserves_empty_registry_and_
             .records()
             .is_empty()
     );
-    assert_eq!(state.schema, NAMESPACE_SDK_CLEANUP_STATE_SCHEMA);
+    assert_eq!(state.schema, SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA);
+    assert!(state.auth.has_sdk_namespace_custody());
+    let auth = serde_json::from_slice::<Value>(&owner_store::serialize_owner(&state.auth)?)?;
+    assert!(auth.get("sdk_namespace_custody").is_some_and(Value::is_object));
+    assert!(auth["sdk_namespace_custody"]["namespaces"].as_object().is_some_and(|registry| registry.is_empty()));
+    let retained_history = owner_store::serialize_owner(
+        &state.auth.sdk_credential_record(NS, &f.credential.id).ok_or("retained full history")?,
+    )?;
+    assert!(original_history.as_slice() == retained_history.as_slice());
     let mut lower = state.clone();
     lower.schema = 108;
     assert!(lower.validate_format().is_err());
@@ -1365,6 +1384,7 @@ fn owned_body(
     token: &str,
     body: Value,
 ) -> Response {
+    let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
     let execution = service.begin_request_before(
         ServiceRequest {
             method,
@@ -3654,6 +3674,7 @@ fn model_late_ack114_mode(
     let shared = Arc::new(Mutex::new(service));
     let worker_service = Arc::clone(&shared);
     let worker = ModelThread114(Some(std::thread::spawn(move || {
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
         plan.execute(&worker_service)
     })));
     let mut rejected_bytes = None;
@@ -4396,6 +4417,7 @@ fn model_retirement_late_ack114(independent: bool) -> TestResult {
     let shared = Arc::new(Mutex::new(service));
     let original_service = Arc::clone(&shared);
     let worker = ModelThread114(Some(std::thread::spawn(move || {
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
         let outcome = pending.execute_with_service_before(&original_service, deadline);
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
         let mut writer = sdk_backend::writer_before(&original_service, deadline)?;
