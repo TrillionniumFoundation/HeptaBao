@@ -101,6 +101,74 @@ pub(super) fn export(kind: &str, material: &[u8], public_key: bool) -> Result<Ze
         .map_err(|_| error(500, "private key encoding failed"))
 }
 
+// Ring keeps Ed25519 OneAsymmetricKey in the existing encrypted version.
+// Bind its provider projection to the original public key before exporting it.
+fn export_private(kind: &str, material: &[u8]) -> Result<PKey<Private>> {
+    let pair = private(material)?;
+    if kind == "ed25519" {
+        let original = signature::Ed25519KeyPair::from_pkcs8(material)
+            .map_err(|_| error(500, "stored Ed25519 signing key is invalid"))?;
+        if pair.id() != openssl::pkey::Id::ED25519
+            || pair.raw_public_key().map_err(provider_failure)?.as_slice()
+                != original.public_key().as_ref()
+        {
+            return Err(error(500, "Ed25519 export key binding failed"));
+        }
+    }
+    Ok(pair)
+}
+
+pub(super) fn export_standard(
+    kind: &str,
+    material: &[u8],
+    public_key: bool,
+    format: &str,
+) -> Result<Zeroizing<String>> {
+    let pair = export_private(kind, material)?;
+    let bytes = if public_key {
+        match format {
+            "der" => pair.public_key_to_der(),
+            "pem" => pair.public_key_to_pem(),
+            _ => return Err(bad("unsupported standard asymmetric export format")),
+        }
+    } else {
+        match format {
+            "der" => pair.private_key_to_pkcs8(),
+            "pem" => pair.private_key_to_pem_pkcs8(),
+            _ => return Err(bad("unsupported standard asymmetric export format")),
+        }
+    }
+    .map(Zeroizing::new)
+    .map_err(provider_failure)?;
+    if format == "der" {
+        Ok(Zeroizing::new(BASE64.encode(bytes.as_slice())))
+    } else {
+        std::str::from_utf8(bytes.as_slice())
+            .map(|pem| Zeroizing::new(pem.to_owned()))
+            .map_err(|_| error(500, "asymmetric PEM encoding failed"))
+    }
+}
+
+pub(super) fn export_ed25519_raw(material: &[u8], public_key: bool) -> Result<Zeroizing<String>> {
+    let pair = export_private("ed25519", material)?;
+    let public = pair.raw_public_key().map_err(provider_failure)?;
+    if public.len() != 32 {
+        return Err(error(500, "Ed25519 public key export length is invalid"));
+    }
+    let raw = if public_key {
+        Zeroizing::new(public)
+    } else {
+        let mut seed = Zeroizing::new(pair.raw_private_key().map_err(provider_failure)?);
+        if seed.len() != 32 {
+            return Err(error(500, "Ed25519 private key export length is invalid"));
+        }
+        seed.extend_from_slice(&public);
+        seed
+    };
+    let encoded = Zeroizing::new(BASE64.encode(raw.as_slice()));
+    Ok(encoded)
+}
+
 fn algorithm<'a>(path: &'a str, body: &'a Value) -> Result<&'a str> {
     if !path.is_empty() {
         return Ok(path);

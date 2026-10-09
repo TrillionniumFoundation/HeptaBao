@@ -269,3 +269,208 @@ fn asymmetric270_prehash_and_padding_failures_match_observed_statuses() -> TestR
     }
     Ok(())
 }
+
+#[test]
+fn asymmetric270_explicit_standard_formats_use_real_private_key_info_and_spki() -> TestResult {
+    use openssl::{hash::MessageDigest, sign::Verifier};
+    for kind in KINDS.into_iter().chain(["ed25519"]) {
+        let mut transit = Transit::default();
+        let created = request(
+            &mut transit,
+            "keys/standard",
+            &json!({"type":kind,"exportable":true}),
+        )?;
+        assert_eq!(created.status, 200);
+        let input = b"synthetic standard exported key verification";
+        let signed = request(
+            &mut transit,
+            "sign/standard",
+            &json!({"input":BASE64.encode(input),"signature_algorithm":"pkcs1v15"}),
+        )?;
+        let signature = signed.body["data"]["signature"]
+            .as_str()
+            .ok_or("signature")?
+            .strip_prefix("vault:v1:")
+            .ok_or("version")?;
+        let signature = BASE64.decode(signature)?;
+        let before = serde_json::to_vec(&transit)?;
+        for format in ["der", "pem"] {
+            let public = transit.handle(
+                "",
+                "transit",
+                "GET",
+                "export/public-key/standard/latest",
+                &json!({"format":format}),
+                100,
+            )?;
+            let private = transit.handle(
+                "",
+                "transit",
+                "GET",
+                "export/signing-key/standard/1",
+                &json!({"format":format}),
+                100,
+            )?;
+            assert!(!public.mutated && !private.mutated);
+            let public = public.body["data"]["keys"]["1"].as_str().ok_or("public")?;
+            let private = private.body["data"]["keys"]["1"]
+                .as_str()
+                .ok_or("private")?;
+            let (public, private) = if format == "der" {
+                let public_der = BASE64.decode(public)?;
+                let private_der = Zeroizing::new(BASE64.decode(private)?);
+                let public = PKey::public_key_from_der(&public_der)?;
+                let private = PKey::private_key_from_pkcs8(&private_der)?;
+                assert_eq!(public.public_key_to_der()?, public_der);
+                assert_eq!(
+                    private.private_key_to_pkcs8()?.as_slice(),
+                    private_der.as_slice()
+                );
+                (public, private)
+            } else {
+                assert!(public.starts_with("-----BEGIN PUBLIC KEY-----\n"));
+                assert!(public.ends_with("-----END PUBLIC KEY-----\n"));
+                assert!(private.starts_with("-----BEGIN PRIVATE KEY-----\n"));
+                assert!(private.ends_with("-----END PRIVATE KEY-----\n"));
+                (
+                    PKey::public_key_from_pem(public.as_bytes())?,
+                    PKey::private_key_from_pem(private.as_bytes())?,
+                )
+            };
+            assert_eq!(public.public_key_to_der()?, private.public_key_to_der()?);
+            for (message, valid) in [
+                (input.as_slice(), true),
+                (b"changed input".as_slice(), false),
+            ] {
+                let mut verifier = if kind == "ed25519" {
+                    Verifier::new_without_digest(&public)?
+                } else {
+                    Verifier::new(MessageDigest::sha256(), &public)?
+                };
+                if asymmetric::is_rsa(kind) {
+                    verifier.set_rsa_padding(openssl::rsa::Padding::PKCS1)?;
+                }
+                assert_eq!(verifier.verify_oneshot(&signature, message)?, valid);
+            }
+        }
+        assert_eq!(serde_json::to_vec(&transit)?, before);
+    }
+    Ok(())
+}
+
+#[test]
+fn asymmetric270_standard_export_and_ed25519_raw_enforce_permission_and_versions() -> TestResult {
+    for kind in ["ed25519", "ecdsa-p256", "rsa-2048"] {
+        let mut transit = Transit::default();
+        request(&mut transit, "keys/permissions", &json!({"type":kind}))?;
+        let before = serde_json::to_vec(&transit)?;
+        for format in ["der", "pem"] {
+            let public = transit.handle(
+                "",
+                "transit",
+                "GET",
+                "export/public-key/permissions",
+                &json!({"format":format}),
+                100,
+            )?;
+            assert!(!public.mutated);
+            assert!(public.body["data"]["keys"]["1"].as_str().is_some());
+            assert!(matches!(
+                transit.handle(
+                    "",
+                    "transit",
+                    "GET",
+                    "export/signing-key/permissions",
+                    &json!({"format":format}),
+                    100,
+                ),
+                Err(EngineError { status: 403, .. })
+            ));
+        }
+        assert_eq!(serde_json::to_vec(&transit)?, before);
+        request(
+            &mut transit,
+            "keys/permissions/config",
+            &json!({"exportable":true}),
+        )?;
+        request(&mut transit, "keys/permissions/rotate", &json!({}))?;
+        request(
+            &mut transit,
+            "keys/permissions/config",
+            &json!({"min_decryption_version":2}),
+        )?;
+        let before = serde_json::to_vec(&transit)?;
+        for format in ["der", "pem"] {
+            assert!(
+                transit
+                    .handle(
+                        "",
+                        "transit",
+                        "GET",
+                        "export/signing-key/permissions/1",
+                        &json!({"format":format}),
+                        100,
+                    )
+                    .is_err()
+            );
+            let latest = transit.handle(
+                "",
+                "transit",
+                "GET",
+                "export/signing-key/permissions/latest",
+                &json!({"format":format}),
+                100,
+            )?;
+            assert!(latest.body["data"]["keys"]["1"].is_null());
+            assert!(latest.body["data"]["keys"]["2"].as_str().is_some());
+        }
+        if kind == "ed25519" {
+            let mut raw = Vec::new();
+            for target in ["signing-key", "public-key"] {
+                let legacy = transit.handle(
+                    "",
+                    "transit",
+                    "GET",
+                    &format!("export/{target}/permissions/latest"),
+                    &json!({}),
+                    100,
+                )?;
+                let explicit = transit.handle(
+                    "",
+                    "transit",
+                    "GET",
+                    &format!("export/{target}/permissions/latest"),
+                    &json!({"format":"raw"}),
+                    100,
+                )?;
+                assert_eq!(legacy.body, explicit.body);
+                raw.push(BASE64.decode(legacy.body["data"]["keys"]["2"].as_str().ok_or("raw")?)?);
+            }
+            assert_eq!(raw[0].len(), 64);
+            assert_eq!(raw[1].len(), 32);
+            assert_eq!(&raw[0][32..], raw[1].as_slice());
+            let pair = signature::Ed25519KeyPair::from_seed_and_public_key(&raw[0][..32], &raw[1])
+                .map_err(|_| "exported raw Ed25519 private/public")?;
+            let input = b"synthetic exported raw Ed25519";
+            signature::UnparsedPublicKey::new(&signature::ED25519, &raw[1])
+                .verify(input, pair.sign(input).as_ref())
+                .map_err(|_| "real exported Ed25519 verification")?;
+        } else {
+            for target in ["signing-key", "public-key"] {
+                assert!(matches!(
+                    transit.handle(
+                        "",
+                        "transit",
+                        "GET",
+                        &format!("export/{target}/permissions/latest"),
+                        &json!({"format":"raw"}),
+                        100,
+                    ),
+                    Err(EngineError { status: 400, .. })
+                ));
+            }
+        }
+        assert_eq!(serde_json::to_vec(&transit)?, before);
+    }
+    Ok(())
+}

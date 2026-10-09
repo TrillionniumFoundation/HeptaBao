@@ -846,9 +846,12 @@ impl Transit {
         }
         let mldsa_key = mldsa::is_kind(&key.kind);
         let asymmetric_key = asymmetric::is_kind(&key.kind);
-        let public_export = (mldsa_key || asymmetric_key) && kind == "public-key";
-        let standard_mldsa = mldsa_key && kind != "hmac-key" && matches!(format, "der" | "pem");
-        if matches!(format, "der" | "pem") && !standard_mldsa {
+        let ed25519_key = key.kind == "ed25519";
+        let public_export = (mldsa_key || asymmetric_key || ed25519_key) && kind == "public-key";
+        let standard_asymmetric = (mldsa_key || asymmetric_key || ed25519_key)
+            && kind != "hmac-key"
+            && matches!(format, "der" | "pem");
+        if matches!(format, "der" | "pem") && !standard_asymmetric {
             return Err(error(
                 501,
                 "standard export is unsupported for this key type",
@@ -865,7 +868,7 @@ impl Transit {
         }
         if kind != "hmac-key"
             && !(asymmetric_key && matches!(kind, "public-key" | "signing-key" | "encryption-key"))
-            && !(mldsa_key && matches!(kind, "public-key" | "signing-key"))
+            && !((mldsa_key || ed25519_key) && matches!(kind, "public-key" | "signing-key"))
             && !(kind == "encryption-key"
                 && matches!(
                     key.kind.as_str(),
@@ -897,12 +900,18 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                let encoded = if standard_mldsa {
-                    mldsa::export_standard(
-                        &key.kind,
+                let encoded = if standard_asymmetric {
+                    let material = stored_material(&value.material)?;
+                    if mldsa_key {
+                        mldsa::export_standard(&key.kind, &material, public_export, format)?
+                    } else {
+                        asymmetric::export_standard(&key.kind, &material, public_export, format)?
+                    }
+                    .to_string()
+                } else if ed25519_key && kind != "hmac-key" {
+                    asymmetric::export_ed25519_raw(
                         &stored_material(&value.material)?,
                         public_export,
-                        format,
                     )?
                     .to_string()
                 } else if asymmetric_key && kind != "hmac-key" {
