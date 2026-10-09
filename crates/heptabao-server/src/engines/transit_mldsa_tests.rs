@@ -914,7 +914,7 @@ fn non_rsa_salt_length_validates_api_syntax_and_ignores_rsa_pss_semantics() -> T
 fn standard_export_roundtrip<P>(kind: &str, public_length: usize) -> TestResult
 where
     P: ml_dsa::MlDsaParams
-        + ml_dsa::pkcs8::AssociatedAlgorithmIdentifier<Params = ml_dsa::pkcs8::der::AnyRef<'static>>,
+        + ml_dsa::pkcs8::spki::AssociatedAlgorithmIdentifier<Params = ml_dsa::pkcs8::der::AnyRef<'static>>,
 {
     use ml_dsa::Keypair as _;
     use ml_dsa::pkcs8::{DecodePrivateKey, DecodePublicKey};

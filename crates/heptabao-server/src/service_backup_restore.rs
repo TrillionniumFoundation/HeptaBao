@@ -335,7 +335,7 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
-        if (current.schema >= SSH_CA_STATE_SCHEMA || current.engines.has_ssh_ca_state())
+        if (current.schema == SSH_CA_STATE_SCHEMA || current.engines.has_ssh_ca_state())
             && (incoming.schema < SSH_CA_STATE_SCHEMA || !incoming.engines.has_ssh_ca_state())
         {
             return Err(Response::error(
@@ -769,6 +769,14 @@ impl Service {
             return Err(Response::error(
                 400,
                 "snapshot would downgrade PKI issuer-path leases",
+            ));
+        }
+        if current.schema >= MLDSA_IMPORT_STATE_SCHEMA
+            && incoming.schema < MLDSA_IMPORT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade ML-DSA imported key state",
             ));
         }
         if current.schema >= TRANSIT_BYOK_STATE_SCHEMA

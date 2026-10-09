@@ -5,6 +5,7 @@ use aws_lc_rs::key_wrap::{AES_256, AesKek, KeyWrapPadded};
 use base64::engine::general_purpose::STANDARD as BASE64;
 use openssl::{encrypt::Encrypter, hash::MessageDigest, pkey::PKey, rsa::Padding};
 use zeroize::Zeroizing;
+use ml_dsa::Keypair as _;
 
 type TestResult<T = ()> = Result<T, &'static str>;
 
@@ -558,6 +559,522 @@ fn byok_mixed_pem69_authenticated_restore_prepare_and_commit_reject_active_retir
     assert!(
         plans.next().is_none(),
         "each genuine affine plan is consumed once"
+    );
+    Ok(())
+}
+
+fn mldsa_fixture() -> TestResult<(Zeroizing<Vec<u8>>, String, String)> {
+    use ml_dsa::pkcs8::{EncodePrivateKey, EncodePublicKey};
+    let seed = Zeroizing::new(
+        ml_dsa::Seed::try_from([0x50; 32].as_slice()).map_err(|_| "fixture_seed_failed")?,
+    );
+    let private = ml_dsa::SigningKey::<ml_dsa::MlDsa44>::from_seed(&seed);
+    let der = private
+        .to_pkcs8_der()
+        .map_err(|_| "fixture_private_encoding_failed")?;
+    let public = private
+        .verifying_key()
+        .to_public_key_der()
+        .map_err(|_| "fixture_public_encoding_failed")?;
+    let encoded = BASE64.encode(public.as_bytes());
+    let mut pem = String::from("-----BEGIN PUBLIC KEY-----\n");
+    for line in encoded.as_bytes().chunks(64) {
+        pem.push_str(std::str::from_utf8(line).map_err(|_| "fixture_pem_failed")?);
+        pem.push('\n');
+    }
+    pem.push_str("-----END PUBLIC KEY-----\n");
+    let signature = private
+        .expanded_key()
+        .sign_randomized(b"public fixture", b"", &mut getrandom::SysRng)
+        .map_err(|_| "fixture_signing_failed")?;
+    Ok((
+        Zeroizing::new(der.as_bytes().to_vec()),
+        pem,
+        format!("vault:v1:{}", BASE64.encode(signature.encode())),
+    ))
+}
+
+#[test]
+fn mldsa270_public_import_encrypted_restart_completion_and_retirement_keep116() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service().map_err(|_| "service_failed")?;
+    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let unseal = Zeroizing::new(unseal);
+    let admin = Zeroizing::new(admin);
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/mounts/imported",
+            &admin,
+            json!({"type":"transit"})
+        )
+        .status
+            == 204
+    );
+    let old = Zeroizing::new(
+        service
+            .durable
+            .as_ref()
+            .ok_or("durable_missing")?
+            .export_backup()
+            .map_err(|_| "backup_failed")?,
+    );
+    let (private, public, signature) = mldsa_fixture()?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "imported/keys/key/import",
+            &admin,
+            json!({"type":"mldsa-44","public_key":public})
+        )
+        .status
+            == 204
+    );
+    let state = service.state.as_ref().ok_or("state_missing")?;
+    assert!(
+        state.schema == MLDSA_IMPORT_STATE_SCHEMA
+            && state.writer_schema() == MLDSA_IMPORT_STATE_SCHEMA
+            && state.engines.has_mldsa_import_state()
+            && !state.engines.has_ssh_ca_state()
+    );
+    assert!(state.validate_format().is_ok());
+    for schema in [
+        CURRENT_STATE_SCHEMA,
+        TRANSIT_BYOK_STATE_SCHEMA,
+        SSH_CA_STATE_SCHEMA,
+    ] {
+        let mut lower = state.clone();
+        lower.schema = schema;
+        assert!(lower.validate_format().is_err());
+        assert!(lower.validate_publication_schema(Some(state)).is_err());
+    }
+    assert!(
+        service
+            .prepare_snapshot_restore(&old)
+            .err()
+            .is_some_and(|e| e.status == 400)
+    );
+    drop(service);
+    let mut service = root.service().map_err(|_| "reopen_failed")?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal.as_str()})
+        )
+        .status
+            == 200
+    );
+    let verified = call(
+        &mut service,
+        "",
+        "POST",
+        "imported/verify/key",
+        &admin,
+        json!({"input":BASE64.encode(b"public fixture"),"signature":signature}),
+    );
+    assert!(verified.status == 200 && verified.body["data"]["valid"] == true);
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "imported/sign/key",
+            &admin,
+            json!({"input":BASE64.encode(b"public fixture")})
+        )
+        .status
+            >= 400
+    );
+    let public_wrap = call(
+        &mut service,
+        "",
+        "GET",
+        "imported/wrapping_key",
+        &admin,
+        json!({}),
+    );
+    let wrapping = public_wrap.body["data"]["public_key"]
+        .as_str()
+        .ok_or("wrapping_missing")?;
+    let ciphertext = wrap(wrapping, &private)?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "imported/keys/key/import_version",
+            &admin,
+            json!({"ciphertext":ciphertext})
+        )
+        .status
+            == 204
+    );
+    let descriptor = call(
+        &mut service,
+        "",
+        "GET",
+        "imported/keys/key",
+        &admin,
+        json!({}),
+    );
+    assert!(descriptor.status == 200 && descriptor.body["data"]["latest_version"] == 1);
+    let signed = call(
+        &mut service,
+        "",
+        "POST",
+        "imported/sign/key",
+        &admin,
+        json!({"input":BASE64.encode(b"public fixture")}),
+    );
+    assert!(signed.status == 200);
+    let encoded = signed.body["data"]["signature"]
+        .as_str()
+        .and_then(|value| value.strip_prefix("vault:v1:"))
+        .ok_or("signature_missing")?;
+    let bytes = BASE64
+        .decode(encoded)
+        .map_err(|_| "signature_decoding_failed")?;
+    let signature = ml_dsa::Signature::<ml_dsa::MlDsa44>::try_from(bytes.as_slice())
+        .map_err(|_| "signature_parse_failed")?;
+    let seed = ml_dsa::Seed::try_from([0x50; 32].as_slice()).map_err(|_| "seed_failed")?;
+    assert!(
+        ml_dsa::SigningKey::<ml_dsa::MlDsa44>::from_seed(&seed)
+            .verifying_key()
+            .verify_with_context(b"public fixture", b"", &signature)
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            "DELETE",
+            "sys/mounts/imported",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204
+    );
+    let retired = service.state.as_ref().ok_or("retired_missing")?.clone();
+    assert!(
+        !retired.engines.has_mldsa_import_state() && retired.schema == MLDSA_IMPORT_STATE_SCHEMA
+    );
+    assert!(retired.validate_format().is_ok());
+    let mut lower = retired.clone();
+    lower.schema = CURRENT_STATE_SCHEMA;
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "identity_failed")?;
+    assert!(service.commit_state(&mut lower).is_err());
+    assert!(
+        service
+            .prepare_snapshot_restore(&old)
+            .err()
+            .is_some_and(|e| e.status == 400)
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "identity_failed")?
+            == identity
+    );
+    drop(service);
+    let mut service = root.service().map_err(|_| "retired_reopen_failed")?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal.as_str()})
+        )
+        .status
+            == 200
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retired_state_missing")?
+            .schema
+            == MLDSA_IMPORT_STATE_SCHEMA
+    );
+    Ok(())
+}
+
+#[test]
+fn mldsa270_mixed116_retired_ssh_marker_cannot_be_erased_by_publication_or_restore() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service().map_err(|_| "service_failed")?;
+    let (_, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let admin = Zeroizing::new(admin);
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/mounts/imported",
+            &admin,
+            json!({"type":"transit"})
+        )
+        .status
+            == 204
+    );
+    let (_, public, _) = mldsa_fixture()?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "imported/keys/key/import",
+            &admin,
+            json!({"type":"mldsa-44","public_key":public})
+        )
+        .status
+            == 204
+    );
+    let pure116 = Zeroizing::new(
+        service
+            .durable
+            .as_ref()
+            .ok_or("durable_missing")?
+            .export_backup()
+            .map_err(|_| "backup_failed")?,
+    );
+    let mut plan = service
+        .prepare_snapshot_restore(&pure116)
+        .map_err(|_| "pure116_prepare_failed")?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/mounts/ssh",
+            &admin,
+            json!({"type":"ssh"})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "ssh/config/ca",
+            &admin,
+            json!({"key_type":"ed25519"})
+        )
+        .status
+            == 200
+    );
+    assert!(service.state.as_ref().ok_or("mixed_missing")?.schema == MLDSA_IMPORT_STATE_SCHEMA);
+    assert!(
+        call(
+            &mut service,
+            "",
+            "DELETE",
+            "sys/mounts/ssh",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204
+    );
+    let retired = service.state.as_ref().ok_or("retired_missing")?.clone();
+    assert!(
+        retired.engines.has_ssh_ca_state()
+            && retired.engines.has_mldsa_import_state()
+            && retired.schema == MLDSA_IMPORT_STATE_SCHEMA
+            && retired.validate_format().is_ok()
+    );
+    let mut stripped = retired.clone();
+    let mut value =
+        serde_json::to_value(&stripped.engines).map_err(|_| "engine_encoding_failed")?;
+    value
+        .as_object_mut()
+        .ok_or("engine_object_missing")?
+        .remove("ssh_ca_format");
+    stripped.engines = serde_json::from_value(value).map_err(|_| "engine_decoding_failed")?;
+    assert!(!stripped.engines.has_ssh_ca_state());
+    assert!(
+        stripped
+            .validate_publication_schema(Some(&retired))
+            .is_err()
+    );
+    assert!(Service::validate_snapshot_protected_floor(&retired, &stripped).is_err());
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "identity_failed")?;
+    assert!(service.commit_state(&mut stripped).is_err());
+    assert!(
+        service
+            .prepare_snapshot_restore(&pure116)
+            .err()
+            .is_some_and(|e| e.status == 400)
+    );
+    let principal = service
+        .state
+        .as_mut()
+        .ok_or("state_missing")?
+        .auth
+        .authenticate_from(&admin, 100, None)
+        .map_err(|_| "actor_failed")?;
+    let body = json!({});
+    let request = RequestView {
+        method: "POST",
+        path: "sys/storage/raft/snapshot-force",
+        namespace: "",
+        token: &admin,
+        body: &body,
+        now: 100,
+        admission_started: std::time::Instant::now(),
+        token_clock: None,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    plan.fixture_rebind_base_for_protected_floor(identity);
+    assert!(
+        service
+            .commit_snapshot_restore(plan, &principal, &request)
+            .status
+            == 400
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "identity_failed")?
+            == identity
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("final_state_missing")?
+            .engines
+            .has_ssh_ca_state()
+    );
+    Ok(())
+}
+
+#[test]
+fn mldsa270_existing115_ssh_history_survives_upgrade_to116_and_mount_retirement() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service().map_err(|_| "service_failed")?;
+    let (_, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let admin = Zeroizing::new(admin);
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/mounts/ssh",
+            &admin,
+            json!({"type":"ssh"})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "ssh/config/ca",
+            &admin,
+            json!({"key_type":"ed25519"})
+        )
+        .status
+            == 200
+    );
+    let original115 = service.state.as_ref().ok_or("original115_missing")?.clone();
+    assert!(original115.schema == SSH_CA_STATE_SCHEMA && original115.engines.has_ssh_ca_state());
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "sys/mounts/imported",
+            &admin,
+            json!({"type":"transit"})
+        )
+        .status
+            == 204
+    );
+    let (_, public, _) = mldsa_fixture()?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            "POST",
+            "imported/keys/key/import",
+            &admin,
+            json!({"type":"mldsa-44","public_key":public})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            "DELETE",
+            "sys/mounts/ssh",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204
+    );
+    let retired116 = service.state.as_ref().ok_or("retired116_missing")?.clone();
+    assert!(
+        retired116.schema == MLDSA_IMPORT_STATE_SCHEMA
+            && retired116.engines.has_ssh_ca_state()
+            && retired116.engines.has_mldsa_import_state()
+    );
+    assert!(
+        retired116
+            .validate_publication_schema(Some(&original115))
+            .is_ok()
+    );
+    let mut stripped = retired116.clone();
+    let mut value =
+        serde_json::to_value(&stripped.engines).map_err(|_| "engine_encoding_failed")?;
+    value
+        .as_object_mut()
+        .ok_or("engine_object_missing")?
+        .remove("ssh_ca_format");
+    stripped.engines = serde_json::from_value(value).map_err(|_| "engine_decoding_failed")?;
+    assert!(
+        stripped
+            .validate_publication_schema(Some(&original115))
+            .is_err()
+    );
+    assert!(
+        stripped
+            .validate_publication_schema(Some(&retired116))
+            .is_err()
+    );
+    assert!(Service::validate_snapshot_protected_floor(&retired116, &stripped).is_err());
+    assert!(service.commit_state(&mut stripped).is_err());
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("final_missing")?
+            .engines
+            .has_ssh_ca_state()
     );
     Ok(())
 }

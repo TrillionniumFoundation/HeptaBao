@@ -27,6 +27,7 @@ pub(super) fn new_version(body: &Value, now: u64) -> Result<KeyVersion> {
     Ok(KeyVersion {
         material: String::new(),
         hmac_material: String::new(),
+        public_key_only: None,
         created_at: now,
         encryptions: 0,
         external_key_ref: Some(reference.into()),

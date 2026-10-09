@@ -2,7 +2,8 @@
 //! Persist only the 32-byte seed in the existing encrypted Transit version.
 use super::*;
 use ml_dsa::pkcs8::{
-    AssociatedAlgorithmIdentifier, EncodePrivateKey, EncodePublicKey, der::AnyRef,
+    DecodePrivateKey, DecodePublicKey, EncodePrivateKey, EncodePublicKey, der::AnyRef,
+    spki::AssociatedAlgorithmIdentifier,
 };
 use ml_dsa::{Keypair as _, MlDsa44, MlDsa65, MlDsa87, MlDsaParams, Seed, SigningKey};
 
@@ -119,11 +120,19 @@ impl Transit {
                 return Err(bad("invalid ML-DSA version state"));
             }
             for (number, version) in &key.versions {
-                if *number == 0
-                    || *number > key.latest_version
-                    || stored_material(&version.material)?.len() != 32
+                if *number == 0 || *number > key.latest_version || version.encryptions != 0 {
+                    return Err(bad("invalid ML-DSA key state"));
+                }
+                if let Some(public) = version.public_key_only.as_ref() {
+                    if key.byok.is_none()
+                        || !version.material.is_empty()
+                        || !version.hmac_material.is_empty()
+                    {
+                        return Err(bad("invalid ML-DSA public-only state"));
+                    }
+                    validate_public(&key.kind, &stored_material(public)?)?;
+                } else if stored_material(&version.material)?.len() != 32
                     || stored_material(&version.hmac_material)?.len() != 32
-                    || version.encryptions != 0
                 {
                     return Err(bad("invalid ML-DSA key state"));
                 }
@@ -181,4 +190,119 @@ pub(super) fn export_standard(
     format: &str,
 ) -> Result<Zeroizing<String>> {
     dispatch!(kind, export_standard_for, material, public_key, format)
+}
+
+fn imported_public_for<P>(der: &[u8]) -> Result<ml_dsa::VerifyingKey<P>>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    if der.len() > 2614 {
+        return Err(bad("ML-DSA public key is too large"));
+    }
+    let public = ml_dsa::VerifyingKey::<P>::from_public_key_der(der)
+        .map_err(|_| bad("invalid ML-DSA public key"))?;
+    if public
+        .to_public_key_der()
+        .map_err(|_| bad("invalid ML-DSA public key"))?
+        .as_bytes()
+        != der
+    {
+        return Err(bad("ML-DSA public key must use canonical SPKI"));
+    }
+    Ok(public)
+}
+
+fn import_private_for<P>(der: &[u8]) -> Result<Zeroizing<Vec<u8>>>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    if der.len() != 54 {
+        return Err(bad("invalid ML-DSA PrivateKeyInfo"));
+    }
+    let private =
+        SigningKey::<P>::from_pkcs8_der(der).map_err(|_| bad("invalid ML-DSA PrivateKeyInfo"))?;
+    if private
+        .to_pkcs8_der()
+        .map_err(|_| bad("invalid ML-DSA PrivateKeyInfo"))?
+        .as_bytes()
+        != der
+    {
+        return Err(bad("ML-DSA private key must use canonical PrivateKeyInfo"));
+    }
+    Ok(Zeroizing::new(private.as_seed().as_slice().to_vec()))
+}
+
+pub(super) fn import_private(kind: &str, der: &[u8]) -> Result<Zeroizing<Vec<u8>>> {
+    dispatch!(kind, import_private_for, der)
+}
+
+fn canonical_public_for<P>(der: &[u8]) -> Result<Vec<u8>>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    imported_public_for::<P>(der).map(|_| der.to_vec())
+}
+
+pub(super) fn validate_public(kind: &str, der: &[u8]) -> Result<()> {
+    dispatch!(kind, canonical_public_for, der).map(|_| ())
+}
+
+pub(super) fn import_public_pem(kind: &str, pem: &str) -> Result<Vec<u8>> {
+    if pem.len() > 4096 {
+        return Err(bad("ML-DSA public PEM is too large"));
+    }
+    let contents = pem
+        .trim()
+        .strip_prefix("-----BEGIN PUBLIC KEY-----")
+        .and_then(|value| value.strip_suffix("-----END PUBLIC KEY-----"))
+        .ok_or_else(|| bad("ML-DSA public import requires PUBLIC KEY PEM"))?;
+    let encoded: String = contents.lines().map(str::trim).collect();
+    let der = BASE64
+        .decode(encoded)
+        .map_err(|_| bad("invalid ML-DSA public PEM"))?;
+    dispatch!(kind, canonical_public_for, &der)
+}
+
+fn public_only_for<P>(der: &[u8]) -> Result<Vec<u8>>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    Ok(imported_public_for::<P>(der)?.encode().to_vec())
+}
+pub(super) fn public_only(kind: &str, der: &[u8]) -> Result<Vec<u8>> {
+    dispatch!(kind, public_only_for, der)
+}
+
+fn verify_public_for<P>(der: &[u8], input: &[u8], bytes: &[u8]) -> Result<bool>
+where
+    P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
+{
+    let public = imported_public_for::<P>(der)?;
+    let Ok(signature) = ml_dsa::Signature::<P>::try_from(bytes) else {
+        return Ok(false);
+    };
+    Ok(public.verify_with_context(input, b"", &signature))
+}
+pub(super) fn verify_public(kind: &str, der: &[u8], input: &[u8], bytes: &[u8]) -> Result<bool> {
+    dispatch!(kind, verify_public_for, der, input, bytes)
+}
+
+pub(super) fn export_public(kind: &str, der: &[u8], format: &str) -> Result<Zeroizing<String>> {
+    validate_public(kind, der)?;
+    let encoded = Zeroizing::new(BASE64.encode(der));
+    if format == "der" {
+        return Ok(encoded);
+    }
+    if format != "pem" {
+        return Err(bad("unsupported standard ML-DSA export format"));
+    }
+    let mut pem = Zeroizing::new(String::from("-----BEGIN PUBLIC KEY-----\n"));
+    for line in encoded.as_bytes().chunks(64) {
+        pem.push_str(
+            std::str::from_utf8(line).map_err(|_| error(500, "ML-DSA PEM encoding failed"))?,
+        );
+        pem.push('\n');
+    }
+    pem.push_str("-----END PUBLIC KEY-----\n");
+    Ok(pem)
 }

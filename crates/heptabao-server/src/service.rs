@@ -134,10 +134,12 @@ const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
 const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
 const SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 114;
 const SSH_CA_STATE_SCHEMA: u32 = 115;
+// Public-only ML-DSA versions have no seed/HMAC and require an aware reader.
+const MLDSA_IMPORT_STATE_SCHEMA: u32 = 116;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = SSH_CA_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = MLDSA_IMPORT_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -178,6 +180,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
                 | SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
                 | SSH_CA_STATE_SCHEMA
+                | MLDSA_IMPORT_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;

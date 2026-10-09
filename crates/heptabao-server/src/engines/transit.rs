@@ -62,6 +62,10 @@ struct Key {
 struct KeyVersion {
     material: String,
     hmac_material: String,
+    // A canonical public-only projection remains inside this encrypted version.
+    // It is never interpreted as seed or HMAC material.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    public_key_only: Option<String>,
     created_at: u64,
     encryptions: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -129,6 +133,7 @@ impl KeyVersion {
         Ok(Self {
             material: BASE64.encode(material),
             hmac_material: BASE64.encode(random_bytes(32)?),
+            public_key_only: None,
             created_at: now,
             encryptions: 0,
             external_key_ref: None,
@@ -222,9 +227,13 @@ impl Key {
                     "public_key":asymmetric::public(&stored_material(&version.material)?)?,
                     "name":"", "certificate_chain":Value::Null})
             } else if mldsa::is_kind(&self.kind) {
-                let material = stored_material(&version.material)?;
+                let public = if let Some(public) = version.public_key_only.as_ref() {
+                    mldsa::public_only(&self.kind, &stored_material(public)?)?
+                } else {
+                    mldsa::public(&self.kind, &stored_material(&version.material)?)?
+                };
                 json!({"creation_time":timestamp(version.created_at),
-                    "public_key":BASE64.encode(mldsa::public(&self.kind, &material)?),
+                    "public_key":BASE64.encode(public),
                     "name":"", "certificate_chain":Value::Null})
             } else {
                 json!(version.created_at)
@@ -900,7 +909,19 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                let encoded = if standard_asymmetric {
+                let encoded = if let Some(public) = value.public_key_only.as_ref() {
+                    if !public_export {
+                        return Err(bad(
+                            "public-only key version has no private or HMAC material",
+                        ));
+                    }
+                    let der = stored_material(public)?;
+                    if standard_asymmetric {
+                        mldsa::export_public(&key.kind, &der, format)?.to_string()
+                    } else {
+                        BASE64.encode(mldsa::public_only(&key.kind, &der)?)
+                    }
+                } else if standard_asymmetric {
                     let material = stored_material(&value.material)?;
                     if mldsa_key {
                         mldsa::export_standard(&key.kind, &material, public_export, format)?
@@ -1241,6 +1262,15 @@ fn handle_crypto(
         "hmac" => {
             let version = key.selected_version(body)?;
             let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
+            if key
+                .versions
+                .get(&version)
+                .ok_or_else(not_found)?
+                .public_key_only
+                .is_some()
+            {
+                return Err(bad("public-only key version cannot generate an HMAC"));
+            }
             let material = stored_material(
                 &key.versions
                     .get(&version)
@@ -1262,8 +1292,11 @@ fn handle_crypto(
             } else {
                 key.selected_version(body)?
             };
-            let material =
-                stored_material(&key.versions.get(&version).ok_or_else(not_found)?.material)?;
+            let selected = key.versions.get(&version).ok_or_else(not_found)?;
+            if selected.public_key_only.is_some() {
+                return Err(bad("public-only key version cannot sign"));
+            }
+            let material = stored_material(&selected.material)?;
             let input = decode_field(body, "input")?;
             let signature = if asymmetric::is_kind(&key.kind) {
                 asymmetric::sign(&key.kind, &material, body, algorithm, &input)?
@@ -1289,6 +1322,9 @@ fn handle_crypto(
                 let (version, tag) =
                     parse_wrapped(mac.as_str().ok_or_else(|| bad("hmac must be a string"))?)?;
                 let version = key.decrypt_version(version)?;
+                if version.public_key_only.is_some() {
+                    return Err(bad("public-only key version cannot verify an HMAC"));
+                }
                 let material = stored_material(&version.hmac_material)?;
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
                 hmac_verify(algorithm, &material, &input, &tag)?
@@ -1304,20 +1340,24 @@ fn handle_crypto(
                 let (version, bytes) =
                     parse_wrapped_with(string(body, "signature")?, signature_encoding(body)?)?;
                 let version = key.decrypt_version(version)?;
-                let material = stored_material(&version.material)?;
-                if asymmetric::is_kind(&key.kind) {
-                    asymmetric::verify(&key.kind, &material, body, algorithm, &input, &bytes)?
-                } else if mldsa::is_kind(&key.kind) {
-                    mldsa::verify(&key.kind, &material, &input, &bytes)?
+                if let Some(public) = version.public_key_only.as_ref() {
+                    mldsa::verify_public(&key.kind, &stored_material(public)?, &input, &bytes)?
                 } else {
-                    let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                        .map_err(|_| error(500, "stored signing key is invalid"))?;
-                    signature::UnparsedPublicKey::new(
-                        &signature::ED25519,
-                        pair.public_key().as_ref(),
-                    )
-                    .verify(&input, &bytes)
-                    .is_ok()
+                    let material = stored_material(&version.material)?;
+                    if asymmetric::is_kind(&key.kind) {
+                        asymmetric::verify(&key.kind, &material, body, algorithm, &input, &bytes)?
+                    } else if mldsa::is_kind(&key.kind) {
+                        mldsa::verify(&key.kind, &material, &input, &bytes)?
+                    } else {
+                        let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
+                            .map_err(|_| error(500, "stored signing key is invalid"))?;
+                        signature::UnparsedPublicKey::new(
+                            &signature::ED25519,
+                            pair.public_key().as_ref(),
+                        )
+                        .verify(&input, &bytes)
+                        .is_ok()
+                    }
                 }
             };
             json!({"valid":valid})

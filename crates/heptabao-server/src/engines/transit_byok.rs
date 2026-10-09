@@ -1,4 +1,4 @@
-//! AES-only wrapped key import. Public-key-only and other types remain unsupported.
+//! Authenticated AES/ML-DSA wrapped imports and canonical ML-DSA public imports.
 use super::*;
 
 #[path = "transit_byok_crypto.rs"]
@@ -120,6 +120,7 @@ fn imported_version(material: Zeroizing<Vec<u8>>, now: u64) -> Result<KeyVersion
     Ok(KeyVersion {
         material: BASE64.encode(material),
         hmac_material: BASE64.encode(hmac_material),
+        public_key_only: None,
         created_at: now,
         encryptions: 0,
         external_key_ref: None,
@@ -137,9 +138,22 @@ impl Transit {
             wrapping.validate()?;
         }
         for key in self.keys.values() {
+            if key
+                .versions
+                .values()
+                .any(|version| version.public_key_only.is_some())
+                && (key.byok.is_none() || !mldsa::is_kind(&key.kind))
+            {
+                return Err(bad("public-only versions require an imported ML-DSA owner"));
+            }
             if let Some(policy) = key.byok.as_ref() {
-                let length = target_length(&key.kind)?;
-                if self.wrapping_key.is_none()
+                let mldsa_key = mldsa::is_kind(&key.kind);
+                let length = if mldsa_key {
+                    32
+                } else {
+                    target_length(&key.kind)?
+                };
+                if (!mldsa_key && self.wrapping_key.is_none())
                     || key.derived
                     || key.convergent_encryption
                     || key.convergent_write_min_version != 0
@@ -151,9 +165,22 @@ impl Transit {
                     return Err(bad("invalid imported key policy"));
                 }
                 for version in key.versions.values() {
-                    if stored_material(&version.material)?.len() != length
+                    if let Some(public) = version.public_key_only.as_ref() {
+                        if !mldsa_key
+                            || !version.material.is_empty()
+                            || !version.hmac_material.is_empty()
+                            || version.encryptions != 0
+                        {
+                            return Err(bad("invalid public-only imported key version"));
+                        }
+                        mldsa::validate_public(&key.kind, &stored_material(public)?)?;
+                    } else if stored_material(&version.material)?.len() != length
                         || stored_material(&version.hmac_material)?.len() != 32
-                        || version.external_key_ref.is_some()
+                        || (mldsa_key && version.encryptions != 0)
+                    {
+                        return Err(bad("invalid imported key version"));
+                    }
+                    if version.external_key_ref.is_some()
                         || version.heptabao_convergent_version.is_some()
                     {
                         return Err(bad("invalid imported key version"));
@@ -233,6 +260,9 @@ impl Transit {
             })
             .transpose()?
             .unwrap_or("aes256-gcm96");
+        if mldsa::is_kind(kind) {
+            return self.import_mldsa(name, kind, body, now);
+        }
         target_length(kind)?;
         if optional_bool(body, "derived")?.unwrap_or(false) {
             return Err(error(501, "derived key imports are not implemented"));
@@ -286,6 +316,9 @@ impl Transit {
         if !imported_key(key) {
             return Err(error(500, "key does not permit imported versions"));
         }
+        if mldsa::is_kind(&key.kind) {
+            return self.import_mldsa_version(name, body, now);
+        }
         if body.get("version").is_some() {
             return Err(error(501, "explicit import versions are not implemented"));
         }
@@ -300,6 +333,179 @@ impl Transit {
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         key.versions.insert(next, version);
         key.latest_version = next;
+        Ok(empty(true))
+    }
+}
+
+impl Transit {
+    pub(in crate::engines) fn has_mldsa_import_state(&self) -> bool {
+        self.keys.values().any(|key| {
+            (mldsa::is_kind(&key.kind) && key.byok.is_some())
+                || key
+                    .versions
+                    .values()
+                    .any(|version| version.public_key_only.is_some())
+        })
+    }
+
+    fn mldsa_imported_version(&self, body: &Value, kind: &str, now: u64) -> Result<KeyVersion> {
+        if let Some(value) = body.get("ciphertext") {
+            let value = value
+                .as_str()
+                .ok_or_else(|| bad("ciphertext must be a string"))?;
+            if value.len() > 768 {
+                return Err(error(500, "wrapped key material is invalid"));
+            }
+            let ciphertext = BASE64
+                .decode(value)
+                .map(Zeroizing::new)
+                .map_err(|_| error(500, "wrapped key material is invalid"))?;
+            let private = self
+                .wrapping_key
+                .as_ref()
+                .ok_or_else(|| error(500, "wrapping key is unavailable"))?
+                .private()?;
+            let pkcs8 = envelope::unwrap_mldsa_envelope(&private, &ciphertext, digest(body)?)
+                .map_err(|_| error(500, "wrapped key material is invalid"))?;
+            return imported_version(mldsa::import_private(kind, &pkcs8)?, now);
+        }
+        let public = string(body, "public_key")?;
+        let der = mldsa::import_public_pem(kind, public)?;
+        Ok(KeyVersion {
+            material: String::new(),
+            hmac_material: String::new(),
+            public_key_only: Some(BASE64.encode(der)),
+            created_at: now,
+            encryptions: 0,
+            external_key_ref: None,
+            heptabao_convergent_version: None,
+        })
+    }
+
+    fn import_mldsa(
+        &mut self,
+        name: &str,
+        kind: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        if optional_bool(body, "derived")?.unwrap_or(false) {
+            return Err(error(501, "derived key imports are not implemented"));
+        }
+        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
+            return Err(error(501, "plaintext key backups are not implemented"));
+        }
+        let allow_rotation = optional_bool(body, "allow_rotation")?.unwrap_or(false);
+        let period = auto_rotate_period(body.get("auto_rotate_period"))?;
+        if period != 0 && !allow_rotation {
+            return Err(error(500, "rotation is disabled for this imported key"));
+        }
+        let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
+        let version = self.mldsa_imported_version(body, kind, now)?;
+        self.keys.insert(
+            name.into(),
+            Key {
+                kind: kind.into(),
+                derived: false,
+                convergent_encryption: false,
+                convergent_write_min_version: 0,
+                latest_version: 1,
+                min_decryption_version: 1,
+                min_encryption_version: 0,
+                deletion_allowed: false,
+                exportable,
+                auto_rotate_period: period,
+                deleted: false,
+                versions: BTreeMap::from([(1, version)]),
+                byok: Some(ImportPolicy {
+                    allow_rotation,
+                    imported_key: true,
+                }),
+            },
+        );
+        Ok(empty(true))
+    }
+
+    fn import_mldsa_version(
+        &mut self,
+        name: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let key = self.keys.get(name).ok_or_else(not_found)?;
+        let explicit = body
+            .get("version")
+            .map(|value| -> Result<u64> {
+                let number = match value {
+                    Value::Number(number) => number.as_u64(),
+                    Value::String(number) => number.parse::<u64>().ok(),
+                    _ => None,
+                }
+                .filter(|number| *number != 0)
+                .ok_or_else(|| bad("version must be a positive integer"))?;
+                Ok(number)
+            })
+            .transpose()?;
+        let mut imported = self.mldsa_imported_version(body, &key.kind, now)?;
+        let private = imported.public_key_only.is_none();
+        let destination = explicit.or_else(|| {
+            (private
+                && key
+                    .versions
+                    .get(&key.latest_version)
+                    .is_some_and(|version| version.public_key_only.is_some()))
+            .then_some(key.latest_version)
+        });
+        let (number, append) = if let Some(number) = destination {
+            let existing = key
+                .versions
+                .get(&number)
+                .ok_or_else(|| bad("requested public-only version does not exist"))?;
+            let public = existing
+                .public_key_only
+                .as_ref()
+                .ok_or_else(|| bad("only public-only versions can be completed"))?;
+            if !private {
+                return Err(bad(
+                    "a public-only version requires matching private material",
+                ));
+            }
+            let expected = stored_material(public)?;
+            let actual = mldsa::export_standard(
+                &key.kind,
+                &stored_material(&imported.material)?,
+                true,
+                "der",
+            )?;
+            if BASE64
+                .decode(actual.as_bytes())
+                .map_err(|_| bad("invalid derived ML-DSA public key"))?
+                .as_slice()
+                != expected.as_slice()
+            {
+                return Err(bad(
+                    "imported private key does not match the existing public key",
+                ));
+            }
+            // Completion retains the original version identity and creation time.
+            imported.created_at = existing.created_at;
+            (number, false)
+        } else {
+            if key.versions.len() >= 10_000 {
+                return Err(bad("key version retention limit reached"));
+            }
+            (
+                key.latest_version
+                    .checked_add(1)
+                    .ok_or_else(|| bad("key version limit reached"))?,
+                true,
+            )
+        };
+        let key = self.keys.get_mut(name).ok_or_else(not_found)?;
+        key.versions.insert(number, imported);
+        if append {
+            key.latest_version = number;
+        }
         Ok(empty(true))
     }
 }
@@ -543,6 +749,410 @@ mod tests {
             )
             .map_err(|_| "ciphertext_precedence_failed")?;
         assert!(imported_key(&transit.keys["precedence"]));
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod mldsa_import_tests {
+    use super::*;
+    use aws_lc_rs::key_wrap::{AES_256, AesKek, KeyWrapPadded};
+    use openssl::{encrypt::Encrypter, hash::MessageDigest, pkey::PKey, rsa::Padding};
+
+    type TestResult<T = ()> = std::result::Result<T, &'static str>;
+
+    fn encoded(transit: &Transit) -> TestResult<Zeroizing<Vec<u8>>> {
+        serde_json::to_vec(transit)
+            .map(Zeroizing::new)
+            .map_err(|_| "state_encoding_failed")
+    }
+
+    fn wrap(transit: &Transit, material: &[u8]) -> TestResult<String> {
+        let pem = transit
+            .wrapping_key
+            .as_ref()
+            .ok_or("wrapping_missing")?
+            .public_pem()
+            .map_err(|_| "wrapping_public_failed")?;
+        let key = PKey::public_key_from_pem(pem.as_bytes()).map_err(|_| "public_parse_failed")?;
+        let mut encrypt = Encrypter::new(&key).map_err(|_| "encrypter_failed")?;
+        encrypt
+            .set_rsa_padding(Padding::PKCS1_OAEP)
+            .map_err(|_| "padding_failed")?;
+        encrypt
+            .set_rsa_oaep_md(MessageDigest::sha256())
+            .map_err(|_| "digest_failed")?;
+        encrypt
+            .set_rsa_mgf1_md(MessageDigest::sha256())
+            .map_err(|_| "mgf_failed")?;
+        let mut envelope = vec![0; 512];
+        assert!(
+            encrypt
+                .encrypt(&[0x41; 32], &mut envelope)
+                .map_err(|_| "rsa_failed")?
+                == 512
+        );
+        let kek = AesKek::new(&AES_256, &[0x41; 32]).map_err(|_| "kek_failed")?;
+        let mut tail = vec![0; material.len() + 15];
+        envelope.extend_from_slice(
+            kek.wrap_with_padding(material, &mut tail)
+                .map_err(|_| "kwp_failed")?,
+        );
+        Ok(BASE64.encode(envelope))
+    }
+
+    fn private_der(kind: &str, seed: &[u8]) -> TestResult<Zeroizing<Vec<u8>>> {
+        let encoded = mldsa::export_standard(kind, seed, false, "der")
+            .map_err(|_| "private_encoding_failed")?;
+        BASE64
+            .decode(encoded.as_bytes())
+            .map(Zeroizing::new)
+            .map_err(|_| "private_decoding_failed")
+    }
+
+    fn public_pem(kind: &str, seed: &[u8]) -> TestResult<Zeroizing<String>> {
+        mldsa::export_standard(kind, seed, true, "pem").map_err(|_| "public_encoding_failed")
+    }
+
+    fn call(
+        transit: &mut Transit,
+        method: &str,
+        path: &str,
+        body: Value,
+    ) -> Result<EngineResponse> {
+        transit.handle("", "transit", method, path, &body, 100)
+    }
+
+    #[test]
+    fn mldsa270_public_only_import_verifies_real_signatures_without_seed_or_hmac() -> TestResult {
+        for kind in ["mldsa-44", "mldsa-65", "mldsa-87"] {
+            let seed = [0x50; 32];
+            let mut transit = Transit::default();
+            let public = public_pem(kind, &seed)?;
+            let imported = call(
+                &mut transit,
+                "POST",
+                "keys/key/import",
+                json!({"type":kind,"public_key":public.as_str(),"exportable":true}),
+            )
+            .map_err(|_| "public_import_failed")?;
+            assert!(imported.status == 204 && imported.mutated);
+            assert!(transit.wrapping_key.is_none());
+            let version = &transit.keys["key"].versions[&1];
+            assert!(
+                version.material.is_empty()
+                    && version.hmac_material.is_empty()
+                    && version.public_key_only.is_some()
+            );
+            let before = encoded(&transit)?;
+            let signature = mldsa::sign(kind, &seed, b"public fixture")
+                .map_err(|_| "independent_signature_failed")?;
+            let signature = format!("vault:v1:{}", BASE64.encode(signature));
+            for (input, valid) in [
+                (b"public fixture".as_slice(), true),
+                (b"changed".as_slice(), false),
+            ] {
+                let response = call(
+                    &mut transit,
+                    "POST",
+                    "verify/key",
+                    json!({"input":BASE64.encode(input),"signature":signature}),
+                )
+                .map_err(|_| "public_verify_failed")?;
+                assert!(response.body["data"]["valid"] == valid);
+            }
+            for (method, path, body) in [
+                (
+                    "POST",
+                    "sign/key",
+                    json!({"input":BASE64.encode(b"public fixture")}),
+                ),
+                (
+                    "POST",
+                    "hmac/key",
+                    json!({"input":BASE64.encode(b"public fixture")}),
+                ),
+                (
+                    "POST",
+                    "verify/key",
+                    json!({"input":BASE64.encode(b"public fixture"),"hmac":"vault:v1:AA=="}),
+                ),
+                ("GET", "export/signing-key/key", json!({})),
+                ("GET", "export/hmac-key/key", json!({})),
+                ("GET", "export/signing-key/key", json!({"format":"der"})),
+            ] {
+                assert!(call(&mut transit, method, path, body).is_err());
+            }
+            let raw = call(&mut transit, "GET", "export/public-key/key", json!({}))
+                .map_err(|_| "public_raw_export_failed")?;
+            assert!(
+                raw.body["data"]["keys"]["1"]
+                    == BASE64
+                        .encode(mldsa::public(kind, &seed).map_err(|_| "expected_public_failed")?)
+            );
+            let pem = call(
+                &mut transit,
+                "GET",
+                "export/public-key/key",
+                json!({"format":"pem"}),
+            )
+            .map_err(|_| "public_pem_export_failed")?;
+            assert!(pem.body["data"]["keys"]["1"] == public.as_str());
+            assert!(encoded(&transit)?.as_slice() == before.as_slice());
+            transit
+                .validate_byok_state()
+                .map_err(|_| "public_policy_invalid")?;
+            transit
+                .validate_mldsa_state()
+                .map_err(|_| "public_state_invalid")?;
+            let reloaded: Transit =
+                serde_json::from_slice(&before).map_err(|_| "public_reload_failed")?;
+            reloaded
+                .validate_byok_state()
+                .map_err(|_| "public_reload_invalid")?;
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn mldsa270_wrapped_private_import_is_canonical_oid_bound_and_atomic() -> TestResult {
+        let mut transit = Transit::default();
+        transit
+            .wrapping("GET", &json!({}))
+            .map_err(|_| "wrapping_failed")?;
+        for kind in ["mldsa-44", "mldsa-65", "mldsa-87"] {
+            let seed = [0x51; 32];
+            let der = private_der(kind, &seed)?;
+            let ciphertext = wrap(&transit, &der)?;
+            let response = call(&mut transit, "POST", &format!("keys/{kind}/import"),
+                json!({"type":kind,"ciphertext":ciphertext,"public_key":"PUBLIC_DUMMY","exportable":true}))
+                .map_err(|_| "private_import_failed")?;
+            assert!(response.status == 204);
+            assert!(
+                stored_material(&transit.keys[kind].versions[&1].material)
+                    .map_err(|_| "seed_decoding_failed")?
+                    .as_slice()
+                    == seed
+            );
+            let signed = call(
+                &mut transit,
+                "POST",
+                &format!("sign/{kind}"),
+                json!({"input":BASE64.encode(b"public fixture")}),
+            )
+            .map_err(|_| "imported_sign_failed")?;
+            let signature = signed.body["data"]["signature"]
+                .as_str()
+                .and_then(|value| value.strip_prefix("vault:v1:"))
+                .ok_or("signature_missing")?;
+            let signature = BASE64
+                .decode(signature)
+                .map_err(|_| "signature_decoding_failed")?;
+            assert!(
+                mldsa::verify(kind, &seed, b"public fixture", &signature)
+                    .map_err(|_| "independent_verify_failed")?
+            );
+            let exported = call(
+                &mut transit,
+                "GET",
+                &format!("export/signing-key/{kind}"),
+                json!({"format":"der"}),
+            )
+            .map_err(|_| "private_export_failed")?;
+            assert!(exported.body["data"]["keys"]["1"] == BASE64.encode(der.as_slice()));
+        }
+        let before = encoded(&transit)?;
+        let good = private_der("mldsa-44", &[0x50; 32])?;
+        let mut malformed = good.to_vec();
+        malformed[20] = 0;
+        let mut truncated = good.to_vec();
+        truncated.pop();
+        for (name, kind, bytes) in [
+            ("wrong_oid", "mldsa-65", good.as_slice()),
+            ("malformed", "mldsa-44", malformed.as_slice()),
+            ("truncated", "mldsa-44", truncated.as_slice()),
+            ("raw_seed", "mldsa-44", &[0x50; 32]),
+        ] {
+            let ciphertext = wrap(&transit, bytes)?;
+            assert!(
+                call(
+                    &mut transit,
+                    "POST",
+                    &format!("keys/{name}/import"),
+                    json!({"type":kind,"ciphertext":ciphertext})
+                )
+                .is_err()
+            );
+            assert!(encoded(&transit)?.as_slice() == before.as_slice());
+        }
+        transit
+            .validate_byok_state()
+            .map_err(|_| "private_policy_invalid")?;
+        transit
+            .validate_mldsa_state()
+            .map_err(|_| "private_state_invalid")?;
+        Ok(())
+    }
+
+    #[test]
+    fn mldsa270_matching_private_completion_preserves_explicit_and_latest_versions() -> TestResult {
+        let kind = "mldsa-44";
+        let mut transit = Transit::default();
+        transit
+            .wrapping("GET", &json!({}))
+            .map_err(|_| "wrapping_failed")?;
+        let first = public_pem(kind, &[0x50; 32])?;
+        let second = public_pem(kind, &[0x51; 32])?;
+        call(
+            &mut transit,
+            "POST",
+            "keys/key/import",
+            json!({"type":kind,"public_key":first.as_str(),"allow_rotation":true}),
+        )
+        .map_err(|_| "initial_public_failed")?;
+        call(
+            &mut transit,
+            "POST",
+            "keys/key/import_version",
+            json!({"public_key":second.as_str()}),
+        )
+        .map_err(|_| "next_public_failed")?;
+        let wrong = wrap(&transit, &private_der(kind, &[0x51; 32])?)?;
+        let before = encoded(&transit)?;
+        for body in [
+            json!({"ciphertext":wrong,"version":1}),
+            json!({"ciphertext":wrong,"version":0}),
+            json!({"ciphertext":wrong,"version":3}),
+            json!({"public_key":first.as_str(),"version":1}),
+        ] {
+            assert!(call(&mut transit, "POST", "keys/key/import_version", body).is_err());
+            assert!(encoded(&transit)?.as_slice() == before.as_slice());
+        }
+        let private = wrap(&transit, &private_der(kind, &[0x50; 32])?)?;
+        assert!(
+            call(
+                &mut transit,
+                "POST",
+                "keys/key/import_version",
+                json!({"ciphertext":private,"version":1})
+            )
+            .map_err(|_| "explicit_fill_failed")?
+            .status
+                == 204
+        );
+        assert!(transit.keys["key"].latest_version == 2 && transit.keys["key"].versions.len() == 2);
+        assert!(transit.keys["key"].versions[&1].public_key_only.is_none());
+        assert!(
+            call(
+                &mut transit,
+                "POST",
+                "keys/key/import_version",
+                json!({"ciphertext":wrong})
+            )
+            .map_err(|_| "latest_fill_failed")?
+            .status
+                == 204
+        );
+        assert!(transit.keys["key"].latest_version == 2 && transit.keys["key"].versions.len() == 2);
+        let before = encoded(&transit)?;
+        assert!(
+            call(
+                &mut transit,
+                "POST",
+                "keys/key/import_version",
+                json!({"ciphertext":private,"version":1})
+            )
+            .is_err()
+        );
+        assert!(encoded(&transit)?.as_slice() == before.as_slice());
+        call(
+            &mut transit,
+            "POST",
+            "keys/key/import_version",
+            json!({"ciphertext":private}),
+        )
+        .map_err(|_| "next_private_failed")?;
+        assert!(transit.keys["key"].latest_version == 3);
+        call(&mut transit, "POST", "keys/key/rotate", json!({}))
+            .map_err(|_| "native_rotate_failed")?;
+        let before = encoded(&transit)?;
+        assert!(
+            call(
+                &mut transit,
+                "POST",
+                "keys/key/import_version",
+                json!({"ciphertext":private})
+            )
+            .is_err()
+        );
+        assert!(encoded(&transit)?.as_slice() == before.as_slice());
+        call(&mut transit, "POST", "keys/generated", json!({"type":kind}))
+            .map_err(|_| "generation_failed")?;
+        let before = encoded(&transit)?;
+        assert!(
+            call(
+                &mut transit,
+                "POST",
+                "keys/generated/import_version",
+                json!({"ciphertext":private})
+            )
+            .is_err()
+        );
+        assert!(encoded(&transit)?.as_slice() == before.as_slice());
+        transit
+            .validate_byok_state()
+            .map_err(|_| "completed_state_invalid")?;
+        Ok(())
+    }
+
+    #[test]
+    fn mldsa270_public_spki_rejects_cross_oid_parameters_truncation_and_forged_storage()
+    -> TestResult {
+        let kind = "mldsa-44";
+        let mut transit = Transit::default();
+        let pem = public_pem(kind, &[0x50; 32])?;
+        let der = mldsa::import_public_pem(kind, &pem).map_err(|_| "fixture_public_failed")?;
+        let before = encoded(&transit)?;
+        let other = public_pem("mldsa-65", &[0x50; 32])?;
+        for public in [
+            other.as_str(),
+            "-----BEGIN PRIVATE KEY-----\nAA==\n-----END PRIVATE KEY-----",
+            "-----BEGIN PUBLIC KEY-----\nAA==\n-----END PUBLIC KEY-----",
+        ] {
+            assert!(
+                call(
+                    &mut transit,
+                    "POST",
+                    "keys/key/import",
+                    json!({"type":kind,"public_key":public})
+                )
+                .is_err()
+            );
+            assert!(encoded(&transit)?.as_slice() == before.as_slice());
+        }
+        // Adding NULL algorithm parameters is rejected even if its OID is correct.
+        let mut null_parameters = der.clone();
+        null_parameters[3] += 2;
+        null_parameters[5] += 2;
+        drop(null_parameters.splice(17..17, [5, 0]));
+        assert!(mldsa::validate_public(kind, &null_parameters).is_err());
+        assert!(mldsa::validate_public(kind, &der[..der.len() - 1]).is_err());
+        call(
+            &mut transit,
+            "POST",
+            "keys/key/import",
+            json!({"type":kind,"public_key":pem.as_str()}),
+        )
+        .map_err(|_| "valid_import_failed")?;
+        let version = transit
+            .keys
+            .get_mut("key")
+            .ok_or("owner_missing")?
+            .versions
+            .get_mut(&1)
+            .ok_or("version_missing")?;
+        version.material = BASE64.encode([0x50; 32]);
+        assert!(transit.validate_byok_state().is_err() && transit.validate_mldsa_state().is_err());
         Ok(())
     }
 }

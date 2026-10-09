@@ -142,6 +142,52 @@ pub fn unwrap_aes_envelope(
     Ok(material)
 }
 
+/// Authenticate an RSA-OAEP KEK and AES-KWP canonical ML-DSA PrivateKeyInfo.
+pub fn unwrap_mldsa_envelope(
+    private_pkcs8: &[u8],
+    envelope: &[u8],
+    digest: OaepDigest,
+) -> Result<Zeroizing<Vec<u8>>, CryptoError> {
+    // Canonical seed-only ML-DSA PrivateKeyInfo is exactly 54 bytes.
+    let target_length = 54;
+    let wrapped_length = 64;
+    if envelope.len() != RSA_BYTES + wrapped_length {
+        return Err(CryptoError::InvalidEnvelope);
+    }
+    let key = wrapping_key(private_pkcs8)?;
+    let mut decrypter = Decrypter::new(&key).map_err(|_| CryptoError::ProviderUnavailable)?;
+    decrypter
+        .set_rsa_padding(Padding::PKCS1_OAEP)
+        .map_err(|_| CryptoError::ProviderUnavailable)?;
+    decrypter
+        .set_rsa_oaep_md(digest.provider())
+        .map_err(|_| CryptoError::ProviderUnavailable)?;
+    decrypter
+        .set_rsa_mgf1_md(digest.provider())
+        .map_err(|_| CryptoError::ProviderUnavailable)?;
+    let mut kek = Zeroizing::new(vec![0; RSA_BYTES]);
+    let actual_length = decrypter
+        .decrypt(&envelope[..RSA_BYTES], &mut kek)
+        .map_err(|_| CryptoError::EnvelopeAuthenticationFailed)?;
+    if actual_length != KEK_BYTES {
+        return Err(CryptoError::EnvelopeAuthenticationFailed);
+    }
+    kek.truncate(actual_length);
+    // The application owns zeroizing buffers. The maintained provider's internal
+    // KEK copy is outside this adapter's erasure guarantee; no unsafe bridge is used.
+    let kwp = AesKek::new(&AES_256, &kek).map_err(|_| CryptoError::ProviderUnavailable)?;
+    let mut material = Zeroizing::new(vec![0; wrapped_length]);
+    let actual_length = kwp
+        .unwrap_with_padding(&envelope[RSA_BYTES..], &mut material)
+        .map_err(|_| CryptoError::EnvelopeAuthenticationFailed)?
+        .len();
+    if actual_length != target_length {
+        return Err(CryptoError::EnvelopeAuthenticationFailed);
+    }
+    material.truncate(actual_length);
+    Ok(material)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -277,6 +323,38 @@ mod tests {
             validate_wrapping_private_key(&trailing),
             Err(CryptoError::InvalidWrappingKey)
         ));
+        Ok(())
+    }
+
+    #[test]
+    fn mldsa270_envelope_all_five_digests_require_authenticated_exact_pkcs8_length() -> TestResult {
+        let key = private()?;
+        let material = [0x50; 54];
+        for digest in [
+            OaepDigest::Sha1,
+            OaepDigest::Sha224,
+            OaepDigest::Sha256,
+            OaepDigest::Sha384,
+            OaepDigest::Sha512,
+        ] {
+            let wrapped = envelope(&key, &material, digest, &[0x41; KEK_BYTES])?;
+            assert!(wrapped.len() == 576);
+            let recovered = unwrap_mldsa_envelope(&key, &wrapped, digest)
+                .map_err(|_| "mldsa_envelope_failed")?;
+            assert!(recovered.as_slice() == material);
+            let mut corrupted = wrapped.clone();
+            corrupted[575] ^= 1;
+            assert!(unwrap_mldsa_envelope(&key, &corrupted, digest).is_err());
+        }
+        for length in [32, 53, 55, 64] {
+            let wrapped = envelope(
+                &key,
+                &vec![0x50; length],
+                OaepDigest::Sha256,
+                &[0x41; KEK_BYTES],
+            )?;
+            assert!(unwrap_mldsa_envelope(&key, &wrapped, OaepDigest::Sha256).is_err());
+        }
         Ok(())
     }
 }

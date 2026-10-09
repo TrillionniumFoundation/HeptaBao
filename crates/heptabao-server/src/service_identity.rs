@@ -185,6 +185,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_mldsa_import_state() {
+            required.max(MLDSA_IMPORT_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -193,6 +198,15 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        self.engines
+            .validate_transit_byok_state()
+            .map_err(|_| Response::error(503, "invalid Transit imported key state"))?;
+        if self.schema < MLDSA_IMPORT_STATE_SCHEMA
+            && (self.engines.has_mldsa_import_state()
+                || previous.is_some_and(|state| state.schema >= MLDSA_IMPORT_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "ML-DSA imports require schema 116"));
+        }
         if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
             && (self.has_mount_listing_visibility_state()
                 || previous
@@ -208,7 +222,7 @@ impl State {
             .map_err(Response::from_engine_error)?;
         if self.engines.has_ssh_ca_state() && self.schema < SSH_CA_STATE_SCHEMA
             || previous.is_some_and(|state| {
-                state.schema >= SSH_CA_STATE_SCHEMA || state.engines.has_ssh_ca_state()
+                state.schema == SSH_CA_STATE_SCHEMA || state.engines.has_ssh_ca_state()
             }) && (self.schema < SSH_CA_STATE_SCHEMA || !self.engines.has_ssh_ca_state())
         {
             return Err(Response::error(503, "SSH CA custody cannot regress"));
@@ -1199,6 +1213,9 @@ impl State {
                 "PKI issuer-path leases require schema 71",
             ));
         }
+        if self.schema < MLDSA_IMPORT_STATE_SCHEMA && self.engines.has_mldsa_import_state() {
+            return Err(Response::error(503, "ML-DSA imports require schema 116"));
+        }
         if self.schema < TRANSIT_BYOK_STATE_SCHEMA && self.engines.has_transit_byok_state() {
             return Err(Response::error(
                 503,
@@ -1930,6 +1947,7 @@ impl State {
             | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             | SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
             | SSH_CA_STATE_SCHEMA
+            | MLDSA_IMPORT_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA
