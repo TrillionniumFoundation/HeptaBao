@@ -7,6 +7,7 @@ use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::thread;
+use std::sync::{mpsc, Arc, Mutex, MutexGuard};
 use std::time::{Duration, Instant};
 use ring::digest::{Context, SHA256};
 use rustix::fs::{Access, AtFlags, Mode, OFlags};
@@ -48,14 +49,16 @@ impl SandboxRunner for CommandSandboxRunner {
         let frame=encode_request(manifest.descriptor().protocol_version(),operation,request.expose())
             .map_err(|_| SandboxFailure::BeforeEntry)?;
         if !pin.unchanged() || Instant::now()>=deadline { return Err(SandboxFailure::BeforeEntry); }
+        let reaper=OriginalReaper::prepare(deadline)?;
+        if !pin.unchanged() || Instant::now()>=deadline { return Err(SandboxFailure::BeforeEntry); }
         let mut command=Command::new(&pin.path);
         command.env_clear().stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::null());
         for (name,value) in environment.iter() { command.env(name,value); }
         // Kernel setuid exec must actually yield EUID=0/RUID=caller. Go observes
         // it before IO and validates the external deployment/broker pin itself.
         let child=command.spawn().map_err(|_| SandboxFailure::BeforeEntry)?;
-        let mut child=RootChild(Some(child));
-        let original=child.0.as_mut().ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
+        let mut child=RootChild { original: Some(child), reaper };
+        let original=child.original.as_mut().ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
         let mut input=Some(original.stdin.take().ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?);
         let mut output=original.stdout.take().ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
         nonblocking(input.as_ref().ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?)?;
@@ -102,21 +105,132 @@ impl SandboxRunner for CommandSandboxRunner {
     }
 }
 
-struct RootChild(Option<Child>);
-impl Drop for RootChild {
-    fn drop(&mut self) {
-        if let Some(mut child)=self.0.take() {
-            // No numeric PID kill, group kill or fabricated task right. The
-            // root broker owns the original absolute guard and traced provider.
-            // A failed/expired outer call returns False immediately; detached
-            // reap is the same actual Child, never a successful provider Wait.
-            if !matches!(child.try_wait(),Ok(Some(_))) {
-                let _=thread::Builder::new().name("heptabao-root-kms-reaper".into())
-                    .spawn(move || { let _=child.wait(); });
+// Every post-entry child has a holder registered before broker execution.
+// The registry is also the explicit closed-False retention path if a ready
+// reaper later dies or its original wait fails. It never grants signal rights.
+#[derive(Default)]
+struct OriginalReaperState {
+    child: Option<Child>,
+    original_wait_returned: bool,
+    handoff_failed: bool,
+    original_wait_failed: bool,
+}
+type OriginalSlot = Arc<Mutex<OriginalReaperState>>;
+static ORIGINAL_REAPERS: Mutex<Vec<OriginalSlot>> = Mutex::new(Vec::new());
+
+fn original_slot_lock(slot: &Mutex<OriginalReaperState>) -> MutexGuard<'_, OriginalReaperState> {
+    match slot.lock() { Ok(guard) => guard, Err(poisoned) => poisoned.into_inner() }
+}
+fn retain_original_slot(slot: &OriginalSlot) {
+    match ORIGINAL_REAPERS.lock() {
+        Ok(mut slots) => slots.push(Arc::clone(slot)),
+        Err(poisoned) => poisoned.into_inner().push(Arc::clone(slot)),
+    }
+}
+fn retire_empty_original_slot(slot: &OriginalSlot) {
+    // A failed handoff/wait leaves the actual Child in the original slot.
+    // No removal, reconstructed Child, numeric PID operation or success claim.
+    if original_slot_lock(slot).child.is_some() { return; }
+    match ORIGINAL_REAPERS.lock() {
+        Ok(mut slots) => slots.retain(|held| !Arc::ptr_eq(held, slot)),
+        Err(poisoned) => poisoned.into_inner().retain(|held| !Arc::ptr_eq(held, slot)),
+    }
+}
+struct OriginalReaper {
+    slot: OriginalSlot,
+    notify: Option<mpsc::SyncSender<()>>,
+    _worker: thread::JoinHandle<()>,
+}
+impl OriginalReaper {
+    fn prepare(deadline: Instant) -> Result<Self, SandboxFailure> {
+        if Instant::now() >= deadline { return Err(SandboxFailure::BeforeEntry); }
+        let slot = Arc::new(Mutex::new(OriginalReaperState::default()));
+        retain_original_slot(&slot);
+        // This fixed one-item channel carries notification only. The actual
+        // Child stays in its pre-registered slot even if the receiver dies.
+        let (notify, receive) = mpsc::sync_channel::<()>(1);
+        let (ready, readiness) = mpsc::sync_channel::<()>(1);
+        let held = Arc::clone(&slot);
+        let worker = match thread::Builder::new().name("heptabao-root-kms-reaper".into())
+            .spawn(move || {
+                if ready.send(()).is_err() {
+                    retire_empty_original_slot(&held);
+                    return;
+                }
+                // Disconnect also wakes an unused before-entry holder.
+                let _ = receive.recv();
+                let mut state = original_slot_lock(&held);
+                if let Some(child) = state.child.as_mut() {
+                    // Keep the same Child inside the retained slot throughout
+                    // its real wait. A panic poisons the mutex but cannot drop
+                    // the handle from the registry. An error preserves it too.
+                    let waited = child.wait();
+                    match waited {
+                        Ok(_) => {
+                            state.original_wait_returned = true;
+                            state.child = None;
+                        }
+                        Err(_) => state.original_wait_failed = true,
+                    }
+                }
+                drop(state);
+                retire_empty_original_slot(&held);
+            }) {
+            Ok(worker) => worker,
+            Err(_) => {
+                retire_empty_original_slot(&slot);
+                return Err(SandboxFailure::BeforeEntry);
             }
+        };
+        let reaper = Self { slot, notify: Some(notify), _worker: worker };
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() || readiness.recv_timeout(remaining).is_err() ||
+            Instant::now() >= deadline {
+            // No broker child exists. Drop wakes/retire the unused holder.
+            return Err(SandboxFailure::BeforeEntry);
+        }
+        Ok(reaper)
+    }
+    fn handoff(&mut self, child: Child) {
+        // Only RootChild::drop calls this private method, once, after taking
+        // its sole original Option<Child>. The worker cannot access this slot
+        // until the notification below; it was proven ready before entry.
+        original_slot_lock(&self.slot).child = Some(child);
+        let delivered = self.notify.take().is_some_and(|sender| sender.try_send(()).is_ok());
+        if !delivered {
+            // The pre-registered slot still owns that exact actual Child.
+            // All callers reaching handoff already return outcome-unknown.
+            original_slot_lock(&self.slot).handoff_failed = true;
         }
     }
 }
+impl Drop for OriginalReaper {
+    fn drop(&mut self) {
+        // An unused holder can finish without receiving any Child. A handed
+        // off holder has consumed this sender and retains its same Child.
+        if let Some(sender) = self.notify.take() { let _ = sender.try_send(()); }
+    }
+}
+struct RootChild {
+    original: Option<Child>,
+    reaper: OriginalReaper,
+}
+impl Drop for RootChild {
+    fn drop(&mut self) {
+        if let Some(mut child) = self.original.take() {
+            if matches!(child.try_wait(), Ok(Some(_))) {
+                // This exact Child was already physically reaped by try_wait.
+                // Status0 here is not fabricated provider.Close qualification.
+                return;
+            }
+            // No post-entry thread creation or new deadline. A failed/expired
+            // outer call returns False; only the ready pre-entry original
+            // holder receives this same Child for its actual wait.
+            self.reaper.handoff(child);
+        }
+    }
+}
+
 struct RootBrokerPin { path: PathBuf, file: File, ancestors: Vec<(File,PathBuf)>, identity: [i128;9], expected: [u8;32] }
 fn identity(m:&std::fs::Metadata)->[i128;9] {
     [i128::from(m.dev()),i128::from(m.ino()),i128::from(m.mode()),i128::from(m.uid()),
