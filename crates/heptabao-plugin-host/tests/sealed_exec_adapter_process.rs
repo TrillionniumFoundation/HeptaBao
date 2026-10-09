@@ -23,8 +23,9 @@ impl Temp {
             SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
         fs::create_dir(&path)?;
-        fs::set_permissions(&path, fs::Permissions::from_mode(0o700))?;
-        Ok(Self(path))
+        let owned = Self(path);
+        fs::set_permissions(&owned.0, fs::Permissions::from_mode(0o700))?;
+        Ok(owned)
     }
 }
 impl Drop for Temp {
@@ -35,17 +36,23 @@ impl Drop for Temp {
 
 fn wait(mut child: Child) -> Result<std::process::ExitStatus, Box<dyn Error>> {
     let deadline = Instant::now() + Duration::from_secs(2);
-    loop {
-        if let Some(status) = child.try_wait()? {
-            return Ok(status);
+    let failure: Box<dyn Error> = loop {
+        match child.try_wait() {
+            Ok(Some(status)) => return Ok(status),
+            Ok(None) => {}
+            Err(error) => break error.into(),
         }
         if Instant::now() >= deadline {
-            child.kill()?;
-            child.wait()?;
-            return Err("owned adapter fixture exceeded its test bound".into());
+            break "owned adapter fixture exceeded its test bound".into();
         }
         std::thread::sleep(Duration::from_millis(2));
-    }
+    };
+    // Keep the same original Child through every failure. Failed termination
+    // must still attempt the original terminal wait; neither cleanup success
+    // nor KILL changes an over-budget/observation failure into test success.
+    let _termination = child.kill();
+    let _original_wait = child.wait();
+    Err(failure)
 }
 
 fn command(path: &Path, owned: &Temp) -> Result<Command, Box<dyn Error>> {
