@@ -233,7 +233,7 @@ impl State {
             crate::service::namespace_diagnostics::record_status("publication.reject.02", 503);
             return Err(Response::error(503, "SSH CA custody cannot regress"));
         }
-        let protected = self.protected_state()?;
+        let protected = namespace_diagnostic!("publication.protected.initial", self.protected_state())?;
         if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
             && (protected.auth.has_sdk_namespace_custody()
                 || previous
@@ -436,7 +436,7 @@ impl State {
             ));
         }
 
-        namespace_diagnostic!("publication.guard.validate_public_origin_state.15", self.protected_state()?
+        namespace_diagnostic!("publication.guard.validate_public_origin_state.15", namespace_diagnostic!("publication.protected.public_origin", self.protected_state())?
             .auth
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin protected owner")))?;
