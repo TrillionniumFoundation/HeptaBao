@@ -8,6 +8,8 @@ use std::io::{self, Read, Write};
 use std::os::fd::{AsFd, AsRawFd, OwnedFd};
 use std::os::unix::fs::{FileExt, MetadataExt};
 use std::os::unix::process::CommandExt;
+#[cfg(test)]
+use std::os::unix::process::ExitStatusExt;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -200,9 +202,15 @@ struct OwnedChild {
     child: Child,
     pidfd: OwnedFd,
     cleanup: Arc<Mutex<WrapperCleanupState>>,
+    #[cfg(test)]
+    diagnostic: Arc<Mutex<Option<serde_json::Value>>>,
 }
 impl OwnedChild {
-    fn capture(child: Child, cleanup: Arc<Mutex<WrapperCleanupState>>) -> Result<Self, Child> {
+    fn capture(
+        child: Child,
+        cleanup: Arc<Mutex<WrapperCleanupState>>,
+        #[cfg(test)] diagnostic: Arc<Mutex<Option<serde_json::Value>>>,
+    ) -> Result<Self, Child> {
         let Some(pid) = i32::try_from(child.id()).ok().and_then(Pid::from_raw) else {
             return Err(child);
         };
@@ -214,11 +222,54 @@ impl OwnedChild {
             child,
             pidfd,
             cleanup,
+            #[cfg(test)]
+            diagnostic,
         })
     }
+    #[cfg(test)]
+    fn fixture_record(
+        &self,
+        stage: u8,
+        syscall_errno: Option<i32>,
+        status: Option<&std::process::ExitStatus>,
+    ) {
+        if let Ok(mut observed) = self.diagnostic.lock()
+            && let Some(value) = observed.as_mut()
+        {
+            let event = serde_json::json!({
+                "stage": stage,
+                "owned_pid": self.child.id(),
+                "provider_pid": value["provider"]["pid"],
+                "provider_uid": value["provider"]["uid"],
+                "provider_start_ticks": value["provider"]["start_ticks"],
+                "memfd_sha256": value["provider"]["executable_sha256"],
+                "memfd_device": value["provider"]["executable_device"],
+                "memfd_inode": value["provider"]["executable_inode"],
+                "syscall_errno": syscall_errno,
+                "requested_signal": if matches!(stage, 4 | 6) { Some(9) } else { None },
+                "wait_exit_code": status.and_then(std::process::ExitStatus::code),
+                "wait_signal": status.and_then(ExitStatusExt::signal),
+                "same_original_child_wait": stage == 5 && status.is_some(),
+            });
+            if value.get("fixture_owned_child_trace").is_none() {
+                value["fixture_owned_child_trace"] = serde_json::json!([]);
+            }
+            if let Some(events) = value["fixture_owned_child_trace"].as_array_mut() {
+                if events.len() < 64 {
+                    events.push(event);
+                } else {
+                    value["fixture_trace_overflow"] = serde_json::json!(true);
+                }
+            }
+        }
+    }
+
     fn request_stop(&mut self) {
         set_cleanup(&self.cleanup, WrapperCleanupState::StopRequested);
-        if rustix::process::pidfd_send_signal(&self.pidfd, Signal::KILL).is_err() {
+        let stopped = rustix::process::pidfd_send_signal(&self.pidfd, Signal::KILL);
+        #[cfg(test)]
+        self.fixture_record(4, Some(stopped.as_ref().err().map_or(0, |e| e.raw_os_error())), None);
+        if stopped.is_err() {
             set_cleanup(&self.cleanup, WrapperCleanupState::CleanupUnknown);
         }
     }
@@ -228,7 +279,9 @@ impl OwnedChild {
         // counted as completed cleanup and no other child/group is signalled.
         loop {
             match self.child.try_wait() {
-                Ok(Some(_)) => {
+                Ok(Some(_status)) => {
+                    #[cfg(test)]
+                    self.fixture_record(5, None, Some(&_status));
                     set_cleanup(&self.cleanup, WrapperCleanupState::TerminalReaped);
                     return;
                 }
@@ -248,9 +301,28 @@ impl Drop for OwnedChild {
             .lock()
             .map_or(true, |state| *state != WrapperCleanupState::TerminalReaped)
         {
-            let _ = rustix::process::pidfd_send_signal(&self.pidfd, Signal::KILL);
+            let _stopped = rustix::process::pidfd_send_signal(&self.pidfd, Signal::KILL);
+            #[cfg(test)]
+            self.fixture_record(6, Some(_stopped.as_ref().err().map_or(0, |e| e.raw_os_error())), None);
             // Panic/drop cannot claim a terminal wait observation.
             set_cleanup(&self.cleanup, WrapperCleanupState::CleanupUnknown);
+        }
+    }
+}
+
+#[cfg(test)]
+fn fixture_preserve_trace(
+    diagnostic: &Arc<Mutex<Option<serde_json::Value>>>,
+    replacement: &mut serde_json::Value,
+) {
+    if let Ok(observed) = diagnostic.lock()
+        && let Some(value) = observed.as_ref()
+    {
+        if let Some(trace) = value.get("fixture_owned_child_trace") {
+            replacement["fixture_owned_child_trace"] = trace.clone();
+        }
+        if let Some(overflow) = value.get("fixture_trace_overflow") {
+            replacement["fixture_trace_overflow"] = overflow.clone();
         }
     }
 }
@@ -575,7 +647,12 @@ pub(super) fn launch_automatic_runtime(
                 set_cleanup(&cleanup, WrapperCleanupState::NotStarted);
                 BridgeError::BeforeDispatch
             })?;
-            let owned = match OwnedChild::capture(started, cleanup.clone()) {
+            let owned = match OwnedChild::capture(
+                started,
+                cleanup.clone(),
+                #[cfg(test)]
+                diagnostic.clone(),
+            ) {
                 Ok(child) => child,
                 Err(mut uncaptured) => {
                     if let Ok(mut observed) = diagnostic.lock()
@@ -607,6 +684,8 @@ pub(super) fn launch_automatic_runtime(
                 value["owned_pid"] = serde_json::json!(child.as_ref().ok_or(BridgeError::OutcomeUnknown)?.child.id());
             }
             let owned = child.as_mut().ok_or(BridgeError::OutcomeUnknown)?;
+            #[cfg(test)]
+            owned.fixture_record(1, None, None);
             let probe = LinuxIdentityProbe::capture_started_child(StartedChildBinding {
                 pid: owned.child.id(), uid: rustix::process::geteuid().as_raw(), executable_device: executable.0,
                 executable_inode: executable.1, executable_sha256: digest(&config.command_sha256)?,
@@ -616,13 +695,22 @@ pub(super) fn launch_automatic_runtime(
             let actual_pid = Pid::from_raw(identity.pid as i32).ok_or(BridgeError::InvalidBinding)?;
             let actual_pgid = rustix::process::getpgid(Some(actual_pid)).map_err(|_| BridgeError::ProcessObservationUnavailable)?.as_raw_pid();
             if probe.observe()?.0 != identity { return Err(BridgeError::IdentityChanged); }
-            let observation = serde_json::json!({
+            #[allow(unused_mut)]
+            let mut observation = serde_json::json!({
                 "provider": {"pid":identity.pid,"pgid":actual_pgid,"sid":identity.session_id,
                     "uid":identity.uid,"start_ticks":identity.start_ticks,
                     "executable_sha256":super::super::hex(&identity.executable_sha256)},
                 "owned_pid":identity.pid,"generation":generation,"authenticated_h2":false,"health_authenticated":false
             });
+            #[cfg(test)]
+            {
+                observation["provider"]["executable_device"] = serde_json::json!(executable.0);
+                observation["provider"]["executable_inode"] = serde_json::json!(executable.1);
+                fixture_preserve_trace(&diagnostic, &mut observation);
+            }
             *diagnostic.lock().map_err(|_| BridgeError::ProcessObservationUnavailable)? = Some(observation.clone());
+            #[cfg(test)]
+            owned.fixture_record(2, None, None);
             let handshake = read_handshake(&mut owned.child, &probe, &directory, deadline, &stop)?;
             let limits = RpcLimits { maximum_request_bytes: 1024 * 1024, maximum_response_bytes: 1024 * 1024, timeout };
             let session = rt.block_on(async {
@@ -644,7 +732,11 @@ pub(super) fn launch_automatic_runtime(
             let mut authenticated = observation;
             authenticated["authenticated_h2"] = serde_json::json!(true);
             authenticated["health_authenticated"] = serde_json::json!(true);
+            #[cfg(test)]
+            fixture_preserve_trace(&diagnostic, &mut authenticated);
             *diagnostic.lock().map_err(|_| BridgeError::ProcessObservationUnavailable)? = Some(authenticated);
+            #[cfg(test)]
+            owned.fixture_record(3, None, None);
             Ok(session)
         })();
         match startup {
@@ -653,7 +745,11 @@ pub(super) fn launch_automatic_runtime(
                     while !stop.load(Ordering::Acquire) {
                         if let Some(owned) = child.as_mut() {
                             match owned.child.try_wait() {
-                                Ok(Some(_)) => { set_cleanup(&cleanup, WrapperCleanupState::TerminalReaped); break; }
+                                Ok(Some(_status)) => {
+                                    #[cfg(test)]
+                                    owned.fixture_record(5, None, Some(&_status));
+                                    set_cleanup(&cleanup, WrapperCleanupState::TerminalReaped); break;
+                                }
                                 Ok(None) => {}
                                 Err(_) => { set_cleanup(&cleanup, WrapperCleanupState::CleanupUnknown); break; }
                             }

@@ -603,6 +603,31 @@ impl AuthState {
             && capability == "update"
     }
 
+    /// A real request owner, not the public policy name, admits native retirement.
+    /// Its existing validator authenticates sealed issuer and approval capsules and
+    /// binds token identity, accessor, namespace, clocks and finite-use flags.
+    pub(super) fn namespace_control_group_deletion_owner(
+        &self,
+        id: &str,
+        namespace: &str,
+    ) -> bool {
+        self.control_groups.floor
+            && self
+                .control_groups
+                .requests
+                .get(id)
+                .is_some_and(|owner| owner.namespace == namespace)
+            && self.tokens.get(id).is_some_and(|token| {
+                token.namespace == namespace
+                    && token.auth_provenance.is_none()
+                    && token.public_origin.is_none()
+                    && token.raw_wrapped_reply_custody.is_none()
+                    && token.auth_mount.is_none()
+                    && token.auth_origin_known
+            })
+            && self.validate_control_group_state().is_ok()
+    }
+
     pub(crate) fn control_group_namespace_has_requests(&self, namespace: &str) -> bool {
         self.control_groups
             .requests

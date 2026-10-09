@@ -802,6 +802,12 @@ impl Service {
             .engines
             .validate_kv2_lossless_state(Some(&current.engines))
             .map_err(Response::from_engine_error)?;
+        if (current.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA
+            || current.namespaces.workflows.has_dynamic_profiles())
+            && incoming.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade dynamic workflow sources"));
+        }
         if current.schema >= WORKFLOW_PROFILE_STATE_SCHEMA
             && incoming.schema < WORKFLOW_PROFILE_STATE_SCHEMA
         {

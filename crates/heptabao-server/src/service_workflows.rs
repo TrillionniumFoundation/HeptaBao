@@ -84,6 +84,8 @@ impl WorkflowState {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct WorkflowDefinition {
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    dynamic_sources: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     profile: Option<profiles::Profile>,
     steps: Vec<WorkflowStep>,
@@ -128,6 +130,11 @@ impl WorkflowState {
                 .values()
                 .any(|entry| entry.definition.profile.is_some())
         })
+    }
+
+    pub(super) fn has_dynamic_profiles(&self) -> bool {
+        self.by_namespace.values().flat_map(BTreeMap::values)
+            .any(|stored| stored.definition.dynamic_sources)
     }
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
@@ -454,6 +461,7 @@ fn parse_definition(body: &Value) -> Result<(WorkflowDefinition, Option<u64>), R
         parsed_outputs.insert(name.clone(), OutputMapping { step, field });
     }
     let definition = WorkflowDefinition {
+        dynamic_sources: false,
         profile: None,
         steps: parsed_steps,
         outputs: parsed_outputs,
@@ -464,6 +472,20 @@ fn parse_definition(body: &Value) -> Result<(WorkflowDefinition, Option<u64>), R
 }
 
 fn validate_definition(definition: &WorkflowDefinition) -> Result<(), Response> {
+    if definition.dynamic_sources {
+        if !definition.steps.is_empty() || !definition.outputs.is_empty()
+            || definition.allow_unauthenticated
+        {
+            return Err(Response::error(503, "invalid dynamic workflow owner"));
+        }
+        let Some(profile) = &definition.profile else {
+            return Err(Response::error(503, "dynamic workflow requires a profile"));
+        };
+        return match profile.dynamic_program() {
+            Ok(Some(_)) => Ok(()),
+            _ => Err(Response::error(503, "invalid persisted dynamic workflow program")),
+        };
+    }
     if let Some(profile) = &definition.profile {
         if !definition.steps.is_empty()
             || !definition.outputs.is_empty()
@@ -661,6 +683,11 @@ impl Service {
                             definition,
                         },
                     );
+                    if let Err(error) =
+                        state.prepare_global_lossless_json_state(self.state.as_ref())
+                    {
+                        return error;
+                    }
                     state.schema = state.writer_schema();
                     if let Err(error) = state.validate_format() {
                         return error;
@@ -752,6 +779,12 @@ impl Service {
         else {
             return Response::error(404, "workflow not found");
         };
+        if stored.definition.dynamic_sources {
+            let Some(profile) = &stored.definition.profile else {
+                return Response::error(503, "dynamic workflow profile is unavailable");
+            };
+            return self.workflow_dynamic_profile_execute(state, principal, request, profile);
+        }
         if request
             .body
             .as_object()

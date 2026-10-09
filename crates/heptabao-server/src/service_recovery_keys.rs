@@ -2078,10 +2078,105 @@ mod source825_real_recovery_fixture_tests {
         (nonce, final_share)
     }
     fn close(c: &Case) {
-        c.service
-            .as_ref()
-            .expect("live fixture")
-            .fence_openbao_wrapper();
+        let service = c.service.as_ref().expect("live fixture");
+        service.fence_openbao_wrapper();
+        // Root captures this absolute CLOCK_MONOTONIC bound once, before the
+        // owned run. Cleanup observes it; no fixture creates a fresh budget.
+        let absolute: u64 = std::env::var(
+            "HEPTABAO_RECOVERY_FIXTURE_OWNER_ABSOLUTE_MONOTONIC_NS",
+        )
+        .expect("UNQUALIFIED: original Root absolute deadline missing")
+        .parse()
+        .expect("UNQUALIFIED: original Root absolute deadline invalid");
+        loop {
+            let observed = rustix::time::clock_gettime_dynamic(
+                rustix::time::DynamicClockId::Known(rustix::time::ClockId::Monotonic),
+            )
+            .expect("genuine Linux monotonic clock");
+            let observed = u64::try_from(
+                i128::from(observed.tv_sec) * 1_000_000_000 + i128::from(observed.tv_nsec),
+            )
+            .expect("genuine monotonic clock bounds");
+            assert!(
+                observed < absolute,
+                "UNQUALIFIED: original Root cleanup deadline expired"
+            );
+            match service.openbao_wrapper_cleanup_state() {
+                Some(crate::WrapperCleanupState::TerminalReaped) => break,
+                Some(crate::WrapperCleanupState::CleanupUnknown) | None => {
+                    panic!("UNQUALIFIED: provider cleanup owner is absent or unknown")
+                }
+                Some(_) => {}
+            }
+            std::thread::sleep(Duration::from_nanos((absolute - observed).min(2_000_000)));
+        }
+        let observation = service
+            .openbao_wrapper_private_observation()
+            .expect("genuine owned provider observation");
+        let pid = observation["provider"]["pid"]
+            .as_u64()
+            .expect("genuine provider PID");
+        let started = observation["provider"]["start_ticks"]
+            .as_u64()
+            .expect("genuine provider start");
+        assert!(pid > 0 && started > 0);
+        assert_eq!(observation["owned_pid"].as_u64(), Some(pid));
+        assert_eq!(
+            observation["provider"]["uid"].as_u64(),
+            Some(u64::from(fs::symlink_metadata(&c.root).expect("case owner").uid()))
+        );
+        let configuration: crate::OpenBaoWrapperConfig =
+            serde_json::from_slice(&c.config).expect("original provider configuration");
+        assert_eq!(
+            observation["provider"]["executable_sha256"].as_str(),
+            Some(configuration.command_sha256.as_str())
+        );
+        assert!(observation["provider"]["executable_device"].as_u64().is_some_and(|v| v > 0));
+        assert!(observation["provider"]["executable_inode"].as_u64().is_some_and(|v| v > 0));
+        assert_eq!(observation["authenticated_h2"], true);
+        assert_eq!(observation["health_authenticated"], true);
+        assert_ne!(observation["fixture_trace_overflow"], true);
+        let events = observation["fixture_owned_child_trace"]
+            .as_array()
+            .expect("actual same Child lifecycle trace");
+        for stage in [1_u64, 2, 3, 5] {
+            assert!(events.iter().any(|event| event["stage"].as_u64() == Some(stage)));
+        }
+        assert!(events.iter().all(|event| event["owned_pid"].as_u64() == Some(pid)));
+        assert!(!events.iter().any(|event| event["stage"] == 6));
+        let terminal = events
+            .iter()
+            .rev()
+            .find(|event| event["stage"] == 5)
+            .expect("original same Child terminal wait");
+        assert_eq!(terminal["same_original_child_wait"], true);
+        assert_eq!(terminal["provider_pid"].as_u64(), Some(pid));
+        assert_eq!(terminal["provider_start_ticks"].as_u64(), Some(started));
+        assert_eq!(terminal["memfd_sha256"], observation["provider"]["executable_sha256"]);
+        assert!(terminal["wait_exit_code"].as_i64().is_some()
+            ^ terminal["wait_signal"].as_i64().is_some());
+        for stopped in events.iter().filter(|event| event["stage"] == 4) {
+            assert_eq!(stopped["requested_signal"], 9);
+            assert!(stopped["syscall_errno"].as_i64().is_some());
+        }
+        // Numeric owned identity and executable digest only; no args, body,
+        // keys, bearer or configuration contents are part of this evidence.
+        let evidence = json!({
+            "schema": "same-original-provider-child-lifecycle-v1",
+            "owner_absolute_monotonic_ns": absolute,
+            "provider": observation["provider"],
+            "owned_pid": observation["owned_pid"],
+            "generation": observation["generation"],
+            "authenticated_h2": observation["authenticated_h2"],
+            "health_authenticated": observation["health_authenticated"],
+            "cleanup_terminal_reaped": true,
+            "trace": events,
+            "root_transport_controls": null,
+            "graceful_close_claimed": false,
+            "natural_exit_claimed": false,
+        });
+        let path = c.root.join(format!("provider-lifecycle-{pid}-{started}.original.json"));
+        save(&path, &serde_json::to_vec(&evidence).expect("fixed public lifecycle evidence"));
     }
     fn genuine_expired_initialization_deadlines() {
         let parent = PathBuf::from(

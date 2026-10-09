@@ -147,6 +147,7 @@ mod kv2_import;
 #[path = "service_kv2_import_tests.rs"]
 mod kv2_import_tests;
 const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
+const WORKFLOW_DYNAMIC_STATE_SCHEMA: u32 = 123;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -155,7 +156,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = WORKFLOW_DYNAMIC_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -202,6 +203,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SYMMETRIC_BACKUP_STATE_SCHEMA
                 | KV2_LOSSLESS_STATE_SCHEMA
                 | WORKFLOW_PROFILE_STATE_SCHEMA
+                | WORKFLOW_DYNAMIC_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -4365,6 +4367,7 @@ impl Service {
             || admitted.auth.has_raw_wrapped_reply_state()
             || admitted.engines.has_ssh_ca_state()
             || admitted.auth.has_control_group_state()
+            || admitted.engines.has_symmetric_backup_state()
             || admitted.engines.has_kv2_lossless_state()
         {
             admitted.schema = admitted.writer_schema();

@@ -206,6 +206,15 @@ fn time_seconds(value: &str) -> Result<u64> {
     u64::try_from(t.timestamp()).map_err(|_| bad("invalid backup timestamp"))
 }
 
+// The measured native backup uses Go Duration nanoseconds; ordinary API durations stay strings.
+fn restored_rotation_period(nanoseconds: u64) -> Result<u64> {
+    if nanoseconds % 1_000_000_000 != 0 {
+        return Err(bad("backup auto_rotate_period requires whole-second precision"));
+    }
+    let seconds = nanoseconds / 1_000_000_000;
+    auto_rotate_period(Some(&json!(format!("{seconds}s"))))
+}
+
 fn stamp_valid(value: &Option<Stamp>, latest: u64) -> Result<()> {
     if let Some(v) = value {
         if v.version == 0 || v.version > latest {
@@ -552,7 +561,8 @@ impl Transit {
                 allow_plaintext_backup: key.allow_plaintext_backup,
                 version_template: m.version_template.clone(),
                 storage_prefix: m.storage_prefix.clone(),
-                auto_rotate_period: key.auto_rotate_period,
+                auto_rotate_period: key.auto_rotate_period.checked_mul(1_000_000_000)
+                .ok_or_else(|| bad("backup auto_rotate_period overflow"))?,
                 imported: byok::imported_key(key),
                 allow_imported_rotation: byok::rotation_permission(key),
                 soft_deleted: key.deleted,
@@ -626,6 +636,7 @@ impl Transit {
             )));
         }
         let kind = kind_name(p.kind)?;
+        let auto_rotate_period = restored_rotation_period(p.auto_rotate_period)?;
         if p.latest_version == 0
             || p.latest_version > MAX_VERSIONS
             || p.archive_version != p.latest_version
@@ -716,7 +727,7 @@ impl Transit {
             min_encryption_version: p.min_encryption_version,
             deletion_allowed: p.deletion_allowed,
             exportable: p.exportable,
-            auto_rotate_period: auto_rotate_period(Some(&json!(p.auto_rotate_period)))?,
+            auto_rotate_period,
             deleted: p.soft_deleted,
             versions,
         };

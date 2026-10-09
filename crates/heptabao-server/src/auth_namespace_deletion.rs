@@ -327,14 +327,14 @@ impl AuthState {
             (owned.contains(id.as_str())
                 && (token.root
                     || token.wrapping.is_some()
-                    || !matches!(
+                    || (!matches!(
                         token.auth_provenance,
                         Some(
                             TokenAuthProvenance::TokenApi { .. }
                                 | TokenAuthProvenance::Userpass { .. }
                                 | TokenAuthProvenance::AppRole { .. }
                         )
-                    )))
+                    ) && !self.namespace_control_group_deletion_owner(id, namespace))))
                 || (!owned.contains(id.as_str())
                     && token
                         .parent

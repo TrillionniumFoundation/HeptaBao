@@ -947,3 +947,135 @@ fn symmetric270_native_kdf1_hot_archive_trim_and_restore_preserve_retained_secre
     }
     Ok(())
 }
+#[test]
+fn symmetric270_backup_rotation_nanoseconds_restore_and_atomic_boundaries() -> TestResult {
+    let mut t = fixture()?;
+    assert!(
+        call(
+            &mut t,
+            "POST",
+            "keys/rotation-source",
+            &json!({
+                "type":"aes256-gcm96","exportable":true,"allow_plaintext_backup":true
+            })
+        )?
+        .status
+            == 200
+    );
+    assert!(
+        call(
+            &mut t,
+            "POST",
+            "keys/rotation-source/config",
+            &json!({"auto_rotate_period":"168h"})
+        )?
+        .status
+            == 200
+    );
+    let exported = call(&mut t, "GET", "backup/rotation-source", &json!({}))?;
+    let blob = exported.body["data"]["backup"]
+        .as_str()
+        .ok_or("backup_missing")?;
+    let raw = Zeroizing::new(BASE64.decode(blob).map_err(|_| "backup_decode_failed")?);
+    let wire: Value = serde_json::from_slice(&raw).map_err(|_| "backup_parse_failed")?;
+    assert!(wire["policy"]["auto_rotate_period"] == 604_800_000_000_000u64);
+    assert!(
+        call(
+            &mut t,
+            "POST",
+            "restore/rotation-copy",
+            &json!({"backup":blob})
+        )?
+        .status
+            == 204
+    );
+    assert!(t.keys["rotation-copy"].auto_rotate_period == 604_800);
+    let source_private = call(
+        &mut t,
+        "GET",
+        "export/encryption-key/rotation-source",
+        &json!({}),
+    )?;
+    let restored_private = call(
+        &mut t,
+        "GET",
+        "export/encryption-key/rotation-copy",
+        &json!({}),
+    )?;
+    assert!(source_private.body["data"]["keys"] == restored_private.body["data"]["keys"]);
+    let encrypted = call(
+        &mut t,
+        "POST",
+        "encrypt/rotation-source",
+        &json!({"plaintext":BASE64.encode(b"nonzero backup period keeps real AES material")}),
+    )?;
+    let plaintext = call(
+        &mut t,
+        "POST",
+        "decrypt/rotation-copy",
+        &json!({"ciphertext":encrypted.body["data"]["ciphertext"]}),
+    )?;
+    assert!(
+        plaintext.body["data"]["plaintext"]
+            == BASE64.encode(b"nonzero backup period keeps real AES material")
+    );
+
+    for (index, seconds) in [0u64, 3_600, 604_800, 315_360_000].into_iter().enumerate() {
+        let mut input = wire_fixture("aes256-gcm96", 0, false)?;
+        input["policy"]["auto_rotate_period"] = json!(seconds * 1_000_000_000);
+        restore_wire(&mut t, &format!("period-{index}"), &input)?;
+        assert!(t.keys[&format!("period-{index}")].auto_rotate_period == seconds);
+        let output = call(&mut t, "GET", &format!("backup/period-{index}"), &json!({}))?;
+        let raw = Zeroizing::new(
+            BASE64
+                .decode(
+                    output.body["data"]["backup"]
+                        .as_str()
+                        .ok_or("backup_missing")?,
+                )
+                .map_err(|_| "backup_decode_failed")?,
+        );
+        let output: Value = serde_json::from_slice(&raw).map_err(|_| "backup_parse_failed")?;
+        assert!(output["policy"]["auto_rotate_period"] == seconds * 1_000_000_000);
+    }
+    let before = encoded(&t)?;
+    for nanoseconds in [
+        3_599_000_000_000,
+        315_360_001_000_000_000,
+        u64::MAX,
+    ] {
+        let mut input = wire_fixture("aes256-gcm96", 0, false)?;
+        input["policy"]["auto_rotate_period"] = json!(nanoseconds);
+        let raw = Zeroizing::new(serde_json::to_vec(&input).map_err(|_| "wire_encoding_failed")?);
+        let failure = t
+            .handle(
+                "team",
+                "transit",
+                "POST",
+                "restore/rotation-copy",
+                &json!({"backup":BASE64.encode(raw.as_slice()),"force":true}),
+                100,
+            )
+            .err()
+            .ok_or("invalid_period_accepted")?;
+        assert!(failure.status == 400);
+        assert!(
+            encoded(&t)?.as_slice() == before.as_slice(),
+            "precision, duration bounds and overflow failures cannot replace any live key"
+        );
+    }
+    assert!(
+        t.handle(
+            "team",
+            "transit",
+            "POST",
+            "keys/rotation-source/config",
+            &json!({"auto_rotate_period":604_800}),
+            100
+        )
+        .is_err(),
+        "backup integer units do not relax the existing public duration API"
+    );
+    assert!(encoded(&t)?.as_slice() == before.as_slice());
+    Ok(())
+}

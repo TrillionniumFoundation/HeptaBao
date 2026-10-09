@@ -2,6 +2,8 @@
 //! CEL, templates, unauthenticated execution and trace remain separate capabilities.
 use super::*;
 use crate::auth::{Lex, lex_hcl, parse_hcl_value};
+#[path = "service_workflow_dynamic.rs"]
+mod dynamic;
 
 const MAX_PROFILE_BYTES: usize = 64 * 1024;
 
@@ -46,6 +48,12 @@ fn step_key(flow: &str, name: &str) -> String {
 }
 
 impl Profile {
+    pub(super) fn dynamic_program(&self) -> Result<Option<dynamic::Program>, Response> {
+        if self.description.len() > MAX_JSON_STRING_BYTES {
+            return Err(bad_profile("workflow description is outside bounds"));
+        }
+        dynamic::Program::compile(&self.document)
+    }
     pub(super) fn wire(&self, path: &str, version: u64) -> Value {
         json!({"path":path, "version":version, "workflow":self.document,
             "description":self.description, "cas_required":self.cas_required,
@@ -399,9 +407,16 @@ impl Service {
             description: description.into(),
             cas_required,
         };
-        if let Err(error) = profile.compile() {
-            return error;
-        }
+        let dynamic_sources = match profile.dynamic_program() {
+            Ok(Some(_)) => true,
+            Ok(None) => {
+                if let Err(error) = profile.compile() {
+                    return error;
+                }
+                false
+            }
+            Err(error) => return error,
+        };
         let cas = match object.get("cas") {
             None => None,
             Some(value) => match value.as_i64() {
@@ -437,6 +452,7 @@ impl Service {
             StoredWorkflow {
                 version,
                 definition: WorkflowDefinition {
+                    dynamic_sources,
                     profile: Some(profile),
                     steps: Vec::new(),
                     outputs: BTreeMap::new(),
@@ -463,112 +479,154 @@ impl Service {
         };
         let mut responses = BTreeMap::new();
         for step in &compiled.steps {
-            if self.workflow_step_is_nonlocal(&state, outer.namespace, step) {
-                return bad_profile(
-                    "profile request requires an unsupported external effect boundary",
-                );
-            }
-            let envelopes =
-                match request_normalization::envelopes(&step.method, &step.path, &step.body) {
-                    Ok(value) => value,
-                    Err(error) => return error,
-                };
-            let root = request_normalization::kv_root(
-                Some(&state),
-                outer.namespace,
-                &step.method,
-                &step.path,
-                envelopes.body,
-            );
-            let normalized = match request_normalization::operation(
-                Some(&state),
-                outer.namespace,
-                &step.method,
-                root.as_deref().unwrap_or(&step.path),
-                &step.path,
-                envelopes.body,
-            ) {
-                Ok(value) => value,
-                Err(error) => return error,
-            };
-            let namespace =
-                request_normalization::token_namespace(&normalized.path, Some(actor.namespace()))
-                    .unwrap_or(outer.namespace);
-            if namespace != outer.namespace {
-                return Response::error(
-                    403,
-                    "profile request cannot change the admitted namespace view",
-                );
-            }
-            let request = RequestView {
-                method: &normalized.method,
-                path: &normalized.path,
-                namespace,
-                token: outer.token,
-                body: &normalized.body.0,
-                now: outer.now,
-                admission_started: outer.admission_started,
-                token_clock: outer.token_clock,
-                allow_forward: outer.allow_forward,
-                enforce_namespace: outer.enforce_namespace,
-                wrap_ttl_seconds: None,
-                origin_peer: outer.origin_peer,
-                client_certificates: outer.client_certificates,
-            };
-            let transport = control_groups::TransportRequest {
-                method: &step.method,
-                path: &step.path,
-                namespace: outer.namespace,
-                body: &step.body,
-            };
-            let deferred =
-                self.control_group_route(&mut state, Some(actor), &request, transport, false);
-            let mut response = if let Some(response) = deferred {
-                response
-            } else {
-                let mut consumption = None;
-                let mut response = Self::dispatch_authorized_subrequest(
-                    &mut state,
-                    Some(actor),
-                    namespace,
-                    request.method,
-                    request.path,
-                    request.body,
-                    envelopes.token_fields.as_ref(),
-                    envelopes.pki_role_fields.as_ref(),
-                    outer.now,
-                    outer.token_clock,
-                    outer.client_certificates,
-                    outer.origin_peer,
-                    &mut consumption,
-                );
-                echo_admitted_token_reply(&mut response, request.path, request.body, outer.token);
-                if consumption.is_some() {
-                    return bad_profile(
-                        "profile authentication login requires an affine consumption boundary",
-                    );
-                }
-                if response.status < 300 {
-                    // Each ordinary inner request commits before the next one.
-                    // Approval deferral has already published its inert owner.
-                    if let Err(error) = self.control_group_publish(&mut state) {
-                        return error;
-                    }
-                }
-                response
-            };
+            let mut response = self.workflow_profile_dispatch_step(&mut state, actor, outer, step);
             if response.status >= 300 && !step.allow_failure {
                 return response;
             }
             responses.insert(step.name.clone(), std::mem::take(&mut response.body));
-            // Refresh without dropping the prepared namespace capsule installed
-            // by the commit. No outer approval authorizes a different inner API.
-            if let Some(current) = &self.state {
-                state = current.clone();
-                state.namespace_protected = current.namespace_protected.clone();
-            }
         }
         match evaluate_output(&compiled.output, &responses) {
+            Ok(output) => Response::ok(json!({"data":output})),
+            Err(error) => error,
+        }
+    }
+
+    fn workflow_profile_dispatch_step(
+        &mut self,
+        state: &mut State,
+        actor: &Principal,
+        outer: &RequestView<'_>,
+        step: &WorkflowStep,
+    ) -> Response {
+        if self.workflow_step_is_nonlocal(state, outer.namespace, step) {
+            return bad_profile("profile request requires an unsupported external effect boundary");
+        }
+        let envelopes = match request_normalization::envelopes(&step.method, &step.path, &step.body)
+        {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        let root = request_normalization::kv_root(
+            Some(state),
+            outer.namespace,
+            &step.method,
+            &step.path,
+            envelopes.body,
+        );
+        let normalized = match request_normalization::operation(
+            Some(state),
+            outer.namespace,
+            &step.method,
+            root.as_deref().unwrap_or(&step.path),
+            &step.path,
+            envelopes.body,
+        ) {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        let namespace =
+            request_normalization::token_namespace(&normalized.path, Some(actor.namespace()))
+                .unwrap_or(outer.namespace);
+        if namespace != outer.namespace {
+            return Response::error(
+                403,
+                "profile request cannot change the admitted namespace view",
+            );
+        }
+        let request = RequestView {
+            method: &normalized.method,
+            path: &normalized.path,
+            namespace,
+            token: outer.token,
+            body: &normalized.body.0,
+            now: outer.now,
+            admission_started: outer.admission_started,
+            token_clock: outer.token_clock,
+            allow_forward: outer.allow_forward,
+            enforce_namespace: outer.enforce_namespace,
+            wrap_ttl_seconds: None,
+            origin_peer: outer.origin_peer,
+            client_certificates: outer.client_certificates,
+        };
+        let transport = control_groups::TransportRequest {
+            method: &step.method,
+            path: &step.path,
+            namespace: outer.namespace,
+            body: &step.body,
+        };
+        let deferred = self.control_group_route(state, Some(actor), &request, transport, false);
+        let response = if let Some(response) = deferred {
+            response
+        } else {
+            let mut consumption = None;
+            let mut response = Self::dispatch_authorized_subrequest(
+                state,
+                Some(actor),
+                namespace,
+                request.method,
+                request.path,
+                request.body,
+                envelopes.token_fields.as_ref(),
+                envelopes.pki_role_fields.as_ref(),
+                outer.now,
+                outer.token_clock,
+                outer.client_certificates,
+                outer.origin_peer,
+                &mut consumption,
+            );
+            echo_admitted_token_reply(&mut response, request.path, request.body, outer.token);
+            if consumption.is_some() {
+                return bad_profile(
+                    "profile authentication login requires an affine consumption boundary",
+                );
+            }
+            if response.status < 300 {
+                // Each ordinary inner request commits before the next one.
+                // Approval deferral has already published its inert owner.
+                if let Err(error) = self.control_group_publish(state) {
+                    return error;
+                }
+            }
+            response
+        };
+        // Refresh without dropping the prepared namespace capsule installed
+        // by the commit. No outer approval authorizes a different inner API.
+        if let Some(current) = &self.state {
+            *state = current.clone();
+            state.namespace_protected = current.namespace_protected.clone();
+        }
+        response
+    }
+
+    pub(super) fn workflow_dynamic_profile_execute(
+        &mut self,
+        mut state: State,
+        actor: &Principal,
+        outer: &RequestView<'_>,
+        profile: &Profile,
+    ) -> Response {
+        let program = match profile.dynamic_program() {
+            Ok(Some(program)) => program,
+            _ => return bad_profile("persisted dynamic workflow program is unavailable"),
+        };
+        let mut context = match program.context(outer.body) {
+            Ok(context) => context,
+            Err(error) => return error,
+        };
+        for step in &program.steps {
+            let resolved = match step.resolve(&context) {
+                Ok(Some(resolved)) => resolved,
+                Ok(None) => continue,
+                Err(error) => return error,
+            };
+            let mut response =
+                self.workflow_profile_dispatch_step(&mut state, actor, outer, &resolved.step);
+            if response.status >= 300 && !resolved.step.allow_failure {
+                return response;
+            }
+            context.record(resolved, std::mem::take(&mut response.body));
+        }
+        match program.output(&context) {
             Ok(output) => Response::ok(json!({"data":output})),
             Err(error) => error,
         }

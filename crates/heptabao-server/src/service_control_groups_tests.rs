@@ -3515,3 +3515,642 @@ fn cg_lossless_encrypted_pending_body_and_approval_context_survive_durable_resta
     assert_eq!(call(&mut f.service,&wrapper,"POST","sys/wrapping/unwrap",json!({}),100).status,400);
     Ok(())
 }
+
+// Schema123 exercises ordinary Service providers; no interpreter mock grants ACL.
+const DYNAMIC_WORKFLOW123: &str = r#"input {
+  field "string" "path" { required = true }
+  field "payload" { type = "map" required = true }
+  field { type = "slice" name = "tags" required = true }
+  field "bool" { name = "run" default = true }
+  field "mode" { type = "string" default = "safe" allowed_values = ["safe", "checked"] }
+  field "operation" { type = "string" default = "update" }
+}
+flow "write" {
+  when = { eval_source = "input" eval_type = "bool" field_name = "run" }
+  request "save" {
+    operation = { eval_source = "input" eval_type = "string" field_name = "operation" }
+    path = { eval_source = "input" eval_type = "string" field_name = "path" }
+    data = { data = { eval_source = "input" eval_type = "map" field_name = "payload" } }
+  }
+  request "skipped" {
+    when = false operation = "update" path = "secret/data/cg/skipped"
+    data = { data = { value = "must-not-execute" } }
+  }
+}
+flow "read" {
+  when = { eval_source = "request" eval_type = "bool"
+    flow_name = "write" request_name = "save" field_selector = "when" }
+  request "load" {
+    operation = "read"
+    path = { eval_source = "request" eval_type = "string"
+      flow_name = "write" request_name = "save" field_selector = "path" }
+    allow_failure = { eval_source = "request" eval_type = "bool"
+      flow_name = "write" request_name = "save" field_selector = "allow_failure" }
+  }
+}
+output { data = {
+  stored = { eval_source = "response" eval_type = "map[string]any"
+    flow_name = "read" response_name = "load" field_selector = ["data", "data"] }
+  tags = { eval_source = "input" eval_type = "[]string" field_name = "tags" }
+  original = { eval_source = "input" eval_type = "interface{}" field_name = "payload" }
+  mode = { eval_source = "input" eval_type = "string" field_name = "mode" }
+  path = { eval_source = "request" eval_type = "string"
+    flow_name = "write" request_name = "save" field_selector = "path" }
+} }"#;
+
+fn dynamic_profile123(f: &mut Fixture, document: &str, cas: i64) -> Response {
+    call(
+        &mut f.service,
+        &f.admin,
+        "POST",
+        "sys/workflows/manage/cg-wire",
+        json!({"workflow":document, "cas":cas, "cas_required":true,
+        "description":"synthetic-typed-dynamic-profile", "allow_unauthenticated":false}),
+        100,
+    )
+}
+fn dynamic_input123() -> Value {
+    json!({"path":"secret/data/cg/key", "payload":{"value":"after"}, "tags":["alpha","beta"]})
+}
+
+#[test]
+fn workflow123_typed_inputs_prior_sources_and_conditions_use_actual_dispatch() -> TestResult {
+    let mut f = setup()?;
+    create(&mut f);
+    let installed = dynamic_profile123(&mut f, DYNAMIC_WORKFLOW123, -1);
+    assert_eq!(installed.status, 200);
+    assert_eq!(installed.body["data"]["version"], 1);
+    let mut input = dynamic_input123();
+    let payload = heptabao_domain::json::decode(br#"{"value":"after","large":184467440737095516160001,"fake":{"$serde_json::private::Number":"7"}}"#)?;
+    input["payload"] = payload.clone();
+    let result = call(
+        &mut f.service,
+        &f.admin,
+        "POST",
+        "sys/workflows/execute/cg-wire",
+        input,
+        100,
+    );
+    assert_eq!(result.status, 200);
+    assert_eq!(result.body["data"]["stored"], payload);
+    assert_eq!(result.body["data"]["original"], payload);
+    assert!(result.body["data"]["stored"]["fake"].is_object());
+    assert_eq!(result.body["data"]["tags"], json!(["alpha", "beta"]));
+    assert_eq!(result.body["data"]["mode"], "safe");
+    assert_eq!(result.body["data"]["path"], "secret/data/cg/key");
+    let stored = call(
+        &mut f.service,
+        &f.admin,
+        "GET",
+        "secret/data/cg/key",
+        json!({}),
+        100,
+    );
+    assert_eq!(stored.status, 200);
+    assert_eq!(stored.body["data"]["metadata"]["version"], 2);
+    assert_eq!(stored.body["data"]["data"], payload);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "GET",
+            "secret/data/cg/skipped",
+            json!({}),
+            100
+        )
+        .status,
+        404
+    );
+    // A false outer block skips all contained requests and records no history.
+    let skipped = DYNAMIC_WORKFLOW123
+        .split("output {")
+        .next()
+        .ok_or("document")?
+        .to_owned()
+        + "output { data = { done = true } }";
+    assert_eq!(dynamic_profile123(&mut f, &skipped, 1).status, 200);
+    let mut input = dynamic_input123();
+    input["run"] = json!(false);
+    // read flow depends on skipped save: unavailable history is rejected before
+    // that request, and the previously stored KV object is untouched.
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "POST",
+            "sys/workflows/execute/cg-wire",
+            input,
+            100
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "GET",
+            "secret/data/cg/key",
+            json!({}),
+            100
+        )
+        .body["data"]["metadata"]["version"],
+        2
+    );
+    Ok(())
+}
+
+#[test]
+fn workflow123_invalid_input_and_forward_history_fail_before_any_provider() -> TestResult {
+    let mut f = setup()?;
+    create(&mut f);
+    assert_eq!(
+        dynamic_profile123(&mut f, DYNAMIC_WORKFLOW123, -1).status,
+        200
+    );
+    let mut cases = Vec::new();
+    let mut missing = dynamic_input123();
+    missing.as_object_mut().ok_or("object")?.remove("payload");
+    cases.push(missing);
+    for (key, value) in [
+        ("payload", json!("not-a-map")),
+        ("run", json!(1)),
+        ("tags", json!(["ok", 1])),
+        ("mode", json!("forbidden")),
+        ("operation", json!("sudo")),
+        ("path", json!("../outside")),
+    ] {
+        let mut input = dynamic_input123();
+        input[key] = value;
+        cases.push(input);
+    }
+    for input in cases {
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.admin,
+                "POST",
+                "sys/workflows/execute/cg-wire",
+                input,
+                100
+            )
+            .status,
+            400
+        );
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.admin,
+                "GET",
+                "secret/data/cg/skipped",
+                json!({}),
+                100
+            )
+            .status,
+            404
+        );
+        assert_eq!(
+            f.service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .control_group_request_count_for_test(),
+            0
+        );
+    }
+    for document in [
+        DYNAMIC_WORKFLOW123.replace("request_name = \"save\"", "request_name = \"missing\""),
+        DYNAMIC_WORKFLOW123.replace("flow_name = \"write\"", "flow_name = \"read\""),
+        DYNAMIC_WORKFLOW123.replace("eval_source = \"input\"", "eval_source = \"cel\""),
+        DYNAMIC_WORKFLOW123.replace("eval_source = \"input\"", "eval_source = \"template\""),
+        DYNAMIC_WORKFLOW123.replace("eval_type = \"[]string\"", "eval_type = \"unknown\""),
+    ] {
+        assert_eq!(dynamic_profile123(&mut f, &document, 1).status, 400);
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.admin,
+                "GET",
+                "sys/workflows/manage/cg-wire",
+                json!({}),
+                100
+            )
+            .body["data"]["version"],
+            1
+        );
+    }
+    assert_eq!(
+        dynamic_profile123(&mut f, DYNAMIC_WORKFLOW123, 0).status,
+        409
+    );
+    read(&mut f, 1, "before", 100);
+    // An invalid independent second-step input cannot write in the first step.
+    let late = r#"input { field "string" "bad" { required = true } }
+      flow "first" { request "write" { operation = "update" path = "secret/data/cg/key"
+        data = { data = { value = "must-not-execute" } } } }
+      flow "second" { request "late" {
+        operation = { eval_source = "input" eval_type = "string" field_name = "bad" }
+        path = "secret/data/cg/late" } }
+      output { data = {} }"#;
+    assert_eq!(dynamic_profile123(&mut f, late, 1).status, 200);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "POST",
+            "sys/workflows/execute/cg-wire",
+            json!({"bad":"sudo"}),
+            100
+        )
+        .status,
+        400
+    );
+    read(&mut f, 1, "before", 100);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "GET",
+            "secret/data/cg/late",
+            json!({}),
+            100
+        )
+        .status,
+        404
+    );
+    Ok(())
+}
+
+#[test]
+fn workflow123_resolved_controlled_body_survives_restart_once_and_live_policy_veto() -> TestResult {
+    let document = r#"input {
+      field "string" "path" { required = true }
+      field "map" "payload" { required = true }
+    }
+    flow "controlled" { request "write" {
+      operation = "update"
+      path = { eval_source = "input" eval_type = "string" field_name = "path" }
+      data = { data = { eval_source = "input" eval_type = "map" field_name = "payload" } }
+    } }
+    output { data = { wrapping = { eval_source = "response" eval_type = "any"
+      flow_name = "controlled" response_name = "write" field_selector = "wrap_info" } } }"#;
+    for precise in [false, true] {
+        let mut f = setup()?;
+        create(&mut f);
+        let policy = requester_policy("60s", "")
+            + r#"path "sys/workflows/execute/cg-wire" { capabilities = ["update"] }"#;
+        policy_write(&mut f.service, &f.admin, "cg-requester", &policy);
+        assert_eq!(dynamic_profile123(&mut f, document, -1).status, 200);
+        let pending = observed_call(
+            &mut f.service,
+            &f.requester.token,
+            "POST",
+            "sys/workflows/execute/cg-wire",
+            dynamic_input123(),
+            100,
+            precise,
+        )?;
+        assert_eq!(pending.status, 200);
+        assert_eq!(
+            pending.body["data"]["wrapping"]["creation_path"],
+            "secret/data/cg/key"
+        );
+        let wrapper = Zeroizing::new(text(&pending.body, "/data/wrapping/token")?);
+        let accessor = text(&pending.body, "/data/wrapping/accessor")?;
+        let review = review_request(&mut f, &accessor);
+        assert_eq!(review.status, 200);
+        assert_eq!(review.body["data"]["request_path"], "secret/data/cg/key");
+        assert_eq!(
+            review.body["data"]["request_data"],
+            json!({"data":{"value":"after"}})
+        );
+        assert_eq!(
+            review.body["data"]["request_entity"]["ID"],
+            f.requester.entity
+        );
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.first.token,
+                "POST",
+                "sys/control-group/authorize",
+                json!({"accessor":accessor}),
+                100
+            )
+            .status,
+            200
+        );
+        f = restart(f, 100)?;
+        assert_eq!(
+            review_request(&mut f, &accessor).body["data"]["approved"],
+            false
+        );
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        // Replacing the stored profile cannot rewrite the already sealed body.
+        let replacement =
+            document.replace("field_name = \"payload\"", "field_name = \"replacement\"");
+        let replacement =
+            replacement.replace("field \"map\" \"payload\"", "field \"map\" \"replacement\"");
+        assert_eq!(dynamic_profile123(&mut f, &replacement, 1).status, 200);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.second.token,
+                "POST",
+                "sys/control-group/authorize",
+                json!({"accessor":accessor}),
+                100
+            )
+            .status,
+            200
+        );
+        f = restart(f, 100)?;
+        let resumed = observed_call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100,
+            precise,
+        )?;
+        assert_eq!(resumed.status, 200);
+        assert_eq!(resumed.body["data"]["version"], 2);
+        read(&mut f, 2, "after", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        read(&mut f, 2, "after", 100);
+
+        let pending = observed_call(
+            &mut f.service,
+            &f.requester.token,
+            "POST",
+            "sys/workflows/execute/cg-wire",
+            json!({"path":"secret/data/cg/key","replacement":{"value":"must-not-execute"}}),
+            100,
+            precise,
+        )?;
+        assert_eq!(pending.status, 200);
+        let wrapper = Zeroizing::new(text(&pending.body, "/data/wrapping/token")?);
+        let accessor = text(&pending.body, "/data/wrapping/accessor")?;
+        approve_two(&mut f, &accessor);
+        policy_write(
+            &mut f.service,
+            &f.admin,
+            "cg-requester",
+            r#"path "sys/workflows/execute/cg-wire" { capabilities = ["update"] }
+            path "secret/data/cg/*" { capabilities = ["deny"] }"#,
+        );
+        f = restart(f, 100)?;
+        assert_eq!(
+            observed_call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100,
+                precise
+            )?
+            .status,
+            403
+        );
+        read(&mut f, 2, "after", 100);
+        assert_raw_absent(&f, &f.requester.token)?;
+    }
+    Ok(())
+}
+
+#[test]
+fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape() -> TestResult {
+    let mut legacy = profile_fixture()?;
+    let old = legacy.service.state.as_ref().ok_or("old state")?.clone();
+    assert_eq!(old.schema, WORKFLOW_PROFILE_STATE_SCHEMA);
+    let mut encoded = serde_json::to_value(&old)?;
+    let definition =
+        &mut encoded["namespaces"]["workflows"]["by_namespace"][""]["cg-wire"]["definition"];
+    assert!(definition.get("dynamic_sources").is_none());
+    let old_document = CG_WORKFLOW_PROFILE.replace(
+        "value = \"after\"",
+        "value = { eval_source = \"literal-payload-not-a-consumer\" eval_type = \"map\" }",
+    );
+    definition["profile"]["document"] = json!(old_document);
+    let mut decoded: State = serde_json::from_value(encoded)?;
+    assert!(decoded.validate_format().is_ok());
+    assert!(!decoded.namespaces.workflows.has_dynamic_profiles());
+    assert_eq!(decoded.writer_schema(), WORKFLOW_PROFILE_STATE_SCHEMA);
+    // An actual old persisted literal object is reopened and dispatched without
+    // treating its eval_source key as a new dynamic source.
+    legacy
+        .service
+        .control_group_publish(&mut decoded)
+        .map_err(|_| "legacy literal publication")?;
+    legacy = restart(legacy, 100)?;
+    assert_eq!(
+        call(
+            &mut legacy.service,
+            &legacy.admin,
+            "POST",
+            "sys/workflows/execute/cg-wire",
+            json!({}),
+            100
+        )
+        .status,
+        200
+    );
+    let literal = call(
+        &mut legacy.service,
+        &legacy.admin,
+        "GET",
+        "secret/data/cg/key",
+        json!({}),
+        100,
+    );
+    assert_eq!(literal.status, 200);
+    assert_eq!(literal.body["data"]["metadata"]["version"], 2);
+    assert_eq!(
+        literal.body["data"]["data"]["value"],
+        json!({"eval_source":"literal-payload-not-a-consumer","eval_type":"map"})
+    );
+
+    assert_eq!(
+        dynamic_profile123(&mut legacy, DYNAMIC_WORKFLOW123, 1).status,
+        200
+    );
+    let active = legacy.service.state.as_ref().ok_or("active")?.clone();
+    assert_eq!(active.schema, WORKFLOW_DYNAMIC_STATE_SCHEMA);
+    assert_eq!(active.writer_schema(), WORKFLOW_DYNAMIC_STATE_SCHEMA);
+    assert!(active.namespaces.workflows.has_dynamic_profiles());
+    assert!(active.validate_format().is_ok());
+    assert!(supported_reader_schema(WORKFLOW_DYNAMIC_STATE_SCHEMA));
+    let encoded = serde_json::to_value(&active)?;
+    let decoded: State = serde_json::from_value(encoded.clone())?;
+    assert!(decoded.validate_format().is_ok());
+    for schema in [
+        WORKFLOW_PROFILE_STATE_SCHEMA,
+        CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA,
+    ] {
+        let mut downgraded = decoded.clone();
+        downgraded.schema = schema;
+        assert_eq!(
+            downgraded.validate_format().err().ok_or("format")?.status,
+            503
+        );
+        assert_eq!(
+            downgraded
+                .validate_publication_schema(Some(&active))
+                .err()
+                .ok_or("publication")?
+                .status,
+            503
+        );
+        assert_eq!(
+            Service::validate_snapshot_protected_floor(&active, &downgraded)
+                .err()
+                .ok_or("snapshot")?
+                .status,
+            400
+        );
+    }
+    for key in ["dynamic_sources", "extra"] {
+        let mut forged = encoded.clone();
+        forged["namespaces"]["workflows"]["by_namespace"][""]["cg-wire"]["definition"][key] =
+            if key == "dynamic_sources" {
+                json!(false)
+            } else {
+                json!(true)
+            };
+        let loaded = serde_json::from_value::<State>(forged);
+        if key == "extra" {
+            assert!(loaded.is_err());
+        } else {
+            assert!(loaded?.validate_format().is_err());
+        }
+    }
+    legacy = restart(legacy, 100)?;
+    assert_eq!(
+        legacy.service.state.as_ref().ok_or("reload")?.schema,
+        WORKFLOW_DYNAMIC_STATE_SCHEMA
+    );
+    assert_eq!(
+        call(
+            &mut legacy.service,
+            &legacy.admin,
+            "POST",
+            "sys/workflows/execute/cg-wire",
+            dynamic_input123(),
+            100
+        )
+        .status,
+        200
+    );
+    let before_retirement = legacy.service.state.as_ref().ok_or("state")?.clone();
+    assert_eq!(
+        call(
+            &mut legacy.service,
+            &legacy.admin,
+            "DELETE",
+            "sys/workflows/manage/cg-wire",
+            json!({}),
+            100
+        )
+        .status,
+        204
+    );
+    let retired = legacy.service.state.as_ref().ok_or("retired")?.clone();
+    assert!(!retired.namespaces.workflows.has_dynamic_profiles());
+    assert!(!retired.namespaces.workflows.has_profiles());
+    assert_eq!(retired.schema, WORKFLOW_DYNAMIC_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), WORKFLOW_DYNAMIC_STATE_SCHEMA);
+    assert!(retired.validate_format().is_ok());
+    let mut downgraded = retired.clone();
+    downgraded.schema = WORKFLOW_PROFILE_STATE_SCHEMA;
+    assert_eq!(
+        downgraded
+            .validate_publication_schema(Some(&retired))
+            .err()
+            .ok_or("retired publication")?
+            .status,
+        503
+    );
+    assert_eq!(
+        Service::validate_snapshot_protected_floor(&retired, &downgraded)
+            .err()
+            .ok_or("retired snapshot")?
+            .status,
+        400
+    );
+    assert_eq!(
+        Service::validate_snapshot_protected_floor(&retired, &old)
+            .err()
+            .ok_or("old snapshot")?
+            .status,
+        400
+    );
+    assert!(
+        before_retirement
+            .validate_publication_schema(Some(&retired))
+            .is_ok()
+    );
+    legacy = restart(legacy, 100)?;
+    assert_eq!(
+        legacy
+            .service
+            .state
+            .as_ref()
+            .ok_or("retired reload")?
+            .schema,
+        WORKFLOW_DYNAMIC_STATE_SCHEMA
+    );
+    assert_eq!(
+        call(
+            &mut legacy.service,
+            &legacy.admin,
+            "GET",
+            "sys/workflows/manage/cg-wire",
+            json!({}),
+            100
+        )
+        .status,
+        404
+    );
+    Ok(())
+}

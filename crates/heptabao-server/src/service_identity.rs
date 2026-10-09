@@ -223,6 +223,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.namespaces.workflows.has_dynamic_profiles() {
+            required.max(WORKFLOW_DYNAMIC_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -232,6 +237,12 @@ impl State {
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
         self.namespaces.workflows.validate()?;
+        if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
+            && (self.namespaces.workflows.has_dynamic_profiles()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "dynamic workflow sources require schema 123"));
+        }
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             && (self.auth.has_fractional_control_group_state()
                 || previous.is_some_and(|state| state.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA))
@@ -1431,6 +1442,9 @@ impl State {
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA && self.auth.has_fractional_control_group_state() {
             return Err(Response::error(503, "fractional control groups require schema 122"));
         }
+        if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA && self.namespaces.workflows.has_dynamic_profiles() {
+            return Err(Response::error(503, "dynamic workflow sources require schema 123"));
+        }
         if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA && self.namespaces.workflows.has_profiles() {
             return Err(Response::error(503, "workflow profiles require schema 121"));
         }
@@ -2180,6 +2194,7 @@ impl State {
             | SYMMETRIC_BACKUP_STATE_SCHEMA
             | KV2_LOSSLESS_STATE_SCHEMA
             | WORKFLOW_PROFILE_STATE_SCHEMA
+            | WORKFLOW_DYNAMIC_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA

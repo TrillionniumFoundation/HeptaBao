@@ -393,7 +393,7 @@ impl Service {
             // must not inherit the durable store's possibly deep path: Linux
             // sockaddr_un is limited to 108 bytes. The provider/config/store
             // binding stays unchanged; only this owned transient path is short.
-            PathBuf::from("/tmp").join(format!(
+            std::env::temp_dir().join(format!(
                 ".heptabao-wrapper-{}-{}",
                 rustix::process::geteuid().as_raw(),
                 super::hex(&suffix)

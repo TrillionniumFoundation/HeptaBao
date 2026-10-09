@@ -44,7 +44,11 @@ fn engine_lossless_inline_and_real_kv1_record_write_observation_preserve_candida
         value
     );
     assert_eq!(
-        call(&mut ordinary, "GET", "lossless-kv1/item", &json!({}))?.status,
+        ordinary
+            .handle("", "GET", "lossless-kv1/item", &json!({}), 100)
+            .err()
+            .ok_or("missing KV1 value must return EngineError")?
+            .status,
         404
     );
     assert!(call(&mut engine, "POST", "lossless-kv1/item", &value)?.mutated);
