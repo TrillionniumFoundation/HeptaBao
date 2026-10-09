@@ -221,3 +221,43 @@ fn ui_loader_rejects_asset_symlinks_and_hardlinks() -> Result<(), Box<dyn std::e
     assert!(fixture.assets().is_err());
     Ok(())
 }
+
+#[test]
+fn official_sw_filename_get_and_head_have_exact_snapshot_scope()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = Fixture::new(&[
+        ("index.html", b"official index"),
+        ("sw.js", b"registered worker"),
+        ("sw-registration.js", b"registration script"),
+        ("assets/app.js", b"ordinary script"),
+    ])?;
+    let assets = fixture.assets()?;
+    for method in ["GET", "HEAD"] {
+        let mut wire = Vec::new();
+        assets
+            .reply(&request(method, "/ui/sw.js").map_err(|error| error.message)?)
+            .write(&mut wire, method == "HEAD")?;
+        let wire = std::str::from_utf8(&wire)?;
+        assert!(wire.starts_with("HTTP/1.1 200 OK\r\n"));
+        assert!(wire.contains("Content-Type: text/javascript; charset=utf-8\r\n"));
+        assert!(wire.contains("Content-Length: 17\r\n"));
+        assert_eq!(
+            wire.matches("Service-Worker-Allowed: /v1/sys/storage/raft/snapshot\r\n")
+                .count(),
+            1
+        );
+        if method == "HEAD" {
+            assert!(wire.ends_with("\r\n\r\n"));
+        } else {
+            assert!(wire.ends_with("\r\n\r\nregistered worker"));
+        }
+    }
+    for path in ["/ui/sw-registration.js", "/ui/assets/app.js"] {
+        let mut wire = Vec::new();
+        assets
+            .reply(&request("GET", path).map_err(|error| error.message)?)
+            .write(&mut wire, false)?;
+        assert!(!std::str::from_utf8(&wire)?.contains("Service-Worker-Allowed:"));
+    }
+    Ok(())
+}

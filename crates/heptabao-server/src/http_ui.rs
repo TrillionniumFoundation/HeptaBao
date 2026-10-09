@@ -259,7 +259,7 @@ impl Assets {
                 bytes: Arc::clone(&asset.bytes),
                 media: asset.media,
                 redirect: false,
-                worker: path == "service-worker.js",
+                worker: matches!(path, "sw.js" | "service-worker.js"),
             },
             None => Reply {
                 status: 404,
