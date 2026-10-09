@@ -89,6 +89,13 @@ pub struct Config {
     pub audit: crate::AuditConfig,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
+    /// OpenBao 2.7 named groups; absent, null and empty use provider defaults.
+    #[serde(default)]
+    pub tls_key_exchange_preferences: Option<Vec<String>>,
+    #[serde(default)]
+    pub tls_min_version: Option<String>,
+    #[serde(default)]
+    pub tls_max_version: Option<String>,
     /// Deployment-owned client trust roots. A configured bundle requires a
     /// valid client certificate unless optional client authentication is set.
     #[serde(default)]
@@ -348,7 +355,13 @@ fn serve_inner(
     let key = rustls_pemfile::private_key(&mut BufReader::new(key_bytes.as_slice()))
         .map_err(|_| "invalid TLS key")?
         .ok_or("missing TLS private key")?;
-    let provider = Arc::new(rustls::crypto::ring::default_provider());
+    let provider = Arc::new(crate::tls_key_exchange::provider(
+        config.tls_key_exchange_preferences.as_deref(),
+    )?);
+    let versions = crate::tls_key_exchange::protocol_versions(
+        config.tls_min_version.as_deref(),
+        config.tls_max_version.as_deref(),
+    )?;
     if config.tls_client_crl_file.is_some() && config.tls_client_ca_file.is_none() {
         return Err("TLS client CRL requires a client CA bundle".into());
     }
@@ -363,7 +376,7 @@ fn serve_inner(
         None => None,
     };
     let builder = ServerConfig::builder_with_provider(provider)
-        .with_safe_default_protocol_versions()
+        .with_protocol_versions(&versions)
         .map_err(|_| "TLS versions unavailable")?;
     let mut tls = match verifier {
         Some(verifier) => builder

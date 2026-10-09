@@ -42,7 +42,7 @@ getrandom = { version = "=0.4.3", features = ["sys_rng"] }
 subtle = "=2.6.1"
 sha2 = { version = "=0.10.9", default-features = false, features = ["std"] }
 sha3 = { version = "=0.10.9", default-features = false, features = ["std"] }
-rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }
+rustls = { version = "=0.23.44", default-features = false, features = ["ring", "aws_lc_rs", "prefer-post-quantum", "std", "tls12"] }
 rustls-pemfile = "=2.2.0"
 rustls-native-certs = "=0.8.2"
 x509-parser = { version = "=0.18.1", default-features = false }
@@ -56,7 +56,7 @@ bytes = "=1.12.1"
 openssl = { version = "=0.10.81", default-features = false, features = ["aws-lc"] }
 mime = "=0.3.17"
 # Maintained safe AES-KWP API; OAEP continues through the existing OpenSSL/AWS-LC bridge.
-aws-lc-rs = { version = "=1.17.1", default-features = false, features = ["non-fips"] }
+aws-lc-rs = { version = "=1.18.1", default-features = false, features = ["non-fips"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 cross-krb5 = { version = "=0.5.0", default-features = false }

@@ -2301,7 +2301,7 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
     let key = rustls_pemfile::private_key(&mut BufReader::new(key_bytes.as_slice()))
         .map_err(|_| "invalid HA TLS private key".to_owned())?
         .ok_or_else(|| "missing HA TLS private key".to_owned())?;
-    let provider = Arc::new(rustls::crypto::ring::default_provider());
+    let provider = Arc::new(crate::tls_key_exchange::default_provider());
 
     let client_roots = root_store(&ca)?;
     let mut client = ClientConfig::builder_with_provider(provider.clone())
@@ -2314,7 +2314,7 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
 
     let verifier = WebPkiClientVerifier::builder_with_provider(
         Arc::new(root_store(&ca)?),
-        Arc::new(rustls::crypto::ring::default_provider()),
+        Arc::new(crate::tls_key_exchange::default_provider()),
     )
     .build()
     .map_err(|_| "invalid HA TLS client verifier".to_owned())?;

@@ -224,7 +224,7 @@ impl Outbound {
             if roots.is_empty() {
                 return Err("empty outbound CA set");
             }
-            let provider = Arc::new(rustls::crypto::ring::default_provider());
+            let provider = Arc::new(crate::tls_key_exchange::default_provider());
             let mut tls = ClientConfig::builder_with_provider(provider)
                 .with_safe_default_protocol_versions()
                 .map_err(|_| "invalid TLS profile")?

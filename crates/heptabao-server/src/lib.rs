@@ -42,6 +42,7 @@ mod snapshot_archive;
 mod snapshot_file;
 #[cfg(test)]
 mod test_support;
+mod tls_key_exchange;
 mod valkey_wire;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};
