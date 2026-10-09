@@ -731,6 +731,19 @@ impl Service {
             if self.workflow_step_is_nonlocal(&state, request.namespace, step) {
                 return Response::error(400, "workflow steps must target local transactional APIs");
             }
+            if let Err(error) = Self::control_group_transactional_step_guard(
+                &state,
+                principal,
+                request,
+                control_groups::TransportRequest {
+                    method: &step.method,
+                    path: &step.path,
+                    namespace: request.namespace,
+                    body: &step.body,
+                },
+            ) {
+                return error;
+            }
             let response = Self::dispatch_authorized_subrequest(
                 &mut state,
                 Some(principal),

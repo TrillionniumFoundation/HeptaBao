@@ -137,10 +137,15 @@ const SSH_CA_STATE_SCHEMA: u32 = 115;
 // Public-only ML-DSA versions have no seed/HMAC and require an aware reader.
 const MLDSA_IMPORT_STATE_SCHEMA: u32 = 116;
 const STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA: u32 = 117;
+const CONTROL_GROUP_STATE_SCHEMA: u32 = crate::auth::control_groups::STATE_SCHEMA;
+#[path = "service_control_groups.rs"]
+mod control_groups;
 #[path = "service_pki_acme_eab.rs"]
 mod pki_acme_eab;
+#[path = "service_request_normalization.rs"]
+mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = CONTROL_GROUP_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -183,6 +188,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SSH_CA_STATE_SCHEMA
                 | MLDSA_IMPORT_STATE_SCHEMA
                 | STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+                | CONTROL_GROUP_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -2965,6 +2971,21 @@ impl Service {
     }
 
     fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
+        self.handle_inner_control_group(request, None)
+    }
+
+    fn handle_inner_control_group(
+        &mut self,
+        request: RequestView<'_>,
+        resume: Option<Principal>,
+    ) -> Response {
+        let resumed_control_group = resume.is_some();
+        let original_transport = control_groups::TransportRequest {
+            method: request.method,
+            path: request.path,
+            namespace: request.namespace,
+            body: request.body,
+        };
         let RequestView {
             method,
             path,
@@ -3214,32 +3235,18 @@ impl Service {
         // HA forwards the authenticated transport body above. Interpret this
         // carrier only at the top-level boundary; workflow step JSON has no
         // transport provenance. ACLs below continue to see numeric Values.
-        let token_fields = match crate::http::token_fields::request(method, path, body) {
-            Ok(carrier) => carrier,
-            Err(message) => return Response::error(400, message),
+        let envelopes = match request_normalization::envelopes(method, path, body) {
+            Ok(envelopes) => envelopes,
+            Err(error) => return error,
         };
-        let body = token_fields
-            .as_ref()
-            .map_or(body, |carrier| carrier.original);
-        let pki_role_fields = match crate::http::pki_role_fields::request(method, path, body) {
-            Ok(carrier) => carrier,
-            Err(message) => return Response::error(400, message),
-        };
-        let body = pki_role_fields
-            .as_ref()
-            .map_or(body, |carrier| carrier.original);
+        let token_fields = envelopes.token_fields;
+        let pki_role_fields = envelopes.pki_role_fields;
+        let body = envelopes.body;
         let request = RequestView { body, ..request };
 
-        // A standby forwards the original path above. Resolve a bare KV root
-        // only against the leader's synchronized mount registry, before ACL
-        // and either immutable or ordinary dispatch. Unknown roots stay as-is.
-        let canonical_kv_root = self.state.as_ref().and_then(|state| {
-            state.engines.canonical_kv_enumeration_root(
-                namespace,
-                kv_authorization_method(method, body),
-                path,
-            )
-        });
+        // Keep this first phase before namespace/seal/recovery guards.
+        let canonical_kv_root =
+            request_normalization::kv_root(self.state.as_ref(), namespace, method, path, body);
         let path = canonical_kv_root.as_deref().unwrap_or(path);
         let request = RequestView { path, ..request };
 
@@ -3296,120 +3303,20 @@ impl Service {
         // longest actual PKI responder. A valid ordinary path retains its
         // original GET/query semantics at other owners; invalid opaque text
         // cannot enter control, auth, KV or external-effect routes.
-        let mut ordinary_get = None;
-        let ocsp_get = if opaque_ocsp_get {
-            if let Some((canonical, suffix)) = self
-                .state
-                .as_ref()
-                .and_then(|state| state.engines.canonical_pki_ocsp_get(namespace, path))
-            {
-                if matches!(method, "LIST" | "SCAN") {
-                    return Response::error(405, "unsupported OCSP operation");
-                }
-                Some((
-                    canonical,
-                    crate::http::ocsp::CarrierBody(crate::http::ocsp::decoded_get_body(&suffix)),
-                ))
-            } else if valid_path(path) {
-                let Some(carrier) = crate::http::ocsp::get_request(method, path, body) else {
-                    return Response::error(400, "invalid request-local GET carrier");
-                };
-                let actual_kv = self
-                    .state
-                    .as_ref()
-                    .is_some_and(|state| state.engines.is_actual_kv_query_owner(namespace, path));
-                ordinary_get = Some(match carrier.ordinary(actual_kv) {
-                    Ok(request) => request,
-                    Err(response) => return response,
-                });
-                None
-            } else {
-                return Response::error(404, "OCSP mount not found");
-            }
-        } else if let Some(carrier) = crate::http::ocsp::query_request(method, path, body) {
-            if !valid_path(path)
-                && !self
-                    .state
-                    .as_ref()
-                    .is_some_and(|state| state.engines.is_actual_pki_ocsp_path(namespace, path))
-            {
-                return Response::error(404, "opaque header owner not found");
-            }
-            let actual_kv = self
-                .state
-                .as_ref()
-                .is_some_and(|state| state.engines.is_actual_kv_query_owner(namespace, path));
-            let actual_ocsp = self
-                .state
-                .as_ref()
-                .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
-            let actual_sdk_auth = match self
-                .state
-                .as_ref()
-                .map(|state| state.auth.sdk_auth_binding(namespace, path))
-                .transpose()
-            {
-                Ok(binding) => binding.flatten().is_some(),
-                Err(error) => return Response::error(error.status, &error.message),
-            };
-            let actual_transit_export = method == "GET"
-                && self.state.as_ref().is_some_and(|state| {
-                    state
-                        .engines
-                        .is_actual_transit_export_query_owner(namespace, path)
-                });
-            let resolved = if actual_transit_export {
-                carrier.resolve_transit_export()
-            } else {
-                carrier.resolve(actual_kv || actual_ocsp || actual_sdk_auth)
-            };
-            ordinary_get = Some(
-                match resolved {
-                    Ok((method, body)) => (
-                        match method {
-                            "LIST" => "LIST",
-                            "SCAN" => "SCAN",
-                            "HEAD" => "HEAD",
-                            _ => "GET",
-                        },
-                        body,
-                    ),
-                    Err(response) => return response,
-                },
-            );
-            None
-        } else {
-            None
+        let normalized = match request_normalization::operation(
+            self.state.as_ref(),
+            namespace,
+            method,
+            path,
+            original_transport.path,
+            body,
+        ) {
+            Ok(normalized) => normalized,
+            Err(error) => return error,
         };
-        let method = ordinary_get.as_ref().map_or(method, |(method, _)| *method);
-        let path = ocsp_get
-            .as_ref()
-            .map_or(path, |(canonical, _)| canonical.as_str());
-        let body = ocsp_get.as_ref().map_or(body, |(_, body)| &body.0);
-        let body = ordinary_get.as_ref().map_or(body, |(_, body)| &body.0);
-        let post_body =
-            if let Some(carrier) = crate::http::ocsp::json_post_request(method, path, body) {
-                let actual_pki_ocsp = self
-                    .state
-                    .as_ref()
-                    .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
-                match carrier.resolve(actual_pki_ocsp) {
-                    Ok(body) => Some(body),
-                    Err(response) => return response,
-                }
-            } else if let Some(carrier) = crate::http::ocsp::raw_post_request(method, path, body) {
-                let actual_pki_ocsp = self
-                    .state
-                    .as_ref()
-                    .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
-                match carrier.resolve(actual_pki_ocsp) {
-                    Ok(body) => Some(body),
-                    Err(response) => return response,
-                }
-            } else {
-                None
-            };
-        let body = post_body.as_ref().map_or(body, |body| &body.0);
+        let method = normalized.method.as_str();
+        let path = normalized.path.as_str();
+        let body = &normalized.body.0;
         let request = RequestView {
             method,
             path,
@@ -3534,6 +3441,28 @@ impl Service {
             }
             admitted = self.install_committed_namespace_view(admitted);
         }
+        if !owner_manifest_migration
+            && (path.starts_with("sys/wrapping/")
+                || path.starts_with("sys/control-group/")
+                || admitted.auth.is_control_group_token(token))
+        {
+            let observed = match request.token_time() {
+                Ok(time) => time.seconds(),
+                Err(error) => return error,
+            };
+            if admitted.auth.advance_control_group_clock(observed) {
+                admitted.schema = admitted.writer_schema();
+                if let Err(error) = self.commit_state(&mut admitted) {
+                    return error;
+                }
+                admitted = self.install_committed_namespace_view(admitted);
+            }
+        }
+        if path == "sys/wrapping/unwrap"
+            && let Some(response) = Self::control_group_preflight(&admitted, &request)
+        {
+            return response;
+        }
         // OpenBao reports an invalid self-unwrapping capability as a wrapping
         // request error, not a generic login failure. Validate its type/scope
         // without consuming it; actual admission below still consumes exactly once.
@@ -3569,7 +3498,9 @@ impl Service {
         {
             return response;
         }
-        let mut principal = if !authenticate_bearer {
+        let mut principal = if let Some(actor) = resume {
+            Some(actor)
+        } else if !authenticate_bearer {
             None
         } else {
             let time = match request.token_time() {
@@ -3613,14 +3544,11 @@ impl Service {
         // The original header's namespace/barrier guards remain above. Only
         // this authenticated request capability selects a self token's actual
         // context; opaque transport text or a routing hint grants no authority.
-        let token_namespace = if matches!(
+        let token_namespace = request_normalization::token_namespace(
             path,
-            "auth/token/lookup-self" | "auth/token/renew-self" | "auth/token/revoke-self"
-        ) {
-            principal.as_ref().map(|actor| actor.namespace().to_owned())
-        } else {
-            None
-        };
+            principal.as_ref().map(Principal::namespace),
+        )
+        .map(str::to_owned);
         let changed_token_namespace = token_namespace
             .as_deref()
             .is_some_and(|actual| actual != namespace);
@@ -3723,6 +3651,15 @@ impl Service {
             {
                 return Response::error(cause.status, &cause.message);
             }
+        }
+        if let Some(response) = self.control_group_route(
+            &mut admitted,
+            principal.as_ref(),
+            &request,
+            original_transport,
+            resumed_control_group,
+        ) {
+            return response;
         }
         // Dynamic metadata is an actual provider effect, selected only from operator bindings.
         let parameter_read = match admitted
@@ -4391,6 +4328,7 @@ impl Service {
             || admitted.has_mount_listing_visibility_state()
             || admitted.auth.has_raw_wrapped_reply_state()
             || admitted.engines.has_ssh_ca_state()
+            || admitted.auth.has_control_group_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -4472,6 +4410,13 @@ impl Service {
     }
 
     fn immutable_kv_response(&mut self, request: &RequestView<'_>) -> Option<Response> {
+        if self
+            .state
+            .as_ref()
+            .is_some_and(|s| s.auth.has_control_group_state())
+        {
+            return None;
+        }
         let state = self.state.as_ref()?;
         if request.wrap_ttl_seconds.is_some()
             || state.has_token_api_precision_state()

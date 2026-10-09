@@ -1313,6 +1313,22 @@ fn read_request_mode(
     }
 }
 
+#[cfg(test)]
+pub(crate) fn parsed_api_request_for_test(
+    bytes: &[u8],
+) -> Result<(String, String, String, Zeroizing<String>, ocsp::CarrierBody), String> {
+    let mut reader = bytes;
+    let mut request = read_request_mode(&mut reader, Duration::from_secs(5), false)
+        .map_err(|error| error.message.to_owned())?;
+    Ok((
+        request.method,
+        request.path,
+        request.namespace,
+        Zeroizing::new(request.token),
+        ocsp::CarrierBody(std::mem::take(&mut request.body.0)),
+    ))
+}
+
 fn read_request_with_ui(
     reader: &mut impl Read,
     timeout: Duration,

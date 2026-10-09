@@ -23,6 +23,9 @@ mod identity;
 mod identity_projection;
 pub(crate) use identity_projection::IdentityNamespace;
 use identity_projection::IdentityProjection;
+#[path = "engine_query_owner.rs"]
+mod query_owner;
+pub(crate) use query_owner::{MountQueryOwner, QueryKind};
 #[path = "engine_help.rs"]
 mod help;
 pub(crate) mod kubernetes;
@@ -2250,6 +2253,42 @@ impl EngineState {
         Ok(())
     }
 
+    /// Select the longest registered mount across every backend in this namespace.
+    /// Ordinary nested mounts block parent PKI/KV/Transit query interpretation.
+    pub(crate) fn query_owner(&self, namespace: &str, path: &str) -> Option<MountQueryOwner> {
+        let (name, mount) = self
+            .namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(name, _)| path.starts_with(name.as_str()))
+            .max_by_key(|(name, _)| name.len())?;
+        Some(MountQueryOwner {
+            path: name.clone(),
+            incarnation: mount.incarnation,
+            kind: QueryKind::from_backend(&mount.backend),
+        })
+    }
+
+    /// Enumeration of a bare mount is exact, never a longest-prefix fallback.
+    pub(crate) fn exact_kv_root_owner(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<MountQueryOwner> {
+        if path.ends_with('/') {
+            return None;
+        }
+        let name = format!("{path}/");
+        let mount = self.namespaces.get(namespace)?.mounts.get(&name)?;
+        let kind = QueryKind::from_backend(&mount.backend);
+        (kind == QueryKind::Kv).then(|| MountQueryOwner {
+            path: name,
+            incarnation: mount.incarnation,
+            kind,
+        })
+    }
+
     /// Normalize only an exact, registered KV mount root for enumeration.
     /// Other handlers have their own route syntax; do not append separators
     /// globally or infer mounts from a first path component.
@@ -2259,21 +2298,8 @@ impl EngineState {
         method: &str,
         path: &str,
     ) -> Option<String> {
-        if !matches!(method, "LIST" | "SCAN") || path.ends_with('/') {
-            return None;
-        }
-        self.namespaces
-            .get(namespace)?
-            .mounts
-            .iter()
-            .find_map(|(name, mount)| {
-                (name.strip_suffix('/') == Some(path)
-                    && matches!(
-                        mount.backend,
-                        Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
-                    ))
-                .then(|| name.clone())
-            })
+        self.exact_kv_root_owner(namespace, path)?
+            .kv_root(method, path)
     }
 
     pub(crate) fn is_immutable_kv_read(&self, namespace: &str, method: &str, path: &str) -> bool {
@@ -2324,10 +2350,7 @@ impl EngineState {
         namespace: &str,
         path: &str,
     ) -> Option<(String, String)> {
-        let (_, relative) = self.public_pki_mount(namespace, path)?;
-        let suffix = relative.strip_prefix("ocsp/")?;
-        let prefix = &path[..path.len() - relative.len()];
-        Some((format!("{prefix}ocsp"), suffix.to_owned()))
+        self.query_owner(namespace, path)?.pki_ocsp_get(path)
     }
 
     /// Capture classification follows the longest actual PKI owner and its
@@ -2355,8 +2378,8 @@ impl EngineState {
     }
 
     pub(crate) fn is_actual_pki_ocsp(&self, namespace: &str, path: &str) -> bool {
-        self.public_pki_mount(namespace, path)
-            .is_some_and(|(_, relative)| relative == "ocsp")
+        self.query_owner(namespace, path)
+            .is_some_and(|owner| owner.is_ocsp(path))
     }
 
     /// Bind a delivery to the longest actual KV mount and its durable path
@@ -2383,55 +2406,20 @@ impl EngineState {
     }
 
     pub(crate) fn is_actual_pki_ocsp_path(&self, namespace: &str, path: &str) -> bool {
-        self.public_pki_mount(namespace, path)
-            .is_some_and(|(_, relative)| relative == "ocsp" || relative.starts_with("ocsp/"))
+        self.query_owner(namespace, path)
+            .is_some_and(|owner| owner.is_pki_path(path))
     }
 
     pub(crate) fn is_actual_kv_query_owner(&self, namespace: &str, path: &str) -> bool {
-        self.namespaces
-            .get(namespace)
-            .and_then(|state| {
-                state
-                    .mounts
-                    .iter()
-                    .filter(|(mount, _)| path.starts_with(mount.as_str()))
-                    .max_by_key(|(mount, _)| mount.len())
-            })
-            .is_some_and(|(_, mount)| {
-                matches!(
-                    mount.backend,
-                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
-                )
-            })
+        self.query_owner(namespace, path)
+            .is_some_and(|owner| owner.is_kv(path))
     }
 
     // URL fields are admitted only after namespace and longest actual mount
     // selection. A path named "transit" does not grant another backend formats.
     pub(crate) fn is_actual_transit_export_query_owner(&self, namespace: &str, path: &str) -> bool {
-        self.namespaces
-            .get(namespace)
-            .and_then(|state| {
-                state
-                    .mounts
-                    .iter()
-                    .filter(|(mount, _)| path.starts_with(mount.as_str()))
-                    .max_by_key(|(mount, _)| mount.len())
-            })
-            .is_some_and(|(mount, owner)| {
-                if !matches!(owner.backend, Backend::Transit(_)) {
-                    return false;
-                }
-                let Some(relative) = path[mount.len()..].strip_prefix("export/") else {
-                    return false;
-                };
-                let parts: Vec<_> = relative.split('/').collect();
-                matches!(parts.len(), 2 | 3)
-                    && parts.iter().all(|part| !part.is_empty())
-                    && matches!(
-                        parts[0],
-                        "public-key" | "signing-key" | "encryption-key" | "hmac-key"
-                    )
-            })
+        self.query_owner(namespace, path)
+            .is_some_and(|owner| owner.is_transit_export(path))
     }
 
     pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {

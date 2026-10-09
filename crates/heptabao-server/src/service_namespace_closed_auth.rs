@@ -23,6 +23,9 @@ impl Service {
         request: &RequestView<'_>,
         help_body: Option<&Value>,
     ) -> Option<Response> {
+        if admitted.auth.has_control_group_state() {
+            return None;
+        }
         let verifier = AuthState::namespace_token_route_verifier(request.token)?;
         let binding = admitted.namespaces.closed_auth_route(&verifier)?.clone();
         let actual = binding.namespace();

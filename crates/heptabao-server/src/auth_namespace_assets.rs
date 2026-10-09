@@ -7,6 +7,8 @@ use super::*;
 #[serde(deny_unknown_fields)]
 pub(crate) struct NamespaceAssets {
     namespace: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    control_groups: Option<control_groups::Registry>,
     tokens: BTreeMap<String, Token>,
     policies: Option<BTreeMap<String, Policy>>,
     token_roles: Option<BTreeMap<String, token_roles::Role>>,
@@ -44,6 +46,14 @@ impl NamespaceAssets {
             || self.tokens.values().any(|token| token.namespace != actual)
         {
             return Err(err(503, "namespace auth owner binding rejected"));
+        }
+        if let Some(control_groups) = &self.control_groups {
+            control_groups.validate_namespace(actual)?;
+        }
+        for policy in self.policies.iter().flat_map(|p| p.values()) {
+            if control_groups::collect(&policy.source, &policy.rules)? != policy.control_groups {
+                return Err(err(503, "namespace control group policy owner rejected"));
+            }
         }
         for token in self.tokens.values() {
             token.validate_public_origin()?;
@@ -228,6 +238,7 @@ impl AuthState {
         }
         Ok(NamespaceAssets {
             namespace: namespace.to_owned(),
+            control_groups: self.detach_control_group_namespace(namespace),
             tokens,
             policies: self.policies.remove(namespace),
             token_roles: self.token_roles.remove(namespace),
@@ -259,6 +270,16 @@ impl AuthState {
     ) -> Result<(), AuthError> {
         assets.validate(actual)?;
         self.sdk_namespace_attach_preflight(actual, &assets.sdk_namespace)?;
+        self.control_group_namespace_attach_preflight(actual, assets.control_groups.as_ref())?;
+        if assets
+            .policies
+            .iter()
+            .flat_map(|p| p.values())
+            .any(|p| !p.control_groups.is_empty())
+            && !self.has_control_group_state()
+        {
+            return Err(err(503, "namespace control group policy floor is missing"));
+        }
         if self.public_origin_floor.is_none()
             && assets.tokens.values().any(Token::has_public_origin)
         {
@@ -290,6 +311,7 @@ impl AuthState {
             return Err(err(503, "namespace auth owner is already loaded"));
         }
         self.attach_sdk_namespace(actual, assets.sdk_namespace)?;
+        self.attach_control_group_namespace(assets.control_groups);
         self.tokens.extend(assets.tokens);
         if let Some(value) = assets.policies {
             self.policies.insert(actual.to_owned(), value);

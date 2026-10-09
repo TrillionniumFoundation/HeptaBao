@@ -74,6 +74,8 @@ mod acl;
 mod acl_template;
 #[path = "auth_acl_wrapping.rs"]
 mod acl_wrapping;
+#[path = "auth_control_groups.rs"]
+pub(crate) mod control_groups;
 #[path = "auth_default_policy.rs"]
 mod default_policy;
 #[path = "auth_ui_acl.rs"]
@@ -227,6 +229,8 @@ fn is_default_userpass_lockout_counter_reset(value: &u64) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    #[serde(default, skip_serializing_if = "control_groups::Registry::is_absent")]
+    control_groups: control_groups::Registry,
     /// RAM-only catalog history for non-recoverable accepted native move tasks.
     #[serde(skip)]
     native_remount_epochs: BTreeMap<(String, String), u64>,
@@ -1560,6 +1564,8 @@ impl Principal {
 struct Policy {
     source: String,
     rules: Vec<Rule>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    control_groups: BTreeMap<String, Vec<control_groups::StanzaControl>>,
 }
 
 const MAX_POLICY_HCL_VALUE_DEPTH: usize = 32;
@@ -2373,7 +2379,8 @@ impl AuthState {
     }
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
-        !self.sdk_credential_namespace_pending(namespace)
+        !self.control_group_namespace_has_requests(namespace)
+            && !self.sdk_credential_namespace_pending(namespace)
             && !self.sdk_auth_retirement_namespace_pending(namespace)
             && !self
                 .tokens
@@ -2458,6 +2465,7 @@ impl AuthState {
 
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
+            control_groups: control_groups::Registry::default(),
             native_remount_epochs: BTreeMap::new(),
             approle_tidy_epochs: BTreeMap::new(),
             native_remount_control: std::sync::Arc::new(()),
@@ -2648,7 +2656,7 @@ impl AuthState {
     ) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
         self.require_active_namespace(&token.namespace)?;
-        let time = self.token_api_observed_time(time);
+        let time = self.control_group_authority_time(self.token_api_observed_time(time))?;
         self.validate_sdk_auth_token_live(token, time)?;
         let time = if token.wrapping.is_some() {
             AuthorityTime::Coarse(time.seconds().max(self.wrapping_clock))
@@ -2796,7 +2804,7 @@ impl AuthState {
         time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
-        let time = self.token_api_observed_time(time);
+        let time = self.control_group_authority_time(self.token_api_observed_time(time))?;
         let now = time.seconds();
         if raw.starts_with("hvb.") {
             return self.batch_principal_observed(raw, time, origin_peer);
@@ -2851,7 +2859,7 @@ impl AuthState {
     ) -> Result<batch_principal::CheckedCredential<'a>, AuthError> {
         validate_namespace(namespace)?;
         self.require_active_namespace(namespace)?;
-        let time = principal.request_authority_time(time)?;
+        let time = self.control_group_authority_time(principal.request_authority_time(time)?)?;
         let view = match &principal.credential {
             batch_principal::VerifiedCredential::Service(snapshot) => {
                 let token = self.active_token_observed(&principal.digest, time, false)?;
@@ -2918,6 +2926,9 @@ impl AuthState {
             } else {
                 Err(denied())
             };
+        }
+        if self.control_groups_token_permission(principal, path, capability) {
+            return Ok(());
         }
         if token.is_root() {
             return Ok(());
@@ -3720,18 +3731,7 @@ impl AuthState {
                 .collect();
             return Ok(response(Value::Object(entries), false));
         }
-        let requested = suffix.trim_start_matches('/').trim_end_matches('/');
-        let (mount, tune) = requested
-            .strip_suffix("/tune")
-            .map_or((requested, false), |mount| (mount, true));
-        if mount.is_empty() || mount.len() > 256 || !mount.split('/').all(valid_name) {
-            return Err(bad("auth mount path must contain canonical segments"));
-        }
-        let route = if tune {
-            format!("sys/auth/{mount}/tune")
-        } else {
-            format!("sys/auth/{mount}")
-        };
+        let (mount, tune, route) = control_groups::auth_mount_route(path)?;
         if tune {
             return match method {
                 "GET" => {
@@ -7482,6 +7482,7 @@ impl AuthState {
             .get("policy")
             .ok_or_else(|| bad("policy is required"))?;
         let policy = parse_policy(input)?;
+        self.observe_control_group_policy(&policy);
         self.policies
             .entry(namespace.into())
             .or_default()
@@ -9010,7 +9011,12 @@ fn parse_policy(input: &Value) -> Result<Policy, AuthError> {
     if rules.len() > 4096 {
         return Err(bad("too many policy rules"));
     }
-    Ok(Policy { source, rules })
+    let control_groups = control_groups::collect(&source, &rules)?;
+    Ok(Policy {
+        source,
+        rules,
+        control_groups,
+    })
 }
 
 fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
@@ -9031,6 +9037,7 @@ fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
                 "required_parameters",
                 "min_wrapping_ttl",
                 "max_wrapping_ttl",
+                "control_group",
             ],
         )?;
         let capabilities = parse_capability_array(
@@ -9085,6 +9092,9 @@ fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
                 }
                 "min_wrapping_ttl" | "max_wrapping_ttl" => {
                     wrapping.insert(field, parse_hcl_value_at_depth(&tokens, &mut cursor, 0)?);
+                }
+                "control_group" => {
+                    let _ = control_groups::hcl_value(&tokens, &mut cursor)?;
                 }
                 _ => return Err(bad("unsupported ACL rule field")),
             }

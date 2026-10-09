@@ -173,6 +173,13 @@ impl Service {
         request: &RequestView<'_>,
         ha: Arc<Mutex<HaProcess>>,
     ) -> Option<Response> {
+        if self
+            .state
+            .as_ref()
+            .is_some_and(|s| s.auth.has_control_group_state())
+        {
+            return None;
+        }
         // Restrict this initial bridge to native, root-namespace GETs with no
         // operation carrier, wrapping or provider credential. Other requests
         // retain the original completed-forward requirement.
@@ -196,7 +203,8 @@ impl Service {
             return Some(error);
         }
         let state = self.state.as_ref()?;
-        if state.has_token_api_precision_state()
+        if state.auth.has_control_group_state()
+            || state.has_token_api_precision_state()
             || state.engines.has_kubernetes_opaque_artifact_state()
             || state.engines.has_live_leases()
             || !state

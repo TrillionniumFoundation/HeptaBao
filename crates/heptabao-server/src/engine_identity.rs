@@ -241,3 +241,43 @@ impl EngineState {
             .project(id)
     }
 }
+
+impl EngineState {
+    pub(crate) fn control_group_ids(
+        &self,
+        namespace: &str,
+        ids: &BTreeSet<String>,
+        names: &BTreeSet<String>,
+    ) -> Result<BTreeSet<String>> {
+        self.namespaces
+            .get(namespace)
+            .ok_or_else(|| error(403, "control group namespace is unavailable"))?
+            .identity
+            .control_group_ids(ids, names)
+    }
+    pub(crate) fn control_group_entity(
+        &self,
+        namespace: &str,
+        id: &str,
+        namespace_id: &str,
+        mount_type: impl Fn(&str) -> Option<String>,
+    ) -> Result<Value> {
+        self.namespaces
+            .get(namespace)
+            .ok_or_else(|| error(403, "control group namespace is unavailable"))?
+            .identity
+            .control_group_entity(id, namespace_id, mount_type)
+    }
+    pub(crate) fn control_group_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .find(|(mount, _)| path.starts_with(mount.as_str()))
+            .map(|(mount, value)| (mount.clone(), value.incarnation))
+    }
+}

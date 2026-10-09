@@ -538,6 +538,10 @@ impl Service {
             .map_err(|error| Response::error(400, &error.message))?;
         incoming
             .auth
+            .validate_control_group_clock_floor(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
         if current.schema >= PKI_URLS_STATE_SCHEMA && incoming.schema < PKI_URLS_STATE_SCHEMA {
@@ -775,6 +779,14 @@ impl Service {
             && incoming.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
         {
             return Err(Response::error(400, "snapshot would downgrade standard asymmetric imported key state"));
+        }
+        if current.schema >= CONTROL_GROUP_STATE_SCHEMA
+            && incoming.schema < CONTROL_GROUP_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Control Groups",
+            ));
         }
         if current.schema >= MLDSA_IMPORT_STATE_SCHEMA
             && incoming.schema < MLDSA_IMPORT_STATE_SCHEMA

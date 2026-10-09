@@ -8,7 +8,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
 };
 
-fn priority(left: &str, right: &str) -> Ordering {
+pub(super) fn priority(left: &str, right: &str) -> Ordering {
     let first_wildcard = |path: &str| path.find(['+', '*']).unwrap_or(path.len());
     first_wildcard(left)
         .cmp(&first_wildcard(right))

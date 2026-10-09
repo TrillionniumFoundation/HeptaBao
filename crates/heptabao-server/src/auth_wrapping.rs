@@ -479,6 +479,13 @@ impl AuthState {
             None => header_token,
             _ => return Err(bad("wrapping token must be a nonempty string")),
         };
+        if let Some(owner) = self.control_group_target(raw, namespace, now)? {
+            return Ok(response(
+                json!({"creation_path":owner.path, "creation_time":owner.creation_time,
+                "creation_ttl":owner.expires_at-owner.created_at}),
+                false,
+            ));
+        }
         let token = self.wrapping_target(raw, namespace, now)?;
         let wrapped = token
             .wrapping
