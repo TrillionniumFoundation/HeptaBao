@@ -255,10 +255,10 @@ impl State {
             )?;
             if self.namespace_protected.is_none()
                 && self.namespace_leases.is_empty()
-                && !self
+                && !namespace_diagnostic!("publication.raw_digest", self
                     .auth
                     .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
-                    .map_err(|e| Response::error(e.status, &e.message))?
+                    .map_err(|e| Response::error(e.status, &e.message)))?
             {
                 return namespace_diagnostic!(
                     "publication.sdk_raw_change",
@@ -318,7 +318,7 @@ impl State {
         if let Some(previous) = previous {
             namespace_diagnostic!("publication.nested.validate_raw_wrapped_reply_successor", protected
                 .auth
-                .validate_raw_wrapped_reply_successor(&previous.protected_state()?.auth)
+                .validate_raw_wrapped_reply_successor(&namespace_diagnostic!("publication.protected.raw.previous", previous.protected_state())?.auth)
                 .map_err(|_| {
                     Response::error(503, "original wrapped reply custody cannot regress")
                 }))?;
@@ -454,17 +454,17 @@ impl State {
                     "namespace deletion writer floor cannot decrease",
                 ));
             }
-            namespace_diagnostic!("publication.nested.validate_namespace_batch_successor", self.protected_state()?
+            namespace_diagnostic!("publication.nested.validate_namespace_batch_successor", namespace_diagnostic!("publication.protected.batch.current", self.protected_state())?
                 .auth
-                .validate_namespace_batch_successor(&previous.protected_state()?.auth)
+                .validate_namespace_batch_successor(&namespace_diagnostic!("publication.protected.batch.previous", previous.protected_state())?.auth)
                 .map_err(|error| Response::error(error.status, &error.message)))?;
-            namespace_diagnostic!("publication.nested.validate_public_origin_successor", self.protected_state()?
+            namespace_diagnostic!("publication.nested.validate_public_origin_successor", namespace_diagnostic!("publication.protected.origin.current", self.protected_state())?
                 .auth
-                .validate_public_origin_successor(&previous.protected_state()?.auth)
+                .validate_public_origin_successor(&namespace_diagnostic!("publication.protected.origin.previous", previous.protected_state())?.auth)
                 .map_err(|_| Response::error(503, "public origin floor cannot retire")))?;
-            namespace_diagnostic!("publication.nested.validate_custody_successor", self.protected_state()?
+            namespace_diagnostic!("publication.nested.validate_custody_successor", namespace_diagnostic!("publication.protected.custody.current", self.protected_state())?
                 .namespaces
-                .validate_custody_successor(&previous.protected_state()?.namespaces))?;
+                .validate_custody_successor(&namespace_diagnostic!("publication.protected.custody.previous", previous.protected_state())?.namespaces))?;
         }
 
         if !supported_reader_schema(self.schema) {
