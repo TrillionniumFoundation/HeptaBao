@@ -67,6 +67,19 @@ fn identity270_modern_alias_uses_actual_partial_priority_implicit_entity_and_clo
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
+    let empty_digest = service.state_digest;
+    assert_eq!(
+        call(
+            &mut service,
+            "LIST",
+            "identity/entity-alias/id",
+            &admin,
+            json!({})
+        )
+        .status,
+        404
+    );
+    assert_eq!(service.state_digest, empty_digest);
     let accessor = mount(&mut service, &admin, "")?;
     let one = entity(&mut service, &admin, "modern-one")?;
     let two = entity(&mut service, &admin, "modern-two")?;

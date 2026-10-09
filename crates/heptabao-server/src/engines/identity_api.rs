@@ -75,7 +75,8 @@ pub(in crate::engines) fn handle(
     }
     if rest == "/id" {
         require_list(method)?;
-        if root == "identity/persona" && state.aliases.is_empty() {
+        if matches!(root, "identity/persona" | "identity/entity-alias") && state.aliases.is_empty()
+        {
             return Err(not_found());
         }
         let key_info: BTreeMap<String, Value> = state
