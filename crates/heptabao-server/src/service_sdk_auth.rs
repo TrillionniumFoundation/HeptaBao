@@ -957,7 +957,7 @@ impl Service {
             ) {
                 return e;
             }
-            self.state = Some(state.clone());
+            self.install_committed_namespace_view_copy(&state);
             return self.stage_sdk_auth(
                 &state,
                 request,

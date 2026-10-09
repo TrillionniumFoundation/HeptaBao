@@ -468,7 +468,7 @@ impl Service {
                     )
                     .map_err(auth_error)?;
                 namespace_diagnostic!("retirement.stage.initial_publish", self.sdk_auth_commit_control(&mut state, &mut caller, &expected, context.clock))?;
-                self.state = Some(state.clone());
+                self.install_committed_namespace_view_copy(&state);
                 if let Some(first) = remaining.front() {
                     // start_worker_typed may call external Setup. Attempted is durable first.
                     let expected = self.current_state_identity()?;
@@ -482,7 +482,7 @@ impl Service {
                         &expected,
                         context.clock,
                     ))?;
-                    self.state = Some(state.clone());
+                    self.install_committed_namespace_view_copy(&state);
                     let path = first
                         .path
                         .strip_prefix(&first.mount)

@@ -1667,6 +1667,15 @@ impl Service {
         continuation
     }
 
+    /// Retain the exact prepared projection of a borrowed committed candidate.
+    /// Only successful publication callers use this unchanged candidate copy;
+    /// ordinary mutable State::clone continues to clear its prepared projection.
+    pub(super) fn install_committed_namespace_view_copy(&mut self, committed: &State) {
+        let mut current = committed.clone();
+        current.namespace_protected = committed.namespace_protected.clone();
+        self.state = Some(current);
+    }
+
     pub(super) fn prepare_namespace_seal_publication(
         &self,
         state: &State,

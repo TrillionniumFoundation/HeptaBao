@@ -742,6 +742,10 @@ impl RetirementView {
                         .publish_namespace_record_cells(previous.binding(), cells)
                         .map_err(|_| failed())?;
                     owner.install(next, &actual)?;
+                    // The complete logical expectation carries this same newly
+                    // authenticated descriptor, including its generation/MAC.
+                    owner.install(&mut logical, &actual)?;
+                    logical.namespaces.set_sealed(&actual, false)?;
                     owners.insert(actual.clone(), owner);
                     Ok(())
                 })?;
@@ -1202,6 +1206,10 @@ impl CleanupView {
                         .publish_namespace_record_cells(previous.binding(), cells)
                         .map_err(|_| failed())?;
                     owner.install(next, &actual)?;
+                    // The complete logical expectation carries this same newly
+                    // authenticated descriptor, including its generation/MAC.
+                    owner.install(&mut logical, &actual)?;
+                    logical.namespaces.set_sealed(&actual, false)?;
                     owners.insert(actual.clone(), owner);
                     Ok(())
                 })?;

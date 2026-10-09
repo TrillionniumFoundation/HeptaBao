@@ -743,7 +743,7 @@ impl Service {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             None,
         )?;
-        self.state = Some(state.clone());
+        self.install_committed_namespace_view_copy(&state);
         let namespace_work = namespace_work
             .map(|key| namespace_sdk_cleanup::Authority::capture(self, key, clock, deadline))
             .transpose()?;

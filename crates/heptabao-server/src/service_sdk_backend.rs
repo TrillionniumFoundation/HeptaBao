@@ -1091,7 +1091,7 @@ impl Service {
             if let Err(e) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
                 return e;
             }
-            self.state = Some(state.clone());
+            self.install_committed_namespace_view_copy(&state);
             // Setup callbacks see the already admitted exact durable mount.
             // A failed external Setup preserves that mount for explicit cleanup.
             return self.stage_sdk_plan(
@@ -1291,7 +1291,7 @@ impl Service {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             None,
         )?;
-        self.state = Some(state.clone());
+        self.install_committed_namespace_view_copy(&state);
         Ok(())
     }
 
@@ -1849,11 +1849,15 @@ impl Service {
                     .map_err(|error| (error, original_now))
             }
             Err(_) => {
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record_status("logical.delivery.capsule", 503);
                 plan.control.retire();
                 return self.sdk_delivery_capsule_lost(response);
             }
         };
         if let Err((error, original_now)) = gate {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("logical.delivery.gate", error.status);
             plan.control.retire();
             return self.sdk_delivery_veto(response, error, fingerprint, original_now);
         }
@@ -1864,7 +1868,7 @@ impl Service {
         plan: &mut Plan,
         result: Result<Option<Value>, Response>,
     ) -> Response {
-        let mut value = match result {
+        let mut value = match namespace_diagnostic!("logical.request.input", result) {
             Ok(v) => v,
             Err(e) => return e,
         };
@@ -1873,10 +1877,12 @@ impl Service {
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
-            self.validate_sdk_authority(&mut authority)?;
-            self.sdk_binding_gate(plan).map_err(bridge_failure)
+            namespace_diagnostic!("logical.request.authority", self.validate_sdk_authority(&mut authority))?;
+            namespace_diagnostic!("logical.request.backend", self.sdk_binding_gate(plan).map_err(bridge_failure))
         })();
         if let Err(e) = gate {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("logical.request.gate", e.status);
             if let Some(v) = &mut value {
                 erase_json(v);
             }

@@ -466,7 +466,7 @@ impl Plan {
             Self::Logical(plan) => {
                 let result = plan.execute(service, plan.deadline);
                 let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
-                let mut writer = sdk_backend::writer_before(service, plan.deadline)?;
+                let mut writer = namespace_diagnostic!("logical.execute.writer", sdk_backend::writer_before(service, plan.deadline))?;
                 writer.finish_sdk_expiry(*plan, result)
             }
             Self::Credential(plan) => {
