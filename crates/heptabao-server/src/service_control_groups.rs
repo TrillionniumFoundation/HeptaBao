@@ -442,9 +442,18 @@ impl Service {
             Ok(raw) => raw,
             Err(error) => return Some(error),
         };
+        let target_time = match request.token_time().and_then(|time| {
+            state
+                .auth
+                .control_group_authority_time(time)
+                .map_err(auth_error)
+        }) {
+            Ok(time) => time,
+            Err(error) => return Some(error),
+        };
         match state
             .auth
-            .control_group_target(raw, request.namespace, request.now)
+            .control_group_target_observed(raw, request.namespace, target_time)
         {
             Ok(None) => None,
             Err(error) => Some(auth_error(error)),
@@ -512,7 +521,7 @@ impl Service {
         }
         Ok(())
     }
-    fn control_group_publish(&mut self, admitted: &mut State) -> Result<(), Response> {
+    pub(super) fn control_group_publish(&mut self, admitted: &mut State) -> Result<(), Response> {
         admitted.schema = admitted.writer_schema();
         self.commit_state(admitted)?;
         // Installation follows the same namespace view boundary as other
@@ -550,8 +559,11 @@ impl Service {
             .auth
             .control_group_authority_time(request.token_time()?)
             .map_err(auth_error)?;
-        let now = time.seconds();
-        if admitted.auth.advance_control_group_clock(now) {
+        if admitted
+            .auth
+            .advance_control_group_observed(time)
+            .map_err(auth_error)?
+        {
             self.control_group_publish(admitted)?;
         }
         // Persistence does not re-anchor the outer clock. Capture its elapsed
@@ -590,7 +602,7 @@ impl Service {
                 .ok_or_else(|| Response::error(400, "accessor is required"))?;
             let owner = admitted
                 .auth
-                .control_group_by_accessor(accessor, namespace, now)
+                .control_group_by_accessor(accessor, namespace, time)
                 .map_err(auth_error)?
                 .clone();
             Self::validate_control_group_scope(admitted, &owner)?;
@@ -643,12 +655,12 @@ impl Service {
                     .map_err(auth_error)?;
                 admitted
                     .auth
-                    .control_group_authorize(accessor, namespace, now, approval)
+                    .control_group_authorize(accessor, namespace, time, approval)
                     .map_err(auth_error)?;
                 self.control_group_publish(admitted)?;
                 let owner = admitted
                     .auth
-                    .control_group_by_accessor(accessor, namespace, now)
+                    .control_group_by_accessor(accessor, namespace, time)
                     .map_err(auth_error)?;
                 return Ok(Some(Response {
                     unwrapped_json: None,
@@ -680,7 +692,7 @@ impl Service {
             let raw = wrapping_raw(request)?;
             if let Some(owner) = admitted
                 .auth
-                .control_group_admitted_target(raw, namespace, now)
+                .control_group_admitted_target(raw, namespace, time)
                 .map_err(auth_error)?
                 .cloned()
             {
@@ -737,7 +749,7 @@ impl Service {
                         "control group sudo ownership has changed",
                     ));
                 }
-                if policy.ttl != owner.expires_at - owner.created_at
+                if policy.duration().map_err(auth_error)? != owner.duration().map_err(auth_error)?
                     || resolved_factors(admitted, namespace, &policy)? != owner.factors
                 {
                     return Err(Response::error(403, "control group factors have changed"));
@@ -755,7 +767,7 @@ impl Service {
                     .map_err(auth_error)?;
                 let owner = admitted
                     .auth
-                    .claim_control_group(raw, namespace, now)
+                    .claim_control_group(raw, namespace, time)
                     .map_err(auth_error)?;
                 self.control_group_publish(admitted)?;
                 // Only this private affine Principal can resume a claimed owner.
@@ -828,9 +840,19 @@ impl Service {
             .namespaces
             .incarnation(namespace)
             .ok_or_else(|| Response::error(404, "namespace not found"))?;
-        let expires_at = now
-            .checked_add(policy.ttl)
-            .ok_or_else(|| Response::error(400, "control group TTL overflows timestamp"))?;
+        let precision = policy
+            .precise_ttl
+            .map(|ttl| crate::auth::control_groups::Precision::capture(time, ttl))
+            .transpose()
+            .map_err(auth_error)?;
+        let expires_at = match precision {
+            Some(precision) => precision.expires_at.ceil_seconds().map_err(|_| {
+                Response::error(400, "control group TTL overflows precise timestamp")
+            })?,
+            None => now
+                .checked_add(policy.ttl)
+                .ok_or_else(|| Response::error(400, "control group TTL overflows timestamp"))?,
+        };
         let owner = DeferredRequest {
             cluster_id: admitted.cluster_id.clone(),
             namespace: namespace.to_owned(),
@@ -857,7 +879,11 @@ impl Service {
             client_certificates: request.client_certificates.map(<[Vec<u8>]>::to_vec),
             created_at: now,
             expires_at,
-            creation_time: crate::engines::timestamp(now),
+            precision,
+            creation_time: precision.map_or_else(
+                || crate::engines::timestamp(now),
+                |precision| precision.issued_at.rfc3339(),
+            ),
             factors,
             authorizations: Default::default(),
         };

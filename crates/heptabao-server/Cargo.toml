@@ -26,7 +26,7 @@ heptabao-plugin-host = { path = "../heptabao-plugin-host" }
 heptabao-openbao-grpc = { path = "../heptabao-openbao-grpc" }
 heptabao-kms-contracts = { path = "../heptabao-kms-contracts" }
 serde = { version = "=1.0.229", features = ["derive"] }
-serde_json = { version = "=1.0.151", features = ["raw_value"] }
+serde_json = { version = "=1.0.151", features = ["raw_value", "arbitrary_precision"] }
 ring = "=0.17.14"
 base64 = "=0.22.1"
 ssh-key = { version = "=0.6.7", default-features = false, features = ["std", "crypto"] }

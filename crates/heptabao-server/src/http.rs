@@ -4396,3 +4396,7 @@ mod transit_export_query_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "http_lossless_json_tests.rs"]
+mod lossless_json_tests;

@@ -20,7 +20,7 @@ impl Drop for WrappingKey {
 }
 
 impl WrappingKey {
-    fn new() -> Result<Self> {
+    pub(super) fn new() -> Result<Self> {
         let material = envelope::generate_wrapping_private_key()
             .map_err(|_| error(503, "wrapping key generation is unavailable"))?;
         Ok(Self {
@@ -106,7 +106,7 @@ fn digest(body: &Value) -> Result<envelope::OaepDigest> {
 fn target_length(kind: &str) -> Result<usize> {
     match kind {
         "aes128-gcm96" => Ok(16),
-        "aes256-gcm96" => Ok(32),
+        "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305" => Ok(32),
         "external-key" => Err(bad("external keys cannot be imported")),
         _ => Err(error(
             501,
@@ -138,6 +138,7 @@ impl Transit {
             wrapping.validate()?;
         }
         for key in self.keys.values() {
+            backup::validate_key(key)?;
             if key
                 .versions
                 .values()
@@ -158,7 +159,7 @@ impl Transit {
                     target_length(&key.kind)?
                 };
                 if (!mldsa_key && self.wrapping_key.is_none())
-                    || key.derived
+                    || (key.derived && (mldsa_key || (!key.legacy_counter_kdf && key.backup_metadata.is_none())))
                     || key.convergent_encryption
                     || key.convergent_write_min_version != 0
                     || (!policy.imported_key && !policy.allow_rotation)
@@ -271,12 +272,11 @@ impl Transit {
             return self.import_standard_asymmetric(name, kind, body, now);
         }
         target_length(kind)?;
-        if optional_bool(body, "derived")?.unwrap_or(false) {
-            return Err(error(501, "derived key imports are not implemented"));
+        let derived = optional_bool(body, "derived")?.unwrap_or(false);
+        if derived && (body.get("context").is_none() || decode_field(body, "context")?.is_empty()) {
+            return Err(bad("missing 'context' for key derivation; the key was created using a derived key, which means additional, per-request information must be included in order to perform operations with the key"));
         }
-        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
-            return Err(error(501, "plaintext key backups are not implemented"));
-        }
+        let allow_plaintext_backup = optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
         let allow_rotation = optional_bool(body, "allow_rotation")?.unwrap_or(false);
         let period = auto_rotate_period(body.get("auto_rotate_period"))?;
         if period != 0 && !allow_rotation {
@@ -288,7 +288,10 @@ impl Transit {
             name.into(),
             Key {
                 kind: kind.into(),
-                derived: false,
+                derived,
+                legacy_counter_kdf: derived,
+                allow_plaintext_backup,
+                backup_metadata: None,
                 convergent_encryption: false,
                 convergent_write_min_version: 0,
                 latest_version: 1,
@@ -321,13 +324,9 @@ impl Transit {
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
         if !imported_key(key) {
-            return Err(if mldsa::is_kind(&key.kind) || asymmetric_byok::is_kind(&key.kind) {
-                openbao_compatibility_error(
-                    "the import_version endpoint can only be used with an imported key",
-                )
-            } else {
-                error(500, "key does not permit imported versions")
-            });
+            return Err(openbao_compatibility_error(
+                "the import_version endpoint can only be used with an imported key",
+            ));
         }
         if mldsa::is_kind(&key.kind) {
             return self.import_mldsa_version(name, body, now);
@@ -424,6 +423,9 @@ impl Transit {
             Key {
                 kind: kind.into(),
                 derived: false,
+                legacy_counter_kdf: false,
+                allow_plaintext_backup: false,
+                backup_metadata: None,
                 convergent_encryption: false,
                 convergent_write_min_version: 0,
                 latest_version: 1,
@@ -639,7 +641,8 @@ impl Transit {
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
         let version = self.standard_imported_version(body, kind, now)?;
         self.keys.insert(name.into(), Key {
-            kind: kind.into(), derived: false, convergent_encryption: false,
+            kind: kind.into(), derived: false, legacy_counter_kdf: false, allow_plaintext_backup: false,
+            backup_metadata: None, convergent_encryption: false,
             convergent_write_min_version: 0, latest_version: 1, min_decryption_version: 1,
             min_encryption_version: 0, deletion_allowed: false, exportable,
             auto_rotate_period: period, deleted: false,
@@ -695,6 +698,14 @@ impl Transit {
         Ok(empty(true))
     }
 }
+pub(super) fn restored_policy(imported: bool, allow_rotation: bool) -> Option<ImportPolicy> {
+    (imported || allow_rotation).then_some(ImportPolicy { imported_key: imported, allow_rotation })
+}
+
+pub(super) fn rotation_permission(key: &Key) -> bool {
+    key.byok.as_ref().is_some_and(|policy| policy.allow_rotation)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -910,7 +921,7 @@ mod tests {
                 json!({"type":"external-key","ciphertext":good}),
                 400,
             ),
-            ("derived", json!({"derived":true,"ciphertext":good}), 501),
+            ("derived", json!({"derived":true,"ciphertext":good}), 400),
             ("public", json!({"public_key":"PUBLIC_DUMMY"}), 500),
         ] {
             let result = transit.import(name, &body, 100);

@@ -21,6 +21,8 @@ mod asymmetric;
 mod asymmetric_byok;
 #[path = "transit_byok.rs"]
 mod byok;
+#[path = "transit_backup.rs"]
+mod backup;
 #[path = "transit_external.rs"]
 mod external;
 #[path = "transit_mldsa.rs"]
@@ -50,6 +52,12 @@ struct Key {
     byok: Option<byok::ImportPolicy>,
     #[serde(default, skip_serializing_if = "symmetric::is_false")]
     derived: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    legacy_counter_kdf: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    allow_plaintext_backup: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    backup_metadata: Option<backup::Metadata>,
     #[serde(default, skip_serializing_if = "symmetric::is_false")]
     convergent_encryption: bool,
     #[serde(default, skip_serializing_if = "symmetric::is_zero")]
@@ -171,8 +179,9 @@ impl Key {
                 "key derivation is unsupported for this key type",
             ));
         }
-        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
-            return Err(error(501, "plaintext key backups are not implemented"));
+        let allow_plaintext_backup = optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
+        if allow_plaintext_backup && (!symmetric::is_kind(kind) || convergent_encryption) {
+            return Err(error(501, "plaintext backups for this key type or protected mode are not implemented"));
         }
         let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
@@ -202,6 +211,9 @@ impl Key {
             kind: kind.into(),
             byok: None,
             derived,
+            legacy_counter_kdf: false,
+            allow_plaintext_backup,
+            backup_metadata: None,
             convergent_encryption,
             convergent_write_min_version: if mode.is_some() { 1 } else { 0 },
             latest_version: 1,
@@ -264,10 +276,10 @@ impl Key {
             let encryption = asymmetric::is_rsa(&self.kind);
             let mut descriptor = json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
                 "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
-                "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
+                "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":self.allow_plaintext_backup,
                 "derived":false,"supports_derivation":self.kind == "ed25519","supports_encryption":encryption,
                 "supports_decryption":encryption,"supports_signing":true,"imported_key":byok::imported_key(self),
-                "auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0});
+                "auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":backup::min_available_version(self)});
             if let Some(allowed) = byok::imported_key_allow_rotation(self) {
                 descriptor["imported_key_allow_rotation"] = json!(allowed);
             }
@@ -279,10 +291,10 @@ impl Key {
         );
         let mut descriptor = json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
             "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
-            "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
+            "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":self.allow_plaintext_backup,
             "derived":self.derived,"convergent_encryption":self.convergent_encryption,"supports_derivation":symmetric::is_kind(&self.kind),
             "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519" || mldsa::is_kind(&self.kind),
-            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0});
+            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":backup::min_available_version(self)});
         descriptor["imported_key"] = json!(byok::imported_key(self));
         if let Some(allowed) = byok::imported_key_allow_rotation(self) {
             descriptor["imported_key_allow_rotation"] = json!(allowed);
@@ -295,7 +307,10 @@ impl Key {
             if !self.derived {
                 fields.remove("convergent_encryption");
             } else {
-                fields.insert("kdf".into(), json!("hkdf_sha256"));
+                fields.insert("kdf".into(), json!(if self.legacy_counter_kdf { "hmac-sha256-counter" } else { "hkdf_sha256" }));
+                if self.legacy_counter_kdf {
+                    fields.insert("kdf_mode".into(), json!("hmac-sha256-counter"));
+                }
             }
             if self.convergent_encryption {
                 fields.insert("convergent_encryption_version".into(), json!(-1));
@@ -315,6 +330,7 @@ impl Key {
                     .collect::<BTreeMap<_, _>>()
             );
         }
+        backup::decorate_descriptor(self, &mut descriptor);
         Ok(descriptor)
     }
 
@@ -399,6 +415,9 @@ impl Key {
             }
         }
         if let Some(value) = optional_u64(body, "min_decryption_version")? {
+            if value.max(1) < backup::min_available_version(self) {
+                return Err(bad("minimum decryption version cannot be lower than minimum available version"));
+            }
             self.min_decryption_version = value.max(1);
         }
         if let Some(value) = optional_u64(body, "min_encryption_version")? {
@@ -422,8 +441,12 @@ impl Key {
             }
             self.exportable = value;
         }
-        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
-            return Err(error(501, "plaintext backup is not implemented"));
+        if let Some(value) = optional_bool(body, "allow_plaintext_backup")? {
+            if value && (!symmetric::is_kind(&self.kind) || self.convergent_encryption
+                || self.convergent_write_min_version != 0)
+            { return Err(bad("plaintext backup cannot expose protected or unsupported key material")); }
+            // The real API accepts false after activation but leaves this permission enabled.
+            self.allow_plaintext_backup |= value;
         }
         if let Some(period) = requested_auto_rotate_period {
             if period != 0 {
@@ -615,6 +638,12 @@ impl Transit {
         if let Some(rest) = path.strip_prefix("keys/") {
             return self.handle_key(method, rest, body, now);
         }
+        if let Some(rest) = path.strip_prefix("backup/") {
+            return self.backup(method, rest, body, now);
+        }
+        if path == "restore" || path.starts_with("restore/") {
+            return self.restore(method, path.strip_prefix("restore/").unwrap_or(""), body, now);
+        }
         if let Some(rest) = path.strip_prefix("export/") {
             return if body.get("format").is_none() {
                 self.export(method, rest)
@@ -733,9 +762,9 @@ impl Transit {
                 if requested_convergent && !requested_derived {
                     return Err(bad("convergent encryption requires key derivation"));
                 }
-                if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
-                    return Err(error(501, "plaintext key backups are not implemented"));
-                }
+                if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false)
+                    && !key.allow_plaintext_backup
+                { return Err(bad("use the key config endpoint to enable plaintext backup")); }
                 if symmetric::is_kind(&key.kind) {
                     symmetric::flag(body, "exportable")?;
                 } else if optional_bool(body, "exportable")?
@@ -775,6 +804,10 @@ impl Transit {
         }
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         match operation {
+            "trim" => {
+                backup::trim(key, body)?;
+                return Ok(ok(key.descriptor(name)?, true));
+            }
             "config" => {
                 key.configure(body)?;
                 return Ok(ok(key.descriptor(name)?, true));
@@ -1649,13 +1682,14 @@ fn encrypt(
         ));
     }
     let master = stored_material(&version.material)?;
-    let material = symmetric::material(
+    let material = symmetric::material_with_kdf(
         &key.kind,
         key.derived,
         key.convergent_encryption,
         version.heptabao_convergent_version,
         &master,
         &context,
+        key.legacy_counter_kdf,
     )?;
     let key_len = symmetric::key_len(&key.kind);
     let associated = symmetric::associated_data(body)?;
@@ -1723,14 +1757,18 @@ fn decrypt(
         return Err(bad("invalid ciphertext"));
     }
     let context = symmetric::context(key, body)?;
+    if key.legacy_counter_kdf && key.kind == "aes128-gcm96" {
+        return Err(openbao_compatibility_error("could not derive enc key, length not correct"));
+    }
     let master = stored_material(&version.material)?;
-    let material = symmetric::material(
+    let material = symmetric::material_with_kdf(
         &key.kind,
         key.derived,
         key.convergent_encryption,
         version.heptabao_convergent_version,
         &master,
         &context,
+        key.legacy_counter_kdf,
     )?;
     let encryption_key = material
         .get(..symmetric::key_len(&key.kind))

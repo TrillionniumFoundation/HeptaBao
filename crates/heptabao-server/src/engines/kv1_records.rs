@@ -20,6 +20,8 @@ pub(super) struct Runtime {
     // additionally contain currently loaded independent namespace records.
     pub(super) protected: Kv1Index,
     pub(super) loaded_namespaces: BTreeSet<String>,
+    // RAM observation of this candidate's real writes; State owns the durable floor.
+    pub(super) observed_lossless_json: bool,
     // Bookkeeping only, not logical state. Publication clears exactly this
     // root's objects; readers still own their complete immutable graph.
     pending: Mutex<Pending>,
@@ -39,6 +41,7 @@ impl Clone for Runtime {
             index: self.index.clone(),
             protected: self.protected.clone(),
             loaded_namespaces: self.loaded_namespaces.clone(),
+            observed_lossless_json: self.observed_lossless_json,
             pending: Mutex::new(pending),
         }
     }
@@ -67,6 +70,7 @@ impl Runtime {
             index,
             protected,
             loaded_namespaces,
+            observed_lossless_json: false,
             pending: Mutex::new(Pending::Ready(objects)),
         }
     }
@@ -76,6 +80,7 @@ impl Runtime {
             protected: index.clone(),
             index,
             loaded_namespaces: BTreeSet::new(),
+            observed_lossless_json: false,
             pending: Mutex::new(Pending::Ready(Vec::new())),
         }
     }
@@ -277,11 +282,13 @@ impl EngineState {
             return Err(error(503, "KV1 record root already exists"));
         }
         let mut index = Kv1Index::empty(Arc::clone(&key));
+        let mut observed_lossless_json = false;
         for (namespace, state) in &self.namespaces {
             for (mount, entry) in &state.mounts {
                 match &entry.backend {
                     Backend::Kv1(entries) => {
                         for (path, value) in entries {
+                            observed_lossless_json |= heptabao_domain::json::requires_lossless_format(value.expose());
                             let bytes = crate::secret_serde::to_vec(
                                 value,
                                 crate::state_records::MAX_VALUE_BYTES,
@@ -322,6 +329,7 @@ impl EngineState {
             protected: index.clone(),
             index,
             loaded_namespaces: BTreeSet::new(),
+            observed_lossless_json,
             pending: Mutex::new(Pending::Ready(objects)),
         });
         candidate.validate_record_registry()?;
@@ -598,6 +606,11 @@ impl EngineState {
             "DELETE" => runtime.apply(key, None)?,
             _ => return Err(unsupported()),
         };
+        if changed && matches!(method, "POST" | "PUT")
+            && heptabao_domain::json::requires_lossless_format(body)
+        {
+            runtime.observed_lossless_json = true;
+        }
         Ok(empty(changed))
     }
 

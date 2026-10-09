@@ -174,6 +174,7 @@ fn bounded_wrapped_response(response: &Value) -> bool {
 pub(super) struct WrappedResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     creation_stamp: Option<public_origin::CreationStamp>,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     response: Value,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     stored_reply: Option<StoredWrappedReply>,
@@ -469,6 +470,23 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        self.lookup_wrapping_request_observed(
+            header_token,
+            namespace,
+            method,
+            body,
+            AuthorityTime::Coarse(now),
+        )
+    }
+    pub(crate) fn lookup_wrapping_request_observed(
+        &self,
+        header_token: &str,
+        namespace: &str,
+        method: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> Result<AuthResponse, AuthError> {
+        let now = time.seconds();
         validate_namespace(namespace)?;
         if !matches!(method, "GET" | "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
@@ -479,10 +497,10 @@ impl AuthState {
             None => header_token,
             _ => return Err(bad("wrapping token must be a nonempty string")),
         };
-        if let Some(owner) = self.control_group_target(raw, namespace, now)? {
+        if let Some(owner) = self.control_group_target_observed(raw, namespace, time)? {
             return Ok(response(
                 json!({"creation_path":owner.path, "creation_time":owner.creation_time,
-                "creation_ttl":owner.expires_at-owner.created_at}),
+                "creation_ttl":owner.wire_ttl()}),
                 false,
             ));
         }
@@ -601,3 +619,9 @@ impl AuthState {
 #[cfg(test)]
 #[path = "auth_wrapping_270_tests.rs"]
 mod openbao270_tests;
+
+impl WrappedResponse {
+    pub(super) fn has_lossless_json_state(&self) -> bool {
+        heptabao_domain::json::requires_lossless_format(&self.response)
+    }
+}

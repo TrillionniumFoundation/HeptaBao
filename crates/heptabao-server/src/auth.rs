@@ -1382,7 +1382,7 @@ struct Token {
     auth_provenance: Option<TokenAuthProvenance>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum TokenAuthProvenance {
     Sdk {
@@ -1573,13 +1573,27 @@ const MAX_POLICY_PARAMETER_KEYS: usize = 128;
 const MAX_POLICY_PARAMETER_VALUES: usize = 128;
 const MAX_POLICY_PARAMETER_VALUE_BYTES: usize = 16 * 1024;
 
+fn lossless_parameter_map<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> std::result::Result<acl::ParameterMap, D::Error> {
+    let mut parsed = StrictJson(heptabao_domain::json::deserialize(deserializer)?);
+    if parsed.0.as_object().is_none_or(|object| object.values().any(|value| !value.is_array())) {
+        return Err(serde::de::Error::custom("policy parameters must be an object of arrays"));
+    }
+    let object = parsed.0.as_object_mut().ok_or_else(|| serde::de::Error::custom("invalid policy parameter map"))?;
+    std::mem::take(object).into_iter().map(|(key, value)| match value {
+        Value::Array(values) => Ok((key, values)),
+        _ => Err(serde::de::Error::custom("invalid policy parameter values")),
+    }).collect()
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct Rule {
     path: String,
     capabilities: BTreeSet<String>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "lossless_parameter_map")]
     allowed_parameters: acl::ParameterMap,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "lossless_parameter_map")]
     denied_parameters: acl::ParameterMap,
     #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
     required_parameters: BTreeSet<String>,
@@ -8923,73 +8937,10 @@ fn erase_parsed_json(value: &mut Value) {
 }
 impl<'de> Deserialize<'de> for StrictJson {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        struct JsonVisitor;
-        impl<'de> serde::de::Visitor<'de> for JsonVisitor {
-            type Value = StrictJson;
-            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("JSON without duplicate object keys")
-            }
-            fn visit_bool<E: serde::de::Error>(self, value: bool) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::Bool(value)))
-            }
-            fn visit_i64<E: serde::de::Error>(self, value: i64) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::Number(value.into())))
-            }
-            fn visit_u64<E: serde::de::Error>(self, value: u64) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::Number(value.into())))
-            }
-            fn visit_f64<E: serde::de::Error>(self, value: f64) -> Result<Self::Value, E> {
-                serde_json::Number::from_f64(value)
-                    .map(|n| StrictJson(Value::Number(n)))
-                    .ok_or_else(|| serde::de::Error::custom("invalid JSON number"))
-            }
-            fn visit_unit<E: serde::de::Error>(self) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::Null))
-            }
-            fn visit_none<E: serde::de::Error>(self) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::Null))
-            }
-            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::String(value.into())))
-            }
-            fn visit_string<E: serde::de::Error>(self, value: String) -> Result<Self::Value, E> {
-                Ok(StrictJson(Value::String(value)))
-            }
-            fn visit_seq<A: serde::de::SeqAccess<'de>>(
-                self,
-                mut seq: A,
-            ) -> Result<Self::Value, A::Error> {
-                let mut result = StrictJson(Value::Array(Vec::new()));
-                let values = result
-                    .0
-                    .as_array_mut()
-                    .ok_or_else(|| serde::de::Error::custom("invalid JSON array"))?;
-                while let Some(mut value) = seq.next_element::<StrictJson>()? {
-                    values.push(std::mem::take(&mut value.0));
-                }
-                Ok(result)
-            }
-            fn visit_map<A: serde::de::MapAccess<'de>>(
-                self,
-                mut map: A,
-            ) -> Result<Self::Value, A::Error> {
-                let mut result = StrictJson(Value::Object(serde_json::Map::new()));
-                let values = result
-                    .0
-                    .as_object_mut()
-                    .ok_or_else(|| serde::de::Error::custom("invalid JSON object"))?;
-                while let Some(key) = map.next_key::<String>()? {
-                    let mut key = Zeroizing::new(key);
-                    if values.contains_key(key.as_str()) {
-                        return Err(serde::de::Error::custom("duplicate JSON key"));
-                    }
-                    let mut value = map.next_value::<StrictJson>()?;
-                    values.insert(std::mem::take(&mut *key), std::mem::take(&mut value.0));
-                }
-                Ok(result)
-            }
-        }
-        deserializer.deserialize_any(JsonVisitor)
+        // Capture actual text tokens before number or magic-map projection.
+        // The public RawValue newtype also reserializes an internal Value
+        // deserializer without interpreting user map keys as numeric tags.
+        crate::engines::deserialize_lossless_json(deserializer).map(Self)
     }
 }
 
@@ -9201,7 +9152,7 @@ fn parse_hcl_required_parameters(
     parse_required_parameters(Some(&value))
 }
 
-fn parse_hcl_value(tokens: &[Lex], cursor: &mut usize) -> Result<Value, AuthError> {
+pub(crate) fn parse_hcl_value(tokens: &[Lex], cursor: &mut usize) -> Result<Value, AuthError> {
     parse_hcl_value_at_depth(tokens, cursor, 0)
 }
 
@@ -9357,7 +9308,7 @@ fn rule(
 }
 
 #[derive(Clone, PartialEq)]
-enum Lex {
+pub(crate) enum Lex {
     Word(String),
     String(String),
     Number(u64),
@@ -9378,7 +9329,7 @@ fn take_string(tokens: &[Lex], cursor: &mut usize) -> Result<String, AuthError> 
         Err(bad("quoted string required in HCL policy"))
     }
 }
-fn lex_hcl(source: &str) -> Result<Vec<Lex>, AuthError> {
+pub(crate) fn lex_hcl(source: &str) -> Result<Vec<Lex>, AuthError> {
     let bytes = source.as_bytes();
     let mut index = 0;
     let mut result = Vec::new();
@@ -9644,5 +9595,29 @@ mod sdk_request_path_tests {
         ] {
             assert!(validate_path(path, false).is_err());
         }
+    }
+}
+
+#[path = "auth_token_provenance_json.rs"]
+mod token_provenance_json;
+
+#[cfg(test)]
+#[path = "auth_lossless_json_tests.rs"]
+mod lossless_json_tests;
+
+impl AuthState {
+    pub(crate) fn has_lossless_json_state(&self) -> bool {
+        self.control_groups.has_lossless_json_state()
+            || self.policies.values().flat_map(BTreeMap::values).any(|policy| {
+                policy.rules.iter().any(|rule| {
+                    rule.allowed_parameters.values().chain(rule.denied_parameters.values())
+                        .flatten().any(heptabao_domain::json::requires_lossless_format)
+                })
+            })
+            || self.tokens.values().any(|token| {
+                token.cubbyhole.has_lossless_json_state()
+                    || token.wrapping.as_ref().is_some_and(wrapping::WrappedResponse::has_lossless_json_state)
+                    || matches!(&token.auth_provenance, Some(TokenAuthProvenance::Sdk { origin }) if origin.has_lossless_json_state())
+            })
     }
 }

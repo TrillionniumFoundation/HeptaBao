@@ -743,6 +743,7 @@ pub(super) struct TokenOrigin {
     lease: token_precision::ServicePrecision,
     maximum: Timestamp,
     metadata: BTreeMap<String, String>,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     internal_data: Value,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     renewal: Option<renewal::RenewalOwner>,
@@ -1287,5 +1288,40 @@ mod sdk_auth100_tests {
             .insert("root".into());
         assert!(target.input(&altered, clock).is_err());
         Ok(())
+    }
+    #[test]
+    fn sdk_auth_lossless_internal_tag_owner_roundtrip_preserves_private_maps_and_numbers() -> TestResult {
+        let (mut auth, binding, clock) = setup()?;
+        let internal = heptabao_domain::json::decode(br#"{"big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"fake":{"$serde_json::private::Number":"7"}}"#)?;
+        let response = auth.finish_sdk_auth_login(&binding, "login", &json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2,"internal_data":internal}), clock)?;
+        let raw = response.body["auth"]["client_token"].as_str().ok_or("issued token")?;
+        let bytes = serde_json::to_vec(&auth)?;
+        let reopened: AuthState = serde_json::from_slice(&bytes)?;
+        reopened.validate_sdk_auth_state()?;
+        let token = reopened.tokens.get(&hash(raw)).ok_or("retained token")?;
+        let Some(TokenAuthProvenance::Sdk { origin }) = &token.auth_provenance else { return Err("SDK provenance lost".into()); };
+        assert_eq!(origin.internal_data, internal);
+        assert_eq!(serde_json::to_vec(&reopened)?, bytes);
+        let trusted: AuthState = serde_json::from_value(serde_json::to_value(&auth)?)?;
+        trusted.validate_sdk_auth_state()?;
+        assert_eq!(serde_json::to_vec(&trusted)?, bytes);
+        let legacy: TokenAuthProvenance = serde_json::from_slice(br#"{"kind":"token_api"}"#)?;
+        assert!(matches!(legacy, TokenAuthProvenance::TokenApi { issued_creation_ttl:None }));
+        for invalid in [
+            br#"{"kind":"token_api","unexpected":1}"#.as_slice(),
+            br#"{"kind":"token_api","kind":"jwt","role_name":"reader"}"#,
+            br#"{"kind":"unknown"}"#,
+            br#"{"kind":"token_api","issued_creation_ttl":{"$serde_json::private::Number":"10"}}"#,
+        ] {
+            assert!(serde_json::from_slice::<TokenAuthProvenance>(invalid).is_err());
+        }
+        Ok(())
+    }
+
+}
+
+impl TokenOrigin {
+    pub(super) fn has_lossless_json_state(&self) -> bool {
+        heptabao_domain::json::requires_lossless_format(&self.internal_data)
     }
 }

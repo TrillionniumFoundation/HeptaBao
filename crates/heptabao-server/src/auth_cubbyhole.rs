@@ -16,6 +16,7 @@ const MAX_VALUE_BYTES: usize = 256 * 1024;
 pub(super) struct TokenCubbyhole {
     // Dimensions remain separate, including for a root token using a child
     // namespace. Neither delimiter concatenation nor a raw bearer is a key.
+    #[serde(deserialize_with = "deserialize_namespaces")]
     namespaces: BTreeMap<String, BTreeMap<String, Value>>,
 }
 
@@ -236,3 +237,23 @@ impl AuthState {
 #[cfg(test)]
 #[path = "auth_cubbyhole_tests.rs"]
 mod tests;
+
+fn deserialize_namespaces<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<BTreeMap<String, BTreeMap<String, Value>>, D::Error> {
+    let mut parsed = super::StrictJson(heptabao_domain::json::deserialize(deserializer)?);
+    if parsed.0.as_object().is_none_or(|outer| outer.values().any(|value| !value.is_object())) {
+        return Err(serde::de::Error::custom("cubbyhole namespaces must be maps"));
+    }
+    let object = parsed.0.as_object_mut().ok_or_else(|| serde::de::Error::custom("invalid cubbyhole namespaces"))?;
+    std::mem::take(object).into_iter().map(|(name, value)| match value {
+        Value::Object(entries) => Ok((name, entries.into_iter().collect())),
+        _ => Err(serde::de::Error::custom("invalid cubbyhole namespace entries")),
+    }).collect()
+}
+impl TokenCubbyhole {
+    pub(super) fn has_lossless_json_state(&self) -> bool {
+        self.namespaces.values().flat_map(BTreeMap::values)
+            .any(heptabao_domain::json::requires_lossless_format)
+    }
+}

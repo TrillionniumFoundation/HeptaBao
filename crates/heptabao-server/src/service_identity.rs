@@ -198,6 +198,24 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_symmetric_backup_state() {
+            required.max(SYMMETRIC_BACKUP_STATE_SCHEMA)
+        } else { required };
+        let required = if self.engines.has_kv2_lossless_state() {
+            required.max(KV2_LOSSLESS_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.workflows.has_profiles() {
+            required.max(WORKFLOW_PROFILE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_fractional_control_group_state() {
+            required.max(CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -205,6 +223,19 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
+        self.namespaces.workflows.validate()?;
+        if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+            && (self.auth.has_fractional_control_group_state()
+                || previous.is_some_and(|state| state.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "fractional control groups require schema 122"));
+        }
+        if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA
+            && (self.namespaces.workflows.has_profiles()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_PROFILE_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "workflow profiles require schema 121"));
+        }
         self.auth
             .validate_control_group_state()
             .map_err(|_| Response::error(503, "invalid control group owner"))?;
@@ -212,11 +243,26 @@ impl State {
         self.auth
             .validate_control_group_clock_floor(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < SYMMETRIC_BACKUP_STATE_SCHEMA
+            && (self.engines.has_symmetric_backup_state()
+                || previous.is_some_and(|s| s.schema >= SYMMETRIC_BACKUP_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "symmetric imported derivation and backups require schema 119"));
+        }
         if self.schema < CONTROL_GROUP_STATE_SCHEMA
             && (self.auth.has_control_group_state()
                 || previous.is_some_and(|s| s.schema >= CONTROL_GROUP_STATE_SCHEMA))
         {
             return Err(Response::error(503, "Control Groups require schema 118"));
+        }
+        self.engines
+            .validate_kv2_lossless_state(previous.map(|state| &*state.engines))
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV2_LOSSLESS_STATE_SCHEMA
+            && (self.engines.has_kv2_lossless_state()
+                || previous.is_some_and(|state| state.schema >= KV2_LOSSLESS_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "KV2 lossless custody requires schema 120"));
         }
         namespace_diagnostic!("publication.guard.validate.00", self.namespace_leases.validate())?;
         namespace_diagnostic!("publication.guard.validate_transit_byok_state.01", self.engines
@@ -957,6 +1003,14 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.engines
+            .validate_kv2_lossless_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV2_LOSSLESS_STATE_SCHEMA && self.engines.has_kv2_lossless_state()
+            || self.schema == KV2_LOSSLESS_STATE_SCHEMA && !self.engines.has_kv2_lossless_state()
+        {
+            return Err(Response::error(503, "KV2 lossless custody requires schema 120"));
+        }
         if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
             && self.auth.has_sdk_namespace_custody()
             || self.schema == SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
@@ -1361,6 +1415,15 @@ impl State {
             .validate_control_group_state()
             .map_err(|_| Response::error(503, "invalid control group owner"))?;
         self.validate_control_group_transports()?;
+        if self.schema < SYMMETRIC_BACKUP_STATE_SCHEMA && self.engines.has_symmetric_backup_state() {
+            return Err(Response::error(503, "symmetric imported derivation and backups require schema 119"));
+        }
+        if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA && self.auth.has_fractional_control_group_state() {
+            return Err(Response::error(503, "fractional control groups require schema 122"));
+        }
+        if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA && self.namespaces.workflows.has_profiles() {
+            return Err(Response::error(503, "workflow profiles require schema 121"));
+        }
         if self.schema < CONTROL_GROUP_STATE_SCHEMA && self.auth.has_control_group_state() {
             return Err(Response::error(503, "Control Groups require schema 118"));
         }
@@ -2104,6 +2167,10 @@ impl State {
             | MLDSA_IMPORT_STATE_SCHEMA
             | STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
             | CONTROL_GROUP_STATE_SCHEMA
+            | SYMMETRIC_BACKUP_STATE_SCHEMA
+            | KV2_LOSSLESS_STATE_SCHEMA
+            | WORKFLOW_PROFILE_STATE_SCHEMA
+            | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
             | PKI_ACME_ACCOUNT_STATE_SCHEMA

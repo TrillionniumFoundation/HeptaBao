@@ -695,7 +695,7 @@ impl SdkBackendHost {
                 return Err(SdkBridgeError::OutcomeUnknown);
             }
             if let Some(end) = self.buffered.iter().position(|b| *b == b'\n') {
-                let message = serde_json::from_slice(&self.buffered[..end])
+                let message = decode_sdk_frame(&self.buffered[..end])
                     .map_err(|_| SdkBridgeError::OutcomeUnknown)?;
                 self.buffered.drain(..=end);
                 return Ok(message);
@@ -942,3 +942,18 @@ mod auth_paths_tests {
         Ok(())
     }
 }
+
+fn decode_sdk_frame(bytes: &[u8]) -> Result<Value, SdkBridgeError> {
+    if bytes.len() > MAX_FRAME {
+        return Err(SdkBridgeError::OutcomeUnknown);
+    }
+    heptabao_domain::json::decode_with_policy(
+        bytes,
+        heptabao_domain::json::DuplicatePolicy::LastWins,
+    )
+    .map_err(|_| SdkBridgeError::OutcomeUnknown)
+}
+
+#[cfg(test)]
+#[path = "sdk_lossless_json_tests.rs"]
+mod lossless_json_tests;

@@ -8,6 +8,8 @@
 //! journal in this profile.
 use super::*;
 use std::collections::{BTreeMap, BTreeSet};
+#[path = "service_workflow_profiles.rs"]
+mod profiles;
 
 const MAX_WORKFLOWS_PER_NAMESPACE: usize = 256;
 const MAX_WORKFLOW_PATH_BYTES: usize = 256;
@@ -82,6 +84,8 @@ impl WorkflowState {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct WorkflowDefinition {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    profile: Option<profiles::Profile>,
     steps: Vec<WorkflowStep>,
     outputs: BTreeMap<String, OutputMapping>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -94,7 +98,7 @@ struct WorkflowStep {
     name: String,
     method: String,
     path: String,
-    #[serde(default = "empty_object")]
+    #[serde(default = "empty_object", deserialize_with = "heptabao_domain::json::deserialize")]
     body: Value,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     allow_failure: bool,
@@ -116,6 +120,14 @@ impl WorkflowState {
         self.by_namespace
             .values()
             .any(|workflows| !workflows.is_empty())
+    }
+
+    pub(super) fn has_profiles(&self) -> bool {
+        self.by_namespace.values().any(|entries| {
+            entries
+                .values()
+                .any(|entry| entry.definition.profile.is_some())
+        })
     }
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
@@ -442,6 +454,7 @@ fn parse_definition(body: &Value) -> Result<(WorkflowDefinition, Option<u64>), R
         parsed_outputs.insert(name.clone(), OutputMapping { step, field });
     }
     let definition = WorkflowDefinition {
+        profile: None,
         steps: parsed_steps,
         outputs: parsed_outputs,
         allow_unauthenticated: false,
@@ -451,6 +464,21 @@ fn parse_definition(body: &Value) -> Result<(WorkflowDefinition, Option<u64>), R
 }
 
 fn validate_definition(definition: &WorkflowDefinition) -> Result<(), Response> {
+    if let Some(profile) = &definition.profile {
+        if !definition.steps.is_empty()
+            || !definition.outputs.is_empty()
+            || definition.allow_unauthenticated
+        {
+            return Err(Response::error(
+                503,
+                "profile workflow has mixed persisted definitions",
+            ));
+        }
+        return profile
+            .compile()
+            .map(|_| ())
+            .map_err(|_| Response::error(503, "invalid persisted workflow profile"));
+    }
     if definition.allow_unauthenticated
         || definition.steps.is_empty()
         || definition.steps.len() > MAX_STEPS
@@ -579,6 +607,9 @@ impl Service {
                     else {
                         return Response::error(404, "workflow not found");
                     };
+                    if let Some(profile) = &stored.definition.profile {
+                        return Response::ok(json!({"data":profile.wire(path, stored.version)}));
+                    }
                     let definition = match definition_value(&stored.definition) {
                         Ok(value) => value,
                         Err(error) => return error,
@@ -595,6 +626,9 @@ impl Service {
                         Ok(()) => path.to_owned(),
                         Err(message) => return Response::error(400, message),
                     };
+                    if request.body.get("workflow").is_some() {
+                        return self.workflow_profile_manage(state, request, path);
+                    }
                     let (definition, cas) = match parse_definition(request.body) {
                         Ok(value) => value,
                         Err(error) => return error,
@@ -724,6 +758,9 @@ impl Service {
             .is_none_or(|object| !object.is_empty())
         {
             return Response::error(400, "workflow execution accepts an empty JSON object");
+        }
+        if let Some(profile) = &stored.definition.profile {
+            return self.workflow_profile_execute(state, principal, request, profile);
         }
         let mut responses = BTreeMap::<String, Value>::new();
         let mut approle_secret_consumption = None;
@@ -1124,5 +1161,18 @@ path "workflow-kv/item" {
         assert_eq!(stored.status, 200);
         assert_eq!(stored.body["data"]["version"], 1);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "service_workflow_lossless_json_tests.rs"]
+mod lossless_json_tests;
+
+impl WorkflowState {
+    pub(super) fn has_lossless_json_state(&self) -> bool {
+        self.by_namespace.values().flat_map(BTreeMap::values)
+            .any(|stored| stored.definition.steps.iter().any(|step| {
+                heptabao_domain::json::requires_lossless_format(&step.body)
+            }))
     }
 }

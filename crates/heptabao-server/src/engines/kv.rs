@@ -1,4 +1,13 @@
 use super::*;
+use crate::auth::Timestamp;
+
+#[path = "kv_lossless.rs"]
+pub(super) mod lossless;
+use lossless::{EntryPrecision, VersionPrecision};
+
+fn nanos_is_zero(value: &u32) -> bool {
+    *value == 0
+}
 
 #[cfg(test)]
 #[path = "kv_version_array_tests.rs"]
@@ -14,6 +23,8 @@ fn metadata_cas_disabled(value: &bool) -> bool {
 pub(super) struct Kv2 {
     config: Config,
     entries: BTreeMap<String, Entry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    lossless_format: Option<u32>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Default)]
@@ -23,6 +34,8 @@ struct Config {
     #[serde(default, skip_serializing_if = "metadata_cas_disabled")]
     metadata_cas_required: bool,
     delete_version_after: u64,
+    #[serde(default, skip_serializing_if = "nanos_is_zero")]
+    delete_version_after_nanos: u32,
 }
 
 impl Config {
@@ -41,12 +54,13 @@ impl Config {
         }
         if let Some(after) = body.get("delete_version_after") {
             self.delete_version_after = duration_seconds(after)?;
+            self.delete_version_after_nanos = 0;
         }
         Ok(())
     }
 
     fn json(&self) -> Value {
-        json!({"max_versions":self.max_versions,"cas_required":self.cas_required,"metadata_cas_required":self.metadata_cas_required,"delete_version_after":format!("{}s",self.delete_version_after)})
+        json!({"max_versions":self.max_versions,"cas_required":self.cas_required,"metadata_cas_required":self.metadata_cas_required,"delete_version_after":lossless::display_duration(self.delete_version_after,self.delete_version_after_nanos)})
     }
 }
 
@@ -63,6 +77,8 @@ struct EntryState {
     updated_at: u64,
     custom_metadata: Option<BTreeMap<String, String>>,
     versions: BTreeMap<u64, Version>,
+    #[serde(default, skip_serializing_if = "EntryPrecision::is_empty")]
+    precision: EntryPrecision,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -85,14 +101,23 @@ impl Drop for EntryState {
 }
 
 impl Version {
-    fn metadata(&self, version: u64, custom_metadata: &Option<BTreeMap<String, String>>) -> Value {
-        json!({"version":version,"created_time":timestamp(self.created_at),
-            "deletion_time":self.deletion_at.map(timestamp).unwrap_or_default(),
+    fn metadata(
+        &self,
+        version: u64,
+        custom_metadata: &Option<BTreeMap<String, String>>,
+        precise: VersionPrecision,
+    ) -> Value {
+        json!({"version":version,"created_time":lossless::display_time(self.created_at, precise.created_at),
+            "deletion_time":self.deletion_at.map(|seconds| lossless::display_time(seconds, precise.deletion_at)).unwrap_or_default(),
             "destroyed":self.destroyed,"custom_metadata":custom_metadata})
     }
 
-    fn readable(&self, now: u64) -> bool {
-        !self.destroyed && self.data.is_some() && self.deletion_at.is_none_or(|at| now < at)
+    fn readable(&self, now: Timestamp, precise: VersionPrecision) -> bool {
+        !self.destroyed
+            && self.data.is_some()
+            && self
+                .deletion_at
+                .is_none_or(|at| lossless::time_before(now, at, precise.deletion_at))
     }
 }
 
@@ -107,18 +132,33 @@ impl Entry {
             updated_at: now,
             custom_metadata: None,
             versions: BTreeMap::new(),
+            precision: EntryPrecision::default(),
         })
+    }
+    fn version_precision(&self, number: u64) -> VersionPrecision {
+        self.precision
+            .versions
+            .get(&number)
+            .copied()
+            .unwrap_or_default()
     }
     fn metadata(&self) -> Value {
         let mut metadata = self.config.json();
-        metadata["created_time"] = json!(timestamp(self.created_at));
-        metadata["updated_time"] = json!(timestamp(self.updated_at));
+        metadata["created_time"] = json!(lossless::display_time(
+            self.created_at,
+            self.precision.created_at
+        ));
+        metadata["updated_time"] = json!(lossless::display_time(
+            self.updated_at,
+            self.precision.updated_at
+        ));
         metadata["current_version"] = json!(self.current_version);
         metadata["current_metadata_version"] = json!(self.current_metadata_version);
         metadata["oldest_version"] = json!(self.oldest_version);
         metadata["custom_metadata"] = json!(self.custom_metadata);
         metadata["versions"] = Value::Object(self.versions.iter().map(|(version, value)| {
-            (version.to_string(), json!({"created_time":timestamp(value.created_at),"deletion_time":value.deletion_at.map(timestamp).unwrap_or_default(),"destroyed":value.destroyed}))
+            let precise = self.version_precision(*version);
+            (version.to_string(), json!({"created_time":lossless::display_time(value.created_at,precise.created_at),"deletion_time":value.deletion_at.map(|seconds|lossless::display_time(seconds,precise.deletion_at)).unwrap_or_default(),"destroyed":value.destroyed}))
         }).collect());
         metadata
     }
@@ -281,7 +321,7 @@ fn scan_map_keys<T>(entries: &BTreeMap<String, T>, prefix: &str) -> Result<Vec<S
 
 impl Kv2 {
     pub(super) fn from_v1(entries: BTreeMap<String, SharedJson>, now: u64) -> Self {
-        Self {
+        let mut converted = Self {
             config: Config::default(),
             entries: entries
                 .into_iter()
@@ -300,7 +340,12 @@ impl Kv2 {
                     (path, entry)
                 })
                 .collect(),
+            lossless_format: None,
+        };
+        if converted.has_lossless_import_state() {
+            converted.lossless_format = Some(1);
         }
+        converted
     }
 
     pub(super) fn has_metadata_cas_state(&self) -> bool {
@@ -322,6 +367,21 @@ impl Kv2 {
         path: &str,
         body: &Value,
         now: u64,
+    ) -> Result<EngineResponse> {
+        self.handle_read_precise(
+            method,
+            path,
+            body,
+            Timestamp::whole(now).map_err(|_| bad("KV2 request clock rejected"))?,
+        )
+    }
+
+    pub(in crate::engines) fn handle_read_precise(
+        &self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: Timestamp,
     ) -> Result<EngineResponse> {
         if !matches!(method, "GET" | "LIST" | "SCAN") {
             return Err(unsupported());
@@ -398,8 +458,37 @@ impl Kv2 {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        self.handle_precise(
+            method,
+            path,
+            body,
+            Timestamp::whole(now).map_err(|_| bad("KV2 request clock rejected"))?,
+        )
+    }
+
+    pub(in crate::engines) fn handle_precise(
+        &mut self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: Timestamp,
+    ) -> Result<EngineResponse> {
+        let response = self.handle_at(method, path, body, now)?;
+        if response.mutated && lossless::subsecond(now).is_some() {
+            self.lossless_format = Some(1);
+        }
+        Ok(response)
+    }
+
+    fn handle_at(
+        &mut self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: Timestamp,
+    ) -> Result<EngineResponse> {
         if matches!(method, "GET" | "LIST" | "SCAN") {
-            return self.handle_read(method, path, body, now);
+            return self.handle_read_precise(method, path, body, now);
         }
         if path == "config" {
             if !write_method(method) {
@@ -436,11 +525,16 @@ impl Kv2 {
                     return Ok(empty(false));
                 };
                 let current_version = entry.current_version;
+                let mut precise = entry.version_precision(current_version);
                 if let Some(version) = entry.versions.get_mut(&current_version)
                     && !version.destroyed
-                    && version.deletion_at.is_none_or(|at| at > now)
+                    && version
+                        .deletion_at
+                        .is_none_or(|at| lossless::time_before(now, at, precise.deletion_at))
                 {
-                    version.deletion_at = Some(now);
+                    version.deletion_at = Some(now.seconds());
+                    precise.deletion_at = lossless::subsecond(now);
+                    entry.precision.set_version(current_version, precise);
                     return Ok(empty(true));
                 }
                 Ok(empty(false))
@@ -460,7 +554,7 @@ impl Kv2 {
         &self,
         resource: &str,
         body: &Value,
-        now: u64,
+        now: Timestamp,
         subkeys: bool,
     ) -> Result<EngineResponse> {
         let entry = self.entries.get(resource).ok_or_else(not_found)?;
@@ -473,8 +567,9 @@ impl Kv2 {
             .flatten()
             .unwrap_or(entry.current_version);
         let version = entry.versions.get(&selected).ok_or_else(not_found)?;
-        let metadata = version.metadata(selected, &entry.custom_metadata);
-        if !version.readable(now) {
+        let precise = entry.version_precision(selected);
+        let metadata = version.metadata(selected, &entry.custom_metadata, precise);
+        if !version.readable(now, precise) {
             return Ok(EngineResponse {
                 status: 404,
                 body: json!({"data":{"data":null,"metadata":metadata}}),
@@ -497,7 +592,7 @@ impl Kv2 {
         &mut self,
         resource: &str,
         body: &Value,
-        now: u64,
+        now: Timestamp,
         patch: bool,
     ) -> Result<EngineResponse> {
         reject_unknown(body, &["data", "options"])?;
@@ -526,7 +621,14 @@ impl Kv2 {
         let data = if patch {
             let current_value = current
                 .and_then(|entry| entry.versions.get(&current_version))
-                .filter(|version| version.readable(now))
+                .filter(|version| {
+                    version.readable(
+                        now,
+                        current
+                            .map(|entry| entry.version_precision(current_version))
+                            .unwrap_or_default(),
+                    )
+                })
                 .and_then(|v| v.data.as_ref())
                 .map(|data| data.expose().clone())
                 .ok_or_else(not_found)?;
@@ -539,35 +641,38 @@ impl Kv2 {
         let next = current_version
             .checked_add(1)
             .ok_or_else(|| bad("version limit reached"))?;
+        // Complete deadline and format validation before an absent key can be
+        // inserted; a rejected candidate cannot leave an empty metadata entry.
+        let key_config = current
+            .map(|entry| entry.config.clone())
+            .unwrap_or_default();
+        let deadline = lossless::deletion_deadline(now, &key_config, &self.config)?;
+        let created_entry = current.is_none();
+        let format_needed = lossless::needs_lossless_number_format(&data);
         let entry = self
             .entries
             .entry(resource.into())
-            .or_insert_with(|| Entry::new(now));
-        let after = match (
-            entry.config.delete_version_after,
-            self.config.delete_version_after,
-        ) {
-            (0, engine) => engine,
-            (key, 0) => key,
-            (key, engine) => key.min(engine),
+            .or_insert_with(|| Entry::new(now.seconds()));
+        if created_entry {
+            entry.precision.created_at = lossless::subsecond(now);
+        }
+        let precise = VersionPrecision {
+            created_at: lossless::subsecond(now),
+            deletion_at: deadline.and_then(lossless::subsecond),
+            source_deletion_at: None,
         };
         let version = Version {
-            created_at: now,
-            deletion_at: if after == 0 {
-                None
-            } else {
-                Some(
-                    now.checked_add(after)
-                        .ok_or_else(|| bad("deletion deadline overflow"))?,
-                )
-            },
+            created_at: now.seconds(),
+            deletion_at: deadline.map(Timestamp::seconds),
             destroyed: false,
             data: Some(SharedJson::from(SecretJson(data))),
         };
-        let metadata = version.metadata(next, &entry.custom_metadata);
+        let metadata = version.metadata(next, &entry.custom_metadata, precise);
+        entry.precision.set_version(next, precise);
         entry.versions.insert(next, version);
         entry.current_version = next;
-        entry.updated_at = now;
+        entry.updated_at = now.seconds();
+        entry.precision.updated_at = lossless::subsecond(now);
         let retained = match (entry.config.max_versions, self.config.max_versions) {
             (0, 0) => 10,
             (0, engine) => engine,
@@ -575,7 +680,14 @@ impl Kv2 {
         };
         let floor = next.saturating_sub(retained).saturating_add(1);
         entry.versions.retain(|version, _| *version >= floor);
+        entry
+            .precision
+            .versions
+            .retain(|version, _| *version >= floor);
         entry.oldest_version = if floor > 1 { floor } else { 0 };
+        if format_needed {
+            self.lossless_format = Some(1);
+        }
         Ok(ok(metadata, true))
     }
 
@@ -584,7 +696,7 @@ impl Kv2 {
         resource: &str,
         operation: &str,
         body: &Value,
-        now: u64,
+        now: Timestamp,
     ) -> Result<EngineResponse> {
         reject_unknown(body, &["versions"])?;
         let versions = body
@@ -596,11 +708,26 @@ impl Kv2 {
             .iter()
             .map(wire_version)
             .collect::<Result<Vec<_>>>()?;
+        // Validate the new schedule before the first version is changed. A
+        // later overflow cannot leave earlier requested versions undeleted.
+        let deadline = if operation == "undelete" {
+            match self.entries.get(resource) {
+                Some(entry) if versions.iter().flatten().any(|number| {
+                    entry.versions.get(number).is_some_and(|version| {
+                        !version.destroyed && version.deletion_at.is_some()
+                    })
+                }) => lossless::deletion_deadline(now, &entry.config, &self.config)?,
+                _ => None,
+            }
+        } else {
+            None
+        };
         let Some(entry) = self.entries.get_mut(resource) else {
             return Ok(empty(false));
         };
         let mut changed = false;
         for number in versions.into_iter().flatten() {
+            let mut precise = entry.version_precision(number);
             if let Some(version) = entry.versions.get_mut(&number) {
                 if version.destroyed {
                     continue;
@@ -611,16 +738,23 @@ impl Kv2 {
                         version.destroyed = true;
                         changed = true;
                     }
-                    "delete" if version.deletion_at.is_none_or(|at| at > now) => {
-                        version.deletion_at = Some(now);
+                    "delete"
+                        if version.deletion_at.is_none_or(|at| {
+                            lossless::time_before(now, at, precise.deletion_at)
+                        }) =>
+                    {
+                        version.deletion_at = Some(now.seconds());
+                        precise.deletion_at = lossless::subsecond(now);
                         changed = true;
                     }
                     "undelete" if version.deletion_at.is_some() => {
-                        version.deletion_at = None;
+                        version.deletion_at = deadline.map(Timestamp::seconds);
+                        precise.deletion_at = deadline.and_then(lossless::subsecond);
                         changed = true;
                     }
                     _ => {}
                 }
+                entry.precision.set_version(number, precise);
             }
         }
         Ok(empty(changed))
@@ -630,7 +764,7 @@ impl Kv2 {
         &mut self,
         resource: &str,
         body: &Value,
-        now: u64,
+        now: Timestamp,
         patch: bool,
     ) -> Result<EngineResponse> {
         const PATCHABLE_FIELDS: &[&str] = &[
@@ -659,6 +793,7 @@ impl Kv2 {
             return Ok(empty(false));
         }
         let previous = self.entries.get(resource);
+        let created_entry = previous.is_none();
         if patch && previous.is_none() {
             return Err(not_found());
         }
@@ -740,10 +875,14 @@ impl Kv2 {
         let entry = self
             .entries
             .entry(resource.into())
-            .or_insert_with(|| Entry::new(now));
+            .or_insert_with(|| Entry::new(now.seconds()));
+        if created_entry {
+            entry.precision.created_at = lossless::subsecond(now);
+        }
         entry.config = config;
         entry.current_metadata_version = next_version;
-        entry.updated_at = now;
+        entry.updated_at = now.seconds();
+        entry.precision.updated_at = lossless::subsecond(now);
         if let Some(old) = std::mem::replace(&mut entry.custom_metadata, custom_metadata) {
             for (mut name, mut value) in old {
                 name.zeroize();
@@ -891,3 +1030,7 @@ mod ordered_list_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "kv_lossless_tests.rs"]
+mod lossless_tests;

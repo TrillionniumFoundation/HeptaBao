@@ -115,7 +115,7 @@ fn checked_bytes(state: &State) -> Result<Zeroizing<Vec<u8>>, Response> {
     if bytes.len() > OLD_STATE_LIMIT {
         return Err(Response::error(507, "historical state capacity exhausted"));
     }
-    let mut projected = CheckedJson(serde_json::from_slice(&bytes).map_err(|_| unavailable())?);
+    let mut projected = CheckedJson(crate::auth::parse_strict_json(&bytes).map_err(|_| unavailable())?);
     exact(&projected.0, &["schema", "cluster_id", "auth", "engines"])?;
     let auth = &mut projected.0["auth"];
     exact(

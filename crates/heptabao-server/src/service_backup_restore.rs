@@ -780,6 +780,30 @@ impl Service {
         {
             return Err(Response::error(400, "snapshot would downgrade standard asymmetric imported key state"));
         }
+        if current.schema >= SYMMETRIC_BACKUP_STATE_SCHEMA
+            && incoming.schema < SYMMETRIC_BACKUP_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade symmetric imported derivation and backups"));
+        }
+        if current.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+            && incoming.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade precise control group deadlines"));
+        }
+        if current.schema >= KV2_LOSSLESS_STATE_SCHEMA
+            && incoming.schema < KV2_LOSSLESS_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade KV2 lossless custody"));
+        }
+        incoming
+            .engines
+            .validate_kv2_lossless_state(Some(&current.engines))
+            .map_err(Response::from_engine_error)?;
+        if current.schema >= WORKFLOW_PROFILE_STATE_SCHEMA
+            && incoming.schema < WORKFLOW_PROFILE_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade workflow profiles"));
+        }
         if current.schema >= CONTROL_GROUP_STATE_SCHEMA
             && incoming.schema < CONTROL_GROUP_STATE_SCHEMA
         {

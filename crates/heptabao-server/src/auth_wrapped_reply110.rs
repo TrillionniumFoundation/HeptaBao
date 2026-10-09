@@ -1293,7 +1293,7 @@ impl StoredWrappedReply {
         {
             return Err(bad("invalid stored wrapped reply representation"));
         }
-        let mut decoded: Value = serde_json::from_slice(&self.bytes)
+        let mut decoded: Value = parse_strict_json(&self.bytes)
             .map_err(|_| bad("invalid stored wrapped reply JSON"))?;
         let mut projected = match logical_envelope_for_projection(
             logical,

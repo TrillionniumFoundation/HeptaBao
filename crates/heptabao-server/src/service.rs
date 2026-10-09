@@ -138,6 +138,15 @@ const SSH_CA_STATE_SCHEMA: u32 = 115;
 const MLDSA_IMPORT_STATE_SCHEMA: u32 = 116;
 const STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA: u32 = 117;
 const CONTROL_GROUP_STATE_SCHEMA: u32 = crate::auth::control_groups::STATE_SCHEMA;
+const SYMMETRIC_BACKUP_STATE_SCHEMA: u32 = 119;
+const KV2_LOSSLESS_STATE_SCHEMA: u32 = 120;
+#[path = "service_kv2_import.rs"]
+mod kv2_import;
+#[cfg(test)]
+#[path = "service_kv2_import_tests.rs"]
+mod kv2_import_tests;
+const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
+const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
 #[path = "service_pki_acme_eab.rs"]
@@ -145,7 +154,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = CONTROL_GROUP_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -189,6 +198,10 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | MLDSA_IMPORT_STATE_SCHEMA
                 | STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
                 | CONTROL_GROUP_STATE_SCHEMA
+                | SYMMETRIC_BACKUP_STATE_SCHEMA
+                | KV2_LOSSLESS_STATE_SCHEMA
+                | WORKFLOW_PROFILE_STATE_SCHEMA
+                | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -3451,10 +3464,14 @@ impl Service {
                 || admitted.auth.is_control_group_token(token))
         {
             let observed = match request.token_time() {
-                Ok(time) => time.seconds(),
+                Ok(time) => time,
                 Err(error) => return error,
             };
-            if admitted.auth.advance_control_group_clock(observed) {
+            let advanced = match admitted.auth.advance_control_group_observed(observed) {
+                Ok(advanced) => advanced,
+                Err(error) => return Response::error(error.status, &error.message),
+            };
+            if advanced {
                 admitted.schema = admitted.writer_schema();
                 if let Err(error) = self.commit_state(&mut admitted) {
                     return error;
@@ -3475,7 +3492,8 @@ impl Service {
             && let Err(error) =
                 admitted
                     .auth
-                    .lookup_wrapping_request(token, namespace, "POST", &json!({}), now)
+                    .lookup_wrapping_request_observed(token, namespace, "POST", &json!({}),
+                        match request.token_time() { Ok(time) => time, Err(error) => return error })
         {
             return Response::error(error.status, &error.message);
         }
@@ -4033,7 +4051,8 @@ impl Service {
         let mut response = if path == "sys/wrapping/lookup" {
             match transaction
                 .auth
-                .lookup_wrapping_request(token, namespace, method, body, now)
+                .lookup_wrapping_request_observed(token, namespace, method, body,
+                    match request.token_time() { Ok(time) => time, Err(error) => return error })
             {
                 Ok(value) => Response {
                     unwrapped_json: None,
@@ -4341,6 +4360,7 @@ impl Service {
             || admitted.auth.has_raw_wrapped_reply_state()
             || admitted.engines.has_ssh_ca_state()
             || admitted.auth.has_control_group_state()
+            || admitted.engines.has_kv2_lossless_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -4503,13 +4523,15 @@ impl Service {
             Ok(authority) => authority,
             Err(error) => return Some(error),
         };
-        let mut response = match state.engines.handle_immutable_kv_read(
-            request.namespace,
-            request.method,
-            request.path,
-            request.body,
-            time.seconds(),
-        ) {
+        let result = match time.exact() {
+            Some(at) => state.engines.handle_immutable_kv_read_precise(
+                request.namespace, request.method, request.path, request.body, at,
+            ),
+            None => state.engines.handle_immutable_kv_read(
+                request.namespace, request.method, request.path, request.body, time.seconds(),
+            ),
+        };
+        let mut response = match result {
             Ok(mut response) => Response {
                 unwrapped_json: None,
                 response_headers: Default::default(),
@@ -4720,6 +4742,9 @@ impl Service {
             )
         {
             return Response::error(error.status, &error.message);
+        }
+        if path == "sys/migration/openbao/kv2" {
+            return Self::kv2_import_route(state, principal, namespace, method, body, time);
         }
         if path == "sys/internal/ui/namespaces" {
             return Self::ui_namespaces_route(state, principal, namespace, method, body, time);
@@ -5025,7 +5050,11 @@ impl Service {
                 id: None,
             }
         };
-        match engines.handle_in_identity_namespace_with_ssh_principal(
+        let at = match Self::kv2_request_timestamp(time) {
+            Ok(at) => at,
+            Err(error) => return error,
+        };
+        match engines.handle_in_identity_namespace_with_ssh_principal_precise(
             identity_scope,
             method,
             path,
@@ -5033,6 +5062,7 @@ impl Service {
             now,
             principal.display_name(),
             Some(principal),
+            at,
         ) {
             Ok(Some(mut response)) => {
                 if let Err(error) = Self::project_kv1_read_lease(
@@ -9940,6 +9970,10 @@ mod ui_bootstrap_tests;
 #[cfg(test)]
 #[path = "service_transit_byok_tests.rs"]
 mod transit_byok_tests;
+
+#[cfg(test)]
+#[path = "service_symmetric_backup_tests.rs"]
+mod symmetric_backup_tests;
 
 #[cfg(test)]
 #[path = "service_default_mount_tests.rs"]

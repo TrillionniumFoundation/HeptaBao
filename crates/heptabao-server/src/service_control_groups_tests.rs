@@ -1135,7 +1135,7 @@ fn cg270_encrypted_restart_expiry_and_irreversible118_reader_snapshot_floor() ->
     let closed_state = f.service.state.as_ref().ok_or("state")?;
     assert_eq!(closed_state.schema, CONTROL_GROUP_STATE_SCHEMA);
     assert!(supported_reader_schema(116));
-    assert!(!supported_reader_schema(CONTROL_GROUP_STATE_SCHEMA + 1));
+    assert!(!supported_reader_schema(MAX_SUPPORTED_STATE_SCHEMA + 1));
     assert!(supported_reader_schema(118));
     let mut wrong = closed_state.clone();
     wrong.schema = 116;
@@ -2826,5 +2826,692 @@ fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -
         .status,
         400
     );
+    Ok(())
+}
+
+const CG_WORKFLOW_PROFILE: &str = r#"flow "controlled" {
+  request "write" {
+    operation = "update"
+    path = "secret/data/cg/key"
+    data = { data = { value = "after" } }
+  }
+}
+output {
+  data = {
+    marker = "controlled-workflow-completed"
+    wrapping = { eval_source = "response" eval_type = "interface{}"
+      flow_name = "controlled" response_name = "write" field_selector = ["wrap_info"] }
+  }
+}"#;
+fn profile_fixture() -> TestResult<Fixture> {
+    let mut f = setup()?;
+    let policy = requester_policy("60s", "")
+        + r#"
+    path "sys/workflows/execute/cg-wire" { capabilities = ["update"] }"#;
+    policy_write(&mut f.service, &f.admin, "cg-requester", &policy);
+    create(&mut f);
+    let response = call(
+        &mut f.service,
+        &f.admin,
+        "POST",
+        "sys/workflows/manage/cg-wire",
+        json!({"workflow":CG_WORKFLOW_PROFILE, "description":"synthetic-controlled-inner-request-wire",
+            "cas":-1, "cas_required":false, "allow_unauthenticated":false}),
+        100,
+    );
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body["data"]["version"], 1);
+    assert_eq!(response.body["data"]["workflow"], CG_WORKFLOW_PROFILE);
+    assert_eq!(response.body["data"]["cas_required"], false);
+    Ok(f)
+}
+fn profile_pending(f: &mut Fixture, precise: bool) -> TestResult<(Zeroizing<String>, String)> {
+    let response = observed_call(
+        &mut f.service,
+        &f.requester.token,
+        "POST",
+        "sys/workflows/execute/cg-wire",
+        json!({}),
+        100,
+        precise,
+    )?;
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.body["data"]["marker"],
+        "controlled-workflow-completed"
+    );
+    assert_eq!(
+        response.body["data"]["wrapping"]["creation_path"],
+        "secret/data/cg/key"
+    );
+    assert_eq!(response.body["data"]["wrapping"]["ttl"], 60);
+    assert!(response.body.get("wrap_info").is_none());
+    read(f, 1, "before", 100);
+    Ok((
+        Zeroizing::new(text(&response.body, "/data/wrapping/token")?),
+        text(&response.body, "/data/wrapping/accessor")?,
+    ))
+}
+
+#[test]
+fn cg270_hcl_workflow_inner_deferred_owner_survives_restart_and_executes_once() -> TestResult {
+    for precise in [false, true] {
+        let mut f = profile_fixture()?;
+        let (wrapper, accessor) = profile_pending(&mut f, precise)?;
+        let initial = review_request(&mut f, &accessor);
+        assert_eq!(initial.status, 200);
+        assert_eq!(initial.body["data"]["request_path"], "secret/data/cg/key");
+        assert_eq!(
+            initial.body["data"]["request_data"],
+            json!({"data":{"value":"after"}})
+        );
+        assert_eq!(
+            initial.body["data"]["request_entity"]["ID"],
+            f.requester.entity
+        );
+        assert_eq!(initial.body["data"]["approved"], false);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.first.token,
+                "POST",
+                "sys/control-group/authorize",
+                json!({"accessor":accessor}),
+                100
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            review_request(&mut f, &accessor).body["data"]["approved"],
+            false
+        );
+        f = restart(f, 100)?;
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.second.token,
+                "POST",
+                "sys/control-group/authorize",
+                json!({"accessor":accessor}),
+                100
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            review_request(&mut f, &accessor).body["data"]["approved"],
+            true
+        );
+        let resumed = observed_call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100,
+            precise,
+        )?;
+        assert_eq!(resumed.status, 200);
+        assert_eq!(resumed.body["data"]["version"], 2);
+        read(&mut f, 2, "after", 100);
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        read(&mut f, 2, "after", 100);
+    }
+    Ok(())
+}
+
+#[test]
+fn cg270_hcl_workflow_current_policy_and_approval_membership_veto_inner_effect() -> TestResult {
+    for revoke_actor in [false, true] {
+        let mut f = profile_fixture()?;
+        let (wrapper, accessor) = profile_pending(&mut f, true)?;
+        approve_two(&mut f, &accessor);
+        if revoke_actor {
+            policy_write(
+                &mut f.service,
+                &f.admin,
+                "cg-requester",
+                r#"path "sys/workflows/execute/cg-wire" { capabilities = ["update"] }
+                path "secret/data/cg/*" { capabilities = ["deny"] }"#,
+            );
+        } else {
+            assert_eq!(
+                call(
+                    &mut f.service,
+                    &f.admin,
+                    "POST",
+                    &format!("identity/group/id/{}", f.group),
+                    json!({"member_entity_ids":[f.requester.entity, f.first.entity]}),
+                    100
+                )
+                .status,
+                204
+            );
+        }
+        f = restart(f, 100)?;
+        let denied = call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100,
+        );
+        assert!(denied.status >= 400);
+        read(&mut f, 1, "before", 100);
+        assert_eq!(
+            f.service.state.as_ref().ok_or("state")?.schema,
+            WORKFLOW_PROFILE_STATE_SCHEMA
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn workflow121_profile_reader_publication_and_snapshot_floor_survives_retirement() -> TestResult {
+    let mut f = profile_fixture()?;
+    let active = f.service.state.as_ref().ok_or("state")?.clone();
+    assert_eq!(active.schema, WORKFLOW_PROFILE_STATE_SCHEMA);
+    assert!(active.validate_format().is_ok());
+    let encoded = serde_json::to_value(&active)?;
+    let decoded: State = serde_json::from_value(encoded.clone())?;
+    assert!(decoded.validate_format().is_ok());
+    for schema in [CONTROL_GROUP_STATE_SCHEMA, 119, 120] {
+        let mut downgraded = decoded.clone();
+        downgraded.schema = schema;
+        assert!(downgraded.validate_format().is_err());
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&active))
+                .is_err()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&active, &downgraded).is_err());
+    }
+    let mut unknown = encoded;
+    unknown["namespaces"]["workflows"]["by_namespace"][""]["cg-wire"]["definition"]["profile"]["extra"] =
+        json!(true);
+    assert!(serde_json::from_value::<State>(unknown).is_err());
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "DELETE",
+            "sys/workflows/manage/cg-wire",
+            json!({}),
+            100
+        )
+        .status,
+        204
+    );
+    let retired = f.service.state.as_ref().ok_or("retired")?.clone();
+    assert!(!retired.namespaces.workflows.has_profiles());
+    assert_eq!(retired.schema, WORKFLOW_PROFILE_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), WORKFLOW_PROFILE_STATE_SCHEMA);
+    let mut downgraded = retired.clone();
+    downgraded.schema = CONTROL_GROUP_STATE_SCHEMA;
+    assert!(
+        downgraded
+            .validate_publication_schema(Some(&retired))
+            .is_err()
+    );
+    assert!(Service::validate_snapshot_protected_floor(&retired, &downgraded).is_err());
+    assert!(supported_reader_schema(WORKFLOW_PROFILE_STATE_SCHEMA));
+    assert!(!supported_reader_schema(MAX_SUPPORTED_STATE_SCHEMA + 1));
+    Ok(())
+}
+
+#[test]
+fn cg270_hcl_workflow_inner_self_lookup_keeps_sealed_echo_and_live_actor_authority() -> TestResult {
+    let mut f = setup()?;
+    let policy = r#"path "auth/token/lookup-self" { capabilities = ["read"]
+      control_group = { ttl = "60s" factor "review" { controlled_capabilities = ["read"]
+        identity { group_names = ["cg-team"] approvals = 2 self_authorization = false } } } }
+      path "sys/workflows/execute/self-wire" { capabilities = ["update"] }
+      path "sys/control-group/request" { capabilities = ["update"] }"#;
+    policy_write(&mut f.service, &f.admin, "cg-requester", policy);
+    let document = r#"flow "self" { request "lookup" {
+      operation = "read" path = "auth/token/lookup-self" } }
+      output { data = { wrapping = { eval_source = "response" eval_type = "interface{}"
+        flow_name = "self" response_name = "lookup" field_selector = ["wrap_info"] } } }"#;
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "POST",
+            "sys/workflows/manage/self-wire",
+            json!({"workflow":document, "cas":-1}),
+            100
+        )
+        .status,
+        200
+    );
+    let response = observed_call(
+        &mut f.service,
+        &f.requester.token,
+        "POST",
+        "sys/workflows/execute/self-wire",
+        json!({}),
+        100,
+        true,
+    )?;
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.body["data"]["wrapping"]["creation_path"],
+        "auth/token/lookup-self"
+    );
+    let wrapper = Zeroizing::new(text(&response.body, "/data/wrapping/token")?);
+    let accessor = text(&response.body, "/data/wrapping/accessor")?;
+    assert!(!serde_json::to_string(&f.service.state)?.contains(f.requester.token.as_str()));
+    assert_eq!(
+        call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
+    approve_two(&mut f, &accessor);
+    f = restart(f, 100)?;
+    let result = call(
+        &mut f.service,
+        &wrapper,
+        "POST",
+        "sys/wrapping/unwrap",
+        json!({}),
+        100,
+    );
+    assert_eq!(result.status, 200);
+    assert_eq!(result.body["data"]["id"], f.requester.token.as_str());
+    assert_eq!(
+        call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
+    // A second owner cannot inherit the first approved claim after actor revocation.
+    let second = call(
+        &mut f.service,
+        &f.requester.token,
+        "POST",
+        "sys/workflows/execute/self-wire",
+        json!({}),
+        100,
+    );
+    assert_eq!(second.status, 200);
+    let wrapper = Zeroizing::new(text(&second.body, "/data/wrapping/token")?);
+    let accessor = text(&second.body, "/data/wrapping/accessor")?;
+    approve_two(&mut f, &accessor);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "POST",
+            "auth/token/revoke",
+            json!({"token":f.requester.token.as_str()}),
+            100
+        )
+        .status,
+        204
+    );
+    assert!(
+        call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status
+            >= 400
+    );
+    Ok(())
+}
+fn fractional_call(
+    service: &mut Service,
+    token: &str,
+    method: &str,
+    path: &str,
+    body: Value,
+    at: crate::auth::token_precision::Timestamp,
+) -> TestResult<Response> {
+    let encoded = Zeroizing::new(serde_json::to_vec(&body)?);
+    let mut wire = Zeroizing::new(format!(
+        "{method} /v1/{path} HTTP/1.1\r\nHost: localhost\r\nX-Vault-Token: {token}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
+        encoded.len()).into_bytes());
+    wire.extend_from_slice(&encoded);
+    let clock = RequestClock::anchored(at.duration_since_epoch(), std::time::Instant::now())?;
+    let (method, path, namespace, token, body) = crate::http::parsed_api_request_for_test(&wire)?;
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method: &method,
+            path: &path,
+            namespace: &namespace,
+            token: &token,
+            body: body.0.clone(),
+            now: at.seconds(),
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
+    Ok(service.finish_synchronous_request(execution))
+}
+fn fractional_approve(
+    fixture: &mut Fixture,
+    accessor: &str,
+    at: crate::auth::token_precision::Timestamp,
+) -> TestResult {
+    for token in [&fixture.first.token, &fixture.second.token] {
+        let response = fractional_call(
+            &mut fixture.service,
+            token,
+            "POST",
+            "sys/control-group/authorize",
+            json!({"accessor":accessor}),
+            at,
+        )?;
+        assert_eq!(response.status, 200);
+    }
+    Ok(())
+}
+#[test]
+fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effects() -> TestResult {
+    use crate::auth::token_precision::{DurationNanos, Timestamp};
+    for (raw, nanos, wire_ttl) in [
+        ("1500ms", 1_500_000_000_u64, 1_u64),
+        ("500ms", 500_000_000, 0),
+    ] {
+        let mut f = setup()?;
+        create(&mut f);
+        policy_write(
+            &mut f.service,
+            &f.admin,
+            "cg-requester",
+            &requester_policy(raw, ""),
+        );
+        let issued = Timestamp::checked(100, 125_000_000)?;
+        let deferred = fractional_call(
+            &mut f.service,
+            &f.requester.token,
+            "POST",
+            "secret/data/cg/key",
+            json!({"data":{"value":"after"}}),
+            issued,
+        )?;
+        assert_eq!(deferred.status, 200);
+        assert_eq!(deferred.body["wrap_info"]["ttl"], wire_ttl);
+        assert!(deferred.body["data"].is_null());
+        let wrapper = Zeroizing::new(text(&deferred.body, "/wrap_info/token")?);
+        let accessor = text(&deferred.body, "/wrap_info/accessor")?;
+        let precision = f
+            .service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .control_group_owners()
+            .next()
+            .ok_or("owner")?
+            .precision
+            .ok_or("precision")?;
+        assert_eq!(precision.ttl.nanoseconds(), nanos);
+        assert_eq!(
+            precision.issued_at.checked_add(precision.ttl)?,
+            precision.expires_at
+        );
+        assert_eq!(
+            f.service.state.as_ref().ok_or("state")?.schema,
+            CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+        );
+        read(&mut f, 1, "before", 100);
+        // Truncated ttl=0 is a projection, not an immediately dead capability.
+        assert_eq!(
+            fractional_call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                precision.issued_at
+            )?
+            .status,
+            400
+        );
+        assert_eq!(
+            f.service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .control_group_request_count_for_test(),
+            1
+        );
+        fractional_approve(&mut f, &accessor, precision.issued_at)?;
+        f = restart(f, 100)?;
+        let resumed = fractional_call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            precision.issued_at,
+        )?;
+        assert_eq!(resumed.status, 200);
+        assert_eq!(resumed.body["data"]["version"], 2);
+        read(&mut f, 2, "after", 100);
+        assert_eq!(
+            fractional_call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                precision.issued_at
+            )?
+            .status,
+            400
+        );
+        read(&mut f, 2, "after", 100);
+
+        let deferred = fractional_call(
+            &mut f.service,
+            &f.requester.token,
+            "POST",
+            "secret/data/cg/key",
+            json!({"data":{"value":"must-not-execute"}}),
+            precision.issued_at,
+        )?;
+        assert_eq!(deferred.status, 200);
+        let wrapper = Zeroizing::new(text(&deferred.body, "/wrap_info/token")?);
+        let accessor = text(&deferred.body, "/wrap_info/accessor")?;
+        fractional_approve(&mut f, &accessor, precision.issued_at)?;
+        let current = f.service.state.as_ref().ok_or("state")?.clone();
+        let exact = current
+            .auth
+            .control_group_owners()
+            .next()
+            .ok_or("owner")?
+            .precision
+            .ok_or("precise deadline")?;
+        let before = exact
+            .issued_at
+            .checked_add(DurationNanos::checked(nanos - 1)?)?;
+        assert!(
+            current
+                .auth
+                .control_group_target_observed(&wrapper, "", AuthorityTime::Precise(before))?
+                .is_some()
+        );
+        assert!(
+            current
+                .auth
+                .control_group_target_observed(
+                    &wrapper,
+                    "",
+                    AuthorityTime::Precise(exact.expires_at)
+                )
+                .is_err()
+        );
+
+        // Full State decoder plus publication reject a forged precise deadline.
+        let mut value = serde_json::to_value(&current)?;
+        let owners = value["auth"]["control_groups"]["requests"]
+            .as_object_mut()
+            .ok_or("owners")?;
+        let owner = owners.values_mut().next().ok_or("owner")?;
+        owner["precision"]["ttl"] = json!(nanos + 1);
+        let forged: State = serde_json::from_value(value)?;
+        assert_eq!(forged.validate_format().err().ok_or("format")?.status, 503);
+        assert_eq!(
+            forged
+                .validate_publication_schema(Some(&current))
+                .err()
+                .ok_or("publication")?
+                .status,
+            503
+        );
+        for schema in [CONTROL_GROUP_STATE_SCHEMA, WORKFLOW_PROFILE_STATE_SCHEMA] {
+            let mut downgraded = current.clone();
+            downgraded.schema = schema;
+            assert!(downgraded.validate_format().is_err());
+            assert!(
+                downgraded
+                    .validate_publication_schema(Some(&current))
+                    .is_err()
+            );
+            assert!(Service::validate_snapshot_protected_floor(&current, &downgraded).is_err());
+        }
+        let expired = fractional_call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            exact.expires_at,
+        )?;
+        assert_eq!(expired.status, 400);
+        read(&mut f, 2, "after", exact.expires_at.seconds());
+        let retired = f.service.state.as_ref().ok_or("retired")?.clone();
+        assert_eq!(retired.auth.control_group_request_count_for_test(), 0);
+        assert_eq!(retired.schema, CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA);
+        assert_eq!(
+            retired.writer_schema(),
+            CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+        );
+        assert!(current.validate_publication_schema(Some(&retired)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&retired, &current).is_err());
+        f = restart(f, 100)?;
+        // Reload and wall rollback cannot restore subsecond approval authority.
+        assert_eq!(
+            fractional_call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                exact.issued_at
+            )?
+            .status,
+            400
+        );
+        assert_eq!(
+            call(
+                &mut f.service,
+                &wrapper,
+                "POST",
+                "sys/wrapping/unwrap",
+                json!({}),
+                100
+            )
+            .status,
+            400
+        );
+        read(&mut f, 2, "after", exact.expires_at.seconds());
+    }
+    Ok(())
+}
+
+#[test]
+fn cg_lossless_encrypted_pending_body_and_approval_context_survive_durable_restart() -> TestResult {
+    let mut f = setup()?;
+    create(&mut f);
+    let value = heptabao_domain::json::decode(br#"{"value":"after","big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"fake":{"$serde_json::private::Number":"7"}}"#)?;
+    let request = json!({"data":value});
+    let pending = observed_call(&mut f.service,&f.requester.token,"POST","secret/data/cg/key",request.clone(),100,true)?;
+    assert_eq!(pending.status,200);
+    assert!(pending.body["data"].is_null());
+    let wrapper = Zeroizing::new(text(&pending.body,"/wrap_info/token")?);
+    let accessor = text(&pending.body,"/wrap_info/accessor")?;
+    let before = review_request(&mut f,&accessor);
+    assert_eq!(before.status,200);
+    assert_eq!(before.body["data"]["request_data"],request);
+    f = restart(f,100)?;
+    let after = review_request(&mut f,&accessor);
+    assert_eq!(after.status,200);
+    assert_eq!(after.body["data"]["request_data"],request);
+    assert_eq!(after.body["data"]["authorizations"],json!([]));
+    approve_two(&mut f,&accessor);
+    f = restart(f,100)?;
+    assert_eq!(review_request(&mut f,&accessor).body["data"]["approved"],true);
+    let executed = call(&mut f.service,&wrapper,"POST","sys/wrapping/unwrap",json!({}),100);
+    assert_eq!(executed.status,200);
+    assert_eq!(executed.body["data"]["version"],2);
+    let read = call(&mut f.service,&f.admin,"GET","secret/data/cg/key",json!({}),100);
+    assert_eq!(read.status,200);
+    assert_eq!(read.body["data"]["data"],value);
+    assert!(read.body["data"]["data"]["fake"].is_object());
+    assert_eq!(call(&mut f.service,&wrapper,"POST","sys/wrapping/unwrap",json!({}),100).status,400);
     Ok(())
 }

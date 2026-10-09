@@ -48,6 +48,7 @@ fn owner(namespace: &str) -> DeferredRequest {
         client_certificates: None,
         created_at: 100,
         expires_at: 160,
+        precision: None,
         creation_time: crate::engines::timestamp(100),
         factors: vec![ResolvedFactor {
             name: "requester:review".into(),
@@ -403,16 +404,130 @@ fn cg270_duration_units_bind_second_clock_and_identity_ttl_minimum() -> TestResu
     assert_eq!(parsed.control_groups["secret/data/+"][0].control.ttl, 60);
     for raw in ["60", "1m", "60000ms", "1m0s"] {
         let parsed = parse_policy(&Value::String(policy(raw, "\"update\"")))?;
-        assert_eq!(parsed.control_groups["secret/data/+"][0].control.ttl, 60, "{raw}");
+        assert_eq!(
+            parsed.control_groups["secret/data/+"][0].control.ttl, 60,
+            "{raw}"
+        );
     }
     let identity = policy("60s", "\"update\"").replace(
-        "group_names = [\"cg-team\"]", "ttl = \"10s\" group_names = [\"cg-team\"]");
+        "group_names = [\"cg-team\"]",
+        "ttl = \"10s\" group_names = [\"cg-team\"]",
+    );
     let parsed = parse_policy(&Value::String(identity))?;
     assert_eq!(parsed.control_groups["secret/data/+"][0].control.ttl, 10);
-    for raw in ["0s", "-1s", "1.5s", "999ms", "9223372036854775807s"] {
-        assert!(parse_policy(&Value::String(policy(raw, "\"update\""))).is_err(), "{raw}");
+    for raw in ["0s", "-1s", "0.1ns", "9223372036854775807s"] {
+        assert!(
+            parse_policy(&Value::String(policy(raw, "\"update\""))).is_err(),
+            "{raw}"
+        );
     }
-    assert_eq!(super::token_duration::parse_duration("60s")?, 60_000_000_000);
-    assert_eq!(control_duration_seconds("60s")?, 60);
+    assert_eq!(
+        super::token_duration::parse_duration("60s")?,
+        60_000_000_000
+    );
+    assert_eq!(control_duration_nanos("60s")?.public_seconds(), 60);
+    for (raw, nanos, projected) in [
+        ("1500ms", 1_500_000_000_u64, 1_u64),
+        ("1.5s", 1_500_000_000, 1),
+        ("500ms", 500_000_000, 0),
+        ("999ms", 999_000_000, 0),
+    ] {
+        let parsed = parse_policy(&Value::String(policy(raw, "\"update\"")))?;
+        let control = &parsed.control_groups["secret/data/+"][0].control;
+        assert_eq!(control.ttl, projected);
+        assert_eq!(control.duration()?.nanoseconds(), nanos);
+        assert!(control.precise_ttl.is_some());
+    }
+    let minimized = policy("1500ms", "\"update\"").replace(
+        "group_names = [\"cg-team\"]",
+        "ttl = \"500ms\" group_names = [\"cg-team\"]",
+    );
+    let parsed = parse_policy(&Value::String(minimized))?;
+    assert_eq!(
+        parsed.control_groups["secret/data/+"][0]
+            .control
+            .duration()?
+            .nanoseconds(),
+        500_000_000
+    );
+    Ok(())
+}
+
+#[test]
+fn cg122_exact_fractional_deadline_and_old118_absence_are_checked() -> TestResult {
+    use super::token_precision::{DurationNanos, Timestamp};
+    for nanos in [500_000_000_u64, 1_500_000_000] {
+        let issued = Timestamp::checked(100, 125_000_000)?;
+        let precision = Precision::capture(
+            AuthorityTime::Precise(issued),
+            DurationNanos::checked(nanos)?,
+        )?;
+        let mut deferred = owner("");
+        deferred.precision = Some(precision);
+        deferred.expires_at = precision.expires_at.ceil_seconds()?;
+        deferred.creation_time = issued.rfc3339();
+        deferred.validate()?;
+        let before = precision.expires_at.elapsed(issued)?.nanoseconds() - 1;
+        let before = issued.checked_add(DurationNanos::checked(before)?)?;
+        assert!(deferred.live(AuthorityTime::Precise(before)));
+        assert!(!deferred.live(AuthorityTime::Precise(precision.expires_at)));
+        assert!(!deferred.live(AuthorityTime::Coarse(100)));
+        assert_eq!(deferred.wire_ttl(), nanos / 1_000_000_000);
+        let (mut state, _) = AuthState::bootstrap(100)?;
+        let wrapped = state.issue_control_group(deferred)?;
+        let raw = wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?;
+        assert_eq!(wrapped.body["wrap_info"]["ttl"], nanos / 1_000_000_000);
+        assert!(
+            state
+                .control_group_target_observed(raw, "", AuthorityTime::Precise(before))?
+                .is_some()
+        );
+        assert!(state.control_group_target(raw, "", 100).is_err());
+        let previous = state.clone();
+        assert!(
+            state.advance_control_group_observed(AuthorityTime::Precise(precision.expires_at))?
+        );
+        state.validate_control_group_state()?;
+        let mut retired: AuthState =
+            serde_json::from_slice(&Zeroizing::new(serde_json::to_vec(&state)?))?;
+        assert!(
+            retired
+                .control_group_target_observed(raw, "", AuthorityTime::Precise(issued))
+                .is_err()
+        );
+        assert!(
+            previous
+                .validate_control_group_clock_floor(Some(&retired))
+                .is_err()
+        );
+        assert!(!retired.advance_control_group_observed(AuthorityTime::Precise(issued))?);
+        assert!(retired.has_fractional_control_group_state());
+        assert!(
+            Precision::capture(AuthorityTime::Coarse(100), DurationNanos::checked(nanos)?).is_err()
+        );
+    }
+    let (mut old, _) = AuthState::bootstrap(100)?;
+    let whole = owner("");
+    let context = whole.credential_context()?;
+    let encoded_owner = serde_json::to_value(&whole)?;
+    assert!(encoded_owner.get("precision").is_none());
+    let wrapped = old.issue_control_group(whole)?;
+    let raw = wrapped.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("legacy wrapper")?;
+    let retained = old
+        .control_group_target(raw, "", 100)?
+        .ok_or("whole owner")?;
+    assert_eq!(retained.credential_context()?, context);
+    assert_eq!(wrapped.body["wrap_info"]["ttl"], 60);
+    assert!(!old.has_fractional_control_group_state());
+    assert!(
+        serde_json::to_value(&old)?["control_groups"]
+            .get("precise_clock")
+            .is_none()
+    );
+    old.validate_control_group_state()?;
     Ok(())
 }

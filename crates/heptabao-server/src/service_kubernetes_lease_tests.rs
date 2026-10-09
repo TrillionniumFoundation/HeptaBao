@@ -1421,3 +1421,26 @@ fn kube_opaque_artifact_actual_unmount_recreate_preserves_epoch_and_last_mount_k
     assert_eq!(reopened.kv_read_only_dispatches, reads);
     Ok(())
 }
+
+#[test]
+fn kube_opaque_claims_keep_last_key_semantics_without_private_object_numeric_coercion() -> TestResult {
+    let (_root, service, _, _, plan) = opaque_fixture()?;
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let reply = |claims: &[u8]| {
+        json!({"status":{"token":format!("{}.{}.{}",URL_SAFE_NO_PAD.encode(br#"{"alg":"bad","alg":"RS256"}"#),URL_SAFE_NO_PAD.encode(claims),URL_SAFE_NO_PAD.encode(b"synthetic-not-authority"))}})
+    };
+    let accepted = token_metadata(&reply(br#"{"iat":99,"iat":100.75,"exp":600,"exp":700.75}"#), &plan.inner, 101).map_err(|_| "last-key metadata")?;
+    assert_eq!(accepted.artifact_lifetime_nanos, Some(600_000_000_000));
+    assert_eq!(plan.inner.authority.expires_at, 200);
+    for claims in [
+        br#"{"iat":100,"exp":{"$serde_json::private::Number":"700"}}"#.as_slice(),
+        br#"{"iat":{"$serde_json::private::Number":"100"},"exp":700}"#,
+        br#"{"iat":100,"exp":{"$serde_json::private::RawValue":"700"}}"#,
+    ] {
+        let response = token_metadata(&reply(claims), &plan.inner, 101).err().ok_or("object interpreted as numeric")?;
+        assert_eq!(response.status, 500);
+        assert!(response.body["errors"][0].as_str().ok_or("error")?.contains("map[string]interface {}"));
+    }
+    assert_eq!(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?, before);
+    Ok(())
+}

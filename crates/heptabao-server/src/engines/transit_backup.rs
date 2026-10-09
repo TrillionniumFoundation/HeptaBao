@@ -1,0 +1,680 @@
+//! Bounded OpenBao 2.7 symmetric plaintext backup wire format, measured using the compiled vendor.
+use super::*;
+use chrono::DateTime;
+
+const MAX_BACKUP_BYTES: usize = 16 * 1024 * 1024;
+const MAX_VERSIONS: u64 = 10_000;
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct Metadata {
+    pub(super) kdf: u8,
+    archive_min_version: u64,
+    min_available_version: u64,
+    version_template: String,
+    storage_prefix: String,
+    backup_info: Option<Stamp>,
+    restore_info: Option<Stamp>,
+    version_times: BTreeMap<u64, String>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Stamp {
+    time: String,
+    version: u64,
+}
+
+#[derive(Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+struct Entry {
+    key: Option<String>,
+    hmac_key: Option<String>,
+    time: String,
+    #[serde(default)]
+    ec_x: Value,
+    #[serde(default)]
+    ec_y: Value,
+    #[serde(default)]
+    ec_d: Value,
+    #[serde(default)]
+    rsa_key: Value,
+    #[serde(default)]
+    rsa_public_key: Value,
+    #[serde(default)]
+    public_key: String,
+    #[serde(default)]
+    convergent_version: u64,
+    creation_time: u64,
+    #[serde(default)]
+    certificate_chain: Value,
+    #[serde(default)]
+    external_key_ref: String,
+}
+
+impl Drop for Entry {
+    fn drop(&mut self) {
+        if let Some(key) = &mut self.key {
+            key.zeroize();
+        }
+        if let Some(key) = &mut self.hmac_key {
+            key.zeroize();
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Policy {
+    name: String,
+    #[serde(deserialize_with = "unique_versions")]
+    keys: BTreeMap<String, Entry>,
+    derived: bool,
+    kdf: u8,
+    convergent_encryption: bool,
+    exportable: bool,
+    min_decryption_version: u64,
+    min_encryption_version: u64,
+    latest_version: u64,
+    archive_version: u64,
+    #[serde(default)]
+    archive_min_version: u64,
+    #[serde(default)]
+    min_available_version: u64,
+    deletion_allowed: bool,
+    convergent_version: u64,
+    #[serde(rename = "type")]
+    kind: u8,
+    backup_info: Option<Stamp>,
+    restore_info: Option<Stamp>,
+    #[serde(default)]
+    allow_plaintext_backup: bool,
+    #[serde(default)]
+    version_template: String,
+    #[serde(default)]
+    storage_prefix: String,
+    #[serde(default)]
+    auto_rotate_period: u64,
+    #[serde(default, rename = "Imported")]
+    imported: bool,
+    #[serde(default, rename = "AllowImportedKeyRotation")]
+    allow_imported_rotation: bool,
+    #[serde(default)]
+    soft_deleted: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Archived {
+    keys: Vec<Entry>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Backup {
+    policy: Policy,
+    archived_keys: Archived,
+}
+
+fn unique_versions<'de, D>(d: D) -> std::result::Result<BTreeMap<String, Entry>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    struct Visitor;
+    impl<'de> serde::de::Visitor<'de> for Visitor {
+        type Value = BTreeMap<String, Entry>;
+        fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("a bounded map of distinct canonical key versions")
+        }
+        fn visit_map<A>(self, mut a: A) -> std::result::Result<Self::Value, A::Error>
+        where
+            A: serde::de::MapAccess<'de>,
+        {
+            let mut out = BTreeMap::new();
+            while let Some((k, v)) = a.next_entry::<String, Entry>()? {
+                if out.len() >= MAX_VERSIONS as usize || out.insert(k, v).is_some() {
+                    return Err(serde::de::Error::custom(
+                        "duplicate or excessive backup versions",
+                    ));
+                }
+            }
+            Ok(out)
+        }
+    }
+    d.deserialize_map(Visitor)
+}
+
+fn kind_code(kind: &str) -> Result<u8> {
+    match kind {
+        "aes256-gcm96" => Ok(0),
+        "chacha20-poly1305" => Ok(5),
+        "aes128-gcm96" => Ok(8),
+        "xchacha20-poly1305" => Ok(11),
+        _ => Err(error(
+            501,
+            "plaintext backups for this key type are not implemented",
+        )),
+    }
+}
+
+fn kind_name(code: u8) -> Result<&'static str> {
+    match code {
+        0 => Ok("aes256-gcm96"),
+        5 => Ok("chacha20-poly1305"),
+        8 => Ok("aes128-gcm96"),
+        11 => Ok("xchacha20-poly1305"),
+        _ => Err(error(
+            501,
+            "restoring this backup key type is not implemented",
+        )),
+    }
+}
+
+fn time_seconds(value: &str) -> Result<u64> {
+    if value.len() > 40 {
+        return Err(bad("invalid backup timestamp"));
+    }
+    let t = DateTime::parse_from_rfc3339(value).map_err(|_| bad("invalid backup timestamp"))?;
+    u64::try_from(t.timestamp()).map_err(|_| bad("invalid backup timestamp"))
+}
+
+fn stamp_valid(value: &Option<Stamp>, latest: u64) -> Result<()> {
+    if let Some(v) = value {
+        if v.version == 0 || v.version > latest {
+            return Err(bad("invalid backup information version"));
+        }
+        time_seconds(&v.time)?;
+    }
+    Ok(())
+}
+
+impl Entry {
+    fn empty() -> Self {
+        Self {
+            key: None,
+            hmac_key: None,
+            time: "0001-01-01T00:00:00Z".into(),
+            ec_x: Value::Null,
+            ec_y: Value::Null,
+            ec_d: Value::Null,
+            rsa_key: Value::Null,
+            rsa_public_key: Value::Null,
+            public_key: String::new(),
+            convergent_version: 0,
+            creation_time: 0,
+            certificate_chain: Value::Null,
+            external_key_ref: String::new(),
+        }
+    }
+    fn from_version(version: &KeyVersion, time: String) -> Self {
+        let mut out = Self::empty();
+        out.key = Some(version.material.clone());
+        out.hmac_key = Some(version.hmac_material.clone());
+        out.creation_time = version.created_at;
+        out.time = time;
+        out
+    }
+    fn empty_exact(&self) -> bool {
+        self == &Self::empty()
+    }
+    fn version(&self, kind: &str) -> Result<KeyVersion> {
+        if !self.ec_x.is_null()
+            || !self.ec_y.is_null()
+            || !self.ec_d.is_null()
+            || !self.rsa_key.is_null()
+            || !self.rsa_public_key.is_null()
+            || !self.certificate_chain.is_null()
+            || !self.public_key.is_empty()
+            || !self.external_key_ref.is_empty()
+            || self.convergent_version != 0
+            || time_seconds(&self.time)? != self.creation_time
+        {
+            return Err(bad("invalid symmetric backup key entry"));
+        }
+        let material = self
+            .key
+            .as_deref()
+            .ok_or_else(|| bad("backup key material is missing"))?;
+        let hmac = self
+            .hmac_key
+            .as_deref()
+            .ok_or_else(|| bad("backup HMAC material is missing"))?;
+        if material.len() > 44
+            || hmac.len() > 44
+            || stored_material(material)?.len() != symmetric::key_len(kind)
+            || stored_material(hmac)?.len() != 32
+        {
+            return Err(bad("invalid symmetric backup key material"));
+        }
+        Ok(KeyVersion {
+            material: material.into(),
+            hmac_material: hmac.into(),
+            public_key_only: None,
+            created_at: self.creation_time,
+            encryptions: 0,
+            external_key_ref: None,
+            heptabao_convergent_version: None,
+        })
+    }
+}
+
+pub(super) fn min_available_version(key: &Key) -> u64 {
+    key.backup_metadata
+        .as_ref()
+        .map_or(0, |m| m.min_available_version)
+}
+
+pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
+    if let Some(m) = &key.backup_metadata {
+        for (name, stamp) in [
+            ("backup_info", &m.backup_info),
+            ("restore_info", &m.restore_info),
+        ] {
+            if let Some(stamp) = stamp {
+                descriptor[name] = json!({"time":stamp.time,"version":stamp.version});
+            }
+        }
+    }
+}
+
+fn metadata(key: &Key) -> Metadata {
+    key.backup_metadata.clone().unwrap_or_else(|| Metadata {
+        kdf: u8::from(!key.legacy_counter_kdf && key.byok.is_none()),
+        archive_min_version: 0,
+        min_available_version: 0,
+        version_template: String::new(),
+        storage_prefix: String::new(),
+        backup_info: None,
+        restore_info: None,
+        version_times: BTreeMap::new(),
+    })
+}
+
+pub(super) fn trim(key: &mut Key, body: &Value) -> Result<()> {
+    reject_unknown(body, &["min_available_version"])?;
+    key.alive()?;
+    kind_code(&key.kind)?;
+    if key.convergent_encryption || key.convergent_write_min_version != 0 {
+        return Err(bad(
+            "trimming protected convergent key material is not supported",
+        ));
+    }
+    let requested = optional_u64(body, "min_available_version")?
+        .ok_or_else(|| bad("min_available_version is required"))?;
+    let current = min_available_version(key);
+    if key.min_encryption_version == 0 {
+        return Err(bad(
+            "minimum available version cannot be set when minimum encryption version is not set",
+        ));
+    }
+    if requested < current {
+        return Err(bad("minimum available version cannot be decremented"));
+    }
+    if requested == 0 {
+        return Err(bad("minimum available version must be positive"));
+    }
+    if requested > key.min_encryption_version {
+        return Err(bad(
+            "minimum available version cannot be greater than minmum encryption version",
+        ));
+    }
+    if requested > key.min_decryption_version {
+        return Err(bad(
+            "minimum available version cannot be greater than minimum decryption version",
+        ));
+    }
+    // Validate a complete replacement before discarding any historical secret.
+    let mut prepared = key.clone();
+    let mut m = metadata(key);
+    m.archive_min_version = requested;
+    m.min_available_version = requested;
+    m.version_times.retain(|n, _| *n >= requested);
+    prepared.versions.retain(|n, _| *n >= requested);
+    prepared.backup_metadata = Some(m);
+    validate_key(&prepared)?;
+    *key = prepared;
+    Ok(())
+}
+
+pub(super) fn validate_key(key: &Key) -> Result<()> {
+    if key.allow_plaintext_backup
+        && (!symmetric::is_kind(&key.kind)
+            || key.convergent_encryption
+            || key.convergent_write_min_version != 0)
+    {
+        return Err(bad(
+            "plaintext backup cannot expose protected or unsupported key material",
+        ));
+    }
+    if key.legacy_counter_kdf
+        && (!key.derived
+            || !symmetric::is_kind(&key.kind)
+            || key.convergent_encryption
+            || (key.byok.is_none() && key.backup_metadata.is_none()))
+    {
+        return Err(bad("invalid legacy imported derivation policy"));
+    }
+    if let Some(m) = &key.backup_metadata {
+        kind_code(&key.kind)?;
+        if m.kdf > 1
+            || m.archive_min_version > m.min_available_version
+            || m.min_available_version > key.min_decryption_version
+            || key.legacy_counter_kdf != (key.derived && m.kdf == 0)
+            || !m.version_template.is_empty()
+            || m.storage_prefix.len() > 256
+            || m.version_times.len() > MAX_VERSIONS as usize
+        {
+            return Err(bad("invalid symmetric backup metadata"));
+        }
+        stamp_valid(&m.backup_info, key.latest_version)?;
+        stamp_valid(&m.restore_info, key.latest_version)?;
+        for (n, t) in &m.version_times {
+            let seconds = time_seconds(t)?;
+            if *n == 0 || *n > key.latest_version {
+                return Err(bad("invalid backup version timestamp"));
+            }
+            if let Some(v) = key.versions.get(n)
+                && seconds != v.created_at
+            {
+                return Err(bad("backup timestamp and creation time disagree"));
+            }
+        }
+        if key.versions.is_empty() || key.versions.keys().next_back() != Some(&key.latest_version) {
+            return Err(bad("invalid restored key version range"));
+        }
+        for (n, v) in &key.versions {
+            if *n == 0
+                || *n < m.min_available_version.max(1)
+                || stored_material(&v.material)?.len() != symmetric::key_len(&key.kind)
+                || stored_material(&v.hmac_material)?.len() != 32
+                || v.public_key_only.is_some()
+                || v.external_key_ref.is_some()
+                || v.heptabao_convergent_version.is_some()
+            {
+                return Err(bad("invalid restored symmetric key material"));
+            }
+        }
+    }
+    Ok(())
+}
+
+impl Transit {
+    pub(in crate::engines) fn has_symmetric_backup_state(&self) -> bool {
+        self.keys.values().any(|key| {
+            key.allow_plaintext_backup
+                || key.legacy_counter_kdf
+                || key.backup_metadata.is_some()
+                || (key.byok.is_some()
+                    && matches!(
+                        key.kind.as_str(),
+                        "chacha20-poly1305" | "xchacha20-poly1305"
+                    ))
+        })
+    }
+
+    pub(super) fn backup(
+        &mut self,
+        method: &str,
+        name: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        if method != "GET" {
+            return Err(unsupported());
+        }
+        reject_unknown(body, &[])?;
+        valid_path(name)?;
+        let key = self.keys.get(name).ok_or_else(not_found)?;
+        key.alive()?;
+        if !key.allow_plaintext_backup {
+            return Err(bad("plaintext backup is not allowed for this key"));
+        }
+        validate_key(key)?;
+        kind_code(&key.kind)?;
+        if key.versions.is_empty() || key.latest_version > MAX_VERSIONS {
+            return Err(bad("backup key version range exceeds supported bounds"));
+        }
+        let mut m = metadata(key);
+        m.backup_info = Some(Stamp {
+            time: timestamp(now),
+            version: key.latest_version,
+        });
+        let mut entries = BTreeMap::new();
+        for (n, v) in &key.versions {
+            let t = m
+                .version_times
+                .get(n)
+                .cloned()
+                .unwrap_or_else(|| timestamp(v.created_at));
+            entries.insert(n.to_string(), Entry::from_version(v, t));
+        }
+        let mut archived = Vec::new();
+        for n in m.archive_min_version..=key.latest_version {
+            if n == 0 {
+                archived.push(Entry::empty());
+            } else {
+                let e = entries
+                    .get(&n.to_string())
+                    .ok_or_else(|| bad("backup contains unavailable historical versions"))?;
+                archived.push(e.clone());
+            }
+        }
+        let wire = Backup {
+            policy: Policy {
+                name: name.into(),
+                keys: entries
+                    .into_iter()
+                    .filter(|(n, _)| {
+                        n.parse::<u64>()
+                            .is_ok_and(|n| n >= key.min_decryption_version)
+                    })
+                    .collect(),
+                derived: key.derived,
+                kdf: m.kdf,
+                convergent_encryption: key.convergent_encryption,
+                exportable: key.exportable,
+                min_decryption_version: key.min_decryption_version,
+                min_encryption_version: key.min_encryption_version,
+                latest_version: key.latest_version,
+                archive_version: key.latest_version,
+                archive_min_version: m.archive_min_version,
+                min_available_version: m.min_available_version,
+                deletion_allowed: key.deletion_allowed,
+                convergent_version: 0,
+                kind: kind_code(&key.kind)?,
+                backup_info: m.backup_info.clone(),
+                restore_info: m.restore_info.clone(),
+                allow_plaintext_backup: key.allow_plaintext_backup,
+                version_template: m.version_template.clone(),
+                storage_prefix: m.storage_prefix.clone(),
+                auto_rotate_period: key.auto_rotate_period,
+                imported: byok::imported_key(key),
+                allow_imported_rotation: byok::rotation_permission(key),
+                soft_deleted: key.deleted,
+            },
+            archived_keys: Archived { keys: archived },
+        };
+        let raw = Zeroizing::new(
+            serde_json::to_vec(&wire).map_err(|_| error(500, "backup encoding failed"))?,
+        );
+        if raw.len() > MAX_BACKUP_BYTES {
+            return Err(error(413, "backup exceeds supported size"));
+        }
+        let encoded = BASE64.encode(raw.as_slice());
+        self.keys
+            .get_mut(name)
+            .ok_or_else(not_found)?
+            .backup_metadata = Some(m);
+        Ok(ok(json!({"backup":encoded}), true))
+    }
+
+    pub(super) fn restore(
+        &mut self,
+        method: &str,
+        name: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        if !write_method(method) {
+            return Err(unsupported());
+        }
+        reject_unknown(body, &["backup", "force", "name"])?;
+        let encoded = string(body, "backup")?;
+        if encoded.len() > MAX_BACKUP_BYTES * 4 / 3 + 4 {
+            return Err(error(413, "backup exceeds supported size"));
+        }
+        let raw = BASE64
+            .decode(encoded)
+            .map(Zeroizing::new)
+            .map_err(|_| bad("invalid backup base64"))?;
+        if raw.len() > MAX_BACKUP_BYTES {
+            return Err(error(413, "backup exceeds supported size"));
+        }
+        let wire: Backup =
+            serde_json::from_slice(&raw).map_err(|_| bad("invalid or ambiguous backup JSON"))?;
+        let p = &wire.policy;
+        valid_path(&p.name)?;
+        if p.name.is_empty() || p.name.contains('/') {
+            return Err(bad("invalid backup key name"));
+        }
+        let provided = body
+            .get("name")
+            .map(|v| v.as_str().ok_or_else(|| bad("name must be a string")))
+            .transpose()?;
+        if !name.is_empty() && provided.is_some_and(|v| v != name) {
+            return Err(bad("conflicting restore key names"));
+        }
+        let name = if !name.is_empty() {
+            name
+        } else {
+            provided.unwrap_or(&p.name)
+        };
+        valid_path(name)?;
+        if name.is_empty() || name.contains('/') {
+            return Err(bad("invalid restore key name"));
+        }
+        let force = optional_bool(body, "force")?.unwrap_or(false);
+        if self.keys.contains_key(name) && !force {
+            return Err(openbao_compatibility_error(&format!(
+                "key \"{name}\" already exists"
+            )));
+        }
+        let kind = kind_name(p.kind)?;
+        if p.latest_version == 0
+            || p.latest_version > MAX_VERSIONS
+            || p.archive_version != p.latest_version
+            || p.kdf > 1
+            || p.archive_min_version > p.min_available_version
+            || p.min_available_version > p.min_decryption_version
+            || p.min_decryption_version == 0
+            || p.min_decryption_version > p.latest_version
+            || p.min_encryption_version > p.latest_version
+            || (p.min_encryption_version != 0
+                && p.min_encryption_version < p.min_decryption_version)
+            || p.convergent_encryption
+            || p.convergent_version != 0
+            || !p.version_template.is_empty()
+            || p.storage_prefix.len() > 256
+            || (p.imported && !p.allow_imported_rotation && p.auto_rotate_period != 0)
+            || wire.archived_keys.keys.len() as u64 != p.latest_version - p.archive_min_version + 1
+        {
+            return Err(bad("invalid or unsupported symmetric backup policy"));
+        }
+        let mut entries = BTreeMap::new();
+        for (i, e) in wire.archived_keys.keys.iter().enumerate() {
+            let n = p.archive_min_version + i as u64;
+            if n == 0 {
+                if !e.empty_exact() {
+                    return Err(bad("invalid archive zero entry"));
+                }
+            } else {
+                entries.insert(n, e);
+            }
+        }
+        for (s, e) in &p.keys {
+            let n: u64 = s
+                .parse()
+                .map_err(|_| bad("invalid backup version number"))?;
+            if n == 0
+                || n.to_string() != *s
+                || n > p.latest_version
+                || entries.get(&n).is_some_and(|archive| *archive != e)
+            {
+                return Err(bad("inconsistent backup key and archive versions"));
+            }
+            entries.insert(n, e);
+        }
+        if !entries.contains_key(&p.latest_version)
+            || entries.len() > MAX_VERSIONS as usize
+            || entries.keys().any(|n| *n < p.min_available_version.max(1))
+        {
+            return Err(bad("invalid available backup versions"));
+        }
+        let mut versions = BTreeMap::new();
+        let mut times = BTreeMap::new();
+        for (n, e) in entries {
+            versions.insert(n, e.version(kind)?);
+            times.insert(n, e.time.clone());
+        }
+        let metadata = Metadata {
+            kdf: p.kdf,
+            archive_min_version: p.archive_min_version,
+            min_available_version: p.min_available_version,
+            version_template: p.version_template.clone(),
+            storage_prefix: p.storage_prefix.clone(),
+            backup_info: p.backup_info.clone(),
+            restore_info: Some(Stamp {
+                time: timestamp(now),
+                version: p.latest_version,
+            }),
+            version_times: times,
+        };
+        let restored = Key {
+            kind: kind.into(),
+            byok: byok::restored_policy(p.imported, p.allow_imported_rotation),
+            derived: p.derived,
+            legacy_counter_kdf: p.derived && p.kdf == 0,
+            allow_plaintext_backup: p.allow_plaintext_backup,
+            backup_metadata: Some(metadata),
+            convergent_encryption: false,
+            convergent_write_min_version: 0,
+            latest_version: p.latest_version,
+            min_decryption_version: p.min_decryption_version,
+            min_encryption_version: p.min_encryption_version,
+            deletion_allowed: p.deletion_allowed,
+            exportable: p.exportable,
+            auto_rotate_period: auto_rotate_period(Some(&json!(p.auto_rotate_period)))?,
+            deleted: p.soft_deleted,
+            versions,
+        };
+        validate_key(&restored)?;
+        if let Some(old) = self.keys.get(name) {
+            if old.convergent_write_min_version != 0 || old.convergent_encryption {
+                return Err(bad(
+                    "restore cannot replace protected convergent key material",
+                ));
+            }
+            if old.allow_plaintext_backup && !restored.allow_plaintext_backup {
+                return Err(bad("restore cannot revoke plaintext backup permission"));
+            }
+        }
+        // Prepare the wrapping owner locally; no mutation until every wire/key validation passed.
+        let wrapping = if restored.byok.is_some() && self.wrapping_key.is_none() {
+            Some(byok::WrappingKey::new()?)
+        } else {
+            None
+        };
+        let mut prepared = self.clone();
+        if let Some(w) = wrapping {
+            prepared.wrapping_key = Some(w);
+        }
+        prepared.keys.insert(name.into(), restored);
+        prepared.validate_byok_state()?;
+        *self = prepared;
+        Ok(empty(true))
+    }
+}
+
+#[cfg(test)]
+#[path = "transit_backup_tests.rs"]
+mod tests;

@@ -50,6 +50,7 @@ pub(crate) struct ForwardRequest {
     pub path: String,
     pub namespace: String,
     pub token: String,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub body: Value,
     #[serde(default)]
     pub wrap_ttl_seconds: Option<u64>,
@@ -107,6 +108,7 @@ struct LegacyForwardRequest {
     path: String,
     namespace: String,
     token: String,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     body: Value,
 }
 
@@ -134,6 +136,7 @@ struct LegacyForwardResponse {
     source: u64,
     target: u64,
     status: u16,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     body: Value,
 }
 
@@ -184,6 +187,7 @@ pub(crate) struct ForwardResponse {
     pub source: u64,
     pub target: u64,
     pub status: u16,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub body: Value,
     #[serde(
         default,
@@ -1756,3 +1760,7 @@ mod sdk_response_header_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "ha_lossless_json_tests.rs"]
+mod lossless_json_tests;

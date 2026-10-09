@@ -1,12 +1,17 @@
 //! Durable pre-execution approval owners, separate from already executed response wrapping.
 use super::*;
 use std::cmp::Ordering;
+#[path = "auth_control_group_precision.rs"]
+mod precision;
+use super::token_precision::{DurationNanos, Timestamp};
+pub(crate) use precision::Precision;
 
 const MAX_FACTORS: usize = 32;
 const MAX_GROUPS: usize = 64;
 const MAX_PENDING: usize = 1024;
 const MAX_REQUEST_BYTES: usize = 1024 * 1024;
 pub(crate) const STATE_SCHEMA: u32 = 118;
+pub(crate) const FRACTIONAL_STATE_SCHEMA: u32 = 122;
 fn valid_digest(value: &str) -> bool {
     URL_SAFE_NO_PAD
         .decode(value)
@@ -56,6 +61,8 @@ pub(crate) struct Factor {
 #[serde(deny_unknown_fields)]
 pub(crate) struct PolicyControl {
     pub(crate) ttl: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) precise_ttl: Option<DurationNanos>,
     pub(crate) factors: Vec<Factor>,
 }
 fn names(value: Option<&Value>) -> Result<BTreeSet<String>, AuthError> {
@@ -102,18 +109,37 @@ pub(crate) fn auth_mount_route(path: &str) -> Result<(&str, bool, String), AuthE
     Ok((mount, tune, route))
 }
 
-fn control_duration_seconds(raw: &str) -> Result<i64, AuthError> {
+fn control_duration_nanos(raw: &str) -> Result<DurationNanos, AuthError> {
     let nanos = token_duration::parse_duration(raw)
         .map_err(|_| bad("invalid control group TTL duration"))?;
-    // The durable owner clock/expiry are whole seconds. Never interpret a
-    // nanosecond duration as seconds or silently extend a fractional deadline.
-    if nanos % 1_000_000_000 != 0 {
-        return Err(bad("control group TTL requires whole seconds"));
-    }
-    Ok(nanos / 1_000_000_000)
+    let nanos = u64::try_from(nanos)
+        .ok()
+        .filter(|value| *value > 0 && *value <= MAX_TTL * 1_000_000_000)
+        .ok_or_else(|| bad("control group TTL exceeds bounds"))?;
+    DurationNanos::checked(nanos).map_err(|_| bad("control group TTL exceeds bounds"))
 }
 
 impl PolicyControl {
+    pub(crate) fn duration(&self) -> Result<DurationNanos, AuthError> {
+        match self.precise_ttl {
+            Some(ttl)
+                if !ttl.nanoseconds().is_multiple_of(1_000_000_000)
+                    && ttl.public_seconds() == self.ttl =>
+            {
+                Ok(ttl)
+            }
+            Some(_) => Err(bad("invalid control group TTL projection")),
+            None => DurationNanos::from_seconds(self.ttl)
+                .map_err(|_| bad("control group TTL exceeds bounds")),
+        }
+    }
+    fn from_duration(ttl: DurationNanos, factors: Vec<Factor>) -> Self {
+        Self {
+            ttl: ttl.public_seconds(),
+            precise_ttl: (!ttl.nanoseconds().is_multiple_of(1_000_000_000)).then_some(ttl),
+            factors,
+        }
+    }
     pub(super) fn parse(value: &Value, capabilities: &BTreeSet<String>) -> Result<Self, AuthError> {
         reject_unknown(value, &["ttl", "factor"])?;
         let explicit_ttl = value
@@ -122,10 +148,13 @@ impl PolicyControl {
                 let raw = v
                     .as_str()
                     .ok_or_else(|| bad("control group TTL must be a duration string"))?;
-                control_duration_seconds(raw)
+                control_duration_nanos(raw)
             })
             .transpose()?;
-        let mut ttl = explicit_ttl.unwrap_or(MAX_TTL as i64);
+        let mut ttl = explicit_ttl.unwrap_or(
+            DurationNanos::from_seconds(MAX_TTL)
+                .map_err(|_| bad("control group TTL exceeds bounds"))?,
+        );
         let factors = value
             .get("factor")
             .and_then(Value::as_object)
@@ -153,7 +182,7 @@ impl PolicyControl {
                 ],
             )?;
             if let Some(v) = identity.get("ttl") {
-                let duration = control_duration_seconds(
+                let duration = control_duration_nanos(
                     v.as_str()
                         .ok_or_else(|| bad("identity factor TTL must be a duration string"))?,
                 )
@@ -199,13 +228,7 @@ impl PolicyControl {
                 controlled_capabilities,
             });
         }
-        if ttl <= 0 || ttl > MAX_TTL as i64 {
-            return Err(bad("control group TTL exceeds bounds"));
-        }
-        Ok(Self {
-            ttl: ttl as u64,
-            factors: out,
-        })
+        Ok(Self::from_duration(ttl, out))
     }
 }
 pub(super) fn hcl_value(tokens: &[Lex], cursor: &mut usize) -> Result<Value, AuthError> {
@@ -392,6 +415,7 @@ pub(crate) struct DeferredRequest {
     pub(crate) actor_digest: String,
     pub(crate) actor_accessor: String,
     pub(crate) actor_entity_id: String,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub(crate) actor_entity: Value,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub(crate) request_accessor: String,
@@ -401,16 +425,20 @@ pub(crate) struct DeferredRequest {
     pub(crate) path: String,
     pub(crate) capability: String,
     pub(crate) requires_sudo: bool,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub(crate) body: Value,
     pub(crate) transport_method: String,
     pub(crate) transport_path: String,
     pub(crate) transport_namespace: String,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub(crate) transport_body: Value,
     pub(crate) wrap_ttl_seconds: Option<u64>,
     pub(crate) origin_peer: Option<std::net::IpAddr>,
     pub(crate) client_certificates: Option<Vec<Vec<u8>>>,
     pub(crate) created_at: u64,
     pub(crate) expires_at: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) precision: Option<Precision>,
     pub(crate) creation_time: String,
     pub(crate) factors: Vec<ResolvedFactor>,
     pub(crate) authorizations: BTreeMap<String, Approval>,
@@ -454,6 +482,8 @@ struct CredentialContext<'a> {
     client_certificates: &'a Option<Vec<Vec<u8>>>,
     created_at: u64,
     expires_at: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    precision: Option<Precision>,
     creation_time: &'a str,
     factors: &'a [ResolvedFactor],
 }
@@ -484,6 +514,7 @@ impl DeferredRequest {
             client_certificates: &self.client_certificates,
             created_at: self.created_at,
             expires_at: self.expires_at,
+            precision: self.precision,
             creation_time: &self.creation_time,
             factors: &self.factors,
         };
@@ -514,13 +545,31 @@ impl DeferredRequest {
 pub(crate) struct Registry {
     floor: bool,
     clock: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    precise_clock: Option<Timestamp>,
     requests: BTreeMap<String, DeferredRequest>,
 }
 impl Registry {
     pub(super) fn is_absent(&self) -> bool {
-        !self.floor && self.clock == 0 && self.requests.is_empty()
+        !self.floor && self.clock == 0 && self.precise_clock.is_none() && self.requests.is_empty()
+    }
+    fn validate_precise_clock(&self) -> Result<(), AuthError> {
+        if self
+            .precise_clock
+            .is_some_and(|floor| floor.seconds() != self.clock)
+            || self.requests.values().any(|owner| {
+                owner.precision.is_some_and(|precision| {
+                    self.precise_clock
+                        .is_none_or(|floor| precision.issued_at > floor)
+                })
+            })
+        {
+            return Err(bad("invalid precise control group clock ownership"));
+        }
+        Ok(())
     }
     pub(crate) fn validate_namespace(&self, actual: &str) -> Result<(), AuthError> {
+        self.validate_precise_clock()?;
         if actual.is_empty()
             || !self.floor
             || self.requests.len() > MAX_PENDING
@@ -583,6 +632,7 @@ impl AuthState {
         Some(Registry {
             floor: true,
             clock: self.control_groups.clock,
+            precise_clock: self.control_groups.precise_clock,
             requests,
         })
     }
@@ -596,6 +646,11 @@ impl AuthState {
         }
         if let Some(incoming) = incoming {
             incoming.validate_namespace(namespace)?;
+            if incoming.precise_clock.is_some() {
+                Timestamp::whole(self.control_groups.clock.max(incoming.clock)).map_err(|_| {
+                    bad("control group namespace clock cannot enter precise domain")
+                })?;
+            }
             if incoming
                 .requests
                 .keys()
@@ -610,6 +665,16 @@ impl AuthState {
         if let Some(incoming) = incoming {
             self.control_groups.floor = true;
             self.control_groups.clock = self.control_groups.clock.max(incoming.clock);
+            self.control_groups.precise_clock = self
+                .control_groups
+                .precise_clock
+                .into_iter()
+                .chain(incoming.precise_clock)
+                .max()
+                .map(|floor| {
+                    Timestamp::whole(self.control_groups.clock)
+                        .map_or(floor, |seconds| floor.max(seconds))
+                });
             self.control_groups.requests.extend(incoming.requests);
         }
     }
@@ -655,8 +720,13 @@ impl AuthState {
         &self,
         time: AuthorityTime,
     ) -> Result<AuthorityTime, AuthError> {
-        time.with_seconds_floor(self.control_groups.clock)
-            .map_err(|_| err(503, "control group clock floor is unavailable"))
+        let time = time
+            .with_seconds_floor(self.control_groups.clock)
+            .map_err(|_| err(503, "control group clock floor is unavailable"))?;
+        Ok(match (time, self.control_groups.precise_clock) {
+            (AuthorityTime::Precise(at), Some(floor)) => AuthorityTime::Precise(at.max(floor)),
+            (other, _) => other,
+        })
     }
     pub(crate) fn control_group_owners(&self) -> impl Iterator<Item = &DeferredRequest> {
         self.control_groups.requests.values()
@@ -672,6 +742,21 @@ impl AuthState {
         if !policy.control_groups.is_empty() {
             self.control_groups.floor = true;
         }
+    }
+    pub(crate) fn has_fractional_control_group_state(&self) -> bool {
+        self.control_groups.precise_clock.is_some()
+            || self
+                .control_groups
+                .requests
+                .values()
+                .any(|owner| owner.precision.is_some())
+            || self
+                .policies
+                .values()
+                .flat_map(|entries| entries.values())
+                .flat_map(|policy| policy.control_groups.values())
+                .flatten()
+                .any(|stanza| stanza.control.precise_ttl.is_some())
     }
     pub(crate) fn has_control_group_state(&self) -> bool {
         !self.control_groups.is_absent()
@@ -756,6 +841,7 @@ impl AuthState {
                     if !factors.is_empty() {
                         controls.push(PolicyControl {
                             ttl: control.ttl,
+                            precise_ttl: control.precise_ttl,
                             factors,
                         });
                     }
@@ -767,7 +853,9 @@ impl AuthState {
         }
         let ttl = controls
             .iter()
-            .map(|c| c.ttl)
+            .map(PolicyControl::duration)
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
             .min()
             .ok_or_else(|| bad("missing control group TTL"))?;
         let factors = controls
@@ -777,7 +865,7 @@ impl AuthState {
         if factors.len() > MAX_FACTORS {
             return Err(bad("effective control group factors exceed bound"));
         }
-        Ok(Some(PolicyControl { ttl, factors }))
+        Ok(Some(PolicyControl::from_duration(ttl, factors)))
     }
     pub(crate) fn control_group_actor_binding(
         &self,
@@ -893,6 +981,9 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<Principal, AuthError> {
         let time = self.control_group_authority_time(time)?;
+        if !owner.live(time) {
+            return Err(bad("control group request is unavailable"));
+        }
         if let Some(capsule) = &owner.credential {
             let raw = self.open_credential(
                 capsule,
@@ -937,6 +1028,9 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<Principal, AuthError> {
         let time = self.control_group_authority_time(time)?;
+        if !owner.live(time) {
+            return Err(bad("control group request is unavailable"));
+        }
         if let Some(capsule) = &approval.credential {
             if !capsule.kind().is_batch() || !approval.token_accessor.is_empty() {
                 return Err(denied());
@@ -1001,12 +1095,23 @@ impl AuthState {
                 .get(&hash(raw))
                 .is_some_and(|t| t.policies == BTreeSet::from(["control-group".into()]))
     }
+    #[cfg(test)]
     pub(crate) fn control_group_target(
         &self,
         raw: &str,
         namespace: &str,
         now: u64,
     ) -> Result<Option<&DeferredRequest>, AuthError> {
+        self.control_group_target_observed(raw, namespace, AuthorityTime::Coarse(now))
+    }
+    pub(crate) fn control_group_target_observed(
+        &self,
+        raw: &str,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<Option<&DeferredRequest>, AuthError> {
+        let time = self.control_group_authority_time(time)?;
+        let now = time.seconds();
         if !self.is_control_group_token(raw) {
             return Ok(None);
         }
@@ -1019,10 +1124,10 @@ impl AuthState {
             .requests
             .get(&id)
             .ok_or_else(|| bad("wrapping token is not valid or does not exist"))?;
-        if token.namespace != namespace
-            || owner.namespace != namespace
-            || now.max(self.control_groups.clock) >= owner.expires_at
-        {
+        if token.namespace != namespace || owner.namespace != namespace {
+            return Err(denied());
+        }
+        if !owner.live(time) {
             return Err(bad("wrapping token is not valid or does not exist"));
         }
         Ok(Some(owner))
@@ -1031,8 +1136,10 @@ impl AuthState {
         &self,
         raw: &str,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<Option<&DeferredRequest>, AuthError> {
+        let time = self.control_group_authority_time(time)?;
+        let now = time.seconds();
         if !self.is_control_group_token(raw) {
             return Ok(None);
         }
@@ -1043,10 +1150,10 @@ impl AuthState {
             .requests
             .get(&id)
             .ok_or_else(|| bad("control group request is unavailable"))?;
-        if owner.namespace != namespace
-            || token.namespace != namespace
-            || now.max(self.control_groups.clock) >= owner.expires_at
-        {
+        if owner.namespace != namespace || token.namespace != namespace {
+            return Err(denied());
+        }
+        if !owner.live(time) {
             return Err(bad("control group request is unavailable"));
         }
         Ok(Some(owner))
@@ -1055,8 +1162,10 @@ impl AuthState {
         &self,
         accessor: &str,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<&DeferredRequest, AuthError> {
+        let time = self.control_group_authority_time(time)?;
+        let now = time.seconds();
         self.control_groups
             .requests
             .iter()
@@ -1067,7 +1176,7 @@ impl AuthState {
                         t.accessor == accessor
                             && t.namespace == namespace
                             && owner.namespace == namespace
-                            && now.max(self.control_groups.clock) < owner.expires_at
+                            && owner.live(time)
                     })
                     .map(|_| owner)
             })
@@ -1077,10 +1186,11 @@ impl AuthState {
         &mut self,
         accessor: &str,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
         approval: Approval,
     ) -> Result<(), AuthError> {
-        self.control_group_by_accessor(accessor, namespace, now)?;
+        let time = self.control_group_authority_time(time)?;
+        self.control_group_by_accessor(accessor, namespace, time)?;
         let id = self
             .tokens
             .iter()
@@ -1157,7 +1267,7 @@ impl AuthState {
             }
         }
         owner.validate()?;
-        let ttl = owner.expires_at - owner.created_at;
+        let ttl = owner.wire_ttl();
         let token = Token {
             token_api_precision: None,
             public_origin: None,
@@ -1191,6 +1301,15 @@ impl AuthState {
             "wrap_info":{"token":raw.as_str(),"accessor":accessor,"ttl":ttl,"creation_time":owner.creation_time,"creation_path":owner.path}});
         self.control_groups.floor = true;
         self.control_groups.clock = self.control_groups.clock.max(owner.created_at);
+        if let Some(precision) = owner.precision {
+            self.control_groups.precise_clock = Some(
+                self.control_groups
+                    .precise_clock
+                    .map_or(precision.issued_at, |previous| {
+                        previous.max(precision.issued_at)
+                    }),
+            );
+        }
         self.control_groups.requests.insert(id.clone(), owner);
         self.store_token(id, token);
         Ok(AuthResponse {
@@ -1208,8 +1327,10 @@ impl AuthState {
         &mut self,
         raw: &str,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<DeferredRequest, AuthError> {
+        let time = self.control_group_authority_time(time)?;
+        let now = time.seconds();
         let id = hash(raw);
         // Self-token admission already consumed its use; the typed owner still
         // must be present and its expiry/scope must be valid before claiming.
@@ -1219,10 +1340,10 @@ impl AuthState {
             .get(&id)
             .ok_or_else(|| bad("control group request is unavailable"))?;
         let token = self.active_token(&id, now.max(self.control_groups.clock), false)?;
-        if owner.namespace != namespace
-            || token.namespace != namespace
-            || now.max(self.control_groups.clock) >= owner.expires_at
-        {
+        if owner.namespace != namespace || token.namespace != namespace {
+            return Err(denied());
+        }
+        if !owner.live(time) {
             return Err(bad("control group request is unavailable"));
         }
         let owner = self
@@ -1233,25 +1354,56 @@ impl AuthState {
         self.tokens.get_mut(&id).ok_or_else(denied)?.uses_remaining = Some(0);
         Ok(owner)
     }
+    #[cfg(test)]
     pub(crate) fn advance_control_group_clock(&mut self, now: u64) -> bool {
-        if self.control_groups.is_absent() || now <= self.control_groups.clock {
-            return false;
+        self.advance_control_group_observed(AuthorityTime::Coarse(now))
+            .unwrap_or(false)
+    }
+    pub(crate) fn advance_control_group_observed(
+        &mut self,
+        time: AuthorityTime,
+    ) -> Result<bool, AuthError> {
+        if self.control_groups.is_absent() {
+            return Ok(false);
         }
-        self.control_groups.clock = now;
+        let time = self.control_group_authority_time(time)?;
+        let now = time.seconds();
+        let mut changed = now > self.control_groups.clock;
+        if self.has_fractional_control_group_state() {
+            let exact = match time.exact() {
+                Some(at) => at,
+                None => Timestamp::whole(now)
+                    .map_err(|_| err(503, "control group clock is outside precise bounds"))?,
+            };
+            let observed = self
+                .control_groups
+                .precise_clock
+                .map_or(exact, |floor| floor.max(exact));
+            if self.control_groups.precise_clock != Some(observed) {
+                self.control_groups.precise_clock = Some(observed);
+                changed = true;
+            }
+        }
+        self.control_groups.clock = self.control_groups.clock.max(now);
         let expired = self
             .control_groups
             .requests
             .iter()
-            .filter(|(_, o)| now >= o.expires_at)
+            .filter(|(_, owner)| match (owner.precision, time.exact()) {
+                (Some(precision), Some(at)) => at >= precision.expires_at,
+                // A coarse observation can retire, but never confer precise authority.
+                _ => now >= owner.expires_at,
+            })
             .map(|(id, _)| id.clone())
             .collect::<Vec<_>>();
         for id in expired {
             self.control_groups.requests.remove(&id);
-            if let Some(t) = self.tokens.get_mut(&id) {
-                t.uses_remaining = Some(0);
+            if let Some(token) = self.tokens.get_mut(&id) {
+                token.uses_remaining = Some(0);
             }
+            changed = true;
         }
-        true
+        Ok(changed)
     }
     pub(crate) fn validate_control_group_clock_floor(
         &self,
@@ -1260,6 +1412,7 @@ impl AuthState {
         if previous.is_some_and(|old| {
             old.control_groups.floor && !self.control_groups.floor
                 || self.control_groups.clock < old.control_groups.clock
+                || self.control_groups.precise_clock < old.control_groups.precise_clock
         }) {
             return Err(err(
                 503,
@@ -1275,10 +1428,12 @@ impl AuthState {
             }
         }
         let registry = &self.control_groups;
+        registry.validate_precise_clock()?;
         if registry.requests.len() > MAX_PENDING
             || (!registry.floor
                 && (!registry.requests.is_empty()
                     || registry.clock != 0
+                    || registry.precise_clock.is_some()
                     || self
                         .policies
                         .values()
@@ -1344,6 +1499,9 @@ impl DeferredRequest {
         validate_namespace(&self.namespace)?;
         validate_namespace(&self.transport_namespace)?;
         validate_path(&self.path, false)?;
+        if let Some(precision) = self.precision {
+            precision.validate(self.created_at, self.expires_at)?;
+        }
         if self.cluster_id.is_empty()
             || !valid_digest(&self.actor_digest)
             || (self.actor_accessor.is_empty()
@@ -1354,7 +1512,7 @@ impl DeferredRequest {
             || self.actor_entity_id.is_empty()
             || self.namespace_id.is_empty()
             || self.expires_at <= self.created_at
-            || self.expires_at - self.created_at > MAX_TTL
+            || self.precision.is_none() && self.expires_at - self.created_at > MAX_TTL
             || !CAPABILITIES.contains(&self.capability.as_str())
             || matches!(self.capability.as_str(), "deny" | "sudo")
             || !matches!(
@@ -1493,3 +1651,12 @@ impl DeferredRequest {
 #[cfg(test)]
 #[path = "auth_control_groups_tests.rs"]
 mod tests;
+
+impl Registry {
+    pub(super) fn has_lossless_json_state(&self) -> bool {
+        self.requests.values().any(|owner| {
+            [&owner.body, &owner.transport_body, &owner.actor_entity].into_iter()
+                .any(heptabao_domain::json::requires_lossless_format)
+        })
+    }
+}

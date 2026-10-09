@@ -57,7 +57,9 @@ pub(super) fn context(key: &Key, body: &Value) -> Result<Zeroizing<Vec<u8>>> {
     flag(body, "convergent_encryption")?;
     let context = context_bytes(body)?;
     if key.derived && context.is_empty() {
-        return Err(bad("derived keys require a nonempty context"));
+        return Err(bad(if key.legacy_counter_kdf {
+            "missing 'context' for key derivation; the key was created using a derived key, which means additional, per-request information must be included in order to perform operations with the key"
+        } else { "derived keys require a nonempty context" }));
     }
     Ok(context)
 }
@@ -255,4 +257,23 @@ pub(super) fn nonce(
     tag.get(..length)
         .map(|nonce| nonce.to_vec())
         .ok_or_else(|| error(500, "nonce derivation failed"))
+}
+
+
+pub(super) fn material_with_kdf(
+    kind: &str, derived: bool, convergent: bool, mode: Option<ConvergentMode>,
+    master: &[u8], context: &[u8], legacy_counter: bool,
+) -> Result<Zeroizing<Vec<u8>>> {
+    if !legacy_counter { return material(kind, derived, convergent, mode, master, context); }
+    if !derived || convergent || mode.is_some() || context.is_empty() || master.len() != key_len(kind) {
+        return Err(error(500, "invalid imported counter derivation policy"));
+    }
+    let mut prf = <Hmac<Sha256> as Mac>::new_from_slice(master)
+        .map_err(|_| error(500, "key derivation failed"))?;
+    prf.update(&0u32.to_be_bytes());
+    prf.update(context);
+    prf.update(&256u32.to_be_bytes());
+    let mut output = Zeroizing::new(prf.finalize().into_bytes().to_vec());
+    output.truncate(key_len(kind));
+    Ok(output)
 }

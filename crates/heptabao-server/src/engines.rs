@@ -31,6 +31,10 @@ mod help;
 pub(crate) mod kubernetes;
 pub(crate) mod kubernetes_artifact;
 mod kv;
+#[path = "engine_kv2_import.rs"]
+mod kv2_import;
+pub(crate) use kv::lossless::decode_lossless_json;
+pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
 mod kv1_records;
 #[path = "engine_kv_versioning.rs"]
 mod kv_versioning;
@@ -76,6 +80,8 @@ mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    kv2_lossless_format: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     ssh_ca_format: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -369,9 +375,14 @@ fn wipe_json(value: &mut Value) {
     *value = Value::Null;
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize)]
 #[serde(transparent)]
 struct SecretJson(Value);
+impl<'de> Deserialize<'de> for SecretJson {
+    fn deserialize<D: serde::Deserializer<'de>>(decoder: D) -> std::result::Result<Self, D::Error> {
+        kv::lossless::deserialize_secret_json(decoder).map(Self)
+    }
+}
 impl std::ops::Deref for SecretJson {
     type Target = Value;
     fn deref(&self) -> &Self::Target {
@@ -743,6 +754,11 @@ impl EngineState {
                 matches!(&mount.backend, Backend::Transit(engine) if engine.has_mldsa_import_state())
             })
         })
+    }
+
+    pub(crate) fn has_symmetric_backup_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_symmetric_backup_state())))
     }
 
     pub(crate) fn has_standard_asymmetric_import_state(&self) -> bool {
@@ -2485,6 +2501,19 @@ impl EngineState {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        let at = crate::auth::Timestamp::whole(now)
+            .map_err(|_| error(503, "KV2 accepted request clock is unavailable"))?;
+        self.handle_immutable_kv_read_precise(namespace, method, path, body, at)
+    }
+
+    pub(crate) fn handle_immutable_kv_read_precise(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        at: crate::auth::Timestamp,
+    ) -> Result<EngineResponse> {
         let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
         let (mount_path, mount) = state
             .mounts
@@ -2506,7 +2535,10 @@ impl EngineState {
             Backend::Kv1Records => {
                 self.read_record_kv1(namespace, mount_path, mount.incarnation, method, relative)
             }
-            Backend::Kv2(engine) => engine.handle_read(method, relative, &params, now),
+            Backend::Kv2(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
+                engine.handle_read(method, relative, &params, at.seconds())
+            }
+            Backend::Kv2(engine) => engine.handle_read_precise(method, relative, &params, at),
             _ => Err(unsupported()),
         }
     }
@@ -2896,6 +2928,28 @@ impl EngineState {
         display_name: &str,
         ssh_principal: Option<&crate::auth::Principal>,
     ) -> Result<Option<EngineResponse>> {
+        let at = crate::auth::Timestamp::whole(now)
+            .map_err(|_| error(503, "KV2 accepted request clock is unavailable"))?;
+        self.handle_in_identity_namespace_with_ssh_principal_precise(
+            scope, method, path, body, now, display_name, ssh_principal, at,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn handle_in_identity_namespace_with_ssh_principal_precise(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        display_name: &str,
+        ssh_principal: Option<&crate::auth::Principal>,
+        at: crate::auth::Timestamp,
+    ) -> Result<Option<EngineResponse>> {
+        if at.seconds() < now {
+            return Err(error(503, "KV2 accepted request clock precedes its floor"));
+        }
         let namespace = scope.path;
         let (path, query) = path.split_once('?').unwrap_or((path, ""));
         let path = path.trim_start_matches('/');
@@ -2980,6 +3034,11 @@ impl EngineState {
             )?;
             if response.mutated {
                 self.update_record_registry(namespace, &mut candidate)?;
+                if candidate.mounts.values().any(|mount| {
+                    matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state())
+                }) {
+                    self.kv2_lossless_format = Some(1);
+                }
                 self.namespaces.insert(namespace.into(), candidate);
             }
             return Ok(Some(response));
@@ -3056,7 +3115,10 @@ impl EngineState {
             }
             Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
             Backend::Kv1Records => return Err(error(503, "KV1 record dispatcher mismatch")),
-            Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
+            Backend::Kv2(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
+                engine.handle(method, relative, &params, at.seconds())?
+            }
+            Backend::Kv2(engine) => engine.handle_precise(method, relative, &params, at)?,
             Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
             Backend::Transit(engine) => {
                 engine.handle(namespace, &mount_path, method, relative, &params, now)?
@@ -3077,6 +3139,9 @@ impl EngineState {
             },
         };
         if response.mutated {
+            if matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state()) {
+                self.kv2_lossless_format = Some(1);
+            }
             if matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()) {
                 self.ssh_ca_format = Some(115);
             }
@@ -3622,3 +3687,24 @@ fn listing(keys: Vec<String>) -> Result<EngineResponse> {
 #[cfg(test)]
 #[path = "engine_batch_lease_tests.rs"]
 mod batch_lease_tests;
+
+impl EngineState {
+    /// Inline JSON owners and this candidate's actual KV1 record writes.
+    /// Opaque records not loaded into this owner are not scanned or claimed.
+    pub(crate) fn has_lossless_json_state(&self) -> bool {
+        self.records.as_ref().is_some_and(|runtime| runtime.observed_lossless_json)
+            || self.sdk_retired_logical.as_ref().is_some_and(|history| history.has_lossless_json_state())
+            || self.namespaces.values().any(|namespace| {
+                namespace.sdk_leases.values().any(sdk_lease::Lease::has_lossless_json_state)
+                    || namespace.mounts.values().any(|mount| match &mount.backend {
+                        Backend::Kv1(entries) => entries.values().any(|data| heptabao_domain::json::requires_lossless_format(data.expose())),
+                        Backend::Kv2(engine) => engine.has_lossless_json_state(),
+                        _ => false,
+                    })
+            })
+    }
+}
+
+#[cfg(test)]
+#[path = "engine_lossless_json_tests.rs"]
+mod lossless_json_tests;
