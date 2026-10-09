@@ -19,10 +19,10 @@ use zeroize::Zeroizing;
 mod asymmetric;
 #[path = "transit_asymmetric_byok.rs"]
 mod asymmetric_byok;
-#[path = "transit_byok.rs"]
-mod byok;
 #[path = "transit_backup.rs"]
 mod backup;
+#[path = "transit_byok.rs"]
+mod byok;
 #[path = "transit_external.rs"]
 mod external;
 #[path = "transit_mldsa.rs"]
@@ -179,10 +179,28 @@ impl Key {
                 "key derivation is unsupported for this key type",
             ));
         }
-        let allow_plaintext_backup = optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
-        if allow_plaintext_backup && (!symmetric::is_kind(kind) || convergent_encryption) {
-            return Err(error(501, "plaintext backups for this key type or protected mode are not implemented"));
+        let allow_plaintext_backup =
+            optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
+        if allow_plaintext_backup && (!backup::is_kind(kind) || convergent_encryption) {
+            return Err(error(
+                501,
+                "plaintext backups for this key type or protected mode are not implemented",
+            ));
         }
+        let hmac_size = if kind == "hmac" {
+            let size = optional_u64(body, "key_size")?.unwrap_or(0);
+            if !(32..=512).contains(&size) {
+                return Err(openbao_compatibility_error(
+                    "invalid key size for HMAC key, must be between 32 and 512 bytes",
+                ));
+            }
+            Some(size)
+        } else {
+            if optional_u64(body, "key_size")?.is_some_and(|n| n != 0) {
+                return Err(bad("key_size requires type hmac"));
+            }
+            None
+        };
         let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
         let mut version = if kind == "external-key" {
@@ -207,13 +225,16 @@ impl Key {
             ));
         }
         version.heptabao_convergent_version = mode;
+        if let Some(size) = hmac_size {
+            version.material = BASE64.encode(random_bytes(size as usize)?.as_slice());
+        }
         Ok(Self {
             kind: kind.into(),
             byok: None,
             derived,
             legacy_counter_kdf: false,
             allow_plaintext_backup,
-            backup_metadata: None,
+            backup_metadata: hmac_size.map(backup::native_hmac_metadata),
             convergent_encryption,
             convergent_write_min_version: if mode.is_some() { 1 } else { 0 },
             latest_version: 1,
@@ -236,13 +257,18 @@ impl Key {
             if symmetric::is_kind(&self.kind) && *number < self.min_decryption_version {
                 continue;
             }
-            let value = if let Some(public) = version.public_key_only.as_ref().filter(|_| asymmetric_byok::is_kind(&self.kind)) {
-                let public = asymmetric_byok::descriptor_public(&self.kind, &stored_material(public)?)?;
+            let value = if let Some(public) = version
+                .public_key_only
+                .as_ref()
+                .filter(|_| asymmetric_byok::is_kind(&self.kind))
+            {
+                let public =
+                    asymmetric_byok::descriptor_public(&self.kind, &stored_material(public)?)?;
                 json!({"creation_time":timestamp(version.created_at),"public_key":public,
                     "name":"", "certificate_chain":Value::Null})
             } else if self.kind == "ed25519" {
                 let material = stored_material(&version.material)?;
-                let pair = if self.byok.is_some() {
+                let pair = if self.byok.is_some() || self.backup_metadata.is_some() {
                     asymmetric_byok::ed25519_pair(&material)?
                 } else {
                     signature::Ed25519KeyPair::from_pkcs8(&material)
@@ -283,6 +309,7 @@ impl Key {
             if let Some(allowed) = byok::imported_key_allow_rotation(self) {
                 descriptor["imported_key_allow_rotation"] = json!(allowed);
             }
+            backup::decorate_descriptor(self, &mut descriptor);
             return Ok(descriptor);
         }
         let encryption = matches!(
@@ -307,7 +334,14 @@ impl Key {
             if !self.derived {
                 fields.remove("convergent_encryption");
             } else {
-                fields.insert("kdf".into(), json!(if self.legacy_counter_kdf { "hmac-sha256-counter" } else { "hkdf_sha256" }));
+                fields.insert(
+                    "kdf".into(),
+                    json!(if self.legacy_counter_kdf {
+                        "hmac-sha256-counter"
+                    } else {
+                        "hkdf_sha256"
+                    }),
+                );
                 if self.legacy_counter_kdf {
                     fields.insert("kdf_mode".into(), json!("hmac-sha256-counter"));
                 }
@@ -416,7 +450,9 @@ impl Key {
         }
         if let Some(value) = optional_u64(body, "min_decryption_version")? {
             if value.max(1) < backup::min_available_version(self) {
-                return Err(bad("minimum decryption version cannot be lower than minimum available version"));
+                return Err(bad(
+                    "minimum decryption version cannot be lower than minimum available version",
+                ));
             }
             self.min_decryption_version = value.max(1);
         }
@@ -442,9 +478,20 @@ impl Key {
             self.exportable = value;
         }
         if let Some(value) = optional_bool(body, "allow_plaintext_backup")? {
-            if value && (!symmetric::is_kind(&self.kind) || self.convergent_encryption
-                || self.convergent_write_min_version != 0)
-            { return Err(bad("plaintext backup cannot expose protected or unsupported key material")); }
+            if value
+                && (!backup::is_kind(&self.kind)
+                    || self.convergent_encryption
+                    || self.convergent_write_min_version != 0
+                    || self.versions.values().any(|v| {
+                        v.public_key_only.is_some()
+                            || v.external_key_ref.is_some()
+                            || v.heptabao_convergent_version.is_some()
+                    }))
+            {
+                return Err(bad(
+                    "plaintext backup cannot expose protected or unsupported key material",
+                ));
+            }
             // The real API accepts false after activation but leaves this permission enabled.
             self.allow_plaintext_backup |= value;
         }
@@ -482,7 +529,7 @@ impl Key {
             .get(&self.latest_version)
             .ok_or_else(|| error(500, "latest transit key version is missing"))?
             .heptabao_convergent_version;
-        let mut version = KeyVersion::generate(&self.kind, now)?;
+        let mut version = backup::generate_version(self, now)?;
         version.heptabao_convergent_version = mode;
         self.versions.insert(next, version);
         self.latest_version = next;
@@ -642,7 +689,12 @@ impl Transit {
             return self.backup(method, rest, body, now);
         }
         if path == "restore" || path.starts_with("restore/") {
-            return self.restore(method, path.strip_prefix("restore/").unwrap_or(""), body, now);
+            return self.restore(
+                method,
+                path.strip_prefix("restore/").unwrap_or(""),
+                body,
+                now,
+            );
         }
         if let Some(rest) = path.strip_prefix("export/") {
             return if body.get("format").is_none() {
@@ -733,6 +785,7 @@ impl Transit {
                 body,
                 &[
                     "type",
+                    "key_size",
                     "derived",
                     "convergent_encryption",
                     "heptabao_convergent_version",
@@ -764,7 +817,11 @@ impl Transit {
                 }
                 if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false)
                     && !key.allow_plaintext_backup
-                { return Err(bad("use the key config endpoint to enable plaintext backup")); }
+                {
+                    return Err(bad(
+                        "use the key config endpoint to enable plaintext backup",
+                    ));
+                }
                 if symmetric::is_kind(&key.kind) {
                     symmetric::flag(body, "exportable")?;
                 } else if optional_bool(body, "exportable")?
@@ -850,7 +907,7 @@ impl Transit {
                         external::new_version(&json!({"external_key_ref":reference}), now)?
                     }
                 } else {
-                    KeyVersion::generate(&key.kind, now)?
+                    backup::generate_version(key, now)?
                 };
                 version.heptabao_convergent_version = mode;
                 if mode.is_some() && key.convergent_write_min_version == 0 {
@@ -922,7 +979,8 @@ impl Transit {
                 error(403, "key is not exportable")
             });
         }
-        if kind == "hmac-key" && (mldsa_key || asymmetric_key || ed25519_key)
+        if kind == "hmac-key"
+            && (mldsa_key || asymmetric_key || ed25519_key)
             && matches!(format, "der" | "pem")
         {
             return Err(openbao_compatibility_error(
@@ -936,10 +994,14 @@ impl Transit {
             ));
         }
         if format == "raw" && asymmetric_key && kind != "hmac-key" {
-            let algorithm = if asymmetric::is_rsa(&key.kind) { "rsa" } else { "ec" };
-            return Err(openbao_compatibility_error(
-                &format!("unknown key format for {algorithm} key; supported values are ``, `der`, or `pem`"),
-            ));
+            let algorithm = if asymmetric::is_rsa(&key.kind) {
+                "rsa"
+            } else {
+                "ec"
+            };
+            return Err(openbao_compatibility_error(&format!(
+                "unknown key format for {algorithm} key; supported values are ``, `der`, or `pem`"
+            )));
         }
         if asymmetric_key && kind == "encryption-key" && !asymmetric::is_rsa(&key.kind) {
             return Err(bad("key type does not support encryption key export"));
@@ -979,7 +1041,7 @@ impl Transit {
             })
             .map(|(version, value)| {
                 let encoded = if kind == "hmac-key" {
-                    value.hmac_material.clone()
+                    backup::hmac_material(key, value).into()
                 } else if let Some(public) = value.public_key_only.as_ref() {
                     if public_export {
                         let der = stored_material(public)?;
@@ -1332,12 +1394,8 @@ fn handle_crypto(
         "hmac" => {
             let version = key.selected_version(body)?;
             let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
-            let material = stored_material(
-                &key.versions
-                    .get(&version)
-                    .ok_or_else(not_found)?
-                    .hmac_material,
-            )?;
+            let selected = key.versions.get(&version).ok_or_else(not_found)?;
+            let material = stored_material(backup::hmac_material(key, selected))?;
             let input = decode_field(body, "input")?;
             let tag = hmac_tag(algorithm, &material, &input)?;
             json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag))})
@@ -1370,7 +1428,7 @@ fn handle_crypto(
                     mldsa::sign(&key.kind, &material, &input)?
                 }
             } else {
-                let pair = if key.byok.is_some() {
+                let pair = if key.byok.is_some() || key.backup_metadata.is_some() {
                     asymmetric_byok::ed25519_pair(&material)?
                 } else {
                     signature::Ed25519KeyPair::from_pkcs8(&material)
@@ -1389,7 +1447,7 @@ fn handle_crypto(
                 let (version, tag) =
                     parse_wrapped(mac.as_str().ok_or_else(|| bad("hmac must be a string"))?)?;
                 let version = key.decrypt_version(version)?;
-                let material = stored_material(&version.hmac_material)?;
+                let material = stored_material(backup::hmac_material(key, version))?;
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
                 hmac_verify(algorithm, &material, &input, &tag)?
             } else {
@@ -1406,7 +1464,14 @@ fn handle_crypto(
                 let version = key.decrypt_version(version)?;
                 if let Some(public) = version.public_key_only.as_ref() {
                     if asymmetric_byok::is_kind(&key.kind) {
-                        asymmetric::verify_public(&key.kind, &stored_material(public)?, body, algorithm, &input, &bytes)?
+                        asymmetric::verify_public(
+                            &key.kind,
+                            &stored_material(public)?,
+                            body,
+                            algorithm,
+                            &input,
+                            &bytes,
+                        )?
                     } else {
                         mldsa::verify_public(&key.kind, &stored_material(public)?, &input, &bytes)?
                     }
@@ -1417,7 +1482,7 @@ fn handle_crypto(
                     } else if mldsa::is_kind(&key.kind) {
                         mldsa::verify(&key.kind, &material, &input, &bytes)?
                     } else {
-                        let pair = if key.byok.is_some() {
+                        let pair = if key.byok.is_some() || key.backup_metadata.is_some() {
                             asymmetric_byok::ed25519_pair(&material)?
                         } else {
                             signature::Ed25519KeyPair::from_pkcs8(&material)
@@ -1758,7 +1823,9 @@ fn decrypt(
     }
     let context = symmetric::context(key, body)?;
     if key.legacy_counter_kdf && key.kind == "aes128-gcm96" {
-        return Err(openbao_compatibility_error("could not derive enc key, length not correct"));
+        return Err(openbao_compatibility_error(
+            "could not derive enc key, length not correct",
+        ));
     }
     let master = stored_material(&version.material)?;
     let material = symmetric::material_with_kdf(

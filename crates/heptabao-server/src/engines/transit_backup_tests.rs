@@ -96,6 +96,7 @@ fn wire_fixture(kind: &str, kdf: u8, derived: bool) -> TestResult<Value> {
             imported: kdf == 0,
             allow_imported_rotation: true,
             soft_deleted: false,
+            key_size: None,
         },
         archived_keys: Archived {
             keys: vec![Entry::empty(), a, b],

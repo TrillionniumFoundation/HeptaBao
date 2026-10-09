@@ -1,6 +1,8 @@
-//! Bounded OpenBao 2.7 symmetric plaintext backup wire format, measured using the compiled vendor.
+//! Bounded typed OpenBao 2.7 private backup wire format, measured using the compiled vendor.
 use super::*;
 use chrono::DateTime;
+#[path = "transit_backup_crypto.rs"]
+mod crypto;
 
 const MAX_BACKUP_BYTES: usize = 16 * 1024 * 1024;
 const MAX_VERSIONS: u64 = 10_000;
@@ -9,6 +11,8 @@ const MAX_VERSIONS: u64 = 10_000;
 #[serde(deny_unknown_fields)]
 pub(super) struct Metadata {
     pub(super) kdf: u8,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    hmac_key_size: Option<u64>,
     archive_min_version: u64,
     min_available_version: u64,
     version_template: String,
@@ -32,13 +36,13 @@ struct Entry {
     hmac_key: Option<String>,
     time: String,
     #[serde(default)]
-    ec_x: Value,
+    ec_x: Option<crypto::Decimal>,
     #[serde(default)]
-    ec_y: Value,
+    ec_y: Option<crypto::Decimal>,
     #[serde(default)]
-    ec_d: Value,
+    ec_d: Option<crypto::Decimal>,
     #[serde(default)]
-    rsa_key: Value,
+    rsa_key: Option<crypto::RsaPrivate>,
     #[serde(default)]
     rsa_public_key: Value,
     #[serde(default)]
@@ -101,6 +105,8 @@ struct Policy {
     allow_imported_rotation: bool,
     #[serde(default)]
     soft_deleted: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    key_size: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -147,6 +153,17 @@ where
 fn kind_code(kind: &str) -> Result<u8> {
     match kind {
         "aes256-gcm96" => Ok(0),
+        "ecdsa-p256" => Ok(1),
+        "ed25519" => Ok(2),
+        "rsa-2048" => Ok(3),
+        "rsa-4096" => Ok(4),
+        "ecdsa-p384" => Ok(6),
+        "ecdsa-p521" => Ok(7),
+        "rsa-3072" => Ok(9),
+        "hmac" => Ok(10),
+        "mldsa-44" => Ok(12),
+        "mldsa-65" => Ok(13),
+        "mldsa-87" => Ok(14),
         "chacha20-poly1305" => Ok(5),
         "aes128-gcm96" => Ok(8),
         "xchacha20-poly1305" => Ok(11),
@@ -160,6 +177,17 @@ fn kind_code(kind: &str) -> Result<u8> {
 fn kind_name(code: u8) -> Result<&'static str> {
     match code {
         0 => Ok("aes256-gcm96"),
+        1 => Ok("ecdsa-p256"),
+        2 => Ok("ed25519"),
+        3 => Ok("rsa-2048"),
+        4 => Ok("rsa-4096"),
+        6 => Ok("ecdsa-p384"),
+        7 => Ok("ecdsa-p521"),
+        9 => Ok("rsa-3072"),
+        10 => Ok("hmac"),
+        12 => Ok("mldsa-44"),
+        13 => Ok("mldsa-65"),
+        14 => Ok("mldsa-87"),
         5 => Ok("chacha20-poly1305"),
         8 => Ok("aes128-gcm96"),
         11 => Ok("xchacha20-poly1305"),
@@ -194,10 +222,10 @@ impl Entry {
             key: None,
             hmac_key: None,
             time: "0001-01-01T00:00:00Z".into(),
-            ec_x: Value::Null,
-            ec_y: Value::Null,
-            ec_d: Value::Null,
-            rsa_key: Value::Null,
+            ec_x: None,
+            ec_y: None,
+            ec_d: None,
+            rsa_key: None,
             rsa_public_key: Value::Null,
             public_key: String::new(),
             convergent_version: 0,
@@ -206,49 +234,18 @@ impl Entry {
             external_key_ref: String::new(),
         }
     }
-    fn from_version(version: &KeyVersion, time: String) -> Self {
-        let mut out = Self::empty();
-        out.key = Some(version.material.clone());
-        out.hmac_key = Some(version.hmac_material.clone());
-        out.creation_time = version.created_at;
-        out.time = time;
-        out
-    }
     fn empty_exact(&self) -> bool {
         self == &Self::empty()
     }
-    fn version(&self, kind: &str) -> Result<KeyVersion> {
-        if !self.ec_x.is_null()
-            || !self.ec_y.is_null()
-            || !self.ec_d.is_null()
-            || !self.rsa_key.is_null()
-            || !self.rsa_public_key.is_null()
-            || !self.certificate_chain.is_null()
-            || !self.public_key.is_empty()
-            || !self.external_key_ref.is_empty()
-            || self.convergent_version != 0
-            || time_seconds(&self.time)? != self.creation_time
-        {
-            return Err(bad("invalid symmetric backup key entry"));
-        }
-        let material = self
-            .key
-            .as_deref()
-            .ok_or_else(|| bad("backup key material is missing"))?;
-        let hmac = self
-            .hmac_key
-            .as_deref()
-            .ok_or_else(|| bad("backup HMAC material is missing"))?;
-        if material.len() > 44
-            || hmac.len() > 44
-            || stored_material(material)?.len() != symmetric::key_len(kind)
-            || stored_material(hmac)?.len() != 32
-        {
-            return Err(bad("invalid symmetric backup key material"));
-        }
+    fn version(&self, kind: &str, key_size: Option<u64>) -> Result<KeyVersion> {
+        let material = crypto::material(self, kind, key_size)?;
         Ok(KeyVersion {
-            material: material.into(),
-            hmac_material: hmac.into(),
+            material,
+            hmac_material: self
+                .hmac_key
+                .as_deref()
+                .ok_or_else(|| bad("backup HMAC missing"))?
+                .into(),
             public_key_only: None,
             created_at: self.creation_time,
             encryptions: 0,
@@ -258,6 +255,60 @@ impl Entry {
     }
 }
 
+pub(super) fn is_kind(kind: &str) -> bool {
+    kind_code(kind).is_ok()
+}
+
+pub(super) fn hmac_key_size(key: &Key) -> Option<u64> {
+    (key.kind == "hmac").then(|| {
+        key.backup_metadata
+            .as_ref()
+            .and_then(|m| m.hmac_key_size)
+            .unwrap_or(32)
+    })
+}
+pub(super) fn hmac_material<'a>(key: &Key, version: &'a KeyVersion) -> &'a str {
+    if key.kind == "hmac"
+        && key
+            .backup_metadata
+            .as_ref()
+            .is_some_and(|m| m.hmac_key_size.is_some())
+    {
+        &version.material
+    } else {
+        &version.hmac_material
+    }
+}
+pub(super) fn native_hmac_metadata(size: u64) -> Metadata {
+    Metadata {
+        kdf: 0,
+        hmac_key_size: Some(size),
+        archive_min_version: 0,
+        min_available_version: 0,
+        version_template: String::new(),
+        storage_prefix: String::new(),
+        backup_info: None,
+        restore_info: None,
+        version_times: BTreeMap::new(),
+    }
+}
+pub(super) fn generate_version(key: &Key, now: u64) -> Result<KeyVersion> {
+    let mut v = KeyVersion::generate(&key.kind, now)?;
+    if key.kind == "hmac"
+        && key
+            .backup_metadata
+            .as_ref()
+            .is_some_and(|m| m.hmac_key_size.is_some())
+    {
+        let size = hmac_key_size(key).ok_or_else(|| bad("HMAC key size missing"))?;
+        if !(32..=512).contains(&size) {
+            return Err(bad("invalid HMAC key size"));
+        }
+        v.material = BASE64.encode(random_bytes(size as usize)?.as_slice());
+    }
+    Ok(v)
+}
+
 pub(super) fn min_available_version(key: &Key) -> u64 {
     key.backup_metadata
         .as_ref()
@@ -265,6 +316,18 @@ pub(super) fn min_available_version(key: &Key) -> u64 {
 }
 
 pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
+    if key.kind == "hmac"
+        && key
+            .backup_metadata
+            .as_ref()
+            .is_some_and(|m| m.hmac_key_size.is_some())
+    {
+        if let Some(fields) = descriptor.as_object_mut() {
+            fields.remove("keys");
+            fields.remove("supports_hmac");
+            fields.insert("key_size".into(), json!(hmac_key_size(key)));
+        }
+    }
     if let Some(m) = &key.backup_metadata {
         for (name, stamp) in [
             ("backup_info", &m.backup_info),
@@ -279,7 +342,10 @@ pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
 
 fn metadata(key: &Key) -> Metadata {
     key.backup_metadata.clone().unwrap_or_else(|| Metadata {
-        kdf: u8::from(!key.legacy_counter_kdf && key.byok.is_none()),
+        kdf: u8::from(
+            symmetric::is_kind(&key.kind) && !key.legacy_counter_kdf && key.byok.is_none(),
+        ),
+        hmac_key_size: None,
         archive_min_version: 0,
         min_available_version: 0,
         version_template: String::new(),
@@ -338,7 +404,7 @@ pub(super) fn trim(key: &mut Key, body: &Value) -> Result<()> {
 
 pub(super) fn validate_key(key: &Key) -> Result<()> {
     if key.allow_plaintext_backup
-        && (!symmetric::is_kind(&key.kind)
+        && (!is_kind(&key.kind)
             || key.convergent_encryption
             || key.convergent_write_min_version != 0)
     {
@@ -360,6 +426,9 @@ pub(super) fn validate_key(key: &Key) -> Result<()> {
             || m.archive_min_version > m.min_available_version
             || m.min_available_version > key.min_decryption_version
             || key.legacy_counter_kdf != (key.derived && m.kdf == 0)
+            || (!symmetric::is_kind(&key.kind) && (key.derived || m.kdf != 0))
+            || m.hmac_key_size
+                .is_some_and(|n| key.kind != "hmac" || !(32..=512).contains(&n))
             || !m.version_template.is_empty()
             || m.storage_prefix.len() > 256
             || m.version_times.len() > MAX_VERSIONS as usize
@@ -382,17 +451,13 @@ pub(super) fn validate_key(key: &Key) -> Result<()> {
         if key.versions.is_empty() || key.versions.keys().next_back() != Some(&key.latest_version) {
             return Err(bad("invalid restored key version range"));
         }
+    }
+    if key.allow_plaintext_backup || key.backup_metadata.is_some() {
         for (n, v) in &key.versions {
-            if *n == 0
-                || *n < m.min_available_version.max(1)
-                || stored_material(&v.material)?.len() != symmetric::key_len(&key.kind)
-                || stored_material(&v.hmac_material)?.len() != 32
-                || v.public_key_only.is_some()
-                || v.external_key_ref.is_some()
-                || v.heptabao_convergent_version.is_some()
-            {
-                return Err(bad("invalid restored symmetric key material"));
+            if *n == 0 || *n < min_available_version(key).max(1) {
+                return Err(bad("invalid restored key version"));
             }
+            crypto::validate_version(key, v)?;
         }
     }
     Ok(())
@@ -446,7 +511,7 @@ impl Transit {
                 .get(n)
                 .cloned()
                 .unwrap_or_else(|| timestamp(v.created_at));
-            entries.insert(n.to_string(), Entry::from_version(v, t));
+            entries.insert(n.to_string(), crypto::from_version(key, v, t)?);
         }
         let mut archived = Vec::new();
         for n in m.archive_min_version..=key.latest_version {
@@ -491,6 +556,7 @@ impl Transit {
                 imported: byok::imported_key(key),
                 allow_imported_rotation: byok::rotation_permission(key),
                 soft_deleted: key.deleted,
+                key_size: hmac_key_size(key),
             },
             archived_keys: Archived { keys: archived },
         };
@@ -564,6 +630,12 @@ impl Transit {
             || p.latest_version > MAX_VERSIONS
             || p.archive_version != p.latest_version
             || p.kdf > 1
+            || (!symmetric::is_kind(kind) && (p.derived || p.kdf != 0))
+            || if kind == "hmac" {
+                p.key_size.is_none_or(|n| !(32..=512).contains(&n))
+            } else {
+                p.key_size.is_some()
+            }
             || p.archive_min_version > p.min_available_version
             || p.min_available_version > p.min_decryption_version
             || p.min_decryption_version == 0
@@ -613,11 +685,12 @@ impl Transit {
         let mut versions = BTreeMap::new();
         let mut times = BTreeMap::new();
         for (n, e) in entries {
-            versions.insert(n, e.version(kind)?);
+            versions.insert(n, e.version(kind, p.key_size)?);
             times.insert(n, e.time.clone());
         }
         let metadata = Metadata {
             kdf: p.kdf,
+            hmac_key_size: p.key_size,
             archive_min_version: p.archive_min_version,
             min_available_version: p.min_available_version,
             version_template: p.version_template.clone(),
@@ -678,3 +751,7 @@ impl Transit {
 #[cfg(test)]
 #[path = "transit_backup_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "transit_backup_native_tests.rs"]
+mod native_tests;
