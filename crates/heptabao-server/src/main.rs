@@ -28,14 +28,13 @@ fn run() -> Result<(), String> {
         && !matches!(arguments.as_slice(), [flag, _, ha_flag, _] if flag == "--config" && ha_flag == "--ha-config")
     {
         return Err(
-            "usage: heptabao-server --config /absolute/server.json [--ha-config /absolute/ha.json] (TLS is required)"
+            "usage: heptabao-server --config /absolute/server.json-or-hcl [--ha-config /absolute/ha.json-or-hcl] (TLS is required)"
                 .into(),
         );
     }
     let server_path = Path::new(&arguments[1]);
     let server_bytes = read_bounded_config(server_path)?;
-    let config = serde_json::from_slice(&server_bytes)
-        .map_err(|_| "invalid server configuration schema".to_owned())?;
+    let config = heptabao_server::configuration::parse_server(&server_bytes)?;
 
     if arguments.len() == 2 {
         return heptabao_server::http::serve(config);
@@ -43,8 +42,7 @@ fn run() -> Result<(), String> {
 
     let ha_path = Path::new(&arguments[3]);
     let ha_bytes = read_bounded_config(ha_path)?;
-    let ha_config = serde_json::from_slice(&ha_bytes)
-        .map_err(|_| "invalid HA configuration schema".to_owned())?;
+    let ha_config = heptabao_server::configuration::parse_ha(&ha_bytes)?;
     let ha = Arc::new(Mutex::new(heptabao_server::ha::HaProcess::start(
         ha_config,
     )?));

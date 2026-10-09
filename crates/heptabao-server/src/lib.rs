@@ -69,3 +69,6 @@ mod login_metadata;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 pub use service::SdkBackendConfig;
+
+#[path = "server_config.rs"]
+pub mod configuration;

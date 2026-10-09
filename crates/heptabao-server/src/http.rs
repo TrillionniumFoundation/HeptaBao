@@ -1324,7 +1324,7 @@ pub(crate) fn parsed_api_request_for_test(
         request.method,
         request.path,
         request.namespace,
-        Zeroizing::new(request.token),
+        request.token,
         ocsp::CarrierBody(std::mem::take(&mut request.body.0)),
     ))
 }

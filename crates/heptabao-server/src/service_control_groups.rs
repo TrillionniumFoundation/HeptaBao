@@ -3,8 +3,6 @@ use super::*;
 use crate::auth::control_groups::{
     Approval, DeferredRequest, PolicyControl, ResolvedFactor, ResourceBinding,
 };
-#[cfg(test)]
-use std::collections::BTreeSet;
 
 pub(super) struct ControlGroupResume {
     pub(super) actor: Principal,
