@@ -29,6 +29,7 @@ pub(super) struct NativeRequest {
 
 pub(super) enum NativeReply {
     Json(Response),
+    Ui(super::ui::Reply),
     HttpBadRequest,
     File(SnapshotFile),
     Redirect {
@@ -57,6 +58,7 @@ impl NativeReply {
             Self::Json(response) => {
                 write_response_with_namespace(writer, response, head, namespace)
             }
+            Self::Ui(reply) => reply.write(writer, head),
             Self::File(file) => write_file_response(writer, file, head, namespace),
             Self::Redirect { origin, target } => {
                 write!(

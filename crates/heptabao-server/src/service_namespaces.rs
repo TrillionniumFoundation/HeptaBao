@@ -983,6 +983,21 @@ impl NamespaceRegistry {
 }
 
 impl State {
+    /// UI discovery returns only relative registry names, under the caller's
+    /// existing request scope. This projection carries no namespace authority.
+    pub(super) fn ui_namespace_keys(&self, base: &str) -> BTreeSet<String> {
+        self.namespaces.entries.keys().filter_map(|path| {
+            let relative = relative_path(base, path)?;
+            if relative.is_empty()
+                || self.namespaces.deletions.as_ref().is_some_and(|ledger| ledger.is_tainted(path))
+            {
+                None
+            } else {
+                Some(format!("{relative}/"))
+            }
+        }).collect()
+    }
+
     pub(super) fn namespace_exists(&self, path: &str) -> bool {
         if path.is_empty() || self.namespaces.contains(path) {
             return true;

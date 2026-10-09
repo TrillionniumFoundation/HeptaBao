@@ -76,6 +76,8 @@ mod acl_template;
 mod acl_wrapping;
 #[path = "auth_default_policy.rs"]
 mod default_policy;
+#[path = "auth_ui_acl.rs"]
+mod ui_acl;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_lookup.rs"]
@@ -4212,6 +4214,9 @@ impl AuthState {
         let now = time.seconds();
         validate_namespace(namespace)?;
         validate_path(path, false)?;
+        if path == "sys/internal/ui/resultant-acl" {
+            return self.ui_resultant_acl(principal, namespace, method, path, body, time).map(Some);
+        }
         if path.starts_with("sys/wrapping/") {
             return self
                 .wrapping_route(principal, namespace, method, path, body, now)

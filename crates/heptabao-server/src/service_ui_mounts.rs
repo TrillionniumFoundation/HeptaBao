@@ -2,6 +2,38 @@
 use super::*;
 
 impl Service {
+    pub(super) fn ui_namespaces_route(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> Response {
+        if method != "GET" {
+            return Response::error(405, "namespace discovery requires GET");
+        }
+        if !body.as_object().is_some_and(|object| object.is_empty()) {
+            return Response::error(400, "namespace discovery does not accept parameters");
+        }
+        let Some(principal) = principal else {
+            return Response::error(403, "permission denied");
+        };
+        if let Err(error) = state.auth.ui_discovery_actor(principal, namespace, time) {
+            return Response::error(error.status, &error.message);
+        }
+        // The current credential model confines nonroot tokens to their issuing
+        // namespace. Reveal descendants only when that actor can already list
+        // the namespace registry; never use UI metadata to widen actor scope.
+        match state.auth.authorize_request_observed(
+            principal, namespace, "sys/namespaces", "list", time,
+        ) {
+            Ok(()) => Response::ok(json!({"data":{"keys":state.ui_namespace_keys(namespace)}})),
+            Err(error) if error.status == 403 => Response::ok(json!({"data":{"keys":[]}})),
+            Err(error) => Response::error(error.status, &error.message),
+        }
+    }
+
     pub(super) fn listed_mount_catalog(
         state: &State,
         principal: Option<&Principal>,

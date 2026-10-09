@@ -38,6 +38,8 @@ pub(crate) mod ocsp;
 pub(crate) mod pki_role_fields;
 #[path = "http_snapshot.rs"]
 mod snapshot;
+#[path = "http_ui.rs"]
+mod ui;
 #[path = "http_token_fields.rs"]
 pub(crate) mod token_fields;
 
@@ -63,6 +65,16 @@ fn default_disable_unauthed_rekey_endpoints() -> bool {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
+    /// Serve a deployment-owned build of the official UI. The complete asset
+    /// table is pinned and loaded before opening the listener.
+    #[serde(default)]
+    pub ui: bool,
+    #[serde(default)]
+    pub ui_assets_dir: Option<PathBuf>,
+    #[serde(default)]
+    pub ui_assets_manifest: Option<PathBuf>,
+    #[serde(default)]
+    pub ui_assets_manifest_sha256: Option<String>,
     /// Listener-only opt-in for deprecated unauthenticated recovery rekey.
     /// Root-key legacy rekey still requires its separate root-key consumer.
     #[serde(default = "default_disable_unauthed_rekey_endpoints")]
@@ -298,6 +310,7 @@ fn serve_inner(
     } else {
         None
     };
+    let ui_assets = ui::Assets::configured(&config)?;
     let consistency_settings = consistency::Settings::checked(
         config.consistency_max_index_wait.as_deref(),
         config.consistency_fallback_behavior.as_deref(),
@@ -649,6 +662,7 @@ fn serve_inner(
         let request_service = Arc::clone(&service);
         let rate_limiter = Arc::clone(&limiter);
         let tls = Arc::clone(&tls);
+        let request_ui_assets = ui_assets.clone();
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
             .spawn(move || {
@@ -668,6 +682,7 @@ fn serve_inner(
                     rate_limiter,
                     peer,
                     consistency_settings,
+                    request_ui_assets.clone(),
                     rate_limited,
                 ) else {
                     return;
@@ -702,7 +717,7 @@ fn serve_inner(
                     .sock
                     .deadline
                     .saturating_duration_since(Instant::now());
-                let parsed = read_request_mode(&mut stream, read_budget, true);
+                let parsed = read_request_with_ui(&mut stream, read_budget, true, request_ui_assets.is_some());
                 stream.sock.deadline = deadline;
                 let client_certificates = stream.conn.peer_certificates().map(|certificates| {
                     certificates
@@ -712,6 +727,7 @@ fn serve_inner(
                 });
                 let (reply, head, namespace) = process_parsed_request(
                     &service,
+                    request_ui_assets.as_deref(),
                     parsed,
                     &mut stream,
                     client_certificates,
@@ -745,7 +761,8 @@ fn serve_inner(
 #[allow(clippy::too_many_arguments)]
 fn process_parsed_request(
     service: &Arc<Mutex<Service>>,
-    parsed: Result<Request, ParseError>,
+    ui_assets: Option<&ui::Assets>,
+    parsed: Result<ParsedRequest, ParseError>,
     source: &mut impl Read,
     client_certificates: Option<Vec<Vec<u8>>>,
     peer: IpAddr,
@@ -754,7 +771,15 @@ fn process_parsed_request(
     deadline: Instant,
 ) -> (snapshot::NativeReply, bool, String) {
     match parsed {
-        Ok(mut request) => {
+        Ok(ParsedRequest::Ui(request)) => {
+            let head = request.head;
+            let reply = match ui_assets {
+                Some(assets) => snapshot::NativeReply::Ui(assets.reply(&request)),
+                None => snapshot::NativeReply::Json(Response::error(404, "UI is disabled")),
+            };
+            (reply, head, String::new())
+        }
+        Ok(ParsedRequest::Api(mut request)) => {
             let _raw_reply_ingress = crate::auth::IngressReplyScope::listener_wrapping(
                 attempt_id,
                 request.lexical_wrapping_body.take(),
@@ -1142,6 +1167,10 @@ impl Drop for SecretJson {
         crate::service::erase_json(&mut self.0);
     }
 }
+enum ParsedRequest {
+    Api(Request),
+    Ui(ui::Request),
+}
 struct Request {
     lexical_wrapping_body: Option<crate::auth::LexicalJson>,
     consistency: consistency::Headers,
@@ -1251,11 +1280,24 @@ fn discard_rejected_consistency_body(
     }
 }
 
+#[cfg(test)]
 fn read_request_mode(
     reader: &mut impl Read,
     timeout: Duration,
     native_wire: bool,
 ) -> Result<Request, ParseError> {
+    match read_request_with_ui(reader, timeout, native_wire, false)? {
+        ParsedRequest::Api(request) => Ok(request),
+        ParsedRequest::Ui(_) => Err(bad("request must use /v1/ API")),
+    }
+}
+
+fn read_request_with_ui(
+    reader: &mut impl Read,
+    timeout: Duration,
+    native_wire: bool,
+    ui_enabled: bool,
+) -> Result<ParsedRequest, ParseError> {
     let start = Instant::now();
     let mut bytes = Zeroizing::new(Vec::new());
     let mut buffer = Zeroizing::new([0; 4096]);
@@ -1291,17 +1333,19 @@ fn read_request_mode(
     }
     let method = parts[0].to_owned();
     let target = Zeroizing::new(parts[1].to_owned());
-    if target.len() > 8192 || !target.starts_with("/v1/") {
+    let ui_target = ui_enabled && ui::selected(&target);
+    if target.len() > 8192 || (!target.starts_with("/v1/") && !ui_target) {
         return Err(bad("request must use /v1/ API"));
     }
-    if !valid_uri_path_escapes(target[4..].split('?').next().unwrap_or_default()) {
+    let api_target = target.strip_prefix("/v1/").unwrap_or("");
+    if !valid_uri_path_escapes(api_target.split('?').next().unwrap_or_default()) {
         return Err(outer_bad("invalid URI path escape"));
     }
-    let leader_route = target[4..].split('?').next() == Some("sys/leader");
+    let leader_route = api_target.split('?').next() == Some("sys/leader");
     if !matches!(
         method.as_str(),
         "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD" | "HELP"
-    ) && !(leader_route && leader::valid_method(&method))
+    ) && !(leader_route && leader::valid_method(&method)) && !ui_target
     {
         return Err(bad("unsupported HTTP method or version"));
     }
@@ -1345,7 +1389,7 @@ fn read_request_mode(
             // read a native snapshot upload before its own admission boundary.
             let native_upload = native_wire
                 && matches!(
-                    target[4..].split('?').next(),
+                    api_target.split('?').next(),
                     Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
                 );
             if !native_upload {
@@ -1362,6 +1406,24 @@ fn read_request_mode(
     };
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
+    }
+    if ui_target {
+        // Static resources retain the same bounded header grammar, duplicate
+        // header and Host admission. They have no logical JSON body, token
+        // authority, response wrapping, or consistency-index operation.
+        if map.contains_key("transfer-encoding") || map.contains_key("expect") {
+            return Err(bad("UI resources do not accept transfer or Expect framing"));
+        }
+        let length = match map.get("content-length") {
+            Some(value) if !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit()) =>
+                value.parse::<usize>().map_err(|_| bad("invalid content length"))?,
+            None => 0,
+            _ => return Err(bad("invalid content length")),
+        };
+        if length != 0 || bytes.len() != header_end {
+            return Err(bad("UI resources do not accept a body or pipelining"));
+        }
+        return ui::request(&method, &target).map(ParsedRequest::Ui);
     }
     let route = target[4..].split('?').next().unwrap_or_default();
     if !leader_route
@@ -1540,7 +1602,7 @@ fn read_request_mode(
         {
             return Err(bad("ambiguous encoded paths are not supported"));
         }
-        return Ok(Request {
+        return Ok(ParsedRequest::Api(Request {
             lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
@@ -1551,7 +1613,7 @@ fn read_request_mode(
             body: SecretJson(body),
             wrap_ttl_seconds,
             client_certificates: None,
-        });
+        }));
     }
     // Public UI preflight has no PATCH operation. Its JSON media boundary is
     // still evaluated before dispatch, after ordinary framing/size fences.
@@ -1576,7 +1638,7 @@ fn read_request_mode(
     }
     if leader_route {
         leader::validate_selectors(&method, &target)?;
-        return Ok(Request {
+        return Ok(ParsedRequest::Api(Request {
             lexical_wrapping_body: None,
             consistency,
             native_snapshot: None,
@@ -1587,7 +1649,7 @@ fn read_request_mode(
             body: SecretJson(json!({})),
             wrap_ttl_seconds: None,
             client_certificates: None,
-        });
+        }));
     }
     // OpenBao reads fields for these operations from the query string only.
     // Still consume and bound the complete body above so ignored bytes cannot
@@ -1766,7 +1828,7 @@ fn read_request_mode(
             .bind_transport_fields(&body.0)
             .map_err(|_| bad("invalid lexical transport body"))?;
     }
-    Ok(Request {
+    Ok(ParsedRequest::Api(Request {
         lexical_wrapping_body,
         consistency,
         native_snapshot,
@@ -1777,7 +1839,7 @@ fn read_request_mode(
         body,
         wrap_ttl_seconds,
         client_certificates: None,
-    })
+    }))
 }
 
 fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {

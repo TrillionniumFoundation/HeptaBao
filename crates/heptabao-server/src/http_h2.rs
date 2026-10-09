@@ -18,6 +18,7 @@ pub(super) fn negotiate(
     limiter: Arc<Mutex<RateLimiter>>,
     peer: IpAddr,
     consistency: consistency::Settings,
+    ui_assets: Option<Arc<ui::Assets>>,
     first_rate_limited: bool,
 ) -> Option<StreamOwned<ServerConnection, DeadlineStream>> {
     stream.set_nonblocking(true).ok()?;
@@ -57,6 +58,7 @@ pub(super) fn negotiate(
         limiter,
         peer,
         consistency,
+        ui_assets,
         certificates,
     });
     runtime.block_on(async {
@@ -73,6 +75,7 @@ struct Context {
     limiter: Arc<Mutex<RateLimiter>>,
     peer: IpAddr,
     consistency: consistency::Settings,
+    ui_assets: Option<Arc<ui::Assets>>,
     certificates: Option<Vec<Vec<u8>>>,
 }
 
@@ -221,14 +224,16 @@ async fn exchange(
         let mut source = io::Cursor::new(wire);
         let parsed = match rejection {
             Some(error) => Err(error),
-            None => read_request_mode(
+            None => read_request_with_ui(
                 &mut source,
                 deadline.saturating_duration_since(Instant::now()),
                 true,
+                context.ui_assets.is_some(),
             ),
         };
         process_parsed_request(
             &context.service,
+            context.ui_assets.as_deref(),
             parsed,
             &mut source,
             context.certificates.clone(),

@@ -4748,6 +4748,9 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
+        if path == "sys/internal/ui/namespaces" {
+            return Self::ui_namespaces_route(state, principal, namespace, method, body, time);
+        }
         if path == "sys/remount" {
             if !matches!(method, "POST" | "PUT") {
                 return Response::error(405, "remount requires POST or PUT");
@@ -9955,6 +9958,9 @@ mod kv_versioning_tests;
 #[cfg(test)]
 #[path = "service_ui_mounts_tests.rs"]
 mod ui_mounts_tests;
+#[cfg(test)]
+#[path = "service_ui_bootstrap_tests.rs"]
+mod ui_bootstrap_tests;
 
 #[cfg(test)]
 #[path = "service_transit_byok_tests.rs"]
