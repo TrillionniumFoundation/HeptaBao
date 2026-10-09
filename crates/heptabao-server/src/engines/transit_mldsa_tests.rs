@@ -998,7 +998,8 @@ where
                     "PRIVATE KEY"
                 };
                 assert!(text.starts_with(&format!("-----BEGIN {label}-----\n")));
-                assert!(text.ends_with(&format!("-----END {label}-----\n")));
+                assert!(text.ends_with(&format!("-----END {label}-----")));
+                assert!(!text.ends_with('\n'));
                 let encoded: String = text
                     .lines()
                     .filter(|line| !line.starts_with("-----"))

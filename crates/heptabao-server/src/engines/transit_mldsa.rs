@@ -179,7 +179,7 @@ where
         );
         pem.push('\n');
     }
-    pem.push_str(&format!("-----END {label}-----\n"));
+    pem.push_str(&format!("-----END {label}-----"));
     Ok(pem)
 }
 
@@ -303,6 +303,6 @@ pub(super) fn export_public(kind: &str, der: &[u8], format: &str) -> Result<Zero
         );
         pem.push('\n');
     }
-    pem.push_str("-----END PUBLIC KEY-----\n");
+    pem.push_str("-----END PUBLIC KEY-----");
     Ok(pem)
 }
