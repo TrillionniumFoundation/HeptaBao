@@ -23,6 +23,17 @@ class Client:
 
 
 class WrappingSelfRevokeTests(unittest.TestCase):
+    def setUp(self):
+        # Model entry still passes the unchanged closed canonical profile gate.
+        work = tempfile.TemporaryDirectory(prefix="qa-unit-owned-")
+        self.addCleanup(work.cleanup)
+        environment = patch.dict(core_isolation.owned_process.os.environ, {
+            "HB_QA_PROFILE_NAME": "wrapping_revoke_self_live",
+            "HB_QA_PROCESS_WORK_ROOT": work.name,
+        })
+        environment.start()
+        self.addCleanup(environment.stop)
+
     def tearDown(self):
         wrapping._RESTART_STATE.clear()
 
@@ -76,7 +87,7 @@ class WrappingSelfRevokeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             argv = ["wrapping270", "--binary", sys.executable, "--output", directory + "/report.json",
                     "--oracle-version", "2.6.2"]
-            with patch.object(sys, "argv", argv), patch.object(core_isolation.tempfile, "mkdtemp") as allocate:
+            with patch.object(sys, "argv", argv), patch.object(core_isolation, "_allocate_private_fixture_root") as allocate:
                 with self.assertRaises(SystemExit) as error:
                     wrapping.main()
                 self.assertEqual(error.exception.code, 2)
@@ -86,7 +97,7 @@ class WrappingSelfRevokeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             Path(directory).chmod(0o700)
             argv = ["wrapping270", "--binary", sys.executable, "--output", directory + "/report.json"]
-            with patch.object(sys, "argv", argv), patch.object(core_isolation.tempfile, "mkdtemp",
+            with patch.object(sys, "argv", argv), patch.object(core_isolation, "_allocate_private_fixture_root",
                     side_effect=RuntimeError("correct-version-admitted")):
                 with self.assertRaisesRegex(RuntimeError, "correct-version-admitted"):
                     wrapping.main()

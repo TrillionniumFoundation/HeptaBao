@@ -206,6 +206,11 @@ def select_scenario_runner(default_runner, version, versioned_runners=None):
     return versioned_runners.get(version, default_runner)
 
 
+def _allocate_private_fixture_root():
+    """Allocate the business fixture separately from the original Owner root."""
+    return Path(tempfile.mkdtemp(prefix="heptabao-core-isolation-"))
+
+
 @owned_process.profile_main
 def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
          oracle_scenario_runner=None, oracle_restart_runner=None,
@@ -249,7 +254,7 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
     output_dir = output.parent.stat()
     if output_dir.st_uid != os.geteuid() or output_dir.st_mode & 0o077:
         parser.error("output directory must be owned by the caller with mode 0700")
-    private_root = Path(tempfile.mkdtemp(prefix="heptabao-core-isolation-"))
+    private_root = _allocate_private_fixture_root()
     private_root.chmod(0o700)
     spec = importlib.util.spec_from_file_location("core_smoke", ROOT / "qa/single-node/smoke.py")
     smoke = importlib.util.module_from_spec(spec)

@@ -21,6 +21,10 @@ import sys
 import tempfile
 import time
 
+# The stdlib type is stable even when a fixture replaces the Popen factory.
+# The standalone compatibility branch still grants no owned-process receipt.
+_POPEN_TYPE = subprocess.Popen
+
 _CURRENT = None
 FIELDS = ("dev", "ino", "mode", "uid", "nlink", "size", "mtime_ns", "ctime_ns")
 PROFILE_SECONDS = 360
@@ -123,7 +127,7 @@ def _gate_main():
         os._exit(71)
 
 
-class _OwnedPopen(subprocess.Popen):
+class _OwnedPopen(_POPEN_TYPE):
     def __init__(self, owner, arguments, *, label, kind, action, stop_timeout, **kwargs):
         self.owner = owner
         self.row = {"label": label, "kind": kind, "declared_stop_action": action,
@@ -241,7 +245,7 @@ class _OwnedPopen(subprocess.Popen):
         # bypassing only a failed/injected wrapper, never replacing its PID.
         if self._done:
             return self.returncode
-        value = subprocess.Popen.wait(self)
+        value = _POPEN_TYPE.wait(self)
         self._done = True
         self.row["completed_original_wait_count"] += 1
         self.row["exit_code"] = value
@@ -343,7 +347,7 @@ class Owner:
             # Never signal a guessed group or a foreign/reused PID.
             child.row["fallback"] = True
             self.failed = True
-            subprocess.Popen.send_signal(child, signum)
+            _POPEN_TYPE.send_signal(child, signum)
             row["authority"] = "original_Popen_failure_cleanup"
         row["sent"] = True
 
@@ -538,7 +542,7 @@ def popen(arguments, *, label, kind="server", action="TERM", stop_timeout=5, **k
 
 
 def wait(child, timeout=None):
-    if _CURRENT is None and isinstance(child, subprocess.Popen) and not isinstance(child, _OwnedPopen):
+    if _CURRENT is None and isinstance(child, _POPEN_TYPE) and not isinstance(child, _OwnedPopen):
         return child.wait(timeout=timeout)
     if not isinstance(child, _OwnedPopen) or child.owner is not _CURRENT:
         raise OwnedFailure("owned_foreign_wait")
@@ -549,7 +553,7 @@ def stop(child, *, action=None, timeout=None, expected_codes=None):
     if child is None:
         return None
     if _CURRENT is None:
-        if not isinstance(child, subprocess.Popen) or isinstance(child, _OwnedPopen):
+        if not isinstance(child, _POPEN_TYPE) or isinstance(child, _OwnedPopen):
             raise OwnedFailure("owned_foreign_standalone_handle")
         # This compatibility branch is deliberately unqualified: no Owner,
         # private admission or kernel-birth claim. Even an already exited

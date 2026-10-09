@@ -22,6 +22,17 @@ class FailingClient:
 
 
 class CoreIsolationHarnessTests(unittest.TestCase):
+    def setUp(self):
+        # Model entry still passes the unchanged closed canonical profile gate.
+        work = tempfile.TemporaryDirectory(prefix="qa-unit-owned-")
+        self.addCleanup(work.cleanup)
+        environment = patch.dict(core_isolation.owned_process.os.environ, {
+            "HB_QA_PROFILE_NAME": "core_isolation",
+            "HB_QA_PROCESS_WORK_ROOT": work.name,
+        })
+        environment.start()
+        self.addCleanup(environment.stop)
+
     def test_failure_records_only_fixed_case_and_status(self):
         observations = []
         with self.assertRaisesRegex(core_isolation.ScenarioFailure, "^token.alice$"):
@@ -42,7 +53,7 @@ class CoreIsolationHarnessTests(unittest.TestCase):
             parent = Path(directory)
             parent.chmod(0o755)
             argv = ['compare', '--binary', sys.executable, '--output', str(parent / 'report.json')]
-            with patch.object(sys, 'argv', argv), patch.object(core_isolation.tempfile, 'mkdtemp') as allocate:
+            with patch.object(sys, 'argv', argv), patch.object(core_isolation, '_allocate_private_fixture_root') as allocate:
                 with self.assertRaises(SystemExit) as raised:
                     core_isolation.main()
                 self.assertEqual(raised.exception.code, 2)
@@ -54,7 +65,7 @@ class CoreIsolationHarnessTests(unittest.TestCase):
             parent = Path(directory)
             parent.chmod(0o700)
             argv = ['compare', '--binary', sys.executable, '--output', str(parent / 'report.json')]
-            with patch.object(sys, 'argv', argv), patch.object(core_isolation.tempfile, 'mkdtemp',
+            with patch.object(sys, 'argv', argv), patch.object(core_isolation, '_allocate_private_fixture_root',
                     side_effect=RuntimeError('fixture-allocation-reached')) as allocate:
                 with self.assertRaisesRegex(RuntimeError, '^fixture-allocation-reached$'):
                     core_isolation.main()
@@ -62,7 +73,7 @@ class CoreIsolationHarnessTests(unittest.TestCase):
             self.assertFalse((parent / 'report.json').exists())
 
     def test_invalid_side_contract_configuration_is_rejected_before_fixture(self):
-        with patch.object(core_isolation.tempfile, "mkdtemp") as allocate:
+        with patch.object(core_isolation, "_allocate_private_fixture_root") as allocate:
             with self.assertRaisesRegex(ValueError, "oracle scenario runner"):
                 core_isolation.main(oracle_scenario_runner=object())
             with self.assertRaisesRegex(ValueError, "oracle restart runner requires"):
@@ -114,6 +125,17 @@ class CoreIsolationHarnessTests(unittest.TestCase):
 
 
 class TransportDiagnosticReportTests(unittest.TestCase):
+    def setUp(self):
+        # Model entry still passes the unchanged closed canonical profile gate.
+        work = tempfile.TemporaryDirectory(prefix="qa-unit-owned-")
+        self.addCleanup(work.cleanup)
+        environment = patch.dict(core_isolation.owned_process.os.environ, {
+            "HB_QA_PROFILE_NAME": "core_isolation",
+            "HB_QA_PROCESS_WORK_ROOT": work.name,
+        })
+        environment.start()
+        self.addCleanup(environment.stop)
+
     def test_startup_exception_preserves_closed_diagnostic_in_report_and_stdout(self):
         sentinel = "synthetic-private-peer-startup"
         class FailedInstance:

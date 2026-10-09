@@ -11,6 +11,17 @@ import core_isolation
 import transit_mldsa_live as profile
 
 class MldsaProfileTests(unittest.TestCase):
+    def setUp(self):
+        # Model entry still passes the unchanged closed canonical profile gate.
+        work = tempfile.TemporaryDirectory(prefix="qa-unit-owned-")
+        self.addCleanup(work.cleanup)
+        environment = patch.dict(core_isolation.owned_process.os.environ, {
+            "HB_QA_PROFILE_NAME": "transit_mldsa_live",
+            "HB_QA_PROCESS_WORK_ROOT": work.name,
+        })
+        environment.start()
+        self.addCleanup(environment.stop)
+
     def tearDown(self):
         profile._CONTEXT.clear()
 
@@ -73,7 +84,7 @@ class MldsaProfileTests(unittest.TestCase):
     def test_old_oracle_rejected_before_allocation(self):
         with tempfile.TemporaryDirectory() as root:
             args=["mldsa270","--binary",sys.executable,"--output",root+"/report.json","--oracle-version","2.6.2"]
-            with patch.object(sys,"argv",args), patch.object(core_isolation.tempfile,"mkdtemp") as allocate:
+            with patch.object(sys,"argv",args), patch.object(core_isolation,"_allocate_private_fixture_root") as allocate:
                 with self.assertRaises(SystemExit) as result:
                     profile.main()
                 self.assertEqual(result.exception.code,2)

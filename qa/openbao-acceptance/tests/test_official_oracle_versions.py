@@ -20,8 +20,11 @@ import official_openbao_launcher as launcher
 from bao_http import BaoError, Response
 
 
-class FixtureProcess:
+class FixtureProcess(launcher.owned_process._POPEN_TYPE):
     def __init__(self, *args, **kwargs):
+        # Synthetic standalone fixture: it never created a kernel child.
+        self._child_created = False
+        self.returncode = None
         self.running = True
     def poll(self):
         return None if self.running else 0

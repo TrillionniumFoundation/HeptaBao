@@ -18,7 +18,7 @@ import tempfile
 import types
 import unittest
 import urllib.error
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 QA = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(QA))
@@ -252,7 +252,9 @@ class BudgetContracts(unittest.TestCase):
                     patch.object(profile.launcher, "verify_inputs", return_value=Path("synthetic-pinned-placeholder")), \
                     patch.object(profile.launcher, "certificates"), patch.object(profile.launcher.subprocess, "Popen") as process, \
                     patch.object(profile.TransportClient, "__init__", initialize), patch.object(profile.launcher, "Client", profile.Client):
+                process.return_value = Mock(spec=profile.launcher.owned_process._POPEN_TYPE)
                 process.return_value.poll.return_value = None
+                process.return_value.wait.return_value = 0
                 oracle = profile.launcher.start_oracle(32123, version="2.7.0")
                 profile.launcher.stop_oracle(oracle)
             self.assertEqual(constructed, [2, 2])

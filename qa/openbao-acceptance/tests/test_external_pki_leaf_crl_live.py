@@ -37,7 +37,9 @@ class ExternalPkiLeafCrlContractTests(unittest.TestCase):
                 if attempts==1:self.wrapped_transport_error(urllib.error.URLError(ConnectionRefusedError()))
                 return response
             with patch.object(MODULE,"Client") as client,patch.object(SMOKE.subprocess,"Popen") as spawn,patch.object(SMOKE.time,"sleep") as sleep:
+                spawn.return_value=Mock(spec=SMOKE.owned_process._POPEN_TYPE)
                 spawn.return_value.poll.return_value=None
+                spawn.return_value.wait.return_value=-9
                 client.return_value.request.side_effect=request
                 try:native.start()
                 finally:native.stop()
@@ -50,7 +52,9 @@ class ExternalPkiLeafCrlContractTests(unittest.TestCase):
             with self.subTest(cause_type=type(cause).__name__),tempfile.TemporaryDirectory() as directory:
                 native=self.readiness_instance(Path(directory))
                 with patch.object(MODULE,"Client") as client,patch.object(SMOKE.subprocess,"Popen") as spawn,patch.object(SMOKE.time,"sleep") as sleep:
+                    spawn.return_value=Mock(spec=SMOKE.owned_process._POPEN_TYPE)
                     spawn.return_value.poll.return_value=None
+                    spawn.return_value.wait.return_value=-9
                     client.return_value.request.side_effect=lambda *args,**kwargs:self.wrapped_transport_error(cause)
                     try:
                         with self.assertRaisesRegex(RuntimeError,"TLS certificate verification failed"):
