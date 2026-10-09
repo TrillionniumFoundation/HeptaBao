@@ -867,7 +867,11 @@ impl Transit {
             ));
         }
         if format == "raw" && asymmetric_key {
-            return Err(bad("raw export is unsupported for this key type"));
+            let algorithm = if asymmetric::is_rsa(&key.kind) { "rsa" } else { "ec" };
+            return Err(error(
+                500,
+                &format!("unknown key format for {algorithm} key; supported values are ``, `der`, or `pem`"),
+            ));
         }
         if !key.exportable && !public_export {
             return Err(error(403, "key is not exportable"));

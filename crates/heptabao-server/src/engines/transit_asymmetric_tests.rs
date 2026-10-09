@@ -329,9 +329,12 @@ fn asymmetric270_explicit_standard_formats_use_real_private_key_info_and_spki() 
                 (public, private)
             } else {
                 assert!(public.starts_with("-----BEGIN PUBLIC KEY-----\n"));
-                assert!(public.ends_with("-----END PUBLIC KEY-----\n"));
+                let terminal = if asymmetric::is_rsa(kind) { "\n" } else { "" };
+                assert!(public.ends_with(&format!("-----END PUBLIC KEY-----{terminal}")));
                 assert!(private.starts_with("-----BEGIN PRIVATE KEY-----\n"));
-                assert!(private.ends_with("-----END PRIVATE KEY-----\n"));
+                assert!(private.ends_with(&format!("-----END PRIVATE KEY-----{terminal}")));
+                assert_eq!(public.ends_with('\n'), asymmetric::is_rsa(kind));
+                assert_eq!(private.ends_with('\n'), asymmetric::is_rsa(kind));
                 (
                     PKey::public_key_from_pem(public.as_bytes())?,
                     PKey::private_key_from_pem(private.as_bytes())?,
@@ -466,7 +469,7 @@ fn asymmetric270_standard_export_and_ed25519_raw_enforce_permission_and_versions
                         &json!({"format":"raw"}),
                         100,
                     ),
-                    Err(EngineError { status: 400, .. })
+                    Err(EngineError { status: 500, .. })
                 ));
             }
         }

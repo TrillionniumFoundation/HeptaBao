@@ -144,7 +144,11 @@ pub(super) fn export_standard(
         Ok(Zeroizing::new(BASE64.encode(bytes.as_slice())))
     } else {
         std::str::from_utf8(bytes.as_slice())
-            .map(|pem| Zeroizing::new(pem.to_owned()))
+            .map(|pem| {
+                // Official 2.7.0 RSA PEM retains LF; EC and Ed25519 omit it.
+                let pem = if is_rsa(kind) { pem } else { pem.strip_suffix('\n').unwrap_or(pem) };
+                Zeroizing::new(pem.to_owned())
+            })
             .map_err(|_| error(500, "asymmetric PEM encoding failed"))
     }
 }
