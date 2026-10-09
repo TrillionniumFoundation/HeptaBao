@@ -132,7 +132,11 @@ impl AuthState {
             })
     }
     pub(crate) fn sdk_auth_retirement_namespace_pending(&self, namespace: &str) -> bool {
-        self.sdk_namespace_custody_pending(namespace)
+        // Closing a namespace moves credential records into custody too.
+        // Only genuine Auth-retirement jobs own this mutually exclusive lane.
+        self.custody_retirement_jobs()
+            .iter()
+            .any(|job| !job.completed() && job.binding.namespace == namespace)
             || self.sdk_auth_retirements.as_ref().is_some_and(|registry| {
                 registry
                     .jobs
