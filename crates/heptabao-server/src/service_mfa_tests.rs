@@ -572,7 +572,10 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
         .status,
         204
     );
-    let request = mfa_challenge(&mut service, 114, 500_000_000)?;
+    let first_attempt_clock = RequestClock::anchored(
+        Duration::new(114, 500_000_000), Instant::now(),
+    ).map_err(|_| "original first attempt clock")?;
+    let request = mfa_challenge_clock(&mut service, first_attempt_clock)?;
     let first_code = Zeroizing::new(
         crate::engines::rfc6238_code(&second_secret, "SHA1", 6, 11).map_err(|_| "native TOTP")?,
     );
@@ -581,20 +584,22 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     } else {
         "000000"
     };
-    for seconds in [114, 115] {
-        assert_eq!(
-            precise_call(
-                &mut service,
-                "POST",
-                "sys/mfa/validate",
-                "",
-                json!({"mfa_request_id":request,"mfa_payload":{second.clone():[wrong]}}),
-                seconds,
-                500_000_000
-            )
-            .status,
-            403
+    // Reuse the challenge's captured clock for its first same-window
+    // validation: reanchoring at 114.5s would regress elapsed nanoseconds.
+    for (seconds, clock) in [
+        (114, first_attempt_clock),
+        (115, RequestClock::anchored(Duration::new(115, 500_000_000), Instant::now())
+            .map_err(|_| "second numeric attempt clock")?),
+    ] {
+        let denied = precise_call_clock(
+            &mut service,
+            "POST",
+            "sys/mfa/validate",
+            "",
+            json!({"mfa_request_id":request,"mfa_payload":{second.clone():[wrong]}}),
+            clock,
         );
+        assert_eq!(denied.status, 403, "numeric attempt at {seconds} returned {:?}", denied.body["errors"]);
     }
     drop(service);
     let mut reopened = files.service()?;
