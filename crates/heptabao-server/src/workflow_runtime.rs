@@ -45,8 +45,11 @@ impl Value {
     }
     pub(crate) fn from_response_json(value:&Json) -> Self {
         match value {
-            Json::Number(value) => value.as_f64().filter(|value| value.is_finite()).map(Self::float)
-                .unwrap_or_else(||Self::from_json(&Json::Number(value.clone()))),
+            // Provider JSON is already a typed, lossless boundary. Rounding
+            // it to float64 here corrupts large integers and exact decimals
+            // when a workflow forwards or exposes a response. Floats created
+            // by evaluated expressions still use the explicit Float variant.
+            Json::Number(_) => Self::from_json(value),
             Json::Array(values)=>Self::array(values.iter().map(Self::from_response_json).collect()),
             Json::Object(values)=>{
                 let mut result=Self::object();
@@ -258,5 +261,27 @@ impl FailedOutput {
         logical == &Self::logical()
             && serde_json::to_vec(logical).is_ok_and(|bytes| crate::crypto::digest(&bytes) == self.logical_digest)
             && self.value.has_nonfinite()
+    }
+}
+
+
+#[cfg(test)]
+mod lossless_response_tests {
+    use super::*;
+
+    #[test]
+    fn workflow_response_keeps_exact_json_numbers_and_public_marker_objects() {
+        let original = heptabao_domain::json::decode(
+            br#"{"big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"nested":[{"big":184467440737095516160001}],"fake":{"$serde_json::private::Number":"7"}}"#
+        ).expect("lossless source JSON");
+        let carried = Value::from_response_json(&original);
+        assert_eq!(carried.to_json().expect("response JSON"), original);
+        assert!(carried.to_json().expect("response JSON")["fake"].is_object());
+
+        // Runtime computations, unlike pass-through JSON, retain a distinct
+        // float variant and must not turn NaN/Infinity into public null.
+        assert_eq!(Value::float(1.5).to_json().expect("finite float"), Json::from(1.5));
+        assert!(Value::float(f64::NAN).to_json().is_err());
+        assert!(Value::float(f64::INFINITY).to_json().is_err());
     }
 }
