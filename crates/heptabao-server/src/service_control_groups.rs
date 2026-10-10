@@ -484,11 +484,20 @@ impl Service {
                     // failed resume keeps the deferred owner reviewable.
                     match state.auth.control_group_actor(owner,time) {
                         Err(error) => Some(auth_error(error)),
-                        Ok(actor) => {
+                        Ok(mut actor) => {
                             if owner.logical_data.is_some() {
                                 if let Err(error) = Self::validate_control_group_scope(state,owner)
-                                    .and_then(|_| workflows::input::live(state,&owner.namespace,owner.logical_data.as_ref()))
-                                    .and_then(|_| workflows::input::authorize_owner_input(state,&actor,owner,time)) {
+                                    .and_then(|_| workflows::input::live(state,&owner.namespace,owner.logical_data.as_ref())) {
+                                    return Some(error);
+                                }
+                                // Preflight must use the same identity-bound authority
+                                // as the later consuming resume. A raw recovered Principal
+                                // has not yet acquired its live identity policy projection.
+                                actor.bind_request_wrapping_ttl(owner.wrap_ttl_seconds);
+                                if let Err(error) = Self::bind_identity_principal(state,&mut actor,&owner.namespace) {
+                                    return Some(error);
+                                }
+                                if let Err(error) = workflows::input::authorize_owner_input(state,&actor,owner,time) {
                                     return Some(error);
                                 }
                             }
