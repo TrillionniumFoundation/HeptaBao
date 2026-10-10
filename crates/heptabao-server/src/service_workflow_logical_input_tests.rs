@@ -482,7 +482,23 @@ fn workflow131_query_and_headers_are_sealed_deferred_reopened_and_dispatched_onc
         json!({}),
         100,
     );
-    assert_eq!(executed.status, 200);
+    // Reveal only a fixed static error category; never log the response body.
+    let error_category = executed.body.get("errors")
+        .and_then(Value::as_array).and_then(|errors| errors.first())
+        .and_then(Value::as_str).map(|error| {
+            if error.contains("control group policy has changed") { "control group policy" }
+            else if error.contains("control group factors have changed") { "control group factors" }
+            else if error.contains("control group operation ownership has changed") { "operation ownership" }
+            else if error.contains("control group sudo ownership has changed") { "sudo ownership" }
+            else if error.contains("workflow input definition ownership changed") { "workflow definition" }
+            else if error.contains("request authority clock is already bound") { "clock already bound" }
+            else if error.contains("control group authorization is not complete") { "approval incomplete" }
+            else if error.contains("control group request is unavailable") { "request unavailable" }
+            else if error.contains("namespace") { "namespace error" }
+            else if error.contains("permission denied") { "permission denied" }
+            else { "unclassified static error" }
+        });
+    assert_eq!(executed.status, 200, "fixed error category: {error_category:?}");
     assert_eq!(executed.body["data"]["value"], "after");
     assert_eq!(
         executed.body["data"]["headers"],
