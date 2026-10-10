@@ -110,6 +110,15 @@ impl Service {
 pub(crate) struct MfaJanitorWorker {
     stop: mpsc::Sender<()>,
     join: Option<JoinHandle<()>>,
+    #[cfg(test)]
+    retirements: Arc<std::sync::atomic::AtomicU64>,
+}
+#[cfg(test)]
+impl MfaJanitorWorker {
+    // Numeric evidence of this same thread's successful real commit only.
+    pub(in crate::service) fn successful_retirements(&self) -> u64 {
+        self.retirements.load(std::sync::atomic::Ordering::Acquire)
+    }
 }
 impl Drop for MfaJanitorWorker {
     fn drop(&mut self) {
@@ -126,6 +135,10 @@ pub(crate) fn start_mfa_janitor_worker(
 ) -> Result<MfaJanitorWorker, String> {
     let service = Arc::downgrade(service);
     let (stop, receiver) = mpsc::channel();
+    #[cfg(test)]
+    let retirements = Arc::new(std::sync::atomic::AtomicU64::new(0));
+    #[cfg(test)]
+    let original_retirements = Arc::clone(&retirements);
     let join = thread::Builder::new()
         .name("heptabao-mfa-janitor".into())
         .spawn(move || {
@@ -149,7 +162,12 @@ pub(crate) fn start_mfa_janitor_worker(
                 if Instant::now() >= deadline {
                     continue;
                 }
-                if writer.maintain_mfa_challenges_with_clock(clock).is_err() {
+                let result = writer.maintain_mfa_challenges_with_clock(clock);
+                #[cfg(test)]
+                if matches!(result, Ok(true)) {
+                    original_retirements.fetch_add(1, std::sync::atomic::Ordering::Release);
+                }
+                if result.is_err() {
                     eprintln!("heptabao-mfa-janitor: original retirement remains pending");
                 }
             }
@@ -158,6 +176,8 @@ pub(crate) fn start_mfa_janitor_worker(
     Ok(MfaJanitorWorker {
         stop,
         join: Some(join),
+        #[cfg(test)]
+        retirements,
     })
 }
 

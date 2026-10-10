@@ -47,6 +47,15 @@ fn wire(
     crate::http::logical_data_wire_fixture(&mut f.service, &bytes, 100)
         .map_err(|_| "actual logical HTTP ingress failed".into())
 }
+fn assert_logical_userpass_floor(state: &State) -> TestResult {
+    assert!(state.auth.has_userpass_issuance_state());
+    assert!(state.namespaces.workflows.has_logical_input_profiles()
+        || state.auth.has_control_group_logical_data());
+    assert_eq!(state.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    state.validate_format().map_err(|_| "combined logical/Userpass format")?;
+    Ok(())
+}
 fn logical_policy(f: &mut Fixture, controlled: bool) {
     let group = if controlled {
         r#"control_group = { ttl = "60s" factor "review" {
@@ -517,16 +526,20 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     let previous = f.service.state.as_ref().ok_or("state")?.clone();
     assert!(!previous.namespaces.workflows.has_logical_input_profiles());
     assert!(!previous.auth.has_control_group_logical_data());
-    assert!(previous.schema < WORKFLOW_INPUT_STATE_SCHEMA);
+    assert!(previous.auth.has_userpass_issuance_state());
+    assert_eq!(previous.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(previous.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
     install_logical(&mut f, QUERY_PROFILE);
     let active = f.service.state.as_ref().ok_or("state")?.clone();
-    assert_eq!(active.schema, WORKFLOW_INPUT_STATE_SCHEMA);
-    assert_eq!(active.writer_schema(), WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_logical_userpass_floor(&active)?;
+    assert_eq!(active.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(active.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
     active.validate_format().map_err(|_| "active format")?;
     active
         .validate_publication_schema(Some(&previous))
         .map_err(|_| "active publication")?;
     for schema in [
+        WORKFLOW_INPUT_STATE_SCHEMA,
         WORKFLOW_CREDENTIAL_STATE_SCHEMA,
         WORKFLOW_EXPRESSION_STATE_SCHEMA,
     ] {
@@ -543,7 +556,7 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        WORKFLOW_INPUT_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     assert_eq!(
         call(
@@ -558,9 +571,10 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
         204
     );
     let retired = f.service.state.as_ref().ok_or("state")?.clone();
+    assert!(retired.auth.has_userpass_issuance_state());
     assert!(!retired.namespaces.workflows.has_logical_input_profiles());
-    assert_eq!(retired.schema, WORKFLOW_INPUT_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
     let mut downgrade = retired.clone();
     downgrade.schema = WORKFLOW_CREDENTIAL_STATE_SCHEMA;
     assert!(
@@ -572,7 +586,7 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        WORKFLOW_INPUT_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     assert_eq!(
         call(
@@ -586,6 +600,63 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
         .status,
         404
     );
+    // Independently create the real earlier reader shape without a native
+    // Userpass issuance. This isolates 131 from the coexisting 132 floor above.
+    let isolated_root = Root::new();
+    let mut isolated = isolated_root.service()?;
+    let (isolated_key, isolated_admin) = bootstrap(&mut isolated)?;
+    let isolated_key = Zeroizing::new(isolated_key);
+    let isolated_admin = Zeroizing::new(isolated_admin);
+    let before = isolated.state.as_ref().ok_or("isolated initial state")?.clone();
+    assert!(!before.auth.has_userpass_issuance_state());
+    assert!(!before.namespaces.workflows.has_logical_input_profiles());
+    assert!(!before.auth.has_control_group_logical_data());
+    assert!(before.schema < WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_eq!(call(&mut isolated, &isolated_admin, "POST", "sys/workflows/manage/wf131",
+        json!({"workflow":QUERY_PROFILE}), 100).status, 200);
+    let active = isolated.state.as_ref().ok_or("isolated active")?.clone();
+    assert!(active.namespaces.workflows.has_logical_input_profiles());
+    assert!(!active.auth.has_userpass_issuance_state());
+    assert_eq!(active.schema, WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_eq!(active.writer_schema(), WORKFLOW_INPUT_STATE_SCHEMA);
+    active.validate_format().map_err(|_| "isolated active format")?;
+    active.validate_publication_schema(Some(&before)).map_err(|_| "isolated publication")?;
+    for schema in [WORKFLOW_CREDENTIAL_STATE_SCHEMA, WORKFLOW_EXPRESSION_STATE_SCHEMA] {
+        let mut downgrade = active.clone();
+        downgrade.schema = schema;
+        assert!(downgrade.validate_format().is_err());
+        assert!(downgrade.validate_publication_schema(Some(&active)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&active, &downgrade).is_err());
+    }
+    drop(isolated);
+    let mut isolated = isolated_root.service()?;
+    assert_eq!(call(&mut isolated, "", "POST", "sys/unseal",
+        json!({"key":isolated_key.as_str()}), 100).status, 200);
+    let reopened = isolated.state.as_ref().ok_or("isolated reopen")?;
+    assert_eq!(reopened.schema, WORKFLOW_INPUT_STATE_SCHEMA);
+    assert!(reopened.namespaces.workflows.has_logical_input_profiles());
+    assert!(!reopened.auth.has_userpass_issuance_state());
+    assert_eq!(call(&mut isolated, &isolated_admin, "DELETE", "sys/workflows/manage/wf131",
+        json!({}), 100).status, 204);
+    let retired = isolated.state.as_ref().ok_or("isolated retired")?.clone();
+    assert!(!retired.namespaces.workflows.has_logical_input_profiles());
+    assert!(!retired.auth.has_control_group_logical_data());
+    assert!(!retired.auth.has_userpass_issuance_state());
+    assert_eq!(retired.schema, WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), WORKFLOW_INPUT_STATE_SCHEMA);
+    retired.validate_format().map_err(|_| "isolated retired format")?;
+    let mut downgrade = retired.clone();
+    downgrade.schema = WORKFLOW_CREDENTIAL_STATE_SCHEMA;
+    assert!(downgrade.validate_publication_schema(Some(&retired)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&retired, &downgrade).is_err());
+    drop(isolated);
+    let mut isolated = isolated_root.service()?;
+    assert_eq!(call(&mut isolated, "", "POST", "sys/unseal",
+        json!({"key":isolated_key.as_str()}), 100).status, 200);
+    assert_eq!(isolated.state.as_ref().ok_or("isolated retired reopen")?.schema,
+        WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_eq!(call(&mut isolated, &isolated_admin, "GET", "sys/workflows/manage/wf131",
+        json!({}), 100).status, 404);
     Ok(())
 }
 
@@ -1070,7 +1141,7 @@ fn workflow131_logical_header_resolver_cg_reopen_and_actual_sdk_job_keep_data_wi
     let wrapper = Zeroizing::new(text(&pending_response.body, "/wrap_info/token")?);
     let accessor = text(&pending_response.body, "/wrap_info/accessor")?;
     let current = f.service.state.as_ref().ok_or("deferred state")?;
-    assert_eq!(current.schema, WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_logical_userpass_floor(current)?;
     let owner = current.auth.control_group_owners()
         .find(|owner| owner.request_accessor == accessor).ok_or("actual deferred SDK owner")?;
     assert_eq!(owner.body, body);
@@ -1188,7 +1259,7 @@ fn workflow131_actual_field_spelling_rejects_documented_alias_without_effect_and
         read(&mut f, version, "observed131", 100);
     }
     f = restart(f, 100)?;
-    assert_eq!(f.service.state.as_ref().ok_or("state")?.schema, WORKFLOW_INPUT_STATE_SCHEMA);
+    assert_logical_userpass_floor(f.service.state.as_ref().ok_or("state")?)?;
     let stored = call(&mut f.service, &f.admin, "GET", "secret/data/cg/key", json!({}), 100);
     assert_eq!(stored.status, 200);
     assert_eq!(stored.body["data"]["metadata"]["version"], version);
@@ -1658,7 +1729,7 @@ fn workflow131_nonfinite_selected_request_serialization_preserves_only_prior_com
         assert_eq!(rejected.status,500);
         version+=1;
         read(&mut f,version,"stage-one",100);
-        assert_eq!(f.service.state.as_ref().ok_or("actual state")?.schema,WORKFLOW_INPUT_STATE_SCHEMA);
+        assert_logical_userpass_floor(f.service.state.as_ref().ok_or("actual state")?)?;
     }
     install_logical(&mut f,&nonfinite_document(true,Some("float64"),"any"));
     let finite=wire(&mut f,&token,"","POST","sys/workflows/execute/wf131",

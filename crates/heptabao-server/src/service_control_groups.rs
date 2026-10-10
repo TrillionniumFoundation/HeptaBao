@@ -43,6 +43,11 @@ fn sudo_requirement(method: &str, path: &str) -> Option<bool> {
     if path == "sys/plugins/reload/backend" {
         return matches!(method, "POST" | "PUT").then_some(true);
     }
+    // The real workflow execution handler admits POST/PUT with ordinary
+    // update ACL. Management has an independent sudo requirement below.
+    if path.starts_with("sys/workflows/execute/") {
+        return matches!(method, "POST" | "PUT").then_some(false);
+    }
     if matches!(path, "sys/remount" | "sys/step-down") {
         return matches!(method, "POST" | "PUT").then_some(true);
     }

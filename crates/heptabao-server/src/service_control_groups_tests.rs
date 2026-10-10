@@ -674,10 +674,12 @@ fn cg270_userpass_quorum_defers_update_and_preapproval_preserves_single_claim() 
         400
     );
     read(&mut f, 2, "after", 100);
-    assert_eq!(
-        f.service.state.as_ref().ok_or("state")?.schema,
-        CONTROL_GROUP_STATE_SCHEMA
-    );
+    let completed = f.service.state.as_ref().ok_or("state")?;
+    assert_eq!(completed.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert!(completed.auth.has_control_group_state());
+    assert!(completed.auth.has_userpass_issuance_state());
+    completed.auth.validate_control_group_state()
+        .map_err(|_| "actual control-group owner beside native Userpass132")?;
     policy_write(
         &mut f.service,
         &f.admin,

@@ -1220,12 +1220,6 @@ impl State {
         self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
-        self.auth.validate_userpass_issuance_state(None)
-            .map_err(|error| Response::error(503, &error.message))?;
-        if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA && self.auth.has_userpass_issuance_state()
-            || self.schema == USERPASS_ISSUANCE_STATE_SCHEMA && !self.auth.has_userpass_issuance_state() {
-            return Err(Response::error(503, "native Userpass issuance reader marker requires schema 132"));
-        }
         self.auth.validate_identity_mfa_state(None).map_err(|error|Response::error(503,&error.message))?;
         self.auth.validate_identity_mfa_bindings(&self.cluster_id,
             |namespace|self.namespaces.mfa_scope(namespace),
@@ -1872,6 +1866,12 @@ impl State {
         self.auth
             .validate_userpass_native_tokens()
             .map_err(|_| Response::error(503, "invalid native userpass state"))?;
+        self.auth.validate_userpass_issuance_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA && self.auth.has_userpass_issuance_state()
+            || self.schema == USERPASS_ISSUANCE_STATE_SCHEMA && !self.auth.has_userpass_issuance_state() {
+            return Err(Response::error(503, "native Userpass issuance reader marker requires schema 132"));
+        }
         self.auth
             .validate_userpass_lockout_state()
             .map_err(|_| Response::error(503, "invalid userpass lockout state"))?;

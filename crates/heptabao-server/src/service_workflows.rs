@@ -602,13 +602,12 @@ impl Service {
         if !state.namespace_exists(request.namespace) {
             return Response::error(404, "request namespace not found");
         }
-        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
-            return Response::error(501, "workflow responses cannot be wrapped");
-        }
-
         let management = request.path == "sys/workflows/manage"
             || request.path.starts_with("sys/workflows/manage/");
         if management {
+            if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
+                return Response::error(501, "workflow responses cannot be wrapped");
+            }
             let capability = match request.method {
                 "LIST" => "list",
                 "GET" => "read",
@@ -801,7 +800,8 @@ impl Service {
             let Some(profile) = &stored.definition.profile else {
                 return Response::error(503, "dynamic workflow profile is unavailable");
             };
-            return self.workflow_dynamic_profile_execute(state, principal, request, profile);
+            let response = self.workflow_dynamic_profile_execute(state, principal, request, profile);
+            return self.workflow_profile_reply(request, response);
         }
         if request
             .body
@@ -811,7 +811,11 @@ impl Service {
             return Response::error(400, "workflow execution accepts an empty JSON object");
         }
         if let Some(profile) = &stored.definition.profile {
-            return self.workflow_profile_execute(state, principal, request, profile);
+            let response = self.workflow_profile_execute(state, principal, request, profile);
+            return self.workflow_profile_reply(request, response);
+        }
+        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
+            return Response::error(501, "workflow responses cannot be wrapped");
         }
         let mut responses = BTreeMap::<String, Value>::new();
         let mut approle_secret_consumption = None;
@@ -882,6 +886,61 @@ impl Service {
             self.state = Some(state);
         }
         Response::ok(json!({"data":outputs}))
+    }
+
+    // A profile commits each admitted inner request before final output.
+    // Wrap only its actual successful output and publish the new wrapper in
+    // the current installed graph. A failure cannot roll back earlier effects.
+    fn workflow_profile_reply(
+        &mut self,
+        request: &RequestView<'_>,
+        mut response: Response,
+    ) -> Response {
+        let Some(ttl) = request.wrap_ttl_seconds.filter(|ttl| *ttl > 0) else {
+            return response;
+        };
+        if response.status != 200 || response.body.is_null()
+            || response.body.get("wrap_info").is_some_and(|value| !value.is_null())
+        {
+            return response;
+        }
+        if response.unwrapped_json.is_some() {
+            return Response::error(500, "internal error");
+        }
+        if self.pending_workflow_external_hold.is_some() || self.recovery_required {
+            return Response::error(503, "workflow output owns an unresolved terminal boundary");
+        }
+        let now = match request.token_time() {
+            Ok(time) => time.seconds(),
+            Err(error) => return error,
+        };
+        let Some(current) = self.state.as_ref() else {
+            return Response::error(503, "workflow output state is unavailable");
+        };
+        if !current.namespace_exists(request.namespace)
+            || current.namespace_is_sealed(request.namespace)
+        {
+            return Response::error(503, "workflow output namespace is unavailable");
+        }
+        let mut candidate = current.clone();
+        candidate.namespace_protected = current.namespace_protected.clone();
+        let mut wrapped = match candidate.auth.wrap_logical_response(
+            request.namespace, request.path, ttl, &response.body, now,
+        ) {
+            Ok(wrapped) => wrapped,
+            Err(error) => return Response::error(error.status, &error.message),
+        };
+        if let Err(error) = self.control_group_publish(&mut candidate) {
+            return error;
+        }
+        erase_json(&mut response.body);
+        Response {
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+            status: wrapped.status,
+            body: std::mem::take(&mut wrapped.body),
+        }
     }
 
     fn workflow_step_is_nonlocal(

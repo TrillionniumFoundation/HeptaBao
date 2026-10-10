@@ -123,7 +123,34 @@ fn mfa129_real_service_configuration_enrollment_acl_and_encrypted_reopen_keep_st
     let mut stripped = persisted.clone();
     let encoded = Zeroizing::new(serde_json::to_vec(&encoded)?);
     stripped.auth = serde_json::from_slice(&encoded)?;
-    assert!(stripped.validate_format().is_err());
+    // The highest 132 label alone cannot identify every erased lower feature.
+    // Keep both actual 132 successor/snapshot negatives below, and exercise
+    // the standalone 129 reader on a genuinely MFA-only native publication.
+    let isolated_files = Root::new();
+    let mut isolated = isolated_files.service()?;
+    let (_, isolated_admin) = bootstrap(&mut isolated)?;
+    let isolated_method = call(
+        &mut isolated,
+        "POST",
+        "identity/mfa/method/totp",
+        &isolated_admin,
+        json!({"issuer":"isolated-native-reader","qr_size":0}),
+    );
+    assert_eq!(isolated_method.status, 200);
+    let isolated_state = isolated.state.clone().ok_or("actual isolated MFA state")?;
+    assert_eq!(isolated_state.schema, IDENTITY_MFA_STATE_SCHEMA);
+    assert!(isolated_state.auth.has_identity_mfa_state());
+    isolated_state.validate_format().map_err(|_| "actual isolated MFA format")?;
+    let mut isolated_auth = serde_json::to_value(&isolated_state.auth)?;
+    isolated_auth.as_object_mut().ok_or("actual isolated Auth object")?
+        .remove("identity_mfa");
+    let isolated_bytes = Zeroizing::new(serde_json::to_vec(&isolated_auth)?);
+    let mut isolated_stripped = isolated_state.clone();
+    isolated_stripped.auth = serde_json::from_slice(&isolated_bytes)?;
+    assert_eq!(isolated_stripped.validate_format().err()
+        .ok_or("erased exact129 reader unexpectedly accepted")?.status, 503);
+    assert!(isolated_stripped.validate_publication_schema(Some(&isolated_state)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&isolated_state, &isolated_stripped).is_err());
     assert!(
         stripped
             .validate_publication_schema(Some(&persisted))
@@ -485,7 +512,7 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
             "sys/mfa/validate",
             "",
             json!({"mfa_request_id":replay,"mfa_payload":{id.clone():[code.as_str()]}}),
-            103,
+            104,
             0
         )
         .status,
@@ -1351,17 +1378,18 @@ fn mfa129_host_owned_five_second_worker_has_one_retirement_and_once_joined_weak_
     let worker =
         start_mfa_janitor_worker(&service).map_err(|_| "start original MFA janitor worker")?;
     let deadline = Instant::now() + Duration::from_secs(7);
-    let count = loop {
-        let count = {
-            let writer = service.lock().map_err(|_| "MFA test writer")?;
-            janitor_pending_count(&writer)?
-        };
-        if count != 3 || Instant::now() >= deadline {
-            break count;
-        }
+    while worker.successful_retirements() == 0 && Instant::now() < deadline {
+        // Observe only the original thread's successful commit, without taking
+        // the Service writer precisely when its real try_lock tick arrives.
         std::thread::sleep(Duration::from_millis(2));
-    };
+    }
+    let original_retirements = worker.successful_retirements();
     drop(worker); // wakes and joins the original thread outside the writer lock
+    assert_eq!(original_retirements, 1, "one original worker commit must finish");
+    let count = {
+        let writer = service.lock().map_err(|_| "MFA test writer")?;
+        janitor_pending_count(&writer)?
+    };
     assert_eq!(
         count, 2,
         "one real five-second tick retires at most one head"
@@ -1626,11 +1654,22 @@ fn closed_janitor_auth(state: &State) -> Result<Value, Box<dyn std::error::Error
         .map_err(|_| "private MFA encoding")?;
     Ok(heptabao_domain::json::decode(&encoded)?)
 }
-fn closed_janitor_restore_root(fixture: &mut ClosedJanitorFixture, seconds: u64) -> TestResult {
-    // Cold reopen of the genuine durable root leaves the independent child closed.
-    let replacement = fixture.files.service()?;
-    let old = std::mem::replace(&mut fixture.service, replacement);
-    drop(old);
+fn closed_janitor_restore_root(
+    fixture: ClosedJanitorFixture,
+    seconds: u64,
+) -> Result<ClosedJanitorFixture, Box<dyn std::error::Error>> {
+    // Drop the original audit writer before opening the same authenticated log.
+    // The durable root and independent namespace keys retain their real owner.
+    let ClosedJanitorFixture {
+        files, service, root_key, admin, namespace_key, requests,
+        live_token_count, outer_key,
+    } = fixture;
+    drop(service);
+    let service = files.service()?;
+    let mut fixture = ClosedJanitorFixture {
+        files, service, root_key, admin, namespace_key, requests,
+        live_token_count, outer_key,
+    };
     assert_eq!(
         precise_call(
             &mut fixture.service,
@@ -1650,14 +1689,14 @@ fn closed_janitor_restore_root(fixture: &mut ClosedJanitorFixture, seconds: u64)
             .namespace_runtime
             .is_loaded("mfa-queue-outer/child")
     );
-    Ok(())
+    Ok(fixture)
 }
 
 #[test]
 fn mfa129_closed_capsule_janitor_commits_receipt_then_authenticates_original_key_before_terminal_reopen()
 -> TestResult {
     let mut fixture = closed_janitor_fixture(false)?;
-    closed_janitor_restore_root(&mut fixture, 403)?;
+    fixture = closed_janitor_restore_root(fixture, 403)?;
     let before = fixture
         .service
         .state
@@ -1724,7 +1763,7 @@ fn mfa129_closed_capsule_janitor_commits_receipt_then_authenticates_original_key
     );
     assert!(Service::validate_snapshot_protected_floor(&retired, &before).is_err());
     let count_before = fixture.live_token_count;
-    closed_janitor_restore_root(&mut fixture, 404)?;
+    fixture = closed_janitor_restore_root(fixture, 404)?;
     let closed_auth = closed_janitor_auth(
         fixture
             .service
@@ -1821,7 +1860,7 @@ fn mfa129_closed_capsule_janitor_commits_receipt_then_authenticates_original_key
     assert!(rejected.body.get("auth").is_none());
     assert_eq!(token_count(&fixture.service)?, count_before);
     // Another actual encrypted cold reopen must not resurrect the private grant.
-    closed_janitor_restore_root(&mut fixture, 406)?;
+    fixture = closed_janitor_restore_root(fixture, 406)?;
     assert_eq!(
         closed_janitor_call(
             &mut fixture.service,
@@ -1862,7 +1901,7 @@ fn mfa129_closed_capsule_janitor_commits_receipt_then_authenticates_original_key
 fn mfa129_closed_capsule_receipt_erasure_wrong_digest_incarnation_and_duplicate_application_are_denied()
 -> TestResult {
     let mut fixture = closed_janitor_fixture(false)?;
-    closed_janitor_restore_root(&mut fixture, 403)?;
+    fixture = closed_janitor_restore_root(fixture, 403)?;
     assert!(
         fixture
             .service
@@ -2032,7 +2071,7 @@ fn mfa129_hidden_child_queue_uses_actual_enclosing_capsule_and_keeps_terminal_hi
     assert!(!incapable.windows(b"grant".len()).any(|w| w == b"grant"));
     assert!(!incapable.windows(b"secret".len()).any(|w| w == b"secret"));
     assert!(protected.validate_format().is_ok());
-    closed_janitor_restore_root(&mut fixture, 403)?;
+    fixture = closed_janitor_restore_root(fixture, 403)?;
     assert!(
         !fixture
             .service
@@ -2133,7 +2172,7 @@ fn mfa129_hidden_child_queue_uses_actual_enclosing_capsule_and_keeps_terminal_hi
         2
     );
     assert!(logical.validate_format().is_ok());
-    closed_janitor_restore_root(&mut fixture, 414)?;
+    fixture = closed_janitor_restore_root(fixture, 414)?;
     assert_eq!(closed_janitor_call(&mut fixture.service, "POST",
         "sys/namespaces/mfa-queue-outer/unseal", "", &fixture.admin,
         json!({"key":fixture.outer_key.as_ref().ok_or("actual durable enclosing key")?.as_str()}),
@@ -2441,7 +2480,7 @@ fn mfa129_native_retirement_floor_stays_global_through_independent_parent_close_
             112
         )
         .status,
-        200
+        204
     );
     assert!(
         !fixture
@@ -2497,7 +2536,7 @@ fn mfa129_native_retirement_floor_stays_global_through_independent_parent_close_
                 == real_stamp
         );
     }
-    closed_janitor_restore_root(&mut fixture, 113)?;
+    fixture = closed_janitor_restore_root(fixture, 113)?;
     let cold = fixture.service.state.as_ref().ok_or("cold durable root")?;
     assert!(
         !fixture
@@ -2720,7 +2759,7 @@ fn mfa129_actual_nested_enclosure_chain_mac_rejects_middle_poison_before_publica
             .as_slice()
             == original_bytes.as_slice()
     );
-    closed_janitor_restore_root(&mut fixture, 403)?;
+    fixture = closed_janitor_restore_root(fixture, 403)?;
     assert!(
         !fixture
             .service
