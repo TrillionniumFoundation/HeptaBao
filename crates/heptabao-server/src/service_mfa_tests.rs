@@ -2033,16 +2033,28 @@ fn mfa129_closed_capsule_receipt_erasure_wrong_digest_incarnation_and_duplicate_
         .status,
         200
     );
-    let mut after = fixture.service.state.clone().ok_or("real complete")?;
+    // State::clone intentionally clears its prepared namespace publication view.
+    // Exercise the only mutable owner accepted by the receipt consumer instead.
+    let state = fixture.service.state.as_ref().ok_or("real complete")?;
+    let encoded_state = crate::secret_serde::to_vec(state, 16 * 1024 * 1024)
+        .map_err(|_| "committed encoding")?;
+    let mut after = state.auth.clone();
     let before =
         crate::secret_serde::to_vec(&after, 16 * 1024 * 1024).map_err(|_| "complete encoding")?;
-    assert_eq!(after.auth.consume_authenticated_mfa_terminal_receipts()?, 0);
+    assert_eq!(after.consume_authenticated_mfa_terminal_receipts()?, 0);
     assert!(
         crate::secret_serde::to_vec(&after, 16 * 1024 * 1024)
             .map_err(|_| "unchanged encoding")?
             .as_slice()
             == before.as_slice(),
         "the actual receipt is consumed once"
+    );
+    assert!(
+        crate::secret_serde::to_vec(state, 16 * 1024 * 1024)
+            .map_err(|_| "unchanged committed encoding")?
+            .as_slice()
+            == encoded_state.as_slice(),
+        "the actual committed full state is unchanged"
     );
     Ok(())
 }
