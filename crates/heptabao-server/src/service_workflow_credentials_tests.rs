@@ -684,7 +684,7 @@ fn workflow128_original_clock_origin_namespace_and_closed_native_scope_are_not_r
             .handle_at(
                 "POST",
                 "sys/auth/cg-login",
-                "wf128-child/",
+                "wf128-child",
                 &admin,
                 json!({"type":"userpass"}),
                 111
@@ -697,7 +697,7 @@ fn workflow128_original_clock_origin_namespace_and_closed_native_scope_are_not_r
             .handle_at(
                 "POST",
                 "sys/policies/acl/wf128-reader",
-                "wf128-child/",
+                "wf128-child",
                 &admin,
                 json!({"policy":r#"path "secret/data/cg/key" { capabilities = ["read"] }"#}),
                 111
@@ -705,12 +705,12 @@ fn workflow128_original_clock_origin_namespace_and_closed_native_scope_are_not_r
             .status,
         204
     );
-    assert_eq!(f.service.handle_at("POST","auth/cg-login/users/native","wf128-child/",&admin,
+    assert_eq!(f.service.handle_at("POST","auth/cg-login/users/native","wf128-child",&admin,
         json!({"password":"synthetic-cg-password","token_policies":["wf128-reader"],"token_no_default_policy":true}),111).status,204);
     let child = f.service.handle_at(
         "POST",
         "auth/cg-login/login/native",
-        "wf128-child/",
+        "wf128-child",
         "",
         json!({"password":"synthetic-cg-password"}),
         111,
