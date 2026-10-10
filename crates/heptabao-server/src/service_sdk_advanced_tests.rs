@@ -575,7 +575,7 @@ fn sdk126_precise_batch_seal_installs_actual_observation_floor_only_after_native
     assert!(reopened.auth.has_token_api_precision_state());
     assert!(reopened.auth.sdk_auth_issued_live(&raw, original).is_ok());
     assert_eq!(service.current_state_identity().map_err(|_| "reopened committed identity")?, identity);
-    assert!(reopened.auth.authenticate_from_observed(&raw,
+    assert!(service.state.as_mut().ok_or("actual encrypted reopened state")?.auth.authenticate_from_observed(&raw,
         AuthorityTime::Precise(Timestamp::checked(106, 0)?), Some("127.0.0.1".parse()?)).is_err());
     Ok(())
 }
