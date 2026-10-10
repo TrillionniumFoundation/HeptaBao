@@ -5,8 +5,40 @@ use super::*;
 use crate::auth::AuthResponse;
 use crate::engines::sdk_lease::{Binding as LeaseBinding, Grant, Lease};
 use crate::engines::sdk_registration::Registration;
-use crate::service::tests::{Root, bootstrap, call};
+use crate::service::tests::{Root, bootstrap, call as coarse_call};
 type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
+
+// Only local unseal is a non-actor status. Give its affine completion the
+// original explicit fixture clock; ordinary coarse calls retain their old gate.
+fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Value) -> Response {
+    if path != "sys/unseal" || !matches!(method, "PUT" | "POST") {
+        return coarse_call(service, method, path, token, body);
+    }
+    let started = Instant::now();
+    let original = match RequestClock::anchored(Duration::from_secs(100), started) {
+        Ok(clock) => clock,
+        Err(_) => return Response::error(503, "original explicit unseal clock unavailable"),
+    };
+    let _explicit_clock = crate::service::external_pki::PublicationClockScope::explicit();
+    let execution = service.begin_at_mode_started_clock(
+        crate::service::RequestDispatch {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        started,
+        Some(original),
+    );
+    service.finish_synchronous_request(execution)
+}
 
 fn clock(seconds: u64, nanos: u32) -> Result<RequestClock, Box<dyn std::error::Error>> {
     Ok(RequestClock::anchored(
