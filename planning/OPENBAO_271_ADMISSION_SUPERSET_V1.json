@@ -1,0 +1,225 @@
+{
+  "schema": "heptabao.openbao-2.7.1-complete-replacement-admission.v1",
+  "authority": "NOT_ADMITTED",
+  "replacement_authority": false,
+  "baseline": {
+    "product": "OpenBao",
+    "version": "2.7.1",
+    "release_date": "2026-10-01",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "oci_image": "ghcr.io/openbao/openbao:2.7.1",
+    "oci_digest": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+    "release_notes": "https://openbao.org/community/release-notes/2-7-0/"
+  },
+  "previous_baseline": "planning/OPENBAO_REPLACEMENT_ADMISSION_V1.yaml (frozen 2.6.2; does not authorize 2.7.1)",
+  "admission_rule": "Every required gate and 2.7.1 delta must have exact-candidate executable receipts; statuses cannot be inferred from code, mock providers, or prior commits.",
+  "required_gates": [
+    {
+      "id": "exact_head_native",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "prospective_main_merge",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "module_evidence_integrity",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "scalable_state_storage",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "replay_identity_lifecycle",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "complete_surface_admission",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "external_provider_semantics",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "full_asset_migration",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "multi_host_fault_upgrade",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "openbao_2_7_1_oracle",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    },
+    {
+      "id": "security_release_supply_chain",
+      "status": "OPEN",
+      "exact_candidate_receipt": null
+    }
+  ],
+  "security_delta": [
+    {
+      "id": "sanitized_acme_eab_mac_key",
+      "status": "OPEN",
+      "scenario": "sys/config/state/sanitized must redact tls_acme_eab_mac_key",
+      "receipt": null
+    },
+    {
+      "id": "root_generation_and_rekey_audit_fail_closed",
+      "status": "OPEN",
+      "scenario": "Unsealed root generation/rekey may never release responses on mandatory audit failure",
+      "receipt": null
+    },
+    {
+      "id": "approle_secret_id_expiry_before_tidy",
+      "status": "OPEN",
+      "scenario": "Expired AppRole SecretID must not authenticate before tidy",
+      "receipt": null
+    },
+    {
+      "id": "approle_form_encoded_login",
+      "status": "OPEN",
+      "scenario": "AppRole form-data login must parse consistently and reject confused encodings",
+      "receipt": null
+    },
+    {
+      "id": "certificate_quota_tls_identity",
+      "status": "OPEN",
+      "scenario": "Certificate auth quota must bind actual TLS peer certificate",
+      "receipt": null
+    },
+    {
+      "id": "kubernetes_renewal_post_revocation",
+      "status": "OPEN",
+      "scenario": "Kubernetes ServiceAccount JWT must revalidate on renewal after revoke",
+      "receipt": null
+    },
+    {
+      "id": "cross_namespace_policy_cache_isolation",
+      "status": "OPEN",
+      "scenario": "Cross-namespace ACL resolution must be cache-isolated (2.7.0 security baseline)",
+      "receipt": null
+    },
+    {
+      "id": "plugins_root_namespace_only",
+      "status": "OPEN",
+      "scenario": "Plugin catalog mutation must remain root namespace restricted (2.7.0 security baseline)",
+      "receipt": null
+    },
+    {
+      "id": "unauthorized_workflow_policy_denial",
+      "status": "OPEN",
+      "scenario": "ACL/workflow policy denial must fail closed (2.7.0 security baseline)",
+      "receipt": null
+    }
+  ],
+  "feature_and_correctness_delta": [
+    {
+      "id": "postgresql_horizontal_scale",
+      "status": "OPEN",
+      "scenario": "Independent PostgreSQL readers and WAL/snapshot/LSN correctness",
+      "receipt": null
+    },
+    {
+      "id": "external_kms_hsm_pki_transit",
+      "status": "OPEN",
+      "scenario": "Real external KMS/HSM plugin key operations and failure boundaries",
+      "receipt": null
+    },
+    {
+      "id": "pqc_tls_mldsa",
+      "status": "OPEN",
+      "scenario": "Post-quantum TLS and native PKI/Transit ML-DSA interoperability",
+      "receipt": null
+    },
+    {
+      "id": "pebble_storage",
+      "status": "OPEN",
+      "scenario": "Pebble storage durability, migration and crash recovery",
+      "receipt": null
+    },
+    {
+      "id": "indexed_consistency",
+      "status": "OPEN",
+      "scenario": "X-Vault-Index / X-Vault-Inconsistent standby semantics",
+      "receipt": null
+    },
+    {
+      "id": "grpc_invalidation",
+      "status": "OPEN",
+      "scenario": "Persistent invalidation manager under restart/upgrade",
+      "receipt": null
+    },
+    {
+      "id": "raft_auto_join_provider_port",
+      "status": "OPEN",
+      "scenario": "Raft discovery join honors provider port",
+      "receipt": null
+    },
+    {
+      "id": "sdk_lifetime_watcher_backoff",
+      "status": "OPEN",
+      "scenario": "Failed lease renewals honor SDK watcher backoff",
+      "receipt": null
+    }
+  ],
+  "observations": {
+    "reference_source_commit": "0ae67bca971ea744f26a88eb0f0644bf8d32dd5f",
+    "fixed_local_test_commit": "d99369442e39d9df315a84666e42d9521673a931",
+    "mac_full_server_lib_0ae": {
+      "passed": 2430,
+      "failed": 14,
+      "receipt": "../HeptaBao-qualification-20261010-r134-assets/evidence/mac-0ae67b-full-server-lib-r06.log"
+    },
+    "mac_native_single_node_smoke": {
+      "passed": 40,
+      "receipt": "../HeptaBao-qualification-20261010-r134-assets/evidence/mac-native-smoke-20261010-r01.log",
+      "qualification_authority": false
+    },
+    "x230_to_mac_native_tls_0ae_worktree": {
+      "result": "NOT_ADMITTED",
+      "checks": 11,
+      "failed_checks": 1,
+      "transport": "native direct IPv4 TLS with trusted CA, no SSH forwarding",
+      "receipt": "../HeptaBao-qualification-20261010-r134-assets/evidence/x230/hb-r04-receipt.json"
+    },
+    "x230_to_mac_native_tls_diagnostic": {
+      "result": "NOT_ADMITTED",
+      "checks": 12,
+      "failed_checks": 1,
+      "receipt": "../HeptaBao-qualification-20261010-r134-assets/evidence/x230/hb-r05-receipt.json"
+    },
+    "official_271_synthetic_numeric_oracle": {
+      "http_write": 200,
+      "http_read": 200,
+      "exact_large_input_preserved": false,
+      "receipt": "../HeptaBao-qualification-20261010-r134-assets/evidence/x230/hb-oracle271-r02.json"
+    }
+  },
+  "blocked_by": [
+    "OpenBao 2.7.1 whole-surface differential not closed",
+    "Mac complete server library test suite not green",
+    "Linux current-candidate server and multi-host fault/rolling upgrade not qualified",
+    "full asset migration and external real providers unqualified",
+    "scalable storage and replay lifecycle admission OPEN",
+    "release supply-chain and reproducibility unqualified"
+  ],
+  "requirements": [
+    "Never flip replacement_authority merely because this file exists",
+    "Never treat a synthetic smoke or old HEAD as current release qualification",
+    "Never treat more exact numeric output as 2.7.1 equality without baseline diff"
+  ]
+}
