@@ -777,12 +777,19 @@ pub(super) fn logical_first_step_fixture(
     let program = profile.dynamic_program()?
         .ok_or_else(|| bad_profile("actual dynamic profile required"))?;
     let context = program.context_at(body, started)?;
-    let resolved = program.steps.first()
+    let mut resolved = program.steps.first()
         .ok_or_else(|| bad_profile("actual first step required"))?
         .resolve(&context)?
         .ok_or_else(|| bad_profile("actual first step was skipped"))?;
     if resolved.token.is_some() {
         return Err(bad_profile("fixture does not substitute credential admission"));
     }
-    Ok((resolved.step, resolved.data_frame))
+    let step = WorkflowStep {
+        name: std::mem::take(&mut resolved.step.name),
+        method: std::mem::take(&mut resolved.step.method),
+        path: std::mem::take(&mut resolved.step.path),
+        body: std::mem::take(&mut resolved.step.body),
+        allow_failure: resolved.step.allow_failure,
+    };
+    Ok((step, resolved.data_frame.take()))
 }
