@@ -1440,8 +1440,15 @@ fn closed_janitor_call(
     body: Value,
     seconds: u64,
 ) -> Response {
-    let clock = RequestClock::anchored(Duration::from_secs(seconds), Instant::now())
+    let started = Instant::now();
+    let clock = RequestClock::anchored(Duration::from_secs(seconds), started)
         .expect("synthetic original native clock");
+    // Unit callers have no HTTP worker. Keep one original request budget from
+    // the same clock anchor, using the existing native namespace fixture's
+    // fifteen-second budget. An enclosing earlier deadline remains earlier.
+    let _request = crate::request_deadline::RequestDeadlineScope::enter(
+        started + Duration::from_secs(15),
+    );
     // These fixture strings name an absolute namespace owner. The actual
     // public endpoint accepts one child name relative to the native namespace
     // header, including seal operations. Never relax the production '/' guard.
@@ -3367,12 +3374,15 @@ fn mfa129_repeated_method_across_matching_native_rules_is_not_deduplicated_into_
         multi_mfa_attempts(&f.service, &f.entity, &a)?,
         Some((2, Some(10)))
     );
-    let next_counter = multi_mfa_code(&f, 0, 111)?;
+    // The first numeric attempt is captured after the original precise
+    // request's work, at 101 + nanoseconds. 111 whole seconds is still inside
+    // that fixed ten-second window. 112 is past it and remains OTP counter 11.
+    let next_counter = multi_mfa_code(&f, 0, 112)?;
     let denied = multi_mfa_validate(
         &mut f.service,
         &id,
         json!({a.clone():[next_counter.as_str()]}),
-        111,
+        112,
     );
     assert_eq!(denied.status, 403);
     multi_mfa_assert_no_bearer(&denied);

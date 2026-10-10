@@ -56,6 +56,21 @@ fn assert_logical_userpass_floor(state: &State) -> TestResult {
     state.validate_format().map_err(|_| "combined logical/Userpass format")?;
     Ok(())
 }
+fn logical_cg_record_key(encoded_auth: &Value, accessor: &str) -> TestResult<String> {
+    let requests = encoded_auth.pointer("/control_groups/requests")
+        .and_then(Value::as_object).ok_or("actual deferred request registry")?;
+    // Public accessors identify a complete stored owner, but are not its map key.
+    assert!(requests.get(accessor).is_none());
+    let mut matches = requests.iter().filter(|(_, owner)| {
+        owner.get("request_accessor").and_then(Value::as_str) == Some(accessor)
+    });
+    let (key, owner) = matches.next().ok_or("actual deferred request record")?;
+    assert!(matches.next().is_none());
+    assert!(owner.get("cluster_id").and_then(Value::as_str)
+        .is_some_and(|cluster| !cluster.is_empty()));
+    assert_ne!(key.as_str(), accessor);
+    Ok(key.clone())
+}
 fn logical_policy(f: &mut Fixture, controlled: bool) {
     let group = if controlled {
         r#"control_group = { ttl = "60s" factor "review" {
@@ -400,7 +415,8 @@ fn workflow131_query_and_headers_are_sealed_deferred_reopened_and_dispatched_onc
     // Changing either public data field cannot reuse the sealed issuer capsule.
     for field in ["headers", "query"] {
         let mut encoded = serde_json::to_value(&current.auth)?;
-        encoded["control_groups"]["requests"][&accessor]["logical_data"][field] =
+        let record_key = logical_cg_record_key(&encoded, &accessor)?;
+        encoded["control_groups"]["requests"][&record_key]["logical_data"][field] =
             if field == "headers" {
                 json!({"x-client-note":["changed"]})
             } else {
@@ -1151,12 +1167,14 @@ fn workflow131_logical_header_resolver_cg_reopen_and_actual_sdk_job_keep_data_wi
     assert_eq!(owner.logical_data.as_ref().ok_or("durable headers")?.headers, headers);
     assert_raw_absent(&f, &f.requester.token)?;
     let mut tampered = serde_json::to_value(&current.auth)?;
-    tampered["control_groups"]["requests"][&accessor]["logical_data"]["headers"]["Bad Header"] =
+    let record_key = logical_cg_record_key(&tampered, &accessor)?;
+    tampered["control_groups"]["requests"][&record_key]["logical_data"]["headers"]["Bad Header"] =
         json!(["changed"]);
     let changed: AuthState = serde_json::from_value(tampered)?;
     assert!(changed.validate_control_group_state().is_err());
     let mut empty_name_tampered = serde_json::to_value(&current.auth)?;
-    empty_name_tampered["control_groups"]["requests"][&accessor]["logical_data"]["headers"][""] =
+    let empty_record_key = logical_cg_record_key(&empty_name_tampered, &accessor)?;
+    empty_name_tampered["control_groups"]["requests"][&empty_record_key]["logical_data"]["headers"][""] =
         json!(["changed-empty-key"]);
     let changed_empty: AuthState = serde_json::from_value(empty_name_tampered)?;
     assert!(changed_empty.validate_control_group_state().is_err());
