@@ -119,6 +119,7 @@ pub(in crate::service) struct Plan {
     operation: String,
     path: String,
     data: Value,
+    logical_data: Option<crate::request_metadata::DataFrame>,
     pub(in crate::service) deadline: Instant,
     renewal: Mutex<Option<Box<RenewalTarget>>>,
     lease: Mutex<Option<credential::Call>>,
@@ -270,6 +271,7 @@ impl Plan {
             operation: self.operation.clone(),
             path,
             data: self.data.clone(),
+            logical_data: self.logical_data.clone(),
             lease: self
                 .lease
                 .lock()
@@ -1263,6 +1265,12 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let logical_data = match crate::request_metadata::current(
+            request.method, request.path, request.namespace, request.body,
+        ) {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "SDK Auth logical data lost its original request"),
+        };
         self.pending_sdk_auth_request = Some(Plan {
             wrapping,
             context,
@@ -1279,6 +1287,7 @@ impl Service {
             operation: operation.into(),
             path: path.into(),
             data: request.body.clone(),
+            logical_data,
             deadline,
             renewal: Mutex::new(renewal.map(Box::new)),
             lease: Mutex::new(None),

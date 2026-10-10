@@ -203,6 +203,10 @@ impl Service {
         leases: &namespace_runtime::Leases,
         response: &AuthResponse,
     ) -> Result<(), Response> {
+        if let Some(pending)=response.pending_service.as_ref() {
+            let binding=Self::mfa_native_binding(namespaces,cluster_id,pending.namespace())?;
+            pending.bind_native(binding).map_err(|error|Response::error(error.status,&error.message))?;
+        }
         if response.pending_batch.is_some() {
             let actual = namespaces.ensure_batch_lifecycle(cluster_id, leases)?;
             auth.install_namespace_batch_registry(actual)

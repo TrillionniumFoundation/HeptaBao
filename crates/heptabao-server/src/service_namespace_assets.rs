@@ -48,12 +48,14 @@ impl NamespacePartition<'_> {
             .sdk_namespace_ciphertext_owner(self.binding.namespace())?;
         self.closed
             .auth
-            .bind_sdk_namespace_ciphertext(&self.binding, stamp)
+            .bind_sdk_namespace_ciphertext(&self.binding, stamp.clone())
             .map_err(|_error| {
                 #[cfg(test)]
                 namespace_diagnostics::record_status("assets.finish.bind_ciphertext", _error.status);
                 failed()
             })?;
+        self.closed.auth.bind_mfa_namespace_ciphertext(&self.binding, stamp.clone())
+            .map_err(|_| failed())?;
         self.closed.schema = self.closed.writer_schema();
         let actual = self.binding.namespace();
         if !self.key.matches_binding(&self.binding)
@@ -243,10 +245,15 @@ impl State {
                 namespace_diagnostics::record_status("assets.restore.opening_owners", _error.status);
                 failed()
             })?;
+        let mfa_inner = self.auth.mfa_namespace_opening_owners(actual, &stamp).map_err(|_| failed())?;
         let mut candidate = self.clone();
         candidate
             .namespaces
             .attach_catalog(actual, assets.catalog)?;
+        for expected in mfa_inner {
+            if candidate.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != expected { return Err(failed()); }
+        }
+        candidate.auth.remove_mfa_namespace_enclosure(actual, &stamp).map_err(|_| failed())?;
         for expected in inner {
             if candidate.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != expected {
                 return Err(failed());

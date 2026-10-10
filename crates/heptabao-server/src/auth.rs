@@ -76,6 +76,8 @@ mod acl_template;
 mod acl_wrapping;
 #[path = "auth_control_groups.rs"]
 pub(crate) mod control_groups;
+#[path = "auth_mfa.rs"]
+pub(crate) mod mfa;
 #[path = "auth_default_policy.rs"]
 mod default_policy;
 #[path = "auth_ui_acl.rs"]
@@ -125,6 +127,10 @@ mod token_roles;
 
 pub(crate) fn ssh_identity_template_duration(raw: &str) -> Result<i64, AuthError> {
     token_duration::parse_duration(raw).map_err(|_| bad("invalid SSH identity time duration"))
+}
+
+pub(crate) fn framework_signed_integer(raw: &str) -> Result<i64, &'static str> {
+    token_duration::signed_int(raw, true)
 }
 
 pub(crate) fn transit_rotation_duration(raw: &str) -> Result<i64, &'static str> {
@@ -234,6 +240,8 @@ fn is_default_userpass_lockout_counter_reset(value: &u64) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    identity_mfa: Option<mfa::Registry>,
     #[serde(default, skip_serializing_if = "control_groups::Registry::is_absent")]
     control_groups: control_groups::Registry,
     /// RAM-only catalog history for non-recoverable accepted native move tasks.
@@ -1735,6 +1743,7 @@ pub struct AuthResponse {
     pub(crate) unwrapped_json: Option<UnwrappedJson>,
     pub(super) approle_secret_consumption: Option<Box<approle_batch::AppRoleSecretIdConsumption>>,
     pub(super) pending_batch: Option<batch_issuance::PendingBatchGrant>,
+    pub(super) pending_service: Option<mfa::PendingServiceGrant>,
     pub(super) login_identity: Option<LoginIdentity>,
     pub(super) external_groups: Option<identity::ExternalGroups>,
     pub status: u16,
@@ -1787,6 +1796,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
         unwrapped_json: None,
         approle_secret_consumption: None,
         pending_batch: None,
+        pending_service: None,
         login_identity: None,
         external_groups: None,
         status: 200,
@@ -1799,6 +1809,7 @@ fn empty(mutated: bool) -> AuthResponse {
         unwrapped_json: None,
         approle_secret_consumption: None,
         pending_batch: None,
+        pending_service: None,
         login_identity: None,
         external_groups: None,
         status: 204,
@@ -2308,6 +2319,7 @@ impl AuthState {
 
     pub(super) fn known_namespaces(&self) -> BTreeSet<String> {
         let mut namespaces = BTreeSet::new();
+        namespaces.extend(self.mfa_known_namespaces());
         for token in self.tokens.values() {
             if !token.namespace.is_empty() {
                 namespaces.insert(token.namespace.clone());
@@ -2422,6 +2434,7 @@ impl AuthState {
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
         !self.control_group_namespace_has_requests(namespace)
+            && !self.mfa_namespace_has_assets(namespace)
             && !self.sdk_credential_namespace_pending(namespace)
             && !self.sdk_auth_retirement_namespace_pending(namespace)
             && !self
@@ -2508,6 +2521,7 @@ impl AuthState {
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
             control_groups: control_groups::Registry::default(),
+            identity_mfa: None,
             native_remount_epochs: BTreeMap::new(),
             approle_tidy_epochs: BTreeMap::new(),
             native_remount_control: std::sync::Arc::new(()),
@@ -3204,6 +3218,17 @@ impl AuthState {
         now: u64,
     ) -> Result<(String, Token, AuthResponse), AuthError> {
         token.issue_stamp = public_origin::CreationStamp::capture(token.created_at)?;
+        Self::prepare_issue_with_stamp(token, now)
+    }
+    fn prepare_issue_captured(mut token: Token, now: u64, at: Timestamp)
+        -> Result<(String, Token, AuthResponse), AuthError> {
+        if token.created_at != at.seconds() { return Err(denied()); }
+        token.issue_stamp = Some(public_origin::CreationStamp::local_epoch(
+            at.seconds(), at.duration_since_epoch().subsec_nanos())?);
+        Self::prepare_issue_with_stamp(token, now)
+    }
+    fn prepare_issue_with_stamp(token: Token, now: u64)
+        -> Result<(String, Token, AuthResponse), AuthError> {
         token.validate_public_origin()?;
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
@@ -3211,6 +3236,7 @@ impl AuthState {
             unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
+            pending_service: None,
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -4312,7 +4338,7 @@ impl AuthState {
                     peer_certificates,
                 ),
                 "userpass" if suffix.starts_with("login/") => {
-                    self.login_userpass(scope, method, &suffix[6..], body, now, origin_peer)
+                    self.login_userpass(scope, method, &suffix[6..], body, time, origin_peer)
                 }
                 "ldap" if suffix.starts_with("login/") => {
                     self.login_ldap(scope, method, &suffix[6..], body, now)
@@ -6924,6 +6950,7 @@ impl AuthState {
                     unwrapped_json: None,
                     approle_secret_consumption: None,
                     pending_batch: None,
+                    pending_service: None,
                     login_identity: None,
                     external_groups: None,
                     status: 200,
@@ -7969,6 +7996,7 @@ impl AuthState {
             unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
+            pending_service: None,
             login_identity: None,
             external_groups: None,
             status,
@@ -7984,10 +8012,11 @@ impl AuthState {
         method: &str,
         name: &str,
         body: &Value,
-        now: u64,
+        time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
+        let now = time.seconds();
         if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
         }
@@ -8108,6 +8137,9 @@ impl AuthState {
             token_policies.insert("default".into());
         }
         let (issued_service, mut response) = if self.userpass_uses_batch(scope, &user) {
+            if self.mfa_might_enforce(namespace, mount, "userpass") {
+                return Err(err(503, "MFA batch login custody is not yet admitted"));
+            }
             let explicit = (user.token_explicit_max_ttl > 0)
                 .then(|| checked_expiry(now, user.token_explicit_max_ttl))
                 .transpose()?;
@@ -8159,8 +8191,13 @@ impl AuthState {
                 0,
                 now,
             )?);
-            let (token_id, token, response) = Self::prepare_issue(token, now)?;
-            (Some((token_id, token)), response)
+            if self.mfa_might_enforce(namespace, mount, "userpass") {
+                let (mount_revision, binding) = self.mfa_userpass_binding(scope, &user)?;
+                (None, mfa::PendingServiceGrant::response(token, mount_revision, binding, time, origin_peer)?)
+            } else {
+                let (token_id, token, response) = Self::prepare_issue(token, now)?;
+                (Some((token_id, token)), response)
+            }
         };
         userpass_no_default::omit_empty_token_policies(&mut response);
         response.body["auth"]["metadata"] = json!({"username":name});
@@ -8954,6 +8991,17 @@ fn path_matches(pattern: &str, path: &str) -> bool {
 pub(crate) fn parse_strict_json(bytes: &[u8]) -> Result<Value, AuthError> {
     let mut parsed = serde_json::from_slice::<StrictJson>(bytes)
         .map_err(|_| bad("invalid JSON or duplicate object key"))?;
+    fn finite_numbers(value: &Value) -> bool {
+        match value {
+            Value::Number(number) => number.as_f64().is_some_and(f64::is_finite),
+            Value::Array(values) => values.iter().all(finite_numbers),
+            Value::Object(values) => values.values().all(finite_numbers),
+            _ => true,
+        }
+    }
+    if !finite_numbers(&parsed.0) {
+        return Err(bad("invalid JSON number"));
+    }
     Ok(std::mem::take(&mut parsed.0))
 }
 

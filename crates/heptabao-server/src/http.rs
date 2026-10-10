@@ -57,7 +57,7 @@ mod local_control;
 pub use local_control::LocalControlConfig;
 
 const MAX_HEADERS: usize = 16 * 1024;
-const MAX_BODY: usize = 256 * 1024;
+pub(crate) const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
@@ -574,6 +574,20 @@ fn serve_inner(
             return Err(error);
         }
     };
+    let _mfa_janitor = match crate::service::start_mfa_janitor_worker(&service) {
+        Ok(value) => value,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
+                    drop(_namespace_deletion);
+                    drop(_lifecycle);
+                });
+            }
+            return Err(error);
+        }
+    };
     let _ha_activation = match crate::service::start_ha_activation_worker_with_budget(
         &service,
         Duration::from_secs(config.timeout_seconds),
@@ -586,6 +600,7 @@ fn serve_inner(
                 return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
                     drop(_namespace_deletion);
                     drop(_lifecycle);
+                    drop(_mfa_janitor);
                 });
             }
             return Err(error);
@@ -608,6 +623,7 @@ fn serve_inner(
             return control.shutdown(&service, &connections, Some(error), || {
                 drop(_namespace_deletion);
                 drop(_lifecycle);
+                    drop(_mfa_janitor);
                 drop(_ha_activation);
             });
         }
@@ -621,6 +637,7 @@ fn serve_inner(
             return control.shutdown(&service, &connections, None, || {
                 drop(_namespace_deletion);
                 drop(_lifecycle);
+                    drop(_mfa_janitor);
                 drop(_ha_activation);
             });
         }
@@ -641,6 +658,7 @@ fn serve_inner(
                         || {
                             drop(_namespace_deletion);
                             drop(_lifecycle);
+                    drop(_mfa_janitor);
                             drop(_ha_activation);
                         },
                     );
@@ -677,6 +695,7 @@ fn serve_inner(
                         || {
                             drop(_namespace_deletion);
                             drop(_lifecycle);
+                    drop(_mfa_janitor);
                             drop(_ha_activation);
                         },
                     );
@@ -777,6 +796,7 @@ fn serve_inner(
                     || {
                         drop(_namespace_deletion);
                         drop(_lifecycle);
+                    drop(_mfa_janitor);
                         drop(_ha_activation);
                     },
                 );
@@ -845,6 +865,17 @@ fn process_parsed_request(
                 wrap_ttl_seconds: request.wrap_ttl_seconds,
                 origin_peer: Some(peer),
                 client_certificates: request.client_certificates.take(),
+            };
+            let _logical_data = match crate::request_metadata::Scope::enter(
+                request.logical_data.take(), service_request.method, service_request.path,
+                service_request.namespace, &service_request.body,
+            ) {
+                Ok(scope) => scope,
+                Err(_) => {
+                    crate::service::erase_json(&mut service_request.body);
+                    return (snapshot::NativeReply::Json(Response::error(400,
+                        "invalid request-owned logical data")), is_head, request.namespace);
+                }
             };
             let mut reply = if let Err(response) = &consistency {
                 let mut rejected = audited_wire_rejection(
@@ -1202,6 +1233,7 @@ enum ParsedRequest {
 }
 struct Request {
     lexical_wrapping_body: Option<crate::auth::LexicalJson>,
+    logical_data: Option<crate::request_metadata::DataFrame>,
     consistency: consistency::Headers,
     native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
@@ -1319,6 +1351,65 @@ fn read_request_mode(
         ParsedRequest::Api(request) => Ok(*request),
         ParsedRequest::Ui(_) => Err(bad("request must use /v1/ API")),
     }
+}
+
+/// Run the actual HTTP parser/data ingress into the ordinary Service boundary.
+/// The fixed fixture time is caller-owned; this does not reset its auth clock.
+#[cfg(test)]
+pub(crate) fn logical_data_wire_fixture(
+    service: &mut Service, bytes: &[u8], now: u64,
+) -> Result<Response, &'static str> {
+    let started = Instant::now();
+    let deadline = crate::request_deadline::current_deadline()
+        .unwrap_or(started + Duration::from_secs(5));
+    let _deadline = RequestDeadlineScope::enter(deadline);
+    let mut reader = bytes;
+    let mut parsed = read_request_mode(&mut reader,
+        deadline.saturating_duration_since(started), false).map_err(|error| error.message)?;
+    let body = std::mem::take(&mut parsed.body.0);
+    let _data = crate::request_metadata::Scope::enter(parsed.logical_data.take(),
+        &parsed.method, &parsed.path, &parsed.namespace, &body)?;
+    Ok(service.handle_at_mode(crate::service::RequestDispatch {
+        method: &parsed.method, path: &parsed.path, namespace: &parsed.namespace,
+        token: &parsed.token, body, now, allow_forward: false, enforce_namespace: true,
+        wrap_ttl_seconds: parsed.wrap_ttl_seconds, origin_peer: Some(std::net::IpAddr::from([127,0,0,1])),
+        client_certificates: None,
+    }))
+}
+
+/// Actual parser, Service mandatory audit, logical projection and wire writer.
+/// No test JSON marker creates the native output owner.
+#[cfg(test)]
+pub(crate) fn workflow_output_wire_fixture(
+    service:&mut Service,bytes:&[u8],now:u64,
+) -> Result<Zeroizing<Vec<u8>>,&'static str> {
+    let started=Instant::now();
+    let deadline=crate::request_deadline::current_deadline()
+        .unwrap_or(started+Duration::from_secs(5));
+    let _deadline=RequestDeadlineScope::enter(deadline);
+    let mut reader=bytes;
+    let mut parsed=read_request_mode(&mut reader,
+        deadline.saturating_duration_since(started),false).map_err(|error|error.message)?;
+    let attempt=[0xb1;16];
+    let _ingress=crate::auth::IngressReplyScope::listener_wrapping(&attempt,
+        parsed.lexical_wrapping_body.take());
+    let body=std::mem::take(&mut parsed.body.0);
+    let _data=crate::request_metadata::Scope::enter(parsed.logical_data.take(),
+        &parsed.method,&parsed.path,&parsed.namespace,&body)?;
+    let response=service.handle_at_mode(crate::service::RequestDispatch {
+        method:&parsed.method,path:&parsed.path,namespace:&parsed.namespace,
+        token:&parsed.token,body,now,allow_forward:false,enforce_namespace:true,
+        wrap_ttl_seconds:parsed.wrap_ttl_seconds,origin_peer:Some(std::net::IpAddr::from([127,0,0,1])),
+        client_certificates:None,
+    });
+    let mut reply=snapshot::NativeReply::Json(response);
+    logical::project(&mut reply,&attempt,&parsed.path);
+    let snapshot::NativeReply::Json(response)=reply else {
+        return Err("workflow returned non-JSON native reply");
+    };
+    let mut writer=Zeroizing::new(Vec::new());
+    write_response(&mut *writer,response,false).map_err(|_|"actual HTTP output writer rejected")?;
+    Ok(writer)
 }
 
 #[cfg(test)]
@@ -1649,6 +1740,7 @@ fn read_request_with_ui(
         }
         return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
+            logical_data: None,
             consistency,
             native_snapshot: None,
             method: "HELP".to_owned(),
@@ -1685,6 +1777,7 @@ fn read_request_with_ui(
         leader::validate_selectors(&method, &target)?;
         return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
+            logical_data: None,
             consistency,
             native_snapshot: None,
             method,
@@ -1743,6 +1836,12 @@ fn read_request_with_ui(
         crate::auth::parse_strict_json(&bytes[header_end..])
             .map_err(|_| bad("invalid JSON object"))?
     });
+    if body.0.is_null()
+        && matches!(method.as_str(), "POST" | "PUT")
+        && decode_native_logical_path(route)?.starts_with("sys/workflows/execute/")
+    {
+        body.0 = json!({});
+    }
     if !body.0.is_object() {
         return Err(bad("JSON object required"));
     }
@@ -1783,6 +1882,29 @@ fn read_request_with_ui(
             Value::String(authorization.to_string()),
         );
     }
+    // These fields are request-owned data only. Credential, namespace,
+    // consistency and framing headers retain their independent admission paths.
+    let mut logical_data = crate::request_metadata::DataFrame::default();
+    if !snapshot_route {
+        for (name, value) in &map {
+            if matches!(name.as_str(), "authorization" | "x-vault-token" | "x-vault-namespace"
+                | "x-vault-wrap-ttl" | "content-length" | "content-type" | "host"
+                | "connection" | "transfer-encoding" | "expect") {
+                continue;
+            }
+            logical_data.headers.insert(name.clone(), vec![value.to_string()]);
+        }
+    }
+    let workflow_query = path.starts_with("sys/workflows/execute/");
+    if workflow_query {
+        for pair in query.split('&').filter(|pair| !pair.is_empty()) {
+            let (name, value) = pair.split_once('=').ok_or_else(|| bad("workflow query requires values"))?;
+            logical_data.query.entry(decode_query(name)?).or_default().push(decode_query(value)?);
+        }
+    }
+    logical_data.validate().map_err(bad)?;
+    let logical_data = (!logical_data.headers.is_empty() || !logical_data.query.is_empty())
+        .then_some(logical_data);
     let invalid_query = |message| bad(message).with_health_context(&method, path);
     let private_query = if ocsp_get.is_none() {
         ocsp::query_carrier_body(&method, path, query)
@@ -1793,7 +1915,7 @@ fn read_request_with_ui(
     if let Some(carrier) = private_query {
         crate::service::erase_json(&mut body.0);
         body.0 = carrier;
-    } else if ocsp_get.is_none() && !ocsp::post_route(&method, route) {
+    } else if !workflow_query && ocsp_get.is_none() && !ocsp::post_route(&method, route) {
         merge_query_fields(&method, path, query, &mut body.0)?;
     }
     let Some(object) = body.0.as_object_mut() else {
@@ -1875,6 +1997,7 @@ fn read_request_with_ui(
     }
     Ok(ParsedRequest::Api(Box::new(Request {
         lexical_wrapping_body,
+        logical_data,
         consistency,
         native_snapshot,
         method,

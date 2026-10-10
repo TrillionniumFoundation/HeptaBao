@@ -265,6 +265,15 @@ impl QueryRequest<'_> {
         Ok(("GET", body))
     }
 
+    pub(crate) fn unmounted_byok_query(&self) -> bool {
+        self.wire_method == "GET" && self.path.split_once("/byok-export/")
+            .is_some_and(|(prefix, suffix)| {
+                let parts: Vec<_> = suffix.split('/').collect();
+                !prefix.is_empty() && matches!(parts.len(), 2 | 3)
+                    && parts.iter().all(|part| !part.is_empty())
+            })
+    }
+
     pub(crate) fn resolve(
         &self,
         actual_native_query: bool,

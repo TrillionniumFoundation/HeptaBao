@@ -13,6 +13,26 @@ pub(crate) use raw_reply::{
 };
 pub(super) use raw_reply::{RawReplyReaderFloor, RawReplyTokenCustody};
 
+enum WorkflowOutputFailure {
+    Local(Box<crate::workflow_runtime::FailedOutput>),
+    Completed { output_digest: [u8;32], logical_digest: [u8;32] },
+}
+impl WorkflowOutputFailure {
+    fn digests(&self) -> ([u8;32],[u8;32]) {
+        match self {
+            Self::Local(value) => value.digests(),
+            Self::Completed {output_digest,logical_digest} => (*output_digest,*logical_digest),
+        }
+    }
+    fn matches(&self, logical: &Value) -> bool {
+        match self {
+            Self::Local(value) => value.matches(logical),
+            Self::Completed {logical_digest,..} =>
+                logical == &crate::workflow_runtime::FailedOutput::logical()
+                && serde_json::to_vec(logical).is_ok_and(|bytes| crypto::digest(&bytes)==*logical_digest),
+        }
+    }
+}
 pub(crate) struct UnwrappedJson {
     // Keep the secret-bearing owner affine without inflating every Response result.
     // Box destruction still runs StoredWrappedReply's zeroizing destructor.
@@ -21,8 +41,36 @@ pub(crate) struct UnwrappedJson {
     selected_json_http: Option<Zeroizing<Vec<u8>>>,
     // Prepared from the actual consumed owner before mandatory response audit.
     selected_response: Option<Box<raw_reply::SelectedResponseProjection>>,
+    workflow_output_failure: Option<WorkflowOutputFailure>,
+    workflow_failure_audited: bool,
 }
 impl UnwrappedJson {
+    pub(crate) fn from_workflow_output_failure(value: crate::workflow_runtime::FailedOutput) -> Self {
+        Self {
+            stored_reply: None, selected_json_http: None, selected_response: None,
+            workflow_output_failure: Some(WorkflowOutputFailure::Local(Box::new(value))),
+            workflow_failure_audited: false,
+        }
+    }
+    pub(crate) fn workflow_value(&self) -> Option<&crate::workflow_runtime::Value> {
+        match &self.workflow_output_failure {
+            Some(WorkflowOutputFailure::Local(value)) => Some(value.value()),
+            _ => None,
+        }
+    }
+    pub(crate) fn framing_wire(&self,logical:&Value)
+        -> Result<crate::ha_forward::UnwrapFramingWire,AuthError> {
+        if let Some(value)=&self.workflow_output_failure {
+            if self.stored_reply.is_some() || !value.matches(logical) {
+                return Err(bad("workflow private output projection differs"));
+            }
+            let (output_digest,logical_digest)=value.digests();
+            return Ok(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure {output_digest,logical_digest});
+        }
+        if let Some(stored)=&self.stored_reply { stored.validate(logical)?; }
+        Ok(crate::ha_forward::UnwrapFramingWire::StoredJson)
+    }
+
     // The owning SSH mount, rather than caller JSON or a route string, is the
     // sole producer. Reuse the existing authenticated GeneralRawHttp wire kind.
     pub(crate) fn from_native_ssh_public_key(
@@ -38,6 +86,8 @@ impl UnwrappedJson {
             stored_reply: Some(Box::new(stored)),
             selected_json_http: None,
             selected_response: None,
+            workflow_output_failure: None,
+            workflow_failure_audited: false,
         })
     }
     pub(crate) fn from_completed_raw_forward(
@@ -53,11 +103,26 @@ impl UnwrappedJson {
                 .validate(&response.body)
                 .map_err(|_| "HA stored reply projection rejected")?;
         }
+        let workflow_output_failure = match response.unwrapped_json {
+            Some(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure {output_digest,logical_digest}) => {
+                let value = WorkflowOutputFailure::Completed {output_digest,logical_digest};
+                if response.status != 200 || response.raw_wrapped_reply.is_some() || !value.matches(&response.body) {
+                    return Err("HA workflow output failure completion differs".into());
+                }
+                Some(value)
+            }
+            _ => None,
+        };
         Ok(Self {
             stored_reply: response.raw_wrapped_reply.clone().map(Box::new),
             selected_json_http: None,
             selected_response: None,
+            workflow_output_failure,
+            workflow_failure_audited: false,
         })
+    }
+    pub(crate) fn has_native_http_projection(&self) -> bool {
+        self.has_stored_reply() || self.workflow_output_failure.is_some()
     }
     pub(crate) fn has_stored_reply(&self) -> bool {
         self.stored_reply.is_some()
@@ -79,6 +144,10 @@ impl UnwrappedJson {
         &'a self,
         logical: &Value,
     ) -> Result<Option<(u16, &'a str)>, AuthError> {
+        if let Some(value)=&self.workflow_output_failure {
+            if !value.matches(logical) { return Err(bad("workflow private output projection differs")); }
+            return Ok(Some((200,"application/json")));
+        }
         self.stored_reply
             .as_ref()
             .map(|stored| stored.raw_http_transport(logical))
@@ -89,6 +158,20 @@ impl UnwrappedJson {
         &mut self,
         logical: &Value,
     ) -> Result<Option<Zeroizing<Vec<u8>>>, AuthError> {
+        if let Some(value)=&self.workflow_output_failure {
+            if !value.matches(logical) || self.workflow_failure_audited {
+                return Err(bad("workflow output mandatory audit projection differs"));
+            }
+            let binding = match value {
+                WorkflowOutputFailure::Local(value) => value.audit_binding()
+                    .map_err(|_|bad("workflow output audit binding exceeds bounds"))?,
+                WorkflowOutputFailure::Completed {output_digest,logical_digest} =>
+                    Zeroizing::new(serde_json::to_vec(&("workflow-output-json-failure",output_digest,logical_digest))
+                        .map_err(|_|bad("workflow output audit binding unavailable"))?),
+            };
+            self.workflow_failure_audited=true;
+            return Ok(Some(binding));
+        }
         let Some(stored) = &self.stored_reply else {
             return Ok(None);
         };
@@ -112,6 +195,16 @@ impl UnwrappedJson {
         if self.selected_json_http.is_some() {
             return Err(bad("selected JSON ingress was already bound"));
         }
+        if let Some(value)=&self.workflow_output_failure {
+            if !value.matches(logical) || !self.workflow_failure_audited {
+                return Err(bad("workflow output lacks mandatory audited ingress"));
+            }
+            // Existing HTTP boundary supplies the actual ingress. The private
+            // native producer owns zero bytes after failed JSON serialization.
+            let _ = actual_ingress;
+            self.selected_json_http=Some(Zeroizing::new(Vec::new()));
+            return Ok(());
+        }
         if let Some(stored) = &self.stored_reply {
             if stored.uses_selected_json_ingress() {
                 let prepared = self.selected_response.as_deref().ok_or_else(|| {
@@ -124,6 +217,13 @@ impl UnwrappedJson {
         Ok(())
     }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
+        if let Some(value)=&self.workflow_output_failure {
+            if !value.matches(logical) || !self.workflow_failure_audited {
+                return Err(bad("workflow output lacks mandatory audit"));
+            }
+            return self.selected_json_http.as_deref().map(Vec::as_slice).map(Some)
+                .ok_or_else(||bad("workflow output lacks actual HTTP ingress"));
+        }
         let Some(stored) = &self.stored_reply else {
             return Ok(None);
         };
@@ -453,6 +553,7 @@ impl AuthState {
             unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
+            pending_service: None,
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -645,10 +746,13 @@ impl AuthState {
             unwrapped_json: Some(UnwrappedJson {
                 selected_json_http: None,
                 selected_response: None,
+            workflow_output_failure: None,
+            workflow_failure_audited: false,
                 stored_reply: wrapped.stored_reply.clone().map(Box::new),
             }),
             approle_secret_consumption: None,
             pending_batch: None,
+            pending_service: None,
             login_identity: None,
             external_groups: None,
             status: 200,

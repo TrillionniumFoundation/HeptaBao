@@ -385,6 +385,7 @@ impl AuthState {
             unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
+            pending_service: None,
             login_identity: None,
             external_groups: None,
             status: 200,

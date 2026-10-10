@@ -412,7 +412,21 @@ fn hmac_algorithm(algorithm: &str) -> Result<hmac::Algorithm> {
 }
 
 fn code(key: &Key, counter: u64) -> Result<String> {
-    let key_bytes = hmac::Key::new(hmac_algorithm(&key.algorithm)?, &key.secret);
+    rfc6238_code(&key.secret, &key.algorithm, key.digits, counter)
+}
+
+/// Parameterized native RFC6238 primitive shared with Identity MFA. It does not
+/// sample time or mutate the independent TOTP secret-engine replay owner.
+pub(crate) fn rfc6238_code(
+    secret: &[u8],
+    algorithm: &str,
+    digits: u32,
+    counter: u64,
+) -> Result<String> {
+    if secret.is_empty() || !matches!(digits, 6 | 8) {
+        return Err(bad("invalid RFC6238 parameters"));
+    }
+    let key_bytes = hmac::Key::new(hmac_algorithm(algorithm)?, secret);
     let tag = hmac::sign(&key_bytes, &counter.to_be_bytes());
     let bytes = tag.as_ref();
     let offset = usize::from(bytes[bytes.len() - 1] & 15);
@@ -422,8 +436,8 @@ fn code(key: &Key, counter: u64) -> Result<String> {
         | u32::from(bytes[offset + 3]);
     Ok(format!(
         "{:0width$}",
-        truncated % 10u32.pow(key.digits),
-        width = key.digits as usize
+        truncated % 10u32.pow(digits),
+        width = digits as usize
     ))
 }
 
@@ -627,4 +641,30 @@ mod tests {
         }
         Ok(())
     }
+}
+
+/// Enrollment rendering is independent of validation/replay ownership.
+pub(crate) fn mfa_totp_enrollment(
+    secret: &[u8],
+    issuer: &str,
+    account: &str,
+    algorithm: &str,
+    digits: u32,
+    period: u64,
+    qr_size: u32,
+) -> Result<(Zeroizing<String>, Zeroizing<String>)> {
+    if secret.is_empty() || period == 0 || qr_size > 4096 || !matches!(digits, 6 | 8) {
+        return Err(bad("invalid TOTP enrollment parameters"));
+    }
+    hmac_algorithm(algorithm)?;
+    let encoded = Zeroizing::new(encode_base32(secret));
+    let url = Zeroizing::new(format!(
+        "otpauth://totp/{}:{}?algorithm={}&digits={}&issuer={}&period={}&secret={}",
+        percent_encode(issuer), percent_encode(account), algorithm, digits,
+        percent_encode(issuer), period, encoded.as_str(),
+    ));
+    let barcode = if qr_size == 0 { String::new() } else {
+        Totp::generate_barcode(&url, qr_size)?
+    };
+    Ok((url, Zeroizing::new(barcode)))
 }

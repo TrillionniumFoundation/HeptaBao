@@ -432,6 +432,8 @@ pub(crate) struct DeferredRequest {
     pub(crate) transport_namespace: String,
     #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub(crate) transport_body: Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) logical_data: Option<crate::request_metadata::DataFrame>,
     pub(crate) wrap_ttl_seconds: Option<u64>,
     pub(crate) origin_peer: Option<std::net::IpAddr>,
     pub(crate) client_certificates: Option<Vec<Vec<u8>>>,
@@ -477,6 +479,8 @@ struct CredentialContext<'a> {
     transport_path: &'a str,
     transport_namespace: &'a str,
     transport_body: &'a Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    logical_data: &'a Option<crate::request_metadata::DataFrame>,
     wrap_ttl_seconds: Option<u64>,
     origin_peer: Option<std::net::IpAddr>,
     client_certificates: &'a Option<Vec<Vec<u8>>>,
@@ -509,6 +513,7 @@ impl DeferredRequest {
             transport_path: &self.transport_path,
             transport_namespace: &self.transport_namespace,
             transport_body: &self.transport_body,
+            logical_data: &self.logical_data,
             wrap_ttl_seconds: self.wrap_ttl_seconds,
             origin_peer: self.origin_peer,
             client_certificates: &self.client_certificates,
@@ -782,6 +787,9 @@ impl AuthState {
                 .flat_map(|policy| policy.control_groups.values())
                 .flatten()
                 .any(|stanza| stanza.control.precise_ttl.is_some())
+    }
+    pub(crate) fn has_control_group_logical_data(&self) -> bool {
+        self.control_groups.requests.values().any(|owner| owner.logical_data.is_some())
     }
     pub(crate) fn has_control_group_state(&self) -> bool {
         !self.control_groups.is_absent()
@@ -1276,6 +1284,7 @@ impl AuthState {
             }
             owner.request_accessor = accessor.clone();
             if actor.service_token().is_none()
+                || owner.logical_data.is_some()
                 || matches!(
                     owner.path.as_str(),
                     "auth/token/lookup-self" | "auth/token/renew-self"
@@ -1341,6 +1350,7 @@ impl AuthState {
             unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
+            pending_service: None,
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -1447,6 +1457,15 @@ impl AuthState {
         Ok(())
     }
     pub(crate) fn validate_control_group_state(&self) -> Result<(), AuthError> {
+        for owner in self.control_groups.requests.values() {
+            if let Some(data) = &owner.logical_data {
+                data.validate().map_err(bad)?;
+                if let Some(profile) = &data.profile
+                    && (profile.namespace_id != owner.namespace_id || profile.incarnation != owner.namespace_incarnation) {
+                    return Err(bad("control group logical data namespace owner rejected"));
+                }
+            }
+        }
         for policy in self.policies.values().flat_map(|p| p.values()) {
             if collect(&policy.source, &policy.rules)? != policy.control_groups {
                 return Err(bad("control group policy source ownership mismatch"));
@@ -1582,6 +1601,9 @@ impl DeferredRequest {
         ) && self.credential.is_none()
         {
             return Err(bad("controlled self-token echo custody is missing"));
+        }
+        if self.logical_data.is_some() && self.credential.is_none() {
+            return Err(bad("controlled logical request data custody is missing"));
         }
         let entity = self
             .actor_entity

@@ -154,6 +154,13 @@ const SDK_ADVANCED_STATE_SCHEMA: u32 = 126;
 const TRANSIT_DERIVED_ED_STATE_SCHEMA: u32 = 127;
 const WORKFLOW_CREDENTIAL_STATE_SCHEMA: u32 = 128;
 const TRANSIT_CACHE_STATE_SCHEMA: u32 = 130;
+const IDENTITY_MFA_STATE_SCHEMA: u32 = crate::auth::mfa::STATE_SCHEMA;
+#[path = "service_mfa.rs"]
+mod mfa;
+#[path = "service_mfa_janitor.rs"]
+mod mfa_janitor;
+pub(crate) use mfa_janitor::start_mfa_janitor_worker;
+const WORKFLOW_INPUT_STATE_SCHEMA: u32 = 131;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -162,7 +169,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_CACHE_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = WORKFLOW_INPUT_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -216,6 +223,8 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | TRANSIT_DERIVED_ED_STATE_SCHEMA
                 | WORKFLOW_CREDENTIAL_STATE_SCHEMA
                 | TRANSIT_CACHE_STATE_SCHEMA
+                | IDENTITY_MFA_STATE_SCHEMA
+                | WORKFLOW_INPUT_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -3027,6 +3036,11 @@ impl Service {
         request: RequestView<'_>,
         resume: Option<control_groups::ControlGroupResume>,
     ) -> Response {
+        let logical_data = match crate::request_metadata::current(
+            request.method, request.path, request.namespace, request.body) {
+            Ok(data) => data,
+            Err(error) => return Response::error(400,error),
+        };
         let resumed_control_group = resume.is_some();
         let (resume, control_group_echo) = match resume {
             Some(resume) => (Some(resume.actor), resume.echo),
@@ -3545,7 +3559,7 @@ impl Service {
         }
         let mount_metadata =
             path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
-        let public_login = admitted.auth.is_public_login(namespace, method, path);
+        let public_login = admitted.auth.is_public_login(namespace, method, path) || path=="sys/mfa/validate";
         let authenticate_bearer = !token.is_empty()
             && path != "sys/wrapping/lookup"
             && !public_otp_verify
@@ -3641,6 +3655,17 @@ impl Service {
         {
             return error;
         }
+        let logical_input = match workflows::input::prepare(&admitted,principal.as_ref(),&request,logical_data) {
+            Ok(prepared) => prepared,
+            Err(error) => return error,
+        };
+        let body = logical_input.body.as_ref().map_or(body, |value| &value.0);
+        let request = RequestView { body, ..request };
+        let _logical_data_scope = match crate::request_metadata::Scope::enter(
+            logical_input.frame,request.method,request.path,request.namespace,request.body) {
+            Ok(scope) => scope,
+            Err(error) => return Response::error(400,error),
+        };
         if method == "HELP" {
             if principal.is_none() {
                 return Response::error(403, "missing client token");
@@ -4410,6 +4435,7 @@ impl Service {
             || admitted.engines.has_transit_cache_state()
                         || admitted.engines.has_transit_derived_ed_state()
             || admitted.engines.has_kv2_lossless_state()
+            || admitted.auth.has_identity_mfa_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -5038,6 +5064,9 @@ impl Service {
                 &secret_mounts,
             );
         }
+        if path=="sys/mfa/validate" {
+            return Self::mfa_validation_route(state,namespace,method,body,time,origin_peer);
+        }
         let Some(principal) = principal else {
             return Response::error(403, "permission denied");
         };
@@ -5074,6 +5103,12 @@ impl Service {
             .authorize_request(principal, namespace, path, capability, now)
         {
             return Response::error(error.status, &error.message);
+        }
+        if let Some(response)=Self::mfa_enrollment_route(state,principal,namespace,method,path,body,time) {
+            return response;
+        }
+        if let Some(response)=Self::mfa_identity_route(state,principal,namespace,method,path,body,time) {
+            return response;
         }
         if matches!(method, "POST" | "PUT" | "PATCH")
             && let Err(error) =

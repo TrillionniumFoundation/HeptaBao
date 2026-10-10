@@ -19,6 +19,7 @@ use zeroize::Zeroize;
 #[path = "engine_external_keys.rs"]
 mod external_keys;
 mod identity;
+pub(crate) use totp::{mfa_totp_enrollment, rfc6238_code};
 #[path = "engine_identity.rs"]
 mod identity_projection;
 #[path = "engine_identity_api.rs"]

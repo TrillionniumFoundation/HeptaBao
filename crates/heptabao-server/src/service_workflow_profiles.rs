@@ -3,7 +3,7 @@
 use super::*;
 use crate::auth::{Lex, lex_hcl, parse_hcl_value};
 #[path = "service_workflow_dynamic.rs"]
-mod dynamic;
+pub(super) mod dynamic;
 #[path = "service_workflow_credentials.rs"]
 mod credentials;
 
@@ -50,6 +50,10 @@ fn step_key(flow: &str, name: &str) -> String {
 }
 
 impl Profile {
+    pub(super) fn document(&self) -> &str { &self.document }
+    pub(super) fn has_logical_data(&self) -> bool {
+        self.dynamic_program().ok().flatten().is_some_and(|program| program.has_logical_data())
+    }
     pub(super) fn has_expression_sources(&self) -> bool {
         self.dynamic_program().ok().flatten().is_some_and(|program| program.has_expression_sources())
     }
@@ -488,6 +492,14 @@ impl Service {
         };
         let mut responses = BTreeMap::new();
         for step in &compiled.steps {
+            // Static requests declare no inner logical headers or query. The
+            // outer HTTP frame belongs to execute, never to this subrequest.
+            let _logical_data = match crate::request_metadata::Scope::enter(
+                None, &step.method, &step.path, outer.namespace, &step.body,
+            ) {
+                Ok(scope) => scope,
+                Err(error) => return Response::error(400, error),
+            };
             let mut response = self.workflow_profile_dispatch_step(&mut state, actor, outer, step);
             if response.status >= 300 && !step.allow_failure {
                 return response;
@@ -556,6 +568,16 @@ impl Service {
             wrap_ttl_seconds: None,
             origin_peer: outer.origin_peer,
             client_certificates: outer.client_certificates,
+        };
+        let logical_data = match crate::request_metadata::current(
+            &step.method,&step.path,outer.namespace,&step.body) {
+            Ok(frame) => frame,
+            Err(error) => return Response::error(400,error),
+        };
+        let _logical_data = match crate::request_metadata::Scope::enter(logical_data,
+            request.method,request.path,request.namespace,request.body) {
+            Ok(scope) => scope,
+            Err(error) => return Response::error(400,error),
         };
         let transport = control_groups::TransportRequest {
             method: &step.method,
@@ -628,6 +650,12 @@ impl Service {
                 Ok(None) => continue,
                 Err(error) => return error,
             };
+            let _logical_data = match crate::request_metadata::Scope::enter(
+                resolved.data_frame.clone(), &resolved.step.method, &resolved.step.path,
+                outer.namespace, &resolved.step.body) {
+                Ok(scope) => scope,
+                Err(message) => return Response::error(400,message),
+            };
             let mut response = match &resolved.token {
                 Some(token) => self.workflow_credential_dispatch_step(&mut state, outer, &resolved.step, token),
                 None => self.workflow_profile_dispatch_step(&mut state, actor, outer, &resolved.step),
@@ -644,11 +672,30 @@ impl Service {
             if response.status >= 300 && !resolved.step.allow_failure {
                 return response;
             }
-            context.record(resolved, std::mem::take(&mut response.body));
+            context.record_response(resolved, &mut response);
         }
-        match program.output(&context) {
-            Ok(output) => Response::ok(json!({"data":output})),
-            Err(error) => error,
+        let output = match program.runtime_output(&context) {
+            Ok(output) => output,
+            Err(error) => return error,
+        };
+        if output.has_nonfinite() {
+            // Official2.7 fails response wrapping at the final output stage,
+            // after already committed requests. Never mint a finite wrapper
+            // for an internally evaluated value that JSON cannot represent.
+            if outer.wrap_ttl_seconds.is_some_and(|ttl|ttl>0) {
+                return Response::error(500,"internal error");
+            }
+            let output=match crate::workflow_runtime::FailedOutput::capture(output) {
+                Ok(output)=>output,
+                Err(())=>return Response::error(500,"workflow output representation rejected"),
+            };
+            let mut response=Response::ok(crate::workflow_runtime::FailedOutput::logical());
+            response.unwrapped_json=Some(crate::auth::UnwrappedJson::from_workflow_output_failure(output));
+            return response;
+        }
+        match output.to_json() {
+            Ok(output)=>Response::ok(json!({"data":output})),
+            Err(())=>Response::error(500,"workflow output JSON encoding failed"),
         }
     }
 }
@@ -719,4 +766,23 @@ mod tests {
             .is_err()
         );
     }
+}
+
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
+pub(super) fn logical_first_step_fixture(
+    profile: &Profile,
+    body: &Value,
+    started: Instant,
+) -> Result<(WorkflowStep, Option<crate::request_metadata::DataFrame>), Response> {
+    let program = profile.dynamic_program()?
+        .ok_or_else(|| bad_profile("actual dynamic profile required"))?;
+    let context = program.context_at(body, started)?;
+    let resolved = program.steps.first()
+        .ok_or_else(|| bad_profile("actual first step required"))?
+        .resolve(&context)?
+        .ok_or_else(|| bad_profile("actual first step was skipped"))?;
+    if resolved.token.is_some() {
+        return Err(bad_profile("fixture does not substitute credential admission"));
+    }
+    Ok((resolved.step, resolved.data_frame))
 }

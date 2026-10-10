@@ -21,8 +21,9 @@ tokio-openssl = "=0.6.5"
 rustix = { version = "=1.1.4", features = ["fs"] }
 
 [dev-dependencies]
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring", "tls12"] }
 rcgen = { version = "=0.14.10", default-features = false, features = ["crypto", "pem", "ring"] }
-tonic = { version = "=0.14.6", default-features = false, features = ["server", "router", "codegen", "tls-ring"] }
+tonic = { version = "=0.14.6", default-features = false, features = ["server", "router", "codegen", "tls-ring", "tls-connect-info"] }
 tokio-stream = { version = "=0.1.19", features = ["net"] }
 tokio = { version = "=1.53.1", features = ["macros", "rt-multi-thread", "test-util", "net"] }
 

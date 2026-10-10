@@ -246,6 +246,11 @@ impl State {
         let required = if self.engines.has_transit_cache_state() {
             required.max(TRANSIT_CACHE_STATE_SCHEMA)
         } else { required };
+        let required=if self.auth.has_identity_mfa_state(){required.max(IDENTITY_MFA_STATE_SCHEMA)}else{required};
+        let required = if self.namespaces.workflows.has_logical_input_profiles()
+            || self.auth.has_control_group_logical_data() {
+            required.max(WORKFLOW_INPUT_STATE_SCHEMA)
+        } else { required };
         self.schema.max(required)
     }
 
@@ -261,6 +266,12 @@ impl State {
                 || previous.is_some_and(|state| state.schema >= TRANSIT_CACHE_STATE_SCHEMA))
         {
             return Err(Response::error(503, "transit cache configuration requires schema 130"));
+        }
+        self.auth.validate_identity_mfa_state(previous.map(|state|&*state.auth))
+            .map_err(|error|Response::error(503,&error.message))?;
+        if self.schema<IDENTITY_MFA_STATE_SCHEMA
+            && (self.auth.has_identity_mfa_state()||previous.is_some_and(|state|state.schema>=IDENTITY_MFA_STATE_SCHEMA)) {
+            return Err(Response::error(503,"Identity MFA requires schema 129"));
         }
         self.auth.validate_sdk_advanced_state(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
@@ -287,6 +298,12 @@ impl State {
             return Err(Response::error(503, "precise transit rotation requires schema 124"));
         }
         self.namespaces.workflows.validate()?;
+        if self.schema < WORKFLOW_INPUT_STATE_SCHEMA
+            && (self.namespaces.workflows.has_logical_input_profiles()
+                || self.auth.has_control_group_logical_data()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_INPUT_STATE_SCHEMA)) {
+            return Err(Response::error(503,"workflow logical input requires schema 131"));
+        }
         if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
             && (self.namespaces.workflows.has_request_credentials()
                 || previous.is_some_and(|state| state.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA))
@@ -1111,6 +1128,7 @@ impl State {
             ));
         }
         self.validate_sdk_namespace_custody()?;
+        self.validate_mfa_namespace_custody()?;
         self.engines
             .validate_ssh_ca_format()
             .map_err(Response::from_engine_error)?;
@@ -1192,6 +1210,17 @@ impl State {
         self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth.validate_identity_mfa_state(None).map_err(|error|Response::error(503,&error.message))?;
+        self.auth.validate_identity_mfa_bindings(&self.cluster_id,
+            |namespace|self.namespaces.mfa_scope(namespace),
+            |namespace|self.namespaces.mfa_retirement_floor(namespace),
+            |namespace|self.namespaces.custody_owner(namespace).is_some()
+                ||self.namespaces.inherited_owner(namespace).is_some())
+            .map_err(|error|Response::error(503,&error.message))?;
+        if self.schema<IDENTITY_MFA_STATE_SCHEMA&&self.auth.has_identity_mfa_state()
+            ||self.schema==IDENTITY_MFA_STATE_SCHEMA&&!self.auth.has_identity_mfa_state(){
+            return Err(Response::error(503,"Identity MFA reader marker requires schema 129"));
+        }
         self.auth.validate_sdk_advanced_state(None)
             .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < SDK_ADVANCED_STATE_SCHEMA && self.auth.has_sdk_advanced_state()
@@ -1524,6 +1553,10 @@ impl State {
         }
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA && self.auth.has_fractional_control_group_state() {
             return Err(Response::error(503, "fractional control groups require schema 122"));
+        }
+        if self.schema < WORKFLOW_INPUT_STATE_SCHEMA
+            && (self.namespaces.workflows.has_logical_input_profiles() || self.auth.has_control_group_logical_data()) {
+            return Err(Response::error(503,"workflow logical input requires schema 131"));
         }
         if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA && self.namespaces.workflows.has_request_credentials() {
             return Err(Response::error(503, "workflow request credentials require schema 128"));
@@ -2290,6 +2323,8 @@ impl State {
             | TRANSIT_DERIVED_ED_STATE_SCHEMA
             | WORKFLOW_CREDENTIAL_STATE_SCHEMA
             | TRANSIT_CACHE_STATE_SCHEMA
+            | IDENTITY_MFA_STATE_SCHEMA
+            | WORKFLOW_INPUT_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
@@ -2405,8 +2440,8 @@ impl Service {
         }
         let is_auth = response.body.get("auth").is_some();
         let envelope = if is_auth { "auth" } else { "data" };
-        let Some(id) = response.body[envelope]["entity_id"]
-            .as_str()
+        let native_mfa_entity=response.pending_service.as_ref().and_then(|pending|pending.entity_id()).map(str::to_owned);
+        let Some(id) = native_mfa_entity.as_deref().or_else(||response.body[envelope]["entity_id"].as_str())
             .filter(|id| !id.is_empty())
         else {
             if response.external_groups.is_some() {
@@ -2438,6 +2473,8 @@ impl Service {
         if is_auth && projection.disabled {
             return Err(Response::error(403, "permission denied"));
         }
+        let mfa_entity=projection.entity_id.clone();
+        let mfa_groups=projection.group_ids.clone();
         response.body[envelope]["entity_id"] = Value::String(projection.entity_id);
         response.body[envelope]["identity_policies"] = json!(projection.policies);
         if is_auth {
@@ -2452,6 +2489,7 @@ impl Service {
             }
             response.body["auth"]["policies"] = json!(all);
         }
+        auth.finish_mfa_response(response,&mfa_entity,&mfa_groups,time).map_err(auth_error)?;
         auth.finish_pending_batch_observed(response, namespace, now, time)
             .map_err(auth_error)
     }

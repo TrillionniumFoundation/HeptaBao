@@ -3789,10 +3789,10 @@ fn workflow123_invalid_input_and_forward_history_fail_before_any_provider() -> T
     let mut cases = Vec::new();
     let mut missing = dynamic_input123();
     missing.as_object_mut().ok_or("object")?.remove("payload");
-    cases.push(missing);
+    cases.push((missing, 500));
     for (key, value) in [
         ("payload", json!("not-a-map")),
-        ("run", json!(1)),
+        ("run", json!(-2)),
         ("tags", json!(["ok", 1])),
         ("mode", json!("forbidden")),
         ("operation", json!("sudo")),
@@ -3800,9 +3800,9 @@ fn workflow123_invalid_input_and_forward_history_fail_before_any_provider() -> T
     ] {
         let mut input = dynamic_input123();
         input[key] = value;
-        cases.push(input);
+        cases.push((input, if matches!(key, "operation" | "path") { 400 } else { 500 }));
     }
-    for input in cases {
+    for (input, expected_status) in cases {
         assert_eq!(
             call(
                 &mut f.service,
@@ -3813,7 +3813,7 @@ fn workflow123_invalid_input_and_forward_history_fail_before_any_provider() -> T
                 100
             )
             .status,
-            400
+            expected_status
         );
         read(&mut f, 1, "before", 100);
         assert_eq!(
@@ -4299,3 +4299,6 @@ mod expression_tests;
 
 #[path = "service_workflow_credentials_tests.rs"]
 mod credential_tests;
+
+#[path = "service_workflow_logical_input_tests.rs"]
+mod logical_input_tests;

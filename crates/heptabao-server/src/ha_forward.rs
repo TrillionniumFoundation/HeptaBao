@@ -64,6 +64,8 @@ pub(crate) struct ForwardRequest {
     pub wrapped_reply_ingress: Option<[u8; 16]>,
     #[serde(default)]
     pub wrapped_reply_lexical: Option<crate::auth::LexicalJson>,
+    #[serde(default)]
+    pub logical_data: Option<crate::request_metadata::DataFrame>,
     /// True only when an explicitly enabled one-step rolling transition
     /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
     #[serde(skip)]
@@ -168,12 +170,17 @@ struct ForwardRequestRef<'a> {
     wrapped_reply_ingress: Option<[u8; 16]>,
     #[serde(skip_serializing_if = "Option::is_none")]
     wrapped_reply_lexical: Option<&'a crate::auth::LexicalJson>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    logical_data: Option<&'a crate::request_metadata::DataFrame>,
 }
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub(crate) enum UnwrapFramingWire {
     StoredJson,
+    // Produced locally only by evaluated workflow output, or recovered from
+    // an original completed-forward MAC. No public request carrier creates it.
+    WorkflowJsonFailure { output_digest: [u8; 32], logical_digest: [u8; 32] },
 }
 
 #[derive(Deserialize, Serialize)]
@@ -301,6 +308,7 @@ pub(crate) fn encode_request_for_cluster(
             completion_nonce: None,
             wrapped_reply_ingress: None,
             wrapped_reply_lexical: None,
+            logical_data: None,
         },
     )
 }
@@ -383,6 +391,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
             completion_nonce: None,
             wrapped_reply_ingress: None,
             wrapped_reply_lexical: None,
+            logical_data: None,
         },
     )
 }
@@ -427,6 +436,7 @@ pub(crate) fn encode_peer_request_for_cluster(
             completion_nonce: None,
             wrapped_reply_ingress: None,
             wrapped_reply_lexical: None,
+            logical_data: None,
         },
     )
 }
@@ -483,6 +493,8 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     validate_direction(direction.0, direction.1)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
+    let logical_data = crate::request_metadata::current(method, path, namespace, body)
+        .map_err(|_| "HA logical data belongs to another request")?;
     let wrapped_reply_context = crate::auth::current_ingress();
     let wrapped_reply_ingress = wrapped_reply_context
         .as_ref()
@@ -496,6 +508,7 @@ pub(crate) fn encode_completed_index_request_for_cluster(
             .map_err(|_| "HA private lexical request binding differs")?;
     }
     let full_reply = path == "sys/wrapping/unwrap"
+        || path.starts_with("sys/workflows/execute/")
         || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some()
         || wrapped_reply_lexical.is_some();
     if full_reply && completion_nonce.is_none() {
@@ -523,6 +536,7 @@ pub(crate) fn encode_completed_index_request_for_cluster(
             client_certificates,
             origin_peer,
             completion_nonce,
+            logical_data: logical_data.as_ref(),
             wrapped_reply_ingress: if full_reply {
                 wrapped_reply_ingress
             } else {
@@ -569,6 +583,7 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
         return Err("HA unwrap framing requires original completion nonce".into());
     }
     let full_reply = request.path == "sys/wrapping/unwrap"
+        || request.path.starts_with("sys/workflows/execute/")
         || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
             && request.wrapped_reply_ingress.is_some()
         || request.wrapped_reply_lexical.is_some();
@@ -606,6 +621,9 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
         &request.token,
     )?;
     validate_client_certificates(request.client_certificates.as_deref())?;
+    if let Some(data) = &request.logical_data {
+        data.validate().map_err(str::to_owned)?;
+    }
     Ok(request)
 }
 
@@ -689,6 +707,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 completion_nonce: None,
                 wrapped_reply_ingress: None,
                 wrapped_reply_lexical: None,
+            logical_data: None,
             })
         }
         Err(error) => Err(error),
@@ -819,7 +838,8 @@ fn encode_completed_framed_response_for_cluster(
             unwrapped_json: response
                 .unwrapped_json
                 .as_ref()
-                .map(|_| UnwrapFramingWire::StoredJson),
+                .map(|origin| origin.framing_wire(&response.body))
+                .transpose().map_err(|_| "HA private response origin rejected")?,
             raw_wrapped_reply: response
                 .unwrapped_json
                 .as_ref()
@@ -870,6 +890,15 @@ fn decode_framed_response_for_cluster(
         stored
             .validate(&response.body)
             .map_err(|_| "HA stored reply representation rejected")?;
+    }
+    if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) = response.unwrapped_json {
+        if response.raw_wrapped_reply.is_some()
+            || response.body != crate::workflow_runtime::FailedOutput::logical()
+            || serde_json::to_vec(&response.body).is_err()
+            || serde_json::to_vec(&response.body).is_ok_and(|bytes| crate::crypto::digest(&bytes) != logical_digest)
+        {
+            return Err("HA workflow serialization failure projection differs".into());
+        }
     }
     validate_direction(response.source, response.target)?;
     validate_cluster_id(&response.cluster_id)?;

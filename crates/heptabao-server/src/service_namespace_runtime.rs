@@ -1124,6 +1124,8 @@ impl Runtime {
         // descendant parcels already carry their own retired admission.
         for namespace in state.namespaces.partition_paths(actual)? {
             state.engines.retire_namespace_pending_delivery(&namespace);
+            state.auth.retire_mfa_pending_delivery(&namespace)
+                .map_err(|error|Response::error(error.status,&error.message))?;
             Service::retire_namespace_pending_database(state, &namespace)?;
         }
         Ok(())
@@ -1657,6 +1659,7 @@ impl Service {
                 request_live()
             })?;
         self.state = Some(candidate);
+        self.complete_mfa_namespace_retirements()?;
         Ok(())
     }
 }
@@ -2757,6 +2760,20 @@ impl State {
                     503,
                     "SDK namespace actual ciphertext ownership differs",
                 ));
+            }
+        }
+        Ok(())
+    }
+}
+
+impl State {
+    pub(super) fn validate_mfa_namespace_custody(&self) -> Result<(), Response> {
+        if self.auth.mfa_has_unbound_projection() {
+            return Err(Response::error(503, "MFA detached projection lacks actual ciphertext ownership"));
+        }
+        for expected in self.auth.mfa_namespace_visible_owners() {
+            if self.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != *expected {
+                return Err(Response::error(503, "MFA queue actual ciphertext ownership differs"));
             }
         }
         Ok(())

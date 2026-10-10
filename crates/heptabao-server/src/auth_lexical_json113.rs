@@ -61,8 +61,10 @@ impl LexicalJson {
             Self::Bool(value) => Value::Bool(*value),
             Self::String(text) => Value::String(text.clone()),
             Self::Number(text) => serde_json::from_str::<serde_json::Number>(text)
+                .ok()
+                .filter(|number| number.as_f64().is_some_and(f64::is_finite))
                 .map(Value::Number)
-                .unwrap_or_else(|_| Value::String(text.clone())),
+                .unwrap_or_else(|| Value::String(text.clone())),
             Self::Array(values) => Value::Array(
                 values
                     .iter()

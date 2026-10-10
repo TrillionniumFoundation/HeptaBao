@@ -1022,11 +1022,13 @@ fn transit_hmac_key_size_matches_actual_openbao270_creation_boundaries() -> Test
         ("twenty", json!({"type":"hmac","key_size":20}), 400),
         ("five-thirteen", json!({"type":"hmac","key_size":513}), 400),
     ] {
-        let before = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)?;
+        let before = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "private HMAC boundary snapshot")?;
         let path = format!("transit/keys/{name}");
         let rejected = state.handle("", "POST", &path, &body, 1);
         assert!(rejected.is_err_and(|error| error.status == status), "actual boundary {name}");
-        assert!(crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)? == before);
+        assert!(crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "private HMAC boundary snapshot")? == before);
         assert!(state.handle("", "GET", &path, &json!({}), 1).is_err_and(|error| error.status == 404));
     }
     for (name, size) in [("thirty-two", 32), ("five-twelve", 512)] {

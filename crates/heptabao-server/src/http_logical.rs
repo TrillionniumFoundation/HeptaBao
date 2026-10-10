@@ -54,7 +54,7 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
         return;
     }
     if let Some(origin) = response.unwrapped_json.as_mut()
-        && origin.has_stored_reply()
+        && origin.has_native_http_projection()
     {
         // The stored original ID/bytes remain immutable. Only this real final
         // ingress binds the ordinary selected-Data HTTP envelope and its ID.

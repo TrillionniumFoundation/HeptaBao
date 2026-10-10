@@ -91,6 +91,9 @@ fn exact(expected: &Value, actual: &Value, scalar_number: bool) -> bool {
             // 42.0, 42e0 and -0 are not the integer JSON number "42" or "0".
             // All payload numbers pass through f64, including JSON integers,
             // matching the pinned verifier's rounding above 2^53.
+            if expected.to_string() == "-0" {
+                return false;
+            }
             let Some(expected) = expected.as_i64() else {
                 return false;
             };

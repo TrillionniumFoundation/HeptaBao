@@ -1434,6 +1434,7 @@ dependencies = [
  "rustix",
  "tokio",
  "tokio-openssl",
+ "tokio-rustls",
  "tokio-stream",
  "tonic",
  "tower",

@@ -499,7 +499,7 @@ fn append_json(output: &mut Vec<u8>, value: &Value, bound: usize) -> Result<(), 
             output.push(b'}');
         }
         Value::Number(number) => {
-            let text = if number.is_i64() || number.is_u64() {
+            let text = if (number.is_i64() || number.is_u64()) && number.to_string() != "-0" {
                 number.to_string()
             } else {
                 go_float(number)?

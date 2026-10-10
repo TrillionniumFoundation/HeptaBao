@@ -132,6 +132,7 @@ impl PendingBatchGrant {
         AuthResponse {
             unwrapped_json: None,
             approle_secret_consumption: None,
+            pending_service: None,
             pending_batch: Some(Self {
                 claims,
                 login_mount,

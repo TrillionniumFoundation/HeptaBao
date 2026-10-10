@@ -24,7 +24,7 @@ fn size(value: &gotmpl::Value, depth: usize) -> Option<usize> {
         | gotmpl::Value::Bool(_)
         | gotmpl::Value::Int(_)
         | gotmpl::Value::Uint(_) => Some(16),
-        gotmpl::Value::Float(value) if value.is_finite() => Some(16),
+        gotmpl::Value::Float(_) => Some(16),
         gotmpl::Value::String(value) | gotmpl::Value::JsonNumber(value) => add(8, value.len()),
         gotmpl::Value::List(values) => values
             .iter()
@@ -75,9 +75,31 @@ fn convert(value: &Value, input_numbers: bool, depth: usize) -> Result<gotmpl::V
     }
     Ok(result)
 }
+fn convert_runtime(value: &RuntimeValue,input_numbers: bool,depth: usize)
+    -> Result<gotmpl::Value,Response> {
+    if depth > MAX_JSON_DEPTH { return Err(failed()); }
+    let result = if let Some(value)=value.actual_float() {
+        gotmpl::Value::Float(value)
+    } else if let Some(value)=value.json_scalar() {
+        convert(value,input_numbers,depth)?
+    } else if let Some(values)=value.as_array() {
+        gotmpl::Value::List(Arc::from(values.iter()
+            .map(|value|convert_runtime(value,input_numbers,depth+1))
+            .collect::<Result<Vec<_>,_>>()?))
+    } else if let Some(values)=value.as_object() {
+        gotmpl::Value::Map(Arc::new(values.iter().map(|(key,value)| {
+            Ok((Arc::from(key.as_str()),convert_runtime(value,input_numbers,depth+1)?))
+        }).collect::<Result<BTreeMap<_,_>,Response>>()?))
+    } else { return Err(failed()); };
+    if size(&result,0).is_none() { return Err(failed()); }
+    Ok(result)
+}
 struct Writer<'a> {
     text: String,
     meter: &'a cel_consumer::Meter,
+}
+impl Drop for Writer<'_> {
+    fn drop(&mut self) { zeroize::Zeroize::zeroize(&mut self.text); }
 }
 impl Write for Writer<'_> {
     fn write_str(&mut self, text: &str) -> std::fmt::Result {
@@ -145,14 +167,14 @@ impl TemplateSource {
     pub(super) fn preflight(&self, meter: &Arc<cel_consumer::Meter>) -> Result<(), Response> {
         self.build(meter).map(|_| ())
     }
-    pub(super) fn evaluate(
+    pub(super) fn evaluate_runtime(
         &self,
-        input: &Value,
-        requests: &Value,
-        responses: &Value,
-        additional: &Value,
+        input: &RuntimeValue,
+        requests: &RuntimeValue,
+        responses: &RuntimeValue,
+        additional: &RuntimeValue,
         meter: &Arc<cel_consumer::Meter>,
-    ) -> Result<Value, Response> {
+    ) -> Result<RuntimeValue, Response> {
         let template = self.build(meter)?;
         let additional = additional.as_object().ok_or_else(failed)?;
         if additional
@@ -163,11 +185,11 @@ impl TemplateSource {
         }
         let mut context = additional
             .iter()
-            .map(|(key, value)| Ok((Arc::from(key.as_str()), convert(value, false, 0)?)))
+            .map(|(key, value)| Ok((Arc::from(key.as_str()), convert_runtime(value, false, 0)?)))
             .collect::<Result<BTreeMap<_, _>, Response>>()?;
-        context.insert(Arc::from("input"), convert(input, true, 0)?);
-        context.insert(Arc::from("requests"), convert(requests, true, 0)?);
-        context.insert(Arc::from("responses"), convert(responses, false, 0)?);
+        context.insert(Arc::from("input"), convert_runtime(input, true, 0)?);
+        context.insert(Arc::from("requests"), convert_runtime(requests, true, 0)?);
+        context.insert(Arc::from("responses"), convert_runtime(responses, false, 0)?);
         let context = gotmpl::Value::Map(Arc::new(context));
         let mut writer = Writer {
             text: String::new(),
@@ -177,8 +199,16 @@ impl TemplateSource {
             .execute_fmt(&mut writer, &context)
             .map_err(|_| failed())?;
         meter.check()?;
-        Ok(Value::String(writer.text))
+        Ok(RuntimeValue::string(std::mem::take(&mut writer.text)))
     }
+    #[cfg(test)]
+    pub(super) fn evaluate(&self,input:&Value,requests:&Value,responses:&Value,
+        additional:&Value,meter:&Arc<cel_consumer::Meter>) -> Result<Value,Response> {
+        self.evaluate_runtime(&RuntimeValue::from_json(input),&RuntimeValue::from_json(requests),
+            &RuntimeValue::from_json(responses),&RuntimeValue::from_json(additional),meter)?
+            .to_json().map_err(|_|failed())
+    }
+
 }
 
 #[cfg(test)]

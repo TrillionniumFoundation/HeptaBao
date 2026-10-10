@@ -124,6 +124,10 @@ pub(super) fn operation_with_owner(
             carrier.resolve_transit_export()
         } else if method == "GET" && owner.is_some_and(|owner| owner.is_transit_byok_export(path)) {
             carrier.resolve_transit_byok_export()
+        } else if owner.is_none() && !actual_sdk_auth && carrier.unmounted_byok_query() {
+            // No mount is inferred from the spelling. Identity, namespace and
+            // ordinary ACL still run, then the actual unmatched route returns404.
+            carrier.resolve_transit_byok_export()
         } else {
             carrier.resolve(actual_kv || actual_ocsp || actual_sdk_auth)
         };

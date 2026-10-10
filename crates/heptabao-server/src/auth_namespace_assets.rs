@@ -9,6 +9,8 @@ pub(crate) struct NamespaceAssets {
     namespace: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     control_groups: Option<control_groups::Registry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    identity_mfa: Option<mfa::Parcel>,
     tokens: BTreeMap<String, Token>,
     policies: Option<BTreeMap<String, Policy>>,
     token_roles: Option<BTreeMap<String, token_roles::Role>>,
@@ -47,6 +49,7 @@ impl NamespaceAssets {
         {
             return Err(err(503, "namespace auth owner binding rejected"));
         }
+        if let Some(mfa)=&self.identity_mfa {mfa.validate_namespace(actual)?;}
         if let Some(control_groups) = &self.control_groups {
             control_groups.validate_namespace(actual)?;
         }
@@ -239,6 +242,7 @@ impl AuthState {
         Ok(NamespaceAssets {
             namespace: namespace.to_owned(),
             control_groups: self.detach_control_group_namespace(namespace),
+            identity_mfa: self.detach_mfa_namespace(namespace)?,
             tokens,
             policies: self.policies.remove(namespace),
             token_roles: self.token_roles.remove(namespace),
@@ -271,6 +275,7 @@ impl AuthState {
         assets.validate(actual)?;
         self.sdk_namespace_attach_preflight(actual, &assets.sdk_namespace)?;
         self.control_group_namespace_attach_preflight(actual, assets.control_groups.as_ref())?;
+        self.mfa_namespace_attach_preflight(actual,assets.identity_mfa.as_ref())?;
         if assets
             .policies
             .iter()
@@ -312,6 +317,7 @@ impl AuthState {
         }
         self.attach_sdk_namespace(actual, assets.sdk_namespace)?;
         self.attach_control_group_namespace(assets.control_groups);
+        self.attach_mfa_namespace(actual,assets.identity_mfa)?;
         self.tokens.extend(assets.tokens);
         if let Some(value) = assets.policies {
             self.policies.insert(actual.to_owned(), value);

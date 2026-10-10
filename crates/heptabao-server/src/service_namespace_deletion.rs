@@ -720,6 +720,9 @@ impl Service {
             next.engines
                 .retire_namespace_record_cells(&binding)
                 .map_err(Response::from_engine_error)?;
+            // The existing native task already authenticated and closed this
+            // exact Binding, including all original SDK terminal/ACK gates.
+            next.auth.retire_closed_mfa_namespace(&binding,&next.cluster_id).map_err(auth_error)?;
             next.namespaces.remove(actual)?;
             next.sync_namespace_batch_registry()?;
             next.auth.remove_fresh_namespace_auth_defaults(actual);

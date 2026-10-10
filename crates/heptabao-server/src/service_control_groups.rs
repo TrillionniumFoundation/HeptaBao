@@ -213,6 +213,9 @@ fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Resp
         envelopes.body,
     )
     .map_err(|_| invalid())?;
+    let logical_body = workflows::input::reconstruct(owner.logical_data.as_ref(),
+        &normalized.method,&normalized.path,&normalized.body.0).map_err(|_| invalid())?;
+    let canonical_body = logical_body.as_ref().map_or(&normalized.body.0, |value| &value.0);
     let namespace =
         request_normalization::token_namespace(&normalized.path, Some(owner.namespace.as_str()))
             .unwrap_or(transport_namespace);
@@ -220,7 +223,7 @@ fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Resp
         || namespace != owner.namespace
         || normalized.method != owner.method
         || normalized.path != owner.path
-        || normalized.body.0 != owner.body
+        || *canonical_body != owner.body
     {
         return Err(invalid());
     }
@@ -229,7 +232,7 @@ fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Resp
         namespace,
         &normalized.method,
         &normalized.path,
-        &normalized.body.0,
+        canonical_body,
     );
     // Concurrent KV existence changes may make an original create/update
     // owner inert. Preserve that record, then require exact current capability
@@ -237,7 +240,7 @@ fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Resp
     let dynamic_kv_pair = secret_owner
         .is_some_and(|mount| mount.kind == crate::engines::QueryKind::Kv)
         && matches!(
-            kv_authorization_method(&normalized.method, &normalized.body.0),
+            kv_authorization_method(&normalized.method, canonical_body),
             "POST" | "PUT"
         )
         && matches!(cap, "create" | "update")
@@ -474,7 +477,19 @@ impl Service {
                     // A live quorum cannot renew an expired requester. Reject
                     // before authenticating the one-use wrapping token so a
                     // failed resume keeps the deferred owner reviewable.
-                    state.auth.control_group_actor(owner, time).err().map(auth_error)
+                    match state.auth.control_group_actor(owner,time) {
+                        Err(error) => Some(auth_error(error)),
+                        Ok(actor) => {
+                            if owner.logical_data.is_some() {
+                                if let Err(error) = Self::validate_control_group_scope(state,owner)
+                                    .and_then(|_| workflows::input::live(state,&owner.namespace,owner.logical_data.as_ref()))
+                                    .and_then(|_| workflows::input::authorize_owner_input(state,&actor,owner,time)) {
+                                    return Some(error);
+                                }
+                            }
+                            None
+                        }
+                    }
                 } else {
                     Some(Response::error(
                         400,
@@ -764,6 +779,8 @@ impl Service {
                         "control group operation ownership has changed",
                     ));
                 }
+                workflows::input::live(admitted,&owner.namespace,owner.logical_data.as_ref())?;
+                workflows::input::authorize_owner_input(admitted,&actor,&owner,time)?;
                 let echo = admitted
                     .auth
                     .control_group_echo(&owner)
@@ -790,6 +807,9 @@ impl Service {
                     origin_peer: owner.origin_peer,
                     client_certificates: owner.client_certificates.as_deref(),
                 };
+                let _logical_data = crate::request_metadata::Scope::enter(owner.logical_data.clone(),
+                    resumed.method,resumed.path,resumed.namespace,resumed.body)
+                    .map_err(|error| Response::error(503,error))?;
                 return Ok(Some(self.handle_inner_control_group(
                     resumed,
                     Some(ControlGroupResume { actor, echo }),
@@ -877,6 +897,8 @@ impl Service {
             transport_path: transport.path.to_owned(),
             transport_namespace: transport.namespace.to_owned(),
             transport_body: transport.body.clone(),
+            logical_data: crate::request_metadata::current(request.method,request.path,namespace,request.body)
+                .map_err(|error| Response::error(400,error))?,
             wrap_ttl_seconds: request.wrap_ttl_seconds,
             origin_peer: request.origin_peer,
             client_certificates: request.client_certificates.map(<[Vec<u8>]>::to_vec),

@@ -785,6 +785,11 @@ impl Service {
                 "snapshot would downgrade PKI issuer-path leases",
             ));
         }
+        incoming.auth.validate_identity_mfa_state(Some(&current.auth))
+            .map_err(|error|Response::error(400,&error.message))?;
+        if current.schema>=IDENTITY_MFA_STATE_SCHEMA&&incoming.schema<IDENTITY_MFA_STATE_SCHEMA {
+            return Err(Response::error(400,"snapshot would downgrade Identity MFA custody"));
+        }
         incoming.auth.validate_sdk_advanced_state(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
         if current.schema >= SDK_ADVANCED_STATE_SCHEMA
@@ -828,6 +833,11 @@ impl Service {
             .engines
             .validate_kv2_lossless_state(Some(&current.engines))
             .map_err(Response::from_engine_error)?;
+        if (current.schema >= WORKFLOW_INPUT_STATE_SCHEMA
+            || current.namespaces.workflows.has_logical_input_profiles()
+            || current.auth.has_control_group_logical_data()) && incoming.schema < WORKFLOW_INPUT_STATE_SCHEMA {
+            return Err(Response::error(503,"workflow logical input snapshot floor cannot decrease"));
+        }
         if (current.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA
             || current.namespaces.workflows.has_request_credentials())
             && incoming.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA

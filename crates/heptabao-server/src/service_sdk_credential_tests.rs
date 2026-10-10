@@ -332,6 +332,7 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         operation: "revoke".into(),
         path: "record".into(),
         data: json!({}),
+        logical_data: None,
         deadline: clock.started() + Duration::from_secs(4),
         renewal: Mutex::new(None),
         lease: Mutex::new(None),

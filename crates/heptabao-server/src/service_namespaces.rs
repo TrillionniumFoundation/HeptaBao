@@ -544,6 +544,13 @@ impl NamespaceRegistry {
         path.is_empty() || self.entries.contains_key(path)
     }
 
+    pub(super) fn mfa_scope(&self,path:&str)->Option<(String,u64)> {
+        if path.is_empty(){Some(("root".to_owned(),0))}
+        else{self.entries.get(path).map(|entry|(entry.id.clone(),entry.incarnation))}
+    }
+    pub(super) fn mfa_retirement_floor(&self,path:&str)->Option<u64>{
+        self.next_incarnation.get(path).and_then(|next|next.checked_sub(1))
+    }
     pub(super) fn incarnation(&self, path: &str) -> Option<u64> {
         if path.is_empty() {
             Some(0)
@@ -1305,6 +1312,7 @@ impl Service {
                                 .status(&state, &target)
                                 .unwrap_or_else(|error| error);
                             self.state = Some(state);
+                            if let Err(error) = self.complete_mfa_namespace_retirements() { return error; }
                             return response;
                         }
                         Ok(None) => {}
@@ -1719,6 +1727,12 @@ impl Service {
                     && let Err(error) = state.engines.retire_namespace_record_cells(&binding)
                 {
                     return Response::error(error.status, &error.message);
+                }
+                let mfa_incarnation=state.namespaces.incarnation(&target)
+                    .ok_or_else(||Response::error(503,"MFA namespace retirement incarnation unavailable"));
+                let mfa_incarnation=match mfa_incarnation {Ok(value)=>value,Err(error)=>return error};
+                if let Err(error)=state.auth.retire_mfa_namespace(&target,mfa_incarnation) {
+                    return Response::error(error.status,&error.message);
                 }
                 if let Err(error) = state.namespaces.remove(&target) {
                     return error;

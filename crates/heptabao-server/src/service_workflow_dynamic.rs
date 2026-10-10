@@ -1,15 +1,19 @@
 //! Typed dynamic data stays request-local; the Service interpreter owns effects.
 use super::*;
+use crate::workflow_runtime::Value as RuntimeValue;
 #[path = "service_workflow_cel.rs"]
 mod cel_consumer;
 #[path = "service_workflow_template.rs"]
 mod template_consumer;
+#[path = "service_workflow_fields.rs"]
+mod field_consumer;
 
 #[derive(Clone, Copy)]
 enum Kind {
     Any,
     String,
     Int,
+    UnsupportedInt64,
     Float,
     Bool,
     Strings,
@@ -20,7 +24,8 @@ impl Kind {
         match raw {
             "any" | "interface{}" => Ok(Self::Any),
             "string" => Ok(Self::String),
-            "int" | "int64" => Ok(Self::Int),
+            "int" => Ok(Self::Int),
+            "int64" => Ok(Self::UnsupportedInt64),
             "float64" => Ok(Self::Float),
             "bool" => Ok(Self::Bool),
             "[]string" => Ok(Self::Strings),
@@ -33,6 +38,7 @@ impl Kind {
             Self::Any => true,
             Self::String => value.is_string(),
             Self::Int => value.as_i64().is_some(),
+            Self::UnsupportedInt64 => false,
             Self::Float => value.as_f64().is_some_and(f64::is_finite),
             Self::Bool => value.is_boolean(),
             Self::Strings => value
@@ -48,12 +54,41 @@ impl Kind {
             ))
         }
     }
+    fn runtime_value(self, value: &RuntimeValue) -> Result<RuntimeValue, Response> {
+        if matches!(self, Self::UnsupportedInt64) {
+            return Err(Response::error(500, "unsupported type conversion: int64"));
+        }
+        if matches!(self, Self::Any) || matches!(self, Self::Map) && value.is_object() {
+            return Ok(value.clone());
+        }
+        if let Some(number) = value.actual_float() {
+            let mut converted = match self {
+                Self::Float => return Ok(value.clone()),
+                Self::String => json!(RuntimeValue::float_text(number)),
+                Self::Int => json!(RuntimeValue::go_int(number)),
+                Self::Bool => json!(number != 0.0),
+                Self::Strings => json!([RuntimeValue::float_text(number)]),
+                _ => return Err(Response::error(500, "workflow runtime conversion rejected")),
+            };
+            let result = RuntimeValue::from_json(&converted);
+            erase_json(&mut converted);
+            return Ok(result);
+        }
+        let original = crate::http::ocsp::CarrierBody(value.to_json()
+            .map_err(|_| Response::error(500, "workflow runtime conversion rejected"))?);
+        let mut converted = self.value(&original.0)?;
+        let result = RuntimeValue::from_json(&converted);
+        erase_json(&mut converted);
+        Ok(result)
+    }
+
 }
 
 #[derive(Clone, Copy)]
 enum InputKind {
     Value(Kind),
     Slice,
+    Field(field_consumer::FieldKind),
 }
 impl InputKind {
     fn parse(raw: &str) -> Result<Self, Response> {
@@ -63,22 +98,36 @@ impl InputKind {
             "bool" => Ok(Self::Value(Kind::Bool)),
             "map" => Ok(Self::Value(Kind::Map)),
             "slice" => Ok(Self::Slice),
-            _ => Err(bad_profile(
+            _ => field_consumer::FieldKind::parse(raw).map(Self::Field).ok_or_else(|| bad_profile(
                 "workflow input field type is not supported by this consumer",
             )),
         }
     }
     fn value(self, value: &Value) -> Result<Value, Response> {
         match self {
+            Self::Value(Kind::String) => field_consumer::weak_string(value).map(Value::String),
+            Self::Value(Kind::Int) => field_consumer::weak_int(value).map(|value| json!(value)),
+            Self::Value(Kind::Bool) => field_consumer::weak_bool(value),
+            Self::Value(Kind::Map) => field_consumer::weak_map(value),
             Self::Value(kind) => kind.value(value),
-            Self::Slice if value.is_array() => Ok(value.clone()),
-            Self::Slice => Err(bad_profile("workflow input must be an array")),
+            Self::Slice => field_consumer::weak_slice(value),
+            Self::Field(kind) => kind.value(value),
         }
     }
+
+    fn runtime_value(self, value: &Value) -> Result<RuntimeValue, Response> {
+        if let Self::Field(kind) = self { return kind.runtime_value(value); }
+        let mut converted = self.value(value)?;
+        let result = RuntimeValue::from_json(&converted);
+        erase_json(&mut converted);
+        Ok(result)
+    }
+
 }
 struct Field {
     kind: InputKind,
     required: bool,
+    query: bool,
     default: Option<Value>,
     allowed: Vec<Value>,
 }
@@ -248,95 +297,81 @@ impl Expr {
             _ => false,
         }
     }
+    fn has_deferred_cast(&self) -> bool {
+        match self {
+            Self::Source(Kind::UnsupportedInt64, _) | Self::Cel(Kind::UnsupportedInt64, _)
+                | Self::Template(Kind::UnsupportedInt64, _, _) => true,
+            Self::Object(values) => values.values().any(Self::has_deferred_cast),
+            Self::Array(values) => values.iter().any(Self::has_deferred_cast),
+            _ => false,
+        }
+    }
     fn validate_inputs(&self, context: &Context) -> Result<(), Response> {
         match self {
             Self::Template(_, source, data) => {
                 source.preflight(&context.meter)?;
                 data.validate_inputs(context)?;
             }
-            Self::Cel(kind, source) => {
+            Self::Cel(_, source) => {
                 let (input, requests, responses) = context.expression_bindings();
-                if let Some(value) = source.preflight(&input, &requests, &responses, &context.meter)? {
-                    kind.value(&value).map_err(|_| Response::error(500, "workflow expression result type rejected"))?;
-                }
+                source.preflight_runtime(&input, &requests, &responses, &context.meter)?;
             }
-            Self::Source(kind, Source::Input(name)) => {
-                let value = context
-                    .input
-                    .get(name)
-                    .ok_or_else(|| bad_profile("declared workflow input is unavailable"))?;
-                kind.value(value)?;
+            Self::Source(_, Source::Input(name)) => {
+                if !context.input.contains_key(name) {
+                    return Err(bad_profile("declared workflow input is unavailable"));
+                }
+                // eval_type is evaluated where this request/output executes.
             }
             Self::Object(object) => {
-                for value in object.values() {
-                    value.validate_inputs(context)?;
-                }
+                for value in object.values() { value.validate_inputs(context)?; }
             }
             Self::Array(array) => {
-                for value in array {
-                    value.validate_inputs(context)?;
-                }
+                for value in array { value.validate_inputs(context)?; }
             }
             _ => (),
         }
         Ok(())
     }
-    fn resolve(&self, context: &Context, depth: usize) -> Result<Value, Response> {
-        if depth > MAX_JSON_DEPTH {
-            return Err(bad_profile(
-                "workflow evaluated value nesting is outside bounds",
-            ));
-        }
+    fn resolve(&self, context: &Context, depth: usize) -> Result<RuntimeValue, Response> {
+        if depth > MAX_JSON_DEPTH { return Err(bad_profile("workflow evaluated value nesting is outside bounds")); }
         match self {
             Self::Template(kind, source, data) => {
                 let (input, requests, responses) = context.expression_bindings();
                 let data = data.resolve(context, depth + 1)?;
-                let value = source.evaluate(&input, &requests, &responses, &data, &context.meter)?;
-                kind.value(&value).map_err(|_| Response::error(500, "workflow template result type rejected"))
+                let value = source.evaluate_runtime(&input, &requests, &responses, &data, &context.meter)?;
+                kind.runtime_value(&value)
             }
             Self::Cel(kind, source) => {
                 let (input, requests, responses) = context.expression_bindings();
-                let value = source.evaluate(&input, &requests, &responses, &context.meter)?;
-                kind.value(&value).map_err(|_| Response::error(500, "workflow expression result type rejected"))
+                let value = source.evaluate_runtime(&input, &requests, &responses, &context.meter)?;
+                kind.runtime_value(&value)
             }
-            Self::Literal(value) => Ok(value.clone()),
-            Self::Object(object) => object
-                .iter()
-                .map(|(key, value)| Ok((key.clone(), value.resolve(context, depth + 1)?)))
-                .collect::<Result<serde_json::Map<_, _>, Response>>()
-                .map(Value::Object),
-            Self::Array(array) => array
-                .iter()
-                .map(|value| value.resolve(context, depth + 1))
-                .collect::<Result<Vec<_>, _>>()
-                .map(Value::Array),
+            Self::Literal(value) => Ok(RuntimeValue::from_json(value)),
+            Self::Object(object) => {
+                let mut result = RuntimeValue::object();
+                for (key, value) in object {
+                    result.insert(key.clone(), value.resolve(context, depth + 1)?);
+                }
+                Ok(result)
+            }
+            Self::Array(array) => array.iter().map(|value| value.resolve(context, depth + 1))
+                .collect::<Result<Vec<_>, _>>().map(RuntimeValue::array),
             Self::Source(kind, source) => {
                 let selected = match source {
                     Source::Input(name) => context.input.get(name),
-                    Source::Request(name, selector) => context
-                        .requests
-                        .get(name)
-                        .and_then(|value| select(value, selector)),
-                    Source::Response(name, selector) => context
-                        .responses
-                        .get(name)
-                        .and_then(|value| select(value, selector)),
-                }
-                .ok_or_else(|| {
-                    bad_profile("workflow source has not executed or its field is unavailable")
-                })?;
-                kind.value(selected)
+                    Source::Request(name, selector) => context.requests.get(name).and_then(|value| select(value, selector)),
+                    Source::Response(name, selector) => context.responses.get(name).and_then(|value| select(value, selector)),
+                }.ok_or_else(|| bad_profile("workflow source has not executed or its field is unavailable"))?;
+                kind.runtime_value(selected)
             }
         }
     }
 }
-fn select<'a>(mut value: &'a Value, selector: &[String]) -> Option<&'a Value> {
+fn select<'a>(mut value: &'a RuntimeValue, selector: &[String]) -> Option<&'a RuntimeValue> {
     for field in selector {
-        value = match value {
-            Value::Object(object) => object.get(field)?,
-            Value::Array(array) => array.get(field.parse::<usize>().ok()?)?,
-            _ => return None,
-        };
+        value = if let Some(object) = value.as_object() { object.get(field)? }
+            else if let Some(array) = value.as_array() { array.get(field.parse::<usize>().ok()?)? }
+            else { return None; };
     }
     Some(value)
 }
@@ -430,23 +465,13 @@ fn input_fields(tokens: &[Lex], cursor: &mut usize) -> Result<BTreeMap<String, F
         )?;
         let required = boolean(attrs, "required", false)?;
         let _ = boolean(attrs, "deprecated", false)?;
-        if boolean(attrs, "query", false)? {
-            return Err(bad_profile(
-                "workflow query input requires a query carrier consumer",
-            ));
-        }
+        let query = boolean(attrs, "query", false)?;
         if text(attrs, "description")?.is_some_and(|text| text.len() > MAX_JSON_STRING_BYTES) {
             return Err(bad_profile("workflow input description is outside bounds"));
         }
-        let default = attrs
-            .get("default")
-            .map(|value| kind.value(value))
-            .transpose()?;
-        if !required && default.is_none() {
-            return Err(bad_profile(
-                "optional workflow input requires a typed default",
-            ));
-        }
+        // FieldData returns a supplied default verbatim when a field is absent.
+        // Conversion applies only to an explicitly supplied value, including null.
+        let default = attrs.get("default").cloned();
         let allowed = match attrs.get("allowed_values") {
             None => Vec::new(),
             Some(Value::Array(values)) if values.len() <= 64 => values
@@ -473,6 +498,7 @@ fn input_fields(tokens: &[Lex], cursor: &mut usize) -> Result<BTreeMap<String, F
                 Field {
                     kind,
                     required,
+                    query,
                     default,
                     allowed,
                 },
@@ -511,26 +537,135 @@ pub(super) struct Step {
     body: Expr,
     allow_failure: Expr,
     token: Option<Expr>,
+    headers: Option<Expr>,
 }
 pub(in crate::service::workflows) struct Program {
     fields: BTreeMap<String, Field>,
     pub(super) steps: Vec<Step>,
     output: Expr,
 }
+// Input conversion clones caller/default data before a Context exists. Keep
+// partial and admission-only results under the same erase-on-drop custody.
+// Input admission uses the actual listener payload budget once for the whole
+// caller map. The smaller persisted step-data bound remains independent.
+fn bounded_input_json(value: &Value, depth: usize, bytes: &mut usize) -> Result<(), &'static str> {
+    if depth > MAX_JSON_DEPTH {
+        return Err("workflow input nesting is too deep");
+    }
+    if depth == 0 {
+        let encoded = Zeroizing::new(serde_json::to_vec(value)
+            .map_err(|_| "workflow input is not serializable")?);
+        *bytes = encoded.len();
+        if *bytes > crate::http::MAX_BODY {
+            return Err("workflow input exceeds the listener payload bound");
+        }
+    }
+    match value {
+        Value::Array(values) => {
+            if values.len() > 64 {
+                return Err("workflow input array exceeds the bounded size");
+            }
+            for value in values {
+                bounded_input_json(value, depth + 1, bytes)?;
+            }
+        }
+        Value::Object(values) => {
+            if values.len() > 64 {
+                return Err("workflow input object exceeds the bounded size");
+            }
+            for (key, value) in values {
+                if key.is_empty() || key.len() > MAX_JSON_STRING_BYTES {
+                    return Err("workflow input object key exceeds the bounded size");
+                }
+                bounded_input_json(value, depth + 1, bytes)?;
+            }
+        }
+        _ => {}
+    }
+    Ok(())
+}
+struct InputValues(BTreeMap<String, RuntimeValue>);
+impl Drop for InputValues {
+    fn drop(&mut self) {
+        for (mut key, value) in std::mem::take(&mut self.0) { key.zeroize(); drop(value); }
+    }
+}
 pub(super) struct Context {
-    input: BTreeMap<String, Value>,
-    requests: BTreeMap<String, Value>,
-    responses: BTreeMap<String, Value>,
+    input: BTreeMap<String, RuntimeValue>,
+    requests: BTreeMap<String, RuntimeValue>,
+    responses: BTreeMap<String, RuntimeValue>,
     meter: std::sync::Arc<cel_consumer::Meter>,
 }
 impl Program {
+    pub(in crate::service::workflows) fn has_logical_data(&self) -> bool {
+        self.fields.values().any(|field| field.query || matches!(field.kind, InputKind::Field(_)))
+            || self.steps.iter().any(|step| step.headers.is_some())
+    }
+    pub(in crate::service) fn raw_input(
+        &self,
+        body: &Value,
+        _query: &BTreeMap<String, Vec<String>>,
+    ) -> Result<crate::http::ocsp::CarrierBody, Response> {
+        // POST/PUT workflow execution receives the JSON map. Field.query is
+        // schema metadata; URL values do not replace the request body.
+        let raw = crate::http::ocsp::CarrierBody(
+            if body.is_null() { empty_object() } else { body.clone() }
+        );
+        if !raw.0.is_object() {
+            return Err(bad_profile("workflow input must be an object"));
+        }
+        let mut bytes = 0;
+        bounded_input_json(&raw.0, 0, &mut bytes).map_err(bad_profile)?;
+        Ok(raw)
+    }
+    pub(in crate::service) fn effective_input(
+        &self,
+        body: &Value,
+        query: &BTreeMap<String, Vec<String>>,
+    ) -> Result<Value, Response> {
+        let mut raw = self.raw_input(body, query)?;
+        self.input_values(&raw.0)?;
+        // Keep the original caller input in the sealed transport. Re-running
+        // conversion at execution must not coerce an absent field's raw default.
+        Ok(std::mem::take(&mut raw.0))
+    }
+    fn input_values(&self, body: &Value) -> Result<InputValues, Response> {
+        let supplied = body.as_object();
+        if supplied.is_none() && !body.is_null() { return Err(bad_profile("workflow input must be an object")); }
+        let mut bytes = 0;
+        bounded_input_json(body, 0, &mut bytes).map_err(bad_profile)?;
+        let mut input = InputValues(BTreeMap::new());
+        for (name, field) in &self.fields {
+            let selected = match supplied.and_then(|object| object.get(name)) {
+                Some(value) => field.kind.runtime_value(value)
+                    .map_err(|_| Response::error(500, "workflow input field conversion failed"))?,
+                None if field.required => return Err(Response::error(500, "required workflow input is missing")),
+                None => match &field.default {
+                    Some(default) => RuntimeValue::from_json(default),
+                    None => field.kind.runtime_value(&Value::Null)
+                        .map_err(|_| Response::error(500, "workflow input default conversion failed"))?,
+                },
+            };
+            if !selected.within_bounds() { return Err(bad_profile("workflow runtime input exceeds bound")); }
+            if !field.allowed.is_empty() {
+                let mut converted = crate::http::ocsp::CarrierBody(selected.to_json()
+                    .map_err(|_| Response::error(500, "workflow input is outside its allowed values"))?);
+                if !field.allowed.contains(&converted.0) {
+                    return Err(Response::error(500, "workflow input is outside its allowed values"));
+                }
+                erase_json(&mut converted.0);
+            }
+            input.0.insert(name.clone(), selected);
+        }
+        Ok(input)
+    }
     pub(super) fn has_request_credentials(&self) -> bool {
         self.steps.iter().any(|step| step.token.is_some())
     }
     pub(super) fn has_expression_sources(&self) -> bool {
-        self.output.has_expression_sources() || self.steps.iter().any(|step| [&step.flow_when, &step.when, &step.operation, &step.path, &step.body, &step.allow_failure].iter().any(|value| value.has_expression_sources()) || step.token.as_ref().is_some_and(Expr::has_expression_sources))
+        self.output.has_expression_sources() || self.steps.iter().any(|step| [&step.flow_when, &step.when, &step.operation, &step.path, &step.body, &step.allow_failure].iter().any(|value| value.has_expression_sources()) || step.token.as_ref().is_some_and(Expr::has_expression_sources) || step.headers.as_ref().is_some_and(Expr::has_expression_sources))
     }
-    pub(super) fn compile(document: &str) -> Result<Option<Self>, Response> {
+    pub(in crate::service::workflows) fn compile(document: &str) -> Result<Option<Self>, Response> {
         if document.is_empty() || document.len() > MAX_PROFILE_BYTES {
             return Err(bad_profile("workflow profile text is outside bounds"));
         }
@@ -640,7 +775,7 @@ impl Program {
                 flow.requests.iter().all(|(_, attrs)| {
                     !attrs
                         .as_object()
-                        .is_some_and(|attrs| attrs.contains_key("when") || attrs.contains_key("token"))
+                        .is_some_and(|attrs| attrs.contains_key("when") || attrs.contains_key("token") || attrs.contains_key("headers"))
                         && !declared_source(attrs)
                 })
             })
@@ -661,7 +796,7 @@ impl Program {
                 if attrs.keys().any(|key| {
                     !matches!(
                         key.as_str(),
-                        "operation" | "path" | "data" | "allow_failure" | "when" | "token"
+                        "operation" | "path" | "data" | "allow_failure" | "when" | "token" | "headers"
                     )
                 }) {
                     return Err(bad_profile(
@@ -680,7 +815,7 @@ impl Program {
                     .get("allow_failure")
                     .cloned()
                     .unwrap_or(Value::Bool(false));
-                if attrs.contains_key("when") || attrs.contains_key("token") {
+                if attrs.contains_key("when") || attrs.contains_key("token") || attrs.contains_key("headers") {
                     feature = true;
                 }
                 let mut bytes = 0;
@@ -694,6 +829,7 @@ impl Program {
                     body: Expr::compile(&body, &fields, &prior, &mut feature, 0)?,
                     allow_failure: Expr::compile(&allow_failure, &fields, &prior, &mut feature, 0)?,
                     token: attrs.get("token").map(|value| Expr::compile(value, &fields, &prior, &mut feature, 0)).transpose()?,
+                    headers: attrs.get("headers").map(|value| Expr::compile(value, &fields, &prior, &mut feature, 0)).transpose()?,
                 };
                 if !prior.insert(name) || steps.len() >= MAX_STEPS {
                     return Err(bad_profile("duplicate or excessive workflow request"));
@@ -727,32 +863,9 @@ impl Program {
         self.context_at(body, std::time::Instant::now())
     }
     pub(super) fn context_at(&self, body: &Value, started: std::time::Instant) -> Result<Context, Response> {
-        let supplied = body
-            .as_object()
-            .ok_or_else(|| bad_profile("workflow input must be an object"))?;
-        let mut bytes = 0;
-        bounded_json(body, 0, &mut bytes).map_err(bad_profile)?;
-        let mut input = BTreeMap::new();
-        for (name, field) in &self.fields {
-            let selected = match supplied.get(name) {
-                Some(value) => field.kind.value(value)?,
-                None if field.required => {
-                    return Err(bad_profile("required workflow input is missing"));
-                }
-                None => field
-                    .default
-                    .clone()
-                    .ok_or_else(|| bad_profile("workflow input default is unavailable"))?,
-            };
-            let mut selected_bytes = 0;
-            bounded_json(&selected, 0, &mut selected_bytes).map_err(bad_profile)?;
-            if !field.allowed.is_empty() && !field.allowed.contains(&selected) {
-                return Err(bad_profile("workflow input is outside its allowed values"));
-            }
-            input.insert(name.clone(), selected);
-        }
+        let mut input = self.input_values(body)?;
         let context = Context {
-            input,
+            input: std::mem::take(&mut input.0),
             requests: BTreeMap::new(),
             responses: BTreeMap::new(),
             meter: cel_consumer::Meter::new(started),
@@ -769,26 +882,24 @@ impl Program {
                 value.validate_inputs(&context)?;
             }
             if let Some(token) = &step.token { token.validate_inputs(&context)?; }
+            if let Some(headers) = &step.headers { headers.validate_inputs(&context)?; }
             step.preflight(&context)?;
         }
         self.output.validate_inputs(&context)?;
         Ok(context)
     }
-    pub(super) fn output(&self, context: &Context) -> Result<Value, Response> {
+    pub(super) fn runtime_output(&self, context: &Context) -> Result<RuntimeValue, Response> {
         let output = self.output.resolve(context, 0)?;
-        let mut bytes = 0;
-        bounded_json(&output, 0, &mut bytes).map_err(bad_profile)?;
-        if output.is_object() {
-            Ok(output)
-        } else {
-            Err(bad_profile("workflow output must resolve to an object"))
-        }
+        if !output.within_bounds() { return Err(bad_profile("workflow runtime output exceeds bound")); }
+        if output.is_object() { Ok(output) }
+        else { Err(bad_profile("workflow output must resolve to an object")) }
     }
 }
 pub(super) struct Resolved {
     pub(super) step: WorkflowStep,
     history: Value,
     pub(super) token: Option<Zeroizing<String>>,
+    pub(super) data_frame: Option<crate::request_metadata::DataFrame>,
 }
 fn operation_method(operation: &str) -> Result<&'static str, Response> {
     match operation {
@@ -802,12 +913,31 @@ fn operation_method(operation: &str) -> Result<&'static str, Response> {
     }
 }
 impl Step {
+    fn resolved_headers(&self, context: &Context) -> Result<Option<crate::request_metadata::DataFrame>, Response> {
+        let Some(expression) = &self.headers else { return Ok(None); };
+        let value = expression.resolve(context,0)?;
+        let headers = (|| {
+            let object = value.as_object().ok_or_else(|| bad_profile("workflow headers must be an object"))?;
+            let mut frame = crate::request_metadata::DataFrame::default();
+            if object.len() > 64 { return Err(bad_profile("logical header count exceeds bound")); }
+            for (name, value) in object {
+                let values = value.as_array().filter(|values| values.len() <= 64
+                    && values.iter().all(RuntimeValue::is_string))
+                    .ok_or_else(|| bad_profile("workflow headers must contain bounded string arrays"))?;
+                frame.headers.insert(name.clone(),values.iter().filter_map(RuntimeValue::as_str).map(str::to_owned).collect());
+            }
+            frame.validate().map_err(bad_profile)?;
+            Ok(frame)
+        })();
+        drop(value);
+        headers.map(Some)
+    }
     fn resolved_token(&self, context: &Context) -> Result<Option<Zeroizing<String>>, Response> {
         let Some(token) = &self.token else { return Ok(None); };
-        let mut value = token.resolve(context, 0)?;
+        let value = token.resolve(context, 0)?;
         let result = value.as_str().filter(|token| token.len() <= 16 * 1024)
             .map(|token| Zeroizing::new(token.to_owned()));
-        erase_json(&mut value);
+        drop(value);
         result.map(Some).ok_or_else(|| bad_profile("workflow token must resolve to a bounded string"))
     }
     fn preflight(&self, context: &Context) -> Result<(), Response> {
@@ -835,18 +965,20 @@ impl Step {
             )
             .map_err(bad_profile)?;
         }
-        if !self.body.needs_history() {
+        if !self.body.needs_history() && !self.body.has_deferred_cast() {
             let value = self.body.resolve(context, 0)?;
             if !value.is_object() {
                 return Err(bad_profile(
                     "workflow request data must resolve to an object",
                 ));
             }
-            let mut bytes = 0;
-            bounded_json(&value, 0, &mut bytes).map_err(bad_profile)?;
+            if !value.within_bounds() { return Err(bad_profile("workflow runtime request exceeds bound")); }
         }
         if self.token.as_ref().is_some_and(|token| !token.needs_history()) {
             self.resolved_token(context)?;
+        }
+        if self.headers.as_ref().is_some_and(|headers| !headers.needs_history()) {
+            self.resolved_headers(context)?;
         }
         Ok(())
     }
@@ -881,57 +1013,83 @@ impl Step {
                 "workflow request data must resolve to an object",
             ));
         }
-        let mut bytes = 0;
-        bounded_json(&body, 0, &mut bytes).map_err(bad_profile)?;
+        if !body.within_bounds() { return Err(bad_profile("workflow runtime request exceeds bound")); }
+        // This request's save boundary is after preceding steps committed.
+        let mut body = crate::http::ocsp::CarrierBody(body.to_json()
+            .map_err(|_| Response::error(500, "workflow request JSON encoding failed"))?);
         let allow_failure = self.allow_failure.resolve(context, 0)?;
         let allow_failure = allow_failure
             .as_bool()
             .ok_or_else(|| bad_profile("workflow allow_failure must be boolean"))?;
         let token = self.resolved_token(context)?;
+        let data_frame = self.resolved_headers(context)?;
         let mut history = json!({"name":self.name, "operation":operation, "path":path,
-            "data":body, "allow_failure":allow_failure, "when":when});
+            "data":&body.0, "allow_failure":allow_failure, "when":when});
         if let Some(token) = &token { history["token"] = Value::String(token.to_string()); }
+        if let Some(frame) = &data_frame {
+            history["headers"] = serde_json::to_value(&frame.headers).map_err(|_| bad_profile("workflow header encoding failed"))?;
+        }
         Ok(Some(Resolved {
             step: WorkflowStep {
                 name: self.name.clone(),
                 method: method.into(),
                 path: path.into(),
-                body,
+                body: std::mem::take(&mut body.0),
                 allow_failure,
             },
             history,
             token,
+            data_frame,
         }))
     }
 }
 impl Context {
-    fn expression_bindings(&self) -> (Value, Value, Value) {
-        fn nested(history: &BTreeMap<String, Value>) -> Value {
-            let mut flows = serde_json::Map::new();
-            for (key, value) in history {
-                if let Some((flow, name)) = key.split_once('/') {
-                    let flow = flows.entry(flow.to_owned()).or_insert_with(empty_object);
-                    if let Some(flow) = flow.as_object_mut() { flow.insert(name.to_owned(), value.clone()); }
+    fn expression_bindings(&self) -> (RuntimeValue, RuntimeValue, RuntimeValue) {
+        fn nested(values: &BTreeMap<String, RuntimeValue>) -> RuntimeValue {
+            let mut flows = RuntimeValue::object();
+            for (name, value) in values {
+                if let Some((flow, member)) = name.split_once('/') {
+                    let mut members = flows.as_object().and_then(|flows| flows.get(flow))
+                        .cloned().unwrap_or_else(RuntimeValue::object);
+                    members.insert(member.to_owned(), value.clone());
+                    flows.insert(flow.to_owned(), members);
                 }
             }
-            Value::Object(flows)
+            flows
         }
-        (Value::Object(self.input.clone().into_iter().collect()), nested(&self.requests), nested(&self.responses))
+        let mut input = RuntimeValue::object();
+        for (name, value) in &self.input { input.insert(name.clone(), value.clone()); }
+        (input, nested(&self.requests), nested(&self.responses))
     }
-    pub(super) fn record(&mut self, mut resolved: Resolved, response: Value) {
+    pub(super) fn record_response(&mut self,resolved:Resolved,response:&mut Response) {
+        if let Some(output)=response.unwrapped_json.as_ref().and_then(|origin|origin.workflow_value()) {
+            let mut value=RuntimeValue::object();
+            value.insert("data".into(),output.clone());
+            let mut resolved=resolved;
+            let name=resolved.step.name.clone();
+            self.requests.insert(name.clone(),RuntimeValue::from_json(&resolved.history));
+            erase_json(&mut resolved.history);
+            self.responses.insert(name,value);
+        } else {
+            self.record(resolved,std::mem::take(&mut response.body));
+        }
+    }
+    pub(super) fn record(&mut self, mut resolved: Resolved, mut response: Value) {
         let name = resolved.step.name.clone();
-        self.requests.insert(name.clone(), std::mem::take(&mut resolved.history));
-        self.responses.insert(name, response);
+        self.requests.insert(name.clone(), RuntimeValue::from_json(&resolved.history));
+        erase_json(&mut resolved.history);
+        self.responses.insert(name, RuntimeValue::from_response_json(&response));
+        erase_json(&mut response);
+    }
+}
+impl Drop for Context {
+    fn drop(&mut self) {
+        for values in [&mut self.input, &mut self.requests, &mut self.responses] {
+            for (mut key, value) in std::mem::take(values) { key.zeroize(); drop(value); }
+        }
     }
 }
 
-impl Drop for Context {
-    fn drop(&mut self) {
-        for value in self.input.values_mut().chain(self.requests.values_mut()).chain(self.responses.values_mut()) {
-            erase_json(value);
-        }
-    }
-}
 impl Drop for Resolved {
     fn drop(&mut self) {
         erase_json(&mut self.step.body);

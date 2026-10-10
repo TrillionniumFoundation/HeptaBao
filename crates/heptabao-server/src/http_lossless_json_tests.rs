@@ -42,9 +42,10 @@ fn http_lossless_json_preserves_actual_number_tokens_and_user_private_maps() -> 
     let ocsp_wire = wire("secret/ocsp", raw);
     let request = read_request(&mut ocsp_wire.as_slice(), Duration::from_secs(1))
         .map_err(|_| "raw carrier")?;
-    let raw_post =
-        ocsp::raw_post_request("POST", "secret/ocsp", &request.body.0).ok_or("raw post")?;
-    let ordinary = raw_post
+    assert!(ocsp::raw_post_request("POST", "secret/ocsp", &request.body.0).is_none());
+    let json_post =
+        ocsp::json_post_request("POST", "secret/ocsp", &request.body.0).ok_or("JSON post")?;
+    let ordinary = json_post
         .resolve(false)
         .map_err(|_| "ordinary raw resolution")?;
     assert_eq!(ordinary.0, expected);

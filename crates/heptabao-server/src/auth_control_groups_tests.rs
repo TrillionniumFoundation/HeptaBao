@@ -43,6 +43,7 @@ fn owner(namespace: &str) -> DeferredRequest {
         transport_path: "secret/data/key".into(),
         transport_namespace: namespace.into(),
         transport_body: json!({"data":{"value":"synthetic-secret"}}),
+        logical_data: None,
         wrap_ttl_seconds: None,
         origin_peer: None,
         client_certificates: None,

@@ -824,6 +824,13 @@ impl HaProcess {
                                             heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                         );
                                     }
+                                    // Only the authenticated enrolled peer reaches this
+                                    // data-only scope. The Service reauthenticates the
+                                    // original token and binds namespace/incarnation.
+                                    let _logical_data = crate::request_metadata::Scope::enter(
+                                        request.logical_data.take(), &request.method,
+                                        &request.path, &request.namespace, &request.body,
+                                    ).map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
                                     let legacy_v1 = request.legacy_v1;
                                     let index_response = request.index_response;
                                     let unwrap_response = request.unwrap_response;
@@ -1193,6 +1200,7 @@ impl HaProcess {
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
         let legacy_v1 = self.emit_legacy_peer_v1;
         let unwrap_response = path == "sys/wrapping/unwrap"
+            || path.starts_with("sys/workflows/execute/")
             || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
                 && crate::auth::current_ingress().is_some();
         if unwrap_response && (legacy_v1 || !completed) {

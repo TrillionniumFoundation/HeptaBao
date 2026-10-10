@@ -165,12 +165,13 @@ pub(crate) fn response_digest(response: &crate::Response) -> Result<[u8; 32], St
                 crate::ha_forward::UnwrapFramingWire::StoredJson,
                 stored,
             ))
-        } else if response.unwrapped_json.is_some() {
+        } else if let Some(origin)=&response.unwrapped_json {
+            let framing=origin.framing_wire(&response.body).map_err(|_|"HA private response origin differs")?;
             serde_json::to_vec(&(
                 response.status,
                 &response.body,
                 &response.response_headers,
-                crate::ha_forward::UnwrapFramingWire::StoredJson,
+                framing,
             ))
         } else {
             serde_json::to_vec(&(response.status, &response.body, &response.response_headers))
@@ -193,12 +194,12 @@ pub(crate) fn wire_response_digest(
                 crate::ha_forward::UnwrapFramingWire::StoredJson,
                 stored,
             ))
-        } else if response.unwrapped_json.is_some() {
+        } else if let Some(framing)=response.unwrapped_json {
             serde_json::to_vec(&(
                 response.status,
                 &response.body,
                 &response.response_headers,
-                crate::ha_forward::UnwrapFramingWire::StoredJson,
+                framing,
             ))
         } else {
             serde_json::to_vec(&(response.status, &response.body, &response.response_headers))

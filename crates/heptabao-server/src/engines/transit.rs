@@ -201,7 +201,10 @@ impl Key {
             ));
         }
         let hmac_size = if kind == "hmac" {
-            let size = optional_u64(body, "key_size")?.unwrap_or(0);
+            let size = match body.get("key_size") {
+                None | Some(Value::Null) => 0,
+                _ => optional_u64(body, "key_size")?.unwrap_or(0),
+            };
             if size != 0 && !(32..=512).contains(&size) {
                 return Err(bad(&format!("invalid key_size {size}")));
             }

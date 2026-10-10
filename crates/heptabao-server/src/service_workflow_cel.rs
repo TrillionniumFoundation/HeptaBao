@@ -116,7 +116,7 @@ fn value_size(value: &cel::Value, depth: usize) -> Option<usize> {
         cel::Value::Null | cel::Value::Bool(_) | cel::Value::Int(_) | cel::Value::UInt(_) => {
             Some(16)
         }
-        cel::Value::Float(value) if value.is_finite() => Some(16),
+        cel::Value::Float(_) => Some(16),
         cel::Value::String(value) => add(8, value.len()),
         cel::Value::List(values) => values
             .iter()
@@ -197,44 +197,46 @@ fn json_to_cel(
     }
     Ok(result)
 }
-fn cel_to_json(value: &cel::Value, depth: usize) -> Result<Value, Response> {
-    if depth > MAX_AST_DEPTH {
-        return Err(failed());
-    }
+fn runtime_to_cel(value: &RuntimeValue, response_numbers: bool, depth: usize)
+    -> Result<cel::Value, Response> {
+    if depth > MAX_AST_DEPTH { return Err(failed()); }
+    let result = if let Some(value) = value.actual_float() {
+        cel::Value::Float(value)
+    } else if let Some(value) = value.json_scalar() {
+        json_to_cel(value, response_numbers, depth)?
+    } else if let Some(values) = value.as_array() {
+        cel::Value::List(Arc::new(values.iter()
+            .map(|value| runtime_to_cel(value, response_numbers, depth + 1))
+            .collect::<Result<Vec<_>, _>>()?))
+    } else if let Some(values) = value.as_object() {
+        cel::Value::Map(Map { map: Arc::new(values.iter().map(|(key,value)| {
+            Ok((Key::String(Arc::new(key.clone())),
+                runtime_to_cel(value, response_numbers, depth + 1)?))
+        }).collect::<Result<HashMap<_,_>,Response>>()?) })
+    } else { return Err(failed()); };
+    if value_size(&result,0).is_none() { return Err(failed()); }
+    Ok(result)
+}
+fn cel_to_runtime(value: &cel::Value, depth: usize) -> Result<RuntimeValue, Response> {
+    if depth > MAX_AST_DEPTH { return Err(failed()); }
     match value {
-        cel::Value::Null => Ok(Value::Null),
-        cel::Value::Bool(value) => Ok(Value::Bool(*value)),
-        cel::Value::Int(value) => Ok(Value::from(*value)),
-        cel::Value::UInt(value) => Ok(Value::from(*value)),
-        cel::Value::Float(value) => {
-            let mut wire = serde_json::Number::from_f64(*value)
-                .ok_or_else(failed)?
-                .to_string();
-            // Official workflow float64 results encode integral finite values without ".0".
-            if wire.ends_with(".0") {
-                wire.truncate(wire.len() - 2);
+        cel::Value::Null => Ok(RuntimeValue::from_json(&Value::Null)),
+        cel::Value::Bool(value) => Ok(RuntimeValue::from_json(&Value::Bool(*value))),
+        cel::Value::Int(value) => Ok(RuntimeValue::from_json(&Value::from(*value))),
+        cel::Value::UInt(value) => Ok(RuntimeValue::from_json(&Value::from(*value))),
+        cel::Value::Float(value) => Ok(RuntimeValue::float(*value)),
+        cel::Value::String(value) => Ok(RuntimeValue::string(value.as_ref().clone())),
+        cel::Value::List(values) => values.iter()
+            .map(|value| cel_to_runtime(value,depth+1))
+            .collect::<Result<Vec<_>,_>>().map(RuntimeValue::array),
+        cel::Value::Map(values) => {
+            let mut result = RuntimeValue::object();
+            for (key,value) in values.map.iter() {
+                let Key::String(key) = key else { return Err(failed()); };
+                result.insert(key.as_ref().clone(),cel_to_runtime(value,depth+1)?);
             }
-            wire.parse::<serde_json::Number>()
-                .map(Value::Number)
-                .map_err(|_| failed())
+            Ok(result)
         }
-        cel::Value::String(value) => Ok(Value::String(value.as_ref().clone())),
-        cel::Value::List(values) => values
-            .iter()
-            .map(|value| cel_to_json(value, depth + 1))
-            .collect::<Result<Vec<_>, _>>()
-            .map(Value::Array),
-        cel::Value::Map(values) => values
-            .map
-            .iter()
-            .map(|(key, value)| {
-                let Key::String(key) = key else {
-                    return Err(failed());
-                };
-                Ok((key.as_ref().clone(), cel_to_json(value, depth + 1)?))
-            })
-            .collect::<Result<serde_json::Map<_, _>, _>>()
-            .map(Value::Object),
         _ => Err(failed()),
     }
 }
@@ -397,13 +399,13 @@ impl CelSource {
             variables,
         })
     }
-    pub(super) fn preflight(
+    pub(super) fn preflight_runtime(
         &self,
-        input: &Value,
-        requests: &Value,
-        responses: &Value,
+        input: &RuntimeValue,
+        requests: &RuntimeValue,
+        responses: &RuntimeValue,
         meter: &Arc<Meter>,
-    ) -> Result<Option<Value>, Response> {
+    ) -> Result<Option<RuntimeValue>, Response> {
         let mut history = false;
         for source in self
             .variables
@@ -418,16 +420,16 @@ impl CelSource {
         if history {
             Ok(None)
         } else {
-            self.evaluate(input, requests, responses, meter).map(Some)
+            self.evaluate_runtime(input, requests, responses, meter).map(Some)
         }
     }
-    pub(super) fn evaluate(
+    pub(super) fn evaluate_runtime(
         &self,
-        input: &Value,
-        requests: &Value,
-        responses: &Value,
+        input: &RuntimeValue,
+        requests: &RuntimeValue,
+        responses: &RuntimeValue,
         meter: &Arc<Meter>,
-    ) -> Result<Value, Response> {
+    ) -> Result<RuntimeValue, Response> {
         meter.check()?;
         // Parse all ordered expressions before the evaluator can run any one of them.
         let parsed = self
@@ -437,9 +439,9 @@ impl CelSource {
             .collect::<Result<Vec<_>, _>>()?;
         let expression = parse(&self.expression, meter)?;
         let mut context = cel::Context::default();
-        context.add_variable_from_value("input", json_to_cel(input, false, 0)?);
-        context.add_variable_from_value("requests", json_to_cel(requests, false, 0)?);
-        context.add_variable_from_value("responses", json_to_cel(responses, true, 0)?);
+        context.add_variable_from_value("input", runtime_to_cel(input, false, 0)?);
+        context.add_variable_from_value("requests", runtime_to_cel(requests, false, 0)?);
+        context.add_variable_from_value("responses", runtime_to_cel(responses, true, 0)?);
         for name in [
             "int",
             "uint",
@@ -531,10 +533,18 @@ impl CelSource {
         // CEL logical/optional operators may absorb a child error; fuel exhaustion never is absorbed.
         meter.check()?;
         meter.value(&value).map_err(|_| failed())?;
-        let value = cel_to_json(&value, 0)?;
+        let value = cel_to_runtime(&value, 0)?;
         meter.check()?;
         Ok(value)
     }
+    #[cfg(test)]
+    pub(super) fn evaluate(&self,input: &Value,requests: &Value,responses: &Value,
+        meter: &Arc<Meter>) -> Result<Value,Response> {
+        self.evaluate_runtime(&RuntimeValue::from_json(input),
+            &RuntimeValue::from_json(requests), &RuntimeValue::from_json(responses),meter)?
+            .to_json().map_err(|_| failed())
+    }
+
 }
 
 #[cfg(test)]

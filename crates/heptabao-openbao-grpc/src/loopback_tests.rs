@@ -12,7 +12,8 @@ use tokio::task::JoinHandle;
 use tokio_stream::wrappers::TcpListenerStream;
 use tonic::codegen::{Service, http};
 use tonic::server::{NamedService, UnaryService};
-use tonic::transport::{Certificate, ClientTlsConfig, Endpoint, Identity, Server, ServerTlsConfig};
+use tonic::transport::{Certificate, ClientTlsConfig, Endpoint, Server};
+use tokio_rustls::rustls::{RootCertStore, ServerConfig, server::WebPkiClientVerifier};
 
 use super::*;
 use crate::handshake::LocalEndpoint;
@@ -248,6 +249,72 @@ impl Certificates {
         }
     }
 }
+// Explicit provider selection is local to this synthetic TLS server. Failed
+// handshakes are discarded before gRPC, as in Tonic's owned TLS incoming path.
+struct ExplicitTlsIncoming {
+    listener: TcpListenerStream,
+    acceptor: tokio_rustls::TlsAcceptor,
+    pending: Option<Pin<Box<tokio_rustls::Accept<tokio::net::TcpStream>>>>,
+}
+impl tokio_stream::Stream for ExplicitTlsIncoming {
+    type Item = std::io::Result<tokio_rustls::server::TlsStream<tokio::net::TcpStream>>;
+
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        loop {
+            if let Some(pending) = self.pending.as_mut() {
+                match pending.as_mut().poll(cx) {
+                    Poll::Pending => return Poll::Pending,
+                    Poll::Ready(Ok(stream)) => {
+                        self.pending = None;
+                        return Poll::Ready(Some(Ok(stream)));
+                    }
+                    Poll::Ready(Err(_)) => {
+                        self.pending = None;
+                    }
+                }
+            }
+            match tokio_stream::Stream::poll_next(Pin::new(&mut self.listener), cx) {
+                Poll::Pending => return Poll::Pending,
+                Poll::Ready(None) => return Poll::Ready(None),
+                Poll::Ready(Some(Err(error))) => return Poll::Ready(Some(Err(error))),
+                Poll::Ready(Some(Ok(stream))) => {
+                    self.pending = Some(Box::pin(self.acceptor.accept(stream)));
+                }
+            }
+        }
+    }
+}
+fn explicit_tls_acceptor(certificates: &Certificates) -> Result<tokio_rustls::TlsAcceptor, BridgeError> {
+    use tokio_rustls::rustls::pki_types::{CertificateDer, PrivatePkcs8KeyDer};
+    let certificate_chain = |pem: &[u8]| -> Result<Vec<CertificateDer<'static>>, BridgeError> {
+        openssl::x509::X509::stack_from_pem(pem)
+            .map_err(|_| BridgeError::InvalidBinding)?
+            .into_iter()
+            .map(|certificate| {
+                certificate.to_der().map(CertificateDer::from)
+                    .map_err(|_| BridgeError::InvalidBinding)
+            })
+            .collect()
+    };
+    let mut roots = RootCertStore::empty();
+    for certificate in certificate_chain(&certificates.client)? {
+        roots.add(certificate).map_err(|_| BridgeError::InvalidBinding)?;
+    }
+    let provider = Arc::new(tokio_rustls::rustls::crypto::ring::default_provider());
+    let verifier = WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider.clone())
+        .build().map_err(|_| BridgeError::InvalidBinding)?;
+    let private_key = openssl::pkey::PKey::private_key_from_pem(&certificates.server_key)
+        .and_then(|key| key.private_key_to_pkcs8())
+        .map_err(|_| BridgeError::InvalidBinding)?;
+    let mut config = ServerConfig::builder_with_provider(provider)
+        .with_safe_default_protocol_versions().map_err(|_| BridgeError::InvalidBinding)?
+        .with_client_cert_verifier(verifier)
+        .with_single_cert(certificate_chain(&certificates.server)?,
+            PrivatePkcs8KeyDer::from(private_key).into())
+        .map_err(|_| BridgeError::InvalidBinding)?;
+    config.alpn_protocols = vec![b"h2".to_vec()];
+    Ok(tokio_rustls::TlsAcceptor::from(Arc::new(config)))
+}
 struct Fixture {
     address: std::net::SocketAddr,
     certificates: Certificates,
@@ -270,22 +337,18 @@ impl Fixture {
             mode,
             probe: Probe::new(),
         });
-        let tls = ServerTlsConfig::new()
-            .identity(Identity::from_pem(
-                certificates.server.as_slice(),
-                certificates.server_key.as_slice(),
-            ))
-            .client_ca_root(Certificate::from_pem(certificates.client.as_slice()))
-            .client_auth_optional(false);
-        let mut server = Server::builder()
-            .tls_config(tls)
-            .map_err(|_| BridgeError::InvalidBinding)?;
+        let incoming = ExplicitTlsIncoming {
+            listener: TcpListenerStream::new(listener),
+            acceptor: explicit_tls_acceptor(&certificates)?,
+            pending: None,
+        };
+        let mut server = Server::builder();
         let (shutdown, wait) = oneshot::channel();
         let wrapper = MockWrapper(state.clone());
         let task = tokio::spawn(async move {
             server
                 .add_service(wrapper)
-                .serve_with_incoming_shutdown(TcpListenerStream::new(listener), async {
+                .serve_with_incoming_shutdown(incoming, async {
                     let _ = wait.await;
                 })
                 .await

@@ -37,6 +37,8 @@ pub mod postgres_durable;
 pub mod postgres_storage;
 mod postgres_wire;
 mod request_deadline;
+mod request_metadata;
+mod workflow_runtime;
 mod service;
 mod snapshot_archive;
 mod snapshot_file;

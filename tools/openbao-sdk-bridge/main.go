@@ -44,34 +44,35 @@ type ownedImage struct {
 }
 
 type message struct {
-	OwnedImages       []ownedImage      `json:"owned_images,omitempty"`
-	Version           int               `json:"version"`
-	Kind              string            `json:"kind"`
-	Call              uint64            `json:"call"`
-	RPC               uint64            `json:"rpc,omitempty"`
-	Plugin            string            `json:"plugin,omitempty"`
-	Args              []string          `json:"args,omitempty"`
-	SocketDir         string            `json:"socket_dir,omitempty"`
-	TimeoutMS         int64             `json:"timeout_ms,omitempty"`
-	DefaultTTLSeconds int64             `json:"default_ttl_seconds,omitempty"`
-	MaxTTLSeconds     int64             `json:"max_ttl_seconds,omitempty"`
-	Operation         string            `json:"operation,omitempty"`
-	Path              string            `json:"path,omitempty"`
-	Data              map[string]any    `json:"data,omitempty"`
-	Secret            *logical.Secret   `json:"secret,omitempty"`
-	Auth              *logical.Auth     `json:"auth,omitempty"`
-	IssueTimeNS       int64             `json:"issue_time_ns,omitempty"`
-	IncrementNS       int64             `json:"increment_ns,omitempty"`
-	Method            string            `json:"method,omitempty"`
-	Key               string            `json:"key,omitempty"`
-	After             string            `json:"after,omitempty"`
-	Limit             int               `json:"limit,omitempty"`
-	Entry             *entry            `json:"entry,omitempty"`
-	Keys              []string          `json:"keys,omitempty"`
-	Response          *logical.Response `json:"response"`
-	Error             string            `json:"error,omitempty"`
-	BackendType       string            `json:"backend_type,omitempty"`
-	AuthPaths         *logical.Paths    `json:"auth_paths"`
+	OwnedImages       []ownedImage        `json:"owned_images,omitempty"`
+	Version           int                 `json:"version"`
+	Kind              string              `json:"kind"`
+	Call              uint64              `json:"call"`
+	RPC               uint64              `json:"rpc,omitempty"`
+	Plugin            string              `json:"plugin,omitempty"`
+	Args              []string            `json:"args,omitempty"`
+	SocketDir         string              `json:"socket_dir,omitempty"`
+	TimeoutMS         int64               `json:"timeout_ms,omitempty"`
+	DefaultTTLSeconds int64               `json:"default_ttl_seconds,omitempty"`
+	MaxTTLSeconds     int64               `json:"max_ttl_seconds,omitempty"`
+	Operation         string              `json:"operation,omitempty"`
+	Path              string              `json:"path,omitempty"`
+	Data              map[string]any      `json:"data,omitempty"`
+	Headers           map[string][]string `json:"headers,omitempty"`
+	Secret            *logical.Secret     `json:"secret,omitempty"`
+	Auth              *logical.Auth       `json:"auth,omitempty"`
+	IssueTimeNS       int64               `json:"issue_time_ns,omitempty"`
+	IncrementNS       int64               `json:"increment_ns,omitempty"`
+	Method            string              `json:"method,omitempty"`
+	Key               string              `json:"key,omitempty"`
+	After             string              `json:"after,omitempty"`
+	Limit             int                 `json:"limit,omitempty"`
+	Entry             *entry              `json:"entry,omitempty"`
+	Keys              []string            `json:"keys,omitempty"`
+	Response          *logical.Response   `json:"response"`
+	Error             string              `json:"error,omitempty"`
+	BackendType       string              `json:"backend_type,omitempty"`
+	AuthPaths         *logical.Paths      `json:"auth_paths"`
 }
 type wire struct {
 	writes    sync.Mutex
@@ -397,9 +398,13 @@ func run() (outcome error) {
 		default:
 			return errors.New("operation outside first bridge")
 		}
+		request, err := logicalRequestFromMessage(&m, hostStorage)
+		if err != nil {
+			return err
+		}
 		ctx, cancel := w.ownerContext(timeout)
 		w.active.Store(m.Call)
-		response, problem := backend.HandleRequest(ctx, &logical.Request{Operation: logical.Operation(m.Operation), Path: m.Path, Data: m.Data, Secret: m.Secret, Auth: m.Auth, Storage: hostStorage})
+		response, problem := backend.HandleRequest(ctx, request)
 		w.active.Store(0)
 		cancel()
 		result := message{Kind: "result", Call: m.Call, Response: response}
@@ -411,6 +416,31 @@ func run() (outcome error) {
 		}
 	}
 }
+
+// This IPC data is separate from ClientToken, namespace and issuer metadata.
+func validLogicalHeaders(headers map[string][]string) bool {
+	if len(headers) > 64 {
+		return false
+	}
+	total := 0
+	for name, values := range headers {
+		if len(name) > 256 || len(values) > 64 {
+			return false
+		}
+		total += len(name)
+		for _, value := range values {
+			if len(value) > 16*1024 {
+				return false
+			}
+			total += len(value)
+		}
+		if total > 64*1024 {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	// A closed owner pipe must return EPIPE through run's owned terminal cleanup.
 	// Go otherwise exits on SIGPIPE for stdout/stderr without executing defers.
@@ -423,4 +453,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+// This is the actual AutoMTLS consumer input; caller authority never comes from
+// Headers. The original owner context and deadline remain in run.
+func logicalRequestFromMessage(m *message, storage logical.Storage) (*logical.Request, error) {
+	if !validLogicalHeaders(m.Headers) {
+		return nil, errors.New("invalid logical headers")
+	}
+	return &logical.Request{Operation: logical.Operation(m.Operation), Path: m.Path,
+		Data: m.Data, Headers: m.Headers, Secret: m.Secret, Auth: m.Auth, Storage: storage}, nil
 }

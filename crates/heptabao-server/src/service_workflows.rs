@@ -10,6 +10,8 @@ use super::*;
 use std::collections::{BTreeMap, BTreeSet};
 #[path = "service_workflow_profiles.rs"]
 mod profiles;
+#[path = "service_workflow_input.rs"]
+pub(super) mod input;
 
 const MAX_WORKFLOWS_PER_NAMESPACE: usize = 256;
 const MAX_WORKFLOW_PATH_BYTES: usize = 256;
@@ -134,6 +136,12 @@ impl WorkflowState {
 
     pub(super) fn has_expression_profiles(&self) -> bool {
         self.by_namespace.values().flat_map(BTreeMap::values).any(|stored| stored.definition.profile.as_ref().is_some_and(profiles::Profile::has_expression_sources))
+    }
+
+    pub(super) fn has_logical_input_profiles(&self) -> bool {
+        self.by_namespace.values().flat_map(BTreeMap::values).any(|stored| {
+            stored.definition.profile.as_ref().is_some_and(profiles::Profile::has_logical_data)
+        })
     }
 
     pub(super) fn has_request_credentials(&self) -> bool {
@@ -762,8 +770,8 @@ impl Service {
             };
         }
 
-        if request.method != "POST" {
-            return Response::error(405, "workflow execution requires POST");
+        if !matches!(request.method, "POST" | "PUT") {
+            return Response::error(405, "workflow execution requires POST or PUT");
         }
         if let Err(error) = state.auth.authorize_request(
             principal,
@@ -1217,5 +1225,22 @@ impl WorkflowState {
             .any(|stored| stored.definition.steps.iter().any(|step| {
                 heptabao_domain::json::requires_lossless_format(&step.body)
             }))
+    }
+}
+
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
+impl WorkflowState {
+    pub(super) fn logical_first_step_fixture(
+        &self,
+        namespace: &str,
+        path: &str,
+        body: &Value,
+        started: Instant,
+    ) -> Result<(String, String, Value, Option<crate::request_metadata::DataFrame>), Response> {
+        let profile = self.get(namespace, path)
+            .and_then(|stored| stored.definition.profile.as_ref())
+            .ok_or_else(|| Response::error(400, "actual stored profile required"))?;
+        let (step, frame) = profiles::logical_first_step_fixture(profile, body, started)?;
+        Ok((step.method, step.path, step.body, frame))
     }
 }

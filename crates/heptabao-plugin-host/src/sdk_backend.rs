@@ -468,10 +468,23 @@ impl SdkBackendHost {
 
     pub fn handle_logical_request_before(
         &mut self,
-        mut logical: SdkLogicalRequest<'_>,
+        logical: SdkLogicalRequest<'_>,
         storage: &mut dyn SdkStorage,
         original_deadline: Instant,
     ) -> Result<Option<Value>, SdkBridgeError> {
+        self.handle_logical_request_with_headers_before(logical, None, storage, original_deadline)
+    }
+
+    /// Data-only logical headers. This never changes the enrolled process,
+    /// original caller/namespace authority or original bounded deadline.
+    pub fn handle_logical_request_with_headers_before(
+        &mut self,
+        mut logical: SdkLogicalRequest<'_>,
+        headers: Option<&std::collections::BTreeMap<String, Vec<String>>>,
+        storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Option<Value>, SdkBridgeError> {
+        validate_logical_headers(headers)?;
         let operation = logical.operation;
         let path = logical.path;
         if Instant::now() >= original_deadline {
@@ -515,6 +528,7 @@ impl SdkBackendHost {
         let mut request = SensitiveJson(json!({"version":1,"kind":"request","call":self.call,
             "operation":operation,"path":path}));
         request["data"] = std::mem::take(&mut logical.data);
+        append_logical_headers(&mut request, headers)?;
         if let Some(mut lease) = logical.lease.take() {
             request["secret"] = std::mem::take(&mut lease.secret);
             request["issue_time_ns"] = json!(lease.issue_time_ns);
@@ -957,3 +971,38 @@ fn decode_sdk_frame(bytes: &[u8]) -> Result<Value, SdkBridgeError> {
 #[cfg(test)]
 #[path = "sdk_lossless_json_tests.rs"]
 mod lossless_json_tests;
+
+fn validate_logical_headers(headers: Option<&std::collections::BTreeMap<String, Vec<String>>>)
+    -> Result<(), SdkBridgeError> {
+    if let Some(headers) = headers {
+        let mut bytes = 0usize;
+        if headers.len() > 64 { return Err(SdkBridgeError::BeforeEntry); }
+        for (name, values) in headers {
+            if name.len() > 256 || values.len() > 64 {
+                return Err(SdkBridgeError::BeforeEntry);
+            }
+            bytes = bytes.checked_add(name.len()).ok_or(SdkBridgeError::BeforeEntry)?;
+            for value in values {
+                if value.len() > 16 * 1024 {
+                    return Err(SdkBridgeError::BeforeEntry);
+                }
+                bytes = bytes.checked_add(value.len()).ok_or(SdkBridgeError::BeforeEntry)?;
+            }
+        }
+        if bytes > 64 * 1024 { return Err(SdkBridgeError::BeforeEntry); }
+    }
+    Ok(())
+}
+fn append_logical_headers(request: &mut Value,
+    headers: Option<&std::collections::BTreeMap<String, Vec<String>>>)
+    -> Result<(), SdkBridgeError> {
+    validate_logical_headers(headers)?;
+    if let Some(headers) = headers.filter(|headers| !headers.is_empty()) {
+        request["headers"] = serde_json::to_value(headers).map_err(|_| SdkBridgeError::BeforeEntry)?;
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "sdk_logical_headers_tests.rs"]
+mod logical_headers_tests;

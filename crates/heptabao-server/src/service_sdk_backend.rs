@@ -162,6 +162,7 @@ struct WorkerJob {
     operation: String,
     path: String,
     data: Value,
+    logical_data: Option<crate::request_metadata::DataFrame>,
     lease: Option<SdkLeaseCallback>,
     auth: Option<Box<SdkAuthCallback>>,
     expected_auth_paths: Option<Value>,
@@ -311,7 +312,7 @@ fn start_worker_typed(
                     }
                     host.as_mut()
                         .ok_or(SdkBridgeError::Fenced)?
-                        .handle_logical_request_before(
+                        .handle_logical_request_with_headers_before(
                             SdkLogicalRequest {
                                 operation: &job.operation,
                                 path: &job.path,
@@ -319,6 +320,7 @@ fn start_worker_typed(
                                 lease: job.lease.take(),
                                 auth: job.auth.take().map(|auth| *auth),
                             },
+                            job.logical_data.as_ref().map(|data| &data.headers),
                             &mut view,
                             job.deadline,
                         )
@@ -378,6 +380,7 @@ pub(super) struct Plan {
     operation: String,
     path: String,
     data: Value,
+    logical_data: Option<crate::request_metadata::DataFrame>,
     lease: Mutex<Option<Box<secret_lease::LeaseCall>>>,
     retirement: Option<Mutex<retirement::Retirement>>,
     namespace_cleanup: bool,
@@ -396,6 +399,49 @@ impl Drop for Plan {
 }
 
 impl Plan {
+    fn worker_job(
+        &self,
+        call: &Option<Box<secret_lease::LeaseCall>>,
+        lease_callback: Option<SdkLeaseCallback>,
+        deadline: Instant,
+        events: Sender<Event>,
+    ) -> WorkerJob {
+        WorkerJob {
+            operation: self.operation.clone(),
+            path: call.as_ref().map_or_else(
+                || self.path.clone(),
+                |call| {
+                    call.record
+                        .path
+                        .strip_prefix(&self.mount)
+                        .unwrap_or("")
+                        .to_owned()
+                },
+            ),
+            data: call
+                .as_ref()
+                .map_or_else(|| self.data.clone(), |call| call.request_data()),
+            logical_data: self.logical_data.clone(),
+            lease: lease_callback,
+            auth: None,
+            expected_auth_paths: None,
+            deadline,
+            events,
+        }
+    }
+    #[cfg(test)]
+    pub(in crate::service) fn logical_worker_job_fixture(&self) -> Result<Value, Response> {
+        let call = self.lease.lock()
+            .map_err(|_| Response::error(503, "actual SDK lease owner unavailable"))?.clone();
+        let lease_callback = call.as_ref().map(|call| call.callback()).transpose()?;
+        let (events, _received) = mpsc::channel();
+        let job = self.worker_job(&call, lease_callback, self.deadline, events);
+        Ok(json!({"operation":&job.operation,"path":&job.path,"data":&job.data,
+            "headers":job.logical_data.as_ref().map(|frame| &frame.headers),
+            "lease_present":job.lease.is_some(),"auth_present":job.auth.is_some(),
+            "expected_auth_paths_present":job.expected_auth_paths.is_some(),
+            "original_deadline_preserved":job.deadline == self.deadline}))
+    }
     pub(super) fn execute(
         &self,
         service: &Arc<Mutex<Service>>,
@@ -459,27 +505,7 @@ impl Plan {
         }
 
         let (events, received) = mpsc::channel();
-        let job = WorkerJob {
-            operation: self.operation.clone(),
-            path: call.as_ref().map_or_else(
-                || self.path.clone(),
-                |call| {
-                    call.record
-                        .path
-                        .strip_prefix(&self.mount)
-                        .unwrap_or("")
-                        .to_owned()
-                },
-            ),
-            data: call
-                .as_ref()
-                .map_or_else(|| self.data.clone(), |call| call.request_data()),
-            lease: lease_callback,
-            auth: None,
-            expected_auth_paths: None,
-            deadline,
-            events,
-        };
+        let job = self.worker_job(&call, lease_callback, deadline, events);
         let dispatch = (|| {
             let private = self
                 .private_cleanup
@@ -1709,6 +1735,12 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let logical_data = match crate::request_metadata::current(
+            request.method, request.path, request.namespace, request.body,
+        ) {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "SDK logical data lost its original request"),
+        };
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             wrapping,
@@ -1720,6 +1752,7 @@ impl Service {
             operation: operation.into(),
             path,
             data,
+            logical_data,
             lease: Mutex::new(lease.map(Box::new)),
             retirement: None,
             namespace_cleanup,
