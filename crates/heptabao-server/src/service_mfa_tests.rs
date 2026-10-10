@@ -232,6 +232,17 @@ fn precise_call(
 ) -> Response {
     let clock = RequestClock::anchored(Duration::new(seconds, nanos), Instant::now())
         .expect("synthetic captured request clock");
+    precise_call_clock(service, method, path, token, body, clock)
+}
+fn precise_call_clock(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    clock: RequestClock,
+) -> Response {
+    let seconds = clock.admitted_at().seconds();
     service.handle_request_clock(
         ServiceRequest {
             method,
@@ -298,14 +309,21 @@ fn mfa_challenge(
     seconds: u64,
     nanos: u32,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let response = precise_call(
+    let clock = RequestClock::anchored(Duration::new(seconds, nanos), Instant::now())
+        .expect("synthetic captured challenge clock");
+    mfa_challenge_clock(service, clock)
+}
+fn mfa_challenge_clock(
+    service: &mut Service,
+    clock: RequestClock,
+) -> Result<String, Box<dyn std::error::Error>> {
+    let response = precise_call_clock(
         service,
         "POST",
         "auth/mfa_userpass/login/alice",
         "",
         json!({"password":"public-synthetic-mfa-test"}),
-        seconds,
-        nanos,
+        clock,
     );
     assert_eq!(
         response.status, 200,
@@ -602,30 +620,36 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     let next_code = Zeroizing::new(
         crate::engines::rfc6238_code(&second_secret, "SHA1", 6, 12).map_err(|_| "native TOTP")?,
     );
-    let fresh = mfa_challenge(&mut reopened, 120, 100_000_000)?;
+    // Both requests advance from this original fixture clock. Re-anchoring
+    // validate at the same wall value would regress the captured challenge.
+    let rollover_clock = RequestClock::anchored(
+        Duration::new(120, 100_000_000), Instant::now(),
+    ).map_err(|_| "original rollover clock")?;
+    let fresh = mfa_challenge_clock(&mut reopened, rollover_clock)?;
     assert_eq!(
-        precise_call(
+        precise_call_clock(
             &mut reopened,
             "POST",
             "sys/mfa/validate",
             "",
             json!({"mfa_request_id":fresh,"mfa_payload":{second.clone():[next_code.as_str()]}}),
-            120,
-            100_000_000
+            rollover_clock
         )
         .status,
         403,
         "counter rollover alone cannot reset fixed attempt window"
     );
-    let fresh = mfa_challenge(&mut reopened, 124, 600_000_000)?;
-    let accepted = precise_call(
+    let expired_window_clock = RequestClock::anchored(
+        Duration::new(124, 600_000_000), Instant::now(),
+    ).map_err(|_| "original expired-window clock")?;
+    let fresh = mfa_challenge_clock(&mut reopened, expired_window_clock)?;
+    let accepted = precise_call_clock(
         &mut reopened,
         "POST",
         "sys/mfa/validate",
         "",
         json!({"mfa_request_id":fresh,"mfa_payload":{second.clone():[next_code.as_str()]}}),
-        124,
-        600_000_000,
+        expired_window_clock,
     );
     assert_eq!(
         accepted.status, 200,
