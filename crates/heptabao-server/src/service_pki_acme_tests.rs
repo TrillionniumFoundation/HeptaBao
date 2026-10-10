@@ -1491,6 +1491,11 @@ fn pki_acme99_http01_namespace_delete_recreate_vetoes_original_queue_owner() -> 
         .status,
         200
     );
+    crate::service::tests::finish_namespace_deletion_fixture(
+        &mut service,
+        namespace,
+        Duration::from_secs(101),
+    )?;
     assert_eq!(
         call(
             &mut service,

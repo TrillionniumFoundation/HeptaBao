@@ -3385,11 +3385,9 @@ impl Service {
         }
 
         if let Some(current) = self.state.as_ref() {
-            let Some(durable) = self.durable.as_ref() else {
-                return Response::error(503, "transit cache committed durable owner is absent");
-            };
             if let Err(error) = current.engines.synchronize_transit_policy_caches(
-                durable.generation(), |namespace| current.namespaces.incarnation(namespace),
+                self.durable.as_ref().map(|durable| durable.generation()),
+                |namespace| current.namespaces.incarnation(namespace),
             ) {
                 return Response::from_engine_error(error);
             }

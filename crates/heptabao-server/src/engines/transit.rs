@@ -202,7 +202,10 @@ impl Key {
         }
         let hmac_size = if kind == "hmac" {
             let size = optional_u64(body, "key_size")?.unwrap_or(0);
-            if !(32..=512).contains(&size) {
+            if size != 0 && !(32..=512).contains(&size) {
+                return Err(bad(&format!("invalid key_size {size}")));
+            }
+            if size == 0 {
                 return Err(openbao_compatibility_error(
                     "invalid key size for HMAC key, must be between 32 and 512 bytes",
                 ));

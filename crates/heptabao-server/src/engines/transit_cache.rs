@@ -188,6 +188,14 @@ impl Transit {
         Ok(ok(json!({"size":requested}), true))
     }
 
+    /// An absent durable/catalog owner confers no cache authority. Historical
+    /// trusted native namespaces still read their installed policies directly.
+    /// Erasing the shared runtime also drops any old retained Arc<Key> entries.
+    pub(in crate::engines) fn invalidate_unowned_policy_cache(&self) -> Result<()> {
+        *self.policy_cache_lock()? = Runtime::default();
+        Ok(())
+    }
+
     pub(in crate::engines) fn synchronize_policy_cache(&self, namespace: &str, namespace_incarnation: u64,
         mount: &str, mount_incarnation: u64, generation: u64) -> Result<()> {
         let owner = Owner { namespace: namespace.to_owned(), namespace_incarnation,
@@ -303,6 +311,32 @@ mod tests {
         current.synchronize_policy_cache("team", 2, "transit/", 2, 2).map_err(|_| "new namespace incarnation")?;
         assert!(current.policy_cache.lock().map_err(|_| "cache lock")?.owner.as_ref()
             .is_some_and(|owner| owner.namespace_incarnation == 2));
+        Ok(())
+    }
+
+    #[test]
+    fn cache130_missing_installed_owner_retires_cached_material_without_changing_policy() -> TestResult {
+        let mut current = Transit::default();
+        call(&mut current, "POST", "config/cache", json!({"size":10}))?;
+        call(&mut current, "POST", "keys/key", json!({"exportable":true}))?;
+        current.synchronize_policy_cache("legacy-team", 7, "transit/", 9, 1)
+            .map_err(|_| "previous installed owner")?;
+        let policy = current.cached_policy("key").map_err(|_| "retained cached material")?;
+        let retained = Arc::downgrade(&policy);
+        drop(policy);
+        assert!(retained.upgrade().is_some());
+        let before = snapshot(&current)?;
+        current.invalidate_unowned_policy_cache().map_err(|_| "retire missing actual owner")?;
+        assert!(retained.upgrade().is_none(), "no runtime owner keeps the old material alive");
+        let first = current.cached_policy("key").map_err(|_| "installed uncached policy")?;
+        let second = current.cached_policy("key").map_err(|_| "second uncached policy")?;
+        assert!(!Arc::ptr_eq(&first, &second));
+        {
+            let runtime = current.policy_cache.lock().map_err(|_| "cache lock")?;
+            assert!(runtime.owner.is_none() && runtime.published_generation.is_none()
+                && runtime.basis.is_empty() && runtime.entries.is_empty() && runtime.order.is_empty());
+        }
+        assert!(snapshot(&current)? == before, "cache invalidation cannot edit durable policy/configuration");
         Ok(())
     }
 

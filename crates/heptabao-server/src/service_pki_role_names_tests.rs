@@ -1727,6 +1727,7 @@ fn pki_templates93_external_signed_uri_owner_retirement_and_encrypted_reopen() -
         &token,
         json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"}),
     );
+    assert_eq!(response.status, 200, "actual URI issuance errors: {}", response.body["errors"]);
     let (csr, public) = actual_csr_fixture()?;
     assert_eq!(
         call(

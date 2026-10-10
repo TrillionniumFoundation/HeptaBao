@@ -1012,6 +1012,35 @@ fn transit_sign_verify_hmac_and_hash_use_real_crypto() -> TestResult {
 }
 
 #[test]
+fn transit_hmac_key_size_matches_actual_openbao270_creation_boundaries() -> TestResult {
+    let mut state = EngineState::default();
+    request(&mut state, "", "POST", "sys/mounts/transit", json!({"type":"transit"}), 1)?;
+    for (name, body, status) in [
+        ("missing", json!({"type":"hmac"}), 500),
+        ("null", json!({"type":"hmac","key_size":null}), 500),
+        ("zero", json!({"type":"hmac","key_size":0}), 500),
+        ("twenty", json!({"type":"hmac","key_size":20}), 400),
+        ("five-thirteen", json!({"type":"hmac","key_size":513}), 400),
+    ] {
+        let before = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)?;
+        let path = format!("transit/keys/{name}");
+        let rejected = state.handle("", "POST", &path, &body, 1);
+        assert!(rejected.is_err_and(|error| error.status == status), "actual boundary {name}");
+        assert!(crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)? == before);
+        assert!(state.handle("", "GET", &path, &json!({}), 1).is_err_and(|error| error.status == 404));
+    }
+    for (name, size) in [("thirty-two", 32), ("five-twelve", 512)] {
+        let path = format!("transit/keys/{name}");
+        assert_eq!(request(&mut state, "", "POST", &path, json!({"type":"hmac","key_size":size}), 1)?.status, 200);
+        let descriptor = request(&mut state, "", "GET", &path, json!({}), 1)?;
+        assert_eq!(descriptor.status, 200);
+        assert_eq!(descriptor.body["data"]["type"], "hmac");
+        assert_eq!(descriptor.body["data"]["key_size"], size);
+    }
+    Ok(())
+}
+
+#[test]
 fn transit_hmac_matches_rfc4231_test_case_1() -> TestResult {
     let mut state = EngineState::default();
     request(
@@ -1019,7 +1048,7 @@ fn transit_hmac_matches_rfc4231_test_case_1() -> TestResult {
         "",
         "POST",
         "transit/keys/rfc",
-        json!({"type":"hmac"}),
+        json!({"type":"hmac","key_size":32}),
         1,
     )?;
     let mut serialized = serde_json::to_value(&state)?;
@@ -1054,7 +1083,7 @@ fn transit_supports_openbao_hash_and_hmac_algorithm_matrix() -> TestResult {
         "",
         "POST",
         "transit/keys/algorithm-matrix",
-        json!({"type":"hmac"}),
+        json!({"type":"hmac","key_size":32}),
         1,
     )?;
     let mut serialized = serde_json::to_value(&state)?;

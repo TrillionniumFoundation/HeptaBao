@@ -801,15 +801,18 @@ impl EngineState {
 
     /// Called only against the genuine installed Service state, before cloning
     /// a transaction candidate. This method installs no persistent state.
-    pub(crate) fn synchronize_transit_policy_caches(&self, generation: u64,
+    pub(crate) fn synchronize_transit_policy_caches(&self, generation: Option<u64>,
         namespace_incarnation: impl Fn(&str) -> Option<u64>) -> Result<()> {
         self.validate_transit_cache_state(None)?;
         for (namespace, state) in &self.namespaces {
             for (mount_name, mount) in &state.mounts {
                 if let Backend::Transit(engine) = &mount.backend {
-                    let incarnation = namespace_incarnation(namespace)
-                        .ok_or_else(|| error(503, "transit cache namespace owner is absent"))?;
-                    engine.synchronize_policy_cache(namespace, incarnation, mount_name, mount.incarnation, generation)?;
+                    match (generation, namespace_incarnation(namespace)) {
+                        (Some(generation), Some(incarnation)) => {
+                            engine.synchronize_policy_cache(namespace, incarnation, mount_name, mount.incarnation, generation)?;
+                        }
+                        _ => engine.invalidate_unowned_policy_cache()?,
+                    }
                 }
             }
         }
