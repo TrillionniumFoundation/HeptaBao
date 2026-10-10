@@ -118,7 +118,7 @@ impl Transit {
         if algorithm != "ecdh" { return Err(bad(&format!("key derivation algorithm {algorithm} not supported"))); }
         let kind = body.get("derived_key_type").map(|v| v.as_str().ok_or_else(|| bad("derived key type must be a string"))).transpose()?.unwrap_or("aes256-gcm96");
         if !symmetric::is_kind(kind) { return Err(bad(&format!("unknown key type {kind}"))); }
-        let base = self.keys.get(string(body, "base_key_name")?).ok_or_else(not_found)?;
+        let base = self.cached_policy(string(body, "base_key_name")?)?;
         base.alive()?;
         if !matches!(base.kind.as_str(), "ecdsa-p256" | "ecdsa-p384" | "ecdsa-p521") {
             return Err(bad("ECDH requires an EC base key"));

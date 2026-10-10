@@ -153,6 +153,7 @@ const WORKFLOW_EXPRESSION_STATE_SCHEMA: u32 = 125;
 const SDK_ADVANCED_STATE_SCHEMA: u32 = 126;
 const TRANSIT_DERIVED_ED_STATE_SCHEMA: u32 = 127;
 const WORKFLOW_CREDENTIAL_STATE_SCHEMA: u32 = 128;
+const TRANSIT_CACHE_STATE_SCHEMA: u32 = 130;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -161,7 +162,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = WORKFLOW_CREDENTIAL_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_CACHE_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -214,6 +215,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SDK_ADVANCED_STATE_SCHEMA
                 | TRANSIT_DERIVED_ED_STATE_SCHEMA
                 | WORKFLOW_CREDENTIAL_STATE_SCHEMA
+                | TRANSIT_CACHE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -284,6 +286,8 @@ mod namespaces;
 pub(crate) use approle_tidy::start_worker as start_approle_tidy_worker;
 #[path = "service_native_remount.rs"]
 mod native_remount;
+#[path = "service_transit_cache_reload.rs"]
+mod transit_cache_reload;
 pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
 use namespaces::deletion as namespace_deletion;
 pub(crate) use native_remount::start_worker as start_native_remount_worker;
@@ -1376,6 +1380,7 @@ pub struct Service {
     approle_tidy_slots: BTreeMap<(String, String), approle_tidy::Slot>,
     approle_tidy_periodic_cursor: Option<(String, String)>,
     pending_native_remount: Option<native_remount::AcceptedMove>,
+    pending_transit_cache_reload: Option<transit_cache_reload::AcceptedReload>,
     native_remount_jobs: std::collections::VecDeque<native_remount::Task>,
     native_remount_statuses: BTreeMap<String, native_remount::Status>,
     pending_acme_authority: Option<pki_acme::Authority>,
@@ -1791,6 +1796,7 @@ impl Service {
             approle_tidy_slots: BTreeMap::new(),
             approle_tidy_periodic_cursor: None,
             pending_native_remount: None,
+            pending_transit_cache_reload: None,
             native_remount_jobs: Default::default(),
             native_remount_statuses: BTreeMap::new(),
             pending_acme_authority: None,
@@ -2568,6 +2574,7 @@ impl Service {
             || self.pending_namespace_deletion.is_some()
             || self.pending_approle_tidy.is_some()
             || self.pending_native_remount.is_some()
+            || self.pending_transit_cache_reload.is_some()
             || self.pending_acme_authority.is_some()
             || self.pending_local_unseal_completion.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
@@ -2853,6 +2860,7 @@ impl Service {
         let namespace_deletion = self.pending_namespace_deletion.take();
         let approle_tidy = self.pending_approle_tidy.take();
         let native_remount = self.pending_native_remount.take();
+        let transit_cache_reload = self.pending_transit_cache_reload.take();
         let acme_authority = self.pending_acme_authority.take();
         let local_unseal_completion = self.pending_local_unseal_completion.take();
         let staged = sdk_staged
@@ -2878,6 +2886,7 @@ impl Service {
             + usize::from(namespace_deletion.is_some())
             + usize::from(approle_tidy.is_some())
             + usize::from(native_remount.is_some())
+            + usize::from(transit_cache_reload.is_some())
             + usize::from(acme_authority.is_some())
             + usize::from(local_unseal_completion.is_some())
             + usize::from(step_down.is_some())
@@ -2942,6 +2951,7 @@ impl Service {
         let namespace_deletion_expected = namespace_deletion.is_some();
         let approle_tidy_expected = approle_tidy.is_some();
         let native_remount_expected = native_remount.is_some();
+        let transit_cache_reload_expected = transit_cache_reload.is_some();
         let step_down_expected = self.expects_local_ha_step_down(path, &response);
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
@@ -2957,6 +2967,7 @@ impl Service {
         self.pending_namespace_deletion = namespace_deletion;
         self.pending_approle_tidy = approle_tidy;
         self.pending_native_remount = native_remount;
+        self.pending_transit_cache_reload = transit_cache_reload;
         let acme_expected = acme_authority.is_some();
         self.pending_acme_authority = acme_authority;
         let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
@@ -3003,6 +3014,7 @@ impl Service {
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
         let response = self.complete_forward_delivery(response, &fingerprint);
+        let response = self.complete_transit_cache_reload_delivery(transit_cache_reload_expected, response, &fingerprint);
         RequestExecution::Complete(response)
     }
 
@@ -3372,6 +3384,16 @@ impl Service {
             return response;
         }
 
+        if let Some(current) = self.state.as_ref() {
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "transit cache committed durable owner is absent");
+            };
+            if let Err(error) = current.engines.synchronize_transit_policy_caches(
+                durable.generation(), |namespace| current.namespaces.incarnation(namespace),
+            ) {
+                return Response::from_engine_error(error);
+            }
+        }
         let Some(mut admitted) = self.state.clone() else {
             return Response::error(503, "server is sealed");
         };
@@ -3705,6 +3727,9 @@ impl Service {
             resumed_control_group,
         ) {
             return response;
+        }
+        if path == "sys/plugins/reload/backend" {
+            return self.transit_cache_reload_route(admitted, principal, &request);
         }
         // Dynamic metadata is an actual provider effect, selected only from operator bindings.
         let parameter_read = match admitted
@@ -4384,6 +4409,7 @@ impl Service {
             || admitted.engines.has_ssh_ca_state()
             || admitted.auth.has_control_group_state()
             || admitted.engines.has_symmetric_backup_state()
+            || admitted.engines.has_transit_cache_state()
                         || admitted.engines.has_transit_derived_ed_state()
             || admitted.engines.has_kv2_lossless_state()
         {
@@ -10059,3 +10085,6 @@ mod ssh_template115_tests;
 #[cfg(test)]
 #[path = "service_transit_derivation_tests.rs"]
 mod transit_derivation_tests;
+#[cfg(test)]
+#[path = "service_transit_cache_tests.rs"]
+mod transit_cache_tests;

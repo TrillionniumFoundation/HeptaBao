@@ -4505,7 +4505,7 @@ mod transit_export_query_tests {
         }
         assert_eq!(wire(&mut service, &root, "POST", "sys/mounts/sibling/data", json!({"type":"kv"}))?.status, 204);
         assert_eq!(wire(&mut service, &root, "GET",
-            "sibling/data/byok-export/destination/source?hash=SHA256", json!({}))?.status, 400);
+            "sibling/data/byok-export/destination/source?hash=SHA256", json!({}))?.status, 404);
         assert_eq!(wire(&mut service, "invalid-token", "GET",
             "nested/crypto/byok-export/destination/source?hash=SHA256", json!({}))?.status, 403);
         let after = wire(&mut service, &root, "GET", "nested/crypto/keys/source", json!({}))?;

@@ -80,8 +80,16 @@ mod ssh_templates;
 mod totp;
 mod transit;
 
+#[derive(Clone, PartialEq, Eq)]
+pub(crate) struct TransitCacheReloadMount {
+    pub(crate) owner: MountQueryOwner,
+    pub(crate) configured_size: Option<u64>,
+}
+
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    transit_cache_format: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     kv2_lossless_format: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -761,6 +769,121 @@ impl EngineState {
     pub(crate) fn has_symmetric_backup_state(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_symmetric_backup_state())))
+    }
+
+
+    pub(crate) fn has_transit_cache_state(&self) -> bool {
+        self.transit_cache_format.is_some() || self.namespaces.values().any(|state|
+            state.mounts.values().any(|mount|
+                matches!(&mount.backend, Backend::Transit(engine) if engine.has_policy_cache_state())))
+    }
+
+    pub(crate) fn validate_transit_cache_state(&self, previous: Option<&Self>) -> Result<()> {
+        if self.transit_cache_format.is_some_and(|format| format != 1)
+            || self.has_transit_cache_state() && self.transit_cache_format != Some(1)
+            || previous.is_some_and(Self::has_transit_cache_state) && self.transit_cache_format != Some(1)
+        {
+            return Err(error(503, "invalid or erased transit cache owner format"));
+        }
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let prior = previous.and_then(|old| old.namespaces.get(namespace_name))
+                        .and_then(|old| old.mounts.get(mount_name))
+                        .filter(|old| old.incarnation == mount.incarnation)
+                        .and_then(|old| if let Backend::Transit(engine) = &old.backend { Some(engine) } else { None });
+                    engine.validate_policy_cache_state(prior)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Called only against the genuine installed Service state, before cloning
+    /// a transaction candidate. This method installs no persistent state.
+    pub(crate) fn synchronize_transit_policy_caches(&self, generation: u64,
+        namespace_incarnation: impl Fn(&str) -> Option<u64>) -> Result<()> {
+        self.validate_transit_cache_state(None)?;
+        for (namespace, state) in &self.namespaces {
+            for (mount_name, mount) in &state.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let incarnation = namespace_incarnation(namespace)
+                        .ok_or_else(|| error(503, "transit cache namespace owner is absent"))?;
+                    engine.synchronize_policy_cache(namespace, incarnation, mount_name, mount.incarnation, generation)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn transit_cache_observation(&self, namespace: &str, mount: &str)
+        -> Result<Option<(u64, usize)>> {
+        self.namespaces.get(namespace).and_then(|state| state.mounts.get(mount))
+            .and_then(|mount| if let Backend::Transit(engine) = &mount.backend { Some(engine) } else { None })
+            .map(|engine| engine.policy_cache_observation()).transpose()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn transit_cache_entry_observation(&self, namespace: &str, mount: &str, name: &str)
+        -> Result<Option<(u64, std::sync::Weak<dyn std::any::Any + Send + Sync>)>> {
+        match self.namespaces.get(namespace).and_then(|state| state.mounts.get(mount))
+            .and_then(|mount| if let Backend::Transit(engine) = &mount.backend { Some(engine) } else { None })
+        {
+            Some(engine) => engine.policy_cache_entry_observation(name),
+            None => Ok(None),
+        }
+    }
+
+
+    pub(crate) fn transit_cache_reload_targets(&self, namespace: &str, paths: Option<&[String]>)
+        -> Result<Vec<TransitCacheReloadMount>> {
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let selected = match paths {
+            Some(paths) => paths.to_vec(),
+            None => state.mounts.iter().filter(|(_, mount)|
+                matches!(mount.backend, Backend::Transit(_))).map(|(path, _)| path.clone()).collect(),
+        };
+        if selected.is_empty() { return Err(not_found()); }
+        let mut seen = BTreeSet::new();
+        let mut targets = Vec::with_capacity(selected.len());
+        for path in selected {
+            if !seen.insert(path.clone()) { return Err(bad("duplicate reload mount")); }
+            let mount = state.mounts.get(&path).ok_or_else(not_found)?;
+            let Backend::Transit(engine) = &mount.backend else {
+                return Err(error(501, "reload consumer is not implemented for this backend"));
+            };
+            targets.push(TransitCacheReloadMount {
+                owner: MountQueryOwner { path, incarnation: mount.incarnation, kind: QueryKind::Transit },
+                configured_size: engine.policy_cache_config_identity(),
+            });
+        }
+        targets.sort_by(|a, b| a.owner.path.cmp(&b.owner.path));
+        Ok(targets)
+    }
+
+    /// This is a runtime-only effect on the genuine installed State. Calling
+    /// it with an uncommitted candidate is prohibited by the affine Service
+    /// delivery owner; all mount/configuration checks precede cache mutation.
+    pub(crate) fn reload_accepted_transit_policy_caches(&self, namespace: &str,
+        namespace_incarnation: u64, generation: u64, targets: &[TransitCacheReloadMount])
+        -> Result<()> {
+        let paths = targets.iter().map(|target| target.owner.path.clone()).collect::<Vec<_>>();
+        let actual = self.transit_cache_reload_targets(namespace, Some(&paths))
+            .map_err(|_| error(503, "transit reload accepted mount is unavailable"))?;
+        if actual.as_slice() != targets {
+            return Err(error(503, "transit reload accepted mount or configuration changed"));
+        }
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let mut engines = Vec::with_capacity(targets.len());
+        for target in targets {
+            let mount = state.mounts.get(&target.owner.path).ok_or_else(not_found)?;
+            let Backend::Transit(engine) = &mount.backend else {
+                return Err(error(503, "transit reload backend changed"));
+            };
+            engines.push((engine, target.owner.path.as_str(), mount.incarnation));
+        }
+        transit::Transit::reload_policy_cache_batch(namespace, namespace_incarnation, generation, &engines)
     }
 
     pub(crate) fn has_transit_derived_ed_state(&self) -> bool {
@@ -3199,6 +3322,9 @@ impl EngineState {
             },
         };
         if response.mutated {
+            if matches!(&mount.backend, Backend::Transit(engine) if engine.has_policy_cache_state()) {
+                self.transit_cache_format = Some(1);
+            }
             if matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state()) {
                 self.kv2_lossless_format = Some(1);
             }

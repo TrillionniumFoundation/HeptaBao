@@ -117,8 +117,8 @@ impl Transit {
         }
         valid_path(parts[0])?;
         valid_path(parts[1])?;
-        let source = self.keys.get(parts[1])
-            .ok_or_else(|| openbao_compatibility_error("no such source key for export"))?;
+        let source = self.cached_policy(parts[1])
+            .map_err(|error| if error.status == 404 { openbao_compatibility_error("no such source key for export") } else { error })?;
         source.alive()?;
         if !source.exportable { return Err(bad("key is not exportable")); }
         if source.convergent_write_min_version != 0 {
@@ -133,16 +133,16 @@ impl Transit {
         {
             return Err(bad("version does not exist or cannot be found"));
         }
-        let destination = self.keys.get(parts[0])
-            .ok_or_else(|| openbao_compatibility_error("no such destination key for export"))?;
-        let public = destination_public(destination)?;
+        let destination = self.cached_policy(parts[0])
+            .map_err(|error| if error.status == 404 { openbao_compatibility_error("no such destination key for export") } else { error })?;
+        let public = destination_public(&destination)?;
         let digest = export_digest(body)?;
         let mut keys = serde_json::Map::new();
         for (number, version) in &source.versions {
             if *number < source.min_decryption_version || selected.is_some_and(|wanted| wanted != *number) {
                 continue;
             }
-            let material = source_material(source, version)?;
+            let material = source_material(&source, version)?;
             let ciphertext = wrap(&public, &material, digest)?;
             keys.insert(number.to_string(), json!(BASE64.encode(&ciphertext)));
         }

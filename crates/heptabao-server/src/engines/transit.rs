@@ -21,6 +21,8 @@ mod asymmetric;
 mod asymmetric_byok;
 #[path = "transit_backup.rs"]
 mod backup;
+#[path = "transit_cache.rs"]
+mod cache;
 #[path = "transit_byok.rs"]
 mod byok;
 #[path = "transit_byok_export.rs"]
@@ -45,6 +47,10 @@ fn openbao_compatibility_error(message: &str) -> EngineError {
 pub(super) struct Transit {
     keys: BTreeMap<String, Key>,
     disable_upsert: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    cache_config: Option<cache::Config>,
+    #[serde(skip)]
+    policy_cache: std::sync::Arc<std::sync::Mutex<cache::Runtime>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     wrapping_key: Option<byok::WrappingKey>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -739,6 +745,9 @@ impl Transit {
         if path == "wrapping_key" {
             return self.wrapping(method, body);
         }
+        if path == "config/cache" {
+            return self.policy_cache_config(method, body);
+        }
         if path == "config/keys" {
             if method == "GET" {
                 return Ok(ok(json!({"disable_upsert":self.disable_upsert}), false));
@@ -811,6 +820,16 @@ impl Transit {
             creation["derived"] = json!(symmetric::upsert_derived(body)?);
             self.keys.insert(name.into(), Key::new(&creation, now)?);
         }
+        if matches!(operation, "decrypt" | "hmac" | "sign" | "verify") {
+            let policy = self.cached_policy(name)?;
+            policy.alive()?;
+            let mut policy = (*policy).clone();
+            let response = handle_crypto(&mut policy, namespace, mount, name, operation, algorithm, body)?;
+            if response.mutated {
+                return Err(error(503, "read-only transit policy operation attempted mutation"));
+            }
+            return Ok(response);
+        }
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         key.alive()?;
         handle_crypto(key, namespace, mount, name, operation, algorithm, body)
@@ -838,10 +857,7 @@ impl Transit {
         if operation.is_empty() {
             if method == "GET" {
                 return Ok(ok(
-                    self.keys
-                        .get(name)
-                        .ok_or_else(not_found)?
-                        .descriptor(name)?,
+                    self.cached_policy(name)?.descriptor(name)?,
                     false,
                 ));
             }
@@ -1033,7 +1049,7 @@ impl Transit {
         }
         let kind = parts[0];
         let name = parts[1];
-        let key = self.keys.get(name).ok_or_else(not_found)?;
+        let key = self.cached_policy(name)?;
         key.alive()?;
         if key.convergent_write_min_version != 0 {
             return Err(error(
@@ -1117,8 +1133,8 @@ impl Transit {
             })
             .map(|(version, value)| {
                 let encoded = if kind == "hmac-key" {
-                    backup::hmac_material(key, value).into()
-                } else if derivation::is_ed(key) {
+                    backup::hmac_material(&key, value).into()
+                } else if derivation::is_ed(&key) {
                     derivation::export_ed(value, public_export, format)?.to_string()
                 } else if let Some(public) = value.public_key_only.as_ref() {
                     if public_export {

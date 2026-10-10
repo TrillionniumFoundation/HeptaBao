@@ -338,6 +338,13 @@ impl Service {
     ) -> Result<(), Response> {
         incoming.validate_global_lossless_json_state(Some(current))
             .map_err(|_| Response::error(400, "snapshot would downgrade global lossless JSON custody"))?;
+        incoming.engines.validate_transit_cache_state(Some(&current.engines))
+            .map_err(|_| Response::error(400, "snapshot would erase transit cache owner"))?;
+        if (current.schema >= TRANSIT_CACHE_STATE_SCHEMA || current.engines.has_transit_cache_state())
+            && incoming.schema < TRANSIT_CACHE_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade transit cache configuration"));
+        }
         if (current.schema == SSH_CA_STATE_SCHEMA || current.engines.has_ssh_ca_state())
             && (incoming.schema < SSH_CA_STATE_SCHEMA || !incoming.engines.has_ssh_ca_state())
         {

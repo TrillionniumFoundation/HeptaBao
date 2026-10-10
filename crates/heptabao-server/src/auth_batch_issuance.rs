@@ -354,6 +354,18 @@ impl AuthState {
         } else if pending.claims.namespace_binding.is_some() {
             return Err(err(503, "batch binding has no actual namespace registry"));
         }
+        // A real SDK batch carries precise lease authority even though the
+        // opaque bearer itself is not a service-token record. Compute its
+        // original observation before sealing; failed native identity/parent
+        // gates above must not install a floor or change the current authority.
+        let sdk_observation = if precision.is_some() && sdk.is_some() {
+            Some(time.exact().ok_or_else(denied)?.max(
+                Timestamp::whole(self.wrapping_clock)
+                    .map_err(|_| err(503, "trusted token clock is unavailable"))?,
+            ))
+        } else {
+            None
+        };
         let mut authority = match &self.batch_authority {
             Some(authority) => authority.clone(),
             None => batch::BatchKeyAuthority::new(issuance_seconds)
@@ -362,6 +374,12 @@ impl AuthState {
         let raw = authority
             .seal(pending.claims.clone(), issuance_seconds)
             .map_err(|_| err(503, "batch sealing unavailable"))?;
+        if let Some(at) = sdk_observation {
+            self.token_api_precision_state = true;
+            self.token_api_observed_at = Some(
+                self.token_api_observed_at.map_or(at, |previous| previous.max(at)),
+            );
+        }
         response.body["auth"]["client_token"] = json!(raw.as_str());
         if pending.claims.public_origin.is_some() {
             self.public_origin_floor = Some(public_origin::Floor::V1);

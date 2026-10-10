@@ -40,6 +40,7 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
             external_keys: external_keys::Registry::default(),
         };
         let mut state = EngineState {
+            transit_cache_format: None,
             kv2_lossless_format: None,
             ssh_ca_format: None,
             sdk_catalog: sdk::Catalog::default(),

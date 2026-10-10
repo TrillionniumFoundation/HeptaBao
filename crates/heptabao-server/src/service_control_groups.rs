@@ -40,6 +40,9 @@ fn sudo_requirement(method: &str, path: &str) -> Option<bool> {
     if path.starts_with("sys/mounts") {
         return Some(!matches!(method, "GET" | "LIST" | "HEAD"));
     }
+    if path == "sys/plugins/reload/backend" {
+        return matches!(method, "POST" | "PUT").then_some(true);
+    }
     if matches!(path, "sys/remount" | "sys/step-down") {
         return matches!(method, "POST" | "PUT").then_some(true);
     }

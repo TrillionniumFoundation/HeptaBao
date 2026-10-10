@@ -243,6 +243,9 @@ impl State {
         let required = if self.namespaces.workflows.has_request_credentials() {
             required.max(WORKFLOW_CREDENTIAL_STATE_SCHEMA)
         } else { required };
+        let required = if self.engines.has_transit_cache_state() {
+            required.max(TRANSIT_CACHE_STATE_SCHEMA)
+        } else { required };
         self.schema.max(required)
     }
 
@@ -251,6 +254,14 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
+        self.engines.validate_transit_cache_state(previous.map(|state| &*state.engines))
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_CACHE_STATE_SCHEMA
+            && (self.engines.has_transit_cache_state()
+                || previous.is_some_and(|state| state.schema >= TRANSIT_CACHE_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "transit cache configuration requires schema 130"));
+        }
         self.auth.validate_sdk_advanced_state(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < SDK_ADVANCED_STATE_SCHEMA
@@ -1074,6 +1085,12 @@ impl State {
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.validate_global_lossless_json_state(None)?;
+        self.engines.validate_transit_cache_state(None).map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_CACHE_STATE_SCHEMA && self.engines.has_transit_cache_state()
+            || self.schema == TRANSIT_CACHE_STATE_SCHEMA && !self.engines.has_transit_cache_state()
+        {
+            return Err(Response::error(503, "transit cache reader floor or retired owner is missing"));
+        }
         self.engines
             .validate_kv2_lossless_state(None)
             .map_err(Response::from_engine_error)?;
@@ -2272,6 +2289,7 @@ impl State {
             | SDK_ADVANCED_STATE_SCHEMA
             | TRANSIT_DERIVED_ED_STATE_SCHEMA
             | WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            | TRANSIT_CACHE_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA

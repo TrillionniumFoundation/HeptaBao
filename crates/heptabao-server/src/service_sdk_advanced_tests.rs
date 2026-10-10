@@ -515,3 +515,67 @@ fn sdk126_sdk_batch_secret_registration_wrap_reopen_and_native_mount_retirement_
     );
     Ok(())
 }
+
+
+#[test]
+fn sdk126_precise_batch_seal_installs_actual_observation_floor_only_after_native_identity_admission()
+-> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    let previous = service.state.clone().ok_or("actual state")?;
+    assert!(!previous.auth.has_token_api_precision_state());
+    let mut candidate = previous.clone();
+    let binding = mount(&mut candidate, &admin)?;
+    let original = clock(100, 125_000_000)?;
+    let input = json!({"alias":{"name":"floor-owner"},"lease":5_000_000_000u64,
+        "token_type":2,"bound_cidrs":["127.0.0.0/8"]});
+
+    // A provider result alone cannot install a native publication floor. The
+    // unresolved native identity is genuinely rejected by the existing sealer.
+    let mut unbound = candidate.clone();
+    let mut pending = unbound.auth.finish_sdk_auth_login(&binding, "login", &input, original)?;
+    let before = Zeroizing::new(serde_json::to_vec(&unbound.auth)?);
+    let rejected = unbound.auth.finish_pending_batch_observed(&mut pending, "", 100,
+        AuthorityTime::Precise(original.observed_at()?));
+    assert_eq!(rejected.err().ok_or("actual unresolved native identity rejection")?.status, 403);
+    let after = Zeroizing::new(serde_json::to_vec(&unbound.auth)?);
+    assert_eq!(&*before, &*after);
+    assert!(!unbound.auth.has_token_api_precision_state());
+    assert!(unbound.auth.terminal_token_clock_floor().is_none());
+
+    let issued = native_login(&mut candidate, &binding, &input, original)?;
+    let raw = bearer(&issued)?;
+    let entity = issued.body["auth"]["entity_id"].as_str().ok_or("native entity")?;
+    assert!(!entity.is_empty());
+    assert!(candidate.engines.identity_projection("", entity).is_ok());
+    assert!(candidate.auth.sdk_auth_issued_live(&raw, original).is_ok());
+    assert!(candidate.auth.has_token_api_precision_state());
+    let floor = candidate.auth.terminal_token_clock_floor().ok_or("actual observation floor")?;
+    assert!(floor >= original.admitted_at());
+    assert!(floor <= original.observed_at()?);
+    let mut erased = serde_json::to_value(&candidate.auth)?;
+    erased.as_object_mut().ok_or("auth object")?.remove("token_api_observed_at");
+    let mut torn = candidate.clone();
+    torn.auth = serde_json::from_slice::<AuthState>(&serde_json::to_vec(&erased)?)?.into();
+    torn.schema = torn.writer_schema();
+    assert_eq!(torn.validate_format().err().ok_or("erased precise floor rejection")?.status, 503);
+
+    publish(&mut service, candidate)?;
+    let current = service.state.as_ref().ok_or("installed state")?;
+    assert_eq!(current.schema, SDK_ADVANCED_STATE_SCHEMA);
+    assert_eq!(current.auth.terminal_token_clock_floor(), Some(floor));
+    let identity = service.current_state_identity().map_err(|_| "actual committed identity")?;
+    drop(service);
+    let mut service = files.service()?;
+    assert_eq!(call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status, 200);
+    let reopened = service.state.as_ref().ok_or("encrypted reopen")?;
+    assert_eq!(reopened.schema, SDK_ADVANCED_STATE_SCHEMA);
+    assert_eq!(reopened.auth.terminal_token_clock_floor(), Some(floor));
+    assert!(reopened.auth.has_token_api_precision_state());
+    assert!(reopened.auth.sdk_auth_issued_live(&raw, original).is_ok());
+    assert_eq!(service.current_state_identity().map_err(|_| "reopened committed identity")?, identity);
+    assert!(reopened.auth.authenticate_from_observed(&raw,
+        AuthorityTime::Precise(Timestamp::checked(106, 0)?), Some("127.0.0.1".parse()?)).is_err());
+    Ok(())
+}

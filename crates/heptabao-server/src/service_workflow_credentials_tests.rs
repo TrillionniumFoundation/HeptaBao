@@ -7,7 +7,7 @@ flow "read" { request "kv" {
  token = { eval_source = "input" eval_type = "string" field_name = "credential" }
 } }
 output { data = { value = { eval_source = "response" eval_type = "string"
- flow_name = "read" response_name = "kv" field_selector = "data.data.value" } } }"#;
+ flow_name = "read" response_name = "kv" field_selector = ["data", "data", "value"] } } }"#;
 
 fn install(f: &mut Fixture, document: &str) {
     assert_eq!(
@@ -175,12 +175,12 @@ fn workflow128_empty_userpass_login_chains_actual_entity_and_live_policy_without
         token = "" data = { password = { eval_source = "input" eval_type = "string" field_name = "password" } } } }
       flow "read" { request "kv" { operation = "read" path = "secret/data/cg/key"
         token = { eval_source = "response" eval_type = "string" flow_name = "login"
-          response_name = "native" field_selector = "auth.client_token" } } }
+          response_name = "native" field_selector = ["auth", "client_token"] } } }
       output { data = {
         entity = { eval_source = "response" eval_type = "string" flow_name = "login"
-          response_name = "native" field_selector = "auth.entity_id" }
+          response_name = "native" field_selector = ["auth", "entity_id"] }
         value = { eval_source = "response" eval_type = "string" flow_name = "read"
-          response_name = "kv" field_selector = "data.data.value" }
+          response_name = "kv" field_selector = ["data", "data", "value"] }
       } }"#;
     install(&mut f, document);
     let admin = Zeroizing::new(f.admin.to_string());
@@ -326,9 +326,9 @@ fn workflow128_approle_login_consumes_one_secret_id_and_restores_lexical_ingress
       } } }
     flow "read" { request "kv" { operation = "read" path = "secret/data/cg/key"
       token = { eval_source = "response" eval_type = "string" flow_name = "login"
-        response_name = "native" field_selector = "auth.client_token" } } }
+        response_name = "native" field_selector = ["auth", "client_token"] } } }
     output { data = { value = { eval_source = "response" eval_type = "string"
-      flow_name = "read" response_name = "kv" field_selector = "data.data.value" } } }"#;
+      flow_name = "read" response_name = "kv" field_selector = ["data", "data", "value"] } } }"#;
     install(&mut f, document);
     let admin = Zeroizing::new(f.admin.to_string());
     let attempt = [0x28; 16];
@@ -411,9 +411,9 @@ fn workflow128_cert_login_uses_original_verified_chain_and_role_constraints() ->
       token = "" data = { name = "native" } } }
       flow "read" { request "kv" { operation = "read" path = "secret/data/cg/key"
         token = { eval_source = "response" eval_type = "string" flow_name = "login"
-          response_name = "native" field_selector = "auth.client_token" } } }
+          response_name = "native" field_selector = ["auth", "client_token"] } } }
       output { data = { value = { eval_source = "response" eval_type = "string"
-        flow_name = "read" response_name = "kv" field_selector = "data.data.value" } } }"#;
+        flow_name = "read" response_name = "kv" field_selector = ["data", "data", "value"] } } }"#;
     install(&mut f, document);
     let admin = Zeroizing::new(f.admin.to_string());
     let allowed = execute(
