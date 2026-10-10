@@ -975,9 +975,11 @@ fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypte
     assert_eq!(call(&mut service, "GET", &format!("identity/mfa/method/{method}"), &admin,
         json!({})).status, 200);
     let current = service.state.clone().ok_or("inert state")?;
-    current.validate_format()?;
-    current.validate_publication_schema(Some(&configured))?;
-    Service::validate_snapshot_protected_floor(&current, &current)?;
+    current.validate_format().map_err(|_| "actual inert MFA format")?;
+    current.validate_publication_schema(Some(&configured))
+        .map_err(|_| "actual inert MFA publication")?;
+    Service::validate_snapshot_protected_floor(&current, &current)
+        .map_err(|_| "actual inert MFA snapshot floor")?;
     let before = crate::secret_serde::to_vec(&current, 16 * 1024 * 1024)
         .map_err(|_| "private State encoding")?;
     for path in ["identity/mfa/login-enforcement/new", "identity/mfa/login-enforcement/inert"] {
@@ -1026,7 +1028,7 @@ fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypte
         .iter().any(|name| name.as_str() == Some("inert")));
     let final_state = reopened.state.as_ref().ok_or("final state")?;
     assert_eq!(final_state.schema, IDENTITY_MFA_STATE_SCHEMA);
-    final_state.validate_format()?;
+    final_state.validate_format().map_err(|_| "actual inert MFA reopened format")?;
     assert!(final_state.auth.has_identity_mfa_state());
     Ok(())
 }
@@ -1378,7 +1380,7 @@ fn mfa129_host_owned_five_second_worker_has_one_retirement_and_once_joined_weak_
     }
     std::thread::sleep(Duration::from_millis(20));
     assert_eq!(
-        janitor_pending_count(&service.lock().map_err(|_| "MFA test writer")?)?,
+        janitor_pending_count(&*service.lock().map_err(|_| "MFA test writer")?)?,
         2,
         "stopped original thread cannot publish another retirement"
     );
@@ -2666,7 +2668,7 @@ fn mfa129_actual_nested_enclosure_chain_mac_rejects_middle_poison_before_publica
             );
         } else {
             let mut torn = original.clone();
-            torn.auth = decoded?;
+            torn.auth = decoded?.into();
             assert!(
                 torn.auth
                     .validate_identity_mfa_state(Some(&original.auth))

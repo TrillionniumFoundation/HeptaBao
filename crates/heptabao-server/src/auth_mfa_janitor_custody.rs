@@ -153,7 +153,8 @@ impl Locator {
         verify(key, &self.payload(), &self.mac)
     }
     fn sign(&mut self, key: &[u8]) -> Result<(), AuthError> {
-        self.mac = sign(key, &self.payload())?;
+        let mac = sign(key, &self.payload())?;
+        self.mac = mac;
         Ok(())
     }
 }
@@ -486,7 +487,8 @@ impl AuthState {
                     .enclosures
                     .clear();
             } else {
-                draft.mac = sign(&registry.key.0, &draft.payload())?;
+                let mac = sign(&registry.key.0, &draft.payload())?;
+                draft.mac = mac;
                 book.current.insert(
                     namespace,
                     Locator {
@@ -708,7 +710,8 @@ impl AuthState {
         let source_capture = digest(&original.capture)?;
         let mut capture = original.capture.clone();
         capture.entries.retain(|id, _| id == &head.id);
-        capture.mac = sign(&registry.key.0, &capture.payload())?;
+        let mac = sign(&registry.key.0, &capture.payload())?;
+        capture.mac = mac;
         let mut receipt = Receipt {
             capture,
             source_capture,
@@ -718,7 +721,8 @@ impl AuthState {
             previous,
             mac: Vec::new(),
         };
-        receipt.mac = sign(&registry.key.0, &receipt.payload())?;
+        let mac = sign(&registry.key.0, &receipt.payload())?;
+        receipt.mac = mac;
         book.terminal.push(receipt);
         registry.clock = now;
         registry.mutation_epoch = epoch;
@@ -829,7 +833,8 @@ impl AuthState {
                 epoch,
                 mac: Vec::new(),
             };
-            record.mac = sign(&registry.key.0, &record.payload())?;
+            let mac = sign(&registry.key.0, &record.payload())?;
+            record.mac = mac;
             records.push(record);
         }
         registry.namespaces = owners;

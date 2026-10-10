@@ -106,8 +106,12 @@ impl Value {
         match &self.0 {
             Data::Json(value) => Ok(value.clone()),
             Data::Float(value) => {
-                let mut wire = serde_json::Number::from_f64(*value).ok_or(())?.to_string();
-                if wire.ends_with(".0") { wire.truncate(wire.len() - 2); }
+                let mut wire = Zeroizing::new(
+                    serde_json::Number::from_f64(*value).ok_or(())?.to_string());
+                if wire.ends_with(".0") {
+                    let end = wire.len() - 2;
+                    wire.truncate(end);
+                }
                 wire.parse::<serde_json::Number>().map(Json::Number).map_err(|_| ())
             },
             Data::Array(values) => {

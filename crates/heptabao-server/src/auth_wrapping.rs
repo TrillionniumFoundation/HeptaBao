@@ -29,7 +29,7 @@ impl WorkflowOutputFailure {
             Self::Local(value) => value.matches(logical),
             Self::Completed {logical_digest,..} =>
                 logical == &crate::workflow_runtime::FailedOutput::logical()
-                && serde_json::to_vec(logical).is_ok_and(|bytes| crypto::digest(&bytes)==*logical_digest),
+                && serde_json::to_vec(logical).is_ok_and(|bytes| crate::crypto::digest(&bytes)==*logical_digest),
         }
     }
 }

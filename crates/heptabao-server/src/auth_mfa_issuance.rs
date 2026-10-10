@@ -277,7 +277,7 @@ impl Challenge {
     }
 }
 impl NamespaceOwner {
-    fn retire_matching(&mut self, mut check: impl FnMut(&Challenge) -> bool) {
+    pub(super) fn retire_matching(&mut self, mut check: impl FnMut(&Challenge) -> bool) {
         let ids = self
             .challenges
             .iter()
@@ -477,7 +477,7 @@ impl Registry {
     }
 }
 impl AuthState {
-    pub(super) fn mfa_userpass_binding(
+    pub(in crate::auth) fn mfa_userpass_binding(
         &self,
         scope: AuthScope<'_>,
         user: &User,

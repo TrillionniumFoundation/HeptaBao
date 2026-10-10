@@ -1360,7 +1360,7 @@ pub(crate) fn logical_data_wire_fixture(
     service: &mut Service, bytes: &[u8], now: u64,
 ) -> Result<Response, &'static str> {
     let started = Instant::now();
-    let deadline = crate::request_deadline::current_deadline()
+    let deadline = crate::request_deadline::current()
         .unwrap_or(started + Duration::from_secs(5));
     let _deadline = RequestDeadlineScope::enter(deadline);
     let mut reader = bytes;
@@ -1369,12 +1369,12 @@ pub(crate) fn logical_data_wire_fixture(
     let body = std::mem::take(&mut parsed.body.0);
     let _data = crate::request_metadata::Scope::enter(parsed.logical_data.take(),
         &parsed.method, &parsed.path, &parsed.namespace, &body)?;
-    Ok(service.handle_at_mode(crate::service::RequestDispatch {
+    Ok(service.handle_http_fixture_at(crate::service::ServiceRequest {
         method: &parsed.method, path: &parsed.path, namespace: &parsed.namespace,
-        token: &parsed.token, body, now, allow_forward: false, enforce_namespace: true,
+        token: &parsed.token, body,
         wrap_ttl_seconds: parsed.wrap_ttl_seconds, origin_peer: Some(std::net::IpAddr::from([127,0,0,1])),
         client_certificates: None,
-    }))
+    }, now))
 }
 
 /// Actual parser, Service mandatory audit, logical projection and wire writer.
@@ -1384,7 +1384,7 @@ pub(crate) fn workflow_output_wire_fixture(
     service:&mut Service,bytes:&[u8],now:u64,
 ) -> Result<Zeroizing<Vec<u8>>,&'static str> {
     let started=Instant::now();
-    let deadline=crate::request_deadline::current_deadline()
+    let deadline=crate::request_deadline::current()
         .unwrap_or(started+Duration::from_secs(5));
     let _deadline=RequestDeadlineScope::enter(deadline);
     let mut reader=bytes;
@@ -1396,12 +1396,12 @@ pub(crate) fn workflow_output_wire_fixture(
     let body=std::mem::take(&mut parsed.body.0);
     let _data=crate::request_metadata::Scope::enter(parsed.logical_data.take(),
         &parsed.method,&parsed.path,&parsed.namespace,&body)?;
-    let response=service.handle_at_mode(crate::service::RequestDispatch {
+    let response=service.handle_http_fixture_at(crate::service::ServiceRequest {
         method:&parsed.method,path:&parsed.path,namespace:&parsed.namespace,
-        token:&parsed.token,body,now,allow_forward:false,enforce_namespace:true,
+        token:&parsed.token,body,
         wrap_ttl_seconds:parsed.wrap_ttl_seconds,origin_peer:Some(std::net::IpAddr::from([127,0,0,1])),
         client_certificates:None,
-    });
+    }, now);
     let mut reply=snapshot::NativeReply::Json(response);
     logical::project(&mut reply,&attempt,&parsed.path);
     let snapshot::NativeReply::Json(response)=reply else {

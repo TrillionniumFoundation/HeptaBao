@@ -24,7 +24,7 @@ use std::{
     net::{SocketAddr, TcpStream},
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
-    time::{Duration, SystemTime, UNIX_EPOCH},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 use zeroize::{Zeroize, Zeroizing};
 
@@ -2165,6 +2165,26 @@ impl Service {
             clock,
         )
         .with_realtime_remote_jwt()
+    }
+
+    // Test HTTP ingress keeps its original fixture clock and admission flags.
+    // The production private dispatch layout and visibility stay unchanged.
+    #[cfg(test)]
+    pub(crate) fn handle_http_fixture_at(
+        &mut self,
+        request: ServiceRequest<'_>,
+        now: u64,
+    ) -> Response {
+        let ServiceRequest {
+            method, path, namespace, token, body, wrap_ttl_seconds,
+            origin_peer, client_certificates,
+        } = request;
+        self.handle_at_mode(RequestDispatch {
+            method, path, namespace, token, body, now,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds, origin_peer, client_certificates,
+        })
     }
 
     fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {

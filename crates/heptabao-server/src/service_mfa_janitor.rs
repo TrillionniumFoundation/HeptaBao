@@ -179,11 +179,13 @@ impl Service {
             let at = next.auth.mfa_terminal_receipt_clock()
                 .ok_or_else(|| Response::error(503, "MFA original terminal observation absent"))?;
             let fingerprint = self.request_fingerprint("INTERNAL", "mfa/restored-terminal", "", "");
-            self.audit_event("mfa-restored-terminal-request", &fingerprint, at.seconds(), None)?;
+            self.audit_event("mfa-restored-terminal-request", &fingerprint, at.seconds(), None)
+                .map_err(|_| Response::error(503, "MFA restored cleanup request audit unavailable"))?;
             next.schema = next.writer_schema();
             self.commit_state(&mut next)?;
             self.state = Some(next);
-            self.audit_event("mfa-restored-terminal-response", &fingerprint, at.seconds(), Some(204))?;
+            self.audit_event("mfa-restored-terminal-response", &fingerprint, at.seconds(), Some(204))
+                .map_err(|_| Response::error(503, "MFA restored cleanup response audit unavailable"))?;
             if Instant::now() >= deadline {
                 return Err(Response::error(503, "MFA restored cleanup original deadline elapsed"));
             }

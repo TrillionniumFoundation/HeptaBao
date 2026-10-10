@@ -369,7 +369,7 @@ fn workflow131_query_and_headers_are_sealed_deferred_reopened_and_dispatched_onc
     let owner = current
         .auth
         .control_group_owners()
-        .find(|owner| owner.accessor == accessor)
+        .find(|owner| owner.request_accessor == accessor)
         .ok_or("owner")?;
     assert_eq!(owner.transport_body, json!({"value":"after"}));
     assert_eq!(owner.body, json!({"value":"after"}));
@@ -444,7 +444,7 @@ fn workflow131_query_and_headers_are_sealed_deferred_reopened_and_dispatched_onc
             .ok_or("deferred state")?
             .auth
             .control_group_owners()
-            .any(|owner| owner.accessor == accessor)
+            .any(|owner| owner.request_accessor == accessor)
     );
     read(&mut f, 1, "before", 100);
     logical_policy(&mut f, true);
@@ -972,7 +972,8 @@ fn workflow131_logical_header_resolver_cg_reopen_and_actual_sdk_job_keep_data_wi
         args: vec![], sha256: "a".repeat(64), generation: 1,
     })?;
     let created = candidate.engines.handle("", "POST", "sys/mounts/header-sdk",
-        &json!({"type":"plugin","config":{"plugin_id":"header_probe"}}), 100)?;
+        &json!({"type":"plugin","config":{"plugin_id":"header_probe"}}), 100)?
+        .ok_or("actual SDK mount route")?;
     assert_eq!(created.status, 204);
     let sdk_owner = candidate.engines.bind_sdk_mount("", "header-sdk/", &descriptor)?;
     f.service.prepare_sdk_mount_record_root(&mut candidate)
@@ -1061,7 +1062,7 @@ fn workflow131_logical_header_resolver_cg_reopen_and_actual_sdk_job_keep_data_wi
     let current = f.service.state.as_ref().ok_or("deferred state")?;
     assert_eq!(current.schema, WORKFLOW_INPUT_STATE_SCHEMA);
     let owner = current.auth.control_group_owners()
-        .find(|owner| owner.accessor == accessor).ok_or("actual deferred SDK owner")?;
+        .find(|owner| owner.request_accessor == accessor).ok_or("actual deferred SDK owner")?;
     assert_eq!(owner.body, body);
     assert_eq!(owner.actor_entity_id, f.requester.entity);
     assert_eq!(owner.namespace_id, "root");
@@ -1083,7 +1084,7 @@ fn workflow131_logical_header_resolver_cg_reopen_and_actual_sdk_job_keep_data_wi
     assert_eq!(before_queue.unexpected_invokes(), 0);
     f = logical_sdk_reopen(f)?;
     let restored = f.service.state.as_ref().ok_or("encrypted reopen")?.auth
-        .control_group_owners().find(|owner| owner.accessor == accessor)
+        .control_group_owners().find(|owner| owner.request_accessor == accessor)
         .ok_or("reopened original CG owner")?;
     assert_eq!(restored.logical_data.as_ref().ok_or("reopened headers")?.headers, headers);
     approve_two(&mut f, &accessor);
@@ -1117,7 +1118,7 @@ fn workflow131_logical_header_resolver_cg_reopen_and_actual_sdk_job_keep_data_wi
     assert!(job.get("principal").is_none());
     assert_eq!(after_queue.unexpected_invokes(), 0);
     assert!(!f.service.state.as_ref().ok_or("claimed state")?.auth
-        .control_group_owners().any(|owner| owner.accessor == accessor));
+        .control_group_owners().any(|owner| owner.request_accessor == accessor));
     // No typed model is called a started AutoMTLS provider or external workflow.
     drop(pending);
     Ok(())
@@ -1647,7 +1648,7 @@ fn workflow131_nonfinite_selected_request_serialization_preserves_only_prior_com
         assert_eq!(rejected.status,500);
         version+=1;
         read(&mut f,version,"stage-one",100);
-        assert_eq!(f.service.state.as_ref().ok_or("actual state")?.schema,WORKFLOW_LOGICAL_DATA_STATE_SCHEMA);
+        assert_eq!(f.service.state.as_ref().ok_or("actual state")?.schema,WORKFLOW_INPUT_STATE_SCHEMA);
     }
     install_logical(&mut f,&nonfinite_document(true,Some("float64"),"any"));
     let finite=wire(&mut f,&token,"","POST","sys/workflows/execute/wf131",
