@@ -494,7 +494,8 @@ mod capabilities_number_tests {
     fn capabilities_raw_numbers_keep_original_parameter_acl_body()
     -> Result<(), Box<dyn std::error::Error>> {
         let bytes = br#"{"paths":[1.00,1E+08,-0,9007199254740993],"token":1E-08}"#;
-        let original: Value = serde_json::from_slice(bytes)?;
+        let original =
+            crate::auth::parse_strict_json(bytes).map_err(|_| "strict HTTP body parse failed")?;
         let mut body = original.clone();
         transport_body("POST", "sys/capabilities-self", &mut body, bytes)?;
         let carrier = request("POST", "sys/capabilities-self", &body)?.ok_or("carrier missing")?;
