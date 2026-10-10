@@ -9,7 +9,9 @@ struct Fixture {
 }
 impl Fixture {
     fn new(files: &[(&str, &[u8])]) -> Result<Self, Box<dyn std::error::Error>> {
-        let root = std::env::temp_dir().join(format!(
+        // macOS /var aliases /private/var. The UI loader correctly rejects
+        // noncanonical paths, including in its synthetic test fixture.
+        let root = std::env::temp_dir().canonicalize()?.join(format!(
             "heptabao-ui-assets-test-{}-{}",
             std::process::id(),
             NEXT.fetch_add(1, Ordering::Relaxed)
