@@ -369,7 +369,7 @@ fn sdk126_sdk_batch_secret_registration_wrap_reopen_and_native_mount_retirement_
             ttl_ns: 30_000_000_000,
             max_ttl_ns: 60_000_000_000,
             renewable: true,
-            secret: json!({"internal_data":{"native":"batch-callback"},"lease":30_000_000_000u64,
+            secret: json!({"internal_data":{"native":"batch-callback"},"LeaseID":"","lease":30_000_000_000u64,
             "max_ttl":60_000_000_000u64,"renewable":true}),
             data: json!({"value":"synthetic actual encrypted SDK record"}),
         },

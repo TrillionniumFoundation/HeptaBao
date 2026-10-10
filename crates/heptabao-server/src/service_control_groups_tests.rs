@@ -4296,3 +4296,6 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
 
 #[path = "service_workflow_expression_tests.rs"]
 mod expression_tests;
+
+#[path = "service_workflow_credentials_tests.rs"]
+mod credential_tests;

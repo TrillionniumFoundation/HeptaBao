@@ -94,4 +94,18 @@ impl MountQueryOwner {
                 "public-key" | "signing-key" | "encryption-key" | "hmac-key"
             )
     }
+
+    pub(crate) fn is_transit_byok_export(&self, path: &str) -> bool {
+        if self.kind != QueryKind::Transit {
+            return false;
+        }
+        let Some(relative) = path
+            .strip_prefix(self.path.as_str())
+            .and_then(|relative| relative.strip_prefix("byok-export/"))
+        else {
+            return false;
+        };
+        let parts: Vec<_> = relative.split('/').collect();
+        matches!(parts.len(), 2 | 3) && parts.iter().all(|part| !part.is_empty())
+    }
 }

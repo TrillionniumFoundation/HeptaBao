@@ -240,6 +240,9 @@ impl State {
         let required = if self.engines.has_transit_derived_ed_state() {
             required.max(TRANSIT_DERIVED_ED_STATE_SCHEMA)
         } else { required };
+        let required = if self.namespaces.workflows.has_request_credentials() {
+            required.max(WORKFLOW_CREDENTIAL_STATE_SCHEMA)
+        } else { required };
         self.schema.max(required)
     }
 
@@ -273,6 +276,12 @@ impl State {
             return Err(Response::error(503, "precise transit rotation requires schema 124"));
         }
         self.namespaces.workflows.validate()?;
+        if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            && (self.namespaces.workflows.has_request_credentials()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "workflow request credentials require schema 128"));
+        }
         if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
             && (self.namespaces.workflows.has_expression_profiles()
                 || previous.is_some_and(|state| state.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA))
@@ -1499,6 +1508,9 @@ impl State {
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA && self.auth.has_fractional_control_group_state() {
             return Err(Response::error(503, "fractional control groups require schema 122"));
         }
+        if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA && self.namespaces.workflows.has_request_credentials() {
+            return Err(Response::error(503, "workflow request credentials require schema 128"));
+        }
         if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA && self.namespaces.workflows.has_expression_profiles() {
             return Err(Response::error(503, "workflow expressions require schema 125"));
         }
@@ -2259,6 +2271,7 @@ impl State {
             | WORKFLOW_EXPRESSION_STATE_SCHEMA
             | SDK_ADVANCED_STATE_SCHEMA
             | TRANSIT_DERIVED_ED_STATE_SCHEMA
+            | WORKFLOW_CREDENTIAL_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA

@@ -152,6 +152,7 @@ const TRANSIT_ROTATION_PRECISION_STATE_SCHEMA: u32 = 124;
 const WORKFLOW_EXPRESSION_STATE_SCHEMA: u32 = 125;
 const SDK_ADVANCED_STATE_SCHEMA: u32 = 126;
 const TRANSIT_DERIVED_ED_STATE_SCHEMA: u32 = 127;
+const WORKFLOW_CREDENTIAL_STATE_SCHEMA: u32 = 128;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -160,7 +161,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_DERIVED_ED_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = WORKFLOW_CREDENTIAL_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -212,6 +213,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | WORKFLOW_EXPRESSION_STATE_SCHEMA
                 | SDK_ADVANCED_STATE_SCHEMA
                 | TRANSIT_DERIVED_ED_STATE_SCHEMA
+                | WORKFLOW_CREDENTIAL_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -1360,6 +1362,7 @@ pub struct Service {
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
+    pending_workflow_external_hold: Option<Box<PendingExternalRequest>>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
@@ -1774,6 +1777,7 @@ impl Service {
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
+            pending_workflow_external_hold: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
             pending_ha_step_down: None,
@@ -2555,6 +2559,7 @@ impl Service {
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
+            || self.pending_workflow_external_hold.is_some()
             || self.pending_ordinary_kv_authority.is_some()
             || self.pending_token_api_authority.is_some()
             || self.pending_ha_step_down.is_some()

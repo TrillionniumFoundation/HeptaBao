@@ -821,6 +821,12 @@ impl Service {
             .engines
             .validate_kv2_lossless_state(Some(&current.engines))
             .map_err(Response::from_engine_error)?;
+        if (current.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            || current.namespaces.workflows.has_request_credentials())
+            && incoming.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
+        {
+            return Err(Response::error(400, "snapshot would downgrade workflow request credentials"));
+        }
         if (current.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA
             || current.namespaces.workflows.has_expression_profiles())
             && incoming.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA

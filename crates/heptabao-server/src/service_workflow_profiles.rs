@@ -4,6 +4,8 @@ use super::*;
 use crate::auth::{Lex, lex_hcl, parse_hcl_value};
 #[path = "service_workflow_dynamic.rs"]
 mod dynamic;
+#[path = "service_workflow_credentials.rs"]
+mod credentials;
 
 const MAX_PROFILE_BYTES: usize = 64 * 1024;
 
@@ -51,6 +53,10 @@ impl Profile {
     pub(super) fn has_expression_sources(&self) -> bool {
         self.dynamic_program().ok().flatten().is_some_and(|program| program.has_expression_sources())
     }
+    pub(super) fn has_request_credentials(&self) -> bool {
+        self.dynamic_program().ok().flatten().is_some_and(|program| program.has_request_credentials())
+    }
+
     pub(super) fn dynamic_program(&self) -> Result<Option<dynamic::Program>, Response> {
         if self.description.len() > MAX_JSON_STRING_BYTES {
             return Err(bad_profile("workflow description is outside bounds"));
@@ -622,8 +628,19 @@ impl Service {
                 Ok(None) => continue,
                 Err(error) => return error,
             };
-            let mut response =
-                self.workflow_profile_dispatch_step(&mut state, actor, outer, &resolved.step);
+            let mut response = match &resolved.token {
+                Some(token) => self.workflow_credential_dispatch_step(&mut state, outer, &resolved.step, token),
+                None => self.workflow_profile_dispatch_step(&mut state, actor, outer, &resolved.step),
+            };
+            // An actual retained provider owner or affine delivery fence is
+            // terminal even when the profile permits ordinary API failures.
+            if self.pending_workflow_external_hold.is_some() || self.recovery_required {
+                if response.status < 500 {
+                    erase_json(&mut response.body);
+                    return Response::error(503, "workflow request owns an unresolved terminal boundary");
+                }
+                return response;
+            }
             if response.status >= 300 && !resolved.step.allow_failure {
                 return response;
             }

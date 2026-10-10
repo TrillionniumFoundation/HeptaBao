@@ -125,7 +125,14 @@ fn derivation127_context_ed25519_matches_independent_sdk_and_rejects_changed_con
 #[test]
 fn derivation127_ed_rotation_backup_restore_preserves_master_versions_and_rejects_partial_custody() -> TestResult {
     let mut t = Transit::default();
-    assert!(call(&mut t,"POST","keys/source",json!({"type":"ed25519","derived":true,"allow_plaintext_backup":true,"deletion_allowed":true}))?.status == 200);
+    assert!(call(&mut t,"POST","keys/source",json!({"type":"ed25519","derived":true,"allow_plaintext_backup":true}))?.status == 200);
+    let configured = call(&mut t,"POST","keys/source/config",json!({"deletion_allowed":true}))?;
+    assert!(configured.status == 200
+        && configured.body["data"]["name"] == "source"
+        && configured.body["data"]["type"] == "ed25519"
+        && configured.body["data"]["derived"] == true
+        && configured.body["data"]["latest_version"] == 1
+        && configured.body["data"]["deletion_allowed"] == true);
     let request = json!({"input":BASE64.encode(b"backup context vector"),"context":BASE64.encode(b"archive tenant")});
     let first = call(&mut t,"POST","sign/source",request.clone())?.body["data"].clone();
     assert!(call(&mut t,"POST","keys/source/rotate",json!({}))?.status == 200);

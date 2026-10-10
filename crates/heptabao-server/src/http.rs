@@ -4403,6 +4403,126 @@ mod transit_export_query_tests {
         );
         Ok(())
     }
+
+
+    fn unwrap_byok_query(
+        private: &openssl::pkey::PKey<openssl::pkey::Private>,
+        value: &Value,
+        hash: openssl::hash::MessageDigest,
+    ) -> TestResult<Zeroizing<Vec<u8>>> {
+        use aws_lc_rs::key_wrap::{AES_256, AesKek, KeyWrapPadded};
+        use openssl::{encrypt::Decrypter, rsa::Padding};
+        let encoded = Zeroizing::new(STANDARD.decode(value.as_str().ok_or("HTTP wrapped value")?)?);
+        assert!(encoded.len() >= private.size() + 16);
+        let mut decoder = Decrypter::new(private)?;
+        decoder.set_rsa_padding(Padding::PKCS1_OAEP)?;
+        decoder.set_rsa_oaep_md(hash)?;
+        decoder.set_rsa_mgf1_md(hash)?;
+        let mut kek = Zeroizing::new(vec![0; private.size()]);
+        let n = decoder.decrypt(&encoded[..private.size()], &mut kek)?;
+        assert_eq!(n, 32);
+        kek.truncate(n);
+        let kwp = AesKek::new(&AES_256, &kek).map_err(|_| "HTTP independent KWP key")?;
+        let mut material = Zeroizing::new(vec![0; encoded.len() - private.size()]);
+        let n = kwp.unwrap_with_padding(&encoded[private.size()..], &mut material)
+            .map_err(|_| "HTTP independent KWP authentication")?.len();
+        material.truncate(n);
+        Ok(material)
+    }
+
+    #[test]
+    fn byok270_http_query_hash_reaches_actual_nested_transit_owner_and_survives_encrypted_reopen() -> TestResult {
+        use openssl::{hash::MessageDigest, pkey::PKey, rsa::Rsa};
+        let private = PKey::from_rsa(Rsa::generate(4096)?)?;
+        let public = String::from_utf8(private.public_key_to_pem()?)?;
+        let directory = Directory(std::env::temp_dir().join(format!(
+            "heptabao-byok-http-export-{}-{}",
+            std::process::id(), u64::from_le_bytes(crypto::random::<8>()?)
+        )));
+        std::fs::create_dir(&directory.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&directory.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let data = directory.0.join("data");
+        let audit = directory.0.join("audit.jsonl");
+        let mut service = Service::new(data.clone(), &audit)?;
+        let initialized = wire(&mut service, "", "POST", "sys/init",
+            json!({"secret_shares":1,"secret_threshold":1}))?;
+        assert_eq!(initialized.status, 200);
+        let root = Zeroizing::new(initialized.body["root_token"].as_str().ok_or("root token")?.to_owned());
+        let unseal = Zeroizing::new(initialized.body["keys_base64"][0].as_str().ok_or("unseal key")?.to_owned());
+        assert_eq!(wire(&mut service, "", "POST", "sys/unseal", json!({"key":unseal.as_str()}))?.status, 200);
+        assert_eq!(wire(&mut service, &root, "POST", "sys/mounts/nested/crypto", json!({"type":"transit"}))?.status, 204);
+        assert_eq!(wire(&mut service, &root, "POST", "nested/crypto/keys/destination/import",
+            json!({"type":"rsa-4096","public_key":public}))?.status, 204);
+        assert_eq!(wire(&mut service, &root, "POST", "nested/crypto/keys/source",
+            json!({"type":"aes256-gcm96","exportable":true}))?.status, 200);
+        let rotated = wire(&mut service, &root, "POST", "nested/crypto/keys/source/rotate", json!({}))?;
+        assert_eq!(rotated.status, 200);
+        assert!(rotated.body["data"]["latest_version"] == 2);
+        let raw = wire(&mut service, &root, "GET", "nested/crypto/export/encryption-key/source", json!({}))?;
+        assert_eq!(raw.status, 200);
+        let descriptor = wire(&mut service, &root, "GET", "nested/crypto/keys/source", json!({}))?;
+        assert_eq!(descriptor.status, 200);
+        for (hash, digest) in [
+            ("SHA1", MessageDigest::sha1()), ("SHA224", MessageDigest::sha224()),
+            ("SHA256", MessageDigest::sha256()), ("SHA384", MessageDigest::sha384()),
+            ("SHA512", MessageDigest::sha512()),
+        ] {
+            let result = wire(&mut service, &root, "GET",
+                &format!("nested/crypto/byok-export/destination/source?%68ash={hash}"),
+                // GET uses the URL carrier; this conflicting framed body cannot choose SHA1.
+                json!({"hash":"bad"}))?;
+            assert_eq!(result.status, 200);
+            assert!(result.body["data"]["name"] == "source");
+            let keys = result.body["data"]["keys"].as_object().ok_or("HTTP exported versions")?;
+            assert_eq!(keys.keys().map(String::as_str).collect::<Vec<_>>(), vec!["1","2"]);
+            for (number, encoded) in keys {
+                let decoded = unwrap_byok_query(&private, encoded, digest)?;
+                let expected = Zeroizing::new(STANDARD.decode(raw.body["data"]["keys"][number].as_str().ok_or("raw source")?)?);
+                assert!(decoded.len() == 32 && decoded.as_slice() == expected.as_slice());
+            }
+        }
+        for (suffix, version) in [("/1", "1"), ("/latest", "2")] {
+            let result = wire(&mut service, &root, "GET",
+                &format!("nested/crypto/byok-export/destination/source{suffix}"), json!({}))?;
+            assert_eq!(result.status, 200);
+            let keys = result.body["data"]["keys"].as_object().ok_or("single HTTP version")?;
+            assert_eq!(keys.keys().map(String::as_str).collect::<Vec<_>>(), vec![version]);
+            let decoded = unwrap_byok_query(&private, &keys[version], MessageDigest::sha256())?;
+            let expected = Zeroizing::new(STANDARD.decode(raw.body["data"]["keys"][version].as_str().ok_or("raw version")?)?);
+            assert!(decoded.as_slice() == expected.as_slice());
+        }
+        for (path, status) in [
+            ("nested/crypto/byok-export/destination/source?hash=bad", 500),
+            ("nested/crypto/byok-export/destination/source?hash=SHA256&%68ash=SHA512", 400),
+            ("nested/crypto/keys/source?hash=SHA256", 400),
+            ("unknown/byok-export/destination/source?hash=SHA256", 400),
+        ] {
+            assert_eq!(wire(&mut service, &root, "GET", path, json!({}))?.status, status);
+        }
+        assert_eq!(wire(&mut service, &root, "POST", "sys/mounts/sibling/data", json!({"type":"kv"}))?.status, 204);
+        assert_eq!(wire(&mut service, &root, "GET",
+            "sibling/data/byok-export/destination/source?hash=SHA256", json!({}))?.status, 400);
+        assert_eq!(wire(&mut service, "invalid-token", "GET",
+            "nested/crypto/byok-export/destination/source?hash=SHA256", json!({}))?.status, 403);
+        let after = wire(&mut service, &root, "GET", "nested/crypto/keys/source", json!({}))?;
+        assert!(after.body["data"] == descriptor.body["data"]);
+        drop(service);
+        let mut reopened = Service::new(data, &audit)?;
+        assert_eq!(wire(&mut reopened, "", "POST", "sys/unseal", json!({"key":unseal.as_str()}))?.status, 200);
+        let result = wire(&mut reopened, &root, "GET",
+            "nested/crypto/byok-export/destination/source/latest?hash=SHA512", json!({}))?;
+        assert_eq!(result.status, 200);
+        let decoded = unwrap_byok_query(&private, &result.body["data"]["keys"]["2"], MessageDigest::sha512())?;
+        let expected = Zeroizing::new(STANDARD.decode(raw.body["data"]["keys"]["2"].as_str().ok_or("reopened raw source")?)?);
+        assert!(decoded.as_slice() == expected.as_slice());
+        let after = wire(&mut reopened, &root, "GET", "nested/crypto/keys/source", json!({}))?;
+        assert!(after.body["data"] == descriptor.body["data"]);
+        Ok(())
+    }
 }
 
 #[cfg(test)]

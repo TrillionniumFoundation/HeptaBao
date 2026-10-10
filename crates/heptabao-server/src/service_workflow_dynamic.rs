@@ -510,6 +510,7 @@ pub(super) struct Step {
     path: Expr,
     body: Expr,
     allow_failure: Expr,
+    token: Option<Expr>,
 }
 pub(in crate::service::workflows) struct Program {
     fields: BTreeMap<String, Field>,
@@ -523,8 +524,11 @@ pub(super) struct Context {
     meter: std::sync::Arc<cel_consumer::Meter>,
 }
 impl Program {
+    pub(super) fn has_request_credentials(&self) -> bool {
+        self.steps.iter().any(|step| step.token.is_some())
+    }
     pub(super) fn has_expression_sources(&self) -> bool {
-        self.output.has_expression_sources() || self.steps.iter().any(|step| [&step.flow_when, &step.when, &step.operation, &step.path, &step.body, &step.allow_failure].iter().any(|value| value.has_expression_sources()))
+        self.output.has_expression_sources() || self.steps.iter().any(|step| [&step.flow_when, &step.when, &step.operation, &step.path, &step.body, &step.allow_failure].iter().any(|value| value.has_expression_sources()) || step.token.as_ref().is_some_and(Expr::has_expression_sources))
     }
     pub(super) fn compile(document: &str) -> Result<Option<Self>, Response> {
         if document.is_empty() || document.len() > MAX_PROFILE_BYTES {
@@ -636,7 +640,7 @@ impl Program {
                 flow.requests.iter().all(|(_, attrs)| {
                     !attrs
                         .as_object()
-                        .is_some_and(|attrs| attrs.contains_key("when"))
+                        .is_some_and(|attrs| attrs.contains_key("when") || attrs.contains_key("token"))
                         && !declared_source(attrs)
                 })
             })
@@ -657,7 +661,7 @@ impl Program {
                 if attrs.keys().any(|key| {
                     !matches!(
                         key.as_str(),
-                        "operation" | "path" | "data" | "allow_failure" | "when"
+                        "operation" | "path" | "data" | "allow_failure" | "when" | "token"
                     )
                 }) {
                     return Err(bad_profile(
@@ -676,7 +680,7 @@ impl Program {
                     .get("allow_failure")
                     .cloned()
                     .unwrap_or(Value::Bool(false));
-                if attrs.contains_key("when") {
+                if attrs.contains_key("when") || attrs.contains_key("token") {
                     feature = true;
                 }
                 let mut bytes = 0;
@@ -689,6 +693,7 @@ impl Program {
                     path: Expr::compile(path, &fields, &prior, &mut feature, 0)?,
                     body: Expr::compile(&body, &fields, &prior, &mut feature, 0)?,
                     allow_failure: Expr::compile(&allow_failure, &fields, &prior, &mut feature, 0)?,
+                    token: attrs.get("token").map(|value| Expr::compile(value, &fields, &prior, &mut feature, 0)).transpose()?,
                 };
                 if !prior.insert(name) || steps.len() >= MAX_STEPS {
                     return Err(bad_profile("duplicate or excessive workflow request"));
@@ -763,6 +768,7 @@ impl Program {
             ] {
                 value.validate_inputs(&context)?;
             }
+            if let Some(token) = &step.token { token.validate_inputs(&context)?; }
             step.preflight(&context)?;
         }
         self.output.validate_inputs(&context)?;
@@ -782,6 +788,7 @@ impl Program {
 pub(super) struct Resolved {
     pub(super) step: WorkflowStep,
     history: Value,
+    pub(super) token: Option<Zeroizing<String>>,
 }
 fn operation_method(operation: &str) -> Result<&'static str, Response> {
     match operation {
@@ -795,6 +802,14 @@ fn operation_method(operation: &str) -> Result<&'static str, Response> {
     }
 }
 impl Step {
+    fn resolved_token(&self, context: &Context) -> Result<Option<Zeroizing<String>>, Response> {
+        let Some(token) = &self.token else { return Ok(None); };
+        let mut value = token.resolve(context, 0)?;
+        let result = value.as_str().filter(|token| token.len() <= 16 * 1024)
+            .map(|token| Zeroizing::new(token.to_owned()));
+        erase_json(&mut value);
+        result.map(Some).ok_or_else(|| bad_profile("workflow token must resolve to a bounded string"))
+    }
     fn preflight(&self, context: &Context) -> Result<(), Response> {
         // Inputs and independent positions are checked for the complete program
         // before the first provider. History-dependent values are checked only
@@ -829,6 +844,9 @@ impl Step {
             }
             let mut bytes = 0;
             bounded_json(&value, 0, &mut bytes).map_err(bad_profile)?;
+        }
+        if self.token.as_ref().is_some_and(|token| !token.needs_history()) {
+            self.resolved_token(context)?;
         }
         Ok(())
     }
@@ -869,8 +887,10 @@ impl Step {
         let allow_failure = allow_failure
             .as_bool()
             .ok_or_else(|| bad_profile("workflow allow_failure must be boolean"))?;
-        let history = json!({"name":self.name, "operation":operation, "path":path,
+        let token = self.resolved_token(context)?;
+        let mut history = json!({"name":self.name, "operation":operation, "path":path,
             "data":body, "allow_failure":allow_failure, "when":when});
+        if let Some(token) = &token { history["token"] = Value::String(token.to_string()); }
         Ok(Some(Resolved {
             step: WorkflowStep {
                 name: self.name.clone(),
@@ -880,6 +900,7 @@ impl Step {
                 allow_failure,
             },
             history,
+            token,
         }))
     }
 }
@@ -897,9 +918,23 @@ impl Context {
         }
         (Value::Object(self.input.clone().into_iter().collect()), nested(&self.requests), nested(&self.responses))
     }
-    pub(super) fn record(&mut self, resolved: Resolved, response: Value) {
-        self.requests
-            .insert(resolved.step.name.clone(), resolved.history);
-        self.responses.insert(resolved.step.name, response);
+    pub(super) fn record(&mut self, mut resolved: Resolved, response: Value) {
+        let name = resolved.step.name.clone();
+        self.requests.insert(name.clone(), std::mem::take(&mut resolved.history));
+        self.responses.insert(name, response);
+    }
+}
+
+impl Drop for Context {
+    fn drop(&mut self) {
+        for value in self.input.values_mut().chain(self.requests.values_mut()).chain(self.responses.values_mut()) {
+            erase_json(value);
+        }
+    }
+}
+impl Drop for Resolved {
+    fn drop(&mut self) {
+        erase_json(&mut self.step.body);
+        erase_json(&mut self.history);
     }
 }

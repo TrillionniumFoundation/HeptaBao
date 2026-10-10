@@ -122,6 +122,8 @@ pub(super) fn operation_with_owner(
             method == "GET" && owner.is_some_and(|owner| owner.is_transit_export(path));
         let resolved = if actual_transit_export {
             carrier.resolve_transit_export()
+        } else if method == "GET" && owner.is_some_and(|owner| owner.is_transit_byok_export(path)) {
+            carrier.resolve_transit_byok_export()
         } else {
             carrier.resolve(actual_kv || actual_ocsp || actual_sdk_auth)
         };

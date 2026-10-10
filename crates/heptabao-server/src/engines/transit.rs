@@ -23,6 +23,8 @@ mod asymmetric_byok;
 mod backup;
 #[path = "transit_byok.rs"]
 mod byok;
+#[path = "transit_byok_export.rs"]
+mod byok_export;
 #[path = "transit_external.rs"]
 mod external;
 #[path = "transit_derivation.rs"]
@@ -730,6 +732,9 @@ impl Transit {
     ) -> Result<EngineResponse> {
         if let Some(output) = path.strip_prefix("derive-key/") {
             return self.derive_key(method, output, body, now);
+        }
+        if let Some(rest) = path.strip_prefix("byok-export/") {
+            return self.byok_export(method, rest, body);
         }
         if path == "wrapping_key" {
             return self.wrapping(method, body);

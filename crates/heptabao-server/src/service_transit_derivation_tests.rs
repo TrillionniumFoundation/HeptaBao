@@ -24,7 +24,14 @@ fn derivation127_service_old_reader_marker_rollback_snapshot_restart_and_retirem
     let before = Zeroizing::new(service.durable.as_ref().ok_or("durable missing")?
         .export_backup().map_err(|_| "original snapshot")?);
     assert!(call(&mut service,"POST","sys/mounts/derive",&admin,json!({"type":"transit"})).status == 204);
-    assert!(call(&mut service,"POST","derive/keys/context",&admin,json!({"type":"ed25519","derived":true,"deletion_allowed":true})).status == 200);
+    assert!(call(&mut service,"POST","derive/keys/context",&admin,json!({"type":"ed25519","derived":true})).status == 200);
+    let configured = call(&mut service,"POST","derive/keys/context/config",&admin,json!({"deletion_allowed":true}));
+    assert!(configured.status == 200
+        && configured.body["data"]["name"] == "context"
+        && configured.body["data"]["type"] == "ed25519"
+        && configured.body["data"]["derived"] == true
+        && configured.body["data"]["latest_version"] == 1
+        && configured.body["data"]["deletion_allowed"] == true);
     let request = json!({"input":"bmV3IGVuY3J5cHRlZCByZXN0YXJ0IHZlY3Rvcg==","context":"dGVuYW50"});
     let signed = call(&mut service,"POST","derive/sign/context",&admin,request.clone());
     assert!(signed.status == 200 && signed.body["data"]["public_key"].as_str().is_some_and(|value| !value.is_empty()));

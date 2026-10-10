@@ -4150,6 +4150,20 @@ impl AuthState {
             })
     }
 
+    /// Native workflow admission uses actual mounted public-login ownership.
+    pub(crate) fn is_native_workflow_login(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !self.is_public_login(namespace, method, path) { return false; }
+        let Some(auth_path) = path.strip_prefix("auth/") else { return false; };
+        self.effective_auth_mounts(namespace).iter().any(|(mount, entry)| {
+            let Some(suffix) = auth_path.strip_prefix(&format!("{mount}/")) else { return false; };
+            match entry.kind.as_str() {
+                "userpass" => suffix.strip_prefix("login/").is_some_and(valid_name),
+                "approle" | "cert" => suffix == "login",
+                _ => false,
+            }
+        })
+    }
+
     /// Returns None only for routes owned by another service subsystem.
     pub(super) fn handle(
         &mut self,

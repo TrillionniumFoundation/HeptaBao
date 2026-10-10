@@ -63,6 +63,10 @@ pub(crate) fn current_ingress() -> Option<IngressReplyContext> {
     INGRESS.with(|slot| slot.borrow().clone())
 }
 impl IngressReplyContext {
+    /// A synthesized logical request keeps the admitted ID, not its outer raw body.
+    pub(crate) fn logical_subrequest(&self) -> Self {
+        Self { attempt_id: self.attempt_id, lexical_body: None }
+    }
     pub(crate) fn attempt_id(&self) -> [u8; 16] {
         self.attempt_id
     }
