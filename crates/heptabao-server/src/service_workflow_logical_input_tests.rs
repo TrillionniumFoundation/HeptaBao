@@ -23,7 +23,8 @@ fn install_logical(f: &mut Fixture, document: &str) {
         json!({"workflow":document}),
         100,
     );
-    assert_eq!(response.status, 200);
+    assert_eq!(response.status, 200, "workflow install errors: {}",
+        response.body.get("errors").unwrap_or(&Value::Null));
 }
 fn wire(
     f: &mut Fixture,
@@ -659,17 +660,26 @@ fn workflow131_data_scope_and_authenticated_forward_wire_preserve_headers_withou
         client_certificates: None,
         caller_deadline: None,
     };
-    let encoded = Zeroizing::new(
+    assert!(
         crate::ha_forward::encode_completed_index_request_for_cluster(
             "logical131",
             (1, 2),
             &context,
             None,
+        ).is_err()
+    );
+    let encoded = Zeroizing::new(
+        crate::ha_forward::encode_completed_index_request_for_cluster(
+            "logical131",
+            (1, 2),
+            &context,
+            Some([0x31; 32]),
         )?,
     );
     assert!(crate::ha_forward::decode_request_for_cluster(&encoded, "other-cluster").is_err());
     let mut decoded = crate::ha_forward::decode_request_for_cluster(&encoded, "logical131")?;
     assert_eq!((decoded.source, decoded.target), (1, 2));
+    assert_eq!(decoded.completion_nonce, Some([0x31; 32]));
     assert_eq!(
         decoded
             .logical_data
@@ -1707,7 +1717,9 @@ fn workflow131_real_float_runtime_casts_output_empty_wire_and_wrapping_fail_at_a
             version+=1;
             read(&mut f,version,"stage-one",100);
             let wrapped=nonfinite_raw(&mut f,&token,json!({"value":raw}),true)?;
-            assert!(wrapped.starts_with(b"HTTP/1.1 500 "));
+            assert!(wrapped.starts_with(b"HTTP/1.1 500 "),
+                "actual wrapped workflow status: {}",
+                String::from_utf8_lossy(wrapped.split(|byte| *byte == b'\r').next().unwrap_or(&[])));
             let error:Value=serde_json::from_slice(nonfinite_response_body(&wrapped)?)?;
             assert_eq!(error["errors"],json!(["internal error"]));
             assert!(error.get("wrap_info").is_none());
@@ -1778,6 +1790,159 @@ fn workflow131_true_nonfinite_input_reaches_maintained_cel_template_and_public_o
         let after=Zeroizing::new(serde_json::to_vec(&f.service.state.as_ref().ok_or("after forged")?.engines)?);
         assert!(before.as_slice()==after.as_slice());
         read(&mut f,2,"typed-runtime",100);
+    }
+    Ok(())
+}
+
+
+#[test]
+fn workflow131_hcl_numeric_defaults_use_real_legacy_tokens_and_install_errors_have_no_effect()
+    -> TestResult
+{
+    let mut f = setup()?;
+    create(&mut f);
+    logical_policy(&mut f, false);
+    let token = Zeroizing::new(f.requester.token.to_string());
+    let mut version = 1;
+    // Original compiled2.7 R35 and R36: 23 actual installation/execution rows.
+    for (literal, expected) in [
+        ("7.5", Some(7.5)),
+        ("-0", Some(0.0)),
+        ("-0.0", Some(0.0)),
+        (".5", Some(0.5)),
+        ("+1.5", None),
+        ("1e2", Some(100.0)),
+        ("1E+2", Some(100.0)),
+        ("01", Some(1.0)),
+        ("1e309", None),
+        ("-1e309", None),
+        ("null", None),
+        ("7.5", Some(7.5)),
+        ("-.5", None),
+        ("010", Some(8.0)),
+        ("08", None),
+        ("09", None),
+        ("-010", Some(-8.0)),
+        ("0x10", Some(16.0)),
+        ("1.", Some(1.0)),
+        ("1.e2", Some(100.0)),
+        ("1_0", None),
+        (".5e2", None),
+        ("0007", Some(7.0)),
+    ] {
+        let document = format!(r#"input {{ field "float" "value" {{ default = {literal} }} }}
+          flow "store" {{ request "kv" {{ operation = "update"
+            path = "secret/data/cg/key" data = {{ data = {{
+              value = "grammar131"
+              number = {{ eval_source = "input" eval_type = "any" field_name = "value" }}
+            }} }} }} }}
+          output {{ data = {{ value = {{
+            eval_source = "input" eval_type = "any" field_name = "value"
+          }} }} }}"#);
+        if let Some(expected) = expected {
+            install_logical(&mut f, &document);
+            let (method, path, body, frame) = f.service.state.as_ref().ok_or("actual grammar state")?
+                .namespaces.workflows.logical_first_step_fixture("", "wf131", &json!({}), Instant::now())
+                .map_err(|_| "actual stored numeric Program resolution")?;
+            assert_eq!(method, "POST");
+            assert_eq!(path, "secret/data/cg/key");
+            assert_eq!(body["data"]["value"], json!("grammar131"));
+            assert_eq!(body["data"]["number"].as_f64(), Some(expected), "typed default {literal}");
+            assert!(frame.is_none());
+            let response = wire(&mut f, &token, "", "POST",
+                "sys/workflows/execute/wf131", json!({}), "")?;
+            assert_eq!(response.status, 200, "actual numeric default {literal}");
+            assert!(response.body["data"]["value"].is_number());
+            assert_eq!(response.body["data"]["value"].as_f64(), Some(expected));
+            version += 1;
+            read(&mut f, version, "grammar131", 100);
+            let saved = call(&mut f.service, &f.admin, "GET",
+                "secret/data/cg/key", json!({}), 100);
+            assert_eq!(saved.status, 200);
+            assert_eq!(saved.body["data"]["data"]["number"].as_f64(), Some(expected));
+        } else {
+            let before = Zeroizing::new(serde_json::to_vec(
+                &f.service.state.as_ref().ok_or("actual rejected grammar state")?.engines)
+                .map_err(|_| "grammar engine custody")?);
+            let old = call(&mut f.service, &f.admin, "GET",
+                "sys/workflows/manage/wf131", json!({}), 100);
+            assert_eq!(call(&mut f.service, &f.admin, "POST",
+                "sys/workflows/manage/wf131", json!({"workflow":document}), 100).status,
+                400, "actual rejected default {literal}");
+            let unchanged = call(&mut f.service, &f.admin, "GET",
+                "sys/workflows/manage/wf131", json!({}), 100);
+            assert_eq!(unchanged.status, old.status);
+            assert_eq!(unchanged.body, old.body);
+            let after = Zeroizing::new(serde_json::to_vec(
+                &f.service.state.as_ref().ok_or("actual rejected grammar state")?.engines)
+                .map_err(|_| "rejected grammar engine custody")?);
+            assert!(before.as_slice() == after.as_slice());
+            read(&mut f, version, "grammar131", 100);
+        }
+    }
+    // R38 pins original response number tokens, exact signed-i64 and signbit.
+    for (literal, expected_literal) in [
+        ("7.5", Some("7.5")),
+        ("-0", Some("0")),
+        ("-0.0", Some("-0")),
+        ("9223372036854775807", Some("9223372036854775807")),
+        ("9223372036854775808", None),
+        ("18446744073709551615", None),
+        ("-9223372036854775808", Some("-9223372036854775808")),
+        ("-9223372036854775809", None),
+        ("-0x10", Some("-16")),
+        ("0X10", Some("16")),
+        ("0b10", None),
+        ("0o10", None),
+    ] {
+        let document = format!(r#"input {{ field "float" "value" {{ default = {literal} }} }}
+          flow "store" {{ request "kv" {{ operation = "update"
+            path = "secret/data/cg/key" data = {{ data = {{ value = "grammar131" }} }} }} }}
+          output {{ data = {{ value = {{
+            eval_source = "input" eval_type = "any" field_name = "value"
+          }} }} }}"#);
+        if let Some(expected_literal) = expected_literal {
+            install_logical(&mut f, &document);
+            let raw = nonfinite_raw(&mut f, &token, json!({}), false)?;
+            assert!(raw.starts_with(b"HTTP/1.1 200 "));
+            let response = crate::auth::parse_strict_json(nonfinite_response_body(&raw)?)
+                .map_err(|_| "actual HCL numeric original wire")?;
+            let value = &response["data"]["value"];
+            assert!(value.is_number());
+            if literal == "-0.0" {
+                assert_eq!(value.as_f64().ok_or("actual float zero")?.to_bits(),
+                    (-0.0_f64).to_bits());
+            } else {
+                let expected = crate::auth::parse_strict_json(expected_literal.as_bytes())
+                    .map_err(|_| "actual expected numeric token")?;
+                if let Some(integer) = expected.as_i64() {
+                    assert_eq!(value.as_i64(), Some(integer), "exact HCL int {literal}");
+                } else {
+                    assert_eq!(value.as_f64(), expected.as_f64());
+                }
+                if literal == "-0" {
+                    assert_eq!(value.as_f64().ok_or("actual integer zero")?.to_bits(), 0.0_f64.to_bits());
+                }
+            }
+            version += 1;
+            read(&mut f, version, "grammar131", 100);
+        } else {
+            let before = Zeroizing::new(serde_json::to_vec(
+                &f.service.state.as_ref().ok_or("actual integer-range state")?.engines)
+                .map_err(|_| "integer-range engine custody")?);
+            let old = call(&mut f.service, &f.admin, "GET",
+                "sys/workflows/manage/wf131", json!({}), 100);
+            assert_eq!(call(&mut f.service, &f.admin, "POST",
+                "sys/workflows/manage/wf131", json!({"workflow":document}), 100).status, 400);
+            let unchanged = call(&mut f.service, &f.admin, "GET",
+                "sys/workflows/manage/wf131", json!({}), 100);
+            assert_eq!(unchanged.body, old.body);
+            let after = Zeroizing::new(serde_json::to_vec(
+                &f.service.state.as_ref().ok_or("actual integer-range state")?.engines)
+                .map_err(|_| "integer-range engine custody")?);
+            assert!(before.as_slice() == after.as_slice());
+            read(&mut f, version, "grammar131", 100);
+        }
     }
     Ok(())
 }

@@ -146,7 +146,7 @@ fn native_leaf_delete_taints_issued_login_and_retires_actual_kv_owner() -> TestR
         .map_err(|_| "binding")?;
     begin(&mut service, &actor, "retire");
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, NAMESPACE_DELETION_STATE_SCHEMA);
+    assert_eq!(state.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(state.namespace_is_tainted("retire"));
     state.validate_format().map_err(|_| "pending format")?;
     let mut downgrade = state.clone();
@@ -335,7 +335,7 @@ fn pending_native_leaf_deletion_reopens_and_old_backup_cannot_remove_taint() -> 
     assert!(service.prepare_snapshot_restore(&archive).is_err());
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        NAMESPACE_DELETION_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }

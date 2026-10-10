@@ -425,6 +425,9 @@ impl AuthState {
         Ok(())
     }
     pub(super) fn store_token(&mut self, id: String, token: Token) -> Option<Token> {
+        if token.has_userpass_creation_ttl() {
+            self.userpass_issuance_floor = Some(userpass_creation_ttl::Floor::V1);
+        }
         if token.has_public_origin() {
             self.public_origin_floor = Some(Floor::V1);
         }

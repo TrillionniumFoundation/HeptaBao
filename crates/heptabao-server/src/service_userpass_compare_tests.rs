@@ -106,7 +106,7 @@ fn schema37_credentials_keep_absent_marker_on_read_reopen_and_successful_login()
     // it must never reinterpret the account's historical credential.
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     assert!(
         !service

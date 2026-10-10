@@ -108,7 +108,7 @@ impl Value {
             Data::Float(value) => {
                 let mut wire = Zeroizing::new(
                     serde_json::Number::from_f64(*value).ok_or(())?.to_string());
-                if wire.ends_with(".0") {
+                if wire.ends_with(".0") && !(*value == 0.0 && value.is_sign_negative()) {
                     let end = wire.len() - 2;
                     wire.truncate(end);
                 }

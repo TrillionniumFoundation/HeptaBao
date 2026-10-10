@@ -127,7 +127,7 @@ impl AuthState {
             }
         }
         for token in self.tokens.values() {
-            if let (Some(mount), Some(TokenAuthProvenance::Userpass { username })) =
+            if let (Some(mount), Some(TokenAuthProvenance::Userpass { username, .. })) =
                 (token.auth_mount.as_deref(), token.auth_provenance.as_ref())
                 && self.has_native_userpass_names(AuthScope {
                     namespace: &token.namespace,

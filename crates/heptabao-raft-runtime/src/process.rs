@@ -24,3 +24,6 @@ mod replication_tests;
 
 #[cfg(test)]
 mod snapshot_receive_tests;
+
+#[cfg(test)]
+mod snapshot_observation_tests;

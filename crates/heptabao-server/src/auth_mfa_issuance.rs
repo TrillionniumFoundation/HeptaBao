@@ -346,7 +346,7 @@ impl Registry {
                 || token.entity_id.as_deref().is_none_or(str::is_empty)
                 || !token.auth_origin_known
                 || !matches!(&token.auth_provenance,
-                    Some(TokenAuthProvenance::Userpass { username }) if !username.is_empty())
+                    Some(TokenAuthProvenance::Userpass { username, issued_creation_ttl: None }) if !username.is_empty())
                 || token.token_api_precision.is_some()
                 || token.public_origin.is_some()
                 || token.issue_stamp.is_some()
@@ -702,7 +702,7 @@ impl AuthState {
                 Self::prepare_issue(pending.token, time.seconds())?
             };
             let username = match &token.auth_provenance {
-                Some(TokenAuthProvenance::Userpass { username }) => username.clone(),
+                Some(TokenAuthProvenance::Userpass { username, .. }) => username.clone(),
                 _ => return Err(denied()),
             };
             issued.body["auth"]["metadata"] = json!({"username":username});
@@ -779,7 +779,7 @@ impl AuthState {
         token: &mut Token,
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
-        let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance else {
+        let Some(TokenAuthProvenance::Userpass { username, .. }) = &token.auth_provenance else {
             return Err(denied());
         };
         let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
@@ -856,7 +856,7 @@ impl AuthState {
         }
         let username = match &challenge.grant {
             Grant::Service(token) => match &token.auth_provenance {
-                Some(TokenAuthProvenance::Userpass { username }) => username.clone(),
+                Some(TokenAuthProvenance::Userpass { username, .. }) => username.clone(),
                 _ => return Err(denied()),
             },
         };
@@ -1131,5 +1131,33 @@ impl AuthState {
         registry.clock = now;
         registry.mutation_epoch = next_epoch;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+impl AuthState {
+    // Structural reader counterexample only: the original Service challenge
+    // remains genuine and its private MAC is independently verified before
+    // and after claiming an impossible already-captured unissued grant.
+    pub(crate) fn test_resign_mfa_pending_grant_with_claimed_ttl(
+        &mut self, namespace: &str, id: &str, ttl: u64,
+    ) -> Result<(), AuthError> {
+        let registry = self.identity_mfa.as_mut()
+            .ok_or_else(|| err(503, "actual MFA registry"))?;
+        let key = Zeroizing::new(registry.key.0.clone());
+        let challenge = registry.namespaces.get_mut(namespace)
+            .and_then(|owner| owner.challenges.get_mut(id))
+            .ok_or_else(|| err(503, "actual MFA challenge"))?;
+        challenge.verify(&key)?;
+        let Grant::Service(token) = &mut challenge.grant;
+        let Some(TokenAuthProvenance::Userpass { issued_creation_ttl, .. }) = &mut token.auth_provenance else {
+            return Err(err(503, "actual native unissued Userpass provenance"));
+        };
+        if issued_creation_ttl.is_some() {
+            return Err(err(503, "original pending grant was already captured"));
+        }
+        *issued_creation_ttl = Some(ttl);
+        challenge.sign(&key)?;
+        challenge.verify(&key)
     }
 }

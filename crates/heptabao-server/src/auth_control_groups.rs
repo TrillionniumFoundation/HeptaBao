@@ -1585,6 +1585,7 @@ impl DeferredRequest {
                 .map_err(|_| bad("invalid control group credential capsule"))?;
             if self.request_accessor.is_empty()
                 || (!capsule.kind().is_batch()
+                    && self.logical_data.is_none()
                     && !matches!(
                         self.path.as_str(),
                         "auth/token/lookup-self" | "auth/token/renew-self"

@@ -97,6 +97,7 @@ impl AuthState {
     }
 
     pub(crate) fn validate_userpass_native_tokens(&self) -> Result<(), AuthError> {
+        self.validate_userpass_issuance_state(None)?;
         for user in self.users.values().flat_map(|users| users.values()).chain(
             self.mounted_users
                 .values()
@@ -126,7 +127,7 @@ impl AuthState {
             }
         }
         for token in self.tokens.values() {
-            if let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance
+            if let Some(TokenAuthProvenance::Userpass { username, .. }) = &token.auth_provenance
                 && (token.root
                     || token.parent.is_some()
                     || !token.auth_origin_known
@@ -155,7 +156,7 @@ impl AuthState {
         now: u64,
     ) -> Result<Option<AuthResponse>, AuthError> {
         let token = self.tokens.get(target).ok_or_else(denied)?;
-        let Some(TokenAuthProvenance::Userpass { username }) = token.auth_provenance.as_ref()
+        let Some(TokenAuthProvenance::Userpass { username, .. }) = token.auth_provenance.as_ref()
         else {
             if token.auth_provenance.is_none()
                 && token.parent.is_none()

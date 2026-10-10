@@ -155,6 +155,8 @@ use radius_native::RadiusNativeConfig;
 mod token_cidrs;
 #[path = "auth_token_creation_ttl.rs"]
 mod token_creation_ttl;
+#[path = "auth_userpass_creation_ttl.rs"]
+pub(crate) mod userpass_creation_ttl;
 #[path = "auth_token_duration.rs"]
 mod token_duration;
 #[path = "auth_token_precise_issuance.rs"]
@@ -256,6 +258,9 @@ pub struct AuthState {
     /// Native origin retirement cannot erase its owner floor.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     public_origin_floor: Option<public_origin::Floor>,
+    /// Immutable native Userpass issuance grants survive token retirement.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    userpass_issuance_floor: Option<userpass_creation_ttl::Floor>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sdk_auth_catalog: Option<crate::engines::sdk::Catalog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1410,6 +1415,8 @@ enum TokenAuthProvenance {
     },
     Userpass {
         username: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        issued_creation_ttl: Option<u64>,
     },
     AppRole {
         role_name: String,
@@ -2534,6 +2541,7 @@ impl AuthState {
                     .map_err(|_| err(503, "batch authority unavailable"))?,
             ),
             public_origin_floor: None,
+            userpass_issuance_floor: None,
             sdk_auth_catalog: None,
             sdk_auth_clock: None,
             sdk_advanced_format: None,
@@ -3227,8 +3235,10 @@ impl AuthState {
             at.seconds(), at.duration_since_epoch().subsec_nanos())?);
         Self::prepare_issue_with_stamp(token, now)
     }
-    fn prepare_issue_with_stamp(token: Token, now: u64)
+    fn prepare_issue_with_stamp(mut token: Token, now: u64)
         -> Result<(String, Token, AuthResponse), AuthError> {
+        // Capture only the final genuine native grant, after MFA reanchoring.
+        token.capture_userpass_creation_ttl()?;
         token.validate_public_origin()?;
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
@@ -8178,6 +8188,7 @@ impl AuthState {
             token.auth_mount = Some(mount.into());
             token.auth_provenance = Some(TokenAuthProvenance::Userpass {
                 username: name.into(),
+                issued_creation_ttl: None,
             });
             token.period = user.token_period;
             token.max_expires_at = (user.token_explicit_max_ttl > 0)
@@ -8907,8 +8918,9 @@ fn token_info(token: &Token, now: u64) -> Value {
     if let Some(TokenAuthProvenance::Jwt { role_name }) = &token.auth_provenance {
         info["meta"] = json!({"role":role_name});
     }
-    if let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance {
+    if let Some(TokenAuthProvenance::Userpass { username, issued_creation_ttl }) = &token.auth_provenance {
         info["meta"] = json!({"username":username});
+        if let Some(ttl) = issued_creation_ttl { info["creation_ttl"] = json!(ttl); }
     }
     if let Some(TokenAuthProvenance::Kerberos {
         provider,

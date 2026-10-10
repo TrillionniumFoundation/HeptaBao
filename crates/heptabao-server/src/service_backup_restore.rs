@@ -785,6 +785,11 @@ impl Service {
                 "snapshot would downgrade PKI issuer-path leases",
             ));
         }
+        incoming.auth.validate_userpass_issuance_state(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= USERPASS_ISSUANCE_STATE_SCHEMA && incoming.schema < USERPASS_ISSUANCE_STATE_SCHEMA {
+            return Err(Response::error(400, "snapshot would downgrade native Userpass issuance"));
+        }
         incoming.auth.validate_identity_mfa_state(Some(&current.auth))
             .map_err(|error|Response::error(400,&error.message))?;
         if current.schema>=IDENTITY_MFA_STATE_SCHEMA&&incoming.schema<IDENTITY_MFA_STATE_SCHEMA {

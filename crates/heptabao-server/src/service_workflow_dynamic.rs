@@ -8,6 +8,250 @@ mod template_consumer;
 #[path = "service_workflow_fields.rs"]
 mod field_consumer;
 
+// Workflow HCL has decimal defaults; the shared policy lexer is u64-only.
+// Retain its exact quoted-string/comment/block grammar here, with typed finite
+// numbers. Bare HCL null is rejected as observed at the official2.7 installer;
+// JSON input null remains a separate FieldData conversion.
+#[derive(Clone, PartialEq)]
+enum HclToken {
+    Word(String),
+    String(String),
+    Number(serde_json::Number),
+    Symbol(char),
+}
+fn workflow_take(tokens: &[HclToken], cursor: &mut usize, wanted: HclToken) -> Result<(), Response> {
+    if tokens.get(*cursor) != Some(&wanted) {
+        return Err(bad_profile("malformed workflow HCL value"));
+    }
+    *cursor += 1;
+    Ok(())
+}
+fn workflow_symbol(tokens: &[HclToken], cursor: &mut usize, wanted: char) -> Result<(), Response> {
+    workflow_take(tokens, cursor, HclToken::Symbol(wanted))
+}
+fn workflow_label(tokens: &[HclToken], cursor: &mut usize) -> Result<String, Response> {
+    let Some(HclToken::String(label)) = tokens.get(*cursor) else {
+        return Err(bad_profile("workflow profile block requires a quoted name"));
+    };
+    if !validate_name(label, MAX_WORKFLOW_NAME_BYTES) {
+        return Err(bad_profile("invalid workflow profile name"));
+    }
+    *cursor += 1;
+    Ok(label.clone())
+}
+fn workflow_attributes(tokens: &[HclToken], cursor: &mut usize) -> Result<Value, Response> {
+    workflow_value(tokens, cursor, 0)
+}
+fn workflow_lex_hcl(source: &str) -> Result<Vec<HclToken>, Response> {
+    let bytes = source.as_bytes();
+    let mut index = 0;
+    let mut result = Vec::new();
+    while index < bytes.len() {
+        if bytes[index].is_ascii_whitespace() {
+            index += 1;
+            continue;
+        }
+        if bytes[index] == b'#' || bytes[index..].starts_with(b"//") {
+            while index < bytes.len() && bytes[index] != b'\n' {
+                index += 1;
+            }
+            continue;
+        }
+        if bytes[index..].starts_with(b"/*") {
+            index += 2;
+            while index + 1 < bytes.len() && !bytes[index..].starts_with(b"*/") {
+                index += 1;
+            }
+            if index + 1 >= bytes.len() {
+                return Err(bad_profile("unterminated HCL comment"));
+            }
+            index += 2;
+            continue;
+        }
+        if b"{}[]=,".contains(&bytes[index]) {
+            result.push(HclToken::Symbol(bytes[index] as char));
+            index += 1;
+            continue;
+        }
+        if bytes[index] == b'"' {
+            let start = index;
+            index += 1;
+            let mut escaped = false;
+            while index < bytes.len() {
+                if bytes[index] == b'"' && !escaped {
+                    break;
+                }
+                escaped = bytes[index] == b'\\' && !escaped;
+                index += 1;
+            }
+            if index >= bytes.len() {
+                return Err(bad_profile("unterminated HCL string"));
+            }
+            index += 1;
+            let value: String = serde_json::from_str(&source[start..index])
+                .map_err(|_| bad_profile("invalid HCL string escape"))?;
+            result.push(HclToken::String(value));
+            continue;
+        }
+        if bytes[index].is_ascii_alphabetic() || bytes[index] == b'_' {
+            let start = index;
+            while index < bytes.len()
+                && (bytes[index].is_ascii_alphanumeric() || matches!(bytes[index], b'_' | b'-'))
+            {
+                index += 1;
+            }
+            result.push(HclToken::Word(source[start..index].into()));
+            continue;
+        }
+        if bytes[index].is_ascii_digit() || matches!(bytes[index], b'-' | b'.') {
+            let start = index;
+            let leading_dot = bytes[index] == b'.';
+            if bytes[index] == b'-' { index += 1; }
+            let integer = index;
+            while index < bytes.len() && bytes[index].is_ascii_digit() { index += 1; }
+            if index == integer && !leading_dot {
+                return Err(bad_profile("invalid workflow HCL number"));
+            }
+            if !leading_dot && &source[integer..index] == "0"
+                && matches!(bytes.get(index), Some(b'x' | b'X')) {
+                index += 1;
+                let hexadecimal = index;
+                while index < bytes.len() && bytes[index].is_ascii_hexdigit() { index += 1; }
+                if index == hexadecimal { return Err(bad_profile("invalid workflow HCL integer")); }
+            } else {
+                if bytes.get(index) == Some(&b'.') {
+                    index += 1;
+                    let fraction = index;
+                    while index < bytes.len() && bytes[index].is_ascii_digit() { index += 1; }
+                    if leading_dot && index == fraction {
+                        return Err(bad_profile("invalid workflow HCL fraction"));
+                    }
+                }
+                if matches!(bytes.get(index), Some(b'e' | b'E')) {
+                    // Actual HCL1 rejects an exponent after a leading-dot fraction.
+                    if leading_dot { return Err(bad_profile("invalid workflow HCL leading-dot exponent")); }
+                    index += 1;
+                    if matches!(bytes.get(index), Some(b'+' | b'-')) { index += 1; }
+                    let exponent = index;
+                    while index < bytes.len() && bytes[index].is_ascii_digit() { index += 1; }
+                    if index == exponent { return Err(bad_profile("invalid workflow HCL exponent")); }
+                }
+            }
+            result.push(HclToken::Number(workflow_hcl_number(&source[start..index])?));
+            continue;
+        }
+        return Err(bad_profile("unsupported character in HCL policy"));
+    }
+    Ok(result)
+}
+
+fn workflow_hcl_number(raw: &str) -> Result<serde_json::Number, Response> {
+    let integer_text = raw.trim_start_matches('-');
+    let hexadecimal = integer_text.starts_with("0x") || integer_text.starts_with("0X");
+    if raw.contains(['.', 'e', 'E']) && !hexadecimal {
+        let mut normalized = Zeroizing::new(raw.to_owned());
+        if normalized.starts_with('.') { normalized.insert(0, '0'); }
+        if let Some(dot) = normalized.find('.')
+            && (dot + 1 == normalized.len()
+                || matches!(normalized.as_bytes().get(dot + 1), Some(b'e' | b'E'))) {
+            normalized.insert(dot + 1, '0');
+        }
+        let value = normalized.parse::<f64>()
+            .map_err(|_| bad_profile("invalid workflow HCL number"))?;
+        if !value.is_finite() {
+            return Err(bad_profile("workflow HCL number exceeds finite range"));
+        }
+        let mut wire = Zeroizing::new(serde_json::Number::from_f64(value)
+            .ok_or_else(|| bad_profile("invalid workflow HCL number"))?.to_string());
+        if wire.ends_with(".0") && !(value == 0.0 && value.is_sign_negative()) {
+            let end = wire.len() - 2;
+            wire.truncate(end);
+        }
+        return wire.parse::<serde_json::Number>()
+            .map_err(|_| bad_profile("invalid workflow HCL number"));
+    }
+    let (negative, digits) = raw.strip_prefix('-').map_or((false, raw), |v| (true, v));
+    let (radix, magnitude) = if let Some(value) = digits.strip_prefix("0x").or_else(|| digits.strip_prefix("0X")) {
+        (16, value)
+    } else if digits.len() > 1 && digits.starts_with('0') {
+        (8, digits)
+    } else {
+        (10, digits)
+    };
+    let signed = Zeroizing::new(if negative { format!("-{magnitude}") } else { magnitude.to_owned() });
+    let value = i64::from_str_radix(&signed, radix)
+        .map_err(|_| bad_profile("invalid workflow HCL integer"))?;
+    Ok(serde_json::Number::from(value))
+}
+
+fn workflow_value(
+    tokens: &[HclToken],
+    cursor: &mut usize,
+    depth: usize,
+) -> Result<Value, Response> {
+    // Bound recursion before constructing a child, not after serializing it.
+    // The policy byte limit alone still permits thousands of nested arrays.
+    if depth > MAX_JSON_DEPTH + 3 {
+        return Err(bad_profile("HCL policy value nesting exceeds bound"));
+    }
+    match tokens.get(*cursor).cloned() {
+        Some(HclToken::String(value)) => {
+            *cursor += 1;
+            Ok(Value::String(value))
+        }
+        Some(HclToken::Number(value)) => {
+            *cursor += 1;
+            Ok(Value::Number(value))
+        }
+        Some(HclToken::Word(value)) if matches!(value.as_str(), "true" | "false") => {
+            *cursor += 1;
+            Ok(Value::Bool(value == "true"))
+        }
+        Some(HclToken::Symbol('[')) => {
+            *cursor += 1;
+            let mut values = Vec::new();
+            while tokens.get(*cursor) != Some(&HclToken::Symbol(']')) {
+                values.push(workflow_value(tokens, cursor, depth + 1)?);
+                if tokens.get(*cursor) == Some(&HclToken::Symbol(',')) {
+                    *cursor += 1;
+                } else if tokens.get(*cursor) != Some(&HclToken::Symbol(']')) {
+                    return Err(bad_profile("malformed HCL value array"));
+                }
+            }
+            *cursor += 1;
+            Ok(Value::Array(values))
+        }
+        Some(HclToken::Symbol('{')) => {
+            *cursor += 1;
+            let mut values = serde_json::Map::new();
+            while tokens.get(*cursor) != Some(&HclToken::Symbol('}')) {
+                let key = workflow_key(tokens, cursor)?;
+                if values.contains_key(&key) {
+                    return Err(bad_profile("duplicate HCL object key"));
+                }
+                workflow_take(tokens, cursor, HclToken::Symbol('='))?;
+                values.insert(key, workflow_value(tokens, cursor, depth + 1)?);
+                if tokens.get(*cursor) == Some(&HclToken::Symbol(',')) {
+                    *cursor += 1;
+                }
+            }
+            *cursor += 1;
+            Ok(Value::Object(values))
+        }
+        _ => Err(bad_profile("unsupported HCL policy value")),
+    }
+}
+
+fn workflow_key(tokens: &[HclToken], cursor: &mut usize) -> Result<String, Response> {
+    match tokens.get(*cursor) {
+        Some(HclToken::String(value)) | Some(HclToken::Word(value)) => {
+            *cursor += 1;
+            Ok(value.clone())
+        }
+        _ => Err(bad_profile("HCL object key must be a string or identifier")),
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Kind {
     Any,
@@ -397,16 +641,16 @@ fn text(attrs: &serde_json::Map<String, Value>, name: &str) -> Result<Option<Str
         })
         .transpose()
 }
-fn input_fields(tokens: &[Lex], cursor: &mut usize) -> Result<BTreeMap<String, Field>, Response> {
-    symbol(tokens, cursor, '{')?;
+fn input_fields(tokens: &[HclToken], cursor: &mut usize) -> Result<BTreeMap<String, Field>, Response> {
+    workflow_symbol(tokens, cursor, '{')?;
     let mut fields = BTreeMap::new();
-    while tokens.get(*cursor) != Some(&Lex::Symbol('}')) {
-        if tokens.get(*cursor) != Some(&Lex::Word("field".into())) {
+    while tokens.get(*cursor) != Some(&HclToken::Symbol('}')) {
+        if tokens.get(*cursor) != Some(&HclToken::Word("field".into())) {
             return Err(bad_profile("workflow input accepts only field blocks"));
         }
         *cursor += 1;
         let mut labels = Vec::new();
-        while let Some(Lex::String(value)) = tokens.get(*cursor) {
+        while let Some(HclToken::String(value)) = tokens.get(*cursor) {
             labels.push(value.clone());
             *cursor += 1;
         }
@@ -415,7 +659,7 @@ fn input_fields(tokens: &[Lex], cursor: &mut usize) -> Result<BTreeMap<String, F
                 "workflow input field labels or count exceed bounds",
             ));
         }
-        let value = attributes(tokens, cursor)?;
+        let value = workflow_attributes(tokens, cursor)?;
         let attrs = value
             .as_object()
             .ok_or_else(|| bad_profile("workflow input field is invalid"))?;
@@ -548,7 +792,10 @@ pub(in crate::service::workflows) struct Program {
 // partial and admission-only results under the same erase-on-drop custody.
 // Input admission uses the actual listener payload budget once for the whole
 // caller map. The smaller persisted step-data bound remains independent.
-fn bounded_input_json(value: &Value, depth: usize, bytes: &mut usize) -> Result<(), &'static str> {
+fn bounded_input_json(
+    value: &Value, depth: usize, bytes: &mut usize,
+    fields: &BTreeMap<String, Field>, logical_header_map: bool,
+) -> Result<(), &'static str> {
     if depth > MAX_JSON_DEPTH {
         return Err("workflow input nesting is too deep");
     }
@@ -566,7 +813,7 @@ fn bounded_input_json(value: &Value, depth: usize, bytes: &mut usize) -> Result<
                 return Err("workflow input array exceeds the bounded size");
             }
             for value in values {
-                bounded_input_json(value, depth + 1, bytes)?;
+                bounded_input_json(value, depth + 1, bytes, fields, false)?;
             }
         }
         Value::Object(values) => {
@@ -574,10 +821,15 @@ fn bounded_input_json(value: &Value, depth: usize, bytes: &mut usize) -> Result<
                 return Err("workflow input object exceeds the bounded size");
             }
             for (key, value) in values {
-                if key.is_empty() || key.len() > MAX_JSON_STRING_BYTES {
+                if (key.is_empty() && !logical_header_map) || key.len() > MAX_JSON_STRING_BYTES {
                     return Err("workflow input object key exceeds the bounded size");
                 }
-                bounded_input_json(value, depth + 1, bytes)?;
+                // Only the declared Header map has SDK logical header names.
+                // The raw caller map and all ordinary nested JSON retain their gate.
+                let header = depth == 0 && fields.get(key).is_some_and(|field| {
+                    matches!(field.kind, InputKind::Field(field_consumer::FieldKind::Header))
+                });
+                bounded_input_json(value, depth + 1, bytes, fields, header)?;
             }
         }
         _ => {}
@@ -615,7 +867,7 @@ impl Program {
             return Err(bad_profile("workflow input must be an object"));
         }
         let mut bytes = 0;
-        bounded_input_json(&raw.0, 0, &mut bytes).map_err(bad_profile)?;
+        bounded_input_json(&raw.0, 0, &mut bytes, &self.fields, false).map_err(bad_profile)?;
         Ok(raw)
     }
     pub(in crate::service) fn effective_input(
@@ -633,7 +885,7 @@ impl Program {
         let supplied = body.as_object();
         if supplied.is_none() && !body.is_null() { return Err(bad_profile("workflow input must be an object")); }
         let mut bytes = 0;
-        bounded_input_json(body, 0, &mut bytes).map_err(bad_profile)?;
+        bounded_input_json(body, 0, &mut bytes, &self.fields, false).map_err(bad_profile)?;
         let mut input = InputValues(BTreeMap::new());
         for (name, field) in &self.fields {
             let selected = match supplied.and_then(|object| object.get(name)) {
@@ -669,17 +921,17 @@ impl Program {
         if document.is_empty() || document.len() > MAX_PROFILE_BYTES {
             return Err(bad_profile("workflow profile text is outside bounds"));
         }
-        let tokens = lex_hcl(document).map_err(|_| bad_profile("invalid workflow HCL"))?;
+        let tokens = workflow_lex_hcl(document).map_err(|_| bad_profile("invalid workflow HCL"))?;
         let mut nesting = 0usize;
         for token in &tokens {
             match token {
-                Lex::Symbol('{' | '[') => {
+                HclToken::Symbol('{' | '[') => {
                     nesting += 1;
                     if nesting > MAX_JSON_DEPTH + 3 {
                         return Err(bad_profile("workflow profile nesting is outside bounds"));
                     }
                 }
-                Lex::Symbol('}' | ']') => nesting = nesting.saturating_sub(1),
+                HclToken::Symbol('}' | ']') => nesting = nesting.saturating_sub(1),
                 _ => (),
             }
         }
@@ -691,7 +943,7 @@ impl Program {
         let mut feature = false;
         while cursor < tokens.len() {
             match tokens.get(cursor) {
-                Some(Lex::Word(word)) if word == "input" => {
+                Some(HclToken::Word(word)) if word == "input" => {
                     cursor += 1;
                     if input.is_some() {
                         return Err(bad_profile("duplicate workflow input block"));
@@ -699,30 +951,30 @@ impl Program {
                     input = Some(input_fields(&tokens, &mut cursor)?);
                     feature = true;
                 }
-                Some(Lex::Word(word)) if word == "flow" => {
+                Some(HclToken::Word(word)) if word == "flow" => {
                     cursor += 1;
-                    let name = label(&tokens, &mut cursor)?;
+                    let name = workflow_label(&tokens, &mut cursor)?;
                     if !flow_names.insert(name.clone()) || flows.len() >= MAX_STEPS {
                         return Err(bad_profile("duplicate or excessive workflow flow"));
                     }
-                    symbol(&tokens, &mut cursor, '{')?;
+                    workflow_symbol(&tokens, &mut cursor, '{')?;
                     let mut when = None;
                     let mut requests = Vec::new();
-                    while tokens.get(cursor) != Some(&Lex::Symbol('}')) {
+                    while tokens.get(cursor) != Some(&HclToken::Symbol('}')) {
                         match tokens.get(cursor) {
-                            Some(Lex::Word(word)) if word == "when" => {
+                            Some(HclToken::Word(word)) if word == "when" => {
                                 cursor += 1;
-                                symbol(&tokens, &mut cursor, '=')?;
+                                workflow_symbol(&tokens, &mut cursor, '=')?;
                                 if when.is_some() {
                                     return Err(bad_profile("duplicate workflow flow condition"));
                                 }
-                                when = Some(attributes(&tokens, &mut cursor)?);
+                                when = Some(workflow_attributes(&tokens, &mut cursor)?);
                                 feature = true;
                             }
-                            Some(Lex::Word(word)) if word == "request" => {
+                            Some(HclToken::Word(word)) if word == "request" => {
                                 cursor += 1;
-                                let request = label(&tokens, &mut cursor)?;
-                                requests.push((request, attributes(&tokens, &mut cursor)?));
+                                let request = workflow_label(&tokens, &mut cursor)?;
+                                requests.push((request, workflow_attributes(&tokens, &mut cursor)?));
                                 if requests.len() > MAX_STEPS {
                                     return Err(bad_profile("excessive workflow request"));
                                 }
@@ -740,12 +992,12 @@ impl Program {
                         requests,
                     });
                 }
-                Some(Lex::Word(word)) if word == "output" => {
+                Some(HclToken::Word(word)) if word == "output" => {
                     cursor += 1;
                     if output.is_some() {
                         return Err(bad_profile("duplicate workflow output block"));
                     }
-                    let value = attributes(&tokens, &mut cursor)?;
+                    let value = workflow_attributes(&tokens, &mut cursor)?;
                     let attrs = value
                         .as_object()
                         .ok_or_else(|| bad_profile("workflow output must be an object"))?;

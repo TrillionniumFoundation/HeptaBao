@@ -92,7 +92,7 @@ fn fresh_userpass_case_variants_share_identity_and_survive_reopen() -> TestResul
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }
@@ -336,7 +336,7 @@ fn schema38_and39_accept_absent_name_modes_without_adopting_legacy_accounts() ->
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }

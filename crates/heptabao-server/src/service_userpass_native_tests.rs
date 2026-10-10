@@ -114,7 +114,7 @@ fn userpass_native_limits_policies_and_issuer_each_require_schema_thirty_five()
         state.validate_format().err().ok_or("issuer fence")?.status,
         503
     );
-    state.schema = CURRENT_STATE_SCHEMA;
+    state.schema = USERPASS_ISSUANCE_STATE_SCHEMA;
     assert!(state.validate_format().is_ok());
     Ok(())
 }

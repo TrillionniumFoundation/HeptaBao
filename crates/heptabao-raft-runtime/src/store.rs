@@ -26,6 +26,10 @@ use tokio::sync::Mutex;
 mod blocking_io;
 use blocking_io::with_owned_store;
 
+#[cfg(test)]
+#[path = "store_snapshot_test_gate.rs"]
+mod snapshot_test_gate;
+
 const MAX_DURABLE_ARTIFACT_BYTES: usize = 128 * 1024 * 1024;
 const ENVELOPE_OVERHEAD_BYTES: usize = 20;
 const COMPACT_STATE_BUNDLE_FORMAT: u16 = 2;
@@ -1616,6 +1620,18 @@ impl DurableStateMachine {
         let _ = self.apply_observation_start.set(started);
     }
 
+    #[cfg(test)]
+    pub(crate) fn pause_next_snapshot_completion(
+        &self,
+    ) -> io::Result<snapshot_test_gate::SnapshotPause> {
+        snapshot_test_gate::arm(&self.bundle_path)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn note_snapshot_observation_trigger(&self) {
+        snapshot_test_gate::note_trigger(&self.bundle_path);
+    }
+
     fn artifact_bound(&self) -> usize {
         #[cfg(test)]
         {
@@ -1871,7 +1887,7 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
     ) -> Result<SnapshotOf<TypeConfig, Self::SnapshotData>, io::Error> {
         let owner = self.bundle.clone().lock_owned().await;
         let store = self.clone();
-        with_owned_store(owner, move |bundle| {
+        let snapshot = with_owned_store(owner, move |bundle| {
             let checkpoint = GeneratedSnapshotCheckpoint::new(bundle)?;
             // Preserve the actual encoded artifact bound, including the current
             // state, base64 snapshot and frame. No disk or in-memory publication
@@ -1904,7 +1920,14 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
                 snapshot: Cursor::new(data),
             })
         })
-        .await
+        .await?;
+        #[cfg(test)]
+        snapshot_test_gate::after_persist(
+            &self.bundle_path,
+            snapshot.meta.last_log_id.as_ref().map(|log| log.index),
+        )
+        .await;
+        Ok(snapshot)
     }
 }
 

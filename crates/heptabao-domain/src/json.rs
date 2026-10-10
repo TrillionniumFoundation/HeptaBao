@@ -74,7 +74,15 @@ fn value(
         b'f' => Value::Bool(false),
         b'n' => Value::Null,
         _ => {
-            Value::Number(serde_json::from_str::<serde_json::Number>(text).map_err(|_| JsonError)?)
+            // The maintained arbitrary-precision parser reads "-0" through i64
+            // and loses its sign. Keep the admitted negative-zero token in the
+            // finite float category, while validating every other token normally.
+            let number = if text == "-0" {
+                serde_json::Number::from_f64(-0.0).ok_or(JsonError)?
+            } else {
+                serde_json::from_str::<serde_json::Number>(text).map_err(|_| JsonError)?
+            };
+            Value::Number(number)
         }
     };
     if matches!(first, b'{' | b'[') {

@@ -70,3 +70,35 @@ fn lossless_field_deserialization_preserves_text_and_trusted_value_maps() -> Tes
     assert!(serde_json::from_slice::<Owner>(br#"{"body":{"x":1,"x":2}}"#).is_err());
     Ok(())
 }
+
+#[test]
+fn lossless_negative_zero_keeps_float_sign_and_category_at_real_token_boundary() -> TestResult {
+    let decoded = decode(br#"{"negative":-0,"decimal":-0.0,"exponent":-0e0,"positive":0,"text":"-0","nested":[-0,{"value":-0}],"tag":{"$serde_json::private::Number":"-0"}}"#)?;
+    for number in [
+        &decoded["negative"],
+        &decoded["decimal"],
+        &decoded["exponent"],
+        &decoded["nested"][0],
+        &decoded["nested"][1]["value"],
+    ] {
+        assert_eq!(number.as_f64().ok_or("finite signed zero")?.to_bits(), (-0.0_f64).to_bits());
+        assert!(number.as_i64().is_none());
+        assert!(number.as_u64().is_none());
+    }
+    assert_eq!(decoded["positive"].as_f64().ok_or("positive zero")?.to_bits(), 0.0_f64.to_bits());
+    assert_eq!(decoded["positive"].as_i64(), Some(0));
+    assert_eq!(decoded["text"], "-0");
+    assert!(decoded["tag"].is_object());
+    assert_eq!(decode(&serde_json::to_vec(&decoded)?)?, decoded);
+    for bad in [
+        br#"{"x":-0,"x":0}"#.as_slice(),
+        br#"{"nested":{"x":-0,"x":0}}"#,
+        b"-00",
+        b"-0.",
+        b"-0e",
+    ] {
+        assert!(decode(bad).is_err());
+    }
+    assert_eq!(decode_with_policy(br#"{"x":-0,"x":0}"#, DuplicatePolicy::LastWins)?["x"].as_i64(), Some(0));
+    Ok(())
+}

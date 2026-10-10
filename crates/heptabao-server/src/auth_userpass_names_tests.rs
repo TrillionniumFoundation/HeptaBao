@@ -59,7 +59,7 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
         assert_eq!(result.login_identity.unwrap().alias, "mixed");
         let raw = result.body["auth"]["client_token"].as_str().unwrap();
         assert!(matches!(&state.tokens[&hash(raw)].auth_provenance,
-            Some(TokenAuthProvenance::Userpass { username }) if username == "mixed"));
+            Some(TokenAuthProvenance::Userpass { username, .. }) if username == "mixed"));
     }
     assert_eq!(
         request(

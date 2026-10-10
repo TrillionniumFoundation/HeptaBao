@@ -64,7 +64,7 @@ fn mfa129_real_service_configuration_enrollment_acl_and_encrypted_reopen_keep_st
         .ok_or("native method")?
         .to_owned();
     let current = service.state.clone().ok_or("MFA state")?;
-    assert_eq!(current.schema, IDENTITY_MFA_STATE_SCHEMA);
+    assert_eq!(current.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(current.auth.has_identity_mfa_state());
     let before =
         crate::secret_serde::to_vec(&current, 16 * 1024 * 1024).map_err(|_| "state encoding")?;
@@ -187,7 +187,7 @@ fn mfa129_real_service_configuration_enrollment_acl_and_encrypted_reopen_keep_st
     );
     assert_eq!(
         reopened.state.as_ref().ok_or("retired")?.schema,
-        IDENTITY_MFA_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }
@@ -554,8 +554,7 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     drop(service);
     let mut reopened = files.service()?;
     assert_eq!(
-        reopened
-            .handle_at("POST", "sys/unseal", "", "", json!({"key":key}), 116)
+        precise_call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key}), 116, 0)
             .status,
         200
     );
@@ -763,7 +762,7 @@ fn mfa129_native_namespace_terminal_retirement_preserves_floor_and_rejects_old_e
     // original namespace binding/terminal/history/ACK checks.
     finish_namespace_deletion_fixture(&mut service, "mfa-child", Duration::from_secs(101))?;
     let retired = service.state.clone().ok_or("terminal state")?;
-    assert_eq!(retired.schema, IDENTITY_MFA_STATE_SCHEMA);
+    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(retired.auth.has_identity_mfa_state());
     assert!(Service::validate_snapshot_protected_floor(&retired, &original).is_err());
     assert_eq!(
@@ -844,7 +843,7 @@ fn mfa129_native_namespace_terminal_retirement_preserves_floor_and_rejects_old_e
     );
     assert_eq!(
         reopened.state.as_ref().ok_or("reopened state")?.schema,
-        IDENTITY_MFA_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }
@@ -918,7 +917,12 @@ fn mfa129_actual_closed_namespace_publication_snapshot_and_reopen_preserve_refer
         let bytes = Zeroizing::new(serde_json::to_vec(&altered)?);
         let mut torn = original.clone();
         torn.auth = serde_json::from_slice(&bytes)?;
-        torn.auth.validate_identity_mfa_state(None)?;
+        // The current MAC queue reader may reject the same torn reference
+        // before successor validation. Either way both actual final gates MUST
+        // reject; do not require acceptance by an earlier, now stricter guard.
+        if let Err(error) = torn.auth.validate_identity_mfa_state(None) {
+            assert_eq!(error.status, 503);
+        }
         assert!(torn.validate_publication_schema(Some(&original)).is_err());
         assert!(Service::validate_snapshot_protected_floor(&original, &torn).is_err());
     }
@@ -932,7 +936,9 @@ fn mfa129_actual_closed_namespace_publication_snapshot_and_reopen_preserve_refer
     let bytes = Zeroizing::new(serde_json::to_vec(&fake_retirement)?);
     let mut torn = original.clone();
     torn.auth = serde_json::from_slice(&bytes)?;
-    torn.auth.validate_identity_mfa_state(Some(&original.auth))?;
+    if let Err(error) = torn.auth.validate_identity_mfa_state(Some(&original.auth)) {
+        assert_eq!(error.status, 503);
+    }
     assert!(torn.validate_format().is_err(), "a registry floor cannot manufacture native retirement");
     assert!(crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, 16 * 1024 * 1024)
         .map_err(|_| "closed state encoding")?.as_slice() == source_bytes.as_slice());
@@ -1027,7 +1033,7 @@ fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypte
     assert!(read.body["data"]["keys"].as_array().ok_or("enforcement keys")?
         .iter().any(|name| name.as_str() == Some("inert")));
     let final_state = reopened.state.as_ref().ok_or("final state")?;
-    assert_eq!(final_state.schema, IDENTITY_MFA_STATE_SCHEMA);
+    assert_eq!(final_state.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     final_state.validate_format().map_err(|_| "actual inert MFA reopened format")?;
     assert!(final_state.auth.has_identity_mfa_state());
     Ok(())
@@ -1408,6 +1414,24 @@ fn closed_janitor_call(
 ) -> Response {
     let clock = RequestClock::anchored(Duration::from_secs(seconds), Instant::now())
         .expect("synthetic original native clock");
+    // These fixture strings name an absolute namespace owner. The actual
+    // public endpoint accepts one child name relative to the native namespace
+    // header, including seal operations. Never relax the production '/' guard.
+    let relative;
+    let parent;
+    let (path, namespace) = if let Some(target) = path.strip_prefix("sys/namespaces/") {
+        let (owner, operation) = ["seal", "unseal", "seal-status"].into_iter()
+            .find_map(|operation| target.strip_suffix(&format!("/{operation}"))
+                .map(|owner| (owner, Some(operation))))
+            .unwrap_or((target, None));
+        if let Some((base, child)) = owner.rsplit_once('/') {
+            parent = if namespace.is_empty() { base.to_owned() }
+                else { format!("{namespace}/{base}") };
+            relative = operation.map_or_else(|| format!("sys/namespaces/{child}"),
+                |operation| format!("sys/namespaces/{child}/{operation}"));
+            (relative.as_str(), parent.as_str())
+        } else { (path, namespace) }
+    } else { (path, namespace) };
     service.handle_request_clock(
         ServiceRequest {
             method,
@@ -1466,12 +1490,14 @@ fn closed_janitor_fixture(
     } else {
         None
     };
-    let created = call(
+    let created = closed_janitor_call(
         &mut service,
         "POST",
         "sys/namespaces/mfa-queue-outer/child",
+        "",
         &admin,
         json!({"seal":"seal \"shamir\" { shares = 1 threshold = 1 }"}),
+        100,
     );
     assert_eq!(created.status, 200);
     let namespace_key = Zeroizing::new(
@@ -2176,16 +2202,18 @@ fn deep_closed_janitor_fixture()
         .status,
         200
     );
-    let outer = call(
+    let outer = closed_janitor_call(
         &mut service,
         "POST",
         "sys/namespaces/mfa-queue-top/outer",
+        "",
         &admin,
         if independent_outer {
             json!({"seal":"seal \"shamir\" { shares = 1 threshold = 1 }"})
         } else {
             json!({})
         },
+        100,
     );
     assert_eq!(outer.status, 200);
     let outer_key = if independent_outer {
@@ -2212,12 +2240,14 @@ fn deep_closed_janitor_fixture()
     } else {
         None
     };
-    let created = call(
+    let created = closed_janitor_call(
         &mut service,
         "POST",
         "sys/namespaces/mfa-queue-top/outer/child",
+        "",
         &admin,
         json!({"seal":"seal \"shamir\" { shares = 1 threshold = 1 }"}),
+        100,
     );
     assert_eq!(created.status, 200);
     let namespace_key = Zeroizing::new(
@@ -3248,7 +3278,7 @@ fn mfa129_fresh_distinct_native_rules_mint_once_only_after_all_requirements_and_
             .as_ref()
             .ok_or("native terminal schema")?
             .schema,
-        IDENTITY_MFA_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }
@@ -3752,5 +3782,133 @@ fn mfa129_qualified_child_method_names_and_colliding_rule_keys_keep_both_native_
     );
     assert_eq!(lookup.status, 200);
     assert_eq!(lookup.body["data"]["entity_id"], entity);
+    Ok(())
+}
+
+
+#[test]
+fn userpass132_real_native_login_renew_reopen_and_retirement_keep_initial_ttl_and_reader_floor() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    let ordinary = service.state.clone().ok_or("ordinary native state")?;
+    assert!(!ordinary.auth.has_userpass_issuance_state());
+    assert_eq!(call(&mut service, "POST", "sys/auth/initial_ttl", &admin,
+        json!({"type":"userpass"})).status, 204);
+    assert_eq!(call(&mut service, "POST", "auth/initial_ttl/users/alice", &admin,
+        json!({"password":"public-synthetic-initial-ttl","token_ttl":20,"token_max_ttl":20})).status, 204);
+    let login = call(&mut service, "POST", "auth/initial_ttl/login/alice", "",
+        json!({"password":"public-synthetic-initial-ttl"}));
+    assert_eq!(login.status, 200);
+    assert_eq!(login.body["auth"]["lease_duration"], 20);
+    let bearer = Zeroizing::new(login.body["auth"]["client_token"].as_str()
+        .filter(|s| !s.is_empty()).ok_or("real native bearer")?.to_owned());
+    let issued = service.state.clone().ok_or("issued native state")?;
+    assert_eq!(issued.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert!(issued.auth.has_userpass_issuance_state());
+    assert!(!issued.auth.has_identity_mfa_state(), "ordinary issuer is not an MFA issuer");
+    let lookup = precise_call(&mut service, "GET", "auth/token/lookup-self", &bearer, json!({}), 100, 0);
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["creation_ttl"], 20);
+    let renewal = precise_call(&mut service, "POST", "auth/token/renew-self", &bearer,
+        json!({"increment":5}), 101, 0);
+    assert_eq!(renewal.status, 200);
+    assert_eq!(renewal.body["auth"]["lease_duration"], 5);
+    assert_eq!(precise_call(&mut service, "POST", "auth/initial_ttl/users/alice", &admin,
+        json!({"token_ttl":10}), 102, 0).status, 204);
+    let renewal = precise_call(&mut service, "POST", "auth/token/renew-self", &bearer,
+        json!({"increment":5}), 103, 0);
+    assert_eq!(renewal.status, 200);
+    assert_eq!(renewal.body["auth"]["lease_duration"], 5);
+    let lookup = precise_call(&mut service, "GET", "auth/token/lookup-self", &bearer, json!({}), 103, 0);
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["creation_ttl"], 20);
+    drop(service);
+    let mut reopened = files.service()?;
+    assert_eq!(precise_call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key}), 104, 0).status, 200);
+    let lookup = precise_call(&mut reopened, "GET", "auth/token/lookup-self", &bearer, json!({}), 104, 0);
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["creation_ttl"], 20);
+    let current = reopened.state.clone().ok_or("encrypted reopened native owner")?;
+    current.validate_format().map_err(|_| "native132 format")?;
+    let auth_bytes = Zeroizing::new(serde_json::to_vec(&*current.auth)?);
+    let auth: Value = serde_json::from_slice(&auth_bytes)?;
+    let token_id = auth["tokens"].as_object().ok_or("native token map")?.iter()
+        .find(|(_, value)| value["auth_provenance"]["kind"] == "userpass")
+        .map(|(id, _)| id.clone()).ok_or("native Userpass stored issuer")?;
+    for mutation in ["floor", "grant", "both"] {
+        let mut altered = auth.clone();
+        if mutation != "grant" { altered.as_object_mut().ok_or("auth owner")?.remove("userpass_issuance_floor"); }
+        if mutation != "floor" { altered["tokens"][&token_id]["auth_provenance"].as_object_mut()
+            .ok_or("actual Userpass provenance")?.remove("issued_creation_ttl"); }
+        let bytes = Zeroizing::new(serde_json::to_vec(&altered)?);
+        let mut torn = current.clone();
+        torn.auth = serde_json::from_slice(&bytes)?;
+        assert!(torn.validate_publication_schema(Some(&current)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&current, &torn).is_err());
+        if mutation == "floor" || mutation == "both" { assert!(torn.validate_format().is_err()); }
+    }
+    let mut lower = current.clone();
+    lower.schema = 131;
+    assert!(lower.validate_format().is_err());
+    assert!(lower.validate_publication_schema(Some(&current)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&current, &lower).is_err());
+    assert_eq!(precise_call(&mut reopened, "POST", "auth/token/revoke-self", &bearer, json!({}), 104, 0).status, 204);
+    let retired = reopened.state.clone().ok_or("retired native issuer")?;
+    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert!(retired.auth.has_userpass_issuance_state());
+    assert!(Service::validate_snapshot_protected_floor(&retired, &ordinary).is_err());
+    let bytes = Zeroizing::new(serde_json::to_vec(&*retired.auth)?);
+    let mut altered: Value = serde_json::from_slice(&bytes)?;
+    altered.as_object_mut().ok_or("retired auth owner")?.remove("userpass_issuance_floor");
+    let bytes = Zeroizing::new(serde_json::to_vec(&altered)?);
+    let mut erased = retired.clone();
+    erased.auth = serde_json::from_slice(&bytes)?;
+    assert!(erased.validate_format().is_err());
+    assert!(erased.validate_publication_schema(Some(&retired)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&retired, &erased).is_err());
+    Ok(())
+}
+
+#[test]
+fn userpass132_real_resigned_mfa_unissued_grant_cannot_claim_a_captured_initial_ttl() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    assert_eq!(call(&mut service, "POST", "sys/auth/mfa_userpass", &admin,
+        json!({"type":"userpass"})).status, 204);
+    assert_eq!(call(&mut service, "POST", "auth/mfa_userpass/users/alice", &admin,
+        json!({"password":"public-synthetic-mfa-test","token_ttl":20,"token_max_ttl":20})).status, 204);
+    let created = call(&mut service, "POST", "identity/mfa/method/totp", &admin,
+        json!({"issuer":"public-unissued-shape","qr_size":0}));
+    assert_eq!(created.status, 200);
+    let method = created.body["data"]["method_id"].as_str()
+        .ok_or("real native method")?.to_owned();
+    assert_eq!(call(&mut service, "POST", "identity/mfa/login-enforcement/unissued", &admin,
+        json!({"auth_method_types":["userpass"],"mfa_method_ids":[method]})).status, 204);
+    let before_tokens = token_count(&service)?;
+    let request = mfa_challenge(&mut service, 100, 0)?;
+    assert_eq!(token_count(&service)?, before_tokens, "genuine first factor mints no bearer");
+    let original = service.state.clone().ok_or("actual native pending challenge")?;
+    assert_eq!(original.schema, IDENTITY_MFA_STATE_SCHEMA);
+    assert!(!original.auth.has_userpass_issuance_state());
+    original.validate_format().map_err(|_| "actual unissued reader")?;
+    let before = Zeroizing::new(crate::secret_serde::to_vec(&original, 16 * 1024 * 1024)
+        .map_err(|_| "original pending encoding")?);
+    let mut impossible = original.clone();
+    impossible.auth.test_resign_mfa_pending_grant_with_claimed_ttl("", &request, 20)?;
+    assert!(!impossible.auth.has_userpass_issuance_state(),
+        "an impossible pending fact cannot mint a token or latch final floor132");
+    let rejected = impossible.auth.validate_identity_mfa_state(None)
+        .err().ok_or("strict pending shape must reject a genuinely resigned claim")?;
+    assert_eq!(rejected.status, 503);
+    assert_eq!(rejected.message, "MFA private grant has no native unissued userpass owner");
+    assert!(impossible.validate_format().is_err());
+    assert!(impossible.validate_publication_schema(Some(&original)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&original, &impossible).is_err());
+    assert_eq!(token_count(&service)?, before_tokens);
+    let after = Zeroizing::new(crate::secret_serde::to_vec(service.state.as_ref().ok_or("same native state")?,
+        16 * 1024 * 1024).map_err(|_| "same pending encoding")?);
+    assert_eq!(before.as_slice(), after.as_slice(), "counterexample never enters the genuine owner");
     Ok(())
 }

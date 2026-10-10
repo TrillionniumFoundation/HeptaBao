@@ -59,6 +59,7 @@ impl NamespaceAssets {
             }
         }
         for token in self.tokens.values() {
+            token.validate_userpass_creation_ttl()?;
             token.validate_public_origin()?;
         }
         Ok(())
@@ -289,6 +290,10 @@ impl AuthState {
             && assets.tokens.values().any(Token::has_public_origin)
         {
             return Err(err(503, "namespace public origin floor is missing"));
+        }
+        if self.userpass_issuance_floor.is_none()
+            && assets.tokens.values().any(Token::has_userpass_creation_ttl) {
+            return Err(err(503, "namespace Userpass issuance floor is missing"));
         }
         // Complete collision checks precede every mutation, so a rejected
         // parcel cannot partially replace tokens, policies or auth providers.

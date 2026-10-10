@@ -25,7 +25,7 @@ fn exact_claim_alternatives_preserve_types_and_scalar_number_coercion() {
         (json!(42.9), json!(42.9), false),
         (json!(42.0), json!(42), false),
         (serde_json::from_str("42e0").unwrap(), json!(42), false),
-        (serde_json::from_str("-0").unwrap(), json!(0), false),
+        (crate::auth::parse_strict_json(b"-0").unwrap(), json!(0), false),
         (json!(0), json!(-0.0), true),
         (json!(42), json!("42"), false),
         (json!(42), json!([42]), false),

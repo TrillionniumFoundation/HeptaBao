@@ -14,6 +14,8 @@ enum Wire {
     },
     Userpass {
         username: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        issued_creation_ttl: Option<u64>,
     },
     AppRole {
         role_name: String,
@@ -88,7 +90,7 @@ impl<'de> Deserialize<'de> for TokenAuthProvenance {
                 issued_metadata,
                 issued_creation_ttl,
             },
-            Wire::Userpass { username } => Self::Userpass { username },
+            Wire::Userpass { username, issued_creation_ttl } => Self::Userpass { username, issued_creation_ttl },
             Wire::AppRole {
                 role_name,
                 issued_metadata,

@@ -161,6 +161,7 @@ mod mfa;
 mod mfa_janitor;
 pub(crate) use mfa_janitor::start_mfa_janitor_worker;
 const WORKFLOW_INPUT_STATE_SCHEMA: u32 = 131;
+const USERPASS_ISSUANCE_STATE_SCHEMA: u32 = crate::auth::userpass_creation_ttl::STATE_SCHEMA;
 const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
@@ -169,7 +170,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = WORKFLOW_INPUT_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = USERPASS_ISSUANCE_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -225,6 +226,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | TRANSIT_CACHE_STATE_SCHEMA
                 | IDENTITY_MFA_STATE_SCHEMA
                 | WORKFLOW_INPUT_STATE_SCHEMA
+                | USERPASS_ISSUANCE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
 }
@@ -4456,6 +4458,7 @@ impl Service {
                         || admitted.engines.has_transit_derived_ed_state()
             || admitted.engines.has_kv2_lossless_state()
             || admitted.auth.has_identity_mfa_state()
+            || admitted.auth.has_userpass_issuance_state()
         {
             admitted.schema = admitted.writer_schema();
         }

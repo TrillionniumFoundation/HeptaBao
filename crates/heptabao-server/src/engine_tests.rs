@@ -1014,7 +1014,7 @@ fn transit_sign_verify_hmac_and_hash_use_real_crypto() -> TestResult {
 #[test]
 fn transit_hmac_key_size_matches_actual_openbao270_creation_boundaries() -> TestResult {
     let mut state = EngineState::default();
-    request(&mut state, "", "POST", "sys/mounts/transit", json!({"type":"transit"}), 1)?;
+    // The native EngineState fixture already owns its transit mount.
     for (name, body, status) in [
         ("missing", json!({"type":"hmac"}), 500),
         ("null", json!({"type":"hmac","key_size":null}), 500),
@@ -1055,7 +1055,13 @@ fn transit_hmac_matches_rfc4231_test_case_1() -> TestResult {
     )?;
     let mut serialized = serde_json::to_value(&state)?;
     serialized["namespaces"][""]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["rfc"]["versions"]
-        ["1"]["hmac_material"] = json!(BASE64.encode([0x0b; 20]));
+        ["1"]["material"] = {
+            // Native HMAC keys use primary material and require at least 32
+            // bytes. Zero padding the 20-byte RFC key preserves its HMAC value.
+            let mut key = [0_u8; 32];
+            key[..20].fill(0x0b);
+            json!(BASE64.encode(key))
+        };
     let mut state: EngineState = serde_json::from_value(serialized)?;
     let hmac = request(
         &mut state,
@@ -1090,7 +1096,11 @@ fn transit_supports_openbao_hash_and_hmac_algorithm_matrix() -> TestResult {
     )?;
     let mut serialized = serde_json::to_value(&state)?;
     serialized["namespaces"][""]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["algorithm-matrix"]
-        ["versions"]["1"]["hmac_material"] = json!(BASE64.encode([0x0b; 20]));
+        ["versions"]["1"]["material"] = {
+            let mut key = [0_u8; 32];
+            key[..20].fill(0x0b);
+            json!(BASE64.encode(key))
+        };
     let mut state: EngineState = serde_json::from_value(serialized)?;
     let input = BASE64.encode(b"Hi There");
     let cases = [

@@ -196,37 +196,73 @@ impl ProcessRaftNode {
         let requested = before
             .applied_index
             .ok_or(RemoteRaftError::InvalidTopology)?;
-        self.trigger_snapshot().await?;
-        self.raft
-            .wait(Some(Duration::from_secs(4)))
-            .metrics(
-                |m| m.snapshot.as_ref().is_some_and(|s| s.index >= requested),
-                "durable snapshot frontier",
-            )
+        // The maintained trigger only queues a build when none is in flight.
+        // A busy build can cover an older prefix, so re-arm maintenance within
+        // one fixed budget. Neither the required frontier nor that budget moves.
+        let started = std::time::Instant::now();
+        let deadline = super::read_deadline::current()
+            .map_or(started + Duration::from_secs(4), |outer| {
+                outer.min(started + Duration::from_secs(4))
+            });
+        let observation = async {
+            loop {
+                let remaining = deadline.saturating_duration_since(std::time::Instant::now());
+                if remaining.is_zero() {
+                    return Err(RemoteRaftError::Consensus(
+                        "snapshot completion unobserved".into(),
+                    ));
+                }
+                self.trigger_snapshot().await?;
+                #[cfg(test)]
+                self.state_machine.note_snapshot_observation_trigger();
+                match self
+                    .raft
+                    .wait(Some(remaining.min(Duration::from_millis(50))))
+                    .metrics(
+                        |m| m.snapshot.as_ref().is_some_and(|s| s.index >= requested),
+                        "durable snapshot frontier",
+                    )
+                    .await
+                {
+                    Ok(_) => break,
+                    Err(openraft::metrics::WaitError::Timeout(_, _)) => {
+                        // Only a wait slice may re-arm a maintenance snapshot.
+                        // Unhealthy/shutdown nodes never become success by retry.
+                        self.membership_observation().await?;
+                    }
+                    Err(openraft::metrics::WaitError::ShuttingDown) => {
+                        return Err(RemoteRaftError::Consensus(
+                            "snapshot completion unobserved".into(),
+                        ));
+                    }
+                }
+            }
+            let mut state = self.state_machine.clone();
+            let snapshot = state
+                .get_current_snapshot()
+                .await
+                .map_err(|_| RemoteRaftError::Io("snapshot readback failed".into()))?
+                .ok_or(RemoteRaftError::InvalidTopology)?;
+            let persisted = snapshot
+                .meta
+                .last_log_id
+                .as_ref()
+                .map(|l| l.index)
+                .ok_or(RemoteRaftError::InvalidTopology)?;
+            if persisted < requested {
+                return Err(RemoteRaftError::InvalidTopology);
+            }
+            let data = snapshot.snapshot.into_inner();
+            use sha2::{Digest, Sha256};
+            Ok(SnapshotObservation {
+                requested_index: requested,
+                persisted_index: persisted,
+                byte_count: data.len(),
+                sha256: Sha256::digest(&data).into(),
+            })
+        };
+        tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), observation)
             .await
-            .map_err(|_| RemoteRaftError::Consensus("snapshot completion unobserved".into()))?;
-        let mut state = self.state_machine.clone();
-        let snapshot = state
-            .get_current_snapshot()
-            .await
-            .map_err(|_| RemoteRaftError::Io("snapshot readback failed".into()))?
-            .ok_or(RemoteRaftError::InvalidTopology)?;
-        let persisted = snapshot
-            .meta
-            .last_log_id
-            .as_ref()
-            .map(|l| l.index)
-            .ok_or(RemoteRaftError::InvalidTopology)?;
-        if persisted < requested {
-            return Err(RemoteRaftError::InvalidTopology);
-        }
-        let data = snapshot.snapshot.into_inner();
-        use sha2::{Digest, Sha256};
-        Ok(SnapshotObservation {
-            requested_index: requested,
-            persisted_index: persisted,
-            byte_count: data.len(),
-            sha256: Sha256::digest(&data).into(),
-        })
+            .map_err(|_| RemoteRaftError::Consensus("snapshot completion unobserved".into()))?
     }
 }

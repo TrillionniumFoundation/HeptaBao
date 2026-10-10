@@ -371,10 +371,14 @@ fn headers(value: &Value) -> Result<Value, Response> {
     }
     // These are logical values, not raw HTTP lines. Preserve the SDK's data,
     // including CRLF strings; actual ingress and any consumer wire gate remain.
-    let result = serde_json::to_value(&frame.headers).map_err(|_| invalid())?;
-    let mut bytes = 0;
-    bounded_json(&result, 0, &mut bytes).map_err(bad_profile)?;
-    Ok(result)
+    frame.validate().map_err(bad_profile)?;
+    let mut result = crate::http::ocsp::CarrierBody(
+        serde_json::to_value(&frame.headers).map_err(|_| invalid())?);
+    let encoded = Zeroizing::new(serde_json::to_vec(&result.0).map_err(|_| invalid())?);
+    if encoded.len() > MAX_STEP_BODY_BYTES {
+        return Err(bad_profile("workflow logical headers exceed the encoded byte bound"));
+    }
+    Ok(std::mem::take(&mut result.0))
 }
 
 #[derive(Clone, Copy)]

@@ -251,6 +251,9 @@ impl State {
             || self.auth.has_control_group_logical_data() {
             required.max(WORKFLOW_INPUT_STATE_SCHEMA)
         } else { required };
+        let required = if self.auth.has_userpass_issuance_state() {
+            required.max(USERPASS_ISSUANCE_STATE_SCHEMA)
+        } else { required };
         self.schema.max(required)
     }
 
@@ -259,6 +262,13 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
+        self.auth.validate_userpass_issuance_state(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA
+            && (self.auth.has_userpass_issuance_state()
+                || previous.is_some_and(|state| state.schema >= USERPASS_ISSUANCE_STATE_SCHEMA)) {
+            return Err(Response::error(503, "native Userpass issuance requires schema 132"));
+        }
         self.engines.validate_transit_cache_state(previous.map(|state| &*state.engines))
             .map_err(Response::from_engine_error)?;
         if self.schema < TRANSIT_CACHE_STATE_SCHEMA
@@ -1210,6 +1220,12 @@ impl State {
         self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth.validate_userpass_issuance_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA && self.auth.has_userpass_issuance_state()
+            || self.schema == USERPASS_ISSUANCE_STATE_SCHEMA && !self.auth.has_userpass_issuance_state() {
+            return Err(Response::error(503, "native Userpass issuance reader marker requires schema 132"));
+        }
         self.auth.validate_identity_mfa_state(None).map_err(|error|Response::error(503,&error.message))?;
         self.auth.validate_identity_mfa_bindings(&self.cluster_id,
             |namespace|self.namespaces.mfa_scope(namespace),
@@ -2325,6 +2341,7 @@ impl State {
             | TRANSIT_CACHE_STATE_SCHEMA
             | IDENTITY_MFA_STATE_SCHEMA
             | WORKFLOW_INPUT_STATE_SCHEMA
+            | USERPASS_ISSUANCE_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA

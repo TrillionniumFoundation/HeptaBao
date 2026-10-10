@@ -67,7 +67,7 @@ fn userpass_no_default_presence_requires39_and_legacy_unknown_survives_read_and_
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     Ok(())
 }
