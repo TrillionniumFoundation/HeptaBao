@@ -779,7 +779,7 @@ fn workflow128_active_and_retired_reader_floor_survives_actual_commit_and_reopen
     for schema in [
         WORKFLOW_PROFILE_STATE_SCHEMA,
         WORKFLOW_EXPRESSION_STATE_SCHEMA,
-        TRANSIT_DERIVATION_STATE_SCHEMA,
+        TRANSIT_DERIVED_ED_STATE_SCHEMA,
     ] {
         let mut downgrade = current.clone();
         downgrade.schema = schema;
@@ -818,7 +818,7 @@ fn workflow128_active_and_retired_reader_floor_survives_actual_commit_and_reopen
         original_workflows
     );
     let mut stale = retired.clone();
-    stale.schema = TRANSIT_DERIVATION_STATE_SCHEMA;
+    stale.schema = TRANSIT_DERIVED_ED_STATE_SCHEMA;
     assert!(stale.validate_publication_schema(Some(&retired)).is_err());
     assert!(Service::validate_snapshot_protected_floor(&retired, &stale).is_err());
     f = restart(f, 100)?;
