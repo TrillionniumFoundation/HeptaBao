@@ -1336,6 +1336,7 @@ pub struct Service {
     openbao_wrapper_owner: Option<openbao_wrapper::ServiceWrapperOwner>,
     openbao_wrapper_generation: u64,
     outbound: crate::outbound::Outbound,
+    sanitized_configuration: Option<Value>,
     database_cursor: Option<(String, String, String)>,
     database_rotation_cursor: Option<(String, String, String)>,
     database_in_flight: database::DatabaseFlights,
@@ -1506,6 +1507,22 @@ impl Service {
             return Err("fixture opaque-owner limit must be 1 MiB through 16 MiB".into());
         }
         self.opaque_owner_capacity = limit;
+        Ok(())
+    }
+
+    // The only caller is the trusted server bootstrap. This is a projection,
+    // NOT a persisted copy of the original HCL, key files or provider secrets.
+    pub(crate) fn install_sanitized_configuration(
+        &mut self,
+        configuration: Value,
+    ) -> Result<(), String> {
+        if self.state.is_some()
+            || self.sanitized_configuration.is_some()
+            || !configuration.is_object()
+        {
+            return Err("sanitized configuration can only be installed at bootstrap".into());
+        }
+        self.sanitized_configuration = Some(configuration);
         Ok(())
     }
 
@@ -1752,6 +1769,7 @@ impl Service {
             openbao_wrapper_owner: None,
             openbao_wrapper_generation: 0,
             outbound: crate::outbound::Outbound::default(),
+            sanitized_configuration: None,
             database_cursor: None,
             database_rotation_cursor: None,
             database_in_flight: database::DatabaseFlights::default(),
@@ -4158,6 +4176,25 @@ impl Service {
             }
         } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0) {
             Response::error(400, "endpoint requires response wrapping to be used")
+        } else if path == "sys/config/state/sanitized" {
+            // The process-owned server configuration is never a logical KV
+            // value. Its read is still gated by the original namespace,
+            // authenticated request policy, HA admission and response audit.
+            if method != "GET" {
+                Response::error(405, "sanitized configuration supports GET only")
+            } else if let Some(actor) = principal.as_ref() {
+                match transaction.auth.authorize_request(
+                    actor, namespace, path, "read", now
+                ) {
+                    Ok(()) => match self.sanitized_configuration.as_ref() {
+                        Some(safe) => Response::ok(json!({"data": safe})),
+                        None => Response::error(503, "server configuration not installed"),
+                    },
+                    Err(error) => Response::error(error.status, &error.message),
+                }
+            } else {
+                Response::error(403, "missing client token")
+            }
         } else if let Some(authority) = ordinary_kv_authority.as_ref() {
             Self::dispatch_authorized_subrequest(
                 &mut transaction,
@@ -10052,6 +10089,10 @@ mod kerberos_schema_tests;
 #[cfg(test)]
 #[path = "service_secret_delivery_tests.rs"]
 mod secret_delivery_tests;
+
+#[cfg(test)]
+#[path = "service_sanitized_config_tests.rs"]
+mod sanitized_config_tests;
 
 #[cfg(test)]
 #[path = "service_token_number_tests.rs"]

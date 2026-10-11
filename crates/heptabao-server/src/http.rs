@@ -31,6 +31,8 @@ mod h2_transport;
 mod api_alpn_tests;
 #[path = "http_logical.rs"]
 mod logical;
+#[path = "http_sanitized_config.rs"]
+mod sanitized_config;
 use zeroize::{Zeroize, Zeroizing};
 
 #[path = "http_help.rs"]
@@ -301,6 +303,8 @@ fn serve_inner(
     >,
 ) -> Result<(), String> {
     crate::configuration::validate_storage_runtime(&config, ha.is_some())?;
+    // Only an allowlisted projection survives the ownership transfer below.
+    let sanitized_configuration = sanitized_config::project(&config);
     if let Some(ha) = ha.as_ref() {
         let consumer = ha.lock().map_err(|_| "HA process lock is unavailable")?;
         crate::configuration::validate_storage_running(&config, &consumer)?;
@@ -421,6 +425,7 @@ fn serve_inner(
     let wrapper_launch = {
         let mut service = service.lock().map_err(|_| "service lock unavailable")?;
         service.install_recovery_listener_policy(config.disable_unauthed_rekey_endpoints)?;
+        service.install_sanitized_configuration(sanitized_configuration)?;
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         {
             service.native_restore_fault = fixture;
