@@ -644,15 +644,19 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
         .status,
         200
     );
+    // Preserve the captured monotonic origin across reopen. A fresh origin
+    // can regress the durable MFA clock under parallel test execution.
+    let reopened_clock =
+        RequestClock::anchored(Duration::new(116, 0), first_attempt_clock.started())
+            .map_err(|_| "original reopened validate clock")?;
     assert_eq!(
-        precise_call(
+        precise_call_clock(
             &mut reopened,
             "POST",
             "sys/mfa/validate",
             "",
             json!({"mfa_request_id":request,"mfa_payload":{second.clone():[first_code.as_str()]}}),
-            116,
-            0
+            reopened_clock
         )
         .status,
         403,
@@ -661,10 +665,13 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     let next_code = Zeroizing::new(
         crate::engines::rfc6238_code(&second_secret, "SHA1", 6, 12).map_err(|_| "native TOTP")?,
     );
-    // Both requests advance from this original fixture clock. Re-anchoring
-    // validate at the same wall value would regress the captured challenge.
-    let rollover_clock = RequestClock::anchored(Duration::new(120, 100_000_000), Instant::now())
-        .map_err(|_| "original rollover clock")?;
+    // Keep the monotonic origin identical for challenge and validation,
+    // including after encrypted reopen and counter rollover.
+    let rollover_clock = RequestClock::anchored(
+        Duration::new(120, 100_000_000),
+        first_attempt_clock.started(),
+    )
+    .map_err(|_| "original rollover clock")?;
     let fresh = mfa_challenge_clock(&mut reopened, rollover_clock)?;
     assert_eq!(
         precise_call_clock(
@@ -679,9 +686,11 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
         403,
         "counter rollover alone cannot reset fixed attempt window"
     );
-    let expired_window_clock =
-        RequestClock::anchored(Duration::new(124, 600_000_000), Instant::now())
-            .map_err(|_| "original expired-window clock")?;
+    let expired_window_clock = RequestClock::anchored(
+        Duration::new(124, 600_000_000),
+        first_attempt_clock.started(),
+    )
+    .map_err(|_| "original expired-window clock")?;
     let fresh = mfa_challenge_clock(&mut reopened, expired_window_clock)?;
     let accepted = precise_call_clock(
         &mut reopened,
