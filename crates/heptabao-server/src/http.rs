@@ -1331,6 +1331,34 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     read_request_mode(reader, timeout, false)
 }
 
+// The parser can reject an otherwise well-framed body before reading it.
+// Writing 413 with TLS plaintext still pending can cause the peer to observe
+// a truncated response when the connection closes. Drain only a small,
+// authenticated-independent window; never parse rejected bytes or allocate
+// the caller-advertised length. Requests larger than this fixed budget remain
+// fail-closed and may have no reliably delivered response.
+const MAX_413_DRAIN_BODY_BYTES: usize = 1024 * 1024;
+
+fn drain_bounded_413_body(
+    reader: &mut impl Read,
+    declared: usize,
+    received: usize,
+    start: Instant,
+    timeout: Duration,
+) {
+    if declared <= MAX_BODY || declared > MAX_413_DRAIN_BODY_BYTES || received > declared {
+        return;
+    }
+    let mut remaining = declared - received;
+    let mut buffer = Zeroizing::new([0_u8; 4096]);
+    while remaining != 0 && start.elapsed() < timeout {
+        match reader.read(&mut buffer[..remaining.min(4096)]) {
+            Ok(0) | Err(_) => break,
+            Ok(count) => remaining -= count,
+        }
+    }
+}
+
 // Only discard an unambiguous, already bounded ordinary body. This operation
 // has no JSON decoding, credentials, storage owner or authority to execute.
 fn discard_rejected_consistency_body(
@@ -1734,6 +1762,16 @@ fn read_request_with_ui(
         MAX_BODY
     };
     if length > maximum_body {
+        if !native_snapshot && !map.contains_key("transfer-encoding") && !map.contains_key("expect")
+        {
+            drain_bounded_413_body(
+                reader,
+                length,
+                bytes.len().saturating_sub(header_end),
+                start,
+                timeout,
+            );
+        }
         return Err(ParseError {
             status: 413,
             message: "request body exceeds limit",
@@ -3038,6 +3076,46 @@ mod tests {
         assert_eq!(body.0["list"], "true");
         assert!(body.0.get("help").is_none());
         Ok(())
+    }
+
+    #[test]
+    fn oversized_json_413_drains_only_bounded_unambiguous_framing() {
+        for count in [MAX_BODY + 1, MAX_BODY + 64 * 1024, MAX_413_DRAIN_BODY_BYTES] {
+            let mut wire = format!(
+                "POST /v1/secret/data/denied HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {count}\r\n\r\n"
+            )
+            .into_bytes();
+            wire.extend(std::iter::repeat_n(b'x', count));
+            let mut reader = wire.as_slice();
+            let err = read_request_mode(&mut reader, Duration::from_secs(3), false)
+                .err()
+                .expect("oversized body must not enter service");
+            assert_eq!(err.status, 413);
+            assert!(
+                reader.is_empty(),
+                "bounded body must be consumed before 413"
+            );
+        }
+        let count = MAX_413_DRAIN_BODY_BYTES + 1;
+        let mut wire = format!(
+            "POST /v1/secret/data/denied HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {count}\r\n\r\n"
+        ).into_bytes();
+        wire.extend(std::iter::repeat_n(b'x', count));
+        let mut reader = wire.as_slice();
+        let err = read_request_mode(&mut reader, Duration::from_secs(3), false)
+            .err()
+            .expect("oversized body must be rejected");
+        assert_eq!(err.status, 413);
+        assert!(!reader.is_empty(), "large bodies must not be fully drained");
+
+        // A malformed framing claim is never an instruction to swallow bytes.
+        let mut invalid = b"POST /v1/secret/data/denied HTTP/1.1\r\nHost: localhost\r\nContent-Length: 400000\r\nTransfer-Encoding: chunked\r\n\r\nbody".as_slice();
+        let error = read_request_mode(&mut invalid, Duration::from_secs(1), false)
+            .err()
+            .expect("ambiguous framing rejected");
+        assert_eq!(error.status, 400);
+        // The bounded header read may already contain the short trailing body.
+        // The framing itself must be rejected before parsing any JSON.
     }
 
     #[test]
