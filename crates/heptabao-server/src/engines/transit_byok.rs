@@ -56,7 +56,10 @@ pub(super) struct ImportPolicy {
 }
 
 pub(super) fn ecdh_import_policy() -> ImportPolicy {
-    ImportPolicy { allow_rotation: false, imported_key: true }
+    ImportPolicy {
+        allow_rotation: false,
+        imported_key: true,
+    }
 }
 
 pub(super) fn rotation_allowed(key: &Key) -> Result<()> {
@@ -147,7 +150,8 @@ impl Transit {
                 .versions
                 .values()
                 .any(|version| version.public_key_only.is_some())
-                && (key.byok.is_none() || !(mldsa::is_kind(&key.kind) || asymmetric_byok::is_kind(&key.kind)))
+                && (key.byok.is_none()
+                    || !(mldsa::is_kind(&key.kind) || asymmetric_byok::is_kind(&key.kind)))
             {
                 return Err(bad("public-only versions require an imported ML-DSA owner"));
             }
@@ -163,7 +167,9 @@ impl Transit {
                     target_length(&key.kind)?
                 };
                 if (!mldsa_key && self.wrapping_key.is_none())
-                    || (key.derived && (mldsa_key || (!key.legacy_counter_kdf && key.backup_metadata.is_none())))
+                    || (key.derived
+                        && (mldsa_key
+                            || (!key.legacy_counter_kdf && key.backup_metadata.is_none())))
                     || key.convergent_encryption
                     || key.convergent_write_min_version != 0
                     || (!policy.imported_key && !policy.allow_rotation)
@@ -278,9 +284,12 @@ impl Transit {
         target_length(kind)?;
         let derived = optional_bool(body, "derived")?.unwrap_or(false);
         if derived && (body.get("context").is_none() || decode_field(body, "context")?.is_empty()) {
-            return Err(bad("missing 'context' for key derivation; the key was created using a derived key, which means additional, per-request information must be included in order to perform operations with the key"));
+            return Err(bad(
+                "missing 'context' for key derivation; the key was created using a derived key, which means additional, per-request information must be included in order to perform operations with the key",
+            ));
         }
-        let allow_plaintext_backup = optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
+        let allow_plaintext_backup =
+            optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
         let allow_rotation = optional_bool(body, "allow_rotation")?.unwrap_or(false);
         let period = auto_rotate_period(body.get("auto_rotate_period"))?;
         if period != 0 && !allow_rotation {
@@ -472,16 +481,27 @@ impl Transit {
         let mut imported = self.mldsa_imported_version(body, &key.kind, now)?;
         let private = imported.public_key_only.is_none();
         let matching_latest = if explicit.is_none() && private {
-            if let Some(public) = key.versions.get(&key.latest_version)
+            if let Some(public) = key
+                .versions
+                .get(&key.latest_version)
                 .and_then(|version| version.public_key_only.as_ref())
             {
-                let actual = mldsa::export_standard(&key.kind,
-                    &stored_material(&imported.material)?, true, "der")?;
-                let actual = BASE64.decode(actual.as_bytes())
+                let actual = mldsa::export_standard(
+                    &key.kind,
+                    &stored_material(&imported.material)?,
+                    true,
+                    "der",
+                )?;
+                let actual = BASE64
+                    .decode(actual.as_bytes())
                     .map_err(|_| bad("invalid derived ML-DSA public key"))?;
                 actual.as_slice() == stored_material(public)?.as_slice()
-            } else { false }
-        } else { false };
+            } else {
+                false
+            }
+        } else {
+            false
+        };
         let destination = explicit.or_else(|| matching_latest.then_some(key.latest_version));
         let (number, append) = if let Some(number) = destination {
             let existing = key
@@ -538,12 +558,14 @@ impl Transit {
     }
 }
 
-
 const MAX_STANDARD_ENVELOPE_BASE64: usize = 11_616;
 
 pub(super) fn rotation_allowed_named(key: &Key, name: &str) -> Result<()> {
     if asymmetric_byok::is_kind(&key.kind)
-        && key.byok.as_ref().is_some_and(|policy| !policy.allow_rotation)
+        && key
+            .byok
+            .as_ref()
+            .is_some_and(|policy| !policy.allow_rotation)
     {
         return Err(openbao_compatibility_error(&format!(
             "imported key {name} does not allow rotation within Vault"
@@ -553,7 +575,9 @@ pub(super) fn rotation_allowed_named(key: &Key, name: &str) -> Result<()> {
 }
 
 fn validate_standard_imported_key(key: &Key, policy: &ImportPolicy) -> Result<()> {
-    if key.derived || key.convergent_encryption || key.convergent_write_min_version != 0
+    if key.derived
+        || key.convergent_encryption
+        || key.convergent_write_min_version != 0
         || (!policy.imported_key && !policy.allow_rotation)
         || (!policy.allow_rotation && key.auto_rotate_period != 0)
         || key.versions.is_empty()
@@ -597,21 +621,31 @@ fn standard_explicit_version(body: &Value) -> Result<Option<u64>> {
 
 impl Transit {
     pub(in crate::engines) fn has_standard_asymmetric_import_state(&self) -> bool {
-        self.keys.values().any(|key| asymmetric_byok::is_kind(&key.kind) && key.byok.is_some())
+        self.keys
+            .values()
+            .any(|key| asymmetric_byok::is_kind(&key.kind) && key.byok.is_some())
     }
 
     fn standard_imported_version(&self, body: &Value, kind: &str, now: u64) -> Result<KeyVersion> {
         if let Some(value) = body.get("ciphertext") {
-            let value = value.as_str().ok_or_else(|| bad("ciphertext must be a string"))?;
+            let value = value
+                .as_str()
+                .ok_or_else(|| bad("ciphertext must be a string"))?;
             if value.len() > MAX_STANDARD_ENVELOPE_BASE64 {
                 return Err(error(500, "wrapped key material is invalid"));
             }
-            let ciphertext = BASE64.decode(value).map(Zeroizing::new)
+            let ciphertext = BASE64
+                .decode(value)
+                .map(Zeroizing::new)
                 .map_err(|_| error(500, "wrapped key material is invalid"))?;
-            let private = self.wrapping_key.as_ref()
-                .ok_or_else(|| error(500, "wrapping key is unavailable"))?.private()?;
-            let pkcs8 = envelope::unwrap_standard_pkcs8_envelope(&private, &ciphertext, digest(body)?)
-                .map_err(|_| error(500, "wrapped key material is invalid"))?;
+            let private = self
+                .wrapping_key
+                .as_ref()
+                .ok_or_else(|| error(500, "wrapping key is unavailable"))?
+                .private()?;
+            let pkcs8 =
+                envelope::unwrap_standard_pkcs8_envelope(&private, &ciphertext, digest(body)?)
+                    .map_err(|_| error(500, "wrapped key material is invalid"))?;
             return imported_version(asymmetric_byok::import_private(kind, &pkcs8)?, now);
         }
         let der = asymmetric_byok::import_public_pem(kind, string(body, "public_key")?)?;
@@ -626,9 +660,13 @@ impl Transit {
         })
     }
 
-    fn import_standard_asymmetric(&mut self, name: &str, kind: &str, body: &Value, now: u64)
-        -> Result<EngineResponse>
-    {
+    fn import_standard_asymmetric(
+        &mut self,
+        name: &str,
+        kind: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
         if optional_bool(body, "derived")?.unwrap_or(false) {
             return Err(error(501, "derived key imports are not implemented"));
         }
@@ -644,47 +682,83 @@ impl Transit {
         }
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
         let version = self.standard_imported_version(body, kind, now)?;
-        self.keys.insert(name.into(), Key {
-            kind: kind.into(), derived: false, legacy_counter_kdf: false, allow_plaintext_backup: false,
-            backup_metadata: None, convergent_encryption: false,
-            convergent_write_min_version: 0, latest_version: 1, min_decryption_version: 1,
-            min_encryption_version: 0, deletion_allowed: false, exportable,
-            auto_rotate_period: period, deleted: false,
-            versions: BTreeMap::from([(1, version)]),
-            byok: Some(ImportPolicy { allow_rotation, imported_key: true }),
-        });
+        self.keys.insert(
+            name.into(),
+            Key {
+                kind: kind.into(),
+                derived: false,
+                legacy_counter_kdf: false,
+                allow_plaintext_backup: false,
+                backup_metadata: None,
+                convergent_encryption: false,
+                convergent_write_min_version: 0,
+                latest_version: 1,
+                min_decryption_version: 1,
+                min_encryption_version: 0,
+                deletion_allowed: false,
+                exportable,
+                auto_rotate_period: period,
+                deleted: false,
+                versions: BTreeMap::from([(1, version)]),
+                byok: Some(ImportPolicy {
+                    allow_rotation,
+                    imported_key: true,
+                }),
+            },
+        );
         Ok(empty(true))
     }
 
-    fn import_standard_asymmetric_version(&mut self, name: &str, body: &Value, now: u64)
-        -> Result<EngineResponse>
-    {
+    fn import_standard_asymmetric_version(
+        &mut self,
+        name: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
         let key = self.keys.get(name).ok_or_else(not_found)?;
         let explicit = standard_explicit_version(body)?;
         let mut imported = self.standard_imported_version(body, &key.kind, now)?;
         let private = imported.public_key_only.is_none();
         let public = if private {
-            Some(asymmetric_byok::private_public_der(&key.kind, &stored_material(&imported.material)?)?)
+            Some(asymmetric_byok::private_public_der(
+                &key.kind,
+                &stored_material(&imported.material)?,
+            )?)
         } else {
             None
         };
         let matching_latest = if let Some(public) = public.as_ref() {
-            key.versions.get(&key.latest_version)
+            key.versions
+                .get(&key.latest_version)
                 .and_then(|version| version.public_key_only.as_ref())
-                .map(|expected| stored_material(expected).map(|expected| expected.as_slice() == public.as_slice()))
-                .transpose()?.unwrap_or(false)
-        } else { false };
+                .map(|expected| {
+                    stored_material(expected)
+                        .map(|expected| expected.as_slice() == public.as_slice())
+                })
+                .transpose()?
+                .unwrap_or(false)
+        } else {
+            false
+        };
         let destination = explicit.or_else(|| matching_latest.then_some(key.latest_version));
         let (number, append) = if let Some(number) = destination {
-            let existing = key.versions.get(&number)
+            let existing = key
+                .versions
+                .get(&number)
                 .ok_or_else(|| bad("requested public-only version does not exist"))?;
-            let expected = existing.public_key_only.as_ref()
+            let expected = existing
+                .public_key_only
+                .as_ref()
                 .ok_or_else(|| bad("only public-only versions can be completed"))?;
             if !private {
-                return Err(bad("a public-only version requires matching private material"));
+                return Err(bad(
+                    "a public-only version requires matching private material",
+                ));
             }
             if public.as_deref() != Some(stored_material(expected)?.as_slice()) {
-                return Err(openbao_compatibility_error("cannot import key, key pair does not match"));
+                return Err(openbao_compatibility_error(
+                    "cannot import key, key pair does not match",
+                ));
             }
             imported.created_at = existing.created_at;
             imported.hmac_material.clone_from(&existing.hmac_material);
@@ -694,20 +768,32 @@ impl Transit {
             if key.versions.len() >= 10_000 {
                 return Err(bad("key version retention limit reached"));
             }
-            (key.latest_version.checked_add(1).ok_or_else(|| bad("key version limit reached"))?, true)
+            (
+                key.latest_version
+                    .checked_add(1)
+                    .ok_or_else(|| bad("key version limit reached"))?,
+                true,
+            )
         };
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         key.versions.insert(number, imported);
-        if append { key.latest_version = number; }
+        if append {
+            key.latest_version = number;
+        }
         Ok(empty(true))
     }
 }
 pub(super) fn restored_policy(imported: bool, allow_rotation: bool) -> Option<ImportPolicy> {
-    (imported || allow_rotation).then_some(ImportPolicy { imported_key: imported, allow_rotation })
+    (imported || allow_rotation).then_some(ImportPolicy {
+        imported_key: imported,
+        allow_rotation,
+    })
 }
 
 pub(super) fn rotation_permission(key: &Key) -> bool {
-    key.byok.as_ref().is_some_and(|policy| policy.allow_rotation)
+    key.byok
+        .as_ref()
+        .is_some_and(|policy| policy.allow_rotation)
 }
 
 #[cfg(test)]
@@ -1042,7 +1128,9 @@ mod mldsa_import_tests {
             assert!(
                 version.material.is_empty()
                     && stored_material(&version.hmac_material)
-                        .map_err(|_| "public_hmac_invalid")?.len() == 32
+                        .map_err(|_| "public_hmac_invalid")?
+                        .len()
+                        == 32
                     && version.public_key_only.is_some()
             );
             let before = encoded(&transit)?;
@@ -1063,48 +1151,89 @@ mod mldsa_import_tests {
                 assert!(response.body["data"]["valid"] == valid);
             }
             let input = BASE64.encode(b"public fixture");
-            assert!(matches!(call(&mut transit,"POST","sign/key",json!({"input":input})),
-                Err(EngineError {status:500,..})));
-            let mac = call(&mut transit,"POST","hmac/key",json!({"input":input}))
-                .map_err(|_| "public_hmac_failed")?.body["data"]["hmac"].clone();
-            for (message,valid) in [(b"public fixture".as_slice(),true),(b"changed".as_slice(),false)] {
-                let verified = call(&mut transit,"POST","verify/key",
-                    json!({"input":BASE64.encode(message),"hmac":mac}))
-                    .map_err(|_| "public_hmac_verify_failed")?;
+            assert!(matches!(
+                call(&mut transit, "POST", "sign/key", json!({"input":input})),
+                Err(EngineError { status: 500, .. })
+            ));
+            let mac = call(&mut transit, "POST", "hmac/key", json!({"input":input}))
+                .map_err(|_| "public_hmac_failed")?
+                .body["data"]["hmac"]
+                .clone();
+            for (message, valid) in [
+                (b"public fixture".as_slice(), true),
+                (b"changed".as_slice(), false),
+            ] {
+                let verified = call(
+                    &mut transit,
+                    "POST",
+                    "verify/key",
+                    json!({"input":BASE64.encode(message),"hmac":mac}),
+                )
+                .map_err(|_| "public_hmac_verify_failed")?;
                 assert!(verified.status == 200 && verified.body["data"]["valid"] == valid);
             }
-            for format in ["","raw","der","pem"] {
-                let private = call(&mut transit,"GET","export/signing-key/key",json!({"format":format}))
-                    .map_err(|_| "public_private_export_failed")?;
+            for format in ["", "raw", "der", "pem"] {
+                let private = call(
+                    &mut transit,
+                    "GET",
+                    "export/signing-key/key",
+                    json!({"format":format}),
+                )
+                .map_err(|_| "public_private_export_failed")?;
                 assert!(private.status == 200 && private.body["data"]["keys"]["1"] == "");
-                let exported = call(&mut transit,"GET","export/hmac-key/key",json!({"format":format}));
-                if matches!(format,""|"raw") {
+                let exported = call(
+                    &mut transit,
+                    "GET",
+                    "export/hmac-key/key",
+                    json!({"format":format}),
+                );
+                if matches!(format, "" | "raw") {
                     let exported = exported.map_err(|_| "public_hmac_export_failed")?;
-                    let material = BASE64.decode(exported.body["data"]["keys"]["1"].as_str()
-                        .ok_or("missing_hmac_key")?).map_err(|_| "invalid_hmac_base64")?;
+                    let material = BASE64
+                        .decode(
+                            exported.body["data"]["keys"]["1"]
+                                .as_str()
+                                .ok_or("missing_hmac_key")?,
+                        )
+                        .map_err(|_| "invalid_hmac_base64")?;
                     assert!(material.len() == 32);
                     let mut independent = <Hmac<Sha256> as Mac>::new_from_slice(&material)
                         .map_err(|_| "independent_hmac_failed")?;
-                    Mac::update(&mut independent,b"public fixture");
+                    Mac::update(&mut independent, b"public fixture");
                     let tag = Mac::finalize(independent).into_bytes();
-                    assert!(mac == format!("vault:v1:{}",BASE64.encode(tag)));
+                    assert!(mac == format!("vault:v1:{}", BASE64.encode(tag)));
                 } else {
-                    assert!(matches!(exported,Err(EngineError {status:500,..})));
+                    assert!(matches!(exported, Err(EngineError { status: 500, .. })));
                 }
             }
             let mut locked = Transit::default();
-            call(&mut locked,"POST","keys/locked/import",json!({"type":kind,"public_key":public.as_str()}))
-                .map_err(|_| "locked_public_import_failed")?;
-            assert!(call(&mut locked,"POST","hmac/locked",json!({"input":input}))
-                .map_err(|_| "locked_public_hmac_failed")?.status == 200);
-            for path in ["export/signing-key/locked","export/hmac-key/locked"] {
-                for format in ["","raw","der","pem"] {
-                    assert!(matches!(call(&mut locked,"GET",path,json!({"format":format})),
-                        Err(EngineError {status:400,..})));
+            call(
+                &mut locked,
+                "POST",
+                "keys/locked/import",
+                json!({"type":kind,"public_key":public.as_str()}),
+            )
+            .map_err(|_| "locked_public_import_failed")?;
+            assert!(
+                call(&mut locked, "POST", "hmac/locked", json!({"input":input}))
+                    .map_err(|_| "locked_public_hmac_failed")?
+                    .status
+                    == 200
+            );
+            for path in ["export/signing-key/locked", "export/hmac-key/locked"] {
+                for format in ["", "raw", "der", "pem"] {
+                    assert!(matches!(
+                        call(&mut locked, "GET", path, json!({"format":format})),
+                        Err(EngineError { status: 400, .. })
+                    ));
                 }
             }
-            assert!(call(&mut locked,"GET","export/public-key/locked",json!({}))
-                .map_err(|_| "locked_public_export_failed")?.status == 200);
+            assert!(
+                call(&mut locked, "GET", "export/public-key/locked", json!({}))
+                    .map_err(|_| "locked_public_export_failed")?
+                    .status
+                    == 200
+            );
             let raw = call(&mut transit, "GET", "export/public-key/key", json!({}))
                 .map_err(|_| "public_raw_export_failed")?;
             assert!(
@@ -1240,11 +1369,19 @@ mod mldsa_import_tests {
         )
         .map_err(|_| "next_public_failed")?;
         let input = BASE64.encode(b"public completion HMAC owner");
-        let original_hmacs: Vec<Value> = [1,2].into_iter().map(|version| {
-            call(&mut transit,"POST","hmac/key",json!({"input":input,"key_version":version}))
+        let original_hmacs: Vec<Value> = [1, 2]
+            .into_iter()
+            .map(|version| {
+                call(
+                    &mut transit,
+                    "POST",
+                    "hmac/key",
+                    json!({"input":input,"key_version":version}),
+                )
                 .map(|response| response.body["data"]["hmac"].clone())
                 .map_err(|_| "initial_public_hmac_failed")
-        }).collect::<TestResult<Vec<Value>>>()?;
+            })
+            .collect::<TestResult<Vec<Value>>>()?;
         let wrong = wrap(&transit, &private_der(kind, &[0x51; 32])?)?;
         let before = encoded(&transit)?;
         for body in [
@@ -1283,8 +1420,13 @@ mod mldsa_import_tests {
         );
         assert!(transit.keys["key"].latest_version == 2 && transit.keys["key"].versions.len() == 2);
         for mac in original_hmacs {
-            let verified = call(&mut transit,"POST","verify/key",json!({"input":input,"hmac":mac}))
-                .map_err(|_| "completed_original_hmac_verify_failed")?;
+            let verified = call(
+                &mut transit,
+                "POST",
+                "verify/key",
+                json!({"input":input,"hmac":mac}),
+            )
+            .map_err(|_| "completed_original_hmac_verify_failed")?;
             assert!(verified.status == 200 && verified.body["data"]["valid"] == true);
         }
         let before = encoded(&transit)?;
@@ -1394,78 +1536,168 @@ mod mldsa_import_tests {
         call(&mut base, "GET", "wrapping_key", json!({})).map_err(|_| "wrapping_failed")?;
         for kind in ["mldsa-44", "mldsa-65", "mldsa-87"] {
             let mut transit = base.clone();
-            let first = [0x50; 32]; let second = [0x51; 32];
+            let first = [0x50; 32];
+            let second = [0x51; 32];
             let pem = public_pem(kind, &first)?;
-            call(&mut transit, "POST", "keys/key/import",
-                json!({"type":kind,"public_key":pem.as_str(),"exportable":true}))
-                .map_err(|_| "public_import_failed")?;
+            call(
+                &mut transit,
+                "POST",
+                "keys/key/import",
+                json!({"type":kind,"public_key":pem.as_str(),"exportable":true}),
+            )
+            .map_err(|_| "public_import_failed")?;
             let original = transit.keys["key"].versions[&1].clone();
             let private = private_der(kind, &second)?;
             let cipher = wrap(&transit, &private)?;
             let before = encoded(&transit)?;
-            let rejected = call(&mut transit, "POST", "keys/key/import_version",
-                json!({"ciphertext":cipher,"version":1})).err().ok_or("explicit_mismatch_accepted")?;
+            let rejected = call(
+                &mut transit,
+                "POST",
+                "keys/key/import_version",
+                json!({"ciphertext":cipher,"version":1}),
+            )
+            .err()
+            .ok_or("explicit_mismatch_accepted")?;
             assert!(rejected.status == 500 && rejected.message.contains("key pair does not match"));
             assert!(encoded(&transit)?.as_slice() == before.as_slice());
-            let appended = call(&mut transit, "POST", "keys/key/import_version",
-                json!({"ciphertext":cipher})).map_err(|_| "different_private_append_failed")?;
+            let appended = call(
+                &mut transit,
+                "POST",
+                "keys/key/import_version",
+                json!({"ciphertext":cipher}),
+            )
+            .map_err(|_| "different_private_append_failed")?;
             assert!(appended.status == 204 && transit.keys["key"].latest_version == 2);
-            assert!(transit.keys["key"].versions[&1].public_key_only == original.public_key_only
-                && transit.keys["key"].versions[&1].hmac_material == original.hmac_material
-                && transit.keys["key"].versions[&1].material.is_empty());
+            assert!(
+                transit.keys["key"].versions[&1].public_key_only == original.public_key_only
+                    && transit.keys["key"].versions[&1].hmac_material == original.hmac_material
+                    && transit.keys["key"].versions[&1].material.is_empty()
+            );
             assert!(transit.keys["key"].versions[&2].public_key_only.is_none());
-            assert!(stored_material(&transit.keys["key"].versions[&2].material)
-                .map_err(|_| "appended_material_failed")?.as_slice() == second);
-            let signed = call(&mut transit, "POST", "sign/key", json!({
-                "input":BASE64.encode(b"different omitted private"),"key_version":2}))
-                .map_err(|_| "appended_private_sign_failed")?;
-            let signature = signed.body["data"]["signature"].as_str()
-                .and_then(|v| v.strip_prefix("vault:v2:")).ok_or("wrong_signature_version")?;
-            let bytes = BASE64.decode(signature).map_err(|_| "signature_decoding_failed")?;
-            assert!(mldsa::verify(kind, &second, b"different omitted private", &bytes)
-                .map_err(|_| "fresh_source_verify_failed")?);
-            assert!(!mldsa::verify(kind, &first, b"different omitted private", &bytes)
-                .map_err(|_| "wrong_source_verify_failed")?);
-            assert!(!mldsa::verify(kind, &second, b"changed message", &bytes)
-                .map_err(|_| "changed_message_verify_failed")?);
+            assert!(
+                stored_material(&transit.keys["key"].versions[&2].material)
+                    .map_err(|_| "appended_material_failed")?
+                    .as_slice()
+                    == second
+            );
+            let signed = call(
+                &mut transit,
+                "POST",
+                "sign/key",
+                json!({
+                "input":BASE64.encode(b"different omitted private"),"key_version":2}),
+            )
+            .map_err(|_| "appended_private_sign_failed")?;
+            let signature = signed.body["data"]["signature"]
+                .as_str()
+                .and_then(|v| v.strip_prefix("vault:v2:"))
+                .ok_or("wrong_signature_version")?;
+            let bytes = BASE64
+                .decode(signature)
+                .map_err(|_| "signature_decoding_failed")?;
+            assert!(
+                mldsa::verify(kind, &second, b"different omitted private", &bytes)
+                    .map_err(|_| "fresh_source_verify_failed")?
+            );
+            assert!(
+                !mldsa::verify(kind, &first, b"different omitted private", &bytes)
+                    .map_err(|_| "wrong_source_verify_failed")?
+            );
+            assert!(
+                !mldsa::verify(kind, &second, b"changed message", &bytes)
+                    .map_err(|_| "changed_message_verify_failed")?
+            );
             assert!(transit.validate_byok_state().is_ok());
         }
         Ok(())
     }
-
 }
 
 #[cfg(test)]
 mod hmac_export270_tests {
     use super::*;
     #[test]
-    fn asymmetric270_hmac_raw_exports_real_material_and_private_permission_precedes_format() -> Result<()> {
-        for kind in ["rsa-2048","rsa-3072","rsa-4096","ecdsa-p256","ecdsa-p384","ecdsa-p521","ed25519"] {
+    fn asymmetric270_hmac_raw_exports_real_material_and_private_permission_precedes_format()
+    -> Result<()> {
+        for kind in [
+            "rsa-2048",
+            "rsa-3072",
+            "rsa-4096",
+            "ecdsa-p256",
+            "ecdsa-p384",
+            "ecdsa-p521",
+            "ed25519",
+        ] {
             let mut transit = Transit::default();
-            transit.handle("","transit","POST","keys/key",&json!({"type":kind,"exportable":true}),100)?;
+            transit.handle(
+                "",
+                "transit",
+                "POST",
+                "keys/key",
+                &json!({"type":kind,"exportable":true}),
+                100,
+            )?;
             let input = BASE64.encode(b"asymmetric HMAC fixture");
-            let mac = transit.handle("","transit","POST","hmac/key",&json!({"input":input}),100)?
-                .body["data"]["hmac"].clone();
-            for format in ["","raw","der","pem"] {
-                let exported = transit.handle("","transit","GET","export/hmac-key/key/1",&json!({"format":format}),100);
-                if matches!(format,""|"raw") {
+            let mac = transit
+                .handle(
+                    "",
+                    "transit",
+                    "POST",
+                    "hmac/key",
+                    &json!({"input":input}),
+                    100,
+                )?
+                .body["data"]["hmac"]
+                .clone();
+            for format in ["", "raw", "der", "pem"] {
+                let exported = transit.handle(
+                    "",
+                    "transit",
+                    "GET",
+                    "export/hmac-key/key/1",
+                    &json!({"format":format}),
+                    100,
+                );
+                if matches!(format, "" | "raw") {
                     let exported = exported?;
-                    let material = BASE64.decode(exported.body["data"]["keys"]["1"].as_str().expect("HMAC key"))
+                    let material = BASE64
+                        .decode(
+                            exported.body["data"]["keys"]["1"]
+                                .as_str()
+                                .expect("HMAC key"),
+                        )
                         .expect("base64 HMAC key");
-                    assert_eq!(material.len(),32);
-                    let mut independent = <Hmac<Sha256> as Mac>::new_from_slice(&material).expect("HMAC material");
-                    Mac::update(&mut independent,b"asymmetric HMAC fixture");
+                    assert_eq!(material.len(), 32);
+                    let mut independent =
+                        <Hmac<Sha256> as Mac>::new_from_slice(&material).expect("HMAC material");
+                    Mac::update(&mut independent, b"asymmetric HMAC fixture");
                     let tag = Mac::finalize(independent).into_bytes();
-                    assert_eq!(mac,format!("vault:v1:{}",BASE64.encode(tag)));
+                    assert_eq!(mac, format!("vault:v1:{}", BASE64.encode(tag)));
                 } else {
-                    assert!(matches!(exported,Err(EngineError {status:500,..})));
+                    assert!(matches!(exported, Err(EngineError { status: 500, .. })));
                 }
             }
-            transit.handle("","transit","POST","keys/locked",&json!({"type":kind}),100)?;
-            for family in ["signing-key","hmac-key"] {
-                for format in ["","raw","der","pem"] {
-                    assert!(matches!(transit.handle("","transit","GET",&format!("export/{family}/locked"),
-                        &json!({"format":format}),100),Err(EngineError {status:400,..})));
+            transit.handle(
+                "",
+                "transit",
+                "POST",
+                "keys/locked",
+                &json!({"type":kind}),
+                100,
+            )?;
+            for family in ["signing-key", "hmac-key"] {
+                for format in ["", "raw", "der", "pem"] {
+                    assert!(matches!(
+                        transit.handle(
+                            "",
+                            "transit",
+                            "GET",
+                            &format!("export/{family}/locked"),
+                            &json!({"format":format}),
+                            100
+                        ),
+                        Err(EngineError { status: 400, .. })
+                    ));
                 }
             }
         }

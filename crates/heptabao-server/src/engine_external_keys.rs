@@ -1087,7 +1087,12 @@ mod tests {
                 json!({"verify":false}),
             )?;
             let before = Zeroizing::new(serde_json::to_vec(&registry)?);
-            for reference in ["selected:key", "missing:key", "selected:missing", "malformed"] {
+            for reference in [
+                "selected:key",
+                "missing:key",
+                "selected:missing",
+                "malformed",
+            ] {
                 for (operation, expected) in [
                     ("sign", 500),
                     ("verify", 500),
@@ -1121,7 +1126,9 @@ mod tests {
                 );
             }
             assert!(
-                registry.consumer_plugin_for_operation("selected:key", "other", "sign").is_err(),
+                registry
+                    .consumer_plugin_for_operation("selected:key", "other", "sign")
+                    .is_err(),
                 "a grant to one mount cannot authorize another"
             );
         }

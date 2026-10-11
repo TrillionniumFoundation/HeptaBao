@@ -153,7 +153,9 @@ fn environment(
             .is_some_and(|value| value.len() <= 60 && canonical_absolute(value))
         || !get("HEPTABAO_KMS_DEPLOYMENT_SHA256").is_some_and(|value| {
             value.len() == 64
-                && value.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+                && value
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
                 && value.bytes().any(|b| b != b'0')
         })
         || !get("HEPTABAO_KMS_TIMEOUT_MS")
@@ -218,7 +220,10 @@ impl Parent {
             )
             .map_err(|_| AdapterError::Parent)?,
         );
-        if directory.metadata().map_err(|_| AdapterError::Parent)?.uid()
+        if directory
+            .metadata()
+            .map_err(|_| AdapterError::Parent)?
+            .uid()
             != rustix::process::geteuid().as_raw()
         {
             return Err(AdapterError::Parent);
@@ -227,7 +232,10 @@ impl Parent {
         if identity.pid != descriptor.parent {
             return Err(AdapterError::Parent);
         }
-        Ok(Self { directory, identity })
+        Ok(Self {
+            directory,
+            identity,
+        })
     }
 
     fn observe(directory: &File) -> Result<ProcessIdentity, AdapterError> {
@@ -246,7 +254,11 @@ impl Parent {
     fn current(&self) -> Result<(), AdapterError> {
         if Self::observe(&self.directory)? != self.identity
             || self_identity()?.parent != self.identity.pid
-            || self.directory.metadata().map_err(|_| AdapterError::Parent)?.uid()
+            || self
+                .directory
+                .metadata()
+                .map_err(|_| AdapterError::Parent)?
+                .uid()
                 != rustix::process::geteuid().as_raw()
         {
             return Err(AdapterError::Parent);
@@ -289,15 +301,13 @@ fn checked_image(file: &mut File) -> Result<(u64, u64), AdapterError> {
         return Err(AdapterError::Image);
     }
     let mut header = [0_u8; 64];
-    file.read_exact(&mut header).map_err(|_| AdapterError::Image)?;
+    file.read_exact(&mut header)
+        .map_err(|_| AdapterError::Image)?;
     let machine = u16::from_le_bytes([header[18], header[19]]);
     let kind = u16::from_le_bytes([header[16], header[17]]);
     let machine_supported = cfg!(target_arch = "x86_64") && machine == 62
         || cfg!(target_arch = "aarch64") && machine == 183;
-    if &header[..7] != b"\x7fELF\x02\x01\x01"
-        || !matches!(kind, 2..=3)
-        || !machine_supported
-    {
+    if &header[..7] != b"\x7fELF\x02\x01\x01" || !matches!(kind, 2..=3) || !machine_supported {
         return Err(AdapterError::Image);
     }
     Ok((metadata.dev(), metadata.ino()))
@@ -313,9 +323,11 @@ fn monotonic_nanos() -> Result<u64, AdapterError> {
 }
 
 fn temp_current(values: &BTreeMap<String, String>) -> Result<(), AdapterError> {
-    let path = values.get("HEPTABAO_KMS_TEMP").ok_or(AdapterError::Environment)?;
-    let metadata = std::fs::symlink_metadata(Path::new(path))
-        .map_err(|_| AdapterError::Environment)?;
+    let path = values
+        .get("HEPTABAO_KMS_TEMP")
+        .ok_or(AdapterError::Environment)?;
+    let metadata =
+        std::fs::symlink_metadata(Path::new(path)).map_err(|_| AdapterError::Environment)?;
     if !metadata.is_dir()
         || metadata.mode() & 0o7777 != 0o700
         || metadata.uid() != rustix::process::geteuid().as_raw()
@@ -351,7 +363,10 @@ pub fn run() -> Result<(), AdapterError> {
     }
     temp_current(&values)?;
     let mut command = Command::new(format!("/proc/self/fd/{}", image.as_raw_fd()));
-    command.arg0("heptabao-kms-bridge").env_clear().envs(&values);
+    command
+        .arg0("heptabao-kms-bridge")
+        .env_clear()
+        .envs(&values);
     let _error: io::Error = command.exec();
     Err(AdapterError::Exec)
 }

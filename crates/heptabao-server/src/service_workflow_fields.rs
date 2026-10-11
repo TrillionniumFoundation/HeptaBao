@@ -17,9 +17,9 @@ fn finite_go_float(raw: &str) -> Result<f64, Response> {
     }
     let bytes = raw.as_bytes();
     let start = matches!(bytes.first(), Some(b'+' | b'-')) as usize;
-    let hex = bytes.get(start..start + 2).is_some_and(|prefix| {
-        prefix[0] == b'0' && matches!(prefix[1], b'x' | b'X')
-    });
+    let hex = bytes
+        .get(start..start + 2)
+        .is_some_and(|prefix| prefix[0] == b'0' && matches!(prefix[1], b'x' | b'X'));
     let digit = |b: u8| b.is_ascii_digit() || (hex && matches!(b, b'a'..=b'f' | b'A'..=b'F'));
     for (index, byte) in bytes.iter().enumerate() {
         if *byte == b'_' {
@@ -130,7 +130,11 @@ fn finite_go_float(raw: &str) -> Result<f64, Response> {
     if exponent < -1075 {
         return Ok(f64::from_bits(sign));
     }
-    let retained = (if exponent < -1022 { exponent + 1075 } else { 53 }) as usize;
+    let retained = (if exponent < -1022 {
+        exponent + 1075
+    } else {
+        53
+    }) as usize;
     let mut significand = 0_u64;
     for at in 0..retained {
         significand = (significand << 1) | (bits.get(at).copied().unwrap_or(false) as u64);
@@ -373,10 +377,13 @@ fn headers(value: &Value) -> Result<Value, Response> {
     // including CRLF strings; actual ingress and any consumer wire gate remain.
     frame.validate().map_err(bad_profile)?;
     let mut result = crate::http::ocsp::CarrierBody(
-        serde_json::to_value(&frame.headers).map_err(|_| invalid())?);
+        serde_json::to_value(&frame.headers).map_err(|_| invalid())?,
+    );
     let encoded = Zeroizing::new(serde_json::to_vec(&result.0).map_err(|_| invalid())?);
     if encoded.len() > MAX_STEP_BODY_BYTES {
-        return Err(bad_profile("workflow logical headers exceed the encoded byte bound"));
+        return Err(bad_profile(
+            "workflow logical headers exceed the encoded byte bound",
+        ));
     }
     Ok(std::mem::take(&mut result.0))
 }
@@ -412,7 +419,10 @@ impl FieldKind {
             _ => return None,
         })
     }
-    pub(super) fn runtime_value(self, value: &Value) -> Result<crate::workflow_runtime::Value, Response> {
+    pub(super) fn runtime_value(
+        self,
+        value: &Value,
+    ) -> Result<crate::workflow_runtime::Value, Response> {
         use crate::workflow_runtime::Value as RuntimeValue;
         if !matches!(self, Self::Float) {
             let mut converted = self.value(value)?;
@@ -423,14 +433,26 @@ impl FieldKind {
         let number = match value {
             Value::Null => 0.0,
             Value::Bool(value) => f64::from(u8::from(*value)),
-            Value::Number(number) => number.as_f64().filter(|value|value.is_finite()).ok_or_else(invalid)?,
+            Value::Number(number) => number
+                .as_f64()
+                .filter(|value| value.is_finite())
+                .ok_or_else(invalid)?,
             Value::String(raw) if raw.is_empty() => 0.0,
             Value::String(raw) if raw.len() <= crate::http::MAX_BODY => {
-                if raw.eq_ignore_ascii_case("nan") { f64::NAN }
-                else if raw.eq_ignore_ascii_case("inf") || raw.eq_ignore_ascii_case("infinity")
-                    || raw.eq_ignore_ascii_case("+inf") || raw.eq_ignore_ascii_case("+infinity") { f64::INFINITY }
-                else if raw.eq_ignore_ascii_case("-inf") || raw.eq_ignore_ascii_case("-infinity") { f64::NEG_INFINITY }
-                else { finite_go_float(raw)? }
+                if raw.eq_ignore_ascii_case("nan") {
+                    f64::NAN
+                } else if raw.eq_ignore_ascii_case("inf")
+                    || raw.eq_ignore_ascii_case("infinity")
+                    || raw.eq_ignore_ascii_case("+inf")
+                    || raw.eq_ignore_ascii_case("+infinity")
+                {
+                    f64::INFINITY
+                } else if raw.eq_ignore_ascii_case("-inf") || raw.eq_ignore_ascii_case("-infinity")
+                {
+                    f64::NEG_INFINITY
+                } else {
+                    finite_go_float(raw)?
+                }
             }
             _ => return Err(invalid()),
         };

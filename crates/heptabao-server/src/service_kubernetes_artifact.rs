@@ -84,8 +84,11 @@ pub(super) fn metadata(value: &Value, plan: &TokenRequestPlan) -> Result<TokenMe
             .map_err(|_| failed(plan, "illegal base64 data in compact JWS"))
     };
     let header_raw = Zeroizing::new(decode(pieces[0])?);
-    let header: Value = heptabao_domain::json::decode_with_policy(&header_raw, heptabao_domain::json::DuplicatePolicy::LastWins)
-        .map_err(|_| failed(plan, "invalid protected JWS header JSON"))?;
+    let header: Value = heptabao_domain::json::decode_with_policy(
+        &header_raw,
+        heptabao_domain::json::DuplicatePolicy::LastWins,
+    )
+    .map_err(|_| failed(plan, "invalid protected JWS header JSON"))?;
     let algorithm = header
         .get("alg")
         .and_then(Value::as_str)
@@ -108,8 +111,11 @@ pub(super) fn metadata(value: &Value, plan: &TokenRequestPlan) -> Result<TokenMe
     }
     // Public metadata accepts the pinned ordinary JSON last-key semantics;
     // this does not parse or mint any caller/provider authorization.
-    let claims: Value = heptabao_domain::json::decode_with_policy(&payload, heptabao_domain::json::DuplicatePolicy::LastWins)
-        .map_err(|_| failed(plan, "invalid compact JWS claims JSON"))?;
+    let claims: Value = heptabao_domain::json::decode_with_policy(
+        &payload,
+        heptabao_domain::json::DuplicatePolicy::LastWins,
+    )
+    .map_err(|_| failed(plan, "invalid compact JWS claims JSON"))?;
     let mut errors = Vec::new();
     let exp = match claim_int(&claims, "exp") {
         Ok(value) => value,

@@ -51,10 +51,15 @@ impl NamespacePartition<'_> {
             .bind_sdk_namespace_ciphertext(&self.binding, stamp.clone())
             .map_err(|_error| {
                 #[cfg(test)]
-                namespace_diagnostics::record_status("assets.finish.bind_ciphertext", _error.status);
+                namespace_diagnostics::record_status(
+                    "assets.finish.bind_ciphertext",
+                    _error.status,
+                );
                 failed()
             })?;
-        self.closed.auth.bind_mfa_namespace_ciphertext(&self.binding, stamp.clone())
+        self.closed
+            .auth
+            .bind_mfa_namespace_ciphertext(&self.binding, stamp.clone())
             .map_err(|_| failed())?;
         self.closed.schema = self.closed.writer_schema();
         let actual = self.binding.namespace();
@@ -94,7 +99,8 @@ impl NamespacePartition<'_> {
         // No key slot, callback, route grant or durable publication is installed.
         namespace_diagnostic!(
             "assets.finish.restore",
-            self.closed.restore_namespace_assets(actual, self.key, authenticated, &actual_cells)
+            self.closed
+                .restore_namespace_assets(actual, self.key, authenticated, &actual_cells)
         )?;
         self.closed.schema = self.closed.writer_schema();
         namespace_diagnostic!("assets.finish.format", self.closed.validate_format())?;
@@ -166,7 +172,10 @@ impl State {
                 .detach_namespace(&namespace)
                 .map_err(|_error| {
                     #[cfg(test)]
-                    namespace_diagnostics::record_status("assets.partition.detach_auth", _error.status);
+                    namespace_diagnostics::record_status(
+                        "assets.partition.detach_auth",
+                        _error.status,
+                    );
                     failed()
                 })?;
             candidate
@@ -174,7 +183,10 @@ impl State {
                 .install_sdk_namespace_custody(&namespace, &binding, &auth)
                 .map_err(|_error| {
                     #[cfg(test)]
-                    namespace_diagnostics::record_status("assets.partition.install_custody", _error.status);
+                    namespace_diagnostics::record_status(
+                        "assets.partition.install_custody",
+                        _error.status,
+                    );
                     failed()
                 })?;
             let (engines, private_cells) = candidate
@@ -242,18 +254,29 @@ impl State {
             .sdk_namespace_custody_opening_owners(actual, &stamp)
             .map_err(|_error| {
                 #[cfg(test)]
-                namespace_diagnostics::record_status("assets.restore.opening_owners", _error.status);
+                namespace_diagnostics::record_status(
+                    "assets.restore.opening_owners",
+                    _error.status,
+                );
                 failed()
             })?;
-        let mfa_inner = self.auth.mfa_namespace_opening_owners(actual, &stamp).map_err(|_| failed())?;
+        let mfa_inner = self
+            .auth
+            .mfa_namespace_opening_owners(actual, &stamp)
+            .map_err(|_| failed())?;
         let mut candidate = self.clone();
         candidate
             .namespaces
             .attach_catalog(actual, assets.catalog)?;
         for expected in mfa_inner {
-            if candidate.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != expected { return Err(failed()); }
+            if candidate.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != expected {
+                return Err(failed());
+            }
         }
-        candidate.auth.remove_mfa_namespace_enclosure(actual, &stamp).map_err(|_| failed())?;
+        candidate
+            .auth
+            .remove_mfa_namespace_enclosure(actual, &stamp)
+            .map_err(|_| failed())?;
         for expected in inner {
             if candidate.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != expected {
                 return Err(failed());
@@ -264,7 +287,10 @@ impl State {
             .remove_sdk_namespace_enclosure(actual, &stamp)
             .map_err(|_error| {
                 #[cfg(test)]
-                namespace_diagnostics::record_status("assets.restore.remove_enclosure", _error.status);
+                namespace_diagnostics::record_status(
+                    "assets.restore.remove_enclosure",
+                    _error.status,
+                );
                 failed()
             })?;
         let expected = candidate
@@ -287,7 +313,10 @@ impl State {
                 .attach_namespace(&owned.namespace, owned.auth)
                 .map_err(|_error| {
                     #[cfg(test)]
-                    namespace_diagnostics::record_status("assets.restore.attach_auth", _error.status);
+                    namespace_diagnostics::record_status(
+                        "assets.restore.attach_auth",
+                        _error.status,
+                    );
                     failed()
                 })?;
             candidate

@@ -74,19 +74,22 @@ fn renew(
         _ => json!({"increment":increment}),
     };
     let path = format!("auth/token/{operation}");
-    let admitted_actor = if operation == "renew-self" { &actor } else { root };
-    match state.prepare_provider_renewal(
-        Some(admitted_actor), "", "POST", &path, &body, now,
-    )? {
+    let admitted_actor = if operation == "renew-self" {
+        &actor
+    } else {
+        root
+    };
+    match state.prepare_provider_renewal(Some(admitted_actor), "", "POST", &path, &body, now)? {
         Some(plan) => state.finish_provider_renewal(
             plan,
             admitted_actor,
-            ProviderRenewalObservation::Kubernetes(
-                KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
-            ),
+            ProviderRenewalObservation::Kubernetes(KubernetesLoginObservation::observed(
+                "workload", "worker", "uid-1",
+            )),
             now,
         ),
-        None => state.handle(Some(admitted_actor), "", "POST", &path, &body, now)?
+        None => state
+            .handle(Some(admitted_actor), "", "POST", &path, &body, now)?
             .ok_or_else(denied),
     }
 }
@@ -95,30 +98,49 @@ fn renew(
 fn kubernetes_all_renew_routes_require_fresh_provider_authority() {
     for operation in ["renew-self", "renew", "renew-accessor"] {
         let (mut state, root, raw, now) = fixture();
-        let scope = AuthScope { namespace: "", mount: "kubernetes" };
+        let scope = AuthScope {
+            namespace: "",
+            mount: "kubernetes",
+        };
         let previous_expiry = state.tokens[&hash(&raw)].expires_at;
         let config = state.kubernetes_mut(scope).config.take().unwrap();
         assert_eq!(
-            renew(&mut state, &root, &raw, operation, 300, now + 3).err().unwrap().status,
+            renew(&mut state, &root, &raw, operation, 300, now + 3)
+                .err()
+                .unwrap()
+                .status,
             503,
             "{operation} must not extend when there is no TokenReview provider",
         );
         assert_eq!(state.tokens[&hash(&raw)].expires_at, previous_expiry);
         state.kubernetes_mut(scope).config = Some(config);
-        update(&mut state, &root, "auth/kubernetes/role/app",
-            json!({"token_ttl":60,"token_max_ttl":600}), now + 3);
+        update(
+            &mut state,
+            &root,
+            "auth/kubernetes/role/app",
+            json!({"token_ttl":60,"token_max_ttl":600}),
+            now + 3,
+        );
         assert_eq!(
-            renew(&mut state, &root, &raw, operation, 300, now + 3).unwrap().status,
+            renew(&mut state, &root, &raw, operation, 300, now + 3)
+                .unwrap()
+                .status,
             200,
         );
         let saved = state.kubernetes_mut(scope).roles.remove("app").unwrap();
         let expiry = state.tokens[&hash(&raw)].expires_at;
         assert_eq!(
-            renew(&mut state, &root, &raw, operation, 300, now + 4).err().unwrap().status,
+            renew(&mut state, &root, &raw, operation, 300, now + 4)
+                .err()
+                .unwrap()
+                .status,
             500,
         );
         assert_eq!(state.tokens[&hash(&raw)].expires_at, expiry);
-        state.kubernetes_mut(scope).roles.insert("app".into(), saved);
+        state
+            .kubernetes_mut(scope)
+            .roles
+            .insert("app".into(), saved);
     }
 }
 
@@ -640,15 +662,18 @@ fn kubernetes_cidr_issued_snapshot_survives_role_clear_reopen_and_admin_renewal(
         let admitted_actor = if via == "renew-self" { &actor } else { &admin };
         let plan = state
             .prepare_provider_renewal(Some(admitted_actor), "", "POST", &path, &body, now)
-            .unwrap().unwrap();
-        let response = state.finish_provider_renewal(
-            plan,
-            admitted_actor,
-            ProviderRenewalObservation::Kubernetes(
-                KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
-            ),
-            now,
-        ).unwrap();
+            .unwrap()
+            .unwrap();
+        let response = state
+            .finish_provider_renewal(
+                plan,
+                admitted_actor,
+                ProviderRenewalObservation::Kubernetes(KubernetesLoginObservation::observed(
+                    "workload", "worker", "uid-1",
+                )),
+                now,
+            )
+            .unwrap();
         assert_eq!(response.status, 200);
         assert_eq!(state.tokens[&hash(&raw)].bound_cidrs, ["127.0.0.1"]);
     }

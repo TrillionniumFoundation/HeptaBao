@@ -986,7 +986,15 @@ fn native_recovery_fixture(
         )?;
     }
     publish(&mut service, state)?;
-    Ok((files, service, job, binding, records, key, retirement_request))
+    Ok((
+        files,
+        service,
+        job,
+        binding,
+        records,
+        key,
+        retirement_request,
+    ))
 }
 fn native_recovery_configured_reopen(
     files: &Root,
@@ -1045,7 +1053,8 @@ fn native_recovery_terminal(service: &mut Service, job: &str, records: &[Record]
 #[test]
 fn sdk_auth_retirement107_native_service_terminal_reopen_executes_final_without_transport()
 -> TestResult {
-    let (files, mut service, job, binding, records, key, _request) = native_recovery_fixture(true, false)?;
+    let (files, mut service, job, binding, records, key, _request) =
+        native_recovery_fixture(true, false)?;
     native_recovery_terminal(&mut service, &job, &records)?;
     drop(service);
     let mut service = native_recovery_configured_reopen(&files, &key)?;
@@ -1124,7 +1133,8 @@ fn sdk_auth_retirement107_native_service_terminal_reopen_executes_final_without_
 #[test]
 fn sdk_auth_retirement107_native_service_missing_transport_retains_attempt_before_setup_and_skips_sibling()
 -> TestResult {
-    let (files, service, job, binding, records, key, _request) = native_recovery_fixture(true, false)?;
+    let (files, service, job, binding, records, key, _request) =
+        native_recovery_fixture(true, false)?;
     drop(service);
     let mut service = native_recovery_configured_reopen(&files, &key)?;
     let work = service
@@ -1134,31 +1144,70 @@ fn sdk_auth_retirement107_native_service_missing_transport_retains_attempt_befor
     assert!(matches!(&work, super::super::RecoveryWork::Callback(_)));
     assert_eq!(service.sdk_hosts.len(), 1);
     let host_key = super::super::sdk_auth_key(
-        &service.state.as_ref().ok_or("callback state")?.cluster_id, &binding,
-    ).map_err(|_| "actual callback key")?;
-    let owner = service.sdk_hosts.get(&host_key).cloned().ok_or("actual callback owner")?;
-    assert!(service.state.as_ref().ok_or("retiring state")?
-        .auth.sdk_auth_retirement_tainted(&binding));
+        &service.state.as_ref().ok_or("callback state")?.cluster_id,
+        &binding,
+    )
+    .map_err(|_| "actual callback key")?;
+    let owner = service
+        .sdk_hosts
+        .get(&host_key)
+        .cloned()
+        .ok_or("actual callback owner")?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retiring state")?
+            .auth
+            .sdk_auth_retirement_tainted(&binding)
+    );
     assert!(service.pending_sdk_auth_request.is_none());
-    let attempted_identity = service.current_state_identity().map_err(|_| "attempt identity")?;
-    let attempted_generation = service.durable.as_ref().ok_or("attempt durable")?.generation();
+    let attempted_identity = service
+        .current_state_identity()
+        .map_err(|_| "attempt identity")?;
+    let attempted_generation = service
+        .durable
+        .as_ref()
+        .ok_or("attempt durable")?
+        .generation();
     let prepared = service.state.as_ref().ok_or("actual prepared attempt")?;
-    let prepared_job = prepared.auth.sdk_auth_retirement_job(&job).ok_or("prepared job")?;
-    assert!(prepared_job.phase(&records[0].id)
-        == Some(crate::auth::sdk_retirement::ResourcePhase::Attempted));
-    assert!(prepared_job.phase(&records[1].id)
-        == Some(crate::auth::sdk_retirement::ResourcePhase::Queued));
+    let prepared_job = prepared
+        .auth
+        .sdk_auth_retirement_job(&job)
+        .ok_or("prepared job")?;
+    assert!(
+        prepared_job.phase(&records[0].id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Attempted)
+    );
+    assert!(
+        prepared_job.phase(&records[1].id)
+            == Some(crate::auth::sdk_retirement::ResourcePhase::Queued)
+    );
     let shared = Arc::new(Mutex::new(service));
-    let failure = work.execute(&shared).err().ok_or("missing companion must reject actual invoke")?;
+    let failure = work
+        .execute(&shared)
+        .err()
+        .ok_or("missing companion must reject actual invoke")?;
     assert_eq!(failure.status, 503);
     assert!(failure.body.get("data").is_none());
     let service = Arc::try_unwrap(shared)
         .map_err(|_| "actual callback service still shared")?
-        .into_inner().map_err(|_| "actual callback writer")?;
-    assert_eq!(service.current_state_identity().map_err(|_| "failed callback identity")?,
-        attempted_identity);
-    assert_eq!(service.durable.as_ref().ok_or("failed callback durable")?.generation(),
-        attempted_generation);
+        .into_inner()
+        .map_err(|_| "actual callback writer")?;
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "failed callback identity")?,
+        attempted_identity
+    );
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("failed callback durable")?
+            .generation(),
+        attempted_generation
+    );
     let actual = service.state.as_ref().ok_or("actual attempted")?;
     let saved = actual.auth.sdk_auth_retirement_job(&job).ok_or("job")?;
     assert!(
@@ -1183,9 +1232,20 @@ fn sdk_auth_retirement107_native_service_missing_transport_retains_attempt_befor
             .is_some()
     );
     assert_eq!(service.sdk_hosts.len(), 1);
-    assert!(service.sdk_hosts.get(&host_key).is_some_and(|current| Arc::ptr_eq(current, &owner)));
-    assert!(service.state.as_ref().ok_or("retained retirement")?
-        .auth.sdk_auth_retirement_tainted(&binding));
+    assert!(
+        service
+            .sdk_hosts
+            .get(&host_key)
+            .is_some_and(|current| Arc::ptr_eq(current, &owner))
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retained retirement")?
+            .auth
+            .sdk_auth_retirement_tainted(&binding)
+    );
     assert!(service.pending_sdk_auth_request.is_none());
     drop(owner);
     drop(service);
@@ -1212,7 +1272,8 @@ fn sdk_auth_retirement107_native_service_missing_transport_retains_attempt_befor
 }
 #[test]
 fn sdk_auth_retirement107_native_service_busy_owner_dispatches_no_setup_or_phase() -> TestResult {
-    let (files, service, job, binding, records, key, _request) = native_recovery_fixture(true, false)?;
+    let (files, service, job, binding, records, key, _request) =
+        native_recovery_fixture(true, false)?;
     drop(service);
     let mut service = native_recovery_configured_reopen(&files, &key)?;
     let (sender, commands) = mpsc::sync_channel(1);
@@ -1265,17 +1326,25 @@ fn sdk_auth_retirement107_native_service_busy_owner_dispatches_no_setup_or_phase
 #[test]
 fn sdk_auth_retirement107_native_service_live_sdk_issued_owner_admission409_before_attempt_no_job_and_no_publication()
 -> TestResult {
-    let (files, service, job, binding, records, key, request) = native_recovery_fixture(false, true)?;
+    let (files, service, job, binding, records, key, request) =
+        native_recovery_fixture(false, true)?;
     drop(service);
     let mut service = native_recovery_configured_reopen(&files, &key)?;
     let identity = service.current_state_identity().map_err(|_| "identity")?;
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     let mut candidate = service.state.clone().ok_or("admission candidate")?;
     let original_auth = serde_json::to_vec(&candidate.auth)?;
-    let error = candidate.auth.begin_sdk_auth_retirement(
-        job.clone(), &candidate.cluster_id, binding.clone(),
-        Timestamp::checked(101, 0)?, request,
-    ).err().ok_or("live issuer must veto actual admission")?;
+    let error = candidate
+        .auth
+        .begin_sdk_auth_retirement(
+            job.clone(),
+            &candidate.cluster_id,
+            binding.clone(),
+            Timestamp::checked(101, 0)?,
+            request,
+        )
+        .err()
+        .ok_or("live issuer must veto actual admission")?;
     assert_eq!(error.status, 409);
     assert!(serde_json::to_vec(&candidate.auth)? == original_auth);
     assert!(candidate.auth.sdk_auth_retirement_job(&job).is_none());
@@ -1301,10 +1370,21 @@ fn sdk_auth_retirement107_native_service_live_sdk_issued_owner_admission409_befo
     );
     assert!(state.auth.sdk_auth_retirement_job(&job).is_none());
     assert!(state.auth.sdk_auth_owned_mount("", "sdk"));
-    assert!(state.auth.sdk_auth_storage_get(&binding, "native-final/probe")?.is_some());
+    assert!(
+        state
+            .auth
+            .sdk_auth_storage_get(&binding, "native-final/probe")?
+            .is_some()
+    );
     for record in &records {
-        assert!(state.auth.sdk_credential_record("", &record.id).ok_or("live owner retained record")?
-            .phase == Phase::PendingRevoke);
+        assert!(
+            state
+                .auth
+                .sdk_credential_record("", &record.id)
+                .ok_or("live owner retained record")?
+                .phase
+                == Phase::PendingRevoke
+        );
     }
     assert!(service.sdk_hosts.is_empty());
     assert!(service.pending_sdk_auth_request.is_none());
@@ -1354,7 +1434,8 @@ fn sdk_auth_retirement107_native_service_expired_original_clock_never_restarts_b
 }
 #[test]
 fn sdk_auth_retirement107_native_service_captured_final_rejects_real_ha_handoff() -> TestResult {
-    let (files, mut service, job, binding, records, key, _request) = native_recovery_fixture(false, false)?;
+    let (files, mut service, job, binding, records, key, _request) =
+        native_recovery_fixture(false, false)?;
     native_recovery_terminal(&mut service, &job, &records)?;
     drop(service);
     let mut service = native_recovery_configured_reopen(&files, &key)?;

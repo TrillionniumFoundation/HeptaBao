@@ -113,7 +113,10 @@ impl RecordStateRoot {
         AddressKey::from_bytes(self.object_address_key.0)
     }
 
-    pub(crate) fn with_global_lossless_json_format(mut self, format: Option<u32>) -> Result<Self, RootError> {
+    pub(crate) fn with_global_lossless_json_format(
+        mut self,
+        format: Option<u32>,
+    ) -> Result<Self, RootError> {
         self.global_lossless_json_format = format;
         self.validate()?;
         Ok(self)
@@ -122,8 +125,9 @@ impl RecordStateRoot {
     pub(crate) fn validate(&self) -> Result<(), RootError> {
         if self.storage_format != STORAGE_FORMAT
             || self.state_schema < 36
-            || self.global_lossless_json_format.is_some_and(|format| format != 1
-                || self.state_schema < crate::service::GLOBAL_LOSSLESS_JSON_STATE_SCHEMA)
+            || self.global_lossless_json_format.is_some_and(|format| {
+                format != 1 || self.state_schema < crate::service::GLOBAL_LOSSLESS_JSON_STATE_SCHEMA
+            })
             || self.object_address_key.0 == [0; 32]
             || self.cluster_id.is_empty()
             || self.cluster_id.len() > 256

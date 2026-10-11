@@ -76,10 +76,10 @@ mod acl_template;
 mod acl_wrapping;
 #[path = "auth_control_groups.rs"]
 pub(crate) mod control_groups;
-#[path = "auth_mfa.rs"]
-pub(crate) mod mfa;
 #[path = "auth_default_policy.rs"]
 mod default_policy;
+#[path = "auth_mfa.rs"]
+pub(crate) mod mfa;
 #[path = "auth_ui_acl.rs"]
 mod ui_acl;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
@@ -155,8 +155,6 @@ use radius_native::RadiusNativeConfig;
 mod token_cidrs;
 #[path = "auth_token_creation_ttl.rs"]
 mod token_creation_ttl;
-#[path = "auth_userpass_creation_ttl.rs"]
-pub(crate) mod userpass_creation_ttl;
 #[path = "auth_token_duration.rs"]
 mod token_duration;
 #[path = "auth_token_precise_issuance.rs"]
@@ -167,6 +165,8 @@ mod token_precise_ttl;
 mod token_precision;
 #[path = "auth_token_ttl.rs"]
 mod token_ttl;
+#[path = "auth_userpass_creation_ttl.rs"]
+pub(crate) mod userpass_creation_ttl;
 pub(crate) use token_precision::{AuthorityTime, RequestClock, Timestamp};
 #[path = "auth_userpass_cidrs.rs"]
 mod userpass_cidrs;
@@ -1602,23 +1602,43 @@ fn lossless_parameter_map<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> std::result::Result<acl::ParameterMap, D::Error> {
     let mut parsed = StrictJson(heptabao_domain::json::deserialize(deserializer)?);
-    if parsed.0.as_object().is_none_or(|object| object.values().any(|value| !value.is_array())) {
-        return Err(serde::de::Error::custom("policy parameters must be an object of arrays"));
+    if parsed
+        .0
+        .as_object()
+        .is_none_or(|object| object.values().any(|value| !value.is_array()))
+    {
+        return Err(serde::de::Error::custom(
+            "policy parameters must be an object of arrays",
+        ));
     }
-    let object = parsed.0.as_object_mut().ok_or_else(|| serde::de::Error::custom("invalid policy parameter map"))?;
-    std::mem::take(object).into_iter().map(|(key, value)| match value {
-        Value::Array(values) => Ok((key, values)),
-        _ => Err(serde::de::Error::custom("invalid policy parameter values")),
-    }).collect()
+    let object = parsed
+        .0
+        .as_object_mut()
+        .ok_or_else(|| serde::de::Error::custom("invalid policy parameter map"))?;
+    std::mem::take(object)
+        .into_iter()
+        .map(|(key, value)| match value {
+            Value::Array(values) => Ok((key, values)),
+            _ => Err(serde::de::Error::custom("invalid policy parameter values")),
+        })
+        .collect()
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Rule {
     path: String,
     capabilities: BTreeSet<String>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "lossless_parameter_map")]
+    #[serde(
+        default,
+        skip_serializing_if = "BTreeMap::is_empty",
+        deserialize_with = "lossless_parameter_map"
+    )]
     allowed_parameters: acl::ParameterMap,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "lossless_parameter_map")]
+    #[serde(
+        default,
+        skip_serializing_if = "BTreeMap::is_empty",
+        deserialize_with = "lossless_parameter_map"
+    )]
     denied_parameters: acl::ParameterMap,
     #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
     required_parameters: BTreeSet<String>,
@@ -2143,7 +2163,6 @@ fn certificate_metadata_extensions(body: &Value, field: &str) -> Result<Vec<Stri
 }
 
 impl AuthState {
-
     // Test-only direct RAM custody observation. It never grants an actor.
     #[cfg(test)]
     pub(crate) fn erased_wrapper_fixture_token_present(&self, raw: &str) -> bool {
@@ -2151,9 +2170,7 @@ impl AuthState {
     }
 
     #[cfg(test)]
-    pub(crate) fn erased_wrapper_fixture_runtime(
-        &self,
-    ) -> Result<Zeroizing<Vec<u8>>, AuthError> {
+    pub(crate) fn erased_wrapper_fixture_runtime(&self) -> Result<Zeroizing<Vec<u8>>, AuthError> {
         let remount = self.native_remount_epochs.iter().collect::<Vec<_>>();
         let tidy = self.approle_tidy_epochs.iter().collect::<Vec<_>>();
         serde_json::to_vec(&(
@@ -3231,15 +3248,24 @@ impl AuthState {
         token.issue_stamp = public_origin::CreationStamp::capture(token.created_at)?;
         Self::prepare_issue_with_stamp(token, now)
     }
-    fn prepare_issue_captured(mut token: Token, now: u64, at: Timestamp)
-        -> Result<(String, Token, AuthResponse), AuthError> {
-        if token.created_at != at.seconds() { return Err(denied()); }
+    fn prepare_issue_captured(
+        mut token: Token,
+        now: u64,
+        at: Timestamp,
+    ) -> Result<(String, Token, AuthResponse), AuthError> {
+        if token.created_at != at.seconds() {
+            return Err(denied());
+        }
         token.issue_stamp = Some(public_origin::CreationStamp::local_epoch(
-            at.seconds(), at.duration_since_epoch().subsec_nanos())?);
+            at.seconds(),
+            at.duration_since_epoch().subsec_nanos(),
+        )?);
         Self::prepare_issue_with_stamp(token, now)
     }
-    fn prepare_issue_with_stamp(mut token: Token, now: u64)
-        -> Result<(String, Token, AuthResponse), AuthError> {
+    fn prepare_issue_with_stamp(
+        mut token: Token,
+        now: u64,
+    ) -> Result<(String, Token, AuthResponse), AuthError> {
         // Capture only the final genuine native grant, after MFA reanchoring.
         token.capture_userpass_creation_ttl()?;
         token.validate_public_origin()?;
@@ -4190,17 +4216,30 @@ impl AuthState {
     }
 
     /// Native workflow admission uses actual mounted public-login ownership.
-    pub(crate) fn is_native_workflow_login(&self, namespace: &str, method: &str, path: &str) -> bool {
-        if !self.is_public_login(namespace, method, path) { return false; }
-        let Some(auth_path) = path.strip_prefix("auth/") else { return false; };
-        self.effective_auth_mounts(namespace).iter().any(|(mount, entry)| {
-            let Some(suffix) = auth_path.strip_prefix(&format!("{mount}/")) else { return false; };
-            match entry.kind.as_str() {
-                "userpass" => suffix.strip_prefix("login/").is_some_and(valid_name),
-                "approle" | "cert" => suffix == "login",
-                _ => false,
-            }
-        })
+    pub(crate) fn is_native_workflow_login(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        if !self.is_public_login(namespace, method, path) {
+            return false;
+        }
+        let Some(auth_path) = path.strip_prefix("auth/") else {
+            return false;
+        };
+        self.effective_auth_mounts(namespace)
+            .iter()
+            .any(|(mount, entry)| {
+                let Some(suffix) = auth_path.strip_prefix(&format!("{mount}/")) else {
+                    return false;
+                };
+                match entry.kind.as_str() {
+                    "userpass" => suffix.strip_prefix("login/").is_some_and(valid_name),
+                    "approle" | "cert" => suffix == "login",
+                    _ => false,
+                }
+            })
     }
 
     /// Returns None only for routes owned by another service subsystem.
@@ -4311,7 +4350,9 @@ impl AuthState {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
         if path == "sys/internal/ui/resultant-acl" {
-            return self.ui_resultant_acl(principal, namespace, method, path, body, time).map(Some);
+            return self
+                .ui_resultant_acl(principal, namespace, method, path, body, time)
+                .map(Some);
         }
         if path.starts_with("sys/wrapping/") {
             return self
@@ -8207,7 +8248,16 @@ impl AuthState {
             )?);
             if self.mfa_might_enforce(namespace, mount, "userpass") {
                 let (mount_revision, binding) = self.mfa_userpass_binding(scope, &user)?;
-                (None, mfa::PendingServiceGrant::response(token, mount_revision, binding, time, origin_peer)?)
+                (
+                    None,
+                    mfa::PendingServiceGrant::response(
+                        token,
+                        mount_revision,
+                        binding,
+                        time,
+                        origin_peer,
+                    )?,
+                )
             } else {
                 let (token_id, token, response) = Self::prepare_issue(token, now)?;
                 (Some((token_id, token)), response)
@@ -8921,9 +8971,15 @@ fn token_info(token: &Token, now: u64) -> Value {
     if let Some(TokenAuthProvenance::Jwt { role_name }) = &token.auth_provenance {
         info["meta"] = json!({"role":role_name});
     }
-    if let Some(TokenAuthProvenance::Userpass { username, issued_creation_ttl }) = &token.auth_provenance {
+    if let Some(TokenAuthProvenance::Userpass {
+        username,
+        issued_creation_ttl,
+    }) = &token.auth_provenance
+    {
         info["meta"] = json!({"username":username});
-        if let Some(ttl) = issued_creation_ttl { info["creation_ttl"] = json!(ttl); }
+        if let Some(ttl) = issued_creation_ttl {
+            info["creation_ttl"] = json!(ttl);
+        }
     }
     if let Some(TokenAuthProvenance::Kerberos {
         provider,

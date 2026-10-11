@@ -146,7 +146,11 @@ pub(super) fn export_standard(
         std::str::from_utf8(bytes.as_slice())
             .map(|pem| {
                 // Official 2.7.0 RSA PEM retains LF; EC and Ed25519 omit it.
-                let pem = if is_rsa(kind) { pem } else { pem.strip_suffix('\n').unwrap_or(pem) };
+                let pem = if is_rsa(kind) {
+                    pem
+                } else {
+                    pem.strip_suffix('\n').unwrap_or(pem)
+                };
                 Zeroizing::new(pem.to_owned())
             })
             .map_err(|_| error(500, "asymmetric PEM encoding failed"))
@@ -447,15 +451,27 @@ fn verify_pair<T: openssl::pkey::HasPublic>(
 }
 
 pub(super) fn verify_public(
-    kind: &str, der: &[u8], body: &Value, path: &str, input: &[u8], signature: &[u8],
+    kind: &str,
+    der: &[u8],
+    body: &Value,
+    path: &str,
+    input: &[u8],
+    signature: &[u8],
 ) -> Result<bool> {
     let pair = asymmetric_byok::public_pair(kind, der)?;
     if kind == "ed25519" {
         let public = pair.raw_public_key().map_err(provider_failure)?;
-        return Ok(signature::UnparsedPublicKey::new(&signature::ED25519, public)
-            .verify(input, signature).is_ok());
+        return Ok(
+            signature::UnparsedPublicKey::new(&signature::ED25519, public)
+                .verify(input, signature)
+                .is_ok(),
+        );
     }
-    let SigningInput { md, digest, padding } = signing_input(kind, body, path, input)?;
+    let SigningInput {
+        md,
+        digest,
+        padding,
+    } = signing_input(kind, body, path, input)?;
     verify_pair(kind, &pair, body, digest, md, padding, signature)
 }
 
@@ -465,13 +481,16 @@ pub(super) fn encrypt(material: &[u8], plaintext: &[u8]) -> Result<Vec<u8>> {
 }
 
 pub(super) fn encrypt_public(kind: &str, der: &[u8], plaintext: &[u8]) -> Result<Vec<u8>> {
-    if !is_rsa(kind) { return Err(bad("key type does not support encryption")); }
+    if !is_rsa(kind) {
+        return Err(bad("key type does not support encryption"));
+    }
     let pair = asymmetric_byok::public_pair(kind, der)?;
     encrypt_pair(&pair, plaintext)
 }
 
 fn encrypt_pair<T: openssl::pkey::HasPublic>(
-    pair: &openssl::pkey::PKeyRef<T>, plaintext: &[u8],
+    pair: &openssl::pkey::PKeyRef<T>,
+    plaintext: &[u8],
 ) -> Result<Vec<u8>> {
     let mut ctx = Encrypter::new(pair).map_err(provider_failure)?;
     ctx.set_rsa_padding(Padding::PKCS1_OAEP)

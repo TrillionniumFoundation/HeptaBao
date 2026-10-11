@@ -287,44 +287,99 @@ fn mfa129_closed_reference_successors_reject_erasure_and_forged_parcels_after_en
         assert!(torn.validate_identity_mfa_state(Some(&closed)).is_err());
     }
     let mut forged_open = closed.clone();
-    let mut changed_owner = open.identity_mfa.as_ref().ok_or("open registry")?
-        .namespaces.get("child").ok_or("open owner")?.clone();
-    changed_owner.enrollments.get_mut("actual-entity").ok_or("enrollment")?
-        .get_mut(&id).ok_or("method enrollment")?.generation += 1;
+    let mut changed_owner = open
+        .identity_mfa
+        .as_ref()
+        .ok_or("open registry")?
+        .namespaces
+        .get("child")
+        .ok_or("open owner")?
+        .clone();
+    changed_owner
+        .enrollments
+        .get_mut("actual-entity")
+        .ok_or("enrollment")?
+        .get_mut(&id)
+        .ok_or("method enrollment")?
+        .generation += 1;
     let registry = forged_open.identity_mfa.as_mut().ok_or("registry")?;
     registry.closed_references.remove("child");
     registry.namespaces.insert("child".into(), changed_owner);
     registry.advance_mutation()?;
     forged_open.validate_identity_mfa_state(None)?;
-    assert!(forged_open.validate_identity_mfa_state(Some(&closed)).is_err());
+    assert!(
+        forged_open
+            .validate_identity_mfa_state(Some(&closed))
+            .is_err()
+    );
 
     let mut forged_closed = open.clone();
-    forged_closed.detach_mfa_namespace("child")?.ok_or("parcel")?;
+    forged_closed
+        .detach_mfa_namespace("child")?
+        .ok_or("parcel")?;
     let registry = forged_closed.identity_mfa.as_mut().ok_or("registry")?;
-    registry.closed_references.get_mut("child").ok_or("index")?.owner_digest[0] ^= 1;
+    registry
+        .closed_references
+        .get_mut("child")
+        .ok_or("index")?
+        .owner_digest[0] ^= 1;
     registry.advance_mutation()?;
     forged_closed.validate_identity_mfa_state(None)?;
-    assert!(forged_closed.validate_identity_mfa_state(Some(&open)).is_err());
+    assert!(
+        forged_closed
+            .validate_identity_mfa_state(Some(&open))
+            .is_err()
+    );
 
     let mut attached = closed.clone();
     attached.attach_mfa_namespace("child", Some(parcel))?;
     attached.validate_identity_mfa_state(Some(&closed))?;
     let binding = crate::namespace_custody::Binding::new(
-        "actual-cluster".into(), "child".into(), "original-child".into(), 7,
-    ).map_err(|_| "native closed binding")?;
+        "actual-cluster".into(),
+        "child".into(),
+        "original-child".into(),
+        7,
+    )
+    .map_err(|_| "native closed binding")?;
     let wrong = crate::namespace_custody::Binding::new(
-        "actual-cluster".into(), "child".into(), "different-child".into(), 7,
-    ).map_err(|_| "negative closed binding")?;
+        "actual-cluster".into(),
+        "child".into(),
+        "different-child".into(),
+        7,
+    )
+    .map_err(|_| "negative closed binding")?;
     let mut retired = closed.clone();
-    assert!(retired.retire_closed_mfa_namespace(&wrong, "actual-cluster").is_err());
-    assert!(crate::secret_serde::to_vec(&retired, 16 * 1024 * 1024)
-        .map_err(|_| "private Auth encoding")?.as_slice() == encoded.as_slice());
+    assert!(
+        retired
+            .retire_closed_mfa_namespace(&wrong, "actual-cluster")
+            .is_err()
+    );
+    assert!(
+        crate::secret_serde::to_vec(&retired, 16 * 1024 * 1024)
+            .map_err(|_| "private Auth encoding")?
+            .as_slice()
+            == encoded.as_slice()
+    );
     retired.retire_closed_mfa_namespace(&binding, "actual-cluster")?;
     retired.validate_identity_mfa_state(Some(&closed))?;
-    assert!(retired.identity_mfa.as_ref().ok_or("registry")?
-        .closed_references.get("child").is_none());
-    assert_eq!(retired.identity_mfa.as_ref().ok_or("registry")?
-        .retired.get("child"), Some(&7));
+    assert!(
+        retired
+            .identity_mfa
+            .as_ref()
+            .ok_or("registry")?
+            .closed_references
+            .get("child")
+            .is_none()
+    );
+    assert_eq!(
+        retired
+            .identity_mfa
+            .as_ref()
+            .ok_or("registry")?
+            .retired
+            .get("child"),
+        Some(&7)
+    );
     retired.mfa_generate("child", "new-child", 8, "new-entity", &id, false)?;
     retired.validate_identity_mfa_state(Some(&closed))?;
     Ok(())
@@ -334,38 +389,107 @@ fn mfa129_closed_reference_successors_reject_erasure_and_forged_parcels_after_en
 fn mfa129_validation_issuer_mount_retirement_never_transfers_the_original_accessor() -> TestResult {
     let (mut auth, raw) = AuthState::bootstrap(100)?;
     let actor = auth.authenticate(&raw, 100)?;
-    assert_eq!(auth.handle(Some(&actor), "", "POST", "sys/auth/mfa_native",
-        &json!({"type":"userpass"}), 100)?.ok_or("native mount")?.status, 204);
-    let scope = AuthScope { namespace: "", mount: "mfa_native" };
-    let original = auth.effective_auth_mounts("").get("mfa_native")
-        .ok_or("native original mount")?.clone();
+    assert_eq!(
+        auth.handle(
+            Some(&actor),
+            "",
+            "POST",
+            "sys/auth/mfa_native",
+            &json!({"type":"userpass"}),
+            100
+        )?
+        .ok_or("native mount")?
+        .status,
+        204
+    );
+    let scope = AuthScope {
+        namespace: "",
+        mount: "mfa_native",
+    };
+    let original = auth
+        .effective_auth_mounts("")
+        .get("mfa_native")
+        .ok_or("native original mount")?
+        .clone();
     assert!(auth.mfa_validation_mount(scope, &original).is_ok());
-    assert_eq!(auth.handle(Some(&actor), "", "DELETE", "sys/auth/mfa_native",
-        &json!({}), 101)?.ok_or("native mount deletion")?.status, 204);
+    assert_eq!(
+        auth.handle(
+            Some(&actor),
+            "",
+            "DELETE",
+            "sys/auth/mfa_native",
+            &json!({}),
+            101
+        )?
+        .ok_or("native mount deletion")?
+        .status,
+        204
+    );
     let retired_bytes = crate::secret_serde::to_vec(&auth, 16 * 1024 * 1024)
         .map_err(|_| "private Auth encoding")?;
-    let failure = auth.mfa_validation_mount(scope, &original).err().ok_or("retired gate")?;
+    let failure = auth
+        .mfa_validation_mount(scope, &original)
+        .err()
+        .ok_or("retired gate")?;
     assert_eq!(failure.status, 500);
-    assert_eq!(failure.message, "failed to find MFAEnforcement configuration");
-    assert!(crate::secret_serde::to_vec(&auth, 16 * 1024 * 1024)
-        .map_err(|_| "private Auth encoding")?.as_slice() == retired_bytes.as_slice());
+    assert_eq!(
+        failure.message,
+        "failed to find MFAEnforcement configuration"
+    );
+    assert!(
+        crate::secret_serde::to_vec(&auth, 16 * 1024 * 1024)
+            .map_err(|_| "private Auth encoding")?
+            .as_slice()
+            == retired_bytes.as_slice()
+    );
     let mut reopened: AuthState = serde_json::from_slice(&retired_bytes)?;
-    let failure = reopened.mfa_validation_mount(scope, &original).err().ok_or("reopened retired gate")?;
+    let failure = reopened
+        .mfa_validation_mount(scope, &original)
+        .err()
+        .ok_or("reopened retired gate")?;
     assert_eq!(failure.status, 500);
-    assert_eq!(failure.message, "failed to find MFAEnforcement configuration");
+    assert_eq!(
+        failure.message,
+        "failed to find MFAEnforcement configuration"
+    );
     let actor = reopened.authenticate(&raw, 102)?;
-    assert_eq!(reopened.handle(Some(&actor), "", "POST", "sys/auth/mfa_native",
-        &json!({"type":"userpass"}), 102)?.ok_or("native remount")?.status, 204);
-    let replacement = reopened.effective_auth_mounts("").get("mfa_native")
-        .ok_or("native replacement mount")?.clone();
+    assert_eq!(
+        reopened
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "sys/auth/mfa_native",
+                &json!({"type":"userpass"}),
+                102
+            )?
+            .ok_or("native remount")?
+            .status,
+        204
+    );
+    let replacement = reopened
+        .effective_auth_mounts("")
+        .get("mfa_native")
+        .ok_or("native replacement mount")?
+        .clone();
     assert_ne!(original.accessor, replacement.accessor);
     let before = crate::secret_serde::to_vec(&reopened, 16 * 1024 * 1024)
         .map_err(|_| "private Auth encoding")?;
-    let failure = reopened.mfa_validation_mount(scope, &original).err().ok_or("remount old issuer gate")?;
+    let failure = reopened
+        .mfa_validation_mount(scope, &original)
+        .err()
+        .ok_or("remount old issuer gate")?;
     assert_eq!(failure.status, 500);
-    assert_eq!(failure.message, "failed to find MFAEnforcement configuration");
+    assert_eq!(
+        failure.message,
+        "failed to find MFAEnforcement configuration"
+    );
     assert!(reopened.mfa_validation_mount(scope, &replacement).is_ok());
-    assert!(crate::secret_serde::to_vec(&reopened, 16 * 1024 * 1024)
-        .map_err(|_| "private Auth encoding")?.as_slice() == before.as_slice());
+    assert!(
+        crate::secret_serde::to_vec(&reopened, 16 * 1024 * 1024)
+            .map_err(|_| "private Auth encoding")?
+            .as_slice()
+            == before.as_slice()
+    );
     Ok(())
 }

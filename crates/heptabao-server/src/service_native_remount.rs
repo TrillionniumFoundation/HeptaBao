@@ -736,7 +736,6 @@ pub(crate) fn start_worker(service: &Arc<Mutex<Service>>) -> Result<Worker, Stri
 #[path = "service_native_remount_tests.rs"]
 pub(in crate::service) mod tests;
 
-
 #[cfg(test)]
 mod original_deadline_tests {
     use super::*;
@@ -749,10 +748,21 @@ mod original_deadline_tests {
         let mut service = directory.service()?;
         let (_, admin) = bootstrap(&mut service)?;
         assert_eq!(
-            service.handle_at("POST", "sys/mounts/from-clock", "", &admin, json!({"type":"kv"}), 100).status,
+            service
+                .handle_at(
+                    "POST",
+                    "sys/mounts/from-clock",
+                    "",
+                    &admin,
+                    json!({"type":"kv"}),
+                    100
+                )
+                .status,
             204
         );
-        let original_anchor = Instant::now().checked_sub(Duration::from_secs(2)).ok_or("anchor")?;
+        let original_anchor = Instant::now()
+            .checked_sub(Duration::from_secs(2))
+            .ok_or("anchor")?;
         let clock = RequestClock::anchored(Duration::new(100, 1), original_anchor)?;
         let original_deadline = Instant::now() + Duration::from_secs(4);
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(original_deadline);
@@ -777,14 +787,30 @@ mod original_deadline_tests {
         assert_eq!(task.deadline, original_deadline);
         assert_eq!(task.clock.started(), original_anchor);
         let original_id = task.id.clone();
-        let expired = Instant::now().checked_sub(Duration::from_millis(1)).ok_or("expired")?;
+        let expired = Instant::now()
+            .checked_sub(Duration::from_millis(1))
+            .ok_or("expired")?;
         let _expired_scope = crate::request_deadline::RequestDeadlineScope::enter(expired);
         let execution = service.begin_at_mode_precise(request("expired-target"), clock);
         let rejected = service.finish_synchronous_request(execution);
         assert_eq!(rejected.status, 503, "{}", rejected.body);
         assert_eq!(service.native_remount_jobs.len(), 1);
-        assert_eq!(service.native_remount_jobs.front().ok_or("original task")?.id, original_id);
-        assert_eq!(service.native_remount_jobs.front().ok_or("original task")?.deadline, original_deadline);
+        assert_eq!(
+            service
+                .native_remount_jobs
+                .front()
+                .ok_or("original task")?
+                .id,
+            original_id
+        );
+        assert_eq!(
+            service
+                .native_remount_jobs
+                .front()
+                .ok_or("original task")?
+                .deadline,
+            original_deadline
+        );
         Ok(())
     }
 }

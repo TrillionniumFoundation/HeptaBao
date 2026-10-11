@@ -129,7 +129,9 @@ impl BatchLeaseClaims {
             parent: claims.parent().map(str::to_owned),
             entity_id: claims.entity_id().map(str::to_owned),
             token_api_precision: claims.precision().cloned(),
-            sdk_issuer: claims.public_origin().and_then(super::public_origin::BatchOrigin::sdk_binding)
+            sdk_issuer: claims
+                .public_origin()
+                .and_then(super::public_origin::BatchOrigin::sdk_binding)
                 .map(super::sdk::advanced::BatchIssuer::from_binding),
         }
     }
@@ -149,7 +151,9 @@ impl BatchLeaseClaims {
         {
             return Err(BatchError::InvalidClaims);
         }
-        if let Some(issuer) = &self.sdk_issuer { issuer.validate(&self.namespace)?; }
+        if let Some(issuer) = &self.sdk_issuer {
+            issuer.validate(&self.namespace)?;
+        }
         if !self.authority_id.is_valid()
             || !self.key_id.is_valid()
             || !valid_digest(&self.token_digest)
@@ -164,7 +168,9 @@ impl BatchLeaseClaims {
             self.entity_id.as_deref(),
         )
     }
-    pub(super) fn sdk_issuer(&self) -> Option<&super::sdk::advanced::BatchIssuer> { self.sdk_issuer.as_ref() }
+    pub(super) fn sdk_issuer(&self) -> Option<&super::sdk::advanced::BatchIssuer> {
+        self.sdk_issuer.as_ref()
+    }
     pub(crate) fn namespace_binding(&self) -> Option<&super::batch_namespace::Binding> {
         self.namespace_binding.as_deref()
     }

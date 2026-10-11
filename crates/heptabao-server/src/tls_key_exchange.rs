@@ -2,12 +2,14 @@
 //! The P-384 hybrid uses the IETF ECDHE-MLKEM wire layout. No group implements
 //! a classical fallback: rustls can select only an explicitly configured group.
 use aws_lc_rs::{agreement, rand::SystemRandom};
-use rustls::{
-    Error, NamedGroup, PeerMisbehaved, ProtocolVersion, SupportedProtocolVersion,
-    crypto::{ActiveKeyExchange, CompletedKeyExchange, CryptoProvider, SharedSecret, SupportedKxGroup},
-};
 use rustls::crypto::aws_lc_rs::kx_group;
 use rustls::ffdhe_groups::FfdheGroup;
+use rustls::{
+    Error, NamedGroup, PeerMisbehaved, ProtocolVersion, SupportedProtocolVersion,
+    crypto::{
+        ActiveKeyExchange, CompletedKeyExchange, CryptoProvider, SharedSecret, SupportedKxGroup,
+    },
+};
 
 const P384_MLKEM1024_NAME: NamedGroup = NamedGroup::Unknown(0x11ed);
 static P384_MLKEM1024: &dyn SupportedKxGroup = &P384MlKem1024;
@@ -34,7 +36,10 @@ pub(crate) fn default_provider() -> CryptoProvider {
 pub(crate) fn provider(preferences: Option<&[String]>) -> Result<CryptoProvider, &'static str> {
     let mut provider = default_provider();
     if let Some(names) = preferences.filter(|names| !names.is_empty()) {
-        provider.kx_groups = names.iter().map(|name| named_group(name)).collect::<Result<_, _>>()?;
+        provider.kx_groups = names
+            .iter()
+            .map(|name| named_group(name))
+            .collect::<Result<_, _>>()?;
     }
     Ok(provider)
 }
@@ -67,7 +72,9 @@ pub(crate) fn protocol_versions(
     let minimum = version(minimum.unwrap_or("tls12"))?;
     let maximum = version(maximum.unwrap_or("tls13"))?;
     match (minimum, maximum) {
-        (ProtocolVersion::TLSv1_2, ProtocolVersion::TLSv1_3) => Ok(vec![&rustls::version::TLS13, &rustls::version::TLS12]),
+        (ProtocolVersion::TLSv1_2, ProtocolVersion::TLSv1_3) => {
+            Ok(vec![&rustls::version::TLS13, &rustls::version::TLS12])
+        }
         (ProtocolVersion::TLSv1_2, ProtocolVersion::TLSv1_2) => Ok(vec![&rustls::version::TLS12]),
         (ProtocolVersion::TLSv1_3, ProtocolVersion::TLSv1_3) => Ok(vec![&rustls::version::TLS13]),
         _ => Err("TLS minimum version exceeds maximum version"),
@@ -89,10 +96,16 @@ impl SupportedKxGroup for P384MlKem1024 {
         let classical = kx_group::SECP384R1.start()?;
         let kem = kx_group::MLKEM1024.start()?;
         if classical.pub_key().len() != 97 || kem.pub_key().len() != 1568 {
-            return Err(Error::General("invalid generated P384MLKEM1024 share".into()));
+            return Err(Error::General(
+                "invalid generated P384MLKEM1024 share".into(),
+            ));
         }
         let public = [classical.pub_key(), kem.pub_key()].concat();
-        Ok(Box::new(P384MlKem1024Active { classical, kem, public }))
+        Ok(Box::new(P384MlKem1024Active {
+            classical,
+            kem,
+            public,
+        }))
     }
 
     fn start_and_complete(&self, peer: &[u8]) -> Result<CompletedKeyExchange, Error> {
@@ -100,7 +113,9 @@ impl SupportedKxGroup for P384MlKem1024 {
         let classical = kx_group::SECP384R1.start_and_complete(classical)?;
         let kem = kx_group::MLKEM1024.start_and_complete(kem)?;
         if classical.pub_key.len() != 97 || kem.pub_key.len() != 1568 {
-            return Err(Error::General("invalid generated P384MLKEM1024 response".into()));
+            return Err(Error::General(
+                "invalid generated P384MLKEM1024 response".into(),
+            ));
         }
         Ok(CompletedKeyExchange {
             group: self.name(),
@@ -109,9 +124,15 @@ impl SupportedKxGroup for P384MlKem1024 {
         })
     }
 
-    fn name(&self) -> NamedGroup { P384_MLKEM1024_NAME }
-    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> { None }
-    fn usable_for_version(&self, version: ProtocolVersion) -> bool { version == ProtocolVersion::TLSv1_3 }
+    fn name(&self) -> NamedGroup {
+        P384_MLKEM1024_NAME
+    }
+    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> {
+        None
+    }
+    fn usable_for_version(&self, version: ProtocolVersion) -> bool {
+        version == ProtocolVersion::TLSv1_3
+    }
 }
 
 fn split_p384_hybrid(peer: &[u8]) -> Result<(&[u8], &[u8]), Error> {
@@ -123,10 +144,14 @@ fn split_p384_hybrid(peer: &[u8]) -> Result<(&[u8], &[u8]), Error> {
 
 fn join_p384_secret(classical: SharedSecret, kem: SharedSecret) -> Result<SharedSecret, Error> {
     if classical.secret_bytes().len() != 48 || kem.secret_bytes().len() != 32 {
-        return Err(Error::General("invalid P384MLKEM1024 shared secret length".into()));
+        return Err(Error::General(
+            "invalid P384MLKEM1024 shared secret length".into(),
+        ));
     }
     // Ownership goes directly into rustls::SharedSecret, which zeroizes on Drop.
-    Ok(SharedSecret::from([classical.secret_bytes(), kem.secret_bytes()].concat()))
+    Ok(SharedSecret::from(
+        [classical.secret_bytes(), kem.secret_bytes()].concat(),
+    ))
 }
 
 struct P384MlKem1024Active {
@@ -140,9 +165,15 @@ impl ActiveKeyExchange for P384MlKem1024Active {
         let (classical, kem) = split_p384_hybrid(peer)?;
         join_p384_secret(self.classical.complete(classical)?, self.kem.complete(kem)?)
     }
-    fn pub_key(&self) -> &[u8] { &self.public }
-    fn group(&self) -> NamedGroup { P384_MLKEM1024_NAME }
-    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> { None }
+    fn pub_key(&self) -> &[u8] {
+        &self.public
+    }
+    fn group(&self) -> NamedGroup {
+        P384_MLKEM1024_NAME
+    }
+    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> {
+        None
+    }
 }
 
 #[derive(Debug)]
@@ -150,17 +181,23 @@ struct P521Group;
 
 impl SupportedKxGroup for P521Group {
     fn start(&self) -> Result<Box<dyn ActiveKeyExchange>, Error> {
-        let private = agreement::EphemeralPrivateKey::generate(&agreement::ECDH_P521, &SystemRandom::new())
-            .map_err(|_| Error::General("P521 ephemeral key generation failed".into()))?;
-        let public = private.compute_public_key()
+        let private =
+            agreement::EphemeralPrivateKey::generate(&agreement::ECDH_P521, &SystemRandom::new())
+                .map_err(|_| Error::General("P521 ephemeral key generation failed".into()))?;
+        let public = private
+            .compute_public_key()
             .map_err(|_| Error::General("P521 public key generation failed".into()))?;
         if public.as_ref().len() != 133 || public.as_ref().first() != Some(&4) {
             return Err(Error::General("invalid generated P521 point".into()));
         }
         Ok(Box::new(P521Active { private, public }))
     }
-    fn name(&self) -> NamedGroup { NamedGroup::secp521r1 }
-    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> { None }
+    fn name(&self) -> NamedGroup {
+        NamedGroup::secp521r1
+    }
+    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> {
+        None
+    }
 }
 
 struct P521Active {
@@ -176,11 +213,19 @@ impl ActiveKeyExchange for P521Active {
         // Enforce TLS's uncompressed encoding before the SDK's real on-curve
         // and subgroup validation. The consumed private key cannot be reused.
         let peer = agreement::UnparsedPublicKey::new(&agreement::ECDH_P521, peer);
-        agreement::agree_ephemeral(self.private, &peer, invalid_share(), |secret| Ok(SharedSecret::from(secret)))
+        agreement::agree_ephemeral(self.private, &peer, invalid_share(), |secret| {
+            Ok(SharedSecret::from(secret))
+        })
     }
-    fn pub_key(&self) -> &[u8] { self.public.as_ref() }
-    fn group(&self) -> NamedGroup { NamedGroup::secp521r1 }
-    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> { None }
+    fn pub_key(&self) -> &[u8] {
+        self.public.as_ref()
+    }
+    fn group(&self) -> NamedGroup {
+        NamedGroup::secp521r1
+    }
+    fn ffdhe_group(&self) -> Option<FfdheGroup<'static>> {
+        None
+    }
 }
 
 #[cfg(test)]

@@ -335,7 +335,9 @@ impl BatchClaims {
         }
         // SDK precision is owned by its authenticated native binding, not by
         // the Token API policy-name grammar or auth/token/create path family.
-        let sdk_precision_owner = self.public_origin.as_ref()
+        let sdk_precision_owner = self
+            .public_origin
+            .as_ref()
             .and_then(super::public_origin::BatchOrigin::sdk_binding)
             .is_some_and(|binding| {
                 binding.namespace == self.namespace

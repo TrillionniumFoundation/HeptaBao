@@ -81,11 +81,20 @@ fn lossless_negative_zero_keeps_float_sign_and_category_at_real_token_boundary()
         &decoded["nested"][0],
         &decoded["nested"][1]["value"],
     ] {
-        assert_eq!(number.as_f64().ok_or("finite signed zero")?.to_bits(), (-0.0_f64).to_bits());
+        assert_eq!(
+            number.as_f64().ok_or("finite signed zero")?.to_bits(),
+            (-0.0_f64).to_bits()
+        );
         assert!(number.as_i64().is_none());
         assert!(number.as_u64().is_none());
     }
-    assert_eq!(decoded["positive"].as_f64().ok_or("positive zero")?.to_bits(), 0.0_f64.to_bits());
+    assert_eq!(
+        decoded["positive"]
+            .as_f64()
+            .ok_or("positive zero")?
+            .to_bits(),
+        0.0_f64.to_bits()
+    );
     assert_eq!(decoded["positive"].as_i64(), Some(0));
     assert_eq!(decoded["text"], "-0");
     assert!(decoded["tag"].is_object());
@@ -99,6 +108,9 @@ fn lossless_negative_zero_keeps_float_sign_and_category_at_real_token_boundary()
     ] {
         assert!(decode(bad).is_err());
     }
-    assert_eq!(decode_with_policy(br#"{"x":-0,"x":0}"#, DuplicatePolicy::LastWins)?["x"].as_i64(), Some(0));
+    assert_eq!(
+        decode_with_policy(br#"{"x":-0,"x":0}"#, DuplicatePolicy::LastWins)?["x"].as_i64(),
+        Some(0)
+    );
     Ok(())
 }

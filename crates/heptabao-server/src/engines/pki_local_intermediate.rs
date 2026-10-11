@@ -2642,9 +2642,9 @@ mod tests {
                     .is_ok_and(|crl| crl.verify(&key).unwrap_or(false)))
         );
         let before = Zeroizing::new(serde_json::to_vec(&root)?);
-        let read =
-            root.handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)
-                .map_err(|error| format!("signed-CA public-read phase: {error:?}"))?;
+        let read = root
+            .handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)
+            .map_err(|error| format!("signed-CA public-read phase: {error:?}"))?;
         assert_eq!(read.body["data"]["revocation_time"], NOW + 1);
         assert_eq!(*before, serde_json::to_vec(&root)?);
         let mut reopened: Pki = serde_json::from_slice(&before)?;
@@ -2675,7 +2675,8 @@ mod tests {
                 "indexed CA field {field} remains owned"
             );
         }
-        reopened.handle_admin("DELETE", "root", &json!({}), NOW + 2)
+        reopened
+            .handle_admin("DELETE", "root", &json!({}), NOW + 2)
             .map_err(|error| format!("signed-CA root-retire phase: {error:?}"))?;
         reopened.validate("", "pki/", NOW + 2)?;
         assert!(reopened.has_local_intermediate_state());

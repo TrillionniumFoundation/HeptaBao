@@ -35,7 +35,10 @@ pub(in crate::service) fn prepare(
     }
     let route = request.path.starts_with("sys/workflows/execute/");
     if route && !matches!(request.method, "POST" | "PUT") {
-        return Err(Response::error(405, "unsupported workflow execution operation"));
+        return Err(Response::error(
+            405,
+            "unsupported workflow execution operation",
+        ));
     }
     if !route {
         if frame
@@ -145,7 +148,9 @@ pub(in crate::service) fn reconstruct(
         }
         return Ok(None);
     };
-    if !matches!(method, "POST" | "PUT") || path != format!("sys/workflows/execute/{}", binding.path) {
+    if !matches!(method, "POST" | "PUT")
+        || path != format!("sys/workflows/execute/{}", binding.path)
+    {
         return Err(invalid());
     }
     validate_workflow_path(&binding.path).map_err(|_| invalid())?;

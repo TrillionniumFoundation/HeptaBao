@@ -77,15 +77,27 @@ impl MfaJanitorHead {
     }
     // This is incapable namespace metadata from the SAME affine signed capture.
     // Service independently verifies its actual enclosing ciphertext before use.
-    pub(crate) fn closed_binding(&self, cluster: &str) -> Result<Option<NativeMfaBinding>, AuthError> {
-        if self.closed.is_none() { return Ok(None); }
+    pub(crate) fn closed_binding(
+        &self,
+        cluster: &str,
+    ) -> Result<Option<NativeMfaBinding>, AuthError> {
+        if self.closed.is_none() {
+            return Ok(None);
+        }
         if self.binding.cluster_id != cluster {
             return Err(err(503, "MFA original closed cluster changed"));
         }
         Ok(Some(self.binding.clone()))
     }
-    pub(crate) fn ciphertext_owner(&self) -> Option<&crate::auth::sdk_namespace_custody::CiphertextOwner> {
-        self.closed.as_ref().and_then(|locator| locator.enclosures.last().or(locator.capture.ciphertext.as_ref()))
+    pub(crate) fn ciphertext_owner(
+        &self,
+    ) -> Option<&crate::auth::sdk_namespace_custody::CiphertextOwner> {
+        self.closed.as_ref().and_then(|locator| {
+            locator
+                .enclosures
+                .last()
+                .or(locator.capture.ciphertext.as_ref())
+        })
     }
 }
 
@@ -232,10 +244,18 @@ fn user_binding(user: &User) -> Result<Vec<u8>, AuthError> {
     Ok(crate::crypto::digest(&bytes).to_vec())
 }
 impl Challenge {
-    pub(super) fn queue_entry(&self, key: &[u8]) -> Result<super::janitor_custody::Entry, AuthError> {
+    pub(super) fn queue_entry(
+        &self,
+        key: &[u8],
+    ) -> Result<super::janitor_custody::Entry, AuthError> {
         self.verify(key)?;
-        Ok(super::janitor_custody::Entry { sequence:self.sequence, binding:self.binding.clone(),
-            created:self.created, eligible_at:self.expires, commitment:crate::crypto::digest(&self.mac) })
+        Ok(super::janitor_custody::Entry {
+            sequence: self.sequence,
+            binding: self.binding.clone(),
+            created: self.created,
+            eligible_at: self.expires,
+            commitment: crate::crypto::digest(&self.mac),
+        })
     }
     pub(super) fn cluster(&self) -> &str {
         &self.binding.cluster_id
@@ -389,13 +409,24 @@ impl Registry {
                         || closed.incarnation != previous.incarnation
                         || closed.method_ids != previous.reference_method_ids()
                         || closed.owner_digest != owner_digest(previous)?
-                        || self.format == super::janitor_custody::FORMAT && closed.queue_digest.is_none()
+                        || self.format == super::janitor_custody::FORMAT
+                            && closed.queue_digest.is_none()
                         || closed.queue_digest.is_some()
-                            && closed.queue_digest != super::janitor_custody::Capture::from_owner(previous,
-                                owner_digest(previous)?, self.mutation_epoch, &self.key.0)?
-                                .as_ref().map(super::janitor_custody::Capture::core_digest).transpose()?
+                            && closed.queue_digest
+                                != super::janitor_custody::Capture::from_owner(
+                                    previous,
+                                    owner_digest(previous)?,
+                                    self.mutation_epoch,
+                                    &self.key.0,
+                                )?
+                                .as_ref()
+                                .map(super::janitor_custody::Capture::core_digest)
+                                .transpose()?
                     {
-                        return Err(err(503, "MFA closed namespace reference differs from its owner"));
+                        return Err(err(
+                            503,
+                            "MFA closed namespace reference differs from its owner",
+                        ));
                     }
                     continue;
                 }
@@ -460,7 +491,10 @@ impl Registry {
                     return Err(err(503, "MFA reopened namespace reference changed"));
                 }
             } else if !retired {
-                return Err(err(503, "MFA closed namespace reference removed without retirement"));
+                return Err(err(
+                    503,
+                    "MFA closed namespace reference removed without retirement",
+                ));
             }
         }
         self.validate_janitor_successor(old)?;
@@ -595,25 +629,31 @@ impl Registry {
         challenge: &Challenge,
         payload: &'a serde_json::Map<String, Value>,
     ) -> Result<BTreeMap<String, &'a Vec<Value>>, AuthError> {
-        let required = challenge.requirements.iter()
-            .flat_map(|rule| rule.methods.keys().cloned()).collect::<BTreeSet<_>>();
+        let required = challenge
+            .requirements
+            .iter()
+            .flat_map(|rule| rule.methods.keys().cloned())
+            .collect::<BTreeSet<_>>();
         let mut resolved = BTreeMap::new();
         for (supplied, value) in payload {
             let id = if required.contains(supplied) {
                 supplied.clone()
             } else {
-                let matches = required.iter().filter_map(|id| {
-                    let method = self.method(&challenge.binding.namespace, id)?;
-                    if method.name.is_empty() {
-                        return None;
-                    }
-                    let name = if method.namespace.is_empty() {
-                        method.name.clone()
-                    } else {
-                        format!("{}/{}", method.namespace, method.name)
-                    };
-                    (name == *supplied).then(|| id.clone())
-                }).collect::<BTreeSet<_>>();
+                let matches = required
+                    .iter()
+                    .filter_map(|id| {
+                        let method = self.method(&challenge.binding.namespace, id)?;
+                        if method.name.is_empty() {
+                            return None;
+                        }
+                        let name = if method.namespace.is_empty() {
+                            method.name.clone()
+                        } else {
+                            format!("{}/{}", method.namespace, method.name)
+                        };
+                        (name == *supplied).then(|| id.clone())
+                    })
+                    .collect::<BTreeSet<_>>();
                 if matches.len() != 1 {
                     return Err(err(403, "unknown or ambiguous MFA method credentials"));
                 }
@@ -827,7 +867,9 @@ impl AuthState {
             .and_then(Value::as_str)
             .filter(|s| uuid_valid(s))
             .ok_or_else(|| bad("invalid request ID"))?;
-        if self.mfa_challenge_has_terminal_receipt(namespace, id) { return Err(bad("invalid request ID")); }
+        if self.mfa_challenge_has_terminal_receipt(namespace, id) {
+            return Err(bad("invalid request ID"));
+        }
         let challenge = self
             .identity_mfa
             .as_ref()
@@ -870,10 +912,7 @@ impl AuthState {
             .and_then(|users| users.get(&username))
             .ok_or_else(denied)?;
         if user_binding(user)? != challenge.user_binding
-            || !same_mount(
-                &current,
-                &challenge.mount_revision,
-            )?
+            || !same_mount(&current, &challenge.mount_revision)?
         {
             return Err(denied());
         }
@@ -1059,13 +1098,13 @@ impl AuthState {
             .namespaces
             .iter()
             .flat_map(|(namespace, owner)| {
-                owner.challenges.iter().map(move |(id, challenge)| {
-                    (namespace, id, challenge)
-                })
+                owner
+                    .challenges
+                    .iter()
+                    .map(move |(id, challenge)| (namespace, id, challenge))
             })
             .min_by(|left, right| {
-                (left.2.created.seconds(), left.1)
-                    .cmp(&(right.2.created.seconds(), right.1))
+                (left.2.created.seconds(), left.1).cmp(&(right.2.created.seconds(), right.1))
             });
         let Some((namespace, id, challenge)) = selected else {
             return Ok(None);
@@ -1140,17 +1179,28 @@ impl AuthState {
     // remains genuine and its private MAC is independently verified before
     // and after claiming an impossible already-captured unissued grant.
     pub(crate) fn test_resign_mfa_pending_grant_with_claimed_ttl(
-        &mut self, namespace: &str, id: &str, ttl: u64,
+        &mut self,
+        namespace: &str,
+        id: &str,
+        ttl: u64,
     ) -> Result<(), AuthError> {
-        let registry = self.identity_mfa.as_mut()
+        let registry = self
+            .identity_mfa
+            .as_mut()
             .ok_or_else(|| err(503, "actual MFA registry"))?;
         let key = Zeroizing::new(registry.key.0.clone());
-        let challenge = registry.namespaces.get_mut(namespace)
+        let challenge = registry
+            .namespaces
+            .get_mut(namespace)
             .and_then(|owner| owner.challenges.get_mut(id))
             .ok_or_else(|| err(503, "actual MFA challenge"))?;
         challenge.verify(&key)?;
         let Grant::Service(token) = &mut challenge.grant;
-        let Some(TokenAuthProvenance::Userpass { issued_creation_ttl, .. }) = &mut token.auth_provenance else {
+        let Some(TokenAuthProvenance::Userpass {
+            issued_creation_ttl,
+            ..
+        }) = &mut token.auth_provenance
+        else {
             return Err(err(503, "actual native unissued Userpass provenance"));
         };
         if issued_creation_ttl.is_some() {

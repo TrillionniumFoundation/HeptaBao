@@ -237,8 +237,9 @@ impl OwnerStateManifest {
         if self.storage_format != STATE_STORAGE_FORMAT
             || self.manifest_schema != 4
             || self.state_schema == 0
-            || self.global_lossless_json_format.is_some_and(|format| format != 1
-                || self.state_schema < crate::service::GLOBAL_LOSSLESS_JSON_STATE_SCHEMA)
+            || self.global_lossless_json_format.is_some_and(|format| {
+                format != 1 || self.state_schema < crate::service::GLOBAL_LOSSLESS_JSON_STATE_SCHEMA
+            })
             || self.cluster_id.is_empty()
             || self.cluster_id.len() > 256
             || self.cluster_id.bytes().any(|byte| byte.is_ascii_control())
@@ -604,13 +605,16 @@ impl OwnerWritePlan {
     }
 
     /// Bind the exact State metadata before the existing publication binding.
-    pub(crate) fn with_global_lossless_json_format(mut self, format: Option<u32>) -> Result<Self, OwnerStoreError> {
-        let mut manifest = decode_manifest(&self.manifest_bytes)?
-            .ok_or(OwnerStoreError::InvalidManifest)?;
+    pub(crate) fn with_global_lossless_json_format(
+        mut self,
+        format: Option<u32>,
+    ) -> Result<Self, OwnerStoreError> {
+        let mut manifest =
+            decode_manifest(&self.manifest_bytes)?.ok_or(OwnerStoreError::InvalidManifest)?;
         manifest.global_lossless_json_format = format;
         manifest.validate()?;
-        self.manifest_bytes = serde_json::to_vec(&manifest)
-            .map_err(|_| OwnerStoreError::Serialization)?;
+        self.manifest_bytes =
+            serde_json::to_vec(&manifest).map_err(|_| OwnerStoreError::Serialization)?;
         Ok(self)
     }
 

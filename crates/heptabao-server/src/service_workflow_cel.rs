@@ -197,28 +197,51 @@ fn json_to_cel(
     }
     Ok(result)
 }
-fn runtime_to_cel(value: &RuntimeValue, response_numbers: bool, depth: usize)
-    -> Result<cel::Value, Response> {
-    if depth > MAX_AST_DEPTH { return Err(failed()); }
+fn runtime_to_cel(
+    value: &RuntimeValue,
+    response_numbers: bool,
+    depth: usize,
+) -> Result<cel::Value, Response> {
+    if depth > MAX_AST_DEPTH {
+        return Err(failed());
+    }
     let result = if let Some(value) = value.actual_float() {
         cel::Value::Float(value)
     } else if let Some(value) = value.json_scalar() {
         json_to_cel(value, response_numbers, depth)?
     } else if let Some(values) = value.as_array() {
-        cel::Value::List(Arc::new(values.iter()
-            .map(|value| runtime_to_cel(value, response_numbers, depth + 1))
-            .collect::<Result<Vec<_>, _>>()?))
+        cel::Value::List(Arc::new(
+            values
+                .iter()
+                .map(|value| runtime_to_cel(value, response_numbers, depth + 1))
+                .collect::<Result<Vec<_>, _>>()?,
+        ))
     } else if let Some(values) = value.as_object() {
-        cel::Value::Map(Map { map: Arc::new(values.iter().map(|(key,value)| {
-            Ok((Key::String(Arc::new(key.clone())),
-                runtime_to_cel(value, response_numbers, depth + 1)?))
-        }).collect::<Result<HashMap<_,_>,Response>>()?) })
-    } else { return Err(failed()); };
-    if value_size(&result,0).is_none() { return Err(failed()); }
+        cel::Value::Map(Map {
+            map: Arc::new(
+                values
+                    .iter()
+                    .map(|(key, value)| {
+                        Ok((
+                            Key::String(Arc::new(key.clone())),
+                            runtime_to_cel(value, response_numbers, depth + 1)?,
+                        ))
+                    })
+                    .collect::<Result<HashMap<_, _>, Response>>()?,
+            ),
+        })
+    } else {
+        return Err(failed());
+    };
+    if value_size(&result, 0).is_none() {
+        return Err(failed());
+    }
     Ok(result)
 }
 fn cel_to_runtime(value: &cel::Value, depth: usize) -> Result<RuntimeValue, Response> {
-    if depth > MAX_AST_DEPTH { return Err(failed()); }
+    if depth > MAX_AST_DEPTH {
+        return Err(failed());
+    }
     match value {
         cel::Value::Null => Ok(RuntimeValue::from_json(&Value::Null)),
         cel::Value::Bool(value) => Ok(RuntimeValue::from_json(&Value::Bool(*value))),
@@ -226,14 +249,18 @@ fn cel_to_runtime(value: &cel::Value, depth: usize) -> Result<RuntimeValue, Resp
         cel::Value::UInt(value) => Ok(RuntimeValue::from_json(&Value::from(*value))),
         cel::Value::Float(value) => Ok(RuntimeValue::float(*value)),
         cel::Value::String(value) => Ok(RuntimeValue::string(value.as_ref().clone())),
-        cel::Value::List(values) => values.iter()
-            .map(|value| cel_to_runtime(value,depth+1))
-            .collect::<Result<Vec<_>,_>>().map(RuntimeValue::array),
+        cel::Value::List(values) => values
+            .iter()
+            .map(|value| cel_to_runtime(value, depth + 1))
+            .collect::<Result<Vec<_>, _>>()
+            .map(RuntimeValue::array),
         cel::Value::Map(values) => {
             let mut result = RuntimeValue::object();
-            for (key,value) in values.map.iter() {
-                let Key::String(key) = key else { return Err(failed()); };
-                result.insert(key.as_ref().clone(),cel_to_runtime(value,depth+1)?);
+            for (key, value) in values.map.iter() {
+                let Key::String(key) = key else {
+                    return Err(failed());
+                };
+                result.insert(key.as_ref().clone(), cel_to_runtime(value, depth + 1)?);
             }
             Ok(result)
         }
@@ -420,7 +447,8 @@ impl CelSource {
         if history {
             Ok(None)
         } else {
-            self.evaluate_runtime(input, requests, responses, meter).map(Some)
+            self.evaluate_runtime(input, requests, responses, meter)
+                .map(Some)
         }
     }
     pub(super) fn evaluate_runtime(
@@ -538,13 +566,22 @@ impl CelSource {
         Ok(value)
     }
     #[cfg(test)]
-    pub(super) fn evaluate(&self,input: &Value,requests: &Value,responses: &Value,
-        meter: &Arc<Meter>) -> Result<Value,Response> {
-        self.evaluate_runtime(&RuntimeValue::from_json(input),
-            &RuntimeValue::from_json(requests), &RuntimeValue::from_json(responses),meter)?
-            .to_json().map_err(|_| failed())
+    pub(super) fn evaluate(
+        &self,
+        input: &Value,
+        requests: &Value,
+        responses: &Value,
+        meter: &Arc<Meter>,
+    ) -> Result<Value, Response> {
+        self.evaluate_runtime(
+            &RuntimeValue::from_json(input),
+            &RuntimeValue::from_json(requests),
+            &RuntimeValue::from_json(responses),
+            meter,
+        )?
+        .to_json()
+        .map_err(|_| failed())
     }
-
 }
 
 #[cfg(test)]

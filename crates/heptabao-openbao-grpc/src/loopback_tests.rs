@@ -9,11 +9,11 @@ use std::task::{Context, Poll};
 use tokio::net::TcpListener;
 use tokio::sync::{Notify, oneshot};
 use tokio::task::JoinHandle;
+use tokio_rustls::rustls::{RootCertStore, ServerConfig, server::WebPkiClientVerifier};
 use tokio_stream::wrappers::TcpListenerStream;
 use tonic::codegen::{Service, http};
 use tonic::server::{NamedService, UnaryService};
 use tonic::transport::{Certificate, ClientTlsConfig, Endpoint, Server};
-use tokio_rustls::rustls::{RootCertStore, ServerConfig, server::WebPkiClientVerifier};
 
 use super::*;
 use crate::handshake::LocalEndpoint;
@@ -284,33 +284,43 @@ impl tokio_stream::Stream for ExplicitTlsIncoming {
         }
     }
 }
-fn explicit_tls_acceptor(certificates: &Certificates) -> Result<tokio_rustls::TlsAcceptor, BridgeError> {
+fn explicit_tls_acceptor(
+    certificates: &Certificates,
+) -> Result<tokio_rustls::TlsAcceptor, BridgeError> {
     use tokio_rustls::rustls::pki_types::{CertificateDer, PrivatePkcs8KeyDer};
     let certificate_chain = |pem: &[u8]| -> Result<Vec<CertificateDer<'static>>, BridgeError> {
         openssl::x509::X509::stack_from_pem(pem)
             .map_err(|_| BridgeError::InvalidBinding)?
             .into_iter()
             .map(|certificate| {
-                certificate.to_der().map(CertificateDer::from)
+                certificate
+                    .to_der()
+                    .map(CertificateDer::from)
                     .map_err(|_| BridgeError::InvalidBinding)
             })
             .collect()
     };
     let mut roots = RootCertStore::empty();
     for certificate in certificate_chain(&certificates.client)? {
-        roots.add(certificate).map_err(|_| BridgeError::InvalidBinding)?;
+        roots
+            .add(certificate)
+            .map_err(|_| BridgeError::InvalidBinding)?;
     }
     let provider = Arc::new(tokio_rustls::rustls::crypto::ring::default_provider());
     let verifier = WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider.clone())
-        .build().map_err(|_| BridgeError::InvalidBinding)?;
+        .build()
+        .map_err(|_| BridgeError::InvalidBinding)?;
     let private_key = openssl::pkey::PKey::private_key_from_pem(&certificates.server_key)
         .and_then(|key| key.private_key_to_pkcs8())
         .map_err(|_| BridgeError::InvalidBinding)?;
     let mut config = ServerConfig::builder_with_provider(provider)
-        .with_safe_default_protocol_versions().map_err(|_| BridgeError::InvalidBinding)?
+        .with_safe_default_protocol_versions()
+        .map_err(|_| BridgeError::InvalidBinding)?
         .with_client_cert_verifier(verifier)
-        .with_single_cert(certificate_chain(&certificates.server)?,
-            PrivatePkcs8KeyDer::from(private_key).into())
+        .with_single_cert(
+            certificate_chain(&certificates.server)?,
+            PrivatePkcs8KeyDer::from(private_key).into(),
+        )
         .map_err(|_| BridgeError::InvalidBinding)?;
     config.alpn_protocols = vec![b"h2".to_vec()];
     Ok(tokio_rustls::TlsAcceptor::from(Arc::new(config)))

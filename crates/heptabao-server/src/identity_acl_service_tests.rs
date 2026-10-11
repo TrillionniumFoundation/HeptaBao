@@ -634,16 +634,63 @@ fn ui_resultant_acl_tracks_live_identity_templates_for_service_and_batch_tokens(
     for batch in [false, true] {
         let mut f = TemplateFixture::new(batch)?;
         f.grant(r#"path "idtest/name/{{identity.entity.name}}/*" { capabilities=["read"] }"#);
-        let acl = call(&mut f.service, "", &f.token, "GET", "sys/internal/ui/resultant-acl", json!({}));
+        let acl = call(
+            &mut f.service,
+            "",
+            &f.token,
+            "GET",
+            "sys/internal/ui/resultant-acl",
+            json!({}),
+        );
         assert_eq!(acl.status, 200);
-        assert_eq!(acl.body["data"]["glob_paths"]["idtest/name/alice/"]["capabilities"], json!(["read"]));
-        update_entity(&mut f.service, "", &f.admin, &f.entity, json!({"name":"renamed"}));
-        let acl = call(&mut f.service, "", &f.token, "GET", "sys/internal/ui/resultant-acl", json!({}));
+        assert_eq!(
+            acl.body["data"]["glob_paths"]["idtest/name/alice/"]["capabilities"],
+            json!(["read"])
+        );
+        update_entity(
+            &mut f.service,
+            "",
+            &f.admin,
+            &f.entity,
+            json!({"name":"renamed"}),
+        );
+        let acl = call(
+            &mut f.service,
+            "",
+            &f.token,
+            "GET",
+            "sys/internal/ui/resultant-acl",
+            json!({}),
+        );
         assert_eq!(acl.status, 200);
-        assert!(acl.body["data"]["glob_paths"].get("idtest/name/alice/").is_none());
-        assert_eq!(acl.body["data"]["glob_paths"]["idtest/name/renamed/"]["capabilities"], json!(["read"]));
-        update_entity(&mut f.service, "", &f.admin, &f.entity, json!({"disabled":true}));
-        assert_eq!(call(&mut f.service, "", &f.token, "GET", "sys/internal/ui/resultant-acl", json!({})).status, 403);
+        assert!(
+            acl.body["data"]["glob_paths"]
+                .get("idtest/name/alice/")
+                .is_none()
+        );
+        assert_eq!(
+            acl.body["data"]["glob_paths"]["idtest/name/renamed/"]["capabilities"],
+            json!(["read"])
+        );
+        update_entity(
+            &mut f.service,
+            "",
+            &f.admin,
+            &f.entity,
+            json!({"disabled":true}),
+        );
+        assert_eq!(
+            call(
+                &mut f.service,
+                "",
+                &f.token,
+                "GET",
+                "sys/internal/ui/resultant-acl",
+                json!({})
+            )
+            .status,
+            403
+        );
     }
     Ok(())
 }

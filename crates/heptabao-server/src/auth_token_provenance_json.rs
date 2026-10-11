@@ -92,7 +92,13 @@ impl<'de> Deserialize<'de> for TokenAuthProvenance {
                 issued_metadata,
                 issued_creation_ttl,
             },
-            Wire::Userpass { username, issued_creation_ttl } => Self::Userpass { username, issued_creation_ttl },
+            Wire::Userpass {
+                username,
+                issued_creation_ttl,
+            } => Self::Userpass {
+                username,
+                issued_creation_ttl,
+            },
             Wire::AppRole {
                 role_name,
                 issued_metadata,
@@ -133,7 +139,13 @@ impl<'de> Deserialize<'de> for TokenAuthProvenance {
                 credential,
             },
             Wire::Jwt { role_name } => Self::Jwt { role_name },
-            Wire::Kubernetes { role_name, renewal_custody } => Self::Kubernetes { role_name, renewal_custody },
+            Wire::Kubernetes {
+                role_name,
+                renewal_custody,
+            } => Self::Kubernetes {
+                role_name,
+                renewal_custody,
+            },
             Wire::Oidc { role_name } => Self::Oidc { role_name },
             Wire::Kerberos {
                 provider,

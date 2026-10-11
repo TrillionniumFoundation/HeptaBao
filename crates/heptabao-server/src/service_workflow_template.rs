@@ -75,23 +75,43 @@ fn convert(value: &Value, input_numbers: bool, depth: usize) -> Result<gotmpl::V
     }
     Ok(result)
 }
-fn convert_runtime(value: &RuntimeValue,input_numbers: bool,depth: usize)
-    -> Result<gotmpl::Value,Response> {
-    if depth > MAX_JSON_DEPTH { return Err(failed()); }
-    let result = if let Some(value)=value.actual_float() {
+fn convert_runtime(
+    value: &RuntimeValue,
+    input_numbers: bool,
+    depth: usize,
+) -> Result<gotmpl::Value, Response> {
+    if depth > MAX_JSON_DEPTH {
+        return Err(failed());
+    }
+    let result = if let Some(value) = value.actual_float() {
         gotmpl::Value::Float(value)
-    } else if let Some(value)=value.json_scalar() {
-        convert(value,input_numbers,depth)?
-    } else if let Some(values)=value.as_array() {
-        gotmpl::Value::List(Arc::from(values.iter()
-            .map(|value|convert_runtime(value,input_numbers,depth+1))
-            .collect::<Result<Vec<_>,_>>()?))
-    } else if let Some(values)=value.as_object() {
-        gotmpl::Value::Map(Arc::new(values.iter().map(|(key,value)| {
-            Ok((Arc::from(key.as_str()),convert_runtime(value,input_numbers,depth+1)?))
-        }).collect::<Result<BTreeMap<_,_>,Response>>()?))
-    } else { return Err(failed()); };
-    if size(&result,0).is_none() { return Err(failed()); }
+    } else if let Some(value) = value.json_scalar() {
+        convert(value, input_numbers, depth)?
+    } else if let Some(values) = value.as_array() {
+        gotmpl::Value::List(Arc::from(
+            values
+                .iter()
+                .map(|value| convert_runtime(value, input_numbers, depth + 1))
+                .collect::<Result<Vec<_>, _>>()?,
+        ))
+    } else if let Some(values) = value.as_object() {
+        gotmpl::Value::Map(Arc::new(
+            values
+                .iter()
+                .map(|(key, value)| {
+                    Ok((
+                        Arc::from(key.as_str()),
+                        convert_runtime(value, input_numbers, depth + 1)?,
+                    ))
+                })
+                .collect::<Result<BTreeMap<_, _>, Response>>()?,
+        ))
+    } else {
+        return Err(failed());
+    };
+    if size(&result, 0).is_none() {
+        return Err(failed());
+    }
     Ok(result)
 }
 struct Writer<'a> {
@@ -99,7 +119,9 @@ struct Writer<'a> {
     meter: &'a cel_consumer::Meter,
 }
 impl Drop for Writer<'_> {
-    fn drop(&mut self) { zeroize::Zeroize::zeroize(&mut self.text); }
+    fn drop(&mut self) {
+        zeroize::Zeroize::zeroize(&mut self.text);
+    }
 }
 impl Write for Writer<'_> {
     fn write_str(&mut self, text: &str) -> std::fmt::Result {
@@ -155,9 +177,9 @@ impl TemplateSource {
                 shared
                     .template_bytes(value.len())
                     .map_err(|_| template_error())?;
-                Ok(gotmpl::Value::String(Arc::from(crate::service::hex(&crypto::digest(
-                    value.as_bytes(),
-                )))))
+                Ok(gotmpl::Value::String(Arc::from(crate::service::hex(
+                    &crypto::digest(value.as_bytes()),
+                ))))
             })
             .parse(&self.source)
             .map_err(|_| failed())?;
@@ -189,7 +211,10 @@ impl TemplateSource {
             .collect::<Result<BTreeMap<_, _>, Response>>()?;
         context.insert(Arc::from("input"), convert_runtime(input, true, 0)?);
         context.insert(Arc::from("requests"), convert_runtime(requests, true, 0)?);
-        context.insert(Arc::from("responses"), convert_runtime(responses, false, 0)?);
+        context.insert(
+            Arc::from("responses"),
+            convert_runtime(responses, false, 0)?,
+        );
         let context = gotmpl::Value::Map(Arc::new(context));
         let mut writer = Writer {
             text: String::new(),
@@ -202,13 +227,24 @@ impl TemplateSource {
         Ok(RuntimeValue::string(std::mem::take(&mut writer.text)))
     }
     #[cfg(test)]
-    pub(super) fn evaluate(&self,input:&Value,requests:&Value,responses:&Value,
-        additional:&Value,meter:&Arc<cel_consumer::Meter>) -> Result<Value,Response> {
-        self.evaluate_runtime(&RuntimeValue::from_json(input),&RuntimeValue::from_json(requests),
-            &RuntimeValue::from_json(responses),&RuntimeValue::from_json(additional),meter)?
-            .to_json().map_err(|_|failed())
+    pub(super) fn evaluate(
+        &self,
+        input: &Value,
+        requests: &Value,
+        responses: &Value,
+        additional: &Value,
+        meter: &Arc<cel_consumer::Meter>,
+    ) -> Result<Value, Response> {
+        self.evaluate_runtime(
+            &RuntimeValue::from_json(input),
+            &RuntimeValue::from_json(requests),
+            &RuntimeValue::from_json(responses),
+            &RuntimeValue::from_json(additional),
+            meter,
+        )?
+        .to_json()
+        .map_err(|_| failed())
     }
-
 }
 
 #[cfg(test)]

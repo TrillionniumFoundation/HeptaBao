@@ -303,7 +303,10 @@ pub(super) struct SealPublication {
 }
 impl SealPublication {
     fn logical_validation(&self) -> Result<State, Response> {
-        namespace_diagnostic!("seal.logical.original_custody", self.check_original_custody())?;
+        namespace_diagnostic!(
+            "seal.logical.original_custody",
+            self.check_original_custody()
+        )?;
         let mut logical = self.closed.clone();
         // This exclusive view is only for full validation. Original real
         // leases are checked separately and no new runtime slot is installed.
@@ -325,7 +328,10 @@ impl SealPublication {
         // Keep engine assets/record cells closed; only completed SDK history moves.
         let logical = self.logical_validation()?;
         let actual = binding.namespace();
-        if logical.namespaces.custody_binding(&logical.cluster_id, actual)? != *binding
+        if logical
+            .namespaces
+            .custody_binding(&logical.cluster_id, actual)?
+            != *binding
             || !logical.namespace_sdk_deletion_terminal(actual)?
         {
             return Err(unavailable());
@@ -384,7 +390,10 @@ impl SealPublication {
             return Err(unavailable());
         }
         let logical = namespace_diagnostic!("seal.proof.logical", self.logical_validation())?;
-        namespace_diagnostic!("seal.proof.publication_schema", logical.validate_publication_schema(previous))?;
+        namespace_diagnostic!(
+            "seal.proof.publication_schema",
+            logical.validate_publication_schema(previous)
+        )?;
         let physical = self.closed.protected_state()?;
         namespace_diagnostic!("seal.proof.physical_format", physical.validate_format())?;
         if let Some(previous) = previous {
@@ -652,7 +661,6 @@ impl Drop for Runtime {
 }
 
 impl Runtime {
-
     // This fixture has no in-progress unseal shares. Fail rather than project
     // those private progress objects into an incomplete custody snapshot.
     #[cfg(test)]
@@ -718,7 +726,10 @@ impl Runtime {
         serde_json::to_vec(&(
             loaded,
             leases,
-            state.namespace_protected.as_ref().map(|owner| Arc::as_ptr(owner) as usize),
+            state
+                .namespace_protected
+                .as_ref()
+                .map(|owner| Arc::as_ptr(owner) as usize),
             retirements,
             cleanups,
         ))
@@ -1058,9 +1069,18 @@ impl Runtime {
         request_live()?;
         namespace_diagnostic!("seal.source_format", state.validate_format())?;
         let (mut closed, fresh) = if state.namespaces.custody_owner(actual).is_some() {
-            (namespace_diagnostic!("seal.close_independent", self.closed_candidate(state, actual))?, None)
+            (
+                namespace_diagnostic!(
+                    "seal.close_independent",
+                    self.closed_candidate(state, actual)
+                )?,
+                None,
+            )
         } else {
-            namespace_diagnostic!("seal.close_inherited", self.inherited_closed_candidate_with_key(state, actual, root_key))?
+            namespace_diagnostic!(
+                "seal.close_inherited",
+                self.inherited_closed_candidate_with_key(state, actual, root_key)
+            )?
         };
         namespace_diagnostic!("seal.prepare_closed", self.prepare(&mut closed))?;
         let prefix = format!("{actual}/");
@@ -1124,8 +1144,10 @@ impl Runtime {
         // descendant parcels already carry their own retired admission.
         for namespace in state.namespaces.partition_paths(actual)? {
             state.engines.retire_namespace_pending_delivery(&namespace);
-            state.auth.retire_mfa_pending_delivery(&namespace)
-                .map_err(|error|Response::error(error.status,&error.message))?;
+            state
+                .auth
+                .retire_mfa_pending_delivery(&namespace)
+                .map_err(|error| Response::error(error.status, &error.message))?;
             Service::retire_namespace_pending_database(state, &namespace)?;
         }
         Ok(())
@@ -1561,29 +1583,32 @@ impl Runtime {
                 .namespaces
                 .custody_binding(&protected.cluster_id, actual)?;
             let lease = loaded(actual).ok_or_else(unavailable)?;
-            protected = namespace_diagnostic!("runtime.partition", lease.with_key(&descriptor, |key| {
-                protected
-                    .partition_namespace_assets(actual, key)?
-                    .finish_with_owner(|next, assets, cells| {
-                        let bytes = owner_store::serialize_owner(assets)
-                            .map_err(state_serialization_error)?;
-                        let previous = descriptor
-                            .open_assets(&binding, key)
-                            .map_err(|_| unavailable())?;
-                        let next_descriptor = if previous.as_slice() == bytes.as_slice() {
-                            descriptor.clone()
-                        } else {
-                            descriptor
-                                .replace_assets(&binding, key, &bytes)
-                                .map_err(|_| unavailable())?
-                        };
-                        next.engines
-                            .publish_namespace_record_cells(&binding, cells)
-                            .map_err(|_| unavailable())?;
-                        next_descriptor.install(next, actual)?;
-                        Ok(())
-                    })
-            }))?;
+            protected = namespace_diagnostic!(
+                "runtime.partition",
+                lease.with_key(&descriptor, |key| {
+                    protected
+                        .partition_namespace_assets(actual, key)?
+                        .finish_with_owner(|next, assets, cells| {
+                            let bytes = owner_store::serialize_owner(assets)
+                                .map_err(state_serialization_error)?;
+                            let previous = descriptor
+                                .open_assets(&binding, key)
+                                .map_err(|_| unavailable())?;
+                            let next_descriptor = if previous.as_slice() == bytes.as_slice() {
+                                descriptor.clone()
+                            } else {
+                                descriptor
+                                    .replace_assets(&binding, key, &bytes)
+                                    .map_err(|_| unavailable())?
+                            };
+                            next.engines
+                                .publish_namespace_record_cells(&binding, cells)
+                                .map_err(|_| unavailable())?;
+                            next_descriptor.install(next, actual)?;
+                            Ok(())
+                        })
+                })
+            )?;
         }
         protected.namespace_leases = Leases::default();
         protected.namespace_protected = None;
@@ -1607,7 +1632,10 @@ impl Runtime {
                     .engines
                     .namespace_record_cells(&binding)
                     .map_err(|_| unavailable())?;
-                let mut next = namespace_diagnostic!("runtime.restore_assets", logical.restore_namespace_assets(actual, key, assets, &cells))?;
+                let mut next = namespace_diagnostic!(
+                    "runtime.restore_assets",
+                    logical.restore_namespace_assets(actual, key, assets, &cells)
+                )?;
                 next.namespaces.set_sealed(actual, false)?;
                 Ok(next)
             })?;
@@ -1779,15 +1807,21 @@ impl Service {
             }
         };
         let root_key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
-        let proof = namespace_diagnostic!("seal.prepare", self.namespace_runtime.seal_publication(
-            state,
-            actual,
-            root_key,
-            base,
-            self.ha.clone(),
-            native_role,
-        ))?;
-        namespace_diagnostic!("seal.prepared_proof", proof.validate(self.state.as_ref(), base, &self.ha))?;
+        let proof = namespace_diagnostic!(
+            "seal.prepare",
+            self.namespace_runtime.seal_publication(
+                state,
+                actual,
+                root_key,
+                base,
+                self.ha.clone(),
+                native_role,
+            )
+        )?;
+        namespace_diagnostic!(
+            "seal.prepared_proof",
+            proof.validate(self.state.as_ref(), base, &self.ha)
+        )?;
         Ok(proof)
     }
 
@@ -2769,11 +2803,17 @@ impl State {
 impl State {
     pub(super) fn validate_mfa_namespace_custody(&self) -> Result<(), Response> {
         if self.auth.mfa_has_unbound_projection() {
-            return Err(Response::error(503, "MFA detached projection lacks actual ciphertext ownership"));
+            return Err(Response::error(
+                503,
+                "MFA detached projection lacks actual ciphertext ownership",
+            ));
         }
         for expected in self.auth.mfa_namespace_visible_owners() {
             if self.sdk_namespace_ciphertext_owner(expected.binding.namespace())? != *expected {
-                return Err(Response::error(503, "MFA queue actual ciphertext ownership differs"));
+                return Err(Response::error(
+                    503,
+                    "MFA queue actual ciphertext ownership differs",
+                ));
             }
         }
         Ok(())

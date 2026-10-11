@@ -233,25 +233,30 @@ impl QueryRequest<'_> {
         Ok(("GET", body))
     }
 
-
     // This hash parameter belongs only to the actual synchronized Transit BYOK owner.
     pub(crate) fn resolve_transit_byok_export(&self) -> Result<(&str, CarrierBody), Response> {
         if self.wire_method != "GET"
             || get_query_method(self.query)
-                .map_err(|error| Response::error(error.status, error.message))? != "GET"
+                .map_err(|error| Response::error(error.status, error.message))?
+                != "GET"
         {
             return Err(Response::error(405, "unsupported BYOK export operation"));
         }
         let mut body = CarrierBody(json!({}));
         for pair in self.query.split('&').filter(|pair| !pair.is_empty()) {
-            let (key, value) = pair.split_once('=')
+            let (key, value) = pair
+                .split_once('=')
                 .ok_or_else(|| Response::error(400, "query parameters require values"))?;
-            let key = decode_query(key)
-                .map_err(|error| Response::error(error.status, error.message))?;
+            let key =
+                decode_query(key).map_err(|error| Response::error(error.status, error.message))?;
             if key == "hash" {
-                let value = Zeroizing::new(decode_query(value)
-                    .map_err(|error| Response::error(error.status, error.message))?);
-                let object = body.0.as_object_mut()
+                let value = Zeroizing::new(
+                    decode_query(value)
+                        .map_err(|error| Response::error(error.status, error.message))?,
+                );
+                let object = body
+                    .0
+                    .as_object_mut()
                     .ok_or_else(|| Response::error(400, "JSON object required"))?;
                 if object.contains_key(&key) {
                     return Err(Response::error(400, "duplicate body/query parameter"));
@@ -266,12 +271,16 @@ impl QueryRequest<'_> {
     }
 
     pub(crate) fn unmounted_byok_query(&self) -> bool {
-        self.wire_method == "GET" && self.path.split_once("/byok-export/")
-            .is_some_and(|(prefix, suffix)| {
-                let parts: Vec<_> = suffix.split('/').collect();
-                !prefix.is_empty() && matches!(parts.len(), 2 | 3)
-                    && parts.iter().all(|part| !part.is_empty())
-            })
+        self.wire_method == "GET"
+            && self
+                .path
+                .split_once("/byok-export/")
+                .is_some_and(|(prefix, suffix)| {
+                    let parts: Vec<_> = suffix.split('/').collect();
+                    !prefix.is_empty()
+                        && matches!(parts.len(), 2 | 3)
+                        && parts.iter().all(|part| !part.is_empty())
+                })
     }
 
     pub(crate) fn resolve(

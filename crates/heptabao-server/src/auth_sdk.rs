@@ -792,10 +792,18 @@ impl AuthState {
             .map_err(|_| err(503, "SDK Auth original clock unavailable"))?;
         if raw.starts_with("hvb.") {
             let authority = self.batch_authority.as_ref().ok_or_else(denied)?;
-            let claims = authority.open_authenticated_observed(raw, AuthorityTime::Precise(at)).map_err(|_| denied())?;
-            let binding = claims.public_origin().and_then(public_origin::BatchOrigin::sdk_binding)
+            let claims = authority
+                .open_authenticated_observed(raw, AuthorityTime::Precise(at))
+                .map_err(|_| denied())?;
+            let binding = claims
+                .public_origin()
+                .and_then(public_origin::BatchOrigin::sdk_binding)
                 .ok_or_else(denied)?;
-            self.check_batch_claims_observed(&claims, &binding.namespace, AuthorityTime::Precise(at))?;
+            self.check_batch_claims_observed(
+                &claims,
+                &binding.namespace,
+                AuthorityTime::Precise(at),
+            )?;
             return self.validate_sdk_batch_binding(binding);
         }
         let token = self.active_token_observed(&hash(raw), AuthorityTime::Precise(at), false)?;
@@ -877,15 +885,24 @@ impl AuthState {
                 .map_err(|_| bad("SDK Auth maximum rejected"))?
                 .min(mount_max)
         };
-        let ttl = if options.period.is_zero() { ttl } else { options.period };
+        let ttl = if options.period.is_zero() {
+            ttl
+        } else {
+            options.period
+        };
         let maximum_duration = if options.period.is_zero() {
-            Some(if options.explicit_max.is_zero() { max } else { max.min(options.explicit_max) })
+            Some(if options.explicit_max.is_zero() {
+                max
+            } else {
+                max.min(options.explicit_max)
+            })
         } else if options.explicit_max.is_zero() {
             None
         } else {
             Some(options.explicit_max)
         };
-        let ttl = maximum_duration.map_or(ttl.min(mount_max), |limit| ttl.min(mount_max).min(limit));
+        let ttl =
+            maximum_duration.map_or(ttl.min(mount_max), |limit| ttl.min(mount_max).min(limit));
         if ttl.is_zero() {
             return Err(bad("SDK Auth positive lease required"));
         }
@@ -917,28 +934,44 @@ impl AuthState {
         let end = at
             .checked_add(ttl)
             .map_err(|_| bad("SDK Auth expiry overflow"))?;
-        let maximum = maximum_duration.map(|maximum| at.checked_add(maximum))
-            .transpose().map_err(|_| bad("SDK Auth maximum overflow"))?;
+        let maximum = maximum_duration
+            .map(|maximum| at.checked_add(maximum))
+            .transpose()
+            .map_err(|_| bad("SDK Auth maximum overflow"))?;
         if options.batch {
             let end = Timestamp::whole(at.seconds())
                 .and_then(|start| start.checked_add(ttl))
                 .map_err(|_| bad("SDK batch expiry overflow"))?;
-            let mut response = batch_issuance::PendingBatchGrant::response(batch::BatchClaims {
-                namespace_binding: None,
-                token_api_precision: Some(token_precision::BatchPrecision { granted_ttl: ttl, expires_at: end }),
-                token_role: None, token_api_policy_names: false,
-                public_origin: Some(public_origin::BatchOrigin::sdk(binding.clone())),
-                namespace: binding.namespace.clone(), policies, metadata: metadata.clone(),
-                display_name: format!("plugin-{}", binding.descriptor.name),
-                path: format!("auth/{}/{}", binding.mount, path),
-                bound_cidrs: options.cidrs.clone().unwrap_or_default(),
-                issued_at: at.seconds(), expires_at: end.ceil_seconds()
-                    .map_err(|_| bad("SDK batch expiry projection"))?,
-                parent: None, entity_id: None,
-            }, Some(binding.mount.clone()));
+            let mut response = batch_issuance::PendingBatchGrant::response(
+                batch::BatchClaims {
+                    namespace_binding: None,
+                    token_api_precision: Some(token_precision::BatchPrecision {
+                        granted_ttl: ttl,
+                        expires_at: end,
+                    }),
+                    token_role: None,
+                    token_api_policy_names: false,
+                    public_origin: Some(public_origin::BatchOrigin::sdk(binding.clone())),
+                    namespace: binding.namespace.clone(),
+                    policies,
+                    metadata: metadata.clone(),
+                    display_name: format!("plugin-{}", binding.descriptor.name),
+                    path: format!("auth/{}/{}", binding.mount, path),
+                    bound_cidrs: options.cidrs.clone().unwrap_or_default(),
+                    issued_at: at.seconds(),
+                    expires_at: end
+                        .ceil_seconds()
+                        .map_err(|_| bad("SDK batch expiry projection"))?,
+                    parent: None,
+                    entity_id: None,
+                },
+                Some(binding.mount.clone()),
+            );
             response.login_identity = Some(LoginIdentity {
-                token_api_alias: false, metadata: None,
-                mount: binding.mount.clone(), alias: alias.into(),
+                token_api_alias: false,
+                metadata: None,
+                mount: binding.mount.clone(),
+                alias: alias.into(),
             });
             options.project_groups(&mut response, binding, alias);
             self.mark_sdk_advanced_state();
@@ -961,8 +994,10 @@ impl AuthState {
             end.ceil_seconds()
                 .map_err(|_| bad("SDK Auth expiry projection"))?,
         );
-        token.max_expires_at = maximum.map(Timestamp::ceil_seconds)
-            .transpose().map_err(|_| bad("SDK Auth maximum projection"))?;
+        token.max_expires_at = maximum
+            .map(Timestamp::ceil_seconds)
+            .transpose()
+            .map_err(|_| bad("SDK Auth maximum projection"))?;
         token.period = options.period.ceil_seconds();
         token.bound_cidrs = options.cidrs.clone().unwrap_or_default();
         let lease = token_precision::ServicePrecision {
@@ -1001,7 +1036,9 @@ impl AuthState {
             alias: alias.into(),
         });
         options.project_groups(&mut response, binding, alias);
-        if options.active() { self.mark_sdk_advanced_state(); }
+        if options.active() {
+            self.mark_sdk_advanced_state();
+        }
         self.observe_sdk_auth_clock(at);
         self.store_token(id, token);
         Ok(response)
@@ -1314,23 +1351,33 @@ mod sdk_auth100_tests {
         Ok(())
     }
     #[test]
-    fn sdk_auth_lossless_internal_tag_owner_roundtrip_preserves_private_maps_and_numbers() -> TestResult {
+    fn sdk_auth_lossless_internal_tag_owner_roundtrip_preserves_private_maps_and_numbers()
+    -> TestResult {
         let (mut auth, binding, clock) = setup()?;
         let internal = heptabao_domain::json::decode(br#"{"big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"fake":{"$serde_json::private::Number":"7"}}"#)?;
         let response = auth.finish_sdk_auth_login(&binding, "login", &json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2,"internal_data":internal}), clock)?;
-        let raw = response.body["auth"]["client_token"].as_str().ok_or("issued token")?;
+        let raw = response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("issued token")?;
         let bytes = serde_json::to_vec(&auth)?;
         let reopened: AuthState = serde_json::from_slice(&bytes)?;
         reopened.validate_sdk_auth_state()?;
         let token = reopened.tokens.get(&hash(raw)).ok_or("retained token")?;
-        let Some(TokenAuthProvenance::Sdk { origin }) = &token.auth_provenance else { return Err("SDK provenance lost".into()); };
+        let Some(TokenAuthProvenance::Sdk { origin }) = &token.auth_provenance else {
+            return Err("SDK provenance lost".into());
+        };
         assert_eq!(origin.internal_data, internal);
         assert_eq!(serde_json::to_vec(&reopened)?, bytes);
         let trusted: AuthState = serde_json::from_value(serde_json::to_value(&auth)?)?;
         trusted.validate_sdk_auth_state()?;
         assert_eq!(serde_json::to_vec(&trusted)?, bytes);
         let legacy: TokenAuthProvenance = serde_json::from_slice(br#"{"kind":"token_api"}"#)?;
-        assert!(matches!(legacy, TokenAuthProvenance::TokenApi { issued_creation_ttl:None }));
+        assert!(matches!(
+            legacy,
+            TokenAuthProvenance::TokenApi {
+                issued_creation_ttl: None
+            }
+        ));
         for invalid in [
             br#"{"kind":"token_api","unexpected":1}"#.as_slice(),
             br#"{"kind":"token_api","kind":"jwt","role_name":"reader"}"#,
@@ -1341,7 +1388,6 @@ mod sdk_auth100_tests {
         }
         Ok(())
     }
-
 }
 
 impl TokenOrigin {

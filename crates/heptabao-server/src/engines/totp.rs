@@ -660,10 +660,17 @@ pub(crate) fn mfa_totp_enrollment(
     let encoded = Zeroizing::new(encode_base32(secret));
     let url = Zeroizing::new(format!(
         "otpauth://totp/{}:{}?algorithm={}&digits={}&issuer={}&period={}&secret={}",
-        percent_encode(issuer), percent_encode(account), algorithm, digits,
-        percent_encode(issuer), period, encoded.as_str(),
+        percent_encode(issuer),
+        percent_encode(account),
+        algorithm,
+        digits,
+        percent_encode(issuer),
+        period,
+        encoded.as_str(),
     ));
-    let barcode = if qr_size == 0 { String::new() } else {
+    let barcode = if qr_size == 0 {
+        String::new()
+    } else {
         Totp::generate_barcode(&url, qr_size)?
     };
     Ok((url, Zeroizing::new(barcode)))

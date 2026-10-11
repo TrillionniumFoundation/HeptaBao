@@ -712,11 +712,15 @@ impl Kv2 {
         // later overflow cannot leave earlier requested versions undeleted.
         let deadline = if operation == "undelete" {
             match self.entries.get(resource) {
-                Some(entry) if versions.iter().flatten().any(|number| {
-                    entry.versions.get(number).is_some_and(|version| {
-                        !version.destroyed && version.deletion_at.is_some()
-                    })
-                }) => lossless::deletion_deadline(now, &entry.config, &self.config)?,
+                Some(entry)
+                    if versions.iter().flatten().any(|number| {
+                        entry.versions.get(number).is_some_and(|version| {
+                            !version.destroyed && version.deletion_at.is_some()
+                        })
+                    }) =>
+                {
+                    lossless::deletion_deadline(now, &entry.config, &self.config)?
+                }
                 _ => None,
             }
         } else {

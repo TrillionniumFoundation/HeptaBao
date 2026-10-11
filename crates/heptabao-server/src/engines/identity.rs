@@ -14,12 +14,12 @@ const MAX_GROUP_DEPTH: usize = 32;
 
 #[path = "identity_acl_templates.rs"]
 mod acl_templates;
+#[path = "identity_api.rs"]
+pub(super) mod api;
 #[path = "identity_control_groups.rs"]
 mod control_groups;
 #[path = "identity_runtime.rs"]
 mod runtime;
-#[path = "identity_api.rs"]
-pub(super) mod api;
 #[path = "identity_ssh_templates.rs"]
 mod ssh_templates;
 #[cfg(test)]

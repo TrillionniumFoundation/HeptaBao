@@ -306,7 +306,10 @@ impl AuthState {
             .iter()
             .any(|record| record.phase != crate::engines::sdk_lease::Phase::Revoked)
         {
-            return Err(err(503, "namespace terminal credential history is not revoked"));
+            return Err(err(
+                503,
+                "namespace terminal credential history is not revoked",
+            ));
         }
         let parcel = owned.detach_sdk_namespace(actual)?;
         if let Some(parcel) = &parcel {
@@ -318,10 +321,16 @@ impl AuthState {
                     .transpose()?
                     .is_some_and(|jobs| jobs.values().any(|job| !job.completed()))
                 || parcel.logical_cleanup.values().any(|record| {
-                    !matches!(record.stage(), namespace_sdk_cleanup::Stage::Terminal { .. })
+                    !matches!(
+                        record.stage(),
+                        namespace_sdk_cleanup::Stage::Terminal { .. }
+                    )
                 })
             {
-                return Err(err(503, "namespace terminal SDK history lacks actual completion"));
+                return Err(err(
+                    503,
+                    "namespace terminal SDK history lacks actual completion",
+                ));
             }
         }
         self.attach_sdk_namespace(actual, parcel)

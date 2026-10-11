@@ -61,12 +61,17 @@ impl Service {
             return Ok(false);
         };
         if let Some(expected) = head.ciphertext_owner() {
-            let actual = next.sdk_namespace_ciphertext_owner(expected.binding.namespace())
+            let actual = next
+                .sdk_namespace_ciphertext_owner(expected.binding.namespace())
                 .map_err(|_| "MFA janitor actual capsule unavailable")?;
-            if actual != *expected { return Err("MFA janitor actual capsule changed"); }
+            if actual != *expected {
+                return Err("MFA janitor actual capsule changed");
+            }
         }
-        let binding = match head.closed_binding(&next.cluster_id)
-            .map_err(|_| "MFA janitor original closed namespace binding unavailable")? {
+        let binding = match head
+            .closed_binding(&next.cluster_id)
+            .map_err(|_| "MFA janitor original closed namespace binding unavailable")?
+        {
             Some(binding) => binding,
             None => Self::mfa_native_binding(&next.namespaces, &next.cluster_id, head.namespace())
                 .map_err(|_| "MFA janitor actual namespace binding unavailable")?,
@@ -184,30 +189,57 @@ pub(crate) fn start_mfa_janitor_worker(
 // Called only after actual key/MAC/assets restoration has completed. Generic
 // verification restores never consume receipts or create a publication.
 impl Service {
-    pub(in crate::service) fn complete_mfa_namespace_retirements(&mut self) -> Result<(), Response> {
+    pub(in crate::service) fn complete_mfa_namespace_retirements(
+        &mut self,
+    ) -> Result<(), Response> {
         let result = (|| -> Result<(), Response> {
-            let Some(current) = self.state.as_ref() else { return Ok(()); };
+            let Some(current) = self.state.as_ref() else {
+                return Ok(());
+            };
             let mut next = current.clone();
-            let count = next.auth.consume_authenticated_mfa_terminal_receipts()
+            let count = next
+                .auth
+                .consume_authenticated_mfa_terminal_receipts()
                 .map_err(|error| Response::error(503, &error.message))?;
-            if count == 0 { return Ok(()); }
-            let deadline = crate::request_deadline::current()
-                .ok_or_else(|| Response::error(503, "MFA restored cleanup has no original request deadline"))?;
-            if Instant::now() >= deadline {
-                return Err(Response::error(503, "MFA restored cleanup original deadline elapsed"));
+            if count == 0 {
+                return Ok(());
             }
-            let at = next.auth.mfa_terminal_receipt_clock()
+            let deadline = crate::request_deadline::current().ok_or_else(|| {
+                Response::error(503, "MFA restored cleanup has no original request deadline")
+            })?;
+            if Instant::now() >= deadline {
+                return Err(Response::error(
+                    503,
+                    "MFA restored cleanup original deadline elapsed",
+                ));
+            }
+            let at = next
+                .auth
+                .mfa_terminal_receipt_clock()
                 .ok_or_else(|| Response::error(503, "MFA original terminal observation absent"))?;
             let fingerprint = self.request_fingerprint("INTERNAL", "mfa/restored-terminal", "", "");
-            self.audit_event("mfa-restored-terminal-request", &fingerprint, at.seconds(), None)
-                .map_err(|_| Response::error(503, "MFA restored cleanup request audit unavailable"))?;
+            self.audit_event(
+                "mfa-restored-terminal-request",
+                &fingerprint,
+                at.seconds(),
+                None,
+            )
+            .map_err(|_| Response::error(503, "MFA restored cleanup request audit unavailable"))?;
             next.schema = next.writer_schema();
             self.commit_state(&mut next)?;
             self.state = Some(next);
-            self.audit_event("mfa-restored-terminal-response", &fingerprint, at.seconds(), Some(204))
-                .map_err(|_| Response::error(503, "MFA restored cleanup response audit unavailable"))?;
+            self.audit_event(
+                "mfa-restored-terminal-response",
+                &fingerprint,
+                at.seconds(),
+                Some(204),
+            )
+            .map_err(|_| Response::error(503, "MFA restored cleanup response audit unavailable"))?;
             if Instant::now() >= deadline {
-                return Err(Response::error(503, "MFA restored cleanup original deadline elapsed"));
+                return Err(Response::error(
+                    503,
+                    "MFA restored cleanup original deadline elapsed",
+                ));
             }
             Ok(())
         })();

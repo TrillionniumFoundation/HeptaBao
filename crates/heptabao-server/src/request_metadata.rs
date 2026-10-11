@@ -82,9 +82,7 @@ pub(crate) fn validate_headers(headers: &Headers) -> Result<(), &'static str> {
     }
     let mut bytes = 0usize;
     for (key, values) in headers {
-        if key.len() > 256
-            || values.len() > 64
-        {
+        if key.len() > 256 || values.len() > 64 {
             return Err("invalid logical header name or values");
         }
         bytes = bytes

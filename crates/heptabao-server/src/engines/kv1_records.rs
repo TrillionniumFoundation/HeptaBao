@@ -288,7 +288,8 @@ impl EngineState {
                 match &entry.backend {
                     Backend::Kv1(entries) => {
                         for (path, value) in entries {
-                            observed_lossless_json |= heptabao_domain::json::requires_lossless_format(value.expose());
+                            observed_lossless_json |=
+                                heptabao_domain::json::requires_lossless_format(value.expose());
                             let bytes = crate::secret_serde::to_vec(
                                 value,
                                 crate::state_records::MAX_VALUE_BYTES,
@@ -606,7 +607,8 @@ impl EngineState {
             "DELETE" => runtime.apply(key, None)?,
             _ => return Err(unsupported()),
         };
-        if changed && matches!(method, "POST" | "PUT")
+        if changed
+            && matches!(method, "POST" | "PUT")
             && heptabao_domain::json::requires_lossless_format(body)
         {
             runtime.observed_lossless_json = true;

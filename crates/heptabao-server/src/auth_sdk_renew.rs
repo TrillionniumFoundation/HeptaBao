@@ -73,10 +73,15 @@ impl RenewalTarget {
         };
         let issue = u64::try_from(origin.lease.issued_at.duration_since_epoch().as_nanos())
             .map_err(|_| bad("SDK issue time overflow"))?;
-        let maximum = origin.maximum.map(|maximum| maximum.elapsed(origin.lease.issued_at))
-            .transpose().map_err(|_| bad("SDK maximum elapsed"))?
-            .unwrap_or(token_precision::DurationNanos::checked(0)
-                .map_err(|_| bad("SDK maximum elapsed"))?);
+        let maximum = origin
+            .maximum
+            .map(|maximum| maximum.elapsed(origin.lease.issued_at))
+            .transpose()
+            .map_err(|_| bad("SDK maximum elapsed"))?
+            .unwrap_or(
+                token_precision::DurationNanos::checked(0)
+                    .map_err(|_| bad("SDK maximum elapsed"))?,
+            );
         let value = json!({"lease":origin.lease.previous_grant.nanoseconds(),"max_ttl":maximum.nanoseconds(),
             "renewable":token.renewable,"internal_data":origin.internal_data,"metadata":origin.metadata,
             "policies":token.policies,"token_policies":token.policies,"accessor":token.accessor,
@@ -87,7 +92,9 @@ impl RenewalTarget {
             value["period"] = json!(origin.lease.requested_period.nanoseconds());
             value["explicit_max_ttl"] = json!(origin.lease.requested_explicit_max.nanoseconds());
             value["bound_cidrs"] = json!(token.bound_cidrs);
-            if let Some(alias) = &origin.identity_alias { value["alias"] = json!({"name":alias}); }
+            if let Some(alias) = &origin.identity_alias {
+                value["alias"] = json!({"name":alias});
+            }
         }
         Ok((value, issue, self.increment.nanoseconds()))
     }
@@ -267,7 +274,9 @@ impl AuthState {
             .as_object()
             .ok_or_else(|| bad("SDK renewal requires Auth response"))?;
         let options = advanced::Options::parse(object, &target.binding.owner)?;
-        if options.batch { return Err(bad("service tokens cannot become batch tokens on renewal")); }
+        if options.batch {
+            return Err(bad("service tokens cannot become batch tokens on renewal"));
+        }
         let renewable = object
             .get("renewable")
             .and_then(Value::as_bool)
@@ -313,14 +322,30 @@ impl AuthState {
             options.explicit_max
         } else if options.explicit_max.is_zero() {
             origin.lease.requested_explicit_max
-        } else { origin.lease.requested_explicit_max.min(options.explicit_max) };
+        } else {
+            origin
+                .lease
+                .requested_explicit_max
+                .min(options.explicit_max)
+        };
         let advanced = origin.advanced.is_some() || options.active();
         let maximum = if !options.period.is_zero() && explicit.is_zero() {
             None
         } else {
-            let requested = if options.period.is_zero() { max } else { explicit };
-            let requested = if explicit.is_zero() { requested } else { requested.min(explicit) };
-            let limit = origin.lease.issued_at.checked_add(requested)
+            let requested = if options.period.is_zero() {
+                max
+            } else {
+                explicit
+            };
+            let requested = if explicit.is_zero() {
+                requested
+            } else {
+                requested.min(explicit)
+            };
+            let limit = origin
+                .lease
+                .issued_at
+                .checked_add(requested)
                 .map_err(|_| bad("SDK maximum overflow"))?;
             Some(origin.maximum.map_or(limit, |old| old.min(limit)))
         };
@@ -334,8 +359,11 @@ impl AuthState {
             target.increment
         };
         let ttl = match maximum {
-            Some(maximum) => requested.min(maximum.elapsed(at)
-                .map_err(|_| bad("lease expired maximum TTL"))?),
+            Some(maximum) => requested.min(
+                maximum
+                    .elapsed(at)
+                    .map_err(|_| bad("lease expired maximum TTL"))?,
+            ),
             None => requested,
         };
         if ttl.is_zero() {
@@ -345,11 +373,27 @@ impl AuthState {
             .checked_add(ttl)
             .map_err(|_| bad("SDK renewal expiry overflow"))?;
         let alias = if options.groups.is_some() {
-            Some(origin.identity_alias.as_deref().or_else(|| object.get("alias")
-                .and_then(|value| value.get("name")).and_then(Value::as_str))
-                .filter(|name| !name.is_empty() && name.len() <= 1024 && !name.chars().any(char::is_control))
-                .ok_or_else(|| bad("SDK renewed groups require the bound identity alias"))?.to_owned())
-        } else { None };
+            Some(
+                origin
+                    .identity_alias
+                    .as_deref()
+                    .or_else(|| {
+                        object
+                            .get("alias")
+                            .and_then(|value| value.get("name"))
+                            .and_then(Value::as_str)
+                    })
+                    .filter(|name| {
+                        !name.is_empty()
+                            && name.len() <= 1024
+                            && !name.chars().any(char::is_control)
+                    })
+                    .ok_or_else(|| bad("SDK renewed groups require the bound identity alias"))?
+                    .to_owned(),
+            )
+        } else {
+            None
+        };
         let mut token = token.clone();
         let Some(TokenAuthProvenance::Sdk { origin }) = &mut token.auth_provenance else {
             return Err(denied());
@@ -362,9 +406,13 @@ impl AuthState {
         origin.advanced = advanced.then_some(advanced::Format::V1);
         origin.lease.requested_period = options.period;
         origin.lease.requested_explicit_max = explicit;
-        if let Some(alias) = &alias { origin.identity_alias = Some(alias.clone()); }
+        if let Some(alias) = &alias {
+            origin.identity_alias = Some(alias.clone());
+        }
         token.period = options.period.ceil_seconds();
-        if let Some(cidrs) = &options.cidrs { token.bound_cidrs = cidrs.clone(); }
+        if let Some(cidrs) = &options.cidrs {
+            token.bound_cidrs = cidrs.clone();
+        }
         origin.metadata = metadata.clone();
         erase_value(&mut origin.internal_data);
         origin.internal_data = internal;
@@ -373,12 +421,16 @@ impl AuthState {
             end.ceil_seconds()
                 .map_err(|_| bad("SDK renewal projection rejected"))?,
         );
-        token.max_expires_at = maximum.map(Timestamp::ceil_seconds).transpose()
+        token.max_expires_at = maximum
+            .map(Timestamp::ceil_seconds)
+            .transpose()
             .map_err(|_| bad("SDK maximum projection rejected"))?;
         let body = json!({"auth":{"client_token":target.raw.as_str(),"accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
             "identity_policies":[],"entity_id":token.entity_id.as_deref().unwrap_or(""),"metadata":metadata,"lease_duration":ttl.public_seconds(),
             "renewable":renewable,"token_type":"service","orphan":token.parent.is_none(),"num_uses":token.uses_remaining.unwrap_or(0)}});
-        if advanced { self.mark_sdk_advanced_state(); }
+        if advanced {
+            self.mark_sdk_advanced_state();
+        }
         self.observe_sdk_auth_clock(at);
         self.store_token(target.id.to_string(), token);
         let mut response = AuthResponse {
@@ -392,7 +444,9 @@ impl AuthState {
             mutated: true,
             body,
         };
-        if let Some(alias) = &alias { options.project_groups(&mut response, &target.binding, alias); }
+        if let Some(alias) = &alias {
+            options.project_groups(&mut response, &target.binding, alias);
+        }
         Ok(response)
     }
 }

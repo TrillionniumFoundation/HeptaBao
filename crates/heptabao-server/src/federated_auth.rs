@@ -1483,7 +1483,6 @@ mod tests {
         }
     }
 
-
     #[test]
     fn jwt_signed_numeric_dates_keep_objects_and_reject_private_transport_magic() {
         let pair = Ed25519KeyPair::from_seed_unchecked(&random_bytes::<32>()).unwrap();

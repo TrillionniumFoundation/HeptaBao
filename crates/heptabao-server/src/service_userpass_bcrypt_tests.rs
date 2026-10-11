@@ -88,14 +88,27 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
     // The native issuance above legitimately owns schema 132. Build the
     // historical bcrypt-only malformed reader input through a separate real
     // Service, so it contains no later native issuance representation.
-    assert!(service.state.as_ref().ok_or("native state")?.auth.has_userpass_issuance_state());
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("native state")?
+            .auth
+            .has_userpass_issuance_state()
+    );
     drop(service);
     let directory = Root::new();
     let mut service = directory.service()?;
     let (key, admin) = bootstrap(&mut service)?;
     assert_eq!(
-        call(&mut service, "POST", "auth/userpass/users/imported", &admin,
-            json!({"password_hash":hashed.as_str()})).status,
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/imported",
+            &admin,
+            json!({"password_hash":hashed.as_str()})
+        )
+        .status,
         204
     );
     let reader_state = service.state.as_ref().ok_or("bcrypt reader state")?;

@@ -208,7 +208,8 @@ impl Registration {
                 let claims = issuer
                     .batch_claims()
                     .ok_or_else(|| error(503, "SDK batch parent owner rejected"))?;
-                if !auth.sdk_batch_lease_issuer_live(issuer, namespace)
+                if !auth
+                    .sdk_batch_lease_issuer_live(issuer, namespace)
                     .map_err(|_| error(503, "SDK batch native issuer observation rejected"))?
                 {
                     return Ok(true);

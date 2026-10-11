@@ -199,7 +199,9 @@ impl AuthState {
         namespace: &str,
     ) -> Result<(), AuthError> {
         self.validate_batch_namespace_owner_structure(claims.namespace_binding(), namespace)?;
-        if let Some(issuer) = claims.sdk_issuer() { issuer.validate_history(self, namespace)?; }
+        if let Some(issuer) = claims.sdk_issuer() {
+            issuer.validate_history(self, namespace)?;
+        }
         self.batch_authority
             .as_ref()
             .ok_or_else(|| err(503, "missing batch lease key authority"))?
@@ -244,9 +246,14 @@ impl AuthState {
             .check_verified_observed(claims, namespace, time)
             .map_err(|_| denied())?;
         self.batch_parent_expiry_observed(claims.parent(), namespace, time)?;
-        if let Some(binding) = claims.public_origin().and_then(public_origin::BatchOrigin::sdk_binding) {
+        if let Some(binding) = claims
+            .public_origin()
+            .and_then(public_origin::BatchOrigin::sdk_binding)
+        {
             self.validate_sdk_batch_binding(binding)?;
-            if binding.namespace != namespace { return Err(denied()); }
+            if binding.namespace != namespace {
+                return Err(denied());
+            }
         }
         Ok(())
     }
@@ -415,8 +422,7 @@ impl AuthState {
             if let Some(end) = parent.expires_at {
                 expires_at = Some(expires_at.map_or(end, |old| old.min(end)));
             }
-            if let Some(end) = parent.issuer_precise_expiry()
-            {
+            if let Some(end) = parent.issuer_precise_expiry() {
                 precise_expires_at = Some(precise_expires_at.map_or(end, |old| old.min(end)));
             }
             current = parent.parent.as_deref();
@@ -524,7 +530,9 @@ impl AuthState {
             });
         }
         let claims = owner.batch_claims()?;
-        if claims.sdk_issuer().is_some_and(|issuer| !issuer.live(self)) { return None; }
+        if claims.sdk_issuer().is_some_and(|issuer| !issuer.live(self)) {
+            return None;
+        }
         self.check_batch_namespace_binding(claims.namespace_binding(), namespace)
             .ok()?;
         self.batch_authority

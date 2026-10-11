@@ -321,7 +321,9 @@ impl<'a> Executor<'a> {
         self.execution_hook = hook;
     }
     fn observe(&self, value: Option<&Value>) -> ExecResult<()> {
-        if let Some(hook) = &self.execution_hook { hook(value).map_err(ExecSignal::from)?; }
+        if let Some(hook) = &self.execution_hook {
+            hook(value).map_err(ExecSignal::from)?;
+        }
         Ok(())
     }
 
@@ -647,7 +649,10 @@ impl<'a> Executor<'a> {
         piped: Option<Value>,
     ) -> ExecResult<Value> {
         self.observe(None)?;
-        let first = cmd.args.first().ok_or_else(|| TemplateError::Exec("empty template command".into()))?;
+        let first = cmd
+            .args
+            .first()
+            .ok_or_else(|| TemplateError::Exec("empty template command".into()))?;
 
         // If the first arg is an identifier, it's a function call
         if let Expr::Identifier(_, name) = first {

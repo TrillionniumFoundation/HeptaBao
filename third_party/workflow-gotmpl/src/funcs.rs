@@ -387,7 +387,9 @@ fn compare_eq(left: &Value, right: &Value) -> Result<bool> {
         (Value::Int(a), Value::Uint(b)) => Ok(*a >= 0 && *a as u64 == *b),
         (Value::Uint(a), Value::Int(b)) => Ok(*b >= 0 && *a == *b as u64),
         (Value::Float(a), Value::Float(b)) => Ok(a == b),
-        (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => Ok(a == b),
+        (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => {
+            Ok(a == b)
+        }
         (Value::List(_), Value::List(_))
         | (Value::Map(_), Value::Map(_))
         | (Value::Function(_), Value::Function(_)) => Err(TemplateError::Exec(format!(
@@ -436,7 +438,9 @@ fn compare_order(left: &Value, right: &Value) -> Result<Ordering> {
         (Value::Float(a), Value::Float(b)) => a
             .partial_cmp(b)
             .ok_or_else(|| TemplateError::Exec("invalid type for comparison".into())),
-        (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => Ok(a.cmp(b)),
+        (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => {
+            Ok(a.cmp(b))
+        }
         // Trusted content orders by its underlying string (see `compare_eq`).
         #[cfg(feature = "html")]
         (Value::Safe { s: a, .. }, Value::Safe { s: b, .. }) => Ok(a.cmp(b)),

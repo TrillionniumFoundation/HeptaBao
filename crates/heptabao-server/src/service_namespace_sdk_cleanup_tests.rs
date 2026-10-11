@@ -230,12 +230,17 @@ fn begin(f: &mut Fixture) -> TestResult {
     let auth = serde_json::from_slice::<Value>(&owner_store::serialize_owner(&state.auth)?)?;
     if state.auth.has_sdk_namespace_custody() {
         assert_eq!(state.schema, SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA);
-        assert!(auth.get("sdk_namespace_custody").is_some_and(Value::is_object));
+        assert!(
+            auth.get("sdk_namespace_custody")
+                .is_some_and(Value::is_object)
+        );
     } else {
         assert_eq!(state.schema, NAMESPACE_SDK_CLEANUP_STATE_SCHEMA);
         assert!(auth.get("sdk_namespace_custody").is_none());
     }
-    state.validate_format().map_err(|_| "actual namespace custody format")?;
+    state
+        .validate_format()
+        .map_err(|_| "actual namespace custody format")?;
     Ok(())
 }
 fn keys(state: &State) -> TestResult<Vec<String>> {
@@ -640,7 +645,10 @@ fn namespace109_true_terminal_namespace_retirement_preserves_empty_registry_and_
     credential.revoke();
     state.auth.store_sdk_credential(credential)?;
     let original_history = owner_store::serialize_owner(
-        &state.auth.sdk_credential_record(NS, &f.credential.id).ok_or("original full history")?,
+        &state
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .ok_or("original full history")?,
     )?;
     publish(&mut f.service, state)?;
     begin(&mut f)?;
@@ -691,10 +699,20 @@ fn namespace109_true_terminal_namespace_retirement_preserves_empty_registry_and_
     assert_eq!(state.schema, SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA);
     assert!(state.auth.has_sdk_namespace_custody());
     let auth = serde_json::from_slice::<Value>(&owner_store::serialize_owner(&state.auth)?)?;
-    assert!(auth.get("sdk_namespace_custody").is_some_and(Value::is_object));
-    assert!(auth["sdk_namespace_custody"]["namespaces"].as_object().is_some_and(|registry| registry.is_empty()));
+    assert!(
+        auth.get("sdk_namespace_custody")
+            .is_some_and(Value::is_object)
+    );
+    assert!(
+        auth["sdk_namespace_custody"]["namespaces"]
+            .as_object()
+            .is_some_and(|registry| registry.is_empty())
+    );
     let retained_history = owner_store::serialize_owner(
-        &state.auth.sdk_credential_record(NS, &f.credential.id).ok_or("retained full history")?,
+        &state
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .ok_or("retained full history")?,
     )?;
     assert!(original_history.as_slice() == retained_history.as_slice());
     let mut lower = state.clone();
@@ -2434,23 +2452,41 @@ fn namespace109_authenticated_inherited_seal_keeps_actual_auth_retirement_attemp
         Ok(_) => return Err("ordinary namespace acquired independent seal status".into()),
     }
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
-    assert!(closed.auth.sdk_credential_record(NS, &f.credential.id).is_none(),
-        "ordinary lookup cannot execute a ciphertext credential");
-    let (retained, digest) = closed.auth
+    assert!(
+        closed
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .is_none(),
+        "ordinary lookup cannot execute a ciphertext credential"
+    );
+    let (retained, digest) = closed
+        .auth
         .sdk_namespace_credential_index_for_test(NS, &f.credential.id)
         .ok_or("actual private non-executable credential index absent")?;
-    assert!(retained.phase == credential.phase
-        && retained.registration == credential.registration
-        && retained.issued == credential.issued
-        && retained.backend == credential.backend);
-    assert!(digest == crypto::digest(&credential_bytes),
-        "complete original Record digest remains committed, not a reconstructed record");
+    assert!(
+        retained.phase == credential.phase
+            && retained.registration == credential.registration
+            && retained.issued == credential.issued
+            && retained.backend == credential.backend
+    );
+    assert!(
+        digest == crypto::digest(&credential_bytes),
+        "complete original Record digest remains committed, not a reconstructed record"
+    );
     assert!(closed.namespaces.deletions == namespace_jobs);
     assert!(closed.auth.sdk_auth_retirement_jobs_for_test().is_empty());
-    assert!(closed.auth.sdk_auth_retirement_job(job_id).is_none(),
-        "ordinary lookup cannot execute ciphertext Job metadata");
-    assert!(closed.auth.sdk_namespace_job_index_for_test(NS, job_id).as_ref() == Some(job),
-        "complete original accepted/Attempted task metadata remains exact");
+    assert!(
+        closed.auth.sdk_auth_retirement_job(job_id).is_none(),
+        "ordinary lookup cannot execute ciphertext Job metadata"
+    );
+    assert!(
+        closed
+            .auth
+            .sdk_namespace_job_index_for_test(NS, job_id)
+            .as_ref()
+            == Some(job),
+        "complete original accepted/Attempted task metadata remains exact"
+    );
     let bytes = owner_store::serialize_owner(closed)?;
     for marker in [
         b"finite-logical-owned".as_slice(),
@@ -2589,17 +2625,27 @@ fn namespace109_authenticated_independent_seal_preserves_two_original_descendant
             && parent_closed.seal_frontier() == parent.seal_frontier() + 1
     );
     assert!(closed.engines.sdk_lease(NS, &f.logical.id).is_none());
-    assert!(closed.auth.sdk_credential_record(NS, &f.credential.id).is_none(),
-        "ordinary lookup cannot execute a ciphertext credential");
-    let (retained, digest) = closed.auth
+    assert!(
+        closed
+            .auth
+            .sdk_credential_record(NS, &f.credential.id)
+            .is_none(),
+        "ordinary lookup cannot execute a ciphertext credential"
+    );
+    let (retained, digest) = closed
+        .auth
         .sdk_namespace_credential_index_for_test(NS, &f.credential.id)
         .ok_or("actual private non-executable credential index absent")?;
-    assert!(retained.phase == credential.phase
-        && retained.registration == credential.registration
-        && retained.issued == credential.issued
-        && retained.backend == credential.backend);
-    assert!(digest == crypto::digest(&credential_bytes),
-        "complete original Record digest remains committed, not a reconstructed record");
+    assert!(
+        retained.phase == credential.phase
+            && retained.registration == credential.registration
+            && retained.issued == credential.issued
+            && retained.backend == credential.backend
+    );
+    assert!(
+        digest == crypto::digest(&credential_bytes),
+        "complete original Record digest remains committed, not a reconstructed record"
+    );
     let Fixture {
         directory,
         service,
@@ -3259,7 +3305,6 @@ fn namespace109_ordinary_unseal_keeps_primary_nonempty400_and_emptykey500_withou
     }
     Ok(())
 }
-
 
 #[test]
 fn namespace114_terminal_renewable_credential_index_keeps_original_metadata_and_digest()
@@ -4219,8 +4264,8 @@ fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_reje
                 == original
         );
     }
-    let mut downgraded: State=serde_json::from_value(value.clone())?;
-    downgraded.schema=GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
+    let mut downgraded: State = serde_json::from_value(value.clone())?;
+    downgraded.schema = GENERAL_WRAPPED_REPLY_STATE_SCHEMA;
     assert!(downgraded.validate_format().is_err());
     assert!(
         Service::validate_snapshot_protected_floor(
@@ -4229,12 +4274,12 @@ fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_reje
         )
         .is_err()
     );
-    let mut erased=value.clone();
-    erased["auth"]["sdk_namespace_custody"]=Value::Null;
-    let erased:State=serde_json::from_value(erased)?;
+    let mut erased = value.clone();
+    erased["auth"]["sdk_namespace_custody"] = Value::Null;
+    let erased: State = serde_json::from_value(erased)?;
     assert!(erased.validate_format().is_err());
-    let mut future:State=serde_json::from_value(value)?;
-    future.schema=MAX_SUPPORTED_STATE_SCHEMA+1;
+    let mut future: State = serde_json::from_value(value)?;
+    future.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
     assert!(future.validate_format().is_err());
     // Reopen the real published parent ciphertext; the original full Lease,
     // registration, Secret/data and 109 selection are checked again.
@@ -4256,7 +4301,7 @@ fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_reje
         .state
         .as_ref()
         .ok_or("actual MAC-hydrated full logical graph")?;
-    assert_eq!(state.schema,114);
+    assert_eq!(state.schema, 114);
     assert!(state.auth.has_sdk_namespace_custody());
     assert!(
         state

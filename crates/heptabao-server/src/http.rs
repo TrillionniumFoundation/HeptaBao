@@ -24,17 +24,19 @@ use std::{
     time::{Duration, Instant},
 };
 
-#[path = "http_h2.rs"]
-mod h2_transport;
 #[cfg(test)]
 #[path = "http_api_alpn_tests.rs"]
 mod api_alpn_tests;
+#[path = "http_h2.rs"]
+mod h2_transport;
 #[path = "http_logical.rs"]
 mod logical;
 #[path = "http_sanitized_config.rs"]
 mod sanitized_config;
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "http_approle_form.rs"]
+mod approle_form;
 #[path = "http_help.rs"]
 pub(crate) mod help;
 #[path = "http_ocsp.rs"]
@@ -43,12 +45,10 @@ pub(crate) mod ocsp;
 pub(crate) mod pki_role_fields;
 #[path = "http_snapshot.rs"]
 mod snapshot;
-#[path = "http_ui.rs"]
-mod ui;
-#[path = "http_approle_form.rs"]
-mod approle_form;
 #[path = "http_token_fields.rs"]
 pub(crate) mod token_fields;
+#[path = "http_ui.rs"]
+mod ui;
 
 #[path = "http_consistency.rs"]
 pub(crate) mod consistency;
@@ -630,7 +630,7 @@ fn serve_inner(
             return control.shutdown(&service, &connections, Some(error), || {
                 drop(_namespace_deletion);
                 drop(_lifecycle);
-                    drop(_mfa_janitor);
+                drop(_mfa_janitor);
                 drop(_ha_activation);
             });
         }
@@ -644,7 +644,7 @@ fn serve_inner(
             return control.shutdown(&service, &connections, None, || {
                 drop(_namespace_deletion);
                 drop(_lifecycle);
-                    drop(_mfa_janitor);
+                drop(_mfa_janitor);
                 drop(_ha_activation);
             });
         }
@@ -665,7 +665,7 @@ fn serve_inner(
                         || {
                             drop(_namespace_deletion);
                             drop(_lifecycle);
-                    drop(_mfa_janitor);
+                            drop(_mfa_janitor);
                             drop(_ha_activation);
                         },
                     );
@@ -702,7 +702,7 @@ fn serve_inner(
                         || {
                             drop(_namespace_deletion);
                             drop(_lifecycle);
-                    drop(_mfa_janitor);
+                            drop(_mfa_janitor);
                             drop(_ha_activation);
                         },
                     );
@@ -771,7 +771,12 @@ fn serve_inner(
                     .sock
                     .deadline
                     .saturating_duration_since(Instant::now());
-                let parsed = read_request_with_ui(&mut stream, read_budget, true, request_ui_assets.is_some());
+                let parsed = read_request_with_ui(
+                    &mut stream,
+                    read_budget,
+                    true,
+                    request_ui_assets.is_some(),
+                );
                 stream.sock.deadline = deadline;
                 let client_certificates = stream.conn.peer_certificates().map(|certificates| {
                     certificates
@@ -803,7 +808,7 @@ fn serve_inner(
                     || {
                         drop(_namespace_deletion);
                         drop(_lifecycle);
-                    drop(_mfa_janitor);
+                        drop(_mfa_janitor);
                         drop(_ha_activation);
                     },
                 );
@@ -874,14 +879,23 @@ fn process_parsed_request(
                 client_certificates: request.client_certificates.take(),
             };
             let _logical_data = match crate::request_metadata::Scope::enter(
-                request.logical_data.take(), service_request.method, service_request.path,
-                service_request.namespace, &service_request.body,
+                request.logical_data.take(),
+                service_request.method,
+                service_request.path,
+                service_request.namespace,
+                &service_request.body,
             ) {
                 Ok(scope) => scope,
                 Err(_) => {
                     crate::service::erase_json(&mut service_request.body);
-                    return (snapshot::NativeReply::Json(Response::error(400,
-                        "invalid request-owned logical data")), is_head, request.namespace);
+                    return (
+                        snapshot::NativeReply::Json(Response::error(
+                            400,
+                            "invalid request-owned logical data",
+                        )),
+                        is_head,
+                        request.namespace,
+                    );
                 }
             };
             let mut reply = if let Err(response) = &consistency {
@@ -1364,58 +1378,95 @@ fn read_request_mode(
 /// The fixed fixture time is caller-owned; this does not reset its auth clock.
 #[cfg(test)]
 pub(crate) fn logical_data_wire_fixture(
-    service: &mut Service, bytes: &[u8], now: u64,
+    service: &mut Service,
+    bytes: &[u8],
+    now: u64,
 ) -> Result<Response, &'static str> {
     let started = Instant::now();
-    let deadline = crate::request_deadline::current()
-        .unwrap_or(started + Duration::from_secs(5));
+    let deadline = crate::request_deadline::current().unwrap_or(started + Duration::from_secs(5));
     let _deadline = RequestDeadlineScope::enter(deadline);
     let mut reader = bytes;
-    let mut parsed = read_request_mode(&mut reader,
-        deadline.saturating_duration_since(started), false).map_err(|error| error.message)?;
+    let mut parsed = read_request_mode(
+        &mut reader,
+        deadline.saturating_duration_since(started),
+        false,
+    )
+    .map_err(|error| error.message)?;
     let body = std::mem::take(&mut parsed.body.0);
-    let _data = crate::request_metadata::Scope::enter(parsed.logical_data.take(),
-        &parsed.method, &parsed.path, &parsed.namespace, &body)?;
-    Ok(service.handle_http_fixture_at(crate::service::ServiceRequest {
-        method: &parsed.method, path: &parsed.path, namespace: &parsed.namespace,
-        token: &parsed.token, body,
-        wrap_ttl_seconds: parsed.wrap_ttl_seconds, origin_peer: Some(std::net::IpAddr::from([127,0,0,1])),
-        client_certificates: None,
-    }, now))
+    let _data = crate::request_metadata::Scope::enter(
+        parsed.logical_data.take(),
+        &parsed.method,
+        &parsed.path,
+        &parsed.namespace,
+        &body,
+    )?;
+    Ok(service.handle_http_fixture_at(
+        crate::service::ServiceRequest {
+            method: &parsed.method,
+            path: &parsed.path,
+            namespace: &parsed.namespace,
+            token: &parsed.token,
+            body,
+            wrap_ttl_seconds: parsed.wrap_ttl_seconds,
+            origin_peer: Some(std::net::IpAddr::from([127, 0, 0, 1])),
+            client_certificates: None,
+        },
+        now,
+    ))
 }
 
 /// Actual parser, Service mandatory audit, logical projection and wire writer.
 /// No test JSON marker creates the native output owner.
 #[cfg(test)]
 pub(crate) fn workflow_output_wire_fixture(
-    service:&mut Service,bytes:&[u8],now:u64,
-) -> Result<Zeroizing<Vec<u8>>,&'static str> {
-    let started=Instant::now();
-    let deadline=crate::request_deadline::current()
-        .unwrap_or(started+Duration::from_secs(5));
-    let _deadline=RequestDeadlineScope::enter(deadline);
-    let mut reader=bytes;
-    let mut parsed=read_request_mode(&mut reader,
-        deadline.saturating_duration_since(started),false).map_err(|error|error.message)?;
-    let attempt=[0xb1;16];
-    let _ingress=crate::auth::IngressReplyScope::listener_wrapping(&attempt,
-        parsed.lexical_wrapping_body.take());
-    let body=std::mem::take(&mut parsed.body.0);
-    let _data=crate::request_metadata::Scope::enter(parsed.logical_data.take(),
-        &parsed.method,&parsed.path,&parsed.namespace,&body)?;
-    let response=service.handle_http_fixture_at(crate::service::ServiceRequest {
-        method:&parsed.method,path:&parsed.path,namespace:&parsed.namespace,
-        token:&parsed.token,body,
-        wrap_ttl_seconds:parsed.wrap_ttl_seconds,origin_peer:Some(std::net::IpAddr::from([127,0,0,1])),
-        client_certificates:None,
-    }, now);
-    let mut reply=snapshot::NativeReply::Json(response);
-    logical::project(&mut reply,&attempt,&parsed.path);
-    let snapshot::NativeReply::Json(response)=reply else {
+    service: &mut Service,
+    bytes: &[u8],
+    now: u64,
+) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    let started = Instant::now();
+    let deadline = crate::request_deadline::current().unwrap_or(started + Duration::from_secs(5));
+    let _deadline = RequestDeadlineScope::enter(deadline);
+    let mut reader = bytes;
+    let mut parsed = read_request_mode(
+        &mut reader,
+        deadline.saturating_duration_since(started),
+        false,
+    )
+    .map_err(|error| error.message)?;
+    let attempt = [0xb1; 16];
+    let _ingress = crate::auth::IngressReplyScope::listener_wrapping(
+        &attempt,
+        parsed.lexical_wrapping_body.take(),
+    );
+    let body = std::mem::take(&mut parsed.body.0);
+    let _data = crate::request_metadata::Scope::enter(
+        parsed.logical_data.take(),
+        &parsed.method,
+        &parsed.path,
+        &parsed.namespace,
+        &body,
+    )?;
+    let response = service.handle_http_fixture_at(
+        crate::service::ServiceRequest {
+            method: &parsed.method,
+            path: &parsed.path,
+            namespace: &parsed.namespace,
+            token: &parsed.token,
+            body,
+            wrap_ttl_seconds: parsed.wrap_ttl_seconds,
+            origin_peer: Some(std::net::IpAddr::from([127, 0, 0, 1])),
+            client_certificates: None,
+        },
+        now,
+    );
+    let mut reply = snapshot::NativeReply::Json(response);
+    logical::project(&mut reply, &attempt, &parsed.path);
+    let snapshot::NativeReply::Json(response) = reply else {
         return Err("workflow returned non-JSON native reply");
     };
-    let mut writer=Zeroizing::new(Vec::new());
-    write_response(&mut *writer,response,false).map_err(|_|"actual HTTP output writer rejected")?;
+    let mut writer = Zeroizing::new(Vec::new());
+    write_response(&mut *writer, response, false)
+        .map_err(|_| "actual HTTP output writer rejected")?;
     Ok(writer)
 }
 
@@ -1488,7 +1539,8 @@ fn read_request_with_ui(
     if !matches!(
         method.as_str(),
         "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD" | "HELP"
-    ) && !(leader_route && leader::valid_method(&method)) && !ui_target
+    ) && !(leader_route && leader::valid_method(&method))
+        && !ui_target
     {
         return Err(bad("unsupported HTTP method or version"));
     }
@@ -1558,8 +1610,11 @@ fn read_request_with_ui(
             return Err(bad("UI resources do not accept transfer or Expect framing"));
         }
         let length = match map.get("content-length") {
-            Some(value) if !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit()) =>
-                value.parse::<usize>().map_err(|_| bad("invalid content length"))?,
+            Some(value) if !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit()) => {
+                value
+                    .parse::<usize>()
+                    .map_err(|_| bad("invalid content length"))?
+            }
             None => 0,
             _ => return Err(bad("invalid content length")),
         };
@@ -1664,7 +1719,9 @@ fn read_request_with_ui(
     // This form codec is intentionally restricted to the literal default
     // AppRole mount. Other authentication backends cannot opt into it.
     let approle_form = approle_form::selected(
-        &method, route, map.get("content-type").map(|media| media.as_str())
+        &method,
+        route,
+        map.get("content-type").map(|media| media.as_str()),
     );
     if approle_form && !raw_query.is_empty() {
         return Err(bad("AppRole form must not combine query credentials"));
@@ -1905,19 +1962,37 @@ fn read_request_with_ui(
     let mut logical_data = crate::request_metadata::DataFrame::default();
     if !snapshot_route {
         for (name, value) in &map {
-            if matches!(name.as_str(), "authorization" | "x-vault-token" | "x-vault-namespace"
-                | "x-vault-wrap-ttl" | "content-length" | "content-type" | "host"
-                | "connection" | "transfer-encoding" | "expect") {
+            if matches!(
+                name.as_str(),
+                "authorization"
+                    | "x-vault-token"
+                    | "x-vault-namespace"
+                    | "x-vault-wrap-ttl"
+                    | "content-length"
+                    | "content-type"
+                    | "host"
+                    | "connection"
+                    | "transfer-encoding"
+                    | "expect"
+            ) {
                 continue;
             }
-            logical_data.headers.insert(name.clone(), vec![value.to_string()]);
+            logical_data
+                .headers
+                .insert(name.clone(), vec![value.to_string()]);
         }
     }
     let workflow_query = path.starts_with("sys/workflows/execute/");
     if workflow_query {
         for pair in query.split('&').filter(|pair| !pair.is_empty()) {
-            let (name, value) = pair.split_once('=').ok_or_else(|| bad("workflow query requires values"))?;
-            logical_data.query.entry(decode_query(name)?).or_default().push(decode_query(value)?);
+            let (name, value) = pair
+                .split_once('=')
+                .ok_or_else(|| bad("workflow query requires values"))?;
+            logical_data
+                .query
+                .entry(decode_query(name)?)
+                .or_default()
+                .push(decode_query(value)?);
         }
     }
     logical_data.validate().map_err(bad)?;
@@ -4545,7 +4620,6 @@ mod transit_export_query_tests {
         Ok(())
     }
 
-
     fn unwrap_byok_query(
         private: &openssl::pkey::PKey<openssl::pkey::Private>,
         value: &Value,
@@ -4565,20 +4639,24 @@ mod transit_export_query_tests {
         kek.truncate(n);
         let kwp = AesKek::new(&AES_256, &kek).map_err(|_| "HTTP independent KWP key")?;
         let mut material = Zeroizing::new(vec![0; encoded.len() - private.size()]);
-        let n = kwp.unwrap_with_padding(&encoded[private.size()..], &mut material)
-            .map_err(|_| "HTTP independent KWP authentication")?.len();
+        let n = kwp
+            .unwrap_with_padding(&encoded[private.size()..], &mut material)
+            .map_err(|_| "HTTP independent KWP authentication")?
+            .len();
         material.truncate(n);
         Ok(material)
     }
 
     #[test]
-    fn byok270_http_query_hash_reaches_actual_nested_transit_owner_and_survives_encrypted_reopen() -> TestResult {
+    fn byok270_http_query_hash_reaches_actual_nested_transit_owner_and_survives_encrypted_reopen()
+    -> TestResult {
         use openssl::{hash::MessageDigest, pkey::PKey, rsa::Rsa};
         let private = PKey::from_rsa(Rsa::generate(4096)?)?;
         let public = String::from_utf8(private.public_key_to_pem()?)?;
         let directory = Directory(std::env::temp_dir().join(format!(
             "heptabao-byok-http-export-{}-{}",
-            std::process::id(), u64::from_le_bytes(crypto::random::<8>()?)
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?)
         )));
         std::fs::create_dir(&directory.0)?;
         #[cfg(unix)]
@@ -4589,78 +4667,254 @@ mod transit_export_query_tests {
         let data = directory.0.join("data");
         let audit = directory.0.join("audit.jsonl");
         let mut service = Service::new(data.clone(), &audit)?;
-        let initialized = wire(&mut service, "", "POST", "sys/init",
-            json!({"secret_shares":1,"secret_threshold":1}))?;
+        let initialized = wire(
+            &mut service,
+            "",
+            "POST",
+            "sys/init",
+            json!({"secret_shares":1,"secret_threshold":1}),
+        )?;
         assert_eq!(initialized.status, 200);
-        let root = Zeroizing::new(initialized.body["root_token"].as_str().ok_or("root token")?.to_owned());
-        let unseal = Zeroizing::new(initialized.body["keys_base64"][0].as_str().ok_or("unseal key")?.to_owned());
-        assert_eq!(wire(&mut service, "", "POST", "sys/unseal", json!({"key":unseal.as_str()}))?.status, 200);
-        assert_eq!(wire(&mut service, &root, "POST", "sys/mounts/nested/crypto", json!({"type":"transit"}))?.status, 204);
-        assert_eq!(wire(&mut service, &root, "POST", "nested/crypto/keys/destination/import",
-            json!({"type":"rsa-4096","public_key":public}))?.status, 204);
-        assert_eq!(wire(&mut service, &root, "POST", "nested/crypto/keys/source",
-            json!({"type":"aes256-gcm96","exportable":true}))?.status, 200);
-        let rotated = wire(&mut service, &root, "POST", "nested/crypto/keys/source/rotate", json!({}))?;
+        let root = Zeroizing::new(
+            initialized.body["root_token"]
+                .as_str()
+                .ok_or("root token")?
+                .to_owned(),
+        );
+        let unseal = Zeroizing::new(
+            initialized.body["keys_base64"][0]
+                .as_str()
+                .ok_or("unseal key")?
+                .to_owned(),
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                "",
+                "POST",
+                "sys/unseal",
+                json!({"key":unseal.as_str()})
+            )?
+            .status,
+            200
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "POST",
+                "sys/mounts/nested/crypto",
+                json!({"type":"transit"})
+            )?
+            .status,
+            204
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "POST",
+                "nested/crypto/keys/destination/import",
+                json!({"type":"rsa-4096","public_key":public})
+            )?
+            .status,
+            204
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "POST",
+                "nested/crypto/keys/source",
+                json!({"type":"aes256-gcm96","exportable":true})
+            )?
+            .status,
+            200
+        );
+        let rotated = wire(
+            &mut service,
+            &root,
+            "POST",
+            "nested/crypto/keys/source/rotate",
+            json!({}),
+        )?;
         assert_eq!(rotated.status, 200);
         assert!(rotated.body["data"]["latest_version"] == 2);
-        let raw = wire(&mut service, &root, "GET", "nested/crypto/export/encryption-key/source", json!({}))?;
+        let raw = wire(
+            &mut service,
+            &root,
+            "GET",
+            "nested/crypto/export/encryption-key/source",
+            json!({}),
+        )?;
         assert_eq!(raw.status, 200);
-        let descriptor = wire(&mut service, &root, "GET", "nested/crypto/keys/source", json!({}))?;
+        let descriptor = wire(
+            &mut service,
+            &root,
+            "GET",
+            "nested/crypto/keys/source",
+            json!({}),
+        )?;
         assert_eq!(descriptor.status, 200);
         for (hash, digest) in [
-            ("SHA1", MessageDigest::sha1()), ("SHA224", MessageDigest::sha224()),
-            ("SHA256", MessageDigest::sha256()), ("SHA384", MessageDigest::sha384()),
+            ("SHA1", MessageDigest::sha1()),
+            ("SHA224", MessageDigest::sha224()),
+            ("SHA256", MessageDigest::sha256()),
+            ("SHA384", MessageDigest::sha384()),
             ("SHA512", MessageDigest::sha512()),
         ] {
-            let result = wire(&mut service, &root, "GET",
+            let result = wire(
+                &mut service,
+                &root,
+                "GET",
                 &format!("nested/crypto/byok-export/destination/source?%68ash={hash}"),
                 // GET uses the URL carrier; this conflicting framed body cannot choose SHA1.
-                json!({"hash":"bad"}))?;
+                json!({"hash":"bad"}),
+            )?;
             assert_eq!(result.status, 200);
             assert!(result.body["data"]["name"] == "source");
-            let keys = result.body["data"]["keys"].as_object().ok_or("HTTP exported versions")?;
-            assert_eq!(keys.keys().map(String::as_str).collect::<Vec<_>>(), vec!["1","2"]);
+            let keys = result.body["data"]["keys"]
+                .as_object()
+                .ok_or("HTTP exported versions")?;
+            assert_eq!(
+                keys.keys().map(String::as_str).collect::<Vec<_>>(),
+                vec!["1", "2"]
+            );
             for (number, encoded) in keys {
                 let decoded = unwrap_byok_query(&private, encoded, digest)?;
-                let expected = Zeroizing::new(STANDARD.decode(raw.body["data"]["keys"][number].as_str().ok_or("raw source")?)?);
+                let expected = Zeroizing::new(
+                    STANDARD.decode(
+                        raw.body["data"]["keys"][number]
+                            .as_str()
+                            .ok_or("raw source")?,
+                    )?,
+                );
                 assert!(decoded.len() == 32 && decoded.as_slice() == expected.as_slice());
             }
         }
         for (suffix, version) in [("/1", "1"), ("/latest", "2")] {
-            let result = wire(&mut service, &root, "GET",
-                &format!("nested/crypto/byok-export/destination/source{suffix}"), json!({}))?;
+            let result = wire(
+                &mut service,
+                &root,
+                "GET",
+                &format!("nested/crypto/byok-export/destination/source{suffix}"),
+                json!({}),
+            )?;
             assert_eq!(result.status, 200);
-            let keys = result.body["data"]["keys"].as_object().ok_or("single HTTP version")?;
-            assert_eq!(keys.keys().map(String::as_str).collect::<Vec<_>>(), vec![version]);
+            let keys = result.body["data"]["keys"]
+                .as_object()
+                .ok_or("single HTTP version")?;
+            assert_eq!(
+                keys.keys().map(String::as_str).collect::<Vec<_>>(),
+                vec![version]
+            );
             let decoded = unwrap_byok_query(&private, &keys[version], MessageDigest::sha256())?;
-            let expected = Zeroizing::new(STANDARD.decode(raw.body["data"]["keys"][version].as_str().ok_or("raw version")?)?);
+            let expected = Zeroizing::new(
+                STANDARD.decode(
+                    raw.body["data"]["keys"][version]
+                        .as_str()
+                        .ok_or("raw version")?,
+                )?,
+            );
             assert!(decoded.as_slice() == expected.as_slice());
         }
         for (path, status) in [
             ("nested/crypto/byok-export/destination/source?hash=bad", 500),
-            ("nested/crypto/byok-export/destination/source?hash=SHA256&%68ash=SHA512", 400),
+            (
+                "nested/crypto/byok-export/destination/source?hash=SHA256&%68ash=SHA512",
+                400,
+            ),
             ("nested/crypto/keys/source?hash=SHA256", 400),
             ("unknown/byok-export/destination/source?hash=SHA256", 404),
         ] {
-            assert_eq!(wire(&mut service, &root, "GET", path, json!({}))?.status, status, "{path}");
+            assert_eq!(
+                wire(&mut service, &root, "GET", path, json!({}))?.status,
+                status,
+                "{path}"
+            );
         }
-        assert_eq!(wire(&mut service, &root, "POST", "sys/mounts/sibling/data", json!({"type":"kv"}))?.status, 204);
-        assert_eq!(wire(&mut service, &root, "GET",
-            "sibling/data/byok-export/destination/source?hash=SHA256", json!({}))?.status, 404);
-        assert_eq!(wire(&mut service, "invalid-token", "GET",
-            "nested/crypto/byok-export/destination/source?hash=SHA256", json!({}))?.status, 403);
-        let after = wire(&mut service, &root, "GET", "nested/crypto/keys/source", json!({}))?;
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "POST",
+                "sys/mounts/sibling/data",
+                json!({"type":"kv"})
+            )?
+            .status,
+            204
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                &root,
+                "GET",
+                "sibling/data/byok-export/destination/source?hash=SHA256",
+                json!({})
+            )?
+            .status,
+            404
+        );
+        assert_eq!(
+            wire(
+                &mut service,
+                "invalid-token",
+                "GET",
+                "nested/crypto/byok-export/destination/source?hash=SHA256",
+                json!({})
+            )?
+            .status,
+            403
+        );
+        let after = wire(
+            &mut service,
+            &root,
+            "GET",
+            "nested/crypto/keys/source",
+            json!({}),
+        )?;
         assert!(after.body["data"] == descriptor.body["data"]);
         drop(service);
         let mut reopened = Service::new(data, &audit)?;
-        assert_eq!(wire(&mut reopened, "", "POST", "sys/unseal", json!({"key":unseal.as_str()}))?.status, 200);
-        let result = wire(&mut reopened, &root, "GET",
-            "nested/crypto/byok-export/destination/source/latest?hash=SHA512", json!({}))?;
+        assert_eq!(
+            wire(
+                &mut reopened,
+                "",
+                "POST",
+                "sys/unseal",
+                json!({"key":unseal.as_str()})
+            )?
+            .status,
+            200
+        );
+        let result = wire(
+            &mut reopened,
+            &root,
+            "GET",
+            "nested/crypto/byok-export/destination/source/latest?hash=SHA512",
+            json!({}),
+        )?;
         assert_eq!(result.status, 200);
-        let decoded = unwrap_byok_query(&private, &result.body["data"]["keys"]["2"], MessageDigest::sha512())?;
-        let expected = Zeroizing::new(STANDARD.decode(raw.body["data"]["keys"]["2"].as_str().ok_or("reopened raw source")?)?);
+        let decoded = unwrap_byok_query(
+            &private,
+            &result.body["data"]["keys"]["2"],
+            MessageDigest::sha512(),
+        )?;
+        let expected = Zeroizing::new(
+            STANDARD.decode(
+                raw.body["data"]["keys"]["2"]
+                    .as_str()
+                    .ok_or("reopened raw source")?,
+            )?,
+        );
         assert!(decoded.as_slice() == expected.as_slice());
-        let after = wire(&mut reopened, &root, "GET", "nested/crypto/keys/source", json!({}))?;
+        let after = wire(
+            &mut reopened,
+            &root,
+            "GET",
+            "nested/crypto/keys/source",
+            json!({}),
+        )?;
         assert!(after.body["data"] == descriptor.body["data"]);
         Ok(())
     }

@@ -935,7 +935,9 @@ fn raw112_actual_sticky_floor_consume_retire_reopen_and_snapshot_cow_veto() -> T
     assert_eq!(live.writer_schema(), RAW_PKI_HTTP_REPLY_STATE_SCHEMA);
     assert!(live.auth.has_pki_raw_http_reply_state());
     assert!(supported_reader_schema(RAW_PKI_HTTP_REPLY_STATE_SCHEMA));
-    assert!(supported_reader_schema(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA));
+    assert!(supported_reader_schema(
+        MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+    ));
     for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         assert!(!supported_reader_schema(schema));
     }
@@ -1357,7 +1359,9 @@ fn raw113_actual_generic_floor_cow_snapshot_consume_revoke_encrypted_reopen() ->
         live.auth.has_general_wrapped_reply_state() && !live.auth.has_pki_raw_http_reply_state()
     );
     assert!(supported_reader_schema(GENERAL_WRAPPED_REPLY_STATE_SCHEMA));
-    assert!(supported_reader_schema(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA));
+    assert!(supported_reader_schema(
+        MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+    ));
     for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         assert!(!supported_reader_schema(schema));
     }

@@ -344,6 +344,8 @@ impl EngineState {
 
 impl Registry {
     pub(super) fn has_lossless_json_state(&self) -> bool {
-        self.entries.values().any(|entry| entry.lease.has_lossless_json_state())
+        self.entries
+            .values()
+            .any(|entry| entry.lease.has_lossless_json_state())
     }
 }

@@ -336,14 +336,23 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
-        incoming.validate_global_lossless_json_state(Some(current))
-            .map_err(|_| Response::error(400, "snapshot would downgrade global lossless JSON custody"))?;
-        incoming.engines.validate_transit_cache_state(Some(&current.engines))
+        incoming
+            .validate_global_lossless_json_state(Some(current))
+            .map_err(|_| {
+                Response::error(400, "snapshot would downgrade global lossless JSON custody")
+            })?;
+        incoming
+            .engines
+            .validate_transit_cache_state(Some(&current.engines))
             .map_err(|_| Response::error(400, "snapshot would erase transit cache owner"))?;
-        if (current.schema >= TRANSIT_CACHE_STATE_SCHEMA || current.engines.has_transit_cache_state())
+        if (current.schema >= TRANSIT_CACHE_STATE_SCHEMA
+            || current.engines.has_transit_cache_state())
             && incoming.schema < TRANSIT_CACHE_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade transit cache configuration"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade transit cache configuration",
+            ));
         }
         if (current.schema == SSH_CA_STATE_SCHEMA || current.engines.has_ssh_ca_state())
             && (incoming.schema < SSH_CA_STATE_SCHEMA || !incoming.engines.has_ssh_ca_state())
@@ -785,54 +794,97 @@ impl Service {
                 "snapshot would downgrade PKI issuer-path leases",
             ));
         }
-        incoming.auth.validate_userpass_issuance_state(Some(&current.auth))
+        incoming
+            .auth
+            .validate_userpass_issuance_state(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
-        if current.schema >= USERPASS_ISSUANCE_STATE_SCHEMA && incoming.schema < USERPASS_ISSUANCE_STATE_SCHEMA {
-            return Err(Response::error(400, "snapshot would downgrade native Userpass issuance"));
+        if current.schema >= USERPASS_ISSUANCE_STATE_SCHEMA
+            && incoming.schema < USERPASS_ISSUANCE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade native Userpass issuance",
+            ));
         }
-        incoming.auth.validate_identity_mfa_state(Some(&current.auth))
-            .map_err(|error|Response::error(400,&error.message))?;
-        if current.schema>=IDENTITY_MFA_STATE_SCHEMA&&incoming.schema<IDENTITY_MFA_STATE_SCHEMA {
-            return Err(Response::error(400,"snapshot would downgrade Identity MFA custody"));
+        incoming
+            .auth
+            .validate_identity_mfa_state(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= IDENTITY_MFA_STATE_SCHEMA
+            && incoming.schema < IDENTITY_MFA_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Identity MFA custody",
+            ));
         }
-        incoming.auth.validate_sdk_advanced_state(Some(&current.auth))
+        incoming
+            .auth
+            .validate_sdk_advanced_state(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
         if current.schema >= SDK_ADVANCED_STATE_SCHEMA
             && incoming.schema < SDK_ADVANCED_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade SDK advanced custody"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK advanced custody",
+            ));
         }
         if current.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
             && incoming.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade standard asymmetric imported key state"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade standard asymmetric imported key state",
+            ));
         }
-        incoming.engines.validate_transit_derived_ed_state(Some(&current.engines))
+        incoming
+            .engines
+            .validate_transit_derived_ed_state(Some(&current.engines))
             .map_err(Response::from_engine_error)?;
-        if current.schema >= TRANSIT_DERIVED_ED_STATE_SCHEMA && incoming.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA {
-            return Err(Response::error(400, "snapshot would downgrade derived Ed25519 custody"));
+        if current.schema >= TRANSIT_DERIVED_ED_STATE_SCHEMA
+            && incoming.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade derived Ed25519 custody",
+            ));
         }
-        incoming.engines.validate_transit_rotation_precision_state(Some(&current.engines))
+        incoming
+            .engines
+            .validate_transit_rotation_precision_state(Some(&current.engines))
             .map_err(Response::from_engine_error)?;
         if current.schema >= TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
             && incoming.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade precise transit rotation"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade precise transit rotation",
+            ));
         }
         if current.schema >= SYMMETRIC_BACKUP_STATE_SCHEMA
             && incoming.schema < SYMMETRIC_BACKUP_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade symmetric imported derivation and backups"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade symmetric imported derivation and backups",
+            ));
         }
         if current.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             && incoming.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade precise control group deadlines"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade precise control group deadlines",
+            ));
         }
         if current.schema >= KV2_LOSSLESS_STATE_SCHEMA
             && incoming.schema < KV2_LOSSLESS_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade KV2 lossless custody"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade KV2 lossless custody",
+            ));
         }
         incoming
             .engines
@@ -840,31 +892,48 @@ impl Service {
             .map_err(Response::from_engine_error)?;
         if (current.schema >= WORKFLOW_INPUT_STATE_SCHEMA
             || current.namespaces.workflows.has_logical_input_profiles()
-            || current.auth.has_control_group_logical_data()) && incoming.schema < WORKFLOW_INPUT_STATE_SCHEMA {
-            return Err(Response::error(503,"workflow logical input snapshot floor cannot decrease"));
+            || current.auth.has_control_group_logical_data())
+            && incoming.schema < WORKFLOW_INPUT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                503,
+                "workflow logical input snapshot floor cannot decrease",
+            ));
         }
         if (current.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA
             || current.namespaces.workflows.has_request_credentials())
             && incoming.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade workflow request credentials"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade workflow request credentials",
+            ));
         }
         if (current.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA
             || current.namespaces.workflows.has_expression_profiles())
             && incoming.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade workflow expressions"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade workflow expressions",
+            ));
         }
         if (current.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA
             || current.namespaces.workflows.has_dynamic_profiles())
             && incoming.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade dynamic workflow sources"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade dynamic workflow sources",
+            ));
         }
         if current.schema >= WORKFLOW_PROFILE_STATE_SCHEMA
             && incoming.schema < WORKFLOW_PROFILE_STATE_SCHEMA
         {
-            return Err(Response::error(400, "snapshot would downgrade workflow profiles"));
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade workflow profiles",
+            ));
         }
         if current.schema >= CONTROL_GROUP_STATE_SCHEMA
             && incoming.schema < CONTROL_GROUP_STATE_SCHEMA

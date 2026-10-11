@@ -196,13 +196,19 @@ pub(crate) struct BatchOrigin {
 }
 impl BatchOrigin {
     pub(super) fn sdk(binding: sdk::Binding) -> Self {
-        Self { input: BatchMetadataInput::Map, sdk: Some(Box::new(binding)) }
+        Self {
+            input: BatchMetadataInput::Map,
+            sdk: Some(Box::new(binding)),
+        }
     }
-    pub(super) fn sdk_binding(&self) -> Option<&sdk::Binding> { self.sdk.as_deref() }
+    pub(super) fn sdk_binding(&self) -> Option<&sdk::Binding> {
+        self.sdk.as_deref()
+    }
     pub(super) fn validate(&self, metadata: &BTreeMap<String, String>) -> Result<(), AuthError> {
         if let Some(binding) = &self.sdk {
             use crate::engines::sdk_lease::Backend;
-            binding.validate_lease_binding(&binding.namespace, &format!("auth/{}/", binding.mount))
+            binding
+                .validate_lease_binding(&binding.namespace, &format!("auth/{}/", binding.mount))
                 .map_err(|_| err(503, "SDK batch issuer binding rejected"))?;
         }
         if (!matches!(self.input, BatchMetadataInput::Map) && !metadata.is_empty())

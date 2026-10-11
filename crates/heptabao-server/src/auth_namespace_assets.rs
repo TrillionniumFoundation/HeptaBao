@@ -49,7 +49,9 @@ impl NamespaceAssets {
         {
             return Err(err(503, "namespace auth owner binding rejected"));
         }
-        if let Some(mfa)=&self.identity_mfa {mfa.validate_namespace(actual)?;}
+        if let Some(mfa) = &self.identity_mfa {
+            mfa.validate_namespace(actual)?;
+        }
         if let Some(control_groups) = &self.control_groups {
             control_groups.validate_namespace(actual)?;
         }
@@ -276,7 +278,7 @@ impl AuthState {
         assets.validate(actual)?;
         self.sdk_namespace_attach_preflight(actual, &assets.sdk_namespace)?;
         self.control_group_namespace_attach_preflight(actual, assets.control_groups.as_ref())?;
-        self.mfa_namespace_attach_preflight(actual,assets.identity_mfa.as_ref())?;
+        self.mfa_namespace_attach_preflight(actual, assets.identity_mfa.as_ref())?;
         if assets
             .policies
             .iter()
@@ -292,7 +294,8 @@ impl AuthState {
             return Err(err(503, "namespace public origin floor is missing"));
         }
         if self.userpass_issuance_floor.is_none()
-            && assets.tokens.values().any(Token::has_userpass_creation_ttl) {
+            && assets.tokens.values().any(Token::has_userpass_creation_ttl)
+        {
             return Err(err(503, "namespace Userpass issuance floor is missing"));
         }
         // Complete collision checks precede every mutation, so a rejected
@@ -322,7 +325,7 @@ impl AuthState {
         }
         self.attach_sdk_namespace(actual, assets.sdk_namespace)?;
         self.attach_control_group_namespace(assets.control_groups);
-        self.attach_mfa_namespace(actual,assets.identity_mfa)?;
+        self.attach_mfa_namespace(actual, assets.identity_mfa)?;
         self.tokens.extend(assets.tokens);
         if let Some(value) = assets.policies {
             self.policies.insert(actual.to_owned(), value);

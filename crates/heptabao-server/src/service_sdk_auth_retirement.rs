@@ -398,7 +398,10 @@ impl Service {
                 .map_err(auth_error)?;
             if response.is_none_or(|response| response.status != 204) {
                 #[cfg(test)]
-                crate::service::namespace_diagnostics::record_status("retirement.stage.native_preflight", 503);
+                crate::service::namespace_diagnostics::record_status(
+                    "retirement.stage.native_preflight",
+                    503,
+                );
                 return Err(Response::error(
                     503,
                     "SDK retirement native preflight unavailable",
@@ -467,7 +470,10 @@ impl Service {
                         fingerprint,
                     )
                     .map_err(auth_error)?;
-                namespace_diagnostic!("retirement.stage.initial_publish", self.sdk_auth_commit_control(&mut state, &mut caller, &expected, context.clock))?;
+                namespace_diagnostic!(
+                    "retirement.stage.initial_publish",
+                    self.sdk_auth_commit_control(&mut state, &mut caller, &expected, context.clock)
+                )?;
                 self.install_committed_namespace_view_copy(&state);
                 if let Some(first) = remaining.front() {
                     // start_worker_typed may call external Setup. Attempted is durable first.
@@ -476,12 +482,15 @@ impl Service {
                         .auth
                         .attempt_sdk_auth_retirement_resource(&job, &first.id, at)
                         .map_err(auth_error)?;
-                    namespace_diagnostic!("retirement.stage.attempt_publish", self.sdk_auth_commit_control(
-                        &mut state,
-                        &mut caller,
-                        &expected,
-                        context.clock,
-                    ))?;
+                    namespace_diagnostic!(
+                        "retirement.stage.attempt_publish",
+                        self.sdk_auth_commit_control(
+                            &mut state,
+                            &mut caller,
+                            &expected,
+                            context.clock,
+                        )
+                    )?;
                     self.install_committed_namespace_view_copy(&state);
                     let path = first
                         .path
@@ -514,7 +523,10 @@ impl Service {
                     );
                     if self.pending_sdk_auth_request.is_none() {
                         #[cfg(test)]
-                        crate::service::namespace_diagnostics::record_status("retirement.stage.external_absent", response.status);
+                        crate::service::namespace_diagnostics::record_status(
+                            "retirement.stage.external_absent",
+                            response.status,
+                        );
                         return Err(response);
                     }
                     Ok(empty_response())

@@ -367,9 +367,18 @@ impl Service {
     }
 
     pub(super) fn prepare_record_plan(&self, state: &mut State) -> Result<RecordPlan, Response> {
-        namespace_diagnostic!("records.namespace_prepare", self.prepare_namespace_publication(state))?;
-        namespace_diagnostic!("records.publication_schema", state.validate_publication_schema(self.state.as_ref()))?;
-        namespace_diagnostic!("records.physical_plan", self.prepare_record_plan_from_validated_owner(state))
+        namespace_diagnostic!(
+            "records.namespace_prepare",
+            self.prepare_namespace_publication(state)
+        )?;
+        namespace_diagnostic!(
+            "records.publication_schema",
+            state.validate_publication_schema(self.state.as_ref())
+        )?;
+        namespace_diagnostic!(
+            "records.physical_plan",
+            self.prepare_record_plan_from_validated_owner(state)
+        )
     }
 
     // Shared physical object construction. This private helper is reachable
@@ -570,7 +579,10 @@ impl Service {
             ));
         }
         let state = proof.closed_state();
-        let plan = namespace_diagnostic!("seal.commit.physical_plan", self.prepare_record_plan_from_validated_owner(state))?;
+        let plan = namespace_diagnostic!(
+            "seal.commit.physical_plan",
+            self.prepare_record_plan_from_validated_owner(state)
+        )?;
         let seal = namespace_deletion::seal_digest(self)?;
         let barrier = namespace_deletion::barrier_digest(self)?;
         self.commit_record_publication_checked(

@@ -94,7 +94,9 @@ fn external_pki270_original_one_second_leaf_expiry_before_publication_keeps_stat
         hex(&<sha2::Sha256 as sha2::Digest>::digest(&diagnostic_error)),
         before,
         diagnostic_calls,
-        service.current_state_identity().is_ok_and(|current| current == identity),
+        service
+            .current_state_identity()
+            .is_ok_and(|current| current == identity),
         started.elapsed().as_millis(),
     );
     assert!(response.status == 403 && response.body.get("data").is_none());

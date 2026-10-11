@@ -1026,14 +1026,35 @@ fn transit_hmac_key_size_matches_actual_openbao270_creation_boundaries() -> Test
             .map_err(|_| "private HMAC boundary snapshot")?;
         let path = format!("transit/keys/{name}");
         let rejected = state.handle("", "POST", &path, &body, 1);
-        assert!(rejected.is_err_and(|error| error.status == status), "actual boundary {name}");
-        assert!(crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
-            .map_err(|_| "private HMAC boundary snapshot")? == before);
-        assert!(state.handle("", "GET", &path, &json!({}), 1).is_err_and(|error| error.status == 404));
+        assert!(
+            rejected.is_err_and(|error| error.status == status),
+            "actual boundary {name}"
+        );
+        assert!(
+            crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "private HMAC boundary snapshot")?
+                == before
+        );
+        assert!(
+            state
+                .handle("", "GET", &path, &json!({}), 1)
+                .is_err_and(|error| error.status == 404)
+        );
     }
     for (name, size) in [("thirty-two", 32), ("five-twelve", 512)] {
         let path = format!("transit/keys/{name}");
-        assert_eq!(request(&mut state, "", "POST", &path, json!({"type":"hmac","key_size":size}), 1)?.status, 200);
+        assert_eq!(
+            request(
+                &mut state,
+                "",
+                "POST",
+                &path,
+                json!({"type":"hmac","key_size":size}),
+                1
+            )?
+            .status,
+            200
+        );
         let descriptor = request(&mut state, "", "GET", &path, json!({}), 1)?;
         assert_eq!(descriptor.status, 200);
         assert_eq!(descriptor.body["data"]["type"], "hmac");
@@ -1056,12 +1077,12 @@ fn transit_hmac_matches_rfc4231_test_case_1() -> TestResult {
     let mut serialized = serde_json::to_value(&state)?;
     serialized["namespaces"][""]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["rfc"]["versions"]
         ["1"]["material"] = {
-            // Native HMAC keys use primary material and require at least 32
-            // bytes. Zero padding the 20-byte RFC key preserves its HMAC value.
-            let mut key = [0_u8; 32];
-            key[..20].fill(0x0b);
-            json!(BASE64.encode(key))
-        };
+        // Native HMAC keys use primary material and require at least 32
+        // bytes. Zero padding the 20-byte RFC key preserves its HMAC value.
+        let mut key = [0_u8; 32];
+        key[..20].fill(0x0b);
+        json!(BASE64.encode(key))
+    };
     let mut state: EngineState = serde_json::from_value(serialized)?;
     let hmac = request(
         &mut state,
@@ -1097,10 +1118,10 @@ fn transit_supports_openbao_hash_and_hmac_algorithm_matrix() -> TestResult {
     let mut serialized = serde_json::to_value(&state)?;
     serialized["namespaces"][""]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["algorithm-matrix"]
         ["versions"]["1"]["material"] = {
-            let mut key = [0_u8; 32];
-            key[..20].fill(0x0b);
-            json!(BASE64.encode(key))
-        };
+        let mut key = [0_u8; 32];
+        key[..20].fill(0x0b);
+        json!(BASE64.encode(key))
+    };
     let mut state: EngineState = serde_json::from_value(serialized)?;
     let input = BASE64.encode(b"Hi There");
     let cases = [

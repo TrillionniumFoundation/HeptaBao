@@ -517,7 +517,9 @@ impl PartialEq for Value {
             (Value::Int(a), Value::Int(b)) => a == b,
             (Value::Uint(a), Value::Uint(b)) => a == b,
             (Value::Float(a), Value::Float(b)) => a == b,
-            (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => a == b,
+            (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => {
+                a == b
+            }
             (Value::List(a), Value::List(b)) => a == b,
             (Value::Map(a), Value::Map(b)) => a == b,
             #[cfg(feature = "html")]
@@ -541,7 +543,9 @@ impl PartialOrd for Value {
             (Value::Int(a), Value::Int(b)) => a.partial_cmp(b),
             (Value::Uint(a), Value::Uint(b)) => a.partial_cmp(b),
             (Value::Float(a), Value::Float(b)) => a.partial_cmp(b),
-            (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => a.partial_cmp(b),
+            (Value::String(a) | Value::JsonNumber(a), Value::String(b) | Value::JsonNumber(b)) => {
+                a.partial_cmp(b)
+            }
             #[cfg(feature = "html")]
             (Value::Safe { s: a, .. }, Value::Safe { s: b, .. }) => a.partial_cmp(b),
             _ => None,

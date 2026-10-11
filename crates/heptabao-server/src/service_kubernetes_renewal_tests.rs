@@ -924,9 +924,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
         ),
     ] {
         // Accepted caller CIDRs do not replace fresh Kubernetes TokenReview.
-        let pending = match cidr_dispatch(
-            &mut service, "POST", path, actor, body, peer, None,
-        ) {
+        let pending = match cidr_dispatch(&mut service, "POST", path, actor, body, peer, None) {
             RequestExecution::External(pending) => pending,
             RequestExecution::Complete(response) => {
                 return Err(format!("renewal bypassed TokenReview: {}", response.status).into());
@@ -955,16 +953,29 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
     Ok(())
 }
 
-
 #[test]
-fn kubernetes_post_revocation_tokenreview_and_recreated_uid_cannot_extend_any_renewal_route() -> TestResult {
+fn kubernetes_post_revocation_tokenreview_and_recreated_uid_cannot_extend_any_renewal_route()
+-> TestResult {
     for operation in ["renew-self", "renew", "renew-accessor"] {
         let root = Root::new();
         let (mut service, _key, admin, token) = fixture(&root)?;
-        let accessor = call(&mut service, "GET", "auth/token/lookup-self", &token, json!({}))
-            .body["data"]["accessor"].as_str().ok_or("accessor")?.to_owned();
+        let accessor = call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &token,
+            json!({}),
+        )
+        .body["data"]["accessor"]
+            .as_str()
+            .ok_or("accessor")?
+            .to_owned();
         let path = format!("auth/token/{operation}");
-        let actor = if operation == "renew-self" { &token } else { &admin };
+        let actor = if operation == "renew-self" {
+            &token
+        } else {
+            &admin
+        };
         let body = match operation {
             "renew" => json!({"token":token, "increment":120}),
             "renew-accessor" => json!({"accessor":accessor, "increment":120}),
@@ -987,24 +998,34 @@ fn kubernetes_post_revocation_tokenreview_and_recreated_uid_cannot_extend_any_re
             }) {
                 RequestExecution::External(plan) => plan,
                 RequestExecution::Complete(response) => {
-                    return Err(format!("missing TokenReview effect for {operation}: {}", response.status).into());
-                },
+                    return Err(format!(
+                        "missing TokenReview effect for {operation}: {}",
+                        response.status
+                    )
+                    .into());
+                }
             };
             let observation = match failure_mode {
-                "revoked-jwt" => ExternalEffectResult::OnlineAuth(
-                    Err(Response::error(403, "Kubernetes TokenReview denied revoked assertion"))),
-                _ => ExternalEffectResult::OnlineAuth(
-                    Ok(OnlineAuthObservation::ProviderRenewal(
-                        crate::auth::ProviderRenewalObservation::Kubernetes(
-                            KubernetesLoginObservation::observed("workload", "worker", "recreated-uid"),
-                        ),
-                    )),
-                ),
+                "revoked-jwt" => ExternalEffectResult::OnlineAuth(Err(Response::error(
+                    403,
+                    "Kubernetes TokenReview denied revoked assertion",
+                ))),
+                _ => ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::ProviderRenewal(
+                    crate::auth::ProviderRenewalObservation::Kubernetes(
+                        KubernetesLoginObservation::observed("workload", "worker", "recreated-uid"),
+                    ),
+                ))),
             };
             let denied = service.finish_external_request(*pending, observation);
-            assert_ne!(denied.status, 200, "{operation}/{failure_mode} must fail closed");
+            assert_ne!(
+                denied.status, 200,
+                "{operation}/{failure_mode} must fail closed"
+            );
             let after = serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?;
-            assert_eq!(after, before, "{operation}/{failure_mode} must not extend an authenticated lease");
+            assert_eq!(
+                after, before,
+                "{operation}/{failure_mode} must not extend an authenticated lease"
+            );
         }
     }
     Ok(())

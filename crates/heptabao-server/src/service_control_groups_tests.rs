@@ -23,7 +23,11 @@ struct Fixture {
 // Compare the closed durable view and the actual loaded typed owners separately.
 // Buffers stay in memory, are zeroized, and are never formatted on failure.
 fn erased_wrapper_fixture_state(f: &Fixture) -> TestResult<Vec<Zeroizing<Vec<u8>>>> {
-    let state = f.service.state.as_ref().ok_or("fixture state is unavailable")?;
+    let state = f
+        .service
+        .state
+        .as_ref()
+        .ok_or("fixture state is unavailable")?;
     let mut parts = vec![
         Zeroizing::new(serde_json::to_vec(state)?),
         Zeroizing::new(serde_json::to_vec(&(
@@ -37,8 +41,13 @@ fn erased_wrapper_fixture_state(f: &Fixture) -> TestResult<Vec<Zeroizing<Vec<u8>
             &state.database,
             &state.raft_admin,
         ))?),
-        state.auth.erased_wrapper_fixture_runtime().map_err(|_| "auth custody snapshot")?,
-        f.service.namespace_runtime.erased_wrapper_fixture_runtime(state)
+        state
+            .auth
+            .erased_wrapper_fixture_runtime()
+            .map_err(|_| "auth custody snapshot")?,
+        f.service
+            .namespace_runtime
+            .erased_wrapper_fixture_runtime(state)
             .map_err(|_| "namespace custody snapshot")?,
         Zeroizing::new(serde_json::to_vec(&(
             f.service.state_digest,
@@ -52,21 +61,31 @@ fn erased_wrapper_fixture_state(f: &Fixture) -> TestResult<Vec<Zeroizing<Vec<u8>
     });
     if state.engines.record_root().is_some() {
         let mut graph = Vec::new();
-        state.engines.visit_record_objects(|object| {
-            graph.push(Zeroizing::new(
-                serde_json::to_vec(&(object.reference(), object.children(), object.bytes()))
-                    .map_err(|_| crate::state_records::RecordError::Invalid)?,
-            ));
-            Ok(())
-        }).map_err(|_| "record graph custody snapshot")?;
+        state
+            .engines
+            .visit_record_objects(|object| {
+                graph.push(Zeroizing::new(
+                    serde_json::to_vec(&(object.reference(), object.children(), object.bytes()))
+                        .map_err(|_| crate::state_records::RecordError::Invalid)?,
+                ));
+                Ok(())
+            })
+            .map_err(|_| "record graph custody snapshot")?;
         parts.push(Zeroizing::new(serde_json::to_vec(
-            &graph.iter().map(|bytes| bytes.as_slice()).collect::<Vec<_>>(),
+            &graph
+                .iter()
+                .map(|bytes| bytes.as_slice())
+                .collect::<Vec<_>>(),
         )?));
-        let pending = state.engines.record_objects().map_err(|_| "record staging custody snapshot")?;
+        let pending = state
+            .engines
+            .record_objects()
+            .map_err(|_| "record staging custody snapshot")?;
         parts.push(Zeroizing::new(serde_json::to_vec(
-            &pending.iter().map(|object| (
-                object.reference(), object.children(), object.bytes()
-            )).collect::<Vec<_>>(),
+            &pending
+                .iter()
+                .map(|object| (object.reference(), object.children(), object.bytes()))
+                .collect::<Vec<_>>(),
         )?));
     }
     Ok(parts)
@@ -678,7 +697,9 @@ fn cg270_userpass_quorum_defers_update_and_preapproval_preserves_single_claim() 
     assert_eq!(completed.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(completed.auth.has_control_group_state());
     assert!(completed.auth.has_userpass_issuance_state());
-    completed.auth.validate_control_group_state()
+    completed
+        .auth
+        .validate_control_group_state()
         .map_err(|_| "actual control-group owner beside native Userpass132")?;
     policy_write(
         &mut f.service,
@@ -2878,11 +2899,23 @@ fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -
     );
     let before = erased_wrapper_fixture_state(&n)?;
     {
-        let state = n.service.state.as_ref().ok_or("retired wrapper fixture state")?;
-        assert!(!state.auth.erased_wrapper_fixture_token_present(&old_wrapper));
+        let state = n
+            .service
+            .state
+            .as_ref()
+            .ok_or("retired wrapper fixture state")?;
+        assert!(
+            !state
+                .auth
+                .erased_wrapper_fixture_token_present(&old_wrapper)
+        );
         assert!(!state.auth.is_control_group_token(&old_wrapper));
-        assert!(!state.auth.control_group_owners()
-            .any(|owner| owner.request_accessor == accessor));
+        assert!(
+            !state
+                .auth
+                .control_group_owners()
+                .any(|owner| owner.request_accessor == accessor)
+        );
     }
     let retired = scoped_call(
         &mut n,
@@ -2900,12 +2933,29 @@ fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -
     );
     let after = erased_wrapper_fixture_state(&n)?;
     assert_eq!(before.len(), after.len());
-    assert!(before.iter().zip(&after).all(|(a, b)| a.as_slice() == b.as_slice()));
+    assert!(
+        before
+            .iter()
+            .zip(&after)
+            .all(|(a, b)| a.as_slice() == b.as_slice())
+    );
     {
-        let state = n.service.state.as_ref().ok_or("retired wrapper fixture state")?;
-        assert!(!state.auth.erased_wrapper_fixture_token_present(&old_wrapper));
-        assert!(!state.auth.control_group_owners()
-            .any(|owner| owner.request_accessor == accessor));
+        let state = n
+            .service
+            .state
+            .as_ref()
+            .ok_or("retired wrapper fixture state")?;
+        assert!(
+            !state
+                .auth
+                .erased_wrapper_fixture_token_present(&old_wrapper)
+        );
+        assert!(
+            !state
+                .auth
+                .control_group_owners()
+                .any(|owner| owner.request_accessor == accessor)
+        );
     }
     let fresh = scoped_call(
         &mut n,
@@ -3505,9 +3555,7 @@ fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effec
             .ok_or("owner")?
             .precision
             .ok_or("precise deadline")?;
-        let before = exact
-            .issued_at
-            .checked_add((nanos - 1).try_into()?)?;
+        let before = exact.issued_at.checked_add((nanos - 1).try_into()?)?;
         assert!(
             current
                 .auth
@@ -3566,10 +3614,7 @@ fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effec
         let retired = f.service.state.as_ref().ok_or("retired")?.clone();
         assert_eq!(retired.auth.control_group_request_count_for_test(), 0);
         assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-        assert_eq!(
-            retired.writer_schema(),
-            USERPASS_ISSUANCE_STATE_SCHEMA
-        );
+        assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
         assert!(current.validate_publication_schema(Some(&retired)).is_err());
         assert!(Service::validate_snapshot_protected_floor(&retired, &current).is_err());
         f = restart(f, 100)?;
@@ -3609,30 +3654,66 @@ fn cg_lossless_encrypted_pending_body_and_approval_context_survive_durable_resta
     create(&mut f);
     let value = heptabao_domain::json::decode(br#"{"value":"after","big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"fake":{"$serde_json::private::Number":"7"}}"#)?;
     let request = json!({"data":value});
-    let pending = observed_call(&mut f.service,&f.requester.token,"POST","secret/data/cg/key",request.clone(),100,true)?;
-    assert_eq!(pending.status,200);
+    let pending = observed_call(
+        &mut f.service,
+        &f.requester.token,
+        "POST",
+        "secret/data/cg/key",
+        request.clone(),
+        100,
+        true,
+    )?;
+    assert_eq!(pending.status, 200);
     assert!(pending.body["data"].is_null());
-    let wrapper = Zeroizing::new(text(&pending.body,"/wrap_info/token")?);
-    let accessor = text(&pending.body,"/wrap_info/accessor")?;
-    let before = review_request(&mut f,&accessor);
-    assert_eq!(before.status,200);
-    assert_eq!(before.body["data"]["request_data"],request);
-    f = restart(f,100)?;
-    let after = review_request(&mut f,&accessor);
-    assert_eq!(after.status,200);
-    assert_eq!(after.body["data"]["request_data"],request);
-    assert_eq!(after.body["data"]["authorizations"],json!([]));
-    approve_two(&mut f,&accessor);
-    f = restart(f,100)?;
-    assert_eq!(review_request(&mut f,&accessor).body["data"]["approved"],true);
-    let executed = call(&mut f.service,&wrapper,"POST","sys/wrapping/unwrap",json!({}),100);
-    assert_eq!(executed.status,200);
-    assert_eq!(executed.body["data"]["version"],2);
-    let read = call(&mut f.service,&f.admin,"GET","secret/data/cg/key",json!({}),100);
-    assert_eq!(read.status,200);
-    assert_eq!(read.body["data"]["data"],value);
+    let wrapper = Zeroizing::new(text(&pending.body, "/wrap_info/token")?);
+    let accessor = text(&pending.body, "/wrap_info/accessor")?;
+    let before = review_request(&mut f, &accessor);
+    assert_eq!(before.status, 200);
+    assert_eq!(before.body["data"]["request_data"], request);
+    f = restart(f, 100)?;
+    let after = review_request(&mut f, &accessor);
+    assert_eq!(after.status, 200);
+    assert_eq!(after.body["data"]["request_data"], request);
+    assert_eq!(after.body["data"]["authorizations"], json!([]));
+    approve_two(&mut f, &accessor);
+    f = restart(f, 100)?;
+    assert_eq!(
+        review_request(&mut f, &accessor).body["data"]["approved"],
+        true
+    );
+    let executed = call(
+        &mut f.service,
+        &wrapper,
+        "POST",
+        "sys/wrapping/unwrap",
+        json!({}),
+        100,
+    );
+    assert_eq!(executed.status, 200);
+    assert_eq!(executed.body["data"]["version"], 2);
+    let read = call(
+        &mut f.service,
+        &f.admin,
+        "GET",
+        "secret/data/cg/key",
+        json!({}),
+        100,
+    );
+    assert_eq!(read.status, 200);
+    assert_eq!(read.body["data"]["data"], value);
     assert!(read.body["data"]["data"]["fake"].is_object());
-    assert_eq!(call(&mut f.service,&wrapper,"POST","sys/wrapping/unwrap",json!({}),100).status,400);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
     Ok(())
 }
 
@@ -3824,7 +3905,8 @@ fn workflow123_invalid_input_and_forward_history_fail_before_any_provider() -> T
                 100
             )
             .status,
-            expected_status, "input case: {label}"
+            expected_status,
+            "input case: {label}"
         );
         read(&mut f, 1, "before", 100);
         assert_eq!(

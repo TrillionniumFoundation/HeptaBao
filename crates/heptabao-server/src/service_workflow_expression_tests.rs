@@ -44,7 +44,11 @@ fn workflow125_public_fielddata_weak_bool_to_string_is_accepted_explicitly() -> 
         json!({"a": 2, "word": true}),
         100,
     );
-    assert_eq!(reply.status, 200, "bool weak coercion: {:?}", reply.body["errors"]);
+    assert_eq!(
+        reply.status, 200,
+        "bool weak coercion: {:?}",
+        reply.body["errors"]
+    );
     assert_eq!(reply.body["data"]["text"], "1");
     read(&mut f, 2, "1", 100);
     Ok(())
@@ -102,12 +106,16 @@ fn workflow125_cel_and_template_use_actual_dispatch_and_validate_before_effects(
             "POST",
             "sys/workflows/execute/cg-wire",
             input,
-            100
+            100,
         );
         // This entry point reuses the maintained public FieldData consumer:
         // missing/invalid scalar coercions use its established 500 mapping.
         // The mandatory safety assertion is unchanged: no provider write.
-        assert_eq!(response.status, 500, "input errors: {:?}", response.body["errors"]);
+        assert_eq!(
+            response.status, 500,
+            "input errors: {:?}",
+            response.body["errors"]
+        );
         read(&mut f, 2, "after", 100);
     }
     for (cas, expression) in [(1, "1 / 0"), (2, "(")] {

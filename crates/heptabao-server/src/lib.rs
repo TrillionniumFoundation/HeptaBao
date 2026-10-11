@@ -38,7 +38,6 @@ pub mod postgres_storage;
 mod postgres_wire;
 mod request_deadline;
 mod request_metadata;
-mod workflow_runtime;
 mod service;
 mod snapshot_archive;
 mod snapshot_file;
@@ -46,6 +45,7 @@ mod snapshot_file;
 mod test_support;
 mod tls_key_exchange;
 mod valkey_wire;
+mod workflow_runtime;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};
 #[cfg(target_os = "linux")]

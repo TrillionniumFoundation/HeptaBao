@@ -516,11 +516,17 @@ impl Service {
             let expected = self.current_state_identity()?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             let mut sdk_hosts = self.reserve_namespace_sdk_hosts(&state, binding.namespace())?;
-            namespace_diagnostic!("delete.begin", state.begin_namespace_deletion(binding.clone()))?;
+            namespace_diagnostic!(
+                "delete.begin",
+                state.begin_namespace_deletion(binding.clone())
+            )?;
             #[cfg(not(any(target_os = "linux", target_os = "macos")))]
             state.sync_namespace_deletion_ledger()?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
-            namespace_diagnostic!("delete.queue_sdk", state.queue_namespace_sdk_deletion(&binding))?;
+            namespace_diagnostic!(
+                "delete.queue_sdk",
+                state.queue_namespace_sdk_deletion(&binding)
+            )?;
             // Every response binding is captured before publication with the
             // original affine admission, never rebuilt from completed state.
             let authority = AcceptedDelete::capture(actor, self, &state, request, binding.clone())?;
@@ -531,8 +537,12 @@ impl Service {
                 caller_incarnation,
                 &binding,
             )?;
-            namespace_diagnostic!("delete.record_root", self.prepare_namespace_deletion_record_root(&mut state))?;
-            let publication = namespace_diagnostic!("delete.record_plan", self.prepare_record_plan(&mut state))?;
+            namespace_diagnostic!(
+                "delete.record_root",
+                self.prepare_namespace_deletion_record_root(&mut state)
+            )?;
+            let publication =
+                namespace_diagnostic!("delete.record_plan", self.prepare_record_plan(&mut state))?;
             authority.check_state(self, &state)?;
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_hosts.check()?;
@@ -722,7 +732,9 @@ impl Service {
                 .map_err(Response::from_engine_error)?;
             // The existing native task already authenticated and closed this
             // exact Binding, including all original SDK terminal/ACK gates.
-            next.auth.retire_closed_mfa_namespace(&binding,&next.cluster_id).map_err(auth_error)?;
+            next.auth
+                .retire_closed_mfa_namespace(&binding, &next.cluster_id)
+                .map_err(auth_error)?;
             next.namespaces.remove(actual)?;
             next.sync_namespace_batch_registry()?;
             next.auth.remove_fresh_namespace_auth_defaults(actual);
@@ -768,10 +780,16 @@ impl Service {
             }
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             if let Some(proof) = &terminal_proof {
-                proof.validate(self.state.as_ref(), self.current_state_identity()?, &self.ha)?;
+                proof.validate(
+                    self.state.as_ref(),
+                    self.current_state_identity()?,
+                    &self.ha,
+                )?;
             }
             #[cfg(any(target_os = "linux", target_os = "macos"))]
-            let native_role = terminal_proof.as_ref().and_then(|proof| proof.native_role());
+            let native_role = terminal_proof
+                .as_ref()
+                .and_then(|proof| proof.native_role());
             #[cfg(not(any(target_os = "linux", target_os = "macos")))]
             let native_role = None;
             self.commit_record_plan_with_native_role(

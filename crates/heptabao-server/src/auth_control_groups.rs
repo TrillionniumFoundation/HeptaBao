@@ -611,11 +611,7 @@ impl AuthState {
     /// A real request owner, not the public policy name, admits native retirement.
     /// Its existing validator authenticates sealed issuer and approval capsules and
     /// binds token identity, accessor, namespace, clocks and finite-use flags.
-    pub(super) fn namespace_control_group_deletion_owner(
-        &self,
-        id: &str,
-        namespace: &str,
-    ) -> bool {
+    pub(super) fn namespace_control_group_deletion_owner(&self, id: &str, namespace: &str) -> bool {
         self.control_groups.floor
             && self
                 .control_groups
@@ -789,7 +785,10 @@ impl AuthState {
                 .any(|stanza| stanza.control.precise_ttl.is_some())
     }
     pub(crate) fn has_control_group_logical_data(&self) -> bool {
-        self.control_groups.requests.values().any(|owner| owner.logical_data.is_some())
+        self.control_groups
+            .requests
+            .values()
+            .any(|owner| owner.logical_data.is_some())
     }
     pub(crate) fn has_control_group_state(&self) -> bool {
         !self.control_groups.is_absent()
@@ -1461,7 +1460,9 @@ impl AuthState {
             if let Some(data) = &owner.logical_data {
                 data.validate().map_err(bad)?;
                 if let Some(profile) = &data.profile
-                    && (profile.namespace_id != owner.namespace_id || profile.incarnation != owner.namespace_incarnation) {
+                    && (profile.namespace_id != owner.namespace_id
+                        || profile.incarnation != owner.namespace_incarnation)
+                {
                     return Err(bad("control group logical data namespace owner rejected"));
                 }
             }
@@ -1703,7 +1704,8 @@ mod tests;
 impl Registry {
     pub(super) fn has_lossless_json_state(&self) -> bool {
         self.requests.values().any(|owner| {
-            [&owner.body, &owner.transport_body, &owner.actor_entity].into_iter()
+            [&owner.body, &owner.transport_body, &owner.actor_entity]
+                .into_iter()
                 .any(heptabao_domain::json::requires_lossless_format)
         })
     }

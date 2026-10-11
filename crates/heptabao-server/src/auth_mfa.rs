@@ -58,7 +58,7 @@ struct ClosedReference {
     method_ids: BTreeSet<String>,
     owner_digest: [u8; 32],
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    queue_digest: Option<[u8;32]>,
+    queue_digest: Option<[u8; 32]>,
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -177,10 +177,20 @@ impl Registry {
             }
         }
         let encoded = match &self.janitor_custody {
-            Some(custody) if !custody.terminal.is_empty() || !custody.applied.is_empty() => crate::secret_serde::to_vec(
-                &(FORMAT, &self.key, self.clock, &self.retired, owners, &custody.terminal, &custody.applied),
-                crate::MAX_APPLICATION_STATE_BYTES,
-            ),
+            Some(custody) if !custody.terminal.is_empty() || !custody.applied.is_empty() => {
+                crate::secret_serde::to_vec(
+                    &(
+                        FORMAT,
+                        &self.key,
+                        self.clock,
+                        &self.retired,
+                        owners,
+                        &custody.terminal,
+                        &custody.applied,
+                    ),
+                    crate::MAX_APPLICATION_STATE_BYTES,
+                )
+            }
             _ => crate::secret_serde::to_vec(
                 &(FORMAT, &self.key, self.clock, &self.retired, owners),
                 crate::MAX_APPLICATION_STATE_BYTES,
@@ -233,7 +243,9 @@ impl Registry {
     fn validate(&self) -> Result<(), AuthError> {
         if !(self.format == FORMAT && self.janitor_custody.is_none()
             || self.format == janitor_custody::FORMAT && self.janitor_custody.is_some())
-            || self.key.0.len() != 32 || self.mutation_epoch == 0 {
+            || self.key.0.len() != 32
+            || self.mutation_epoch == 0
+        {
             return Err(err(503, "invalid MFA reader floor or private key"));
         }
         if self.closed_references.iter().any(|(namespace, index)| {
@@ -1135,7 +1147,12 @@ impl AuthState {
             return Ok(None);
         };
         let digest = owner_digest(owner)?;
-        let draft = janitor_custody::Capture::from_owner(owner, digest, registry.mutation_epoch, &registry.key.0)?;
+        let draft = janitor_custody::Capture::from_owner(
+            owner,
+            digest,
+            registry.mutation_epoch,
+            &registry.key.0,
+        )?;
         if let Some(draft) = draft {
             registry.janitor_drafts.insert(namespace.to_owned(), draft);
         }
@@ -1268,7 +1285,9 @@ impl AuthState {
             return Err(err(503, "MFA closed retirement binding rejected"));
         }
         registry.closed_references.remove(namespace);
-        if let Some(book)=&mut registry.janitor_custody { book.remove_namespace_locator(namespace); }
+        if let Some(book) = &mut registry.janitor_custody {
+            book.remove_namespace_locator(namespace);
+        }
         registry.janitor_drafts.remove(namespace);
         registry
             .retired
@@ -1310,7 +1329,9 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|old| *old < incarnation);
         registry.namespaces.remove(namespace);
-        if let Some(book)=&mut registry.janitor_custody { book.remove_namespace_locator(namespace); }
+        if let Some(book) = &mut registry.janitor_custody {
+            book.remove_namespace_locator(namespace);
+        }
         registry.janitor_drafts.remove(namespace);
         registry
             .retired
@@ -1356,19 +1377,34 @@ impl AuthState {
             }
             // Hidden catalog metadata must be the exact signed original owner
             // projection under an ACTUAL visible enclosing ciphertext binding.
-            let locator = registry.janitor_custody.as_ref()
+            let locator = registry
+                .janitor_custody
+                .as_ref()
                 .and_then(|book| book.current.get(namespace))
-                .ok_or_else(|| err(503, "MFA reference index has no real closed namespace owner"))?;
+                .ok_or_else(|| {
+                    err(
+                        503,
+                        "MFA reference index has no real closed namespace owner",
+                    )
+                })?;
             locator.capture.verify(&registry.key.0)?;
-            let visible = locator.enclosures.last().or(locator.capture.ciphertext.as_ref())
+            let visible = locator
+                .enclosures
+                .last()
+                .or(locator.capture.ciphertext.as_ref())
                 .ok_or_else(|| err(503, "MFA hidden namespace capsule unavailable"))?;
             let boundary = visible.binding.namespace();
             let (id, incarnation) = live(boundary)
                 .ok_or_else(|| err(503, "MFA visible capsule catalog unavailable"))?;
             let actual = crate::namespace_custody::Binding::new(
-                cluster.into(), boundary.into(), id, incarnation)
-                .map_err(|_| err(503, "MFA visible capsule binding rejected"))?;
-            if !closed(boundary) || visible.binding != actual
+                cluster.into(),
+                boundary.into(),
+                id,
+                incarnation,
+            )
+            .map_err(|_| err(503, "MFA visible capsule binding rejected"))?;
+            if !closed(boundary)
+                || visible.binding != actual
                 || locator.capture.namespace != *namespace
                 || locator.capture.namespace_id != index.namespace_id
                 || locator.capture.incarnation != index.incarnation

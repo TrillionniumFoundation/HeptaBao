@@ -271,15 +271,15 @@ pub trait SandboxRunner: fmt::Debug {
 pub struct CommandSandboxRunner;
 
 #[cfg(target_os = "linux")]
-pub mod sealed_exec_adapter;
-#[cfg(target_os = "linux")]
 mod command_runner;
+#[cfg(target_os = "linux")]
+pub mod sealed_exec_adapter;
 #[cfg(target_os = "linux")]
 pub use command_runner::OwnedExecutableImage;
 #[cfg(target_os = "macos")]
-mod darwin_sdk_image;
-#[cfg(target_os = "macos")]
 mod darwin_kms_root_runner;
+#[cfg(target_os = "macos")]
+mod darwin_sdk_image;
 #[cfg(target_os = "macos")]
 pub use darwin_sdk_image::OwnedExecutableImage;
 

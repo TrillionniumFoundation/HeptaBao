@@ -145,7 +145,9 @@ impl AuthState {
         mount: &str,
         entity_id: &str,
     ) -> Result<(), AuthError> {
-        if Self::bind_pending_mfa_entity(response, namespace, mount, entity_id)? { return Ok(()); }
+        if Self::bind_pending_mfa_entity(response, namespace, mount, entity_id)? {
+            return Ok(());
+        }
         if Self::bind_pending_batch_entity(response, namespace, mount, entity_id)? {
             return Ok(());
         }

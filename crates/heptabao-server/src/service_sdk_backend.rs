@@ -431,16 +431,21 @@ impl Plan {
     }
     #[cfg(test)]
     pub(in crate::service) fn logical_worker_job_fixture(&self) -> Result<Value, Response> {
-        let call = self.lease.lock()
-            .map_err(|_| Response::error(503, "actual SDK lease owner unavailable"))?.clone();
+        let call = self
+            .lease
+            .lock()
+            .map_err(|_| Response::error(503, "actual SDK lease owner unavailable"))?
+            .clone();
         let lease_callback = call.as_ref().map(|call| call.callback()).transpose()?;
         let (events, _received) = mpsc::channel();
         let job = self.worker_job(&call, lease_callback, self.deadline, events);
-        Ok(json!({"operation":&job.operation,"path":&job.path,"data":&job.data,
+        Ok(
+            json!({"operation":&job.operation,"path":&job.path,"data":&job.data,
             "headers":job.logical_data.as_ref().map(|frame| &frame.headers),
             "lease_present":job.lease.is_some(),"auth_present":job.auth.is_some(),
             "expected_auth_paths_present":job.expected_auth_paths.is_some(),
-            "original_deadline_preserved":job.deadline == self.deadline}))
+            "original_deadline_preserved":job.deadline == self.deadline}),
+        )
     }
     pub(super) fn execute(
         &self,
@@ -1736,7 +1741,10 @@ impl Service {
             Err(error) => return error,
         };
         let logical_data = match crate::request_metadata::current(
-            request.method, request.path, request.namespace, request.body,
+            request.method,
+            request.path,
+            request.namespace,
+            request.body,
         ) {
             Ok(value) => value,
             Err(_) => return Response::error(503, "SDK logical data lost its original request"),
@@ -1902,9 +1910,19 @@ impl Service {
                     })
                     .and_then(|()| {
                         if let Some(wrapping) = &plan.wrapping {
-                            let auth = &self.state.as_ref()
-                                .ok_or_else(|| Response::error(503, "SDK wrapper delivery state unavailable"))?.auth;
-                            wrapping.check_delivery(auth, &plan.namespace, &response, authority.token_time()?)?;
+                            let auth = &self
+                                .state
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    Response::error(503, "SDK wrapper delivery state unavailable")
+                                })?
+                                .auth;
+                            wrapping.check_delivery(
+                                auth,
+                                &plan.namespace,
+                                &response,
+                                authority.token_time()?,
+                            )?;
                         }
                         Ok(())
                     })
@@ -1913,14 +1931,20 @@ impl Service {
             (Ok(authority), Err(error)) => Err((error, authority.now())),
             (Err(_), _) => {
                 #[cfg(test)]
-                crate::service::namespace_diagnostics::record_status("logical.delivery.capsule", 503);
+                crate::service::namespace_diagnostics::record_status(
+                    "logical.delivery.capsule",
+                    503,
+                );
                 plan.control.retire();
                 return self.sdk_delivery_capsule_lost(response);
             }
         };
         if let Err((error, original_now)) = gate {
             #[cfg(test)]
-            crate::service::namespace_diagnostics::record_status("logical.delivery.gate", error.status);
+            crate::service::namespace_diagnostics::record_status(
+                "logical.delivery.gate",
+                error.status,
+            );
             plan.control.retire();
             return self.sdk_delivery_veto(response, error, fingerprint, original_now);
         }
@@ -1951,11 +1975,18 @@ impl Service {
                 )?;
                 namespace_diagnostic!(
                     "logical.request.private_backend",
-                    self.sdk_binding_private_gate(plan, view.state()).map_err(bridge_failure)
+                    self.sdk_binding_private_gate(plan, view.state())
+                        .map_err(bridge_failure)
                 )
             } else {
-                namespace_diagnostic!("logical.request.authority", self.validate_sdk_authority(&mut authority))?;
-                namespace_diagnostic!("logical.request.backend", self.sdk_binding_gate(plan).map_err(bridge_failure))
+                namespace_diagnostic!(
+                    "logical.request.authority",
+                    self.validate_sdk_authority(&mut authority)
+                )?;
+                namespace_diagnostic!(
+                    "logical.request.backend",
+                    self.sdk_binding_gate(plan).map_err(bridge_failure)
+                )
             }
         })();
         if let Err(e) = gate {
@@ -2101,9 +2132,15 @@ impl Service {
             .authority
             .lock()
             .map_err(|_| Response::error(503, "SDK cleanup authority unavailable"))?;
-        namespace_diagnostic!("logical.private_view.authority", self.validate_sdk_private_cleanup_authority(&authority, &view))?;
-        namespace_diagnostic!("logical.private_view.backend", self.sdk_binding_private_gate(plan, view.state())
-            .map_err(bridge_failure))?;
+        namespace_diagnostic!(
+            "logical.private_view.authority",
+            self.validate_sdk_private_cleanup_authority(&authority, &view)
+        )?;
+        namespace_diagnostic!(
+            "logical.private_view.backend",
+            self.sdk_binding_private_gate(plan, view.state())
+                .map_err(bridge_failure)
+        )?;
         namespace_diagnostic!("logical.private_view.current", view.check_current(self))?;
         Ok(Some(view))
     }

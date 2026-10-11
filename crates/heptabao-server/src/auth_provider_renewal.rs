@@ -41,7 +41,9 @@ impl ProviderRenewalPlan {
                 .execute(outbound)
                 .map(ProviderRenewalObservation::Radius),
             Self::Ldap(plan) => plan.execute(outbound).map(ProviderRenewalObservation::Ldap),
-            Self::Kubernetes(plan) => plan.execute(outbound).map(ProviderRenewalObservation::Kubernetes),
+            Self::Kubernetes(plan) => plan
+                .execute(outbound)
+                .map(ProviderRenewalObservation::Kubernetes),
         }
     }
 
@@ -214,9 +216,10 @@ impl AuthState {
             (ProviderRenewalPlan::Ldap(plan), ProviderRenewalObservation::Ldap(observation)) => {
                 self.finish_ldap_renewal(plan, actor, observation, now)
             }
-            (ProviderRenewalPlan::Kubernetes(plan), ProviderRenewalObservation::Kubernetes(observation)) => {
-                self.finish_kubernetes_renewal(plan, actor, observation, now)
-            }
+            (
+                ProviderRenewalPlan::Kubernetes(plan),
+                ProviderRenewalObservation::Kubernetes(observation),
+            ) => self.finish_kubernetes_renewal(plan, actor, observation, now),
             _ => Err(err(503, "provider renewal observation type mismatch")),
         }
     }

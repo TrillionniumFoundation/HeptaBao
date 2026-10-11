@@ -538,28 +538,50 @@ fn userpass_configured_policies_do_not_store_or_remove_the_tokens_implicit_defau
     );
 }
 
-
 #[test]
 fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_reconstructed() {
     let (mut state, root) = configured("staff");
-    write(&mut state, &root, "staff", json!({"password":PASSWORD,"token_ttl":20,"token_max_ttl":20})).unwrap();
+    write(
+        &mut state,
+        &root,
+        "staff",
+        json!({"password":PASSWORD,"token_ttl":20,"token_max_ttl":20}),
+    )
+    .unwrap();
     assert!(!state.has_userpass_issuance_state());
     let raw = Zeroizing::new(login(&mut state, "staff"));
     let id = hash(&raw);
     assert_eq!(token_info(&state.tokens[&id], 100)["creation_ttl"], 20);
     assert!(state.has_userpass_issuance_state());
-    assert_eq!(renew(&mut state, &root, &raw, "renew-self", Some(5), 101).unwrap().body["auth"]["lease_duration"], 5);
+    assert_eq!(
+        renew(&mut state, &root, &raw, "renew-self", Some(5), 101)
+            .unwrap()
+            .body["auth"]["lease_duration"],
+        5
+    );
     assert_eq!(token_info(&state.tokens[&id], 101)["creation_ttl"], 20);
     write(&mut state, &root, "staff", json!({"token_ttl":10})).unwrap();
-    assert_eq!(renew(&mut state, &root, &raw, "renew-self", Some(5), 102).unwrap().body["auth"]["lease_duration"], 5);
+    assert_eq!(
+        renew(&mut state, &root, &raw, "renew-self", Some(5), 102)
+            .unwrap()
+            .body["auth"]["lease_duration"],
+        5
+    );
     assert_eq!(token_info(&state.tokens[&id], 102)["creation_ttl"], 20);
     let bytes = Zeroizing::new(serde_json::to_vec(&state).unwrap());
     let reopened: AuthState = serde_json::from_slice(&bytes).unwrap();
-    reopened.validate_userpass_issuance_state(Some(&state)).unwrap();
+    reopened
+        .validate_userpass_issuance_state(Some(&state))
+        .unwrap();
     assert_eq!(token_info(&reopened.tokens[&id], 102)["creation_ttl"], 20);
     let mut old = reopened.clone();
-    let Some(TokenAuthProvenance::Userpass { issued_creation_ttl, .. }) =
-        &mut old.tokens.get_mut(&id).unwrap().auth_provenance else { panic!("actual native Userpass owner") };
+    let Some(TokenAuthProvenance::Userpass {
+        issued_creation_ttl,
+        ..
+    }) = &mut old.tokens.get_mut(&id).unwrap().auth_provenance
+    else {
+        panic!("actual native Userpass owner")
+    };
     *issued_creation_ttl = None;
     old.userpass_issuance_floor = None;
     let historical = Zeroizing::new(serde_json::to_vec(&old).unwrap());
@@ -567,22 +589,52 @@ fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_rec
     assert!(!String::from_utf8_lossy(&historical).contains("userpass_issuance_floor"));
     let mut legacy: AuthState = serde_json::from_slice(&historical).unwrap();
     legacy.validate_userpass_issuance_state(None).unwrap();
-    assert_eq!(serde_json::to_vec(&legacy).unwrap().as_slice(), historical.as_slice());
-    assert!(token_info(&legacy.tokens[&id], 102).get("creation_ttl").is_none());
+    assert_eq!(
+        serde_json::to_vec(&legacy).unwrap().as_slice(),
+        historical.as_slice()
+    );
+    assert!(
+        token_info(&legacy.tokens[&id], 102)
+            .get("creation_ttl")
+            .is_none()
+    );
     renew(&mut legacy, &root, &raw, "renew-self", Some(3), 103).unwrap();
-    assert!(token_info(&legacy.tokens[&id], 103).get("creation_ttl").is_none());
-    assert!(legacy.validate_userpass_issuance_state(Some(&state)).is_err(),
-        "historical support cannot erase an already captured current grant");
+    assert!(
+        token_info(&legacy.tokens[&id], 103)
+            .get("creation_ttl")
+            .is_none()
+    );
+    assert!(
+        legacy
+            .validate_userpass_issuance_state(Some(&state))
+            .is_err(),
+        "historical support cannot erase an already captured current grant"
+    );
     let mut wrong = reopened.clone();
-    let Some(TokenAuthProvenance::Userpass { issued_creation_ttl, .. }) =
-        &mut wrong.tokens.get_mut(&id).unwrap().auth_provenance else { panic!("actual native Userpass owner") };
+    let Some(TokenAuthProvenance::Userpass {
+        issued_creation_ttl,
+        ..
+    }) = &mut wrong.tokens.get_mut(&id).unwrap().auth_provenance
+    else {
+        panic!("actual native Userpass owner")
+    };
     *issued_creation_ttl = Some(19);
-    assert!(wrong.validate_userpass_issuance_state(Some(&state)).is_err());
+    assert!(
+        wrong
+            .validate_userpass_issuance_state(Some(&state))
+            .is_err()
+    );
     let mut retired = reopened;
     retired.revoke(&id);
-    retired.validate_userpass_issuance_state(Some(&state)).unwrap();
+    retired
+        .validate_userpass_issuance_state(Some(&state))
+        .unwrap();
     assert!(retired.has_userpass_issuance_state());
     let previous = retired.clone();
     retired.userpass_issuance_floor = None;
-    assert!(retired.validate_userpass_issuance_state(Some(&previous)).is_err());
+    assert!(
+        retired
+            .validate_userpass_issuance_state(Some(&previous))
+            .is_err()
+    );
 }

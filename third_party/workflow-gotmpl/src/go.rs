@@ -202,7 +202,11 @@ fn insert_repeated(out: &mut String, pos: usize, ch: char, count: usize) {
 pub(crate) fn sprintf(fmt_str: &str, args: &[Value]) -> Result<String> {
     let mut out = String::with_capacity(fmt_str.len() + 16 * args.len());
     sprintf_into(&mut out, fmt_str, args)?;
-    if out.len() > 64 * 1024 { return Err(crate::error::TemplateError::Exec("template formatter output exceeds bounds".into())); }
+    if out.len() > 64 * 1024 {
+        return Err(crate::error::TemplateError::Exec(
+            "template formatter output exceeds bounds".into(),
+        ));
+    }
     Ok(out)
 }
 
@@ -363,7 +367,11 @@ fn sprintf_into(out: &mut String, fmt_str: &str, args: &[Value]) -> Result<()> {
     let mut reordered = false;
 
     while let Some(ch) = chars.next() {
-        if out.len() > 64 * 1024 { return Err(crate::error::TemplateError::Exec("template formatter output exceeds bounds".into())); }
+        if out.len() > 64 * 1024 {
+            return Err(crate::error::TemplateError::Exec(
+                "template formatter output exceeds bounds".into(),
+            ));
+        }
         if ch != '%' {
             out.push(ch);
             continue;
@@ -462,7 +470,10 @@ fn sprintf_into(out: &mut String, fmt_str: &str, args: &[Value]) -> Result<()> {
 
         let start = out.len();
         match verb {
-            'T' => { out.push_str(arg.type_name()); spec.pad_in_place(out, start, false); }
+            'T' => {
+                out.push_str(arg.type_name());
+                spec.pad_in_place(out, start, false);
+            }
             's' => match arg {
                 Value::String(_) | Value::JsonNumber(_) => {
                     match spec.precision {
@@ -502,7 +513,11 @@ fn sprintf_into(out: &mut String, fmt_str: &str, args: &[Value]) -> Result<()> {
                     None => write_bad_verb(out, verb, arg),
                 },
             },
-            'f' => match if let Value::Float(value) = arg { Some(*value) } else { None } {
+            'f' => match if let Value::Float(value) = arg {
+                Some(*value)
+            } else {
+                None
+            } {
                 Some(f) => {
                     let prec = spec.precision.unwrap_or(6);
                     if f >= 0.0 && !f.is_nan() {

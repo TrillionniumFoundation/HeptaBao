@@ -65,7 +65,10 @@ pub(crate) fn current_ingress() -> Option<IngressReplyContext> {
 impl IngressReplyContext {
     /// A synthesized logical request keeps the admitted ID, not its outer raw body.
     pub(crate) fn logical_subrequest(&self) -> Self {
-        Self { attempt_id: self.attempt_id, lexical_body: None }
+        Self {
+            attempt_id: self.attempt_id,
+            lexical_body: None,
+        }
     }
     pub(crate) fn attempt_id(&self) -> [u8; 16] {
         self.attempt_id
@@ -1297,8 +1300,8 @@ impl StoredWrappedReply {
         {
             return Err(bad("invalid stored wrapped reply representation"));
         }
-        let mut decoded: Value = parse_strict_json(&self.bytes)
-            .map_err(|_| bad("invalid stored wrapped reply JSON"))?;
+        let mut decoded: Value =
+            parse_strict_json(&self.bytes).map_err(|_| bad("invalid stored wrapped reply JSON"))?;
         let mut projected = match logical_envelope_for_projection(
             logical,
             &self.request_id,

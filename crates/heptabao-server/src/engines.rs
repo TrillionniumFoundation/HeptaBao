@@ -20,10 +20,10 @@ use zeroize::Zeroize;
 mod external_keys;
 mod identity;
 pub(crate) use totp::{mfa_totp_enrollment, rfc6238_code};
-#[path = "engine_identity.rs"]
-mod identity_projection;
 #[path = "engine_identity_api.rs"]
 mod identity_api_runtime;
+#[path = "engine_identity.rs"]
+mod identity_projection;
 pub(crate) use identity_projection::IdentityNamespace;
 use identity_projection::IdentityProjection;
 #[path = "engine_query_owner.rs"]
@@ -772,7 +772,6 @@ impl EngineState {
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_symmetric_backup_state())))
     }
 
-
     pub(crate) fn has_transit_cache_state(&self) -> bool {
         self.transit_cache_format.is_some() || self.namespaces.values().any(|state|
             state.mounts.values().any(|mount|
@@ -782,17 +781,25 @@ impl EngineState {
     pub(crate) fn validate_transit_cache_state(&self, previous: Option<&Self>) -> Result<()> {
         if self.transit_cache_format.is_some_and(|format| format != 1)
             || self.has_transit_cache_state() && self.transit_cache_format != Some(1)
-            || previous.is_some_and(Self::has_transit_cache_state) && self.transit_cache_format != Some(1)
+            || previous.is_some_and(Self::has_transit_cache_state)
+                && self.transit_cache_format != Some(1)
         {
             return Err(error(503, "invalid or erased transit cache owner format"));
         }
         for (namespace_name, namespace) in &self.namespaces {
             for (mount_name, mount) in &namespace.mounts {
                 if let Backend::Transit(engine) = &mount.backend {
-                    let prior = previous.and_then(|old| old.namespaces.get(namespace_name))
+                    let prior = previous
+                        .and_then(|old| old.namespaces.get(namespace_name))
                         .and_then(|old| old.mounts.get(mount_name))
                         .filter(|old| old.incarnation == mount.incarnation)
-                        .and_then(|old| if let Backend::Transit(engine) = &old.backend { Some(engine) } else { None });
+                        .and_then(|old| {
+                            if let Backend::Transit(engine) = &old.backend {
+                                Some(engine)
+                            } else {
+                                None
+                            }
+                        });
                     engine.validate_policy_cache_state(prior)?;
                 }
             }
@@ -802,15 +809,24 @@ impl EngineState {
 
     /// Called only against the genuine installed Service state, before cloning
     /// a transaction candidate. This method installs no persistent state.
-    pub(crate) fn synchronize_transit_policy_caches(&self, generation: Option<u64>,
-        namespace_incarnation: impl Fn(&str) -> Option<u64>) -> Result<()> {
+    pub(crate) fn synchronize_transit_policy_caches(
+        &self,
+        generation: Option<u64>,
+        namespace_incarnation: impl Fn(&str) -> Option<u64>,
+    ) -> Result<()> {
         self.validate_transit_cache_state(None)?;
         for (namespace, state) in &self.namespaces {
             for (mount_name, mount) in &state.mounts {
                 if let Backend::Transit(engine) = &mount.backend {
                     match (generation, namespace_incarnation(namespace)) {
                         (Some(generation), Some(incarnation)) => {
-                            engine.synchronize_policy_cache(namespace, incarnation, mount_name, mount.incarnation, generation)?;
+                            engine.synchronize_policy_cache(
+                                namespace,
+                                incarnation,
+                                mount_name,
+                                mount.incarnation,
+                                generation,
+                            )?;
                         }
                         _ => engine.invalidate_unowned_policy_cache()?,
                     }
@@ -821,44 +837,85 @@ impl EngineState {
     }
 
     #[cfg(test)]
-    pub(crate) fn transit_cache_observation(&self, namespace: &str, mount: &str)
-        -> Result<Option<(u64, usize)>> {
-        self.namespaces.get(namespace).and_then(|state| state.mounts.get(mount))
-            .and_then(|mount| if let Backend::Transit(engine) = &mount.backend { Some(engine) } else { None })
-            .map(|engine| engine.policy_cache_observation()).transpose()
+    pub(crate) fn transit_cache_observation(
+        &self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<Option<(u64, usize)>> {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount))
+            .and_then(|mount| {
+                if let Backend::Transit(engine) = &mount.backend {
+                    Some(engine)
+                } else {
+                    None
+                }
+            })
+            .map(|engine| engine.policy_cache_observation())
+            .transpose()
     }
 
     #[cfg(test)]
-    pub(crate) fn transit_cache_entry_observation(&self, namespace: &str, mount: &str, name: &str)
-        -> Result<Option<(u64, std::sync::Weak<dyn std::any::Any + Send + Sync>)>> {
-        match self.namespaces.get(namespace).and_then(|state| state.mounts.get(mount))
-            .and_then(|mount| if let Backend::Transit(engine) = &mount.backend { Some(engine) } else { None })
-        {
+    pub(crate) fn transit_cache_entry_observation(
+        &self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+    ) -> Result<Option<(u64, std::sync::Weak<dyn std::any::Any + Send + Sync>)>> {
+        match self
+            .namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount))
+            .and_then(|mount| {
+                if let Backend::Transit(engine) = &mount.backend {
+                    Some(engine)
+                } else {
+                    None
+                }
+            }) {
             Some(engine) => engine.policy_cache_entry_observation(name),
             None => Ok(None),
         }
     }
 
-
-    pub(crate) fn transit_cache_reload_targets(&self, namespace: &str, paths: Option<&[String]>)
-        -> Result<Vec<TransitCacheReloadMount>> {
+    pub(crate) fn transit_cache_reload_targets(
+        &self,
+        namespace: &str,
+        paths: Option<&[String]>,
+    ) -> Result<Vec<TransitCacheReloadMount>> {
         let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
         let selected = match paths {
             Some(paths) => paths.to_vec(),
-            None => state.mounts.iter().filter(|(_, mount)|
-                matches!(mount.backend, Backend::Transit(_))).map(|(path, _)| path.clone()).collect(),
+            None => state
+                .mounts
+                .iter()
+                .filter(|(_, mount)| matches!(mount.backend, Backend::Transit(_)))
+                .map(|(path, _)| path.clone())
+                .collect(),
         };
-        if selected.is_empty() { return Err(not_found()); }
+        if selected.is_empty() {
+            return Err(not_found());
+        }
         let mut seen = BTreeSet::new();
         let mut targets = Vec::with_capacity(selected.len());
         for path in selected {
-            if !seen.insert(path.clone()) { return Err(bad("duplicate reload mount")); }
+            if !seen.insert(path.clone()) {
+                return Err(bad("duplicate reload mount"));
+            }
             let mount = state.mounts.get(&path).ok_or_else(not_found)?;
             let Backend::Transit(engine) = &mount.backend else {
-                return Err(error(501, "reload consumer is not implemented for this backend"));
+                return Err(error(
+                    501,
+                    "reload consumer is not implemented for this backend",
+                ));
             };
             targets.push(TransitCacheReloadMount {
-                owner: MountQueryOwner { path, incarnation: mount.incarnation, kind: QueryKind::Transit },
+                owner: MountQueryOwner {
+                    path,
+                    incarnation: mount.incarnation,
+                    kind: QueryKind::Transit,
+                },
                 configured_size: engine.policy_cache_config_identity(),
             });
         }
@@ -869,14 +926,25 @@ impl EngineState {
     /// This is a runtime-only effect on the genuine installed State. Calling
     /// it with an uncommitted candidate is prohibited by the affine Service
     /// delivery owner; all mount/configuration checks precede cache mutation.
-    pub(crate) fn reload_accepted_transit_policy_caches(&self, namespace: &str,
-        namespace_incarnation: u64, generation: u64, targets: &[TransitCacheReloadMount])
-        -> Result<()> {
-        let paths = targets.iter().map(|target| target.owner.path.clone()).collect::<Vec<_>>();
-        let actual = self.transit_cache_reload_targets(namespace, Some(&paths))
+    pub(crate) fn reload_accepted_transit_policy_caches(
+        &self,
+        namespace: &str,
+        namespace_incarnation: u64,
+        generation: u64,
+        targets: &[TransitCacheReloadMount],
+    ) -> Result<()> {
+        let paths = targets
+            .iter()
+            .map(|target| target.owner.path.clone())
+            .collect::<Vec<_>>();
+        let actual = self
+            .transit_cache_reload_targets(namespace, Some(&paths))
             .map_err(|_| error(503, "transit reload accepted mount is unavailable"))?;
         if actual.as_slice() != targets {
-            return Err(error(503, "transit reload accepted mount or configuration changed"));
+            return Err(error(
+                503,
+                "transit reload accepted mount or configuration changed",
+            ));
         }
         let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
         let mut engines = Vec::with_capacity(targets.len());
@@ -887,22 +955,36 @@ impl EngineState {
             };
             engines.push((engine, target.owner.path.as_str(), mount.incarnation));
         }
-        transit::Transit::reload_policy_cache_batch(namespace, namespace_incarnation, generation, &engines)
+        transit::Transit::reload_policy_cache_batch(
+            namespace,
+            namespace_incarnation,
+            generation,
+            &engines,
+        )
     }
 
     pub(crate) fn has_transit_derived_ed_state(&self) -> bool {
-        self.namespaces.values().any(|state| state.mounts.values().any(|mount|
-            matches!(&mount.backend, Backend::Transit(engine) if engine.has_derived_ed_state())))
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_derived_ed_state()))
+        })
     }
 
     pub(crate) fn validate_transit_derived_ed_state(&self, previous: Option<&Self>) -> Result<()> {
         for (namespace_name, namespace) in &self.namespaces {
             for (mount_name, mount) in &namespace.mounts {
                 if let Backend::Transit(engine) = &mount.backend {
-                    let prior = previous.and_then(|old| old.namespaces.get(namespace_name))
+                    let prior = previous
+                        .and_then(|old| old.namespaces.get(namespace_name))
                         .and_then(|old| old.mounts.get(mount_name))
                         .filter(|old| old.incarnation == mount.incarnation)
-                        .and_then(|old| if let Backend::Transit(engine) = &old.backend { Some(engine) } else { None });
+                        .and_then(|old| {
+                            if let Backend::Transit(engine) = &old.backend {
+                                Some(engine)
+                            } else {
+                                None
+                            }
+                        });
                     engine.validate_derived_ed_state(prior)?;
                 }
             }
@@ -915,14 +997,24 @@ impl EngineState {
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_rotation_precision_state())))
     }
 
-    pub(crate) fn validate_transit_rotation_precision_state(&self, previous: Option<&Self>) -> Result<()> {
+    pub(crate) fn validate_transit_rotation_precision_state(
+        &self,
+        previous: Option<&Self>,
+    ) -> Result<()> {
         for (namespace_name, namespace) in &self.namespaces {
             for (mount_name, mount) in &namespace.mounts {
                 if let Backend::Transit(engine) = &mount.backend {
-                    let prior = previous.and_then(|old| old.namespaces.get(namespace_name))
+                    let prior = previous
+                        .and_then(|old| old.namespaces.get(namespace_name))
                         .and_then(|old| old.mounts.get(mount_name))
                         .filter(|old| old.incarnation == mount.incarnation)
-                        .and_then(|old| if let Backend::Transit(engine) = &old.backend { Some(engine) } else { None });
+                        .and_then(|old| {
+                            if let Backend::Transit(engine) = &old.backend {
+                                Some(engine)
+                            } else {
+                                None
+                            }
+                        });
                     engine.validate_rotation_precision_state(prior)?;
                 }
             }
@@ -1389,9 +1481,11 @@ impl EngineState {
         // Each signer is chosen from the actual stored reference and mount
         // grant. Only operator-installed providers can select the genuine lane.
         let request_for = |template: &ExternalPkiTemplate| -> Result<_> {
-            let plugin = state
-                .external_keys
-                .consumer_plugin_for_operation(&template.reference, mount_path, "sign")?;
+            let plugin = state.external_keys.consumer_plugin_for_operation(
+                &template.reference,
+                mount_path,
+                "sign",
+            )?;
             if providers.contains(plugin) {
                 Ok((
                     Some(plugin.to_owned()),
@@ -1592,9 +1686,11 @@ impl EngineState {
         else {
             return Ok(None);
         };
-        let provider = state
-            .external_keys
-            .consumer_plugin_for_operation(&plan.reference, mount_path, plan.operation)?;
+        let provider = state.external_keys.consumer_plugin_for_operation(
+            &plan.reference,
+            mount_path,
+            plan.operation,
+        )?;
         let genuine_provider = admitted.contains(provider).then(|| provider.to_owned());
         let plan = if genuine_provider.is_none() {
             engine
@@ -2925,7 +3021,10 @@ impl EngineState {
         Ok(changed)
     }
 
-    pub(crate) fn maintain_auto_rotation_precise(&mut self, at: crate::auth::Timestamp) -> Result<bool> {
+    pub(crate) fn maintain_auto_rotation_precise(
+        &mut self,
+        at: crate::auth::Timestamp,
+    ) -> Result<bool> {
         if at.duration_since_epoch().subsec_nanos() == 0 {
             return self.maintain_auto_rotation(at.seconds());
         }
@@ -3115,7 +3214,14 @@ impl EngineState {
         let at = crate::auth::Timestamp::whole(now)
             .map_err(|_| error(503, "KV2 accepted request clock is unavailable"))?;
         self.handle_in_identity_namespace_with_ssh_principal_precise(
-            scope, method, path, body, now, display_name, ssh_principal, at,
+            scope,
+            method,
+            path,
+            body,
+            now,
+            display_name,
+            ssh_principal,
+            at,
         )
     }
 
@@ -3326,10 +3432,12 @@ impl EngineState {
             },
         };
         if response.mutated {
-            if matches!(&mount.backend, Backend::Transit(engine) if engine.has_policy_cache_state()) {
+            if matches!(&mount.backend, Backend::Transit(engine) if engine.has_policy_cache_state())
+            {
                 self.transit_cache_format = Some(1);
             }
-            if matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state()) {
+            if matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state())
+            {
                 self.kv2_lossless_format = Some(1);
             }
             if matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()) {
@@ -3882,12 +3990,22 @@ impl EngineState {
     /// Inline JSON owners and this candidate's actual KV1 record writes.
     /// Opaque records not loaded into this owner are not scanned or claimed.
     pub(crate) fn has_lossless_json_state(&self) -> bool {
-        self.records.as_ref().is_some_and(|runtime| runtime.observed_lossless_json)
-            || self.sdk_retired_logical.as_ref().is_some_and(|history| history.has_lossless_json_state())
+        self.records
+            .as_ref()
+            .is_some_and(|runtime| runtime.observed_lossless_json)
+            || self
+                .sdk_retired_logical
+                .as_ref()
+                .is_some_and(|history| history.has_lossless_json_state())
             || self.namespaces.values().any(|namespace| {
-                namespace.sdk_leases.values().any(sdk_lease::Lease::has_lossless_json_state)
+                namespace
+                    .sdk_leases
+                    .values()
+                    .any(sdk_lease::Lease::has_lossless_json_state)
                     || namespace.mounts.values().any(|mount| match &mount.backend {
-                        Backend::Kv1(entries) => entries.values().any(|data| heptabao_domain::json::requires_lossless_format(data.expose())),
+                        Backend::Kv1(entries) => entries.values().any(|data| {
+                            heptabao_domain::json::requires_lossless_format(data.expose())
+                        }),
                         Backend::Kv2(engine) => engine.has_lossless_json_state(),
                         _ => false,
                     })
@@ -3895,12 +4013,22 @@ impl EngineState {
     }
 
     pub(crate) fn has_non_kv2_lossless_json_state(&self) -> bool {
-        self.records.as_ref().is_some_and(|runtime| runtime.observed_lossless_json)
-            || self.sdk_retired_logical.as_ref().is_some_and(|history| history.has_lossless_json_state())
+        self.records
+            .as_ref()
+            .is_some_and(|runtime| runtime.observed_lossless_json)
+            || self
+                .sdk_retired_logical
+                .as_ref()
+                .is_some_and(|history| history.has_lossless_json_state())
             || self.namespaces.values().any(|namespace| {
-                namespace.sdk_leases.values().any(sdk_lease::Lease::has_lossless_json_state)
+                namespace
+                    .sdk_leases
+                    .values()
+                    .any(sdk_lease::Lease::has_lossless_json_state)
                     || namespace.mounts.values().any(|mount| match &mount.backend {
-                        Backend::Kv1(entries) => entries.values().any(|data| heptabao_domain::json::requires_lossless_format(data.expose())),
+                        Backend::Kv1(entries) => entries.values().any(|data| {
+                            heptabao_domain::json::requires_lossless_format(data.expose())
+                        }),
                         Backend::Kv2(_) => false,
                         _ => false,
                     })

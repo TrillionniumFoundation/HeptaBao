@@ -972,33 +972,44 @@ fn decode_sdk_frame(bytes: &[u8]) -> Result<Value, SdkBridgeError> {
 #[path = "sdk_lossless_json_tests.rs"]
 mod lossless_json_tests;
 
-fn validate_logical_headers(headers: Option<&std::collections::BTreeMap<String, Vec<String>>>)
-    -> Result<(), SdkBridgeError> {
+fn validate_logical_headers(
+    headers: Option<&std::collections::BTreeMap<String, Vec<String>>>,
+) -> Result<(), SdkBridgeError> {
     if let Some(headers) = headers {
         let mut bytes = 0usize;
-        if headers.len() > 64 { return Err(SdkBridgeError::BeforeEntry); }
+        if headers.len() > 64 {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
         for (name, values) in headers {
             if name.len() > 256 || values.len() > 64 {
                 return Err(SdkBridgeError::BeforeEntry);
             }
-            bytes = bytes.checked_add(name.len()).ok_or(SdkBridgeError::BeforeEntry)?;
+            bytes = bytes
+                .checked_add(name.len())
+                .ok_or(SdkBridgeError::BeforeEntry)?;
             for value in values {
                 if value.len() > 16 * 1024 {
                     return Err(SdkBridgeError::BeforeEntry);
                 }
-                bytes = bytes.checked_add(value.len()).ok_or(SdkBridgeError::BeforeEntry)?;
+                bytes = bytes
+                    .checked_add(value.len())
+                    .ok_or(SdkBridgeError::BeforeEntry)?;
             }
         }
-        if bytes > 64 * 1024 { return Err(SdkBridgeError::BeforeEntry); }
+        if bytes > 64 * 1024 {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
     }
     Ok(())
 }
-fn append_logical_headers(request: &mut Value,
-    headers: Option<&std::collections::BTreeMap<String, Vec<String>>>)
-    -> Result<(), SdkBridgeError> {
+fn append_logical_headers(
+    request: &mut Value,
+    headers: Option<&std::collections::BTreeMap<String, Vec<String>>>,
+) -> Result<(), SdkBridgeError> {
     validate_logical_headers(headers)?;
     if let Some(headers) = headers.filter(|headers| !headers.is_empty()) {
-        request["headers"] = serde_json::to_value(headers).map_err(|_| SdkBridgeError::BeforeEntry)?;
+        request["headers"] =
+            serde_json::to_value(headers).map_err(|_| SdkBridgeError::BeforeEntry)?;
     }
     Ok(())
 }

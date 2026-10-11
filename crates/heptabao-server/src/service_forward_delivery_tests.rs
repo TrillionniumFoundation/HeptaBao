@@ -1357,70 +1357,156 @@ fn completed_forward_oidc_no_effect_denial_cannot_be_forged_or_used_for_success(
 #[test]
 fn workflow131_nonfinite_original_completion_binds_native_output_digest_projection_and_delivery()
 -> TestResult {
-    let files=Root::new();
-    let (mut service,cluster,_,_,root)=prepare_with_ttl_and_root(&files,"10m")?;
-    let document=r#"input { field "float" "value" { required = true } }
+    let files = Root::new();
+    let (mut service, cluster, _, _, root) = prepare_with_ttl_and_root(&files, "10m")?;
+    let document = r#"input { field "float" "value" { required = true } }
         flow "store" { request "first" { operation = "update" path = "secret/data/completion"
         data = { data = { value = "native-nonfinite" } } } }
         output { data = { value = { eval_source = "input" eval_type = "any" field_name = "value" } } }"#;
-    assert_eq!(native(&mut service,"POST","sys/workflows/manage/nan131",&root,
-        json!({"workflow":document})).status,200);
-    let id=service.state.as_ref().ok_or("actual cluster")?.cluster_id.clone();
-    let nonce=crate::crypto::random::<32>()?;
-    let body=json!({"value":"NaN"});
-    let deadline=Instant::now()+Duration::from_secs(10);
-    let request=crate::ha_forward::encode_completed_index_request_for_cluster(&id,(2,1),
+    assert_eq!(
+        native(
+            &mut service,
+            "POST",
+            "sys/workflows/manage/nan131",
+            &root,
+            json!({"workflow":document})
+        )
+        .status,
+        200
+    );
+    let id = service
+        .state
+        .as_ref()
+        .ok_or("actual cluster")?
+        .cluster_id
+        .clone();
+    let nonce = crate::crypto::random::<32>()?;
+    let body = json!({"value":"NaN"});
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let request = crate::ha_forward::encode_completed_index_request_for_cluster(
+        &id,
+        (2, 1),
         &crate::ha_forward::ForwardContext {
-            method:"POST",path:"sys/workflows/execute/nan131",namespace:"",
-            token:&root,body:&body,wrap_ttl_seconds:None,origin_peer:None,
-            client_certificates:None,caller_deadline:Some(deadline),
-        },Some(nonce))?;
-    let decoded=crate::ha_forward::decode_request(&request)?;
-    assert!(decoded.unwrap_response && decoded.completion_nonce==Some(nonce));
-    let scope=CompletionScope::enter(Some(nonce),&request,deadline,&id,1,false);
-    let response=native(&mut service,"POST","sys/workflows/execute/nan131",&root,body);
-    assert_eq!(response.status,200);
-    let local=response.unwrapped_json.as_ref().ok_or("actual private output origin")?;
-    assert!(local.workflow_value().and_then(|value|value.as_object())
-        .and_then(|value|value.get("value")).and_then(|value|value.actual_float())
-        .is_some_and(f64::is_nan));
+            method: "POST",
+            path: "sys/workflows/execute/nan131",
+            namespace: "",
+            token: &root,
+            body: &body,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+            caller_deadline: Some(deadline),
+        },
+        Some(nonce),
+    )?;
+    let decoded = crate::ha_forward::decode_request(&request)?;
+    assert!(decoded.unwrap_response && decoded.completion_nonce == Some(nonce));
+    let scope = CompletionScope::enter(Some(nonce), &request, deadline, &id, 1, false);
+    let response = native(
+        &mut service,
+        "POST",
+        "sys/workflows/execute/nan131",
+        &root,
+        body,
+    );
+    assert_eq!(response.status, 200);
+    let local = response
+        .unwrapped_json
+        .as_ref()
+        .ok_or("actual private output origin")?;
+    assert!(
+        local
+            .workflow_value()
+            .and_then(|value| value.as_object())
+            .and_then(|value| value.get("value"))
+            .and_then(|value| value.actual_float())
+            .is_some_and(f64::is_nan)
+    );
     service.seal_forward_completion(&response);
-    let wire=scope.finish().ok_or("actual once-only audited Raft completion")?;
+    let wire = scope
+        .finish()
+        .ok_or("actual once-only audited Raft completion")?;
     assert!(scope.finish().is_none());
-    let encoded=crate::ha_forward::encode_completed_unwrap_response_for_cluster(&id,1,2,
-        &response,Some(wire))?;
-    assert!(crate::ha_forward::decode_index_response_for_cluster(&encoded,&id).is_err());
-    let mut received=crate::ha_forward::decode_unwrap_response_for_cluster(&encoded,&id)?;
-    assert!(matches!(received.unwrapped_json,
-        Some(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure {..})));
+    let encoded = crate::ha_forward::encode_completed_unwrap_response_for_cluster(
+        &id,
+        1,
+        2,
+        &response,
+        Some(wire),
+    )?;
+    assert!(crate::ha_forward::decode_index_response_for_cluster(&encoded, &id).is_err());
+    let mut received = crate::ha_forward::decode_unwrap_response_for_cluster(&encoded, &id)?;
+    assert!(matches!(
+        received.unwrapped_json,
+        Some(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure { .. })
+    ));
     assert!(received.raw_wrapped_reply.is_none());
-    let original_digest=response_digest(&response)?;
-    assert_eq!(crate::ha_forward_completion::wire_response_digest(&received)?,original_digest);
-    let proof=received.completion.take().ok_or("actual completion wire")?;
-    let receipt=CompletedForwardReceipt::verified(proof,
+    let original_digest = response_digest(&response)?;
+    assert_eq!(
+        crate::ha_forward_completion::wire_response_digest(&received)?,
+        original_digest
+    );
+    let proof = received.completion.take().ok_or("actual completion wire")?;
+    let receipt = CompletedForwardReceipt::verified(
+        proof,
         crate::ha_forward_completion::CompletedExchange {
-            cluster:id.clone(),source:1,target:2,deadline,nonce,request:&request,
-            response_digest:original_digest,
-        })?;
-    receipt.verify_publication(service.barrier_key.as_ref().ok_or("actual barrier")?.as_slice())?;
-    let mut origin=crate::auth::UnwrappedJson::from_completed_raw_forward(&receipt,&received)?;
-    assert!(origin.workflow_value().is_none(),"forwarding cannot fabricate local evaluated values");
-    assert!(origin.raw_bytes(&received.body).is_err(),"actual audit and ingress still required");
-    assert!(origin.selected_response_audit_binding(&received.body)?.is_some());
-    origin.bind_selected_http_ingress(&received.body,&[0xc3;16])?;
-    assert!(origin.raw_bytes(&received.body)?.is_some_and(<[u8]>::is_empty));
-    received.body["data"]["forged"]=json!(true);
-    assert!(crate::auth::UnwrappedJson::from_completed_raw_forward(&receipt,&received).is_err());
+            cluster: id.clone(),
+            source: 1,
+            target: 2,
+            deadline,
+            nonce,
+            request: &request,
+            response_digest: original_digest,
+        },
+    )?;
+    receipt.verify_publication(
+        service
+            .barrier_key
+            .as_ref()
+            .ok_or("actual barrier")?
+            .as_slice(),
+    )?;
+    let mut origin = crate::auth::UnwrappedJson::from_completed_raw_forward(&receipt, &received)?;
+    assert!(
+        origin.workflow_value().is_none(),
+        "forwarding cannot fabricate local evaluated values"
+    );
+    assert!(
+        origin.raw_bytes(&received.body).is_err(),
+        "actual audit and ingress still required"
+    );
+    assert!(
+        origin
+            .selected_response_audit_binding(&received.body)?
+            .is_some()
+    );
+    origin.bind_selected_http_ingress(&received.body, &[0xc3; 16])?;
+    assert!(
+        origin
+            .raw_bytes(&received.body)?
+            .is_some_and(<[u8]>::is_empty)
+    );
+    received.body["data"]["forged"] = json!(true);
+    assert!(crate::auth::UnwrappedJson::from_completed_raw_forward(&receipt, &received).is_err());
     assert!(origin.raw_bytes(&received.body).is_err());
-    received.body=crate::workflow_runtime::FailedOutput::logical();
-    if let Some(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure {output_digest,..})=&mut received.unwrapped_json {
-        output_digest[0]^=1;
+    received.body = crate::workflow_runtime::FailedOutput::logical();
+    if let Some(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure {
+        output_digest, ..
+    }) = &mut received.unwrapped_json
+    {
+        output_digest[0] ^= 1;
     }
-    assert!(crate::auth::UnwrappedJson::from_completed_raw_forward(&receipt,&received).is_err());
+    assert!(crate::auth::UnwrappedJson::from_completed_raw_forward(&receipt, &received).is_err());
     // Actual prior write remains committed; a malformed final projection cannot replay it.
-    let stored=native(&mut service,"GET","secret/data/completion",&root,json!({}));
-    assert_eq!(stored.status,200);
-    assert_eq!(stored.body["data"]["data"]["value"],"native-nonfinite");
+    let stored = native(
+        &mut service,
+        "GET",
+        "secret/data/completion",
+        &root,
+        json!({}),
+    );
+    assert_eq!(stored.status, 200);
+    assert_eq!(stored.body["data"]["data"]["value"], "native-nonfinite");
     drop(cluster);
     Ok(())
 }

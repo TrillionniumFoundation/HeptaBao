@@ -180,7 +180,10 @@ pub(crate) enum UnwrapFramingWire {
     StoredJson,
     // Produced locally only by evaluated workflow output, or recovered from
     // an original completed-forward MAC. No public request carrier creates it.
-    WorkflowJsonFailure { output_digest: [u8; 32], logical_digest: [u8; 32] },
+    WorkflowJsonFailure {
+        output_digest: [u8; 32],
+        logical_digest: [u8; 32],
+    },
 }
 
 #[derive(Deserialize, Serialize)]
@@ -707,7 +710,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 completion_nonce: None,
                 wrapped_reply_ingress: None,
                 wrapped_reply_lexical: None,
-            logical_data: None,
+                logical_data: None,
             })
         }
         Err(error) => Err(error),
@@ -839,7 +842,8 @@ fn encode_completed_framed_response_for_cluster(
                 .unwrapped_json
                 .as_ref()
                 .map(|origin| origin.framing_wire(&response.body))
-                .transpose().map_err(|_| "HA private response origin rejected")?,
+                .transpose()
+                .map_err(|_| "HA private response origin rejected")?,
             raw_wrapped_reply: response
                 .unwrapped_json
                 .as_ref()
@@ -891,11 +895,14 @@ fn decode_framed_response_for_cluster(
             .validate(&response.body)
             .map_err(|_| "HA stored reply representation rejected")?;
     }
-    if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) = response.unwrapped_json {
+    if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) =
+        response.unwrapped_json
+    {
         if response.raw_wrapped_reply.is_some()
             || response.body != crate::workflow_runtime::FailedOutput::logical()
             || serde_json::to_vec(&response.body).is_err()
-            || serde_json::to_vec(&response.body).is_ok_and(|bytes| crate::crypto::digest(&bytes) != logical_digest)
+            || serde_json::to_vec(&response.body)
+                .is_ok_and(|bytes| crate::crypto::digest(&bytes) != logical_digest)
         {
             return Err("HA workflow serialization failure projection differs".into());
         }

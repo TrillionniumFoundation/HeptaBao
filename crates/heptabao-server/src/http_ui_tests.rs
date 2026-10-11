@@ -36,7 +36,10 @@ impl Fixture {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
-                fs::set_permissions(target.parent().ok_or("parent")?, fs::Permissions::from_mode(0o700))?;
+                fs::set_permissions(
+                    target.parent().ok_or("parent")?,
+                    fs::Permissions::from_mode(0o700),
+                )?;
             }
             fs::write(&target, bytes)?;
             #[cfg(unix)]

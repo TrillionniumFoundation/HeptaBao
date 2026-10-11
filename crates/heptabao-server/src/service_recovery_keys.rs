@@ -2082,12 +2082,10 @@ mod source825_real_recovery_fixture_tests {
         service.fence_openbao_wrapper();
         // Root captures this absolute CLOCK_MONOTONIC bound once, before the
         // owned run. Cleanup observes it; no fixture creates a fresh budget.
-        let absolute: u64 = std::env::var(
-            "HEPTABAO_RECOVERY_FIXTURE_OWNER_ABSOLUTE_MONOTONIC_NS",
-        )
-        .expect("UNQUALIFIED: original Root absolute deadline missing")
-        .parse()
-        .expect("UNQUALIFIED: original Root absolute deadline invalid");
+        let absolute: u64 = std::env::var("HEPTABAO_RECOVERY_FIXTURE_OWNER_ABSOLUTE_MONOTONIC_NS")
+            .expect("UNQUALIFIED: original Root absolute deadline missing")
+            .parse()
+            .expect("UNQUALIFIED: original Root absolute deadline invalid");
         loop {
             let observed = rustix::time::clock_gettime_dynamic(
                 rustix::time::DynamicClockId::Known(rustix::time::ClockId::Monotonic),
@@ -2123,7 +2121,9 @@ mod source825_real_recovery_fixture_tests {
         assert_eq!(observation["owned_pid"].as_u64(), Some(pid));
         assert_eq!(
             observation["provider"]["uid"].as_u64(),
-            Some(u64::from(fs::symlink_metadata(&c.root).expect("case owner").uid()))
+            Some(u64::from(
+                fs::symlink_metadata(&c.root).expect("case owner").uid()
+            ))
         );
         let configuration: crate::OpenBaoWrapperConfig =
             serde_json::from_slice(&c.config).expect("original provider configuration");
@@ -2131,8 +2131,16 @@ mod source825_real_recovery_fixture_tests {
             observation["provider"]["executable_sha256"].as_str(),
             Some(configuration.command_sha256.as_str())
         );
-        assert!(observation["provider"]["executable_device"].as_u64().is_some_and(|v| v > 0));
-        assert!(observation["provider"]["executable_inode"].as_u64().is_some_and(|v| v > 0));
+        assert!(
+            observation["provider"]["executable_device"]
+                .as_u64()
+                .is_some_and(|v| v > 0)
+        );
+        assert!(
+            observation["provider"]["executable_inode"]
+                .as_u64()
+                .is_some_and(|v| v > 0)
+        );
         assert_eq!(observation["authenticated_h2"], true);
         assert_eq!(observation["health_authenticated"], true);
         assert_ne!(observation["fixture_trace_overflow"], true);
@@ -2140,9 +2148,17 @@ mod source825_real_recovery_fixture_tests {
             .as_array()
             .expect("actual same Child lifecycle trace");
         for stage in [1_u64, 2, 3, 5] {
-            assert!(events.iter().any(|event| event["stage"].as_u64() == Some(stage)));
+            assert!(
+                events
+                    .iter()
+                    .any(|event| event["stage"].as_u64() == Some(stage))
+            );
         }
-        assert!(events.iter().all(|event| event["owned_pid"].as_u64() == Some(pid)));
+        assert!(
+            events
+                .iter()
+                .all(|event| event["owned_pid"].as_u64() == Some(pid))
+        );
         assert!(!events.iter().any(|event| event["stage"] == 6));
         let terminal = events
             .iter()
@@ -2152,9 +2168,14 @@ mod source825_real_recovery_fixture_tests {
         assert_eq!(terminal["same_original_child_wait"], true);
         assert_eq!(terminal["provider_pid"].as_u64(), Some(pid));
         assert_eq!(terminal["provider_start_ticks"].as_u64(), Some(started));
-        assert_eq!(terminal["memfd_sha256"], observation["provider"]["executable_sha256"]);
-        assert!(terminal["wait_exit_code"].as_i64().is_some()
-            ^ terminal["wait_signal"].as_i64().is_some());
+        assert_eq!(
+            terminal["memfd_sha256"],
+            observation["provider"]["executable_sha256"]
+        );
+        assert!(
+            terminal["wait_exit_code"].as_i64().is_some()
+                ^ terminal["wait_signal"].as_i64().is_some()
+        );
         for stopped in events.iter().filter(|event| event["stage"] == 4) {
             assert_eq!(stopped["requested_signal"], 9);
             assert!(stopped["syscall_errno"].as_i64().is_some());
@@ -2175,8 +2196,13 @@ mod source825_real_recovery_fixture_tests {
             "graceful_close_claimed": false,
             "natural_exit_claimed": false,
         });
-        let path = c.root.join(format!("provider-lifecycle-{pid}-{started}.original.json"));
-        save(&path, &serde_json::to_vec(&evidence).expect("fixed public lifecycle evidence"));
+        let path = c
+            .root
+            .join(format!("provider-lifecycle-{pid}-{started}.original.json"));
+        save(
+            &path,
+            &serde_json::to_vec(&evidence).expect("fixed public lifecycle evidence"),
+        );
     }
     fn genuine_expired_initialization_deadlines() {
         let parent = PathBuf::from(

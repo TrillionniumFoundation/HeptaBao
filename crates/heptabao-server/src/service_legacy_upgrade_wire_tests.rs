@@ -601,12 +601,15 @@ fn legacy_upgrade_wire_precise_kv2_requires_current_reader_without_old_peer_or_l
 -> TestResult {
     let root = Root::new();
     let (mut service, cluster, _key, token) = prepare_backend(&root, false)?;
-    let old_bytes = checked_bytes(service.state.as_ref().ok_or("state")?)
-        .map_err(|_| "old KV2 profile")?;
+    let old_bytes =
+        checked_bytes(service.state.as_ref().ok_or("state")?).map_err(|_| "old KV2 profile")?;
     let identity = service.current_state_identity().map_err(|_| "identity")?;
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
-    let committed_before = cluster.processes[0].lock().map_err(|_| "HA")?
-        .latest_committed_state()?.ok_or("committed")?;
+    let committed_before = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .latest_committed_state()?
+        .ok_or("committed")?;
     assert_eq!(committed_before.bytes.as_slice(), old_bytes.as_slice());
 
     // Capture one actual ingress clock and original absolute budget. Neither
@@ -615,53 +618,103 @@ fn legacy_upgrade_wire_precise_kv2_requires_current_reader_without_old_peer_or_l
     let wall = SystemTime::now().duration_since(UNIX_EPOCH)?;
     let clock = RequestClock::anchored(wall, started).map_err(|_| "original clock")?;
     let at = clock.admitted_at();
-    assert_ne!(at.duration_since_epoch().subsec_nanos(), 0,
-        "this actual precise boundary requires a non-whole ingress sample");
+    assert_ne!(
+        at.duration_since_epoch().subsec_nanos(),
+        0,
+        "this actual precise boundary requires a non-whole ingress sample"
+    );
     let deadline = started + Duration::from_secs(10);
     let _deadline = crate::request_deadline::RequestDeadlineScope::enter(deadline);
-    let _publication_clock = external_pki::PublicationClockScope::enter(
-        at.duration_since_epoch(), started);
+    let _publication_clock =
+        external_pki::PublicationClockScope::enter(at.duration_since_epoch(), started);
     let mut candidate = service.state.as_ref().ok_or("state")?.clone();
     let body = CheckedJson(json!({"data":{"value":"precise-cannot-downgrade"}}));
-    let proof = candidate.engines.handle_in_identity_namespace_with_ssh_principal_precise(
-        crate::engines::IdentityNamespace { path: "", id: None },
-        "POST", "secret/data/bridge", &body.0, at.seconds(), "root", None, at,
-    ).map_err(|_| "precise KV2 dispatch")?.ok_or("KV2 route")?;
+    let proof = candidate
+        .engines
+        .handle_in_identity_namespace_with_ssh_principal_precise(
+            crate::engines::IdentityNamespace { path: "", id: None },
+            "POST",
+            "secret/data/bridge",
+            &body.0,
+            at.seconds(),
+            "root",
+            None,
+            at,
+        )
+        .map_err(|_| "precise KV2 dispatch")?
+        .ok_or("KV2 route")?;
     assert_eq!(proof.status, 200);
     assert_eq!(proof.body["data"]["created_time"], at.rfc3339());
     assert!(candidate.engines.has_kv2_lossless_state());
     assert_eq!(candidate.writer_schema(), KV2_LOSSLESS_STATE_SCHEMA);
     let wire = CheckedJson(serde_json::from_slice(
-        &owner_store::serialize_owner(&candidate).map_err(|_| "candidate bytes")?)?);
-    let precision = &wire.0["engines"]["namespaces"][""]["mounts"]["secret/"]
-        ["backend"]["Kv2"]["entries"]["bridge"]["precision"];
-    assert_eq!(precision["created_at"],
-        json!({"seconds":at.seconds(),"nanoseconds":at.duration_since_epoch().subsec_nanos()}));
+        &owner_store::serialize_owner(&candidate).map_err(|_| "candidate bytes")?,
+    )?);
+    let precision = &wire.0["engines"]["namespaces"][""]["mounts"]["secret/"]["backend"]["Kv2"]["entries"]
+        ["bridge"]["precision"];
+    assert_eq!(
+        precision["created_at"],
+        json!({"seconds":at.seconds(),"nanoseconds":at.duration_since_epoch().subsec_nanos()})
+    );
     assert_eq!(precision["updated_at"], precision["created_at"]);
-    assert_eq!(precision["versions"]["1"]["created_at"], precision["created_at"]);
+    assert_eq!(
+        precision["versions"]["1"]["created_at"],
+        precision["created_at"]
+    );
     assert!(checked_bytes(&candidate).is_err());
     candidate.schema = candidate.writer_schema();
-    candidate.validate_format().map_err(|_| "precise current reader")?;
-    assert!(checked_bytes(&candidate).is_err(),
-        "the old peer cannot acquire current precision by neutral-field projection");
+    candidate
+        .validate_format()
+        .map_err(|_| "precise current reader")?;
+    assert!(
+        checked_bytes(&candidate).is_err(),
+        "the old peer cannot acquire current precision by neutral-field projection"
+    );
 
-    let execution = service.begin_at_mode_precise(RequestDispatch {
-        method: "POST", path: "secret/data/bridge", namespace: "", token: &token,
-        body: body.0.clone(), now: at.seconds(), allow_forward: true,
-        enforce_namespace: true, wrap_ttl_seconds: None, origin_peer: None,
-        client_certificates: None,
-    }, clock);
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method: "POST",
+            path: "secret/data/bridge",
+            namespace: "",
+            token: &token,
+            body: body.0.clone(),
+            now: at.seconds(),
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
     let response = service.finish_synchronous_request(execution);
     assert_eq!(response.status, 503);
-    assert_eq!(response.body["errors"][0],
-        "historical whole-state upgrade publication is unavailable");
-    assert_eq!(service.current_state_identity().map_err(|_| "identity")?, identity);
-    assert_eq!(service.durable.as_ref().ok_or("durable")?.generation(), generation);
-    assert_eq!(checked_bytes(service.state.as_ref().ok_or("state")?)
-        .map_err(|_| "unchanged old reader")?, old_bytes);
-    let committed_after = cluster.processes[0].lock().map_err(|_| "HA")?
-        .latest_committed_state()?.ok_or("committed")?;
-    assert_eq!(committed_after.bytes.as_slice(), committed_before.bytes.as_slice());
+    assert_eq!(
+        response.body["errors"][0],
+        "historical whole-state upgrade publication is unavailable"
+    );
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        identity
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(
+        checked_bytes(service.state.as_ref().ok_or("state")?)
+            .map_err(|_| "unchanged old reader")?,
+        old_bytes
+    );
+    let committed_after = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .latest_committed_state()?
+        .ok_or("committed")?;
+    assert_eq!(
+        committed_after.bytes.as_slice(),
+        committed_before.bytes.as_slice()
+    );
     assert_eq!(committed_after.digest, committed_before.digest);
     assert!(!service.recovery_required);
     assert!(service.pending_ordinary_kv_authority.is_none());

@@ -425,7 +425,8 @@ impl Kv2 {
                 } else {
                     Some(parse_time(&imported.source_deletion_time)?)
                 };
-                let mut imported_data = SecretJson(decode_lossless_json(imported.data.get().as_bytes())?);
+                let mut imported_data =
+                    SecretJson(decode_lossless_json(imported.data.get().as_bytes())?);
                 if issued < created
                     || issued > updated
                     || deleted.is_some_and(|at| at < issued)
@@ -581,7 +582,9 @@ impl Kv2 {
     pub(in crate::engines) fn has_lossless_json_state(&self) -> bool {
         self.entries.values().any(|entry| {
             entry.versions.values().any(|version| {
-                version.data.as_ref().is_some_and(|data| heptabao_domain::json::requires_lossless_format(data.expose()))
+                version.data.as_ref().is_some_and(|data| {
+                    heptabao_domain::json::requires_lossless_format(data.expose())
+                })
             })
         })
     }

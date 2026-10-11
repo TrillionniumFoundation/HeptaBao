@@ -209,7 +209,9 @@ fn time_seconds(value: &str) -> Result<u64> {
 }
 
 // Native backups carry Go's signed Duration, independently of public configuration validation.
-fn native_rotation_duration<'de, D: serde::Deserializer<'de>>(d: D) -> std::result::Result<i64, D::Error> {
+fn native_rotation_duration<'de, D: serde::Deserializer<'de>>(
+    d: D,
+) -> std::result::Result<i64, D::Error> {
     i64::deserialize(d).map_err(|_| serde::de::Error::custom("invalid native rotation duration"))
 }
 
@@ -218,29 +220,38 @@ fn restored_rotation_period(nanoseconds: i64) -> u64 {
 }
 
 pub(super) fn rotation_nanoseconds(key: &Key) -> Result<i64> {
-    if let Some(nanos) = key.backup_metadata.as_ref().and_then(|m| m.auto_rotate_period_nanoseconds) {
+    if let Some(nanos) = key
+        .backup_metadata
+        .as_ref()
+        .and_then(|m| m.auto_rotate_period_nanoseconds)
+    {
         return Ok(nanos);
     }
     i64::try_from(key.auto_rotate_period)
-        .ok().and_then(|seconds| seconds.checked_mul(1_000_000_000))
+        .ok()
+        .and_then(|seconds| seconds.checked_mul(1_000_000_000))
         .ok_or_else(|| bad("transit rotation duration overflow"))
 }
 
 pub(super) fn has_positive_rotation_period(key: &Key) -> bool {
-    key.backup_metadata.as_ref().and_then(|m| m.auto_rotate_period_nanoseconds)
+    key.backup_metadata
+        .as_ref()
+        .and_then(|m| m.auto_rotate_period_nanoseconds)
         .map_or(key.auto_rotate_period != 0, |nanos| nanos > 0)
 }
 
 pub(super) fn configure_rotation_period(key: &mut Key, seconds: u64) -> Result<()> {
-    let nanoseconds = i64::try_from(seconds).ok()
+    let nanoseconds = i64::try_from(seconds)
+        .ok()
         .and_then(|v| v.checked_mul(1_000_000_000))
         .ok_or_else(|| bad("transit rotation duration overflow"))?;
     if let Some(m) = &mut key.backup_metadata
         && (m.auto_rotate_period_nanoseconds.is_some()
-            || (seconds > 0 && m.version_times.values().any(|value| {
-                DateTime::parse_from_rfc3339(value)
-                    .is_ok_and(|at| at.timestamp_subsec_nanos() != 0)
-            })))
+            || (seconds > 0
+                && m.version_times.values().any(|value| {
+                    DateTime::parse_from_rfc3339(value)
+                        .is_ok_and(|at| at.timestamp_subsec_nanos() != 0)
+                })))
     {
         m.auto_rotate_period_nanoseconds = Some(nanoseconds);
     }
@@ -249,9 +260,17 @@ pub(super) fn configure_rotation_period(key: &mut Key, seconds: u64) -> Result<(
 }
 
 pub(super) fn creation_nanoseconds(key: &Key, number: u64) -> Result<u128> {
-    let version = key.versions.get(&number).ok_or_else(|| error(500, "transit version missing"))?;
-    if let Some(value) = key.backup_metadata.as_ref().and_then(|m| m.version_times.get(&number)) {
-        let at = DateTime::parse_from_rfc3339(value).map_err(|_| bad("invalid backup timestamp"))?;
+    let version = key
+        .versions
+        .get(&number)
+        .ok_or_else(|| error(500, "transit version missing"))?;
+    if let Some(value) = key
+        .backup_metadata
+        .as_ref()
+        .and_then(|m| m.version_times.get(&number))
+    {
+        let at =
+            DateTime::parse_from_rfc3339(value).map_err(|_| bad("invalid backup timestamp"))?;
         let seconds = u64::try_from(at.timestamp()).map_err(|_| bad("invalid backup timestamp"))?;
         if seconds != version.created_at {
             return Err(bad("backup timestamp and creation time disagree"));
@@ -261,11 +280,20 @@ pub(super) fn creation_nanoseconds(key: &Key, number: u64) -> Result<u128> {
     Ok(u128::from(version.created_at) * 1_000_000_000)
 }
 
-pub(super) fn record_rotation_creation(key: &mut Key, number: u64, at: crate::auth::Timestamp) -> Result<()> {
+pub(super) fn record_rotation_creation(
+    key: &mut Key,
+    number: u64,
+    at: crate::auth::Timestamp,
+) -> Result<()> {
     let period = rotation_nanoseconds(key)?;
-    if key.backup_metadata.as_ref().is_some_and(|m| m.auto_rotate_period_nanoseconds.is_some())
+    if key
+        .backup_metadata
+        .as_ref()
+        .is_some_and(|m| m.auto_rotate_period_nanoseconds.is_some())
         || (at.duration_since_epoch().subsec_nanos() != 0
-            && is_kind(&key.kind) && !byok::imported_key(key) && !key.convergent_encryption
+            && is_kind(&key.kind)
+            && !byok::imported_key(key)
+            && !key.convergent_encryption
             && key.convergent_write_min_version == 0
             && key.versions.values().all(|v| v.public_key_only.is_none()))
     {
@@ -278,7 +306,9 @@ pub(super) fn record_rotation_creation(key: &mut Key, number: u64, at: crate::au
 }
 
 pub(super) fn has_rotation_precision(key: &Key) -> bool {
-    key.backup_metadata.as_ref().is_some_and(|m| m.auto_rotate_period_nanoseconds.is_some())
+    key.backup_metadata
+        .as_ref()
+        .is_some_and(|m| m.auto_rotate_period_nanoseconds.is_some())
 }
 
 fn stamp_valid(value: &Option<Stamp>, latest: u64) -> Result<()> {
@@ -315,7 +345,10 @@ impl Entry {
     fn version(&self, kind: &str, key_size: Option<u64>, derived: bool) -> Result<KeyVersion> {
         let mut material = crypto::material(self, kind, key_size)?;
         if kind == "ed25519" && derived {
-            let raw = self.key.as_deref().ok_or_else(|| bad("derived signing master missing"))?;
+            let raw = self
+                .key
+                .as_deref()
+                .ok_or_else(|| bad("derived signing master missing"))?;
             derivation::validate_ed_master(&stored_material(raw)?)?;
             material.zeroize();
             material = raw.into();
@@ -375,8 +408,11 @@ pub(super) fn native_hmac_metadata(size: u64) -> Metadata {
     }
 }
 pub(super) fn generate_version(key: &Key, now: u64) -> Result<KeyVersion> {
-    let mut v = if derivation::is_ed(key) { derivation::generate_ed_version(now)? }
-        else { KeyVersion::generate(&key.kind, now)? };
+    let mut v = if derivation::is_ed(key) {
+        derivation::generate_ed_version(now)?
+    } else {
+        KeyVersion::generate(&key.kind, now)?
+    };
     if key.kind == "hmac"
         && key
             .backup_metadata
@@ -399,7 +435,11 @@ pub(super) fn min_available_version(key: &Key) -> u64 {
 }
 
 pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
-    if let Some(nanoseconds) = key.backup_metadata.as_ref().and_then(|m| m.auto_rotate_period_nanoseconds) {
+    if let Some(nanoseconds) = key
+        .backup_metadata
+        .as_ref()
+        .and_then(|m| m.auto_rotate_period_nanoseconds)
+    {
         descriptor["auto_rotate_period"] = json!(nanoseconds / 1_000_000_000);
     }
     if key.kind == "hmac"
@@ -514,7 +554,9 @@ pub(super) fn validate_key(key: &Key) -> Result<()> {
             || m.archive_min_version > m.min_available_version
             || m.min_available_version > key.min_decryption_version
             || key.legacy_counter_kdf != (key.derived && m.kdf == 0)
-            || (!symmetric::is_kind(&key.kind) && !derivation::is_ed(key) && (key.derived || m.kdf != 0))
+            || (!symmetric::is_kind(&key.kind)
+                && !derivation::is_ed(key)
+                && (key.derived || m.kdf != 0))
             || (derivation::is_ed(key) && (m.kdf != 1 || key.byok.is_some()))
             || m.hmac_key_size
                 .is_some_and(|n| key.kind != "hmac" || !(32..=512).contains(&n))
@@ -524,7 +566,9 @@ pub(super) fn validate_key(key: &Key) -> Result<()> {
         {
             return Err(bad("invalid symmetric backup metadata"));
         }
-        if m.auto_rotate_period_nanoseconds.is_some_and(|nanos| restored_rotation_period(nanos) != key.auto_rotate_period) {
+        if m.auto_rotate_period_nanoseconds
+            .is_some_and(|nanos| restored_rotation_period(nanos) != key.auto_rotate_period)
+        {
             return Err(bad("rotation duration and legacy projection disagree"));
         }
         stamp_valid(&m.backup_info, key.latest_version)?;
@@ -689,7 +733,10 @@ impl Transit {
             return Err(error(413, "backup exceeds supported size"));
         }
         let wire: Backup = serde_json::from_slice(&raw).map_err(|reason| {
-            if reason.to_string().contains("invalid native rotation duration") {
+            if reason
+                .to_string()
+                .contains("invalid native rotation duration")
+            {
                 openbao_compatibility_error("invalid native rotation duration")
             } else {
                 bad("invalid or ambiguous backup JSON")
@@ -728,7 +775,9 @@ impl Transit {
             || p.latest_version > MAX_VERSIONS
             || p.archive_version != p.latest_version
             || p.kdf > 1
-            || (!symmetric::is_kind(kind) && !(kind == "ed25519" && p.derived && p.kdf == 1 && !p.imported) && (p.derived || p.kdf != 0))
+            || (!symmetric::is_kind(kind)
+                && !(kind == "ed25519" && p.derived && p.kdf == 1 && !p.imported)
+                && (p.derived || p.kdf != 0))
             || if kind == "hmac" {
                 p.key_size.is_none_or(|n| !(32..=512).contains(&n))
             } else {
@@ -792,8 +841,12 @@ impl Transit {
             auto_rotate_period_nanoseconds: (p.auto_rotate_period < 0
                 || p.auto_rotate_period % 1_000_000_000 != 0
                 || self.keys.get(name).is_some_and(has_rotation_precision)
-                || (p.auto_rotate_period > 0 && times.values().any(|value| DateTime::parse_from_rfc3339(value).is_ok_and(|at| at.timestamp_subsec_nanos() != 0))))
-                .then_some(p.auto_rotate_period),
+                || (p.auto_rotate_period > 0
+                    && times.values().any(|value| {
+                        DateTime::parse_from_rfc3339(value)
+                            .is_ok_and(|at| at.timestamp_subsec_nanos() != 0)
+                    })))
+            .then_some(p.auto_rotate_period),
             archive_min_version: p.archive_min_version,
             min_available_version: p.min_available_version,
             version_template: p.version_template.clone(),
@@ -844,7 +897,9 @@ impl Transit {
         if let Some(w) = wrapping {
             prepared.wrapping_key = Some(w);
         }
-        if derivation::is_ed(&restored) { prepared.derived_ed_format = Some(derivation::Format::V1); }
+        if derivation::is_ed(&restored) {
+            prepared.derived_ed_format = Some(derivation::Format::V1);
+        }
         prepared.keys.insert(name.into(), restored);
         prepared.validate_byok_state()?;
         prepared.validate_derived_ed_state(Some(self))?;

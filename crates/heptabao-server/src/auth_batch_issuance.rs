@@ -289,15 +289,22 @@ impl AuthState {
             return Ok(());
         };
         let precision = pending.claims.token_api_precision.as_ref();
-        let sdk = pending.claims.public_origin.as_ref()
+        let sdk = pending
+            .claims
+            .public_origin
+            .as_ref()
             .and_then(public_origin::BatchOrigin::sdk_binding);
         if let Some(binding) = sdk {
             self.validate_sdk_batch_binding(binding)?;
-            if binding.namespace != namespace || pending.login_mount.as_deref() != Some(binding.mount.as_str()) {
+            if binding.namespace != namespace
+                || pending.login_mount.as_deref() != Some(binding.mount.as_str())
+            {
                 return Err(denied());
             }
             let at = time.exact().ok_or_else(denied)?;
-            if precision.is_none_or(|lease| at >= lease.expires_at) { return Err(denied()); }
+            if precision.is_none_or(|lease| at >= lease.expires_at) {
+                return Err(denied());
+            }
         }
         let issuance_seconds = if precision.is_some() {
             pending.claims.issued_at
@@ -360,10 +367,12 @@ impl AuthState {
         // original observation before sealing; failed native identity/parent
         // gates above must not install a floor or change the current authority.
         let sdk_observation = if precision.is_some() && sdk.is_some() {
-            Some(time.exact().ok_or_else(denied)?.max(
-                Timestamp::whole(self.wrapping_clock)
-                    .map_err(|_| err(503, "trusted token clock is unavailable"))?,
-            ))
+            Some(
+                time.exact().ok_or_else(denied)?.max(
+                    Timestamp::whole(self.wrapping_clock)
+                        .map_err(|_| err(503, "trusted token clock is unavailable"))?,
+                ),
+            )
         } else {
             None
         };
@@ -378,7 +387,8 @@ impl AuthState {
         if let Some(at) = sdk_observation {
             self.token_api_precision_state = true;
             self.token_api_observed_at = Some(
-                self.token_api_observed_at.map_or(at, |previous| previous.max(at)),
+                self.token_api_observed_at
+                    .map_or(at, |previous| previous.max(at)),
             );
         }
         response.body["auth"]["client_token"] = json!(raw.as_str());

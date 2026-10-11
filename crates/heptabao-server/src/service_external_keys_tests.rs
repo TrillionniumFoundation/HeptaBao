@@ -422,9 +422,8 @@ fn external_keys270_rejections_are_atomic_acl_bound_and_namespace_isolated() -> 
         .status,
         204
     );
-    let before_metadata = zeroize::Zeroizing::new(
-        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
-    );
+    let before_metadata =
+        zeroize::Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?);
     for method in ["GET", "HEAD"] {
         let root_config = call(
             &mut service,

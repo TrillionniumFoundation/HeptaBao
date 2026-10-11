@@ -192,7 +192,9 @@ impl State {
         };
         let required = if self.engines.has_standard_asymmetric_import_state() {
             required.max(STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.auth.has_control_group_state() {
             required.max(CONTROL_GROUP_STATE_SCHEMA)
         } else {
@@ -200,7 +202,9 @@ impl State {
         };
         let required = if self.engines.has_symmetric_backup_state() {
             required.max(SYMMETRIC_BACKUP_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.engines.has_kv2_lossless_state() {
             required.max(KV2_LOSSLESS_STATE_SCHEMA)
         } else {
@@ -230,30 +234,51 @@ impl State {
         };
         let required = if self.engines.has_transit_rotation_precision_state() {
             required.max(TRANSIT_ROTATION_PRECISION_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.namespaces.workflows.has_expression_profiles() {
             required.max(WORKFLOW_EXPRESSION_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.auth.has_sdk_advanced_state() {
             required.max(SDK_ADVANCED_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.engines.has_transit_derived_ed_state() {
             required.max(TRANSIT_DERIVED_ED_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.namespaces.workflows.has_request_credentials() {
             required.max(WORKFLOW_CREDENTIAL_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.engines.has_transit_cache_state() {
             required.max(TRANSIT_CACHE_STATE_SCHEMA)
-        } else { required };
-        let required=if self.auth.has_identity_mfa_state(){required.max(IDENTITY_MFA_STATE_SCHEMA)}else{required};
+        } else {
+            required
+        };
+        let required = if self.auth.has_identity_mfa_state() {
+            required.max(IDENTITY_MFA_STATE_SCHEMA)
+        } else {
+            required
+        };
         let required = if self.namespaces.workflows.has_logical_input_profiles()
-            || self.auth.has_control_group_logical_data() {
+            || self.auth.has_control_group_logical_data()
+        {
             required.max(WORKFLOW_INPUT_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         let required = if self.auth.has_userpass_issuance_state() {
             required.max(USERPASS_ISSUANCE_STATE_SCHEMA)
-        } else { required };
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -262,36 +287,53 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
-        self.auth.validate_userpass_issuance_state(previous.map(|state| &*state.auth))
+        self.auth
+            .validate_userpass_issuance_state(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA
             && (self.auth.has_userpass_issuance_state()
-                || previous.is_some_and(|state| state.schema >= USERPASS_ISSUANCE_STATE_SCHEMA)) {
-            return Err(Response::error(503, "native Userpass issuance requires schema 132"));
+                || previous.is_some_and(|state| state.schema >= USERPASS_ISSUANCE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native Userpass issuance requires schema 132",
+            ));
         }
-        self.engines.validate_transit_cache_state(previous.map(|state| &*state.engines))
+        self.engines
+            .validate_transit_cache_state(previous.map(|state| &*state.engines))
             .map_err(Response::from_engine_error)?;
         if self.schema < TRANSIT_CACHE_STATE_SCHEMA
             && (self.engines.has_transit_cache_state()
                 || previous.is_some_and(|state| state.schema >= TRANSIT_CACHE_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "transit cache configuration requires schema 130"));
+            return Err(Response::error(
+                503,
+                "transit cache configuration requires schema 130",
+            ));
         }
-        self.auth.validate_identity_mfa_state(previous.map(|state|&*state.auth))
-            .map_err(|error|Response::error(503,&error.message))?;
-        if self.schema<IDENTITY_MFA_STATE_SCHEMA
-            && (self.auth.has_identity_mfa_state()||previous.is_some_and(|state|state.schema>=IDENTITY_MFA_STATE_SCHEMA)) {
-            return Err(Response::error(503,"Identity MFA requires schema 129"));
+        self.auth
+            .validate_identity_mfa_state(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < IDENTITY_MFA_STATE_SCHEMA
+            && (self.auth.has_identity_mfa_state()
+                || previous.is_some_and(|state| state.schema >= IDENTITY_MFA_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "Identity MFA requires schema 129"));
         }
-        self.auth.validate_sdk_advanced_state(previous.map(|state| &*state.auth))
+        self.auth
+            .validate_sdk_advanced_state(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < SDK_ADVANCED_STATE_SCHEMA
             && (self.auth.has_sdk_advanced_state()
                 || previous.is_some_and(|state| state.schema >= SDK_ADVANCED_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "SDK advanced custody requires schema 126"));
+            return Err(Response::error(
+                503,
+                "SDK advanced custody requires schema 126",
+            ));
         }
-        self.engines.validate_transit_derived_ed_state(previous.map(|state| &*state.engines))
+        self.engines
+            .validate_transit_derived_ed_state(previous.map(|state| &*state.engines))
             .map_err(Response::from_engine_error)?;
         if self.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA
             && (self.engines.has_transit_derived_ed_state()
@@ -299,44 +341,66 @@ impl State {
         {
             return Err(Response::error(503, "derived Ed25519 requires schema 127"));
         }
-        self.engines.validate_transit_rotation_precision_state(previous.map(|state| &*state.engines))
+        self.engines
+            .validate_transit_rotation_precision_state(previous.map(|state| &*state.engines))
             .map_err(Response::from_engine_error)?;
         if self.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
             && (self.engines.has_transit_rotation_precision_state()
-                || previous.is_some_and(|state| state.schema >= TRANSIT_ROTATION_PRECISION_STATE_SCHEMA))
+                || previous
+                    .is_some_and(|state| state.schema >= TRANSIT_ROTATION_PRECISION_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "precise transit rotation requires schema 124"));
+            return Err(Response::error(
+                503,
+                "precise transit rotation requires schema 124",
+            ));
         }
         self.namespaces.workflows.validate()?;
         if self.schema < WORKFLOW_INPUT_STATE_SCHEMA
             && (self.namespaces.workflows.has_logical_input_profiles()
                 || self.auth.has_control_group_logical_data()
-                || previous.is_some_and(|state| state.schema >= WORKFLOW_INPUT_STATE_SCHEMA)) {
-            return Err(Response::error(503,"workflow logical input requires schema 131"));
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_INPUT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "workflow logical input requires schema 131",
+            ));
         }
         if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
             && (self.namespaces.workflows.has_request_credentials()
                 || previous.is_some_and(|state| state.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "workflow request credentials require schema 128"));
+            return Err(Response::error(
+                503,
+                "workflow request credentials require schema 128",
+            ));
         }
         if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
             && (self.namespaces.workflows.has_expression_profiles()
                 || previous.is_some_and(|state| state.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "workflow expressions require schema 125"));
+            return Err(Response::error(
+                503,
+                "workflow expressions require schema 125",
+            ));
         }
         if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
             && (self.namespaces.workflows.has_dynamic_profiles()
                 || previous.is_some_and(|state| state.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "dynamic workflow sources require schema 123"));
+            return Err(Response::error(
+                503,
+                "dynamic workflow sources require schema 123",
+            ));
         }
         if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             && (self.auth.has_fractional_control_group_state()
-                || previous.is_some_and(|state| state.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA))
+                || previous
+                    .is_some_and(|state| state.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "fractional control groups require schema 122"));
+            return Err(Response::error(
+                503,
+                "fractional control groups require schema 122",
+            ));
         }
         if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA
             && (self.namespaces.workflows.has_profiles()
@@ -355,7 +419,10 @@ impl State {
             && (self.engines.has_symmetric_backup_state()
                 || previous.is_some_and(|s| s.schema >= SYMMETRIC_BACKUP_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "symmetric imported derivation and backups require schema 119"));
+            return Err(Response::error(
+                503,
+                "symmetric imported derivation and backups require schema 119",
+            ));
         }
         if self.schema < CONTROL_GROUP_STATE_SCHEMA
             && (self.auth.has_control_group_state()
@@ -370,17 +437,30 @@ impl State {
             && (self.engines.has_kv2_lossless_state()
                 || previous.is_some_and(|state| state.schema >= KV2_LOSSLESS_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "KV2 lossless custody requires schema 120"));
+            return Err(Response::error(
+                503,
+                "KV2 lossless custody requires schema 120",
+            ));
         }
-        namespace_diagnostic!("publication.guard.validate.00", self.namespace_leases.validate())?;
-        namespace_diagnostic!("publication.guard.validate_transit_byok_state.01", self.engines
-            .validate_transit_byok_state()
-            .map_err(|_| Response::error(503, "invalid Transit imported key state")))?;
+        namespace_diagnostic!(
+            "publication.guard.validate.00",
+            self.namespace_leases.validate()
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_transit_byok_state.01",
+            self.engines
+                .validate_transit_byok_state()
+                .map_err(|_| Response::error(503, "invalid Transit imported key state"))
+        )?;
         if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
             && (self.engines.has_standard_asymmetric_import_state()
-                || previous.is_some_and(|state| state.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA))
+                || previous
+                    .is_some_and(|state| state.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA))
         {
-            return Err(Response::error(503, "standard asymmetric imports require schema 117"));
+            return Err(Response::error(
+                503,
+                "standard asymmetric imports require schema 117",
+            ));
         }
         if self.schema < MLDSA_IMPORT_STATE_SCHEMA
             && (self.engines.has_mldsa_import_state()
@@ -402,9 +482,12 @@ impl State {
                 "mount listing visibility requires schema 111",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_ssh_ca_format.02", self.engines
-            .validate_ssh_ca_format()
-            .map_err(Response::from_engine_error))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_ssh_ca_format.02",
+            self.engines
+                .validate_ssh_ca_format()
+                .map_err(Response::from_engine_error)
+        )?;
         if self.engines.has_ssh_ca_state() && self.schema < SSH_CA_STATE_SCHEMA
             || previous.is_some_and(|state| {
                 state.schema == SSH_CA_STATE_SCHEMA || state.engines.has_ssh_ca_state()
@@ -414,7 +497,8 @@ impl State {
             crate::service::namespace_diagnostics::record_status("publication.reject.02", 503);
             return Err(Response::error(503, "SSH CA custody cannot regress"));
         }
-        let protected = namespace_diagnostic!("publication.protected.initial", self.protected_state())?;
+        let protected =
+            namespace_diagnostic!("publication.protected.initial", self.protected_state())?;
         if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
             && (protected.auth.has_sdk_namespace_custody()
                 || previous
@@ -436,10 +520,12 @@ impl State {
             )?;
             if self.namespace_protected.is_none()
                 && self.namespace_leases.is_empty()
-                && !namespace_diagnostic!("publication.raw_digest", self
-                    .auth
-                    .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
-                    .map_err(|e| Response::error(e.status, &e.message)))?
+                && !namespace_diagnostic!(
+                    "publication.raw_digest",
+                    self.auth
+                        .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
+                        .map_err(|e| Response::error(e.status, &e.message))
+                )?
             {
                 // This raw custody change is already inadmissible. Classify a
                 // torn SDK registration/clock using its existing read-only
@@ -459,19 +545,25 @@ impl State {
                 );
             }
         }
-        namespace_diagnostic!("publication.guard.validate_ssh_ca_format.03", protected
-            .engines
-            .validate_ssh_ca_format()
-            .map_err(Response::from_engine_error))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_ssh_ca_format.03",
+            protected
+                .engines
+                .validate_ssh_ca_format()
+                .map_err(Response::from_engine_error)
+        )?;
         if protected.engines.has_ssh_ca_state() != self.engines.has_ssh_ca_state() {
             #[cfg(test)]
             crate::service::namespace_diagnostics::record_status("publication.reject.04", 503);
             return Err(Response::error(503, "SSH CA owner marker disagrees"));
         }
-        namespace_diagnostic!("publication.guard.validate_raw_wrapped_reply_state.04", protected
-            .auth
-            .validate_raw_wrapped_reply_state()
-            .map_err(|_| Response::error(503, "invalid original wrapped reply custody")))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_raw_wrapped_reply_state.04",
+            protected
+                .auth
+                .validate_raw_wrapped_reply_state()
+                .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))
+        )?;
         if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             && (protected.auth.has_general_wrapped_reply_state()
                 || previous.is_some_and(|state| state.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA))
@@ -506,12 +598,21 @@ impl State {
             ));
         }
         if let Some(previous) = previous {
-            namespace_diagnostic!("publication.nested.validate_raw_wrapped_reply_successor", protected
-                .auth
-                .validate_raw_wrapped_reply_successor(&namespace_diagnostic!("publication.protected.raw.previous", previous.protected_state())?.auth)
-                .map_err(|_| {
-                    Response::error(503, "original wrapped reply custody cannot regress")
-                }))?;
+            namespace_diagnostic!(
+                "publication.nested.validate_raw_wrapped_reply_successor",
+                protected
+                    .auth
+                    .validate_raw_wrapped_reply_successor(
+                        &namespace_diagnostic!(
+                            "publication.protected.raw.previous",
+                            previous.protected_state()
+                        )?
+                        .auth
+                    )
+                    .map_err(|_| {
+                        Response::error(503, "original wrapped reply custody cannot regress")
+                    })
+            )?;
         }
         if self.schema < PKI_RSA8192_STATE_SCHEMA
             && (self.engines.has_pki_rsa8192_state()
@@ -547,9 +648,12 @@ impl State {
                 "PKI subject key policy requires schema 104",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_auth_mount_options_state.05", self.auth
-            .validate_auth_mount_options_state()
-            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_auth_mount_options_state.05",
+            self.auth
+                .validate_auth_mount_options_state()
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
         if self.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA
             && (self.auth.has_auth_mount_options_state()
                 || previous.is_some_and(|state| state.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA))
@@ -561,11 +665,20 @@ impl State {
                 "auth mount options require schema 103",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_namespace_batch_state.06", self.validate_namespace_batch_state())?;
-        namespace_diagnostic!("publication.guard.validate_namespace_deletion_state.07", self.validate_namespace_deletion_state())?;
-        namespace_diagnostic!("publication.guard.validate_acme_state.08", self.engines
-            .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
-            .map_err(|error| Response::error(503, &error.message)))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_namespace_batch_state.06",
+            self.validate_namespace_batch_state()
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_namespace_deletion_state.07",
+            self.validate_namespace_deletion_state()
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_acme_state.08",
+            self.engines
+                .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
         if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA && self.engines.has_pki_acme_state() {
             #[cfg(test)]
             crate::service::namespace_diagnostics::record_status("publication.reject.12", 503);
@@ -574,31 +687,46 @@ impl State {
                 "ACME durable account ownership requires schema 99",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_sdk_credential_state.09", self.auth
-            .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
-                self.namespaces.incarnation(ns)
-            })
-            .map_err(|e| Response::error(e.status, &e.message)))?;
-        namespace_diagnostic!("publication.guard.validate_sdk_auth_state.10", self.auth
-            .validate_sdk_auth_state()
-            .map_err(|e| Response::error(e.status, &e.message)))?;
-        namespace_diagnostic!("publication.guard.validate_sdk_auth_clock.11", self.auth
-            .validate_sdk_auth_clock(previous.map(|state| &*state.auth))
-            .map_err(|e| Response::error(e.status, &e.message)))?;
-        namespace_diagnostic!("publication.guard.validate_sdk_credential_state.12", self.auth
-            .validate_sdk_credential_state(
-                previous.map(|state| &*state.auth),
-                &self.cluster_id,
-                |ns| self.namespaces.incarnation(ns),
-            )
-            .map_err(|e| Response::error(e.status, &e.message)))?;
-        namespace_diagnostic!("publication.guard.validate_sdk_auth_retirement_state.13", self.auth
-            .validate_sdk_auth_retirement_state(
-                previous.map(|state| &*state.auth),
-                &self.cluster_id,
-                |ns| self.namespaces.incarnation(ns),
-            )
-            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_credential_state.09",
+            self.auth
+                .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
+                    self.namespaces.incarnation(ns)
+                })
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_state.10",
+            self.auth
+                .validate_sdk_auth_state()
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_clock.11",
+            self.auth
+                .validate_sdk_auth_clock(previous.map(|state| &*state.auth))
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_credential_state.12",
+            self.auth
+                .validate_sdk_credential_state(
+                    previous.map(|state| &*state.auth),
+                    &self.cluster_id,
+                    |ns| self.namespaces.incarnation(ns),
+                )
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_retirement_state.13",
+            self.auth
+                .validate_sdk_auth_retirement_state(
+                    previous.map(|state| &*state.auth),
+                    &self.cluster_id,
+                    |ns| self.namespaces.incarnation(ns),
+                )
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
         if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
             && (self.auth.has_sdk_auth_retirement_state()
                 || previous.is_some_and(|old| old.auth.has_sdk_auth_retirement_state()))
@@ -611,9 +739,12 @@ impl State {
             ));
         }
         let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
-        namespace_diagnostic!("publication.guard.validate_sdk_auth_epoch_floor.14", self.auth
-            .validate_sdk_auth_epoch_floor(floor.as_ref())
-            .map_err(|e| Response::error(e.status, &e.message)))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_epoch_floor.14",
+            self.auth
+                .validate_sdk_auth_epoch_floor(floor.as_ref())
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
         if self.schema < SDK_AUTH_STATE_SCHEMA
             && (self.auth.has_sdk_auth_state()
                 || previous.is_some_and(|state| state.schema >= SDK_AUTH_STATE_SCHEMA))
@@ -626,14 +757,23 @@ impl State {
             ));
         }
 
-        namespace_diagnostic!("publication.guard.validate_public_origin_state.15", namespace_diagnostic!("publication.protected.public_origin", self.protected_state())?
+        namespace_diagnostic!(
+            "publication.guard.validate_public_origin_state.15",
+            namespace_diagnostic!(
+                "publication.protected.public_origin",
+                self.protected_state()
+            )?
             .auth
             .validate_public_origin_state()
-            .map_err(|_| Response::error(503, "invalid public origin protected owner")))?;
+            .map_err(|_| Response::error(503, "invalid public origin protected owner"))
+        )?;
         if let Some(previous) = previous {
-            namespace_diagnostic!("publication.nested.validate_namespace_deletion_successor", self.auth
-                .validate_namespace_deletion_successor(&previous.auth, &self.cluster_id)
-                .map_err(|e| Response::error(e.status, &e.message)))?;
+            namespace_diagnostic!(
+                "publication.nested.validate_namespace_deletion_successor",
+                self.auth
+                    .validate_namespace_deletion_successor(&previous.auth, &self.cluster_id)
+                    .map_err(|e| Response::error(e.status, &e.message))
+            )?;
             if self.schema < NAMESPACE_DELETION_STATE_SCHEMA
                 && previous.has_namespace_deletion_state()
             {
@@ -644,17 +784,53 @@ impl State {
                     "namespace deletion writer floor cannot decrease",
                 ));
             }
-            namespace_diagnostic!("publication.nested.validate_namespace_batch_successor", namespace_diagnostic!("publication.protected.batch.current", self.protected_state())?
+            namespace_diagnostic!(
+                "publication.nested.validate_namespace_batch_successor",
+                namespace_diagnostic!(
+                    "publication.protected.batch.current",
+                    self.protected_state()
+                )?
                 .auth
-                .validate_namespace_batch_successor(&namespace_diagnostic!("publication.protected.batch.previous", previous.protected_state())?.auth)
-                .map_err(|error| Response::error(error.status, &error.message)))?;
-            namespace_diagnostic!("publication.nested.validate_public_origin_successor", namespace_diagnostic!("publication.protected.origin.current", self.protected_state())?
+                .validate_namespace_batch_successor(
+                    &namespace_diagnostic!(
+                        "publication.protected.batch.previous",
+                        previous.protected_state()
+                    )?
+                    .auth
+                )
+                .map_err(|error| Response::error(error.status, &error.message))
+            )?;
+            namespace_diagnostic!(
+                "publication.nested.validate_public_origin_successor",
+                namespace_diagnostic!(
+                    "publication.protected.origin.current",
+                    self.protected_state()
+                )?
                 .auth
-                .validate_public_origin_successor(&namespace_diagnostic!("publication.protected.origin.previous", previous.protected_state())?.auth)
-                .map_err(|_| Response::error(503, "public origin floor cannot retire")))?;
-            namespace_diagnostic!("publication.nested.validate_custody_successor", namespace_diagnostic!("publication.protected.custody.current", self.protected_state())?
+                .validate_public_origin_successor(
+                    &namespace_diagnostic!(
+                        "publication.protected.origin.previous",
+                        previous.protected_state()
+                    )?
+                    .auth
+                )
+                .map_err(|_| Response::error(503, "public origin floor cannot retire"))
+            )?;
+            namespace_diagnostic!(
+                "publication.nested.validate_custody_successor",
+                namespace_diagnostic!(
+                    "publication.protected.custody.current",
+                    self.protected_state()
+                )?
                 .namespaces
-                .validate_custody_successor(&namespace_diagnostic!("publication.protected.custody.previous", previous.protected_state())?.namespaces))?;
+                .validate_custody_successor(
+                    &namespace_diagnostic!(
+                        "publication.protected.custody.previous",
+                        previous.protected_state()
+                    )?
+                    .namespaces
+                )
+            )?;
         }
 
         if !supported_reader_schema(self.schema) {
@@ -665,14 +841,17 @@ impl State {
                 "unsupported or downgraded identity state schema",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_acme_successor.16", self.engines
-            .validate_acme_successor(previous.map(|state| &*state.engines), |namespace| {
-                previous.is_some_and(|old| {
-                    self.namespaces
-                        .retires_namespace_incarnation(&old.namespaces, namespace)
+        namespace_diagnostic!(
+            "publication.guard.validate_acme_successor.16",
+            self.engines
+                .validate_acme_successor(previous.map(|state| &*state.engines), |namespace| {
+                    previous.is_some_and(|old| {
+                        self.namespaces
+                            .retires_namespace_incarnation(&old.namespaces, namespace)
+                    })
                 })
-            })
-            .map_err(|error| Response::error(503, &error.message)))?;
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
         if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA
             && (self.engines.has_pki_acme_state()
                 || previous.is_some_and(|s| s.schema >= PKI_ACME_ACCOUNT_STATE_SCHEMA))
@@ -684,21 +863,38 @@ impl State {
                 "ACME durable account ownership requires schema 99",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_sdk_registration_namespace.17", self.engines
-            .validate_sdk_registration_namespace(|namespace| self.namespaces.incarnation(namespace))
-            .map_err(|error| Response::error(503, &error.message)))?;
-        namespace_diagnostic!("publication.guard.validate_sdk_lease_clock.18", self.engines
-            .validate_sdk_lease_clock(previous.map(|state| &*state.engines))
-            .map_err(|error| Response::error(503, &error.message)))?;
-        namespace_diagnostic!("publication.guard.validate_pki_revocation_clock.19", self.engines
-            .validate_pki_revocation_clock(previous.map(|state| &*state.engines))
-            .map_err(|error| Response::error(503, &error.message)))?;
-        namespace_diagnostic!("publication.guard.validate_kubernetes_artifact_clock.20", self.engines
-            .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
-            .map_err(|error| Response::error(503, &error.message)))?;
-        namespace_diagnostic!("publication.guard.validate_token_api_clock_floor.21", self.auth
-            .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
-            .map_err(|error| Response::error(503, &error.message)))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_registration_namespace.17",
+            self.engines
+                .validate_sdk_registration_namespace(|namespace| self
+                    .namespaces
+                    .incarnation(namespace))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_lease_clock.18",
+            self.engines
+                .validate_sdk_lease_clock(previous.map(|state| &*state.engines))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_pki_revocation_clock.19",
+            self.engines
+                .validate_pki_revocation_clock(previous.map(|state| &*state.engines))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_kubernetes_artifact_clock.20",
+            self.engines
+                .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_token_api_clock_floor.21",
+            self.auth
+                .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
         if self.schema < NAMESPACE_BATCH_STATE_SCHEMA
             && (self.has_namespace_batch_state()
                 || previous.is_some_and(|old| old.schema >= NAMESPACE_BATCH_STATE_SCHEMA))
@@ -1015,13 +1211,19 @@ impl State {
                 "indexed recovery wire requires schema 74",
             ));
         }
-        namespace_diagnostic!("publication.guard.validate_recovery_credential.22", self.auth
-            .validate_recovery_credential(&self.cluster_id)
-            .map_err(|_| Response::error(503, "invalid protected recovery credential")))?;
+        namespace_diagnostic!(
+            "publication.guard.validate_recovery_credential.22",
+            self.auth
+                .validate_recovery_credential(&self.cluster_id)
+                .map_err(|_| Response::error(503, "invalid protected recovery credential"))
+        )?;
         if let Some(previous) = previous {
-            namespace_diagnostic!("publication.nested.validate_recovery_publication", self.auth
-                .validate_recovery_publication(&previous.auth, &self.cluster_id)
-                .map_err(|_| Response::error(503, "recovery authority publication rejected")))?;
+            namespace_diagnostic!(
+                "publication.nested.validate_recovery_publication",
+                self.auth
+                    .validate_recovery_publication(&previous.auth, &self.cluster_id)
+                    .map_err(|_| Response::error(503, "recovery authority publication rejected"))
+            )?;
         }
         if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
             && (self.engines.has_local_typed_pki_state()
@@ -1112,20 +1314,29 @@ impl State {
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.validate_global_lossless_json_state(None)?;
-        self.engines.validate_transit_cache_state(None).map_err(Response::from_engine_error)?;
+        self.engines
+            .validate_transit_cache_state(None)
+            .map_err(Response::from_engine_error)?;
         if self.schema < TRANSIT_CACHE_STATE_SCHEMA && self.engines.has_transit_cache_state()
             || self.schema == TRANSIT_CACHE_STATE_SCHEMA && !self.engines.has_transit_cache_state()
         {
-            return Err(Response::error(503, "transit cache reader floor or retired owner is missing"));
+            return Err(Response::error(
+                503,
+                "transit cache reader floor or retired owner is missing",
+            ));
         }
         self.engines
             .validate_kv2_lossless_state(None)
             .map_err(Response::from_engine_error)?;
         if self.schema < KV2_LOSSLESS_STATE_SCHEMA && self.engines.has_kv2_lossless_state()
-            || self.schema == KV2_LOSSLESS_STATE_SCHEMA && !self.engines.has_kv2_lossless_state()
+            || self.schema == KV2_LOSSLESS_STATE_SCHEMA
+                && !self.engines.has_kv2_lossless_state()
                 && self.global_lossless_json_format != Some(1)
         {
-            return Err(Response::error(503, "KV2 lossless custody requires schema 120"));
+            return Err(Response::error(
+                503,
+                "KV2 lossless custody requires schema 120",
+            ));
         }
         if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
             && self.auth.has_sdk_namespace_custody()
@@ -1220,23 +1431,38 @@ impl State {
         self.auth
             .validate_sdk_auth_state()
             .map_err(|e| Response::error(e.status, &e.message))?;
-        self.auth.validate_identity_mfa_state(None).map_err(|error|Response::error(503,&error.message))?;
-        self.auth.validate_identity_mfa_bindings(&self.cluster_id,
-            |namespace|self.namespaces.mfa_scope(namespace),
-            |namespace|self.namespaces.mfa_retirement_floor(namespace),
-            |namespace|self.namespaces.custody_owner(namespace).is_some()
-                ||self.namespaces.inherited_owner(namespace).is_some())
-            .map_err(|error|Response::error(503,&error.message))?;
-        if self.schema<IDENTITY_MFA_STATE_SCHEMA&&self.auth.has_identity_mfa_state()
-            ||self.schema==IDENTITY_MFA_STATE_SCHEMA&&!self.auth.has_identity_mfa_state(){
-            return Err(Response::error(503,"Identity MFA reader marker requires schema 129"));
+        self.auth
+            .validate_identity_mfa_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_identity_mfa_bindings(
+                &self.cluster_id,
+                |namespace| self.namespaces.mfa_scope(namespace),
+                |namespace| self.namespaces.mfa_retirement_floor(namespace),
+                |namespace| {
+                    self.namespaces.custody_owner(namespace).is_some()
+                        || self.namespaces.inherited_owner(namespace).is_some()
+                },
+            )
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < IDENTITY_MFA_STATE_SCHEMA && self.auth.has_identity_mfa_state()
+            || self.schema == IDENTITY_MFA_STATE_SCHEMA && !self.auth.has_identity_mfa_state()
+        {
+            return Err(Response::error(
+                503,
+                "Identity MFA reader marker requires schema 129",
+            ));
         }
-        self.auth.validate_sdk_advanced_state(None)
+        self.auth
+            .validate_sdk_advanced_state(None)
             .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < SDK_ADVANCED_STATE_SCHEMA && self.auth.has_sdk_advanced_state()
             || self.schema == SDK_ADVANCED_STATE_SCHEMA && !self.auth.has_sdk_advanced_state()
         {
-            return Err(Response::error(503, "SDK advanced custody requires schema 126"));
+            return Err(Response::error(
+                503,
+                "SDK advanced custody requires schema 126",
+            ));
         }
         if self.schema < SDK_AUTH_STATE_SCHEMA && self.auth.has_sdk_auth_state() {
             return Err(Response::error(
@@ -1550,32 +1776,72 @@ impl State {
             .validate_control_group_state()
             .map_err(|_| Response::error(503, "invalid control group owner"))?;
         self.validate_control_group_transports()?;
-        if self.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA && self.engines.has_transit_derived_ed_state() {
+        if self.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA
+            && self.engines.has_transit_derived_ed_state()
+        {
             return Err(Response::error(503, "derived Ed25519 requires schema 127"));
         }
-        self.engines.validate_transit_derived_ed_state(None).map_err(Response::from_engine_error)?;
-        if self.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA && self.engines.has_transit_rotation_precision_state() {
-            return Err(Response::error(503, "precise transit rotation requires schema 124"));
+        self.engines
+            .validate_transit_derived_ed_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+            && self.engines.has_transit_rotation_precision_state()
+        {
+            return Err(Response::error(
+                503,
+                "precise transit rotation requires schema 124",
+            ));
         }
-        self.engines.validate_transit_rotation_precision_state(None).map_err(Response::from_engine_error)?;
-        if self.schema < SYMMETRIC_BACKUP_STATE_SCHEMA && self.engines.has_symmetric_backup_state() {
-            return Err(Response::error(503, "symmetric imported derivation and backups require schema 119"));
+        self.engines
+            .validate_transit_rotation_precision_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < SYMMETRIC_BACKUP_STATE_SCHEMA && self.engines.has_symmetric_backup_state()
+        {
+            return Err(Response::error(
+                503,
+                "symmetric imported derivation and backups require schema 119",
+            ));
         }
-        if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA && self.auth.has_fractional_control_group_state() {
-            return Err(Response::error(503, "fractional control groups require schema 122"));
+        if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+            && self.auth.has_fractional_control_group_state()
+        {
+            return Err(Response::error(
+                503,
+                "fractional control groups require schema 122",
+            ));
         }
         if self.schema < WORKFLOW_INPUT_STATE_SCHEMA
-            && (self.namespaces.workflows.has_logical_input_profiles() || self.auth.has_control_group_logical_data()) {
-            return Err(Response::error(503,"workflow logical input requires schema 131"));
+            && (self.namespaces.workflows.has_logical_input_profiles()
+                || self.auth.has_control_group_logical_data())
+        {
+            return Err(Response::error(
+                503,
+                "workflow logical input requires schema 131",
+            ));
         }
-        if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA && self.namespaces.workflows.has_request_credentials() {
-            return Err(Response::error(503, "workflow request credentials require schema 128"));
+        if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            && self.namespaces.workflows.has_request_credentials()
+        {
+            return Err(Response::error(
+                503,
+                "workflow request credentials require schema 128",
+            ));
         }
-        if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA && self.namespaces.workflows.has_expression_profiles() {
-            return Err(Response::error(503, "workflow expressions require schema 125"));
+        if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
+            && self.namespaces.workflows.has_expression_profiles()
+        {
+            return Err(Response::error(
+                503,
+                "workflow expressions require schema 125",
+            ));
         }
-        if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA && self.namespaces.workflows.has_dynamic_profiles() {
-            return Err(Response::error(503, "dynamic workflow sources require schema 123"));
+        if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
+            && self.namespaces.workflows.has_dynamic_profiles()
+        {
+            return Err(Response::error(
+                503,
+                "dynamic workflow sources require schema 123",
+            ));
         }
         if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA && self.namespaces.workflows.has_profiles() {
             return Err(Response::error(503, "workflow profiles require schema 121"));
@@ -1583,8 +1849,13 @@ impl State {
         if self.schema < CONTROL_GROUP_STATE_SCHEMA && self.auth.has_control_group_state() {
             return Err(Response::error(503, "Control Groups require schema 118"));
         }
-        if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA && self.engines.has_standard_asymmetric_import_state() {
-            return Err(Response::error(503, "standard asymmetric imports require schema 117"));
+        if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+            && self.engines.has_standard_asymmetric_import_state()
+        {
+            return Err(Response::error(
+                503,
+                "standard asymmetric imports require schema 117",
+            ));
         }
         if self.schema < MLDSA_IMPORT_STATE_SCHEMA && self.engines.has_mldsa_import_state() {
             return Err(Response::error(503, "ML-DSA imports require schema 116"));
@@ -1866,11 +2137,17 @@ impl State {
         self.auth
             .validate_userpass_native_tokens()
             .map_err(|_| Response::error(503, "invalid native userpass state"))?;
-        self.auth.validate_userpass_issuance_state(None)
+        self.auth
+            .validate_userpass_issuance_state(None)
             .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA && self.auth.has_userpass_issuance_state()
-            || self.schema == USERPASS_ISSUANCE_STATE_SCHEMA && !self.auth.has_userpass_issuance_state() {
-            return Err(Response::error(503, "native Userpass issuance reader marker requires schema 132"));
+            || self.schema == USERPASS_ISSUANCE_STATE_SCHEMA
+                && !self.auth.has_userpass_issuance_state()
+        {
+            return Err(Response::error(
+                503,
+                "native Userpass issuance reader marker requires schema 132",
+            ));
         }
         self.auth
             .validate_userpass_lockout_state()
@@ -2457,8 +2734,14 @@ impl Service {
         }
         let is_auth = response.body.get("auth").is_some();
         let envelope = if is_auth { "auth" } else { "data" };
-        let native_mfa_entity=response.pending_service.as_ref().and_then(|pending|pending.entity_id()).map(str::to_owned);
-        let Some(id) = native_mfa_entity.as_deref().or_else(||response.body[envelope]["entity_id"].as_str())
+        let native_mfa_entity = response
+            .pending_service
+            .as_ref()
+            .and_then(|pending| pending.entity_id())
+            .map(str::to_owned);
+        let Some(id) = native_mfa_entity
+            .as_deref()
+            .or_else(|| response.body[envelope]["entity_id"].as_str())
             .filter(|id| !id.is_empty())
         else {
             if response.external_groups.is_some() {
@@ -2490,8 +2773,8 @@ impl Service {
         if is_auth && projection.disabled {
             return Err(Response::error(403, "permission denied"));
         }
-        let mfa_entity=projection.entity_id.clone();
-        let mfa_groups=projection.group_ids.clone();
+        let mfa_entity = projection.entity_id.clone();
+        let mfa_groups = projection.group_ids.clone();
         response.body[envelope]["entity_id"] = Value::String(projection.entity_id);
         response.body[envelope]["identity_policies"] = json!(projection.policies);
         if is_auth {
@@ -2506,7 +2789,8 @@ impl Service {
             }
             response.body["auth"]["policies"] = json!(all);
         }
-        auth.finish_mfa_response(response,&mfa_entity,&mfa_groups,time).map_err(auth_error)?;
+        auth.finish_mfa_response(response, &mfa_entity, &mfa_groups, time)
+            .map_err(auth_error)?;
         auth.finish_pending_batch_observed(response, namespace, now, time)
             .map_err(auth_error)
     }

@@ -33,12 +33,23 @@ fn algorithm(kind: &str, value: &AlgorithmIdentifierRef<'_>) -> Result<()> {
     }
     if let Some(curve) = curve {
         let expected = ObjectIdentifier::new(curve).map_err(|_| invalid())?;
-        if value.parameters.ok_or_else(invalid)?
-            .decode_as::<ObjectIdentifier>().map_err(|_| invalid())? != expected {
+        if value
+            .parameters
+            .ok_or_else(invalid)?
+            .decode_as::<ObjectIdentifier>()
+            .map_err(|_| invalid())?
+            != expected
+        {
             return Err(invalid());
         }
     } else if asymmetric::is_rsa(kind) {
-        if value.parameters.ok_or_else(invalid)?.to_der().map_err(|_| invalid())? != [5, 0] {
+        if value
+            .parameters
+            .ok_or_else(invalid)?
+            .to_der()
+            .map_err(|_| invalid())?
+            != [5, 0]
+        {
             return Err(invalid());
         }
     } else if value.parameters.is_some() {
@@ -49,14 +60,22 @@ fn algorithm(kind: &str, value: &AlgorithmIdentifierRef<'_>) -> Result<()> {
 
 fn family<T: HasPublic>(kind: &str, pair: &PKeyRef<T>) -> Result<()> {
     if asymmetric::is_rsa(kind) {
-        let bits = match kind { "rsa-2048" => 2048, "rsa-3072" => 3072, _ => 4096 };
+        let bits = match kind {
+            "rsa-2048" => 2048,
+            "rsa-3072" => 3072,
+            _ => 4096,
+        };
         if pair.id() != Id::RSA || pair.bits() != bits {
             return Err(invalid());
         }
         let rsa = pair.rsa().map_err(|_| invalid())?;
-        if rsa.n().is_negative() || rsa.e().is_negative()
-            || !rsa.n().is_bit_set(0) || !rsa.e().is_bit_set(0) || rsa.e().num_bits() < 2
-            || rsa.e().ucmp(rsa.n()) != std::cmp::Ordering::Less {
+        if rsa.n().is_negative()
+            || rsa.e().is_negative()
+            || !rsa.n().is_bit_set(0)
+            || !rsa.e().is_bit_set(0)
+            || rsa.e().num_bits() < 2
+            || rsa.e().ucmp(rsa.n()) != std::cmp::Ordering::Less
+        {
             return Err(invalid());
         }
     } else if kind == "ed25519" {
@@ -88,8 +107,13 @@ fn private_pair(kind: &str, material: &[u8]) -> Result<PKey<Private>> {
     }
     let pair = PKey::private_key_from_der(material).map_err(|_| invalid())?;
     family(kind, &pair)?;
-    if asymmetric::is_rsa(kind) && !pair.rsa().map_err(|_| invalid())?
-        .check_key().map_err(|_| invalid())? {
+    if asymmetric::is_rsa(kind)
+        && !pair
+            .rsa()
+            .map_err(|_| invalid())?
+            .check_key()
+            .map_err(|_| invalid())?
+    {
         return Err(invalid());
     }
     if kind == "ed25519" {
@@ -123,7 +147,9 @@ pub(super) fn validate_private(kind: &str, material: &[u8]) -> Result<()> {
 }
 
 pub(super) fn private_public_der(kind: &str, material: &[u8]) -> Result<Vec<u8>> {
-    private_pair(kind, material)?.public_key_to_der().map_err(|_| invalid())
+    private_pair(kind, material)?
+        .public_key_to_der()
+        .map_err(|_| invalid())
 }
 
 pub(super) fn ed25519_pair(material: &[u8]) -> Result<signature::Ed25519KeyPair> {
@@ -152,7 +178,9 @@ pub(super) fn import_public_pem(kind: &str, text: &str) -> Result<Vec<u8>> {
     if text.len() > 12_000 {
         return Err(invalid());
     }
-    let body = text.trim().strip_prefix("-----BEGIN PUBLIC KEY-----")
+    let body = text
+        .trim()
+        .strip_prefix("-----BEGIN PUBLIC KEY-----")
         .and_then(|body| body.strip_suffix("-----END PUBLIC KEY-----"))
         .ok_or_else(invalid)?;
     let encoded: String = body.chars().filter(|c| !c.is_ascii_whitespace()).collect();
@@ -170,8 +198,7 @@ pub(super) fn descriptor_public(kind: &str, der: &[u8]) -> Result<String> {
     if kind == "ed25519" {
         Ok(BASE64.encode(pair.raw_public_key().map_err(|_| invalid())?))
     } else {
-        String::from_utf8(pair.public_key_to_pem().map_err(|_| invalid())?)
-            .map_err(|_| invalid())
+        String::from_utf8(pair.public_key_to_pem().map_err(|_| invalid())?).map_err(|_| invalid())
     }
 }
 
@@ -188,7 +215,11 @@ pub(super) fn export_public(kind: &str, der: &[u8], format: &str) -> Result<Stri
     }
     let pem = String::from_utf8(pair.public_key_to_pem().map_err(|_| invalid())?)
         .map_err(|_| invalid())?;
-    Ok(if asymmetric::is_rsa(kind) { pem } else { pem.trim_end_matches('\n').to_owned() })
+    Ok(if asymmetric::is_rsa(kind) {
+        pem
+    } else {
+        pem.trim_end_matches('\n').to_owned()
+    })
 }
 
 #[cfg(test)]

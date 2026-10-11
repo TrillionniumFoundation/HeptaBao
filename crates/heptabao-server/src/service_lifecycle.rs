@@ -67,7 +67,8 @@ impl Service {
             | match time {
                 AuthorityTime::Precise(at) => next.engines.maintain_auto_rotation_precise(at),
                 AuthorityTime::Coarse(seconds) => next.engines.maintain_auto_rotation(seconds),
-            }.map_err(|_| "transit auto-rotation failed")?;
+            }
+            .map_err(|_| "transit auto-rotation failed")?;
         if !changed {
             return Ok(false);
         }

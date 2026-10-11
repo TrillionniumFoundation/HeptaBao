@@ -21,16 +21,16 @@ mod asymmetric;
 mod asymmetric_byok;
 #[path = "transit_backup.rs"]
 mod backup;
-#[path = "transit_cache.rs"]
-mod cache;
 #[path = "transit_byok.rs"]
 mod byok;
 #[path = "transit_byok_export.rs"]
 mod byok_export;
-#[path = "transit_external.rs"]
-mod external;
+#[path = "transit_cache.rs"]
+mod cache;
 #[path = "transit_derivation.rs"]
 mod derivation;
+#[path = "transit_external.rs"]
+mod external;
 #[path = "transit_mldsa.rs"]
 mod mldsa;
 #[path = "transit_symmetric.rs"]
@@ -181,8 +181,10 @@ impl Key {
         if convergent_encryption && !derived {
             return Err(bad("convergent encryption requires key derivation"));
         }
-        if (derived || convergent_encryption) && !symmetric::is_kind(kind)
-            && !(kind == "ed25519" && derived && !convergent_encryption) {
+        if (derived || convergent_encryption)
+            && !symmetric::is_kind(kind)
+            && !(kind == "ed25519" && derived && !convergent_encryption)
+        {
             return Err(error(
                 if kind == "ed25519" && !convergent_encryption {
                     501
@@ -230,7 +232,9 @@ impl Key {
             }
             if kind == "ed25519" && derived {
                 derivation::generate_ed_version(now)?
-            } else { KeyVersion::generate(kind, now)? }
+            } else {
+                KeyVersion::generate(kind, now)?
+            }
         };
         if kind == "external-key" && (exportable || auto_rotate_period != 0) {
             return Err(bad(
@@ -353,7 +357,9 @@ impl Key {
         if derivation::is_ed(self) {
             descriptor["supports_derivation"] = json!(true);
             descriptor["kdf"] = json!("hkdf_sha256");
-            if let Some(fields) = descriptor.as_object_mut() { fields.remove("supports_hmac"); }
+            if let Some(fields) = descriptor.as_object_mut() {
+                fields.remove("supports_hmac");
+            }
         }
         if symmetric::is_kind(&self.kind) {
             let fields = descriptor
@@ -536,7 +542,8 @@ impl Key {
     }
 
     fn auto_rotate(&mut self, now: u64) -> Result<bool> {
-        let at = crate::auth::Timestamp::whole(now).map_err(|_| bad("invalid transit rotation clock"))?;
+        let at = crate::auth::Timestamp::whole(now)
+            .map_err(|_| bad("invalid transit rotation clock"))?;
         self.auto_rotate_precise(at)
     }
 
@@ -574,15 +581,23 @@ impl Key {
 fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
     let seconds = match value {
         None => 0,
-        Some(Value::String(raw)) if raw.len() <= 256 => crate::auth::transit_rotation_duration(raw)
-            .map_err(|_| bad("invalid auto_rotate_period"))? / 1_000_000_000,
-        Some(value) => value.as_i64().ok_or_else(|| bad("auto_rotate_period must be integer seconds or a duration string"))?,
+        Some(Value::String(raw)) if raw.len() <= 256 => {
+            crate::auth::transit_rotation_duration(raw)
+                .map_err(|_| bad("invalid auto_rotate_period"))?
+                / 1_000_000_000
+        }
+        Some(value) => value.as_i64().ok_or_else(|| {
+            bad("auto_rotate_period must be integer seconds or a duration string")
+        })?,
     };
-    let period = u64::try_from(seconds).map_err(|_| bad("auto_rotate_period must be at least 1h or 0"))?;
+    let period =
+        u64::try_from(seconds).map_err(|_| bad("auto_rotate_period must be at least 1h or 0"))?;
     if period != 0 && period < 3600 {
         return Err(bad("auto_rotate_period must be at least 1h or 0"));
     }
-    seconds.checked_mul(1_000_000_000).ok_or_else(|| bad("auto_rotate_period overflow"))?;
+    seconds
+        .checked_mul(1_000_000_000)
+        .ok_or_else(|| bad("auto_rotate_period overflow"))?;
     Ok(period)
 }
 
@@ -695,7 +710,9 @@ impl Transit {
     pub(super) fn validate_rotation_precision_state(&self, previous: Option<&Self>) -> Result<()> {
         for (name, key) in &self.keys {
             backup::validate_key(key)?;
-            if previous.and_then(|old| old.keys.get(name)).is_some_and(backup::has_rotation_precision)
+            if previous
+                .and_then(|old| old.keys.get(name))
+                .is_some_and(backup::has_rotation_precision)
                 && !backup::has_rotation_precision(key)
             {
                 return Err(error(503, "transit rotation precision cannot be erased"));
@@ -704,7 +721,10 @@ impl Transit {
         Ok(())
     }
 
-    pub(super) fn maintain_auto_rotation_precise(&mut self, at: crate::auth::Timestamp) -> Result<bool> {
+    pub(super) fn maintain_auto_rotation_precise(
+        &mut self,
+        at: crate::auth::Timestamp,
+    ) -> Result<bool> {
         if at.duration_since_epoch().subsec_nanos() == 0 {
             return self.maintain_auto_rotation(at.seconds());
         }
@@ -716,10 +736,19 @@ impl Transit {
     }
 
     pub(super) fn handle_precise(
-        &mut self, namespace: &str, mount: &str, method: &str, path: &str,
-        body: &Value, at: crate::auth::Timestamp,
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        at: crate::auth::Timestamp,
     ) -> Result<EngineResponse> {
-        let before: BTreeMap<_, _> = self.keys.iter().map(|(name, key)| (name.clone(), key.latest_version)).collect();
+        let before: BTreeMap<_, _> = self
+            .keys
+            .iter()
+            .map(|(name, key)| (name.clone(), key.latest_version))
+            .collect();
         let response = self.handle(namespace, mount, method, path, body, at.seconds())?;
         // Restored versions retain their source timestamp; the request clock never replaces it.
         if response.mutated && path != "restore" && !path.starts_with("restore/") {
@@ -830,9 +859,20 @@ impl Transit {
             let policy = self.cached_policy(name)?;
             policy.alive()?;
             let mut policy = (*policy).clone();
-            let response = handle_crypto(&mut policy, namespace, mount, name, operation, algorithm, body)?;
+            let response = handle_crypto(
+                &mut policy,
+                namespace,
+                mount,
+                name,
+                operation,
+                algorithm,
+                body,
+            )?;
             if response.mutated {
-                return Err(error(503, "read-only transit policy operation attempted mutation"));
+                return Err(error(
+                    503,
+                    "read-only transit policy operation attempted mutation",
+                ));
             }
             return Ok(response);
         }
@@ -862,10 +902,7 @@ impl Transit {
         }
         if operation.is_empty() {
             if method == "GET" {
-                return Ok(ok(
-                    self.cached_policy(name)?.descriptor(name)?,
-                    false,
-                ));
+                return Ok(ok(self.cached_policy(name)?.descriptor(name)?, false));
             }
             if method == "DELETE" {
                 let Some(key) = self.keys.get(name) else {
@@ -950,7 +987,9 @@ impl Transit {
             }
             let key = Key::new(body, now)?;
             let descriptor = key.descriptor(name)?;
-            if derivation::is_ed(&key) { self.derived_ed_format = Some(derivation::Format::V1); }
+            if derivation::is_ed(&key) {
+                self.derived_ed_format = Some(derivation::Format::V1);
+            }
             self.keys.insert(name.into(), key);
             return Ok(ok(descriptor, true));
         }
@@ -1540,7 +1579,13 @@ fn handle_crypto(
             };
             let mut result = json!({"signature":format!("vault:v{version}:{}", signature_encoding(body)?.encode(signature)),"key_version":version});
             if derivation::is_ed(key) {
-                result["public_key"] = json!(BASE64.encode(derivation::ed_pair(key, selected, body)?.public_key().as_ref()));
+                result["public_key"] = json!(
+                    BASE64.encode(
+                        derivation::ed_pair(key, selected, body)?
+                            .public_key()
+                            .as_ref()
+                    )
+                );
             }
             result
         }

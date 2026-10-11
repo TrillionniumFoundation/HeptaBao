@@ -544,12 +544,19 @@ impl NamespaceRegistry {
         path.is_empty() || self.entries.contains_key(path)
     }
 
-    pub(super) fn mfa_scope(&self,path:&str)->Option<(String,u64)> {
-        if path.is_empty(){Some(("root".to_owned(),0))}
-        else{self.entries.get(path).map(|entry|(entry.id.clone(),entry.incarnation))}
+    pub(super) fn mfa_scope(&self, path: &str) -> Option<(String, u64)> {
+        if path.is_empty() {
+            Some(("root".to_owned(), 0))
+        } else {
+            self.entries
+                .get(path)
+                .map(|entry| (entry.id.clone(), entry.incarnation))
+        }
     }
-    pub(super) fn mfa_retirement_floor(&self,path:&str)->Option<u64>{
-        self.next_incarnation.get(path).and_then(|next|next.checked_sub(1))
+    pub(super) fn mfa_retirement_floor(&self, path: &str) -> Option<u64> {
+        self.next_incarnation
+            .get(path)
+            .and_then(|next| next.checked_sub(1))
     }
     pub(super) fn incarnation(&self, path: &str) -> Option<u64> {
         if path.is_empty() {
@@ -993,17 +1000,25 @@ impl State {
     /// UI discovery returns only relative registry names, under the caller's
     /// existing request scope. This projection carries no namespace authority.
     pub(super) fn ui_namespace_keys(&self, base: &str) -> BTreeSet<String> {
-        self.namespaces.entries.keys().filter_map(|path| {
-            let relative = relative_path(base, path)?;
-            if relative.is_empty()
-                || relative.contains('/')
-                || self.namespaces.deletions.as_ref().is_some_and(|ledger| ledger.is_tainted(path))
-            {
-                None
-            } else {
-                Some(format!("{relative}/"))
-            }
-        }).collect()
+        self.namespaces
+            .entries
+            .keys()
+            .filter_map(|path| {
+                let relative = relative_path(base, path)?;
+                if relative.is_empty()
+                    || relative.contains('/')
+                    || self
+                        .namespaces
+                        .deletions
+                        .as_ref()
+                        .is_some_and(|ledger| ledger.is_tainted(path))
+                {
+                    None
+                } else {
+                    Some(format!("{relative}/"))
+                }
+            })
+            .collect()
     }
 
     pub(super) fn namespace_exists(&self, path: &str) -> bool {
@@ -1312,7 +1327,9 @@ impl Service {
                                 .status(&state, &target)
                                 .unwrap_or_else(|error| error);
                             self.state = Some(state);
-                            if let Err(error) = self.complete_mfa_namespace_retirements() { return error; }
+                            if let Err(error) = self.complete_mfa_namespace_retirements() {
+                                return error;
+                            }
                             return response;
                         }
                         Ok(None) => {}
@@ -1455,8 +1472,7 @@ impl Service {
         // An asynchronous deletion keeps the old binding visible until the
         // original native cleanup publishes terminal retirement. It cannot
         // authorize metadata changes or be treated as a fresh incarnation.
-        if matches!(request.method, "POST" | "PUT" | "PATCH")
-            && state.namespace_is_tainted(&target)
+        if matches!(request.method, "POST" | "PUT" | "PATCH") && state.namespace_is_tainted(&target)
         {
             return Response::error(400, "namespace deletion is in progress");
         }
@@ -1728,11 +1744,15 @@ impl Service {
                 {
                     return Response::error(error.status, &error.message);
                 }
-                let mfa_incarnation=state.namespaces.incarnation(&target)
-                    .ok_or_else(||Response::error(503,"MFA namespace retirement incarnation unavailable"));
-                let mfa_incarnation=match mfa_incarnation {Ok(value)=>value,Err(error)=>return error};
-                if let Err(error)=state.auth.retire_mfa_namespace(&target,mfa_incarnation) {
-                    return Response::error(error.status,&error.message);
+                let mfa_incarnation = state.namespaces.incarnation(&target).ok_or_else(|| {
+                    Response::error(503, "MFA namespace retirement incarnation unavailable")
+                });
+                let mfa_incarnation = match mfa_incarnation {
+                    Ok(value) => value,
+                    Err(error) => return error,
+                };
+                if let Err(error) = state.auth.retire_mfa_namespace(&target, mfa_incarnation) {
+                    return Response::error(error.status, &error.message);
                 }
                 if let Err(error) = state.namespaces.remove(&target) {
                     return error;

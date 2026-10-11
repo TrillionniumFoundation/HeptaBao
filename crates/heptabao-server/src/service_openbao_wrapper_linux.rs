@@ -268,7 +268,11 @@ impl OwnedChild {
         set_cleanup(&self.cleanup, WrapperCleanupState::StopRequested);
         let stopped = rustix::process::pidfd_send_signal(&self.pidfd, Signal::KILL);
         #[cfg(test)]
-        self.fixture_record(4, Some(stopped.as_ref().err().map_or(0, |e| e.raw_os_error())), None);
+        self.fixture_record(
+            4,
+            Some(stopped.as_ref().err().map_or(0, |e| e.raw_os_error())),
+            None,
+        );
         if stopped.is_err() {
             set_cleanup(&self.cleanup, WrapperCleanupState::CleanupUnknown);
         }
@@ -303,7 +307,11 @@ impl Drop for OwnedChild {
         {
             let _stopped = rustix::process::pidfd_send_signal(&self.pidfd, Signal::KILL);
             #[cfg(test)]
-            self.fixture_record(6, Some(_stopped.as_ref().err().map_or(0, |e| e.raw_os_error())), None);
+            self.fixture_record(
+                6,
+                Some(_stopped.as_ref().err().map_or(0, |e| e.raw_os_error())),
+                None,
+            );
             // Panic/drop cannot claim a terminal wait observation.
             set_cleanup(&self.cleanup, WrapperCleanupState::CleanupUnknown);
         }

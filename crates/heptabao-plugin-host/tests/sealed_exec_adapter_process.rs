@@ -57,22 +57,32 @@ fn wait(mut child: Child) -> Result<std::process::ExitStatus, Box<dyn Error>> {
 
 fn command(path: &Path, owned: &Temp) -> Result<Command, Box<dyn Error>> {
     let time = rustix::time::clock_gettime_dynamic(rustix::time::DynamicClockId::Known(
-        rustix::time::ClockId::Monotonic
+        rustix::time::ClockId::Monotonic,
     ))?;
     let now = u64::try_from(i128::from(time.tv_sec) * 1_000_000_000 + i128::from(time.tv_nsec))?;
     let mut command = Command::new(env!("CARGO_BIN_EXE_heptabao-kms-sealed-exec"));
     command
-        .args(["--heptabao-profile", "kms_sealed_exec_v1", "--heptabao-plugin"])
+        .args([
+            "--heptabao-profile",
+            "kms_sealed_exec_v1",
+            "--heptabao-plugin",
+        ])
         .arg(path)
         .args(["--heptabao-protocol", "1", "--heptabao-operation", "read"])
         .env_clear()
         .env("HEPTABAO_SANDBOX_PROVIDER", "sealed_exec_adapter")
-        .env("HEPTABAO_KMS_DEPLOYMENT", "/data/adapter-test-deployment.json")
+        .env(
+            "HEPTABAO_KMS_DEPLOYMENT",
+            "/data/adapter-test-deployment.json",
+        )
         .env("HEPTABAO_KMS_DEPLOYMENT_SHA256", "a".repeat(64))
         .env("HEPTABAO_KMS_PROVIDER", "transit")
         .env("HEPTABAO_KMS_TEMP", &owned.0)
         .env("HEPTABAO_KMS_TIMEOUT_MS", "5000")
-        .env("HEPTABAO_KMS_DEADLINE_MONOTONIC_NS", (now + 5_000_000_000).to_string())
+        .env(
+            "HEPTABAO_KMS_DEADLINE_MONOTONIC_NS",
+            (now + 5_000_000_000).to_string(),
+        )
         .process_group(0)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
@@ -81,8 +91,8 @@ fn command(path: &Path, owned: &Temp) -> Result<Command, Box<dyn Error>> {
 }
 
 #[test]
-fn actual_sealed_elf_handoff_executes_and_returns_original_owned_wait()
--> Result<(), Box<dyn Error>> {
+fn actual_sealed_elf_handoff_executes_and_returns_original_owned_wait() -> Result<(), Box<dyn Error>>
+{
     // This proves descriptor handoff only. /usr/bin/true is no KMS provider and
     // no HBR1 response or cryptographic success is asserted by this test.
     let owned = Temp::new()?;
@@ -96,16 +106,22 @@ fn actual_sealed_elf_handoff_executes_and_returns_original_owned_wait()
     let child = command(image.descriptor_path(), &owned)?.spawn()?;
     let original_pid = child.id();
     let status = wait(child)?;
-    assert!(original_pid > 0 && status.success(), "actual owned ELF terminal wait");
+    assert!(
+        original_pid > 0 && status.success(),
+        "actual owned ELF terminal wait"
+    );
     Ok(())
 }
 
 #[test]
-fn mutable_path_and_unenrolled_environment_fail_without_execution()
--> Result<(), Box<dyn Error>> {
+fn mutable_path_and_unenrolled_environment_fail_without_execution() -> Result<(), Box<dyn Error>> {
     let owned = Temp::new()?;
     let status = wait(command(Path::new("/usr/bin/true"), &owned)?.spawn()?)?;
-    assert_eq!(status.code(), Some(2), "ordinary pathname never replaces admitted descriptor");
+    assert_eq!(
+        status.code(),
+        Some(2),
+        "ordinary pathname never replaces admitted descriptor"
+    );
     let path = Path::new("/usr/bin/true");
     let bytes = fs::read(path)?;
     let digest: [u8; 32] = ring::digest::digest(&ring::digest::SHA256, &bytes)
@@ -115,6 +131,10 @@ fn mutable_path_and_unenrolled_environment_fail_without_execution()
         .map_err(|_| std::io::Error::other("test image admission failed"))?;
     let mut command = command(image.descriptor_path(), &owned)?;
     command.env("PATH", "/usr/bin");
-    assert_eq!(wait(command.spawn()?)?.code(), Some(2), "closed environment refuses added loader input");
+    assert_eq!(
+        wait(command.spawn()?)?.code(),
+        Some(2),
+        "closed environment refuses added loader input"
+    );
     Ok(())
 }

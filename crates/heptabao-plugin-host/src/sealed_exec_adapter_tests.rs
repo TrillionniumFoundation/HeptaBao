@@ -35,7 +35,10 @@ fn args(path: &str) -> Vec<OsString> {
 
 #[test]
 fn descriptor_capability_grammar_rejects_paths_and_ambiguous_numbers() {
-    assert_eq!(parse_descriptor("/proc/23/fd/4"), Some(Descriptor { parent: 23, fd: 4 }));
+    assert_eq!(
+        parse_descriptor("/proc/23/fd/4"),
+        Some(Descriptor { parent: 23, fd: 4 })
+    );
     for path in [
         "/tmp/bridge",
         "/proc/self/fd/4",
@@ -49,7 +52,10 @@ fn descriptor_capability_grammar_rejects_paths_and_ambiguous_numbers() {
         "/proc/4294967296/fd/4",
         "/proc/23/fd/4294967296",
     ] {
-        assert!(parse_descriptor(path).is_none(), "ambiguous image capability rejected");
+        assert!(
+            parse_descriptor(path).is_none(),
+            "ambiguous image capability rejected"
+        );
     }
 }
 
@@ -103,7 +109,10 @@ fn environment_cannot_change_provider_or_relax_operator_paths_and_digest() {
         (1, "/data/../deployment"),
         (1, "/data//deployment"),
         (2, "not-a-digest"),
-        (2, "0000000000000000000000000000000000000000000000000000000000000000"),
+        (
+            2,
+            "0000000000000000000000000000000000000000000000000000000000000000",
+        ),
         (3, "other-kms"),
         (4, "/data/owned/socket/"),
     ] {
@@ -121,7 +130,11 @@ fn proc_identity_parses_kernel_comm_parentheses_and_keeps_start_ticks() {
     let text = format!("42 (name with ) delimiters) {}\n", fields.join(" "));
     assert_eq!(
         process_identity(&text),
-        Some(ProcessIdentity { pid: 42, parent: 5, start_ticks: 123 })
+        Some(ProcessIdentity {
+            pid: 42,
+            parent: 5,
+            start_ticks: 123
+        })
     );
     assert!(process_identity("42 (broken) S 5").is_none());
     assert!(process_identity(&text.replace("123", "0")).is_none());
@@ -131,7 +144,10 @@ fn proc_identity_parses_kernel_comm_parentheses_and_keeps_start_ticks() {
 fn non_parent_descriptor_rejects_without_opening_requested_image() -> Result<(), Box<dyn Error>> {
     let own = self_identity()?;
     assert!(matches!(
-        Parent::capture(Descriptor { parent: own.pid, fd: 3 }),
+        Parent::capture(Descriptor {
+            parent: own.pid,
+            fd: 3
+        }),
         Err(AdapterError::Parent)
     ));
     Ok(())
@@ -158,7 +174,11 @@ fn elf_header() -> [u8; 64] {
     let mut bytes = [0_u8; 64];
     bytes[..7].copy_from_slice(b"\x7fELF\x02\x01\x01");
     bytes[16..18].copy_from_slice(&2_u16.to_le_bytes());
-    let machine: u16 = if cfg!(target_arch = "aarch64") { 183 } else { 62 };
+    let machine: u16 = if cfg!(target_arch = "aarch64") {
+        183
+    } else {
+        62
+    };
     bytes[18..20].copy_from_slice(&machine.to_le_bytes());
     bytes
 }
@@ -172,7 +192,10 @@ fn only_complete_executable_seals_with_exact_mode_pass_image_admission()
 -> Result<(), Box<dyn Error>> {
     let bytes = elf_header();
     let mut valid = image(&bytes, all_seals(), Mode::RUSR | Mode::XUSR)?;
-    assert!(checked_image(&mut valid).is_ok(), "complete immutable header admission");
+    assert!(
+        checked_image(&mut valid).is_ok(),
+        "complete immutable header admission"
+    );
     // F_SEAL_EXEC on an executable memfd may add write/grow/shrink seals
     // automatically. These are constructible incomplete kernel seal sets.
     for seals in [
@@ -191,8 +214,7 @@ fn only_complete_executable_seals_with_exact_mode_pass_image_admission()
 }
 
 #[test]
-fn shebang_wrong_machine_and_truncated_images_never_pass_as_bridge()
--> Result<(), Box<dyn Error>> {
+fn shebang_wrong_machine_and_truncated_images_never_pass_as_bridge() -> Result<(), Box<dyn Error>> {
     let mut bytes = elf_header();
     bytes[..7].copy_from_slice(b"#!/bin/");
     let mut script = image(&bytes, all_seals(), Mode::RUSR | Mode::XUSR)?;

@@ -218,9 +218,16 @@ fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Resp
         envelopes.body,
     )
     .map_err(|_| invalid())?;
-    let logical_body = workflows::input::reconstruct(owner.logical_data.as_ref(),
-        &normalized.method,&normalized.path,&normalized.body.0).map_err(|_| invalid())?;
-    let canonical_body = logical_body.as_ref().map_or(&normalized.body.0, |value| &value.0);
+    let logical_body = workflows::input::reconstruct(
+        owner.logical_data.as_ref(),
+        &normalized.method,
+        &normalized.path,
+        &normalized.body.0,
+    )
+    .map_err(|_| invalid())?;
+    let canonical_body = logical_body
+        .as_ref()
+        .map_or(&normalized.body.0, |value| &value.0);
     let namespace =
         request_normalization::token_namespace(&normalized.path, Some(owner.namespace.as_str()))
             .unwrap_or(transport_namespace);
@@ -482,22 +489,35 @@ impl Service {
                     // A live quorum cannot renew an expired requester. Reject
                     // before authenticating the one-use wrapping token so a
                     // failed resume keeps the deferred owner reviewable.
-                    match state.auth.control_group_actor(owner,time) {
+                    match state.auth.control_group_actor(owner, time) {
                         Err(error) => Some(auth_error(error)),
                         Ok(mut actor) => {
                             if owner.logical_data.is_some() {
-                                if let Err(error) = Self::validate_control_group_scope(state,owner)
-                                    .and_then(|_| workflows::input::live(state,&owner.namespace,owner.logical_data.as_ref())) {
+                                if let Err(error) = Self::validate_control_group_scope(state, owner)
+                                    .and_then(|_| {
+                                        workflows::input::live(
+                                            state,
+                                            &owner.namespace,
+                                            owner.logical_data.as_ref(),
+                                        )
+                                    })
+                                {
                                     return Some(error);
                                 }
                                 // Preflight must use the same identity-bound authority
                                 // as the later consuming resume. A raw recovered Principal
                                 // has not yet acquired its live identity policy projection.
                                 actor.bind_request_wrapping_ttl(owner.wrap_ttl_seconds);
-                                if let Err(error) = Self::bind_identity_principal(state,&mut actor,&owner.namespace) {
+                                if let Err(error) = Self::bind_identity_principal(
+                                    state,
+                                    &mut actor,
+                                    &owner.namespace,
+                                ) {
                                     return Some(error);
                                 }
-                                if let Err(error) = workflows::input::authorize_owner_input(state,&actor,owner,time) {
+                                if let Err(error) = workflows::input::authorize_owner_input(
+                                    state, &actor, owner, time,
+                                ) {
                                     return Some(error);
                                 }
                             }
@@ -793,8 +813,8 @@ impl Service {
                         "control group operation ownership has changed",
                     ));
                 }
-                workflows::input::live(admitted,&owner.namespace,owner.logical_data.as_ref())?;
-                workflows::input::authorize_owner_input(admitted,&actor,&owner,time)?;
+                workflows::input::live(admitted, &owner.namespace, owner.logical_data.as_ref())?;
+                workflows::input::authorize_owner_input(admitted, &actor, &owner, time)?;
                 let echo = admitted
                     .auth
                     .control_group_echo(&owner)
@@ -821,9 +841,14 @@ impl Service {
                     origin_peer: owner.origin_peer,
                     client_certificates: owner.client_certificates.as_deref(),
                 };
-                let _logical_data = crate::request_metadata::Scope::enter(owner.logical_data.clone(),
-                    resumed.method,resumed.path,resumed.namespace,resumed.body)
-                    .map_err(|error| Response::error(503,error))?;
+                let _logical_data = crate::request_metadata::Scope::enter(
+                    owner.logical_data.clone(),
+                    resumed.method,
+                    resumed.path,
+                    resumed.namespace,
+                    resumed.body,
+                )
+                .map_err(|error| Response::error(503, error))?;
                 return Ok(Some(self.handle_inner_control_group(
                     resumed,
                     Some(ControlGroupResume { actor, echo }),
@@ -911,8 +936,13 @@ impl Service {
             transport_path: transport.path.to_owned(),
             transport_namespace: transport.namespace.to_owned(),
             transport_body: transport.body.clone(),
-            logical_data: crate::request_metadata::current(request.method,request.path,namespace,request.body)
-                .map_err(|error| Response::error(400,error))?,
+            logical_data: crate::request_metadata::current(
+                request.method,
+                request.path,
+                namespace,
+                request.body,
+            )
+            .map_err(|error| Response::error(400, error))?,
             wrap_ttl_seconds: request.wrap_ttl_seconds,
             origin_peer: request.origin_peer,
             client_certificates: request.client_certificates.map(<[Vec<u8>]>::to_vec),

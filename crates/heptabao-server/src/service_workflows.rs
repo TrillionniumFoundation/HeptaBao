@@ -8,10 +8,10 @@
 //! journal in this profile.
 use super::*;
 use std::collections::{BTreeMap, BTreeSet};
-#[path = "service_workflow_profiles.rs"]
-mod profiles;
 #[path = "service_workflow_input.rs"]
 pub(super) mod input;
+#[path = "service_workflow_profiles.rs"]
+mod profiles;
 
 const MAX_WORKFLOWS_PER_NAMESPACE: usize = 256;
 const MAX_WORKFLOW_PATH_BYTES: usize = 256;
@@ -102,7 +102,10 @@ struct WorkflowStep {
     name: String,
     method: String,
     path: String,
-    #[serde(default = "empty_object", deserialize_with = "heptabao_domain::json::deserialize")]
+    #[serde(
+        default = "empty_object",
+        deserialize_with = "heptabao_domain::json::deserialize"
+    )]
     body: Value,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     allow_failure: bool,
@@ -135,23 +138,48 @@ impl WorkflowState {
     }
 
     pub(super) fn has_expression_profiles(&self) -> bool {
-        self.by_namespace.values().flat_map(BTreeMap::values).any(|stored| stored.definition.profile.as_ref().is_some_and(profiles::Profile::has_expression_sources))
+        self.by_namespace
+            .values()
+            .flat_map(BTreeMap::values)
+            .any(|stored| {
+                stored
+                    .definition
+                    .profile
+                    .as_ref()
+                    .is_some_and(profiles::Profile::has_expression_sources)
+            })
     }
 
     pub(super) fn has_logical_input_profiles(&self) -> bool {
-        self.by_namespace.values().flat_map(BTreeMap::values).any(|stored| {
-            stored.definition.profile.as_ref().is_some_and(profiles::Profile::has_logical_data)
-        })
+        self.by_namespace
+            .values()
+            .flat_map(BTreeMap::values)
+            .any(|stored| {
+                stored
+                    .definition
+                    .profile
+                    .as_ref()
+                    .is_some_and(profiles::Profile::has_logical_data)
+            })
     }
 
     pub(super) fn has_request_credentials(&self) -> bool {
-        self.by_namespace.values().flat_map(BTreeMap::values).any(|stored| {
-            stored.definition.profile.as_ref().is_some_and(profiles::Profile::has_request_credentials)
-        })
+        self.by_namespace
+            .values()
+            .flat_map(BTreeMap::values)
+            .any(|stored| {
+                stored
+                    .definition
+                    .profile
+                    .as_ref()
+                    .is_some_and(profiles::Profile::has_request_credentials)
+            })
     }
 
     pub(super) fn has_dynamic_profiles(&self) -> bool {
-        self.by_namespace.values().flat_map(BTreeMap::values)
+        self.by_namespace
+            .values()
+            .flat_map(BTreeMap::values)
             .any(|stored| stored.definition.dynamic_sources)
     }
 
@@ -491,7 +519,8 @@ fn parse_definition(body: &Value) -> Result<(WorkflowDefinition, Option<u64>), R
 
 fn validate_definition(definition: &WorkflowDefinition) -> Result<(), Response> {
     if definition.dynamic_sources {
-        if !definition.steps.is_empty() || !definition.outputs.is_empty()
+        if !definition.steps.is_empty()
+            || !definition.outputs.is_empty()
             || definition.allow_unauthenticated
         {
             return Err(Response::error(503, "invalid dynamic workflow owner"));
@@ -501,7 +530,10 @@ fn validate_definition(definition: &WorkflowDefinition) -> Result<(), Response> 
         };
         return match profile.dynamic_program() {
             Ok(Some(_)) => Ok(()),
-            _ => Err(Response::error(503, "invalid persisted dynamic workflow program")),
+            _ => Err(Response::error(
+                503,
+                "invalid persisted dynamic workflow program",
+            )),
         };
     }
     if let Some(profile) = &definition.profile {
@@ -800,7 +832,8 @@ impl Service {
             let Some(profile) = &stored.definition.profile else {
                 return Response::error(503, "dynamic workflow profile is unavailable");
             };
-            let response = self.workflow_dynamic_profile_execute(state, principal, request, profile);
+            let response =
+                self.workflow_dynamic_profile_execute(state, principal, request, profile);
             return self.workflow_profile_reply(request, response);
         }
         if request
@@ -899,8 +932,12 @@ impl Service {
         let Some(ttl) = request.wrap_ttl_seconds.filter(|ttl| *ttl > 0) else {
             return response;
         };
-        if response.status != 200 || response.body.is_null()
-            || response.body.get("wrap_info").is_some_and(|value| !value.is_null())
+        if response.status != 200
+            || response.body.is_null()
+            || response
+                .body
+                .get("wrap_info")
+                .is_some_and(|value| !value.is_null())
         {
             return response;
         }
@@ -925,7 +962,11 @@ impl Service {
         let mut candidate = current.clone();
         candidate.namespace_protected = current.namespace_protected.clone();
         let mut wrapped = match candidate.auth.wrap_logical_response(
-            request.namespace, request.path, ttl, &response.body, now,
+            request.namespace,
+            request.path,
+            ttl,
+            &response.body,
+            now,
         ) {
             Ok(wrapped) => wrapped,
             Err(error) => return Response::error(error.status, &error.message),
@@ -1280,10 +1321,16 @@ mod lossless_json_tests;
 
 impl WorkflowState {
     pub(super) fn has_lossless_json_state(&self) -> bool {
-        self.by_namespace.values().flat_map(BTreeMap::values)
-            .any(|stored| stored.definition.steps.iter().any(|step| {
-                heptabao_domain::json::requires_lossless_format(&step.body)
-            }))
+        self.by_namespace
+            .values()
+            .flat_map(BTreeMap::values)
+            .any(|stored| {
+                stored
+                    .definition
+                    .steps
+                    .iter()
+                    .any(|step| heptabao_domain::json::requires_lossless_format(&step.body))
+            })
     }
 }
 
@@ -1295,8 +1342,17 @@ impl WorkflowState {
         path: &str,
         body: &Value,
         started: Instant,
-    ) -> Result<(String, String, Value, Option<crate::request_metadata::DataFrame>), Response> {
-        let profile = self.get(namespace, path)
+    ) -> Result<
+        (
+            String,
+            String,
+            Value,
+            Option<crate::request_metadata::DataFrame>,
+        ),
+        Response,
+    > {
+        let profile = self
+            .get(namespace, path)
             .and_then(|stored| stored.definition.profile.as_ref())
             .ok_or_else(|| Response::error(400, "actual stored profile required"))?;
         let (step, frame) = profiles::logical_first_step_fixture(profile, body, started)?;

@@ -162,7 +162,8 @@ mod mfa_janitor;
 pub(crate) use mfa_janitor::start_mfa_janitor_worker;
 const WORKFLOW_INPUT_STATE_SCHEMA: u32 = 131;
 const USERPASS_ISSUANCE_STATE_SCHEMA: u32 = crate::auth::userpass_creation_ttl::STATE_SCHEMA;
-const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 = crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
+const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 =
+    crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
 #[path = "service_control_groups.rs"]
 mod control_groups;
 #[path = "service_pki_acme_eab.rs"]
@@ -270,8 +271,6 @@ mod ha_step_down;
 mod help_delivery;
 #[path = "service_identity.rs"]
 mod identity;
-#[path = "service_lossless_json_state.rs"]
-mod lossless_json_state;
 #[path = "service_kubernetes_secrets.rs"]
 mod kubernetes_secret;
 #[path = "service_leader.rs"]
@@ -284,6 +283,8 @@ pub(crate) mod legacy_upgrade_wire;
 mod lifecycle;
 #[path = "service_local_unseal.rs"]
 mod local_unseal;
+#[path = "service_lossless_json_state.rs"]
+mod lossless_json_state;
 #[path = "service_namespace_assets.rs"]
 mod namespace_assets;
 #[path = "service_namespace_closed_auth.rs"]
@@ -344,11 +345,11 @@ pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, Plugin
 #[path = "service_external_kms.rs"]
 mod external_kms;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
-#[path = "service_sdk_wrapping.rs"]
-mod sdk_wrapping;
-#[cfg(any(target_os = "linux", target_os = "macos"))]
 #[path = "service_sdk_backend.rs"]
 mod sdk_backend;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_sdk_wrapping.rs"]
+mod sdk_wrapping;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 pub use sdk_backend::SdkBackendConfig;
 pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
@@ -2196,14 +2197,27 @@ impl Service {
         now: u64,
     ) -> Response {
         let ServiceRequest {
-            method, path, namespace, token, body, wrap_ttl_seconds,
-            origin_peer, client_certificates,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
         } = request;
         self.handle_at_mode(RequestDispatch {
-            method, path, namespace, token, body, now,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
             allow_forward: false,
             enforce_namespace: true,
-            wrap_ttl_seconds, origin_peer, client_certificates,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
         })
     }
 
@@ -3063,7 +3077,11 @@ impl Service {
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
         let response = self.complete_forward_delivery(response, &fingerprint);
-        let response = self.complete_transit_cache_reload_delivery(transit_cache_reload_expected, response, &fingerprint);
+        let response = self.complete_transit_cache_reload_delivery(
+            transit_cache_reload_expected,
+            response,
+            &fingerprint,
+        );
         RequestExecution::Complete(response)
     }
 
@@ -3077,9 +3095,13 @@ impl Service {
         resume: Option<control_groups::ControlGroupResume>,
     ) -> Response {
         let logical_data = match crate::request_metadata::current(
-            request.method, request.path, request.namespace, request.body) {
+            request.method,
+            request.path,
+            request.namespace,
+            request.body,
+        ) {
             Ok(data) => data,
-            Err(error) => return Response::error(400,error),
+            Err(error) => return Response::error(400, error),
         };
         let resumed_control_group = resume.is_some();
         let (resume, control_group_echo) = match resume {
@@ -3586,11 +3608,16 @@ impl Service {
         // without consuming it; actual admission below still consumes exactly once.
         if path == "sys/wrapping/unwrap"
             && body.get("token").is_none()
-            && let Err(error) =
-                admitted
-                    .auth
-                    .lookup_wrapping_request_observed(token, namespace, "POST", &json!({}),
-                        match request.token_time() { Ok(time) => time, Err(error) => return error })
+            && let Err(error) = admitted.auth.lookup_wrapping_request_observed(
+                token,
+                namespace,
+                "POST",
+                &json!({}),
+                match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                },
+            )
         {
             return Response::error(error.status, &error.message);
         }
@@ -3599,7 +3626,8 @@ impl Service {
         }
         let mount_metadata =
             path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
-        let public_login = admitted.auth.is_public_login(namespace, method, path) || path=="sys/mfa/validate";
+        let public_login =
+            admitted.auth.is_public_login(namespace, method, path) || path == "sys/mfa/validate";
         let authenticate_bearer = !token.is_empty()
             && path != "sys/wrapping/lookup"
             && !public_otp_verify
@@ -3695,16 +3723,26 @@ impl Service {
         {
             return error;
         }
-        let logical_input = match workflows::input::prepare(&admitted,principal.as_ref(),&request,logical_data) {
+        let logical_input = match workflows::input::prepare(
+            &admitted,
+            principal.as_ref(),
+            &request,
+            logical_data,
+        ) {
             Ok(prepared) => prepared,
             Err(error) => return error,
         };
         let body = logical_input.body.as_ref().map_or(body, |value| &value.0);
         let request = RequestView { body, ..request };
         let _logical_data_scope = match crate::request_metadata::Scope::enter(
-            logical_input.frame,request.method,request.path,request.namespace,request.body) {
+            logical_input.frame,
+            request.method,
+            request.path,
+            request.namespace,
+            request.body,
+        ) {
             Ok(scope) => scope,
-            Err(error) => return Response::error(400,error),
+            Err(error) => return Response::error(400, error),
         };
         if method == "HELP" {
             if principal.is_none() {
@@ -4160,11 +4198,16 @@ impl Service {
         };
         let mut approle_secret_consumption = None;
         let mut response = if path == "sys/wrapping/lookup" {
-            match transaction
-                .auth
-                .lookup_wrapping_request_observed(token, namespace, method, body,
-                    match request.token_time() { Ok(time) => time, Err(error) => return error })
-            {
+            match transaction.auth.lookup_wrapping_request_observed(
+                token,
+                namespace,
+                method,
+                body,
+                match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                },
+            ) {
                 Ok(value) => Response {
                     unwrapped_json: None,
                     response_headers: Default::default(),
@@ -4183,9 +4226,10 @@ impl Service {
             if method != "GET" {
                 Response::error(405, "sanitized configuration supports GET only")
             } else if let Some(actor) = principal.as_ref() {
-                match transaction.auth.authorize_request(
-                    actor, namespace, path, "read", now
-                ) {
+                match transaction
+                    .auth
+                    .authorize_request(actor, namespace, path, "read", now)
+                {
                     Ok(()) => match self.sanitized_configuration.as_ref() {
                         Some(safe) => Response::ok(json!({"data": safe})),
                         None => Response::error(503, "server configuration not installed"),
@@ -4492,7 +4536,7 @@ impl Service {
             || admitted.auth.has_control_group_state()
             || admitted.engines.has_symmetric_backup_state()
             || admitted.engines.has_transit_cache_state()
-                        || admitted.engines.has_transit_derived_ed_state()
+            || admitted.engines.has_transit_derived_ed_state()
             || admitted.engines.has_kv2_lossless_state()
             || admitted.auth.has_identity_mfa_state()
             || admitted.auth.has_userpass_issuance_state()
@@ -4660,10 +4704,18 @@ impl Service {
         };
         let result = match time.exact() {
             Some(at) => state.engines.handle_immutable_kv_read_precise(
-                request.namespace, request.method, request.path, request.body, at,
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                at,
             ),
             None => state.engines.handle_immutable_kv_read(
-                request.namespace, request.method, request.path, request.body, time.seconds(),
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                time.seconds(),
             ),
         };
         let mut response = match result {
@@ -5124,8 +5176,8 @@ impl Service {
                 &secret_mounts,
             );
         }
-        if path=="sys/mfa/validate" {
-            return Self::mfa_validation_route(state,namespace,method,body,time,origin_peer);
+        if path == "sys/mfa/validate" {
+            return Self::mfa_validation_route(state, namespace, method, body, time, origin_peer);
         }
         let Some(principal) = principal else {
             return Response::error(403, "permission denied");
@@ -5164,15 +5216,24 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if let Some(response)=Self::mfa_enrollment_route(state,principal,namespace,method,path,body,time) {
+        if let Some(response) =
+            Self::mfa_enrollment_route(state, principal, namespace, method, path, body, time)
+        {
             return response;
         }
-        if let Some(response)=Self::mfa_identity_route(state,principal,namespace,method,path,body,time) {
+        if let Some(response) =
+            Self::mfa_identity_route(state, principal, namespace, method, path, body, time)
+        {
             return response;
         }
         if matches!(method, "POST" | "PUT" | "PATCH")
-            && let Err(error) =
-                Self::validate_identity_alias_mount(&state.auth, &state.engines, namespace, path, body)
+            && let Err(error) = Self::validate_identity_alias_mount(
+                &state.auth,
+                &state.engines,
+                namespace,
+                path,
+                body,
+            )
         {
             return error;
         }
@@ -5219,7 +5280,11 @@ impl Service {
         match engine_result {
             Ok(Some(mut response)) => {
                 Self::project_identity_alias_mounts(
-                    &state.auth, namespace, method, path, &mut response.body,
+                    &state.auth,
+                    namespace,
+                    method,
+                    path,
+                    &mut response.body,
                 );
                 if let Err(error) = Self::project_kv1_read_lease(
                     state,
@@ -5475,11 +5540,18 @@ impl Service {
     fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
         #[cfg(test)]
         let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
-        namespace_diagnostic!("commit.namespace_prepare", self.prepare_namespace_publication(state))?;
+        namespace_diagnostic!(
+            "commit.namespace_prepare",
+            self.prepare_namespace_publication(state)
+        )?;
         namespace_diagnostic!("commit.format", state.validate_format())?;
         if state.engines.record_root().is_some() {
-            let plan = namespace_diagnostic!("commit.record_plan", self.prepare_record_plan(state))?;
-            return namespace_diagnostic!("commit.record_publish", self.commit_record_plan(state, plan));
+            let plan =
+                namespace_diagnostic!("commit.record_plan", self.prepare_record_plan(state))?;
+            return namespace_diagnostic!(
+                "commit.record_publish",
+                self.commit_record_plan(state, plan)
+            );
         }
         if self.record_root.is_some() {
             return Err(Response::error(
@@ -10123,11 +10195,11 @@ mod external_transit_tests;
 mod kv_versioning_tests;
 
 #[cfg(test)]
-#[path = "service_ui_mounts_tests.rs"]
-mod ui_mounts_tests;
-#[cfg(test)]
 #[path = "service_ui_bootstrap_tests.rs"]
 mod ui_bootstrap_tests;
+#[cfg(test)]
+#[path = "service_ui_mounts_tests.rs"]
+mod ui_mounts_tests;
 
 #[cfg(test)]
 #[path = "service_transit_byok_tests.rs"]
@@ -10180,8 +10252,8 @@ mod ssh_ca115_tests;
 mod ssh_template115_tests;
 
 #[cfg(test)]
-#[path = "service_transit_derivation_tests.rs"]
-mod transit_derivation_tests;
-#[cfg(test)]
 #[path = "service_transit_cache_tests.rs"]
 mod transit_cache_tests;
+#[cfg(test)]
+#[path = "service_transit_derivation_tests.rs"]
+mod transit_derivation_tests;

@@ -140,17 +140,33 @@ fn mfa129_real_service_configuration_enrollment_acl_and_encrypted_reopen_keep_st
     let isolated_state = isolated.state.clone().ok_or("actual isolated MFA state")?;
     assert_eq!(isolated_state.schema, IDENTITY_MFA_STATE_SCHEMA);
     assert!(isolated_state.auth.has_identity_mfa_state());
-    isolated_state.validate_format().map_err(|_| "actual isolated MFA format")?;
+    isolated_state
+        .validate_format()
+        .map_err(|_| "actual isolated MFA format")?;
     let mut isolated_auth = serde_json::to_value(&isolated_state.auth)?;
-    isolated_auth.as_object_mut().ok_or("actual isolated Auth object")?
+    isolated_auth
+        .as_object_mut()
+        .ok_or("actual isolated Auth object")?
         .remove("identity_mfa");
     let isolated_bytes = Zeroizing::new(serde_json::to_vec(&isolated_auth)?);
     let mut isolated_stripped = isolated_state.clone();
     isolated_stripped.auth = serde_json::from_slice(&isolated_bytes)?;
-    assert_eq!(isolated_stripped.validate_format().err()
-        .ok_or("erased exact129 reader unexpectedly accepted")?.status, 503);
-    assert!(isolated_stripped.validate_publication_schema(Some(&isolated_state)).is_err());
-    assert!(Service::validate_snapshot_protected_floor(&isolated_state, &isolated_stripped).is_err());
+    assert_eq!(
+        isolated_stripped
+            .validate_format()
+            .err()
+            .ok_or("erased exact129 reader unexpectedly accepted")?
+            .status,
+        503
+    );
+    assert!(
+        isolated_stripped
+            .validate_publication_schema(Some(&isolated_state))
+            .is_err()
+    );
+    assert!(
+        Service::validate_snapshot_protected_floor(&isolated_state, &isolated_stripped).is_err()
+    );
     assert!(
         stripped
             .validate_publication_schema(Some(&persisted))
@@ -572,9 +588,9 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
         .status,
         204
     );
-    let first_attempt_clock = RequestClock::anchored(
-        Duration::new(114, 500_000_000), Instant::now(),
-    ).map_err(|_| "original first attempt clock")?;
+    let first_attempt_clock =
+        RequestClock::anchored(Duration::new(114, 500_000_000), Instant::now())
+            .map_err(|_| "original first attempt clock")?;
     let request = mfa_challenge_clock(&mut service, first_attempt_clock)?;
     let first_code = Zeroizing::new(
         crate::engines::rfc6238_code(&second_secret, "SHA1", 6, 11).map_err(|_| "native TOTP")?,
@@ -590,8 +606,14 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     // anchor pre-created before attempt one can regress under slow execution.
     for (seconds, clock) in [
         (114, first_attempt_clock),
-        (115, RequestClock::anchored(Duration::new(115, 500_000_000), first_attempt_clock.started())
-            .map_err(|_| "second numeric attempt clock")?),
+        (
+            115,
+            RequestClock::anchored(
+                Duration::new(115, 500_000_000),
+                first_attempt_clock.started(),
+            )
+            .map_err(|_| "second numeric attempt clock")?,
+        ),
     ] {
         let denied = precise_call_clock(
             &mut service,
@@ -601,13 +623,25 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
             json!({"mfa_request_id":request,"mfa_payload":{second.clone():[wrong]}}),
             clock,
         );
-        assert_eq!(denied.status, 403, "numeric attempt at {seconds} returned {:?}", denied.body["errors"]);
+        assert_eq!(
+            denied.status, 403,
+            "numeric attempt at {seconds} returned {:?}",
+            denied.body["errors"]
+        );
     }
     drop(service);
     let mut reopened = files.service()?;
     assert_eq!(
-        precise_call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key}), 116, 0)
-            .status,
+        precise_call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":key}),
+            116,
+            0
+        )
+        .status,
         200
     );
     assert_eq!(
@@ -629,9 +663,8 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     );
     // Both requests advance from this original fixture clock. Re-anchoring
     // validate at the same wall value would regress the captured challenge.
-    let rollover_clock = RequestClock::anchored(
-        Duration::new(120, 100_000_000), Instant::now(),
-    ).map_err(|_| "original rollover clock")?;
+    let rollover_clock = RequestClock::anchored(Duration::new(120, 100_000_000), Instant::now())
+        .map_err(|_| "original rollover clock")?;
     let fresh = mfa_challenge_clock(&mut reopened, rollover_clock)?;
     assert_eq!(
         precise_call_clock(
@@ -646,9 +679,9 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
         403,
         "counter rollover alone cannot reset fixed attempt window"
     );
-    let expired_window_clock = RequestClock::anchored(
-        Duration::new(124, 600_000_000), Instant::now(),
-    ).map_err(|_| "original expired-window clock")?;
+    let expired_window_clock =
+        RequestClock::anchored(Duration::new(124, 600_000_000), Instant::now())
+            .map_err(|_| "original expired-window clock")?;
     let fresh = mfa_challenge_clock(&mut reopened, expired_window_clock)?;
     let accepted = precise_call_clock(
         &mut reopened,
@@ -912,21 +945,81 @@ fn mfa129_actual_closed_namespace_publication_snapshot_and_reopen_preserve_refer
     let files = Root::new();
     let mut service = files.service()?;
     let (key, admin) = bootstrap(&mut service)?;
-    assert_eq!(call(&mut service, "POST", "sys/namespaces/mfa-closed", &admin, json!({})).status, 200);
-    assert_eq!(service.handle_at("POST", "sys/auth/native", "mfa-closed", &admin,
-        json!({"type":"userpass"}), 100).status, 204);
-    assert_eq!(service.handle_at("POST", "auth/native/users/alice", "mfa-closed", &admin,
-        json!({"password":"public-synthetic-closed-mfa"}), 100).status, 204);
-    let login = service.handle_at("POST", "auth/native/login/alice", "mfa-closed", "",
-        json!({"password":"public-synthetic-closed-mfa"}), 100);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/mfa-closed",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/auth/native",
+                "mfa-closed",
+                &admin,
+                json!({"type":"userpass"}),
+                100
+            )
+            .status,
+        204
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/native/users/alice",
+                "mfa-closed",
+                &admin,
+                json!({"password":"public-synthetic-closed-mfa"}),
+                100
+            )
+            .status,
+        204
+    );
+    let login = service.handle_at(
+        "POST",
+        "auth/native/login/alice",
+        "mfa-closed",
+        "",
+        json!({"password":"public-synthetic-closed-mfa"}),
+        100,
+    );
     assert_eq!(login.status, 200);
-    let entity = login.body["auth"]["entity_id"].as_str().ok_or("native entity")?.to_owned();
-    let created = call(&mut service, "POST", "identity/mfa/method/totp", &admin,
-        json!({"issuer":"closed-fixture","qr_size":0}));
+    let entity = login.body["auth"]["entity_id"]
+        .as_str()
+        .ok_or("native entity")?
+        .to_owned();
+    let created = call(
+        &mut service,
+        "POST",
+        "identity/mfa/method/totp",
+        &admin,
+        json!({"issuer":"closed-fixture","qr_size":0}),
+    );
     assert_eq!(created.status, 200);
-    let id = created.body["data"]["method_id"].as_str().ok_or("method")?.to_owned();
-    assert_eq!(service.handle_at("POST", "identity/mfa/method/totp/admin-generate",
-        "mfa-closed", &admin, json!({"method_id":id,"entity_id":entity}), 100).status, 200);
+    let id = created.body["data"]["method_id"]
+        .as_str()
+        .ok_or("method")?
+        .to_owned();
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "identity/mfa/method/totp/admin-generate",
+                "mfa-closed",
+                &admin,
+                json!({"method_id":id,"entity_id":entity}),
+                100
+            )
+            .status,
+        200
+    );
     let sealed = match service.begin_request(ServiceRequest {
         method: "POST",
         path: "sys/namespaces/mfa-closed/seal",
@@ -941,33 +1034,55 @@ fn mfa129_actual_closed_namespace_publication_snapshot_and_reopen_preserve_refer
         RequestExecution::External(_) => return Err("unexpected external seal effect".into()),
     };
     assert_eq!(sealed.status, 204);
-    let original = service.state.as_ref().ok_or("closed state")?.protected_state()
-        .map_err(|_| "closed protected owner")?.clone();
-    original.validate_format().map_err(|_| "original closed format")?;
-    original.validate_publication_schema(Some(&original)).map_err(|_| "original publication")?;
+    let original = service
+        .state
+        .as_ref()
+        .ok_or("closed state")?
+        .protected_state()
+        .map_err(|_| "closed protected owner")?
+        .clone();
+    original
+        .validate_format()
+        .map_err(|_| "original closed format")?;
+    original
+        .validate_publication_schema(Some(&original))
+        .map_err(|_| "original publication")?;
     Service::validate_snapshot_protected_floor(&original, &original)
         .map_err(|_| "original snapshot floor")?;
     let auth_value = serde_json::to_value(&original.auth)?;
     let registry = &auth_value["identity_mfa"];
     assert!(registry["closed_references"].get("mfa-closed").is_some());
-    let epoch = registry["mutation_epoch"].as_u64().ok_or("mutation epoch")?;
-    let source_bytes = crate::secret_serde::to_vec(
-        service.state.as_ref().ok_or("state")?, 16 * 1024 * 1024,
-    ).map_err(|_| "closed state encoding")?;
+    let epoch = registry["mutation_epoch"]
+        .as_u64()
+        .ok_or("mutation epoch")?;
+    let source_bytes =
+        crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, 16 * 1024 * 1024)
+            .map_err(|_| "closed state encoding")?;
     for kind in ["erase", "id", "incarnation", "methods", "digest"] {
         let mut altered = auth_value.clone();
-        altered["identity_mfa"]["mutation_epoch"] = json!(epoch.checked_add(1).ok_or("epoch bound")?);
+        altered["identity_mfa"]["mutation_epoch"] =
+            json!(epoch.checked_add(1).ok_or("epoch bound")?);
         let index = &mut altered["identity_mfa"]["closed_references"];
         match kind {
-            "erase" => { index.as_object_mut().ok_or("index map")?.remove("mfa-closed"); }
+            "erase" => {
+                index
+                    .as_object_mut()
+                    .ok_or("index map")?
+                    .remove("mfa-closed");
+            }
             "id" => index["mfa-closed"]["namespace_id"] = json!("wrong-owner"),
             "incarnation" => {
-                let old = index["mfa-closed"]["incarnation"].as_u64().ok_or("incarnation")?;
-                index["mfa-closed"]["incarnation"] = json!(old.checked_add(1).ok_or("incarnation bound")?);
+                let old = index["mfa-closed"]["incarnation"]
+                    .as_u64()
+                    .ok_or("incarnation")?;
+                index["mfa-closed"]["incarnation"] =
+                    json!(old.checked_add(1).ok_or("incarnation bound")?);
             }
             "methods" => index["mfa-closed"]["method_ids"] = json!([]),
             "digest" => {
-                let first = index["mfa-closed"]["owner_digest"][0].as_u64().ok_or("digest byte")?;
+                let first = index["mfa-closed"]["owner_digest"][0]
+                    .as_u64()
+                    .ok_or("digest byte")?;
                 index["mfa-closed"]["owner_digest"][0] = json!(first ^ 1);
             }
             _ => return Err("unknown fixed mutation".into()),
@@ -985,10 +1100,15 @@ fn mfa129_actual_closed_namespace_publication_snapshot_and_reopen_preserve_refer
         assert!(Service::validate_snapshot_protected_floor(&original, &torn).is_err());
     }
     let mut fake_retirement = auth_value.clone();
-    fake_retirement["identity_mfa"]["mutation_epoch"] = json!(epoch.checked_add(1).ok_or("epoch bound")?);
-    let incarnation = fake_retirement["identity_mfa"]["closed_references"]["mfa-closed"]["incarnation"]
-        .as_u64().ok_or("incarnation")?;
-    fake_retirement["identity_mfa"]["closed_references"].as_object_mut().ok_or("index map")?
+    fake_retirement["identity_mfa"]["mutation_epoch"] =
+        json!(epoch.checked_add(1).ok_or("epoch bound")?);
+    let incarnation =
+        fake_retirement["identity_mfa"]["closed_references"]["mfa-closed"]["incarnation"]
+            .as_u64()
+            .ok_or("incarnation")?;
+    fake_retirement["identity_mfa"]["closed_references"]
+        .as_object_mut()
+        .ok_or("index map")?
         .remove("mfa-closed");
     fake_retirement["identity_mfa"]["retired"]["mfa-closed"] = json!(incarnation);
     let bytes = Zeroizing::new(serde_json::to_vec(&fake_retirement)?);
@@ -997,102 +1117,248 @@ fn mfa129_actual_closed_namespace_publication_snapshot_and_reopen_preserve_refer
     if let Err(error) = torn.auth.validate_identity_mfa_state(Some(&original.auth)) {
         assert_eq!(error.status, 503);
     }
-    assert!(torn.validate_format().is_err(), "a registry floor cannot manufacture native retirement");
-    assert!(crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, 16 * 1024 * 1024)
-        .map_err(|_| "closed state encoding")?.as_slice() == source_bytes.as_slice());
+    assert!(
+        torn.validate_format().is_err(),
+        "a registry floor cannot manufacture native retirement"
+    );
+    assert!(
+        crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, 16 * 1024 * 1024)
+            .map_err(|_| "closed state encoding")?
+            .as_slice()
+            == source_bytes.as_slice()
+    );
     drop(service);
     let mut reopened = files.service()?;
-    assert_eq!(call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status, 200);
-    let duplicate = reopened.handle_at("POST", "identity/mfa/method/totp/admin-generate",
-        "mfa-closed", &admin, json!({"method_id":id,"entity_id":entity}), 101);
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let duplicate = reopened.handle_at(
+        "POST",
+        "identity/mfa/method/totp/admin-generate",
+        "mfa-closed",
+        &admin,
+        json!({"method_id":id,"entity_id":entity}),
+        101,
+    );
     assert_eq!(duplicate.status, 200);
-    assert!(duplicate.body["data"].is_null(), "actual encrypted parcel restores the original enrollment");
+    assert!(
+        duplicate.body["data"].is_null(),
+        "actual encrypted parcel restores the original enrollment"
+    );
     Ok(())
 }
 
 #[test]
-fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypted_reopen() -> TestResult {
+fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypted_reopen()
+-> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
     let (key, admin) = bootstrap(&mut service)?;
-    assert_eq!(call(&mut service, "POST", "sys/auth/mfa_inert", &admin,
-        json!({"type":"userpass"})).status, 204);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/mfa_inert",
+            &admin,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
     let mounts = call(&mut service, "GET", "sys/auth", &admin, json!({}));
     assert_eq!(mounts.status, 200);
     let old = mounts.body["data"]["mfa_inert/"]["accessor"]
-        .as_str().ok_or("native accessor")?.to_owned();
-    let created = call(&mut service, "POST", "identity/mfa/method/totp", &admin,
-        json!({"issuer":"public-inert-accessor-fixture","qr_size":0}));
+        .as_str()
+        .ok_or("native accessor")?
+        .to_owned();
+    let created = call(
+        &mut service,
+        "POST",
+        "identity/mfa/method/totp",
+        &admin,
+        json!({"issuer":"public-inert-accessor-fixture","qr_size":0}),
+    );
     assert_eq!(created.status, 200);
-    let method = created.body["data"]["method_id"].as_str().ok_or("native method")?.to_owned();
+    let method = created.body["data"]["method_id"]
+        .as_str()
+        .ok_or("native method")?
+        .to_owned();
     let rule = json!({"auth_method_accessors":[old],"mfa_method_ids":[method]});
-    assert_eq!(call(&mut service, "POST", "identity/mfa/login-enforcement/inert", &admin,
-        rule.clone()).status, 204);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "identity/mfa/login-enforcement/inert",
+            &admin,
+            rule.clone()
+        )
+        .status,
+        204
+    );
     let configured = service.state.clone().ok_or("configured state")?;
-    assert_eq!(call(&mut service, "DELETE", "sys/auth/mfa_inert", &admin, json!({})).status, 204);
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/auth/mfa_inert",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
     let removed = call(&mut service, "GET", "sys/auth", &admin, json!({}));
     assert_eq!(removed.status, 200);
     assert!(removed.body["data"].get("mfa_inert/").is_none());
-    let inert = call(&mut service, "GET", "identity/mfa/login-enforcement/inert", &admin, json!({}));
+    let inert = call(
+        &mut service,
+        "GET",
+        "identity/mfa/login-enforcement/inert",
+        &admin,
+        json!({}),
+    );
     assert_eq!(inert.status, 200);
     assert_eq!(inert.body["data"]["auth_method_accessors"], json!([old]));
-    assert_eq!(call(&mut service, "GET", &format!("identity/mfa/method/{method}"), &admin,
-        json!({})).status, 200);
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            &format!("identity/mfa/method/{method}"),
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
     let current = service.state.clone().ok_or("inert state")?;
-    current.validate_format().map_err(|_| "actual inert MFA format")?;
-    current.validate_publication_schema(Some(&configured))
+    current
+        .validate_format()
+        .map_err(|_| "actual inert MFA format")?;
+    current
+        .validate_publication_schema(Some(&configured))
         .map_err(|_| "actual inert MFA publication")?;
     Service::validate_snapshot_protected_floor(&current, &current)
         .map_err(|_| "actual inert MFA snapshot floor")?;
     let before = crate::secret_serde::to_vec(&current, 16 * 1024 * 1024)
         .map_err(|_| "private State encoding")?;
-    for path in ["identity/mfa/login-enforcement/new", "identity/mfa/login-enforcement/inert"] {
+    for path in [
+        "identity/mfa/login-enforcement/new",
+        "identity/mfa/login-enforcement/inert",
+    ] {
         let rejected = call(&mut service, "POST", path, &admin, rule.clone());
         assert_eq!(rejected.status, 400);
-        assert_eq!(rejected.body["errors"],
-            json!(["one of the auth method accessors provided is invalid"]));
-        assert!(crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?,
-            16 * 1024 * 1024).map_err(|_| "private State encoding")?.as_slice() == before.as_slice());
+        assert_eq!(
+            rejected.body["errors"],
+            json!(["one of the auth method accessors provided is invalid"])
+        );
+        assert!(
+            crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, 16 * 1024 * 1024)
+                .map_err(|_| "private State encoding")?
+                .as_slice()
+                == before.as_slice()
+        );
     }
-    let old_login = call(&mut service, "POST", "auth/mfa_inert/login/alice", "",
-        json!({"password":"public-synthetic-mfa-inert"}));
+    let old_login = call(
+        &mut service,
+        "POST",
+        "auth/mfa_inert/login/alice",
+        "",
+        json!({"password":"public-synthetic-mfa-inert"}),
+    );
     assert_eq!(old_login.status, 403);
     assert!(old_login.body.get("auth").is_none());
     drop(service);
     let mut reopened = files.service()?;
-    assert_eq!(call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status, 200);
-    let inert = call(&mut reopened, "GET", "identity/mfa/login-enforcement/inert", &admin, json!({}));
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let inert = call(
+        &mut reopened,
+        "GET",
+        "identity/mfa/login-enforcement/inert",
+        &admin,
+        json!({}),
+    );
     assert_eq!(inert.status, 200);
     assert_eq!(inert.body["data"]["auth_method_accessors"], json!([old]));
-    assert_eq!(call(&mut reopened, "POST", "sys/auth/mfa_inert", &admin,
-        json!({"type":"userpass"})).status, 204);
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/auth/mfa_inert",
+            &admin,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
     let mounts = call(&mut reopened, "GET", "sys/auth", &admin, json!({}));
     assert_eq!(mounts.status, 200);
     let replacement = mounts.body["data"]["mfa_inert/"]["accessor"]
-        .as_str().ok_or("native replacement accessor")?.to_owned();
+        .as_str()
+        .ok_or("native replacement accessor")?
+        .to_owned();
     assert_ne!(old, replacement);
-    assert_eq!(call(&mut reopened, "POST", "auth/mfa_inert/users/alice", &admin,
-        json!({"password":"public-synthetic-mfa-inert"})).status, 204);
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "auth/mfa_inert/users/alice",
+            &admin,
+            json!({"password":"public-synthetic-mfa-inert"})
+        )
+        .status,
+        204
+    );
     let tokens_before = token_count(&reopened)?;
-    let login = call(&mut reopened, "POST", "auth/mfa_inert/login/alice", "",
-        json!({"password":"public-synthetic-mfa-inert"}));
+    let login = call(
+        &mut reopened,
+        "POST",
+        "auth/mfa_inert/login/alice",
+        "",
+        json!({"password":"public-synthetic-mfa-inert"}),
+    );
     assert_eq!(login.status, 200);
-    let bearer = Zeroizing::new(login.body["auth"]["client_token"]
-        .as_str().ok_or("actual native bearer")?.to_owned());
+    let bearer = Zeroizing::new(
+        login.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("actual native bearer")?
+            .to_owned(),
+    );
     assert!(!bearer.is_empty());
     assert_eq!(token_count(&reopened)?, tokens_before + 1);
     assert!(login.body["auth"]["mfa_requirement"].is_null());
-    let inert = call(&mut reopened, "GET", "identity/mfa/login-enforcement/inert", &admin, json!({}));
+    let inert = call(
+        &mut reopened,
+        "GET",
+        "identity/mfa/login-enforcement/inert",
+        &admin,
+        json!({}),
+    );
     assert_eq!(inert.status, 200);
     assert_eq!(inert.body["data"]["auth_method_accessors"], json!([old]));
-    let read = call(&mut reopened, "GET", "identity/mfa/login-enforcement", &admin,
-        json!({"list":true}));
+    let read = call(
+        &mut reopened,
+        "GET",
+        "identity/mfa/login-enforcement",
+        &admin,
+        json!({"list":true}),
+    );
     assert_eq!(read.status, 200);
-    assert!(read.body["data"]["keys"].as_array().ok_or("enforcement keys")?
-        .iter().any(|name| name.as_str() == Some("inert")));
+    assert!(
+        read.body["data"]["keys"]
+            .as_array()
+            .ok_or("enforcement keys")?
+            .iter()
+            .any(|name| name.as_str() == Some("inert"))
+    );
     let final_state = reopened.state.as_ref().ok_or("final state")?;
     assert_eq!(final_state.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    final_state.validate_format().map_err(|_| "actual inert MFA reopened format")?;
+    final_state
+        .validate_format()
+        .map_err(|_| "actual inert MFA reopened format")?;
     assert!(final_state.auth.has_identity_mfa_state());
     Ok(())
 }
@@ -1416,7 +1682,10 @@ fn mfa129_host_owned_five_second_worker_has_one_retirement_and_once_joined_weak_
     }
     let original_retirements = worker.successful_retirements();
     drop(worker); // wakes and joins the original thread outside the writer lock
-    assert_eq!(original_retirements, 1, "one original worker commit must finish");
+    assert_eq!(
+        original_retirements, 1,
+        "one original worker commit must finish"
+    );
     let count = {
         let writer = service.lock().map_err(|_| "MFA test writer")?;
         janitor_pending_count(&writer)?
@@ -1477,27 +1746,39 @@ fn closed_janitor_call(
     // Unit callers have no HTTP worker. Keep one original request budget from
     // the same clock anchor, using the existing native namespace fixture's
     // fifteen-second budget. An enclosing earlier deadline remains earlier.
-    let _request = crate::request_deadline::RequestDeadlineScope::enter(
-        started + Duration::from_secs(15),
-    );
+    let _request =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
     // These fixture strings name an absolute namespace owner. The actual
     // public endpoint accepts one child name relative to the native namespace
     // header, including seal operations. Never relax the production '/' guard.
     let relative;
     let parent;
     let (path, namespace) = if let Some(target) = path.strip_prefix("sys/namespaces/") {
-        let (owner, operation) = ["seal", "unseal", "seal-status"].into_iter()
-            .find_map(|operation| target.strip_suffix(&format!("/{operation}"))
-                .map(|owner| (owner, Some(operation))))
+        let (owner, operation) = ["seal", "unseal", "seal-status"]
+            .into_iter()
+            .find_map(|operation| {
+                target
+                    .strip_suffix(&format!("/{operation}"))
+                    .map(|owner| (owner, Some(operation)))
+            })
             .unwrap_or((target, None));
         if let Some((base, child)) = owner.rsplit_once('/') {
-            parent = if namespace.is_empty() { base.to_owned() }
-                else { format!("{namespace}/{base}") };
-            relative = operation.map_or_else(|| format!("sys/namespaces/{child}"),
-                |operation| format!("sys/namespaces/{child}/{operation}"));
+            parent = if namespace.is_empty() {
+                base.to_owned()
+            } else {
+                format!("{namespace}/{base}")
+            };
+            relative = operation.map_or_else(
+                || format!("sys/namespaces/{child}"),
+                |operation| format!("sys/namespaces/{child}/{operation}"),
+            );
             (relative.as_str(), parent.as_str())
-        } else { (path, namespace) }
-    } else { (path, namespace) };
+        } else {
+            (path, namespace)
+        }
+    } else {
+        (path, namespace)
+    };
     service.handle_request_clock(
         ServiceRequest {
             method,
@@ -1699,14 +1980,26 @@ fn closed_janitor_restore_root(
     // Drop the original audit writer before opening the same authenticated log.
     // The durable root and independent namespace keys retain their real owner.
     let ClosedJanitorFixture {
-        files, service, root_key, admin, namespace_key, requests,
-        live_token_count, outer_key,
+        files,
+        service,
+        root_key,
+        admin,
+        namespace_key,
+        requests,
+        live_token_count,
+        outer_key,
     } = fixture;
     drop(service);
     let service = files.service()?;
     let mut fixture = ClosedJanitorFixture {
-        files, service, root_key, admin, namespace_key, requests,
-        live_token_count, outer_key,
+        files,
+        service,
+        root_key,
+        admin,
+        namespace_key,
+        requests,
+        live_token_count,
+        outer_key,
     };
     assert_eq!(
         precise_call(
@@ -2067,8 +2360,8 @@ fn mfa129_closed_capsule_receipt_erasure_wrong_digest_incarnation_and_duplicate_
     // State::clone intentionally clears its prepared namespace publication view.
     // Exercise the only mutable owner accepted by the receipt consumer instead.
     let state = fixture.service.state.as_ref().ok_or("real complete")?;
-    let encoded_state = crate::secret_serde::to_vec(state, 16 * 1024 * 1024)
-        .map_err(|_| "committed encoding")?;
+    let encoded_state =
+        crate::secret_serde::to_vec(state, 16 * 1024 * 1024).map_err(|_| "committed encoding")?;
     let mut after = state.auth.clone();
     let before =
         crate::secret_serde::to_vec(&after, 16 * 1024 * 1024).map_err(|_| "complete encoding")?;
@@ -3877,82 +4170,207 @@ fn mfa129_qualified_child_method_names_and_colliding_rule_keys_keep_both_native_
     Ok(())
 }
 
-
 #[test]
-fn userpass132_real_native_login_renew_reopen_and_retirement_keep_initial_ttl_and_reader_floor() -> TestResult {
+fn userpass132_real_native_login_renew_reopen_and_retirement_keep_initial_ttl_and_reader_floor()
+-> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
     let (key, admin) = bootstrap(&mut service)?;
     let ordinary = service.state.clone().ok_or("ordinary native state")?;
     assert!(!ordinary.auth.has_userpass_issuance_state());
-    assert_eq!(call(&mut service, "POST", "sys/auth/initial_ttl", &admin,
-        json!({"type":"userpass"})).status, 204);
-    assert_eq!(call(&mut service, "POST", "auth/initial_ttl/users/alice", &admin,
-        json!({"password":"public-synthetic-initial-ttl","token_ttl":20,"token_max_ttl":20})).status, 204);
-    let login = call(&mut service, "POST", "auth/initial_ttl/login/alice", "",
-        json!({"password":"public-synthetic-initial-ttl"}));
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/initial_ttl",
+            &admin,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/initial_ttl/users/alice",
+            &admin,
+            json!({"password":"public-synthetic-initial-ttl","token_ttl":20,"token_max_ttl":20})
+        )
+        .status,
+        204
+    );
+    let login = call(
+        &mut service,
+        "POST",
+        "auth/initial_ttl/login/alice",
+        "",
+        json!({"password":"public-synthetic-initial-ttl"}),
+    );
     assert_eq!(login.status, 200);
     assert_eq!(login.body["auth"]["lease_duration"], 20);
-    let bearer = Zeroizing::new(login.body["auth"]["client_token"].as_str()
-        .filter(|s| !s.is_empty()).ok_or("real native bearer")?.to_owned());
+    let bearer = Zeroizing::new(
+        login.body["auth"]["client_token"]
+            .as_str()
+            .filter(|s| !s.is_empty())
+            .ok_or("real native bearer")?
+            .to_owned(),
+    );
     let issued = service.state.clone().ok_or("issued native state")?;
     assert_eq!(issued.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(issued.auth.has_userpass_issuance_state());
-    assert!(!issued.auth.has_identity_mfa_state(), "ordinary issuer is not an MFA issuer");
-    let lookup = precise_call(&mut service, "GET", "auth/token/lookup-self", &bearer, json!({}), 100, 0);
+    assert!(
+        !issued.auth.has_identity_mfa_state(),
+        "ordinary issuer is not an MFA issuer"
+    );
+    let lookup = precise_call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &bearer,
+        json!({}),
+        100,
+        0,
+    );
     assert_eq!(lookup.status, 200);
     assert_eq!(lookup.body["data"]["creation_ttl"], 20);
-    let renewal = precise_call(&mut service, "POST", "auth/token/renew-self", &bearer,
-        json!({"increment":5}), 101, 0);
+    let renewal = precise_call(
+        &mut service,
+        "POST",
+        "auth/token/renew-self",
+        &bearer,
+        json!({"increment":5}),
+        101,
+        0,
+    );
     assert_eq!(renewal.status, 200);
     assert_eq!(renewal.body["auth"]["lease_duration"], 5);
-    assert_eq!(precise_call(&mut service, "POST", "auth/initial_ttl/users/alice", &admin,
-        json!({"token_ttl":10}), 102, 0).status, 204);
-    let renewal = precise_call(&mut service, "POST", "auth/token/renew-self", &bearer,
-        json!({"increment":5}), 103, 0);
+    assert_eq!(
+        precise_call(
+            &mut service,
+            "POST",
+            "auth/initial_ttl/users/alice",
+            &admin,
+            json!({"token_ttl":10}),
+            102,
+            0
+        )
+        .status,
+        204
+    );
+    let renewal = precise_call(
+        &mut service,
+        "POST",
+        "auth/token/renew-self",
+        &bearer,
+        json!({"increment":5}),
+        103,
+        0,
+    );
     assert_eq!(renewal.status, 200);
     assert_eq!(renewal.body["auth"]["lease_duration"], 5);
-    let lookup = precise_call(&mut service, "GET", "auth/token/lookup-self", &bearer, json!({}), 103, 0);
+    let lookup = precise_call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &bearer,
+        json!({}),
+        103,
+        0,
+    );
     assert_eq!(lookup.status, 200);
     assert_eq!(lookup.body["data"]["creation_ttl"], 20);
     drop(service);
     let mut reopened = files.service()?;
-    assert_eq!(precise_call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key}), 104, 0).status, 200);
-    let lookup = precise_call(&mut reopened, "GET", "auth/token/lookup-self", &bearer, json!({}), 104, 0);
+    assert_eq!(
+        precise_call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":key}),
+            104,
+            0
+        )
+        .status,
+        200
+    );
+    let lookup = precise_call(
+        &mut reopened,
+        "GET",
+        "auth/token/lookup-self",
+        &bearer,
+        json!({}),
+        104,
+        0,
+    );
     assert_eq!(lookup.status, 200);
     assert_eq!(lookup.body["data"]["creation_ttl"], 20);
-    let current = reopened.state.clone().ok_or("encrypted reopened native owner")?;
+    let current = reopened
+        .state
+        .clone()
+        .ok_or("encrypted reopened native owner")?;
     current.validate_format().map_err(|_| "native132 format")?;
     let auth_bytes = Zeroizing::new(serde_json::to_vec(&*current.auth)?);
     let auth: Value = serde_json::from_slice(&auth_bytes)?;
-    let token_id = auth["tokens"].as_object().ok_or("native token map")?.iter()
+    let token_id = auth["tokens"]
+        .as_object()
+        .ok_or("native token map")?
+        .iter()
         .find(|(_, value)| value["auth_provenance"]["kind"] == "userpass")
-        .map(|(id, _)| id.clone()).ok_or("native Userpass stored issuer")?;
+        .map(|(id, _)| id.clone())
+        .ok_or("native Userpass stored issuer")?;
     for mutation in ["floor", "grant", "both"] {
         let mut altered = auth.clone();
-        if mutation != "grant" { altered.as_object_mut().ok_or("auth owner")?.remove("userpass_issuance_floor"); }
-        if mutation != "floor" { altered["tokens"][&token_id]["auth_provenance"].as_object_mut()
-            .ok_or("actual Userpass provenance")?.remove("issued_creation_ttl"); }
+        if mutation != "grant" {
+            altered
+                .as_object_mut()
+                .ok_or("auth owner")?
+                .remove("userpass_issuance_floor");
+        }
+        if mutation != "floor" {
+            altered["tokens"][&token_id]["auth_provenance"]
+                .as_object_mut()
+                .ok_or("actual Userpass provenance")?
+                .remove("issued_creation_ttl");
+        }
         let bytes = Zeroizing::new(serde_json::to_vec(&altered)?);
         let mut torn = current.clone();
         torn.auth = serde_json::from_slice(&bytes)?;
         assert!(torn.validate_publication_schema(Some(&current)).is_err());
         assert!(Service::validate_snapshot_protected_floor(&current, &torn).is_err());
-        if mutation == "floor" || mutation == "both" { assert!(torn.validate_format().is_err()); }
+        if mutation == "floor" || mutation == "both" {
+            assert!(torn.validate_format().is_err());
+        }
     }
     let mut lower = current.clone();
     lower.schema = 131;
     assert!(lower.validate_format().is_err());
     assert!(lower.validate_publication_schema(Some(&current)).is_err());
     assert!(Service::validate_snapshot_protected_floor(&current, &lower).is_err());
-    assert_eq!(precise_call(&mut reopened, "POST", "auth/token/revoke-self", &bearer, json!({}), 104, 0).status, 204);
+    assert_eq!(
+        precise_call(
+            &mut reopened,
+            "POST",
+            "auth/token/revoke-self",
+            &bearer,
+            json!({}),
+            104,
+            0
+        )
+        .status,
+        204
+    );
     let retired = reopened.state.clone().ok_or("retired native issuer")?;
     assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(retired.auth.has_userpass_issuance_state());
     assert!(Service::validate_snapshot_protected_floor(&retired, &ordinary).is_err());
     let bytes = Zeroizing::new(serde_json::to_vec(&*retired.auth)?);
     let mut altered: Value = serde_json::from_slice(&bytes)?;
-    altered.as_object_mut().ok_or("retired auth owner")?.remove("userpass_issuance_floor");
+    altered
+        .as_object_mut()
+        .ok_or("retired auth owner")?
+        .remove("userpass_issuance_floor");
     let bytes = Zeroizing::new(serde_json::to_vec(&altered)?);
     let mut erased = retired.clone();
     erased.auth = serde_json::from_slice(&bytes)?;
@@ -3963,44 +4381,113 @@ fn userpass132_real_native_login_renew_reopen_and_retirement_keep_initial_ttl_an
 }
 
 #[test]
-fn userpass132_real_resigned_mfa_unissued_grant_cannot_claim_a_captured_initial_ttl() -> TestResult {
+fn userpass132_real_resigned_mfa_unissued_grant_cannot_claim_a_captured_initial_ttl() -> TestResult
+{
     let files = Root::new();
     let mut service = files.service()?;
     let (_, admin) = bootstrap(&mut service)?;
-    assert_eq!(call(&mut service, "POST", "sys/auth/mfa_userpass", &admin,
-        json!({"type":"userpass"})).status, 204);
-    assert_eq!(call(&mut service, "POST", "auth/mfa_userpass/users/alice", &admin,
-        json!({"password":"public-synthetic-mfa-test","token_ttl":20,"token_max_ttl":20})).status, 204);
-    let created = call(&mut service, "POST", "identity/mfa/method/totp", &admin,
-        json!({"issuer":"public-unissued-shape","qr_size":0}));
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/mfa_userpass",
+            &admin,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/mfa_userpass/users/alice",
+            &admin,
+            json!({"password":"public-synthetic-mfa-test","token_ttl":20,"token_max_ttl":20})
+        )
+        .status,
+        204
+    );
+    let created = call(
+        &mut service,
+        "POST",
+        "identity/mfa/method/totp",
+        &admin,
+        json!({"issuer":"public-unissued-shape","qr_size":0}),
+    );
     assert_eq!(created.status, 200);
-    let method = created.body["data"]["method_id"].as_str()
-        .ok_or("real native method")?.to_owned();
-    assert_eq!(call(&mut service, "POST", "identity/mfa/login-enforcement/unissued", &admin,
-        json!({"auth_method_types":["userpass"],"mfa_method_ids":[method]})).status, 204);
+    let method = created.body["data"]["method_id"]
+        .as_str()
+        .ok_or("real native method")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "identity/mfa/login-enforcement/unissued",
+            &admin,
+            json!({"auth_method_types":["userpass"],"mfa_method_ids":[method]})
+        )
+        .status,
+        204
+    );
     let before_tokens = token_count(&service)?;
     let request = mfa_challenge(&mut service, 100, 0)?;
-    assert_eq!(token_count(&service)?, before_tokens, "genuine first factor mints no bearer");
-    let original = service.state.clone().ok_or("actual native pending challenge")?;
+    assert_eq!(
+        token_count(&service)?,
+        before_tokens,
+        "genuine first factor mints no bearer"
+    );
+    let original = service
+        .state
+        .clone()
+        .ok_or("actual native pending challenge")?;
     assert_eq!(original.schema, IDENTITY_MFA_STATE_SCHEMA);
     assert!(!original.auth.has_userpass_issuance_state());
-    original.validate_format().map_err(|_| "actual unissued reader")?;
-    let before = Zeroizing::new(crate::secret_serde::to_vec(&original, 16 * 1024 * 1024)
-        .map_err(|_| "original pending encoding")?);
+    original
+        .validate_format()
+        .map_err(|_| "actual unissued reader")?;
+    let before = Zeroizing::new(
+        crate::secret_serde::to_vec(&original, 16 * 1024 * 1024)
+            .map_err(|_| "original pending encoding")?,
+    );
     let mut impossible = original.clone();
-    impossible.auth.test_resign_mfa_pending_grant_with_claimed_ttl("", &request, 20)?;
-    assert!(!impossible.auth.has_userpass_issuance_state(),
-        "an impossible pending fact cannot mint a token or latch final floor132");
-    let rejected = impossible.auth.validate_identity_mfa_state(None)
-        .err().ok_or("strict pending shape must reject a genuinely resigned claim")?;
+    impossible
+        .auth
+        .test_resign_mfa_pending_grant_with_claimed_ttl("", &request, 20)?;
+    assert!(
+        !impossible.auth.has_userpass_issuance_state(),
+        "an impossible pending fact cannot mint a token or latch final floor132"
+    );
+    let rejected = impossible
+        .auth
+        .validate_identity_mfa_state(None)
+        .err()
+        .ok_or("strict pending shape must reject a genuinely resigned claim")?;
     assert_eq!(rejected.status, 503);
-    assert_eq!(rejected.message, "MFA private grant has no native unissued userpass owner");
+    assert_eq!(
+        rejected.message,
+        "MFA private grant has no native unissued userpass owner"
+    );
     assert!(impossible.validate_format().is_err());
-    assert!(impossible.validate_publication_schema(Some(&original)).is_err());
+    assert!(
+        impossible
+            .validate_publication_schema(Some(&original))
+            .is_err()
+    );
     assert!(Service::validate_snapshot_protected_floor(&original, &impossible).is_err());
     assert_eq!(token_count(&service)?, before_tokens);
-    let after = Zeroizing::new(crate::secret_serde::to_vec(service.state.as_ref().ok_or("same native state")?,
-        16 * 1024 * 1024).map_err(|_| "same pending encoding")?);
-    assert_eq!(before.as_slice(), after.as_slice(), "counterexample never enters the genuine owner");
+    let after = Zeroizing::new(
+        crate::secret_serde::to_vec(
+            service.state.as_ref().ok_or("same native state")?,
+            16 * 1024 * 1024,
+        )
+        .map_err(|_| "same pending encoding")?,
+    );
+    assert_eq!(
+        before.as_slice(),
+        after.as_slice(),
+        "counterexample never enters the genuine owner"
+    );
     Ok(())
 }
