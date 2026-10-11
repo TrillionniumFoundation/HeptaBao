@@ -61,9 +61,10 @@ mod local_control;
 pub use local_control::LocalControlConfig;
 
 const MAX_HEADERS: usize = 16 * 1024;
-// Bounded ordinary JSON transport for OpenBao 2.7.1 KV2 768 KiB controls.
-// This does not increase any durable V5 owner or value resource limit.
-pub(crate) const MAX_BODY: usize = 1024 * 1024;
+// Bounded JSON transport for OpenBao 2.7.1 KV2 up to 1536 KiB.
+// This is ingress-only: V5 owner, value, and graph limits are unchanged.
+// Calls exceeding this bound never enter Service or commit state.
+pub(crate) const MAX_BODY: usize = 2 * 1024 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
@@ -1339,7 +1340,9 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
 // authenticated-independent window; never parse rejected bytes or allocate
 // the caller-advertised length. Requests larger than this fixed budget remain
 // fail-closed and may have no reliably delivered response.
-const MAX_413_DRAIN_BODY_BYTES: usize = 2 * 1024 * 1024;
+// A fixed 4 MiB maximum is small relative to the 32 MiB snapshot lane.
+// Draining only resolves TLS close/413 delivery; bytes are never decoded.
+const MAX_413_DRAIN_BODY_BYTES: usize = 2 * MAX_BODY;
 
 fn drain_bounded_413_body(
     reader: &mut impl Read,
@@ -3118,7 +3121,7 @@ mod tests {
     }
 
     #[test]
-    fn kv2_768k_json_keeps_full_body_and_a_strict_over_1m_transport_fence() -> io::Result<()> {
+    fn kv2_768k_json_keeps_full_body_and_a_strict_over_2m_transport_fence() -> io::Result<()> {
         // OpenBao 2.7.1 accepts this 768 KiB KV2 payload, while the former
         // 512 KiB front-door limit returned 413 before any Service decision.
         // Retain exactly one bounded JSON parser and reject larger requests.
@@ -3139,6 +3142,44 @@ mod tests {
             request.body.0["data"]["payload"].as_str().map(str::len),
             Some(768 * 1024)
         );
+        Ok(())
+    }
+
+    #[test]
+    fn kv2_1536k_json_preserves_all_bytes_but_2m_plus_one_is_413() -> io::Result<()> {
+        // Pinned OpenBao 2.7.1 accepted this previously rejected input.
+        // The codec has no implicit truncation, rounding, or Service grant.
+        let payload = "J".repeat(1536 * 1024);
+        let encoded = serde_json::to_vec(&json!({"data":{"payload":payload}}))?;
+        assert!(encoded.len() > 1024 * 1024 && encoded.len() < MAX_BODY);
+        assert_eq!(MAX_BODY, 2 * 1024 * 1024);
+        assert_eq!(MAX_413_DRAIN_BODY_BYTES, 2 * MAX_BODY);
+        let mut wire = format!(
+            "POST /v1/secret/data/1536k HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
+            encoded.len()
+        ).into_bytes();
+        wire.extend_from_slice(&encoded);
+        let parsed = read_request_mode(&mut wire.as_slice(), Duration::from_secs(5), false)
+            .map_err(|_| io::Error::other("1536 KiB OpenBao KV2 control rejected"))?;
+        assert_eq!(parsed.path, "secret/data/1536k");
+        assert_eq!(
+            parsed.body.0["data"]["payload"].as_str(),
+            Some(payload.as_str())
+        );
+
+        // First byte over the new cap is not parsed; declared bodies within the
+        // independent drain budget can still yield a complete TLS 413 response.
+        let exceeded = MAX_BODY + 1;
+        let mut oversized = format!(
+            "POST /v1/secret/data/over-limit HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {exceeded}\r\n\r\n"
+        ).into_bytes();
+        oversized.extend(std::iter::repeat_n(b'x', exceeded));
+        let mut remaining = oversized.as_slice();
+        let denial = read_request_mode(&mut remaining, Duration::from_secs(5), false)
+            .err()
+            .ok_or_else(|| io::Error::other("2 MiB cap bypass"))?;
+        assert_eq!(denial.status, 413);
+        assert!(remaining.is_empty(), "bounded 413 body not drained");
         Ok(())
     }
 
