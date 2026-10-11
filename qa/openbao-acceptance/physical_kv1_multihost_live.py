@@ -7,14 +7,11 @@ once. Fingerprints replace values in the observer's bounded working set.
 """
 from __future__ import annotations
 
-import base64
 import hashlib
 import json
 import secrets
-import sys
 from pathlib import Path
 
-sys.path.insert(0, '/home/qian-qi/heptabao-271-r89/source-r104/qa/openbao-acceptance')
 import ha_multihost_live as ha
 
 MIB = 1024 * 1024

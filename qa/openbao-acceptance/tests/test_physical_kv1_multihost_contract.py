@@ -15,6 +15,13 @@ class FakeNode:
 
 
 class PhysicalRecordScaleContracts(unittest.TestCase):
+    def test_extension_imports_exact_sibling_controller(self):
+        source = Path(inspect.getfile(scale)).resolve()
+        controller = Path(inspect.getfile(ha)).resolve()
+        self.assertEqual(controller.parent, source.parent)
+        self.assertEqual(controller.name, 'ha_multihost_live.py')
+        self.assertNotIn('sys.path.insert', inspect.getsource(scale))
+
     def test_original_snapshot_route_is_still_the_default(self):
         self.assertEqual(
             ha.snapshot_strategy(None),
