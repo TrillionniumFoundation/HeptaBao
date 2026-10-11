@@ -899,7 +899,8 @@ fn approle_secret_ids_are_hashed_consumable_and_expiring() {
             &json!({"role_id": role_id, "secret_id": secret2}),
             110,
         )
-        .unwrap_err();
+        .err()
+        .expect("expired SecretID must be rejected");
     assert_eq!(
         expired.status, 400,
         "OpenBao 2.7.1 returns invalid credential"
