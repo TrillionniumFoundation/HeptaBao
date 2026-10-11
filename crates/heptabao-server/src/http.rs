@@ -61,7 +61,9 @@ mod local_control;
 pub use local_control::LocalControlConfig;
 
 const MAX_HEADERS: usize = 16 * 1024;
-pub(crate) const MAX_BODY: usize = 256 * 1024;
+// Bounded ordinary JSON transport for the 2.7.1 KV2 320 KiB control case.
+// This does not grant additional V5 owner storage capacity.
+pub(crate) const MAX_BODY: usize = 512 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
@@ -3075,6 +3077,43 @@ mod tests {
         assert_eq!(body.0["unknown"], json!(["one", "two"]));
         assert_eq!(body.0["list"], "true");
         assert!(body.0.get("help").is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn kv2_320k_json_is_delivered_by_original_http_parser_but_larger_framing_is_still_denied()
+    -> io::Result<()> {
+        let value = "K".repeat(320 * 1024);
+        let encoded = serde_json::to_vec(&json!({"data":{"payload":value}}))?;
+        assert!(encoded.len() > 256 * 1024 && encoded.len() <= MAX_BODY);
+        let mut wire = format!(
+            "POST /v1/synthetic/data/large HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
+            encoded.len()
+        ).into_bytes();
+        wire.extend_from_slice(&encoded);
+        let request = read_request_mode(&mut wire.as_slice(), Duration::from_secs(3), false)
+            .map_err(|_| io::Error::other("320 KiB KV2 JSON failed bounded parser"))?;
+        assert_eq!(request.method, "POST");
+        assert_eq!(request.path, "synthetic/data/large");
+        assert_eq!(
+            request.body.0["data"]["payload"].as_str().map(str::len),
+            Some(320 * 1024)
+        );
+        // A request above the transport cap is rejected and never decoded.
+        let oversized = MAX_BODY + 1;
+        let mut header = format!(
+            "POST /v1/synthetic/data/exceeded HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {oversized}\r\n\r\n"
+        ).into_bytes();
+        header.extend(std::iter::repeat_n(b'X', oversized));
+        let mut input = header.as_slice();
+        let denial = read_request_mode(&mut input, Duration::from_secs(3), false)
+            .err()
+            .ok_or_else(|| io::Error::other("oversized request unexpectedly accepted"))?;
+        assert_eq!(denial.status, 413);
+        assert!(
+            input.is_empty(),
+            "bounded rejection must drain the declared body"
+        );
         Ok(())
     }
 
