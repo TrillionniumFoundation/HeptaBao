@@ -147,5 +147,38 @@ class CurrentSourceInventoryTests(unittest.TestCase):
                 INV.members(root)
 
 
+    def test_explicit_third_party_exclusion_keeps_security_boundaries(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.fixture(root)
+            third = root / "third_party/workflow-gotmpl"
+            third.mkdir(parents=True)
+            (third / "Cargo.toml").write_text(
+                '[package]\nname="workflow-gotmpl"\nversion="0.1.0"\n')
+            manifest = root / "Cargo.toml"
+            manifest.write_text(
+                '[workspace]\nmembers=["crates/*"]\n'
+                'exclude=["third_party/workflow-gotmpl"]\n')
+            self.assertEqual(INV.members(root), ["crates/heptabao-probe"])
+            self.assertEqual([], INV.validate(root))
+            for excluded in (
+                "third_party/*",
+                "third_party/../crates",
+                "third_party/missing",
+                "third_party/workflow-gotmpl/inner",
+                "crates/heptabao-probe",
+            ):
+                with self.subTest(excluded=excluded):
+                    manifest.write_text(
+                        '[workspace]\nmembers=["crates/*"]\n'
+                        f'exclude=["{excluded}"]\n')
+                    self.assertTrue(INV.validate(root), excluded)
+            manifest.write_text(
+                '[workspace]\nmembers=["crates/*", "third_party/*"]\n'
+                'exclude=["third_party/workflow-gotmpl"]\n')
+            with self.assertRaisesRegex(ValueError, "hides a declared member"):
+                INV.members(root)
+
+
 if __name__ == "__main__":
     unittest.main()

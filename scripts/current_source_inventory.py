@@ -55,12 +55,12 @@ def members(root: Path) -> list[str]:
     workspace = tomllib.loads(read(root, "Cargo.toml").decode())["workspace"]
     # Vendored dependencies can own their upstream build/test policy without
     # becoming first-party modules. Never let an exclusion hide a declared
-    # product member or an unchecked path outside the vendor directory.
+    # product member or an unchecked path outside the vendor/third_party roots.
     excluded = workspace.get("exclude", [])
     if not isinstance(excluded, list):
         raise ValueError("invalid workspace exclusions")
     for entry in excluded:
-        if (not isinstance(entry, str) or not re.fullmatch(r"vendor/[A-Za-z0-9_.-]+", entry)
+        if (not isinstance(entry, str) or not re.fullmatch(r"(?:vendor|third_party)/[A-Za-z0-9_.-]+", entry)
                 or Path(entry).name in {".", ".."}):
             raise ValueError("workspace exclusions must name explicit vendored dependencies")
         read(root, f"{entry}/Cargo.toml")
