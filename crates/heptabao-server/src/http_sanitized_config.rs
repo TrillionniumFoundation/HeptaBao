@@ -54,8 +54,11 @@ pub(super) fn project(config: &Config) -> Value {
         "log_requests_level": "",
         "listeners": [{
             "type": "tcp",
-            "config": {"address": config.listen.to_string(), "tls_disable": 0}
+            "config": {"address": config.listen.to_string(), "tls_disable": false}
         }],
+        // Telemetry fields not supplied by native Config must not be invented.
+        // Preserve the 2.7.1 container shape without synthesizing provider data.
+        "telemetry": {},
         "storage": {
             "type": kind,
             "redirect_addr": api_addr,
@@ -115,6 +118,8 @@ mod tests {
             projection["listeners"][0]["config"]["address"],
             "127.0.0.1:38413"
         );
+        assert_eq!(projection["listeners"][0]["config"]["tls_disable"], false);
+        assert_eq!(projection["telemetry"], json!({}));
         assert_eq!(projection["storage"]["type"], "pebbledb");
         assert_eq!(projection["seals"][0]["type"], "shamir");
     }
