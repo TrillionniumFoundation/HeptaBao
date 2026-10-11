@@ -1,5 +1,7 @@
 """Harness failures preserve partial observations without copying secrets."""
 import hashlib
+import os
+import subprocess
 import contextlib
 import io
 import types
@@ -135,6 +137,35 @@ class TransportDiagnosticReportTests(unittest.TestCase):
         })
         environment.start()
         self.addCleanup(environment.stop)
+        # The runtime process ownership gate requires Linux pidfd. These unit
+        # tests mock the fixture lifecycle and only need the exact, read-only
+        # source-head lookup; do not attempt to emulate pidfd on macOS.
+        # Linux keeps its original owned-process check_output path unmocked.
+        if not hasattr(os, "pidfd_open"):
+            def fixed_source_identity_only(args, **kwargs):
+                approved = (
+                    ["git", "rev-parse", "HEAD"],
+                    ["git", "rev-parse", "HEAD^{tree}"],
+                    ["git", "status", "--porcelain"],
+                )
+                if list(args) not in approved:
+                    raise AssertionError("unexpected non-owned fixture process")
+                kwargs.pop("label", None)
+                return subprocess.check_output(args, **kwargs)
+            head_probe = patch.object(core_isolation.owned_process, "check_output",
+                                      side_effect=fixed_source_identity_only)
+            head_probe.start()
+            self.addCleanup(head_probe.stop)
+
+
+    def test_portable_head_probe_rejects_nonidentity_commands(self):
+        if hasattr(os, "pidfd_open"):
+            self.skipTest("Linux retains the original pidfd-backed process owner")
+        with self.assertRaisesRegex(AssertionError, "^unexpected non-owned fixture process$"):
+            core_isolation.owned_process.check_output(
+                ["git", "config", "--list"], cwd=core_isolation.ROOT,
+                text=True, label="negative-control-no-subprocess",
+            )
 
     def test_startup_exception_preserves_closed_diagnostic_in_report_and_stdout(self):
         sentinel = "synthetic-private-peer-startup"
