@@ -307,16 +307,20 @@ fn rejected_consistency_body_is_discarded_without_json_or_next_request_parsing()
 
 #[test]
 fn rejected_consistency_body_never_reads_unbounded_or_ambiguous_framing() {
+    // Derive the unbounded claim from the current ingress cap. A literal
+    // 262145-byte claim became bounded when ordinary JSON admission grew,
+    // and must not be misclassified as an ambiguous or unbounded frame.
+    let beyond_max_body = format!("Content-Length: {}\r\n", MAX_BODY + 1);
     for framing in [
-        "",
-        "Content-Length: 0\r\n",
-        "Content-Length: -1\r\n",
-        "Content-Length: invalid\r\n",
-        "Content-Length: 262145\r\n",
-        "Content-Length: 4\r\nTransfer-Encoding: chunked\r\n",
-        "Content-Length: 4\r\nExpect: 100-continue\r\n",
+        "".to_owned(),
+        "Content-Length: 0\r\n".to_owned(),
+        "Content-Length: -1\r\n".to_owned(),
+        "Content-Length: invalid\r\n".to_owned(),
+        beyond_max_body,
+        "Content-Length: 4\r\nTransfer-Encoding: chunked\r\n".to_owned(),
+        "Content-Length: 4\r\nExpect: 100-continue\r\n".to_owned(),
     ] {
-        let mut input = rejected_body("secret/data/rejected", framing);
+        let mut input = rejected_body("secret/data/rejected", &framing);
         assert_eq!(
             read_request(&mut input, Duration::from_secs(1))
                 .err()
