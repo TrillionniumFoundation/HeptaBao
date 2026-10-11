@@ -889,18 +889,23 @@ fn approle_secret_ids_are_hashed_consumable_and_expiring() {
         .as_str()
         .unwrap()
         .to_owned();
-    assert!(
-        state
-            .handle(
-                None,
-                "team",
-                "POST",
-                "auth/approle/login",
-                &json!({"role_id": role_id, "secret_id": secret2}),
-                110
-            )
-            .is_err()
+    let before_expired_login = serde_json::to_value(&state).unwrap();
+    let expired = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/approle/login",
+            &json!({"role_id": role_id, "secret_id": secret2}),
+            110,
+        )
+        .unwrap_err();
+    assert_eq!(
+        expired.status, 400,
+        "OpenBao 2.7.1 returns invalid credential"
     );
+    assert_eq!(expired.message, "invalid role or secret ID");
+    assert_eq!(serde_json::to_value(&state).unwrap(), before_expired_login);
 }
 
 #[test]

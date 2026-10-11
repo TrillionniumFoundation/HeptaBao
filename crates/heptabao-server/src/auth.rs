@@ -8639,9 +8639,10 @@ impl AuthState {
                 .get_mut(&id)
                 .ok_or_else(|| bad("invalid role or secret ID"))?;
             if secret.expires_at.is_some_and(|expiry| now >= expiry) {
-                // OpenBao removes expired SecretIDs asynchronously. This
-                // implementation retains its immediate expiry boundary.
-                return Err(denied());
+                // OpenBao 2.7.1 reports an expired SecretID as an invalid
+                // AppRole credential (HTTP 400), even before tidy runs.
+                // Reject before consuming the SecretID or creating a token.
+                return Err(bad("invalid role or secret ID"));
             }
             if secret.uses_remaining == Some(0) {
                 return Err(bad("invalid role or secret ID"));
