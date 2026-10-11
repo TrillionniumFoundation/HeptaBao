@@ -454,3 +454,34 @@ performance result. The later [913-check 32MiB HA run](../../qa/openbao-acceptan
 qualifies same-version three-process catch-up, failover and restart at that size.
 Dense historical small-record migration, sustained growth and independent
 host/fault qualification remain separate open work.
+
+## Three-physical-host KV1 record-scale qualification
+
+The opt-in `qa/openbao-acceptance/physical_kv1_multihost_live.py`
+fixture composes the original 54-case independent-host Raft lifecycle with
+15 additional record-scale checks. It must run against a pinned exact-head
+Linux binary on **three separate Linux hosts**, with new owner-only fixture
+roots and a private tailnet explicitly authorized by the operator. Existing
+production services are never candidate input directories.
+
+While one voter is stopped, the surviving majority submits each distinct
+random ~224KiB KV1 mutation **once** until at least 24MiB of canonical
+logical payloads are acknowledged. The fixture checks the V5 capacity
+observation and all value fingerprints, triggers real Raft maintenance
+compaction rather than the separate 20MiB HTTP backup-export route, waits for
+the offline voter to catch up, and checks mutation, deletion, leader failure,
+restart and quorum-loss recovery. Fingerprints remain only in fixture memory.
+Root/unseal keys are neither report fields nor controller output. Cleanup
+removes the synthetic KV1 mount and its records. No ambiguous write is retried.
+
+The new snapshot strategy is enabled only by this fixture's
+`snapshot_via_compact=True`. The baseline and other extensions keep their
+previous GET snapshot behavior. The 15 new cases are required **in addition
+to** the 54-case baseline. This private physical test is not run in public CI
+because public runners have no authorized access to the private test devices.
+
+Even a passing 69-case run is scoped synthetic, single-version Raft evidence.
+It does not remove the aggregate 16MiB opaque-owner ceiling, the 47MiB HA
+application budget, the 64MiB KV1 graph limit, whole-graph snapshots,
+replay-retirement limits, physical power-loss/disk faults, mixed-version
+rolling upgrade, external providers, or full OpenBao 2.7.1 replacement gates.

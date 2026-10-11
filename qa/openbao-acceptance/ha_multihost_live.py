@@ -734,6 +734,15 @@ def parse_node(text: str, node_id: int, api_port: int, raft_port: int) -> Node:
     return Node(node_id, alias, str(address), root.rstrip("/"), api_port, raft_port)
 
 
+def snapshot_strategy(extension):
+    # Native large-record snapshot catch-up is an operator-scoped fixture:
+    # compact via the Raft maintenance route. Never smuggle >20MiB state
+    # through the separate HTTP backup-export snapshot endpoint.
+    if extension is not None and getattr(extension, "snapshot_via_compact", False) is True:
+        return ("POST", "sys/storage/raft/compact", {}, 60)
+    return ("GET", "sys/storage/raft/snapshot", None, 20)
+
+
 def main(*, extension=None) -> int:
     # The baseline retains its original fixed denominator. A separately named
     # composed profile must satisfy both sets; it cannot borrow baseline success.
@@ -1043,11 +1052,15 @@ test -d "$root/data"
             context, initial, root_token, readiness_path, readiness_value,
         )
         event("snapshot_majority_ready", node=initial.node_id)
+        if extension is not None and hasattr(extension, "majority_after_offline"):
+            stage = "offline_majority_extension"
+            extension.majority_after_offline(initial, offline)
         for index in range(8):
             path, value = new_value(f"snapshot-{index}")
             write_once(context, initial, root_token, path, value)
-        status, snapshot = api(context, initial, "GET", "sys/storage/raft/snapshot",
-                               token=root_token, timeout=20)
+        method, endpoint, payload, request_timeout = snapshot_strategy(extension)
+        status, snapshot = api(context, initial, method, endpoint, payload,
+                               token=root_token, timeout=request_timeout)
         check("leader_snapshot_trigger", status == 200 and isinstance(snapshot, dict))
         path, value = new_value("after-snapshot")
         write_once(context, initial, root_token, path, value)
@@ -1063,7 +1076,10 @@ test -d "$root/data"
         # recovered node; the read is repeatable, but no mutation is retried.
         initial = wait_leader(context, nodes, root_token, seconds=60)
         event("snapshot_rejoin_leader_ready", node=initial.node_id)
-        local_frontier = wait_local_frontier(context, offline, snapshot_frontier, record=event)
+        frontier_timeout = 150 if (extension is not None and getattr(
+            extension, "snapshot_via_compact", False) is True) else 45
+        local_frontier = wait_local_frontier(
+            context, offline, snapshot_frontier, seconds=frontier_timeout, record=event)
         read_exact(
             context, offline, root_token, path, value,
             seconds=90, request_timeout=12,
