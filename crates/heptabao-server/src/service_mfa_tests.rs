@@ -586,9 +586,11 @@ fn mfa129_actual_native_issuance_is_unissued_until_validate_with_fixed_attempt_w
     };
     // Reuse the challenge's captured clock for its first same-window
     // validation: reanchoring at 114.5s would regress elapsed nanoseconds.
+    // Both simulated attempts must retain the same monotonic origin: a fresh
+    // anchor pre-created before attempt one can regress under slow execution.
     for (seconds, clock) in [
         (114, first_attempt_clock),
-        (115, RequestClock::anchored(Duration::new(115, 500_000_000), Instant::now())
+        (115, RequestClock::anchored(Duration::new(115, 500_000_000), first_attempt_clock.started())
             .map_err(|_| "second numeric attempt clock")?),
     ] {
         let denied = precise_call_clock(
