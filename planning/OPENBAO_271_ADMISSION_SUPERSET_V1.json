@@ -124,6 +124,42 @@
       "status": "OPEN",
       "scenario": "ACL/workflow policy denial must fail closed (2.7.0 security baseline)",
       "receipt": null
+    },
+    {
+      "id": "agent_proxy_quit_request_header",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 security: Agent and proxy quit/cache-clear endpoints must require X-Vault-Request when configured",
+      "receipt": null
+    },
+    {
+      "id": "canonical_resolve_path_operation",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 security: Canonical auth/PKI/policy/workflow endpoints must authorize canonical resource paths",
+      "receipt": null
+    },
+    {
+      "id": "plugin_command_path_confinement",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 security: Plugin executable command path must be constrained relative to plugin_directory",
+      "receipt": null
+    },
+    {
+      "id": "sdk_malformed_audit_redaction",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 security: TypeKVPair and TypeHeader malformed data must not leak raw values to audit records",
+      "receipt": null
+    },
+    {
+      "id": "pki_acme_unvalidated_san_rejection",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 security: ACME issuance must reject subjectAltNames that have not been validated",
+      "receipt": null
+    },
+    {
+      "id": "oidc_ui_prompt_none_disabled",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 security: OIDC provider UI must reject prompt=none redirection",
+      "receipt": null
     }
   ],
   "feature_and_correctness_delta": [
@@ -174,6 +210,18 @@
       "status": "OPEN",
       "scenario": "Failed lease renewals honor SDK watcher backoff",
       "receipt": null
+    },
+    {
+      "id": "barrier_rotation_disabled_field_persistence",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.1: KeyRotationConfig disabled flag changes must be durable across restart/upgrade",
+      "receipt": null
+    },
+    {
+      "id": "linux_package_default_pebbledb",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.1: packaged default server config selects pebbledb rather than removed file backend",
+      "receipt": null
     }
   ],
   "observations": {
@@ -210,12 +258,12 @@
     }
   },
   "blocked_by": [
-    "OpenBao 2.7.1 whole-surface differential not closed",
-    "Mac complete server library test suite not green",
-    "Linux current-candidate server and multi-host fault/rolling upgrade not qualified",
-    "full asset migration and external real providers unqualified",
-    "scalable storage and replay lifecycle admission OPEN",
-    "release supply-chain and reproducibility unqualified"
+    "OpenBao 2.7.1 whole-surface exact-head differential and release delta behavior gates not closed",
+    "Current exact-head repository/full security CI and prospective main merge not qualified",
+    "Linux current-candidate HA rolling upgrade, physical storage faults and long-horizon replay not qualified",
+    "Full 2.7.1 asset migration and external real providers unqualified",
+    "Scalable storage and replay identity lifecycle admission OPEN",
+    "Security release supply-chain and reproducibility unqualified"
   ],
   "requirements": [
     "Never flip replacement_authority merely because this file exists",
