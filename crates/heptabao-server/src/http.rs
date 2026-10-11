@@ -61,9 +61,9 @@ mod local_control;
 pub use local_control::LocalControlConfig;
 
 const MAX_HEADERS: usize = 16 * 1024;
-// Bounded ordinary JSON transport for the 2.7.1 KV2 320 KiB control case.
-// This does not grant additional V5 owner storage capacity.
-pub(crate) const MAX_BODY: usize = 512 * 1024;
+// Bounded ordinary JSON transport for OpenBao 2.7.1 KV2 768 KiB controls.
+// This does not increase any durable V5 owner or value resource limit.
+pub(crate) const MAX_BODY: usize = 1024 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
@@ -1339,7 +1339,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
 // authenticated-independent window; never parse rejected bytes or allocate
 // the caller-advertised length. Requests larger than this fixed budget remain
 // fail-closed and may have no reliably delivered response.
-const MAX_413_DRAIN_BODY_BYTES: usize = 1024 * 1024;
+const MAX_413_DRAIN_BODY_BYTES: usize = 2 * 1024 * 1024;
 
 fn drain_bounded_413_body(
     reader: &mut impl Read,
@@ -3113,6 +3113,31 @@ mod tests {
         assert!(
             input.is_empty(),
             "bounded rejection must drain the declared body"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn kv2_768k_json_keeps_full_body_and_a_strict_over_1m_transport_fence() -> io::Result<()> {
+        // OpenBao 2.7.1 accepts this 768 KiB KV2 payload, while the former
+        // 512 KiB front-door limit returned 413 before any Service decision.
+        // Retain exactly one bounded JSON parser and reject larger requests.
+        let value = "R".repeat(768 * 1024);
+        let encoded = serde_json::to_vec(&json!({"data":{"payload":value}}))?;
+        assert!(encoded.len() > 512 * 1024 && encoded.len() <= MAX_BODY);
+        assert!(MAX_413_DRAIN_BODY_BYTES > MAX_BODY);
+        let mut wire = format!(
+            "POST /v1/secret/data/768k HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
+            encoded.len()
+        ).into_bytes();
+        wire.extend_from_slice(&encoded);
+        let request = read_request_mode(&mut wire.as_slice(), Duration::from_secs(3), false)
+            .map_err(|_| io::Error::other("768 KiB KV2 JSON failed bounded parser"))?;
+        assert_eq!(request.method, "POST");
+        assert_eq!(request.path, "secret/data/768k");
+        assert_eq!(
+            request.body.0["data"]["payload"].as_str().map(str::len),
+            Some(768 * 1024)
         );
         Ok(())
     }
