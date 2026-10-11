@@ -124,19 +124,60 @@ struct Bound {
     frame: DataFrame,
 }
 thread_local! { static DATA: RefCell<Option<Bound>> = const { RefCell::new(None) }; }
+// Request metadata is a data-only binding, not a storage or authorization
+// grant. Hash the exact canonical JSON stream without retaining a second
+// plaintext request copy. The 64 KiB allowance accounts for bounded
+// method/path/namespace tuple framing beyond the HTTP body budget.
+const MAX_LOGICAL_BINDING_BYTES: usize = crate::http::MAX_BODY + 64 * 1024;
+
 fn binding(
     method: &str,
     path: &str,
     namespace: &str,
     body: &Value,
 ) -> Result<[u8; 32], &'static str> {
-    let bytes = crate::secret_serde::to_vec(
+    struct DigestWriter {
+        context: ring::digest::Context,
+        count: usize,
+    }
+    impl std::io::Write for DigestWriter {
+        fn write(&mut self, input: &[u8]) -> std::io::Result<usize> {
+            let Some(next) = self
+                .count
+                .checked_add(input.len())
+                .filter(|length| *length <= MAX_LOGICAL_BINDING_BYTES)
+            else {
+                return Err(std::io::Error::other(
+                    "logical binding byte budget exceeded",
+                ));
+            };
+            self.context.update(input);
+            self.count = next;
+            Ok(input.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut writer = DigestWriter {
+        context: ring::digest::Context::new(&ring::digest::SHA256),
+        count: 0,
+    };
+    // serde_json::to_writer uses the same canonical serializer as the old
+    // Zeroizing to_vec path, so existing small-request digests are unchanged.
+    serde_json::to_writer(
+        &mut writer,
         &("logical-data-v1", method, path, namespace, body),
-        1024 * 1024,
     )
     .map_err(|_| "logical request data binding exceeds bound")?;
-    Ok(crate::crypto::digest(&bytes))
+    writer
+        .context
+        .finish()
+        .as_ref()
+        .try_into()
+        .map_err(|_| "logical request digest unavailable")
 }
+
 pub(crate) struct Scope {
     previous: Option<Bound>,
     _thread: std::marker::PhantomData<std::rc::Rc<()>>,
@@ -188,4 +229,61 @@ pub(crate) fn current(
         }
         Ok(Some(bound.frame.clone()))
     })
+}
+
+#[cfg(test)]
+mod large_binding_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn streaming_binding_matches_legacy_canonical_bytes() {
+        let body = json!({"data":{"string":"abc","signed":-7,"number":1.5}});
+        let tuple = ("logical-data-v1", "POST", "secret/data/item", "team", &body);
+        let old = crate::secret_serde::to_vec(&tuple, 1024 * 1024)
+            .ok()
+            .expect("small canonical old digest");
+        assert_eq!(
+            binding("POST", "secret/data/item", "team", &body).unwrap(),
+            crate::crypto::digest(&old),
+        );
+    }
+
+    #[test]
+    fn streaming_binding_accepts_1536k_and_rejects_changed_request_identity() {
+        let original = json!({"data":{"payload":"J".repeat(1536 * 1024)}});
+        let mut changed = original.clone();
+        changed["data"]["payload"] = json!("K".repeat(1536 * 1024));
+        let digest = binding("POST", "secret/data/large", "", &original).unwrap();
+        assert_ne!(
+            digest,
+            binding("POST", "secret/data/large", "", &changed).unwrap(),
+        );
+        let scope = Scope::enter(
+            Some(DataFrame::default()),
+            "POST",
+            "secret/data/large",
+            "",
+            &original,
+        )
+        .expect("bounded data-only original scope");
+        assert!(
+            current("POST", "secret/data/large", "", &original)
+                .unwrap()
+                .is_some()
+        );
+        assert!(current("POST", "secret/data/large", "", &changed).is_err());
+        drop(scope);
+        assert!(
+            current("POST", "secret/data/large", "", &original)
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn streaming_binding_rejects_over_budget_before_using_digest() {
+        let oversized = json!({"data":{"payload":"X".repeat(MAX_LOGICAL_BINDING_BYTES)}});
+        assert!(binding("POST", "secret/data/too-large", "", &oversized).is_err());
+    }
 }
