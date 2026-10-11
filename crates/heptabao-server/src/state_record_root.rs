@@ -137,13 +137,15 @@ impl RecordStateRoot {
         }
         let mut owner_total = 0_u64;
         for (owner, expected) in self.owners.iter().zip(OWNER_NAMES) {
-            if owner.name != expected
-                || owner.total_bytes == 0
-                || owner.total_bytes > MAX_OWNER_BYTES
-                || owner.chunks.is_empty()
-                || owner.chunks.len() > MAX_OWNER_CHUNKS
-            {
+            // Bad owner identity/shape is corruption; exceeding an otherwise
+            // valid record owner's declared budget is a capacity refusal.
+            // V5 still retains the aggregate legacy limit below: lifting that
+            // fence in-place would make older readers reject new V5 roots.
+            if owner.name != expected || owner.total_bytes == 0 || owner.chunks.is_empty() {
                 return Err(RootError::Invalid);
+            }
+            if owner.total_bytes > MAX_OWNER_BYTES || owner.chunks.len() > MAX_OWNER_CHUNKS {
+                return Err(RootError::TooLarge);
             }
             let mut bytes = 0_u64;
             for chunk in &owner.chunks {
@@ -303,6 +305,64 @@ mod tests {
                 root.identity().map_err(|_| "identity")?
             );
         }
+        Ok(())
+    }
+
+    #[test]
+    fn owner_budget_exhaustion_is_distinct_from_corrupt_owner_metadata() -> TestResult {
+        let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+        root.owners[0].total_bytes = MAX_OWNER_BYTES + 1;
+        assert_eq!(root.validate(), Err(RootError::TooLarge));
+        assert_eq!(root.encode().err(), Some(RootError::TooLarge));
+
+        let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+        let chunk = root.owners[0].chunks[0].clone();
+        root.owners[0].chunks.resize(MAX_OWNER_CHUNKS + 1, chunk);
+        assert_eq!(root.validate(), Err(RootError::TooLarge));
+
+        let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+        root.owners[0].name = "unexpected-owner".into();
+        assert_eq!(root.validate(), Err(RootError::Invalid));
+        let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+        root.owners[0].total_bytes = 0;
+        assert_eq!(root.validate(), Err(RootError::Invalid));
+        Ok(())
+    }
+
+    #[test]
+    fn v5_cannot_silently_increase_aggregate_owner_capacity_or_adopt_v6_roots() -> TestResult {
+        // Both owners individually fit. A larger V5 aggregate would be
+        // rejected by prior-version readers and could strand an HA replica.
+        // A versioned format + dual-reader rolling-upgrade protocol is needed.
+        let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+        let key = root.address_key();
+        let payload = vec![0x6bu8; OWNER_CHUNK_BYTES];
+        let object = StagedObject::owner_chunk(&key, &payload)?;
+        for index in 0..2 {
+            let name = OWNER_NAMES[index];
+            let refs = vec![object.reference().clone(); MAX_OWNER_CHUNKS / 2 + 1];
+            let bytes = payload.repeat(refs.len());
+            root.owners[index] = OpaqueOwnerRef {
+                name: name.into(),
+                total_bytes: bytes.len() as u64,
+                chunks: refs,
+                digest: digest_owner(&key, name, &bytes).map_err(|_| "owner digest")?,
+            };
+        }
+        assert!(root.owners[0].total_bytes <= MAX_OWNER_BYTES);
+        assert!(root.owners[1].total_bytes <= MAX_OWNER_BYTES);
+        assert_eq!(root.validate(), Err(RootError::TooLarge));
+        assert_eq!(root.encode().err(), Some(RootError::TooLarge));
+
+        let root = fixture(ObjectKind::PackedLeaf, 1)?;
+        let canonical = root.encode().map_err(|_| "v5 encode")?;
+        let divergent =
+            std::str::from_utf8(&canonical)?.replace(STORAGE_FORMAT, "heptabao-state-records-v6");
+        assert_ne!(divergent.as_bytes(), canonical.as_slice());
+        assert_eq!(
+            RecordStateRoot::decode(divergent.as_bytes()).err(),
+            Some(RootError::Invalid)
+        );
         Ok(())
     }
 
