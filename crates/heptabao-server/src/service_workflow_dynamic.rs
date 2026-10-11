@@ -560,11 +560,21 @@ impl Expr {
                 let (input, requests, responses) = context.expression_bindings();
                 source.preflight_runtime(&input, &requests, &responses, &context.meter)?;
             }
-            Self::Source(_, Source::Input(name)) => {
-                if !context.input.contains_key(name) {
-                    return Err(bad_profile("declared workflow input is unavailable"));
+            Self::Source(kind, Source::Input(name)) => {
+                let value = context
+                    .input
+                    .get(name)
+                    .ok_or_else(|| bad_profile("declared workflow input is unavailable"))?;
+                // A declared slice may be accepted by the input consumer even
+                // when an element is not a string. Reject an invalid later
+                // []string projection before an earlier provider write.
+                // All other eval_type casts (notably int64 and float runtime
+                // casts) deliberately retain their original execution stage.
+                if matches!(kind, Kind::Strings) {
+                    kind.runtime_value(value).map_err(|_| {
+                        Response::error(400, "workflow []string input projection is invalid")
+                    })?;
                 }
-                // eval_type is evaluated where this request/output executes.
             }
             Self::Object(object) => {
                 for value in object.values() { value.validate_inputs(context)?; }
@@ -888,6 +898,9 @@ impl Program {
         bounded_input_json(body, 0, &mut bytes, &self.fields, false).map_err(bad_profile)?;
         let mut input = InputValues(BTreeMap::new());
         for (name, field) in &self.fields {
+            // The established public FieldData conversion and missing-input
+            // error contract returns 500. This is separate from the 400
+            // pre-effect rejection for a malformed []string output projection.
             let selected = match supplied.and_then(|object| object.get(name)) {
                 Some(value) => field.kind.runtime_value(value)
                     .map_err(|_| Response::error(500, "workflow input field conversion failed"))?,

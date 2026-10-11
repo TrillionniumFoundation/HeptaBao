@@ -17,7 +17,7 @@ def distinct_endpoints(left: Client, left_health: dict, right: Client, right_hea
 
 
 def verify_oracle_identity(receipt: dict, oracle: Client, health: dict, *, version="2.6.2") -> dict:
-    if version not in ("2.6.2", "2.7.0"):
+    if version not in ("2.6.2", "2.7.0", "2.7.1"):
         raise BaoError("oracle_identity_unsupported_version")
     required = {"product", "version", "artifact_sha256", "provenance_url", "endpoint", "cluster_id"}
     if not isinstance(receipt, dict) or not required.issubset(receipt):

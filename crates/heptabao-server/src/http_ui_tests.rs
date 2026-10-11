@@ -24,15 +24,35 @@ impl Fixture {
         }
         let directory = root.join("dist");
         fs::create_dir(&directory)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&directory, fs::Permissions::from_mode(0o700))?;
+        }
         let mut pins = Vec::new();
         for (path, bytes) in files {
             let target = directory.join(path);
             fs::create_dir_all(target.parent().ok_or("parent")?)?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(target.parent().ok_or("parent")?, fs::Permissions::from_mode(0o700))?;
+            }
             fs::write(&target, bytes)?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&target, fs::Permissions::from_mode(0o600))?;
+            }
             pins.push(json!({"path":path,"bytes":bytes.len(),"sha256":sha256(bytes)}));
         }
         let manifest = root.join("pins.json");
         fs::write(&manifest, serde_json::to_vec(&pins)?)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&manifest, fs::Permissions::from_mode(0o600))?;
+        }
         Ok(Self {
             root,
             directory,

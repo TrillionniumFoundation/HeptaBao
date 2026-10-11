@@ -43,6 +43,8 @@ pub(crate) mod pki_role_fields;
 mod snapshot;
 #[path = "http_ui.rs"]
 mod ui;
+#[path = "http_approle_form.rs"]
+mod approle_form;
 #[path = "http_token_fields.rs"]
 pub(crate) mod token_fields;
 
@@ -1654,6 +1656,14 @@ fn read_request_with_ui(
     );
     let ocsp_form_media = ocsp::post_route(&method, route)
         && ocsp::form_media(map.get("content-type").map(|media| media.as_str()));
+    // This form codec is intentionally restricted to the literal default
+    // AppRole mount. Other authentication backends cannot opt into it.
+    let approle_form = approle_form::selected(
+        &method, route, map.get("content-type").map(|media| media.as_str())
+    );
+    if approle_form && !raw_query.is_empty() {
+        return Err(bad("AppRole form must not combine query credentials"));
+    }
     let maximum_body = if native_snapshot {
         crate::snapshot_file::MAX_NATIVE_ARCHIVE as usize
     } else if snapshot_route {
@@ -1703,6 +1713,7 @@ fn read_request_with_ui(
         && !native_snapshot
         && !ocsp_post
         && !ocsp_form_media
+        && !approle_form
         && !ocsp::post_route(&method, route)
         && !query_only
         && !help_selected
@@ -1828,6 +1839,8 @@ fn read_request_with_ui(
         carrier
     } else if native_snapshot || length == 0 || query_only {
         json!({})
+    } else if approle_form {
+        approle_form::parse(&bytes[header_end..]).map_err(bad)?
     } else if let Some(lexical) = &lexical_wrapping_body {
         lexical
             .wrapping_view()
@@ -4622,9 +4635,9 @@ mod transit_export_query_tests {
             ("nested/crypto/byok-export/destination/source?hash=bad", 500),
             ("nested/crypto/byok-export/destination/source?hash=SHA256&%68ash=SHA512", 400),
             ("nested/crypto/keys/source?hash=SHA256", 400),
-            ("unknown/byok-export/destination/source?hash=SHA256", 400),
+            ("unknown/byok-export/destination/source?hash=SHA256", 404),
         ] {
-            assert_eq!(wire(&mut service, &root, "GET", path, json!({}))?.status, status);
+            assert_eq!(wire(&mut service, &root, "GET", path, json!({}))?.status, status, "{path}");
         }
         assert_eq!(wire(&mut service, &root, "POST", "sys/mounts/sibling/data", json!({"type":"kv"}))?.status, 204);
         assert_eq!(wire(&mut service, &root, "GET",

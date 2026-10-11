@@ -466,7 +466,7 @@ fn ssh115_same_namespace_retained_alias_is_data_and_survives_real_encrypted_reop
     );
     assert_eq!(
         service.state.as_ref().ok_or("reopened State")?.schema,
-        SSH_CA_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     let certificate = certify(
         owned(

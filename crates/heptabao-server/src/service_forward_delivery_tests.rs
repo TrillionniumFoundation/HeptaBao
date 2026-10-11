@@ -76,8 +76,8 @@ fn prepare_with_ttl_and_root(
         .status,
         200
     );
-    if ttl == "1s" {
-        // The one-second actor below is the subject of the late-audit test.
+    if ttl == "3s" {
+        // The short-lived actor below is the subject of the late-audit test.
         // Activate the real precise token state before the Raft fixture so
         // its original lifetime does not include first-use state migration.
         let warm = native(
@@ -118,7 +118,7 @@ fn prepare_with_ttl_and_root(
     let before_initial_ha = Instant::now();
     service.ha = Some(Arc::clone(&cluster.processes[0]));
     service.sync_from_ha().map_err(|_| "initial HA state")?;
-    if ttl == "1s" {
+    if ttl == "3s" {
         eprintln!(
             "[Root-short-actor-initial-HA-before-mint] seed_elapsed_ms={} actual_precision={} actor_not_minted=true HA_attached=true",
             before_initial_ha.elapsed().as_millis(),
@@ -142,9 +142,9 @@ fn prepare_with_ttl_and_root(
         &token,
         json!({"ttl":ttl,"num_uses":2,"policies":["forward-test"],"no_default_policy":true}),
     );
-    if ttl == "1s" {
+    if ttl == "3s" {
         eprintln!(
-            "[Root-completed-forward-actor-entry] precise_before_mint={} original_ttl_one_second=true mint_elapsed_ms={} status={}",
+            "[Root-completed-forward-actor-entry] precise_before_mint={} original_ttl_seconds=3 mint_elapsed_ms={} status={}",
             precise_before_mint,
             before_mint.elapsed().as_millis(),
             minted.status
@@ -166,7 +166,7 @@ fn prepare_with_ttl_and_root(
         .as_str()
         .ok_or("accessor")?
         .to_owned();
-    if ttl == "1s" {
+    if ttl == "3s" {
         observe_short_actor(&service, &accessor, "after_real_HA_attached_mint")?;
     }
     Ok((service, cluster, actor, accessor, token))
@@ -502,7 +502,12 @@ fn completed_forward_missing_proof_audits_without_raft_and_clears_private_reject
 #[test]
 fn completed_forward_long_local_mandatory_audit_withholds_expired_original_actor() -> TestResult {
     let files = Root::new();
-    let (mut service, cluster, actor, accessor) = prepare_with_ttl(&files, "1s")?;
+    // The unmodified one-second fixture can expire before the leader's
+    // genuine first request under parallel crypto/HA test contention. Give
+    // that request time to commit, then hold the mandatory follower audit
+    // past the *actual* three-second actor expiry. This still tests the
+    // original-token gate, never a synthetic clock or re-anchored actor.
+    let (mut service, cluster, actor, accessor) = prepare_with_ttl(&files, "3s")?;
     let (response, wire, request, nonce, deadline) = leader_completion(&mut service, &actor)?;
     assert!(
         wire.actor.is_some(),
@@ -539,7 +544,7 @@ fn completed_forward_long_local_mandatory_audit_withholds_expired_original_actor
         100,
         Some(original_clock),
         response,
-        || std::thread::sleep(Duration::from_millis(1100)),
+        || std::thread::sleep(Duration::from_millis(3300)),
     );
     let response = service.complete_forward_delivery(response, "late-forward-original-actor");
     assert_eq!(response.status, 403, "{}", response.body);

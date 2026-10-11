@@ -1,5 +1,5 @@
-//! Service publication tests inject a TokenReview observation only at login.
-//! The real TLS fixture separately proves login I/O and renewal's absence of I/O.
+//! Service publication tests inject verified TokenReview observations at
+//! login and renewal. Live provider revocation must be tested separately.
 use super::online_auth::OnlineAuthObservation;
 use super::tests::{Root, bootstrap, call};
 use super::*;
@@ -127,9 +127,14 @@ fn local_renew(
         client_certificates: None,
     }) {
         RequestExecution::Complete(response) => Ok(response),
-        RequestExecution::External(_) => {
-            Err("Kubernetes renewal must not perform TokenReview".into())
-        }
+        RequestExecution::External(pending) => Ok(service.finish_external_request(
+            *pending,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::ProviderRenewal(
+                crate::auth::ProviderRenewalObservation::Kubernetes(
+                    KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
+                ),
+            ))),
+        )),
     }
 }
 
@@ -192,7 +197,7 @@ fn kubernetes_service_renewal_echo_wrapping_and_role_deletion_survive_restart() 
             service
                 .handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 112)
                 .body["data"]["expire_time_unix"],
-            230
+            231
         );
         assert_eq!(
             service
@@ -214,7 +219,7 @@ fn kubernetes_service_renewal_echo_wrapping_and_role_deletion_survive_restart() 
             service
                 .handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 112)
                 .body["data"]["expire_time_unix"],
-            230
+            231
         );
         assert!(
             service
@@ -918,10 +923,24 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
             other,
         ),
     ] {
-        assert_eq!(
-            cidr_local(&mut service, "POST", path, actor, body, peer)?.status,
-            200
+        // Accepted caller CIDRs do not replace fresh Kubernetes TokenReview.
+        let pending = match cidr_dispatch(
+            &mut service, "POST", path, actor, body, peer, None,
+        ) {
+            RequestExecution::External(pending) => pending,
+            RequestExecution::Complete(response) => {
+                return Err(format!("renewal bypassed TokenReview: {}", response.status).into());
+            }
+        };
+        let response = service.finish_external_request(
+            *pending,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::ProviderRenewal(
+                crate::auth::ProviderRenewalObservation::Kubernetes(
+                    KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
+                ),
+            ))),
         );
+        assert_eq!(response.status, 200);
     }
     let lookup = cidr_local(
         &mut service,
@@ -933,5 +952,60 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
     )?;
     assert_eq!(lookup.status, 200);
     assert_eq!(lookup.body["data"]["bound_cidrs"], json!(["127.0.0.1"]));
+    Ok(())
+}
+
+
+#[test]
+fn kubernetes_post_revocation_tokenreview_and_recreated_uid_cannot_extend_any_renewal_route() -> TestResult {
+    for operation in ["renew-self", "renew", "renew-accessor"] {
+        let root = Root::new();
+        let (mut service, _key, admin, token) = fixture(&root)?;
+        let accessor = call(&mut service, "GET", "auth/token/lookup-self", &token, json!({}))
+            .body["data"]["accessor"].as_str().ok_or("accessor")?.to_owned();
+        let path = format!("auth/token/{operation}");
+        let actor = if operation == "renew-self" { &token } else { &admin };
+        let body = match operation {
+            "renew" => json!({"token":token, "increment":120}),
+            "renew-accessor" => json!({"accessor":accessor, "increment":120}),
+            _ => json!({"increment":120}),
+        };
+        let before = serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?;
+        for failure_mode in ["revoked-jwt", "recreated-serviceaccount-uid"] {
+            let pending = match service.begin_at_mode(RequestDispatch {
+                method: "POST",
+                path: &path,
+                namespace: "",
+                token: actor,
+                body: body.clone(),
+                now: 110,
+                allow_forward: false,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            }) {
+                RequestExecution::External(plan) => plan,
+                RequestExecution::Complete(response) => {
+                    return Err(format!("missing TokenReview effect for {operation}: {}", response.status).into());
+                },
+            };
+            let observation = match failure_mode {
+                "revoked-jwt" => ExternalEffectResult::OnlineAuth(
+                    Err(Response::error(403, "Kubernetes TokenReview denied revoked assertion"))),
+                _ => ExternalEffectResult::OnlineAuth(
+                    Ok(OnlineAuthObservation::ProviderRenewal(
+                        crate::auth::ProviderRenewalObservation::Kubernetes(
+                            KubernetesLoginObservation::observed("workload", "worker", "recreated-uid"),
+                        ),
+                    )),
+                ),
+            };
+            let denied = service.finish_external_request(*pending, observation);
+            assert_ne!(denied.status, 200, "{operation}/{failure_mode} must fail closed");
+            let after = serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?;
+            assert_eq!(after, before, "{operation}/{failure_mode} must not extend an authenticated lease");
+        }
+    }
     Ok(())
 }

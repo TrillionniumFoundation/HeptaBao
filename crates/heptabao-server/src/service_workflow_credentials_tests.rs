@@ -769,8 +769,8 @@ fn workflow128_active_and_retired_reader_floor_survives_actual_commit_and_reopen
     assert!(supported_reader_schema(previous.schema));
     install(&mut f, READ_PROFILE);
     let current = f.service.state.as_ref().ok_or("state")?.clone();
-    assert_eq!(current.schema, WORKFLOW_CREDENTIAL_STATE_SCHEMA);
-    assert_eq!(current.writer_schema(), WORKFLOW_CREDENTIAL_STATE_SCHEMA);
+    assert_eq!(current.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(current.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
     assert!(current.namespaces.workflows.has_request_credentials());
     current.validate_format().map_err(|_| "credential format")?;
     current
@@ -795,7 +795,7 @@ fn workflow128_active_and_retired_reader_floor_survives_actual_commit_and_reopen
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        WORKFLOW_CREDENTIAL_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     assert_eq!(
         call(
@@ -811,8 +811,8 @@ fn workflow128_active_and_retired_reader_floor_survives_actual_commit_and_reopen
     );
     let retired = f.service.state.as_ref().ok_or("state")?.clone();
     assert!(!retired.namespaces.workflows.has_request_credentials());
-    assert_eq!(retired.schema, WORKFLOW_CREDENTIAL_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), WORKFLOW_CREDENTIAL_STATE_SCHEMA);
+    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
     assert_eq!(
         serde_json::to_value(&retired.namespaces.workflows)?,
         original_workflows
@@ -824,7 +824,7 @@ fn workflow128_active_and_retired_reader_floor_survives_actual_commit_and_reopen
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        WORKFLOW_CREDENTIAL_STATE_SCHEMA
+        USERPASS_ISSUANCE_STATE_SCHEMA
     );
     assert_eq!(
         call(

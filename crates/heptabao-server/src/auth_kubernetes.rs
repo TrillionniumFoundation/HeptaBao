@@ -60,6 +60,7 @@ pub(crate) struct KubernetesLoginPlan {
     started: std::time::Instant,
 }
 
+#[derive(Clone, PartialEq, Eq)]
 pub(crate) struct KubernetesLoginObservation {
     service_account_namespace: String,
     service_account_name: String,
@@ -73,6 +74,39 @@ impl KubernetesLoginObservation {
             service_account_namespace: namespace.into(),
             service_account_name: name.into(),
             service_account_uid: uid.into(),
+        }
+    }
+}
+
+/// Original credential and identity persisted only inside the sealed token owner.
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct KubernetesRenewalCustody {
+    credential: ProviderCredential,
+    service_account_namespace: String,
+    service_account_name: String,
+    service_account_uid: String,
+}
+
+pub(crate) struct KubernetesRenewalPlan {
+    login: KubernetesLoginPlan,
+    target: Zeroizing<String>,
+    target_revision: [u8; 32],
+    original_identity: KubernetesLoginObservation,
+    path: String,
+    increment: u64,
+}
+impl KubernetesRenewalPlan {
+    pub(crate) fn execute(&self, outbound: &Outbound) -> Result<KubernetesLoginObservation, AuthError> {
+        self.login.execute(outbound, crate::outbound::auth_https_deadline())
+    }
+    pub(crate) fn delivery_target(&self) -> &str { &self.target }
+    pub(crate) fn observed_now_for(&self, actor: &Principal) -> Result<u64, AuthError> {
+        if actor.request_clock.is_some() {
+            actor.request_authority_time(AuthorityTime::Coarse(self.login.now))
+                .map(AuthorityTime::seconds)
+        } else {
+            Ok(self.login.observed_now())
         }
     }
 }
@@ -345,12 +379,19 @@ impl AuthState {
 
     pub(crate) fn validate_kubernetes_renewal_state(&self) -> Result<(), AuthError> {
         for token in self.tokens.values() {
-            if let Some(TokenAuthProvenance::Kubernetes { role_name }) = &token.auth_provenance
+            if let Some(TokenAuthProvenance::Kubernetes { role_name, renewal_custody }) = &token.auth_provenance
                 && (token.root
                     || token.parent.is_some()
                     || !token.auth_origin_known
                     || token.wrapping.is_some()
                     || !valid_name(role_name)
+                    || renewal_custody.as_ref().is_some_and(|custody| {
+                        !credential(&custody.credential.0)
+                            || !dns_name(&custody.service_account_namespace, true)
+                            || !dns_name(&custody.service_account_name, false)
+                            || custody.service_account_uid.is_empty()
+                            || custody.service_account_uid.len() > 128
+                    })
                     || token.period > MAX_TTL
                     || token.policies.contains("root")
                     || token.auth_cert_role.is_some()
@@ -365,71 +406,24 @@ impl AuthState {
         Ok(())
     }
 
+    /// Direct renewal is not an authority: external TokenReview is mandatory.
     pub(super) fn renew_kubernetes_token(
-        &mut self,
-        namespace: &str,
-        target: &str,
-        body: &Value,
-        now: u64,
+        &mut self, namespace: &str, target: &str, _body: &Value, _now: u64,
     ) -> Result<Option<AuthResponse>, AuthError> {
-        let token = self.tokens.get(target).ok_or_else(denied)?;
-        let Some(TokenAuthProvenance::Kubernetes { role_name }) = token.auth_provenance.as_ref()
-        else {
-            if token.auth_provenance.is_none()
-                && token.parent.is_none()
-                && token.auth_mount.as_ref().is_some_and(|mount| {
-                    self.online_mount_enabled(&token.namespace, mount, "kubernetes")
-                })
-            {
-                return Err(bad(
-                    "legacy Kubernetes token has no issuing role provenance; log in again",
-                ));
-            }
-            return Ok(None);
-        };
-        if token.namespace != namespace || token.parent.is_some() {
-            return Err(denied());
+        let Some(token) = self.tokens.get(target) else { return Ok(None); };
+        if token.namespace == namespace
+            && matches!(token.auth_provenance, Some(TokenAuthProvenance::Kubernetes { .. }))
+        {
+            return Err(err(503, "Kubernetes renewal requires fresh TokenReview"));
         }
-        if !token.renewable {
-            return Err(bad("token is not renewable"));
+        if token.auth_provenance.is_none() && token.parent.is_none()
+            && token.auth_mount.as_ref().is_some_and(|mount| {
+                self.online_mount_enabled(&token.namespace, mount, "kubernetes")
+            })
+        {
+            return Err(bad("legacy Kubernetes token lacks renewal provenance; log in again"));
         }
-        let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
-        let scope = AuthScope { namespace, mount };
-        if !self.online_mount_enabled(namespace, mount, "kubernetes") {
-            return Err(denied());
-        }
-        // TokenReview authenticates login only. Current reviewer credentials,
-        // audience, account bounds and assigned policies do not reauthenticate
-        // a service token or replace its issued policy snapshot.
-        let role = self
-            .kubernetes_at(scope)
-            .and_then(|state| state.roles.get(role_name))
-            .ok_or_else(|| err(500, "Kubernetes role does not exist during renewal"))?;
-        let expires_at = self.native_token_expiry(
-            scope,
-            role.limits(),
-            token.created_at,
-            token.max_expires_at,
-            duration(body, "increment", 0)?,
-            now,
-        )?;
-        let token = self.tokens.get_mut(target).ok_or_else(denied)?;
-        token.expires_at = Some(expires_at);
-        Ok(Some(AuthResponse {
-            unwrapped_json: None,
-            approle_secret_consumption: None,
-            pending_batch: None,
-            pending_service: None,
-            login_identity: None,
-            external_groups: None,
-            status: 200,
-            mutated: true,
-            body: json!({"auth": {
-                "accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
-                "entity_id":token.entity_id.as_deref().unwrap_or(""),
-                "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
-            }}),
-        }))
+        Ok(None)
     }
 
     pub(crate) fn online_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
@@ -1014,6 +1008,12 @@ impl AuthState {
                 uses: plan.role.token_num_uses,
                 provenance: TokenAuthProvenance::Kubernetes {
                     role_name: plan.role_name.clone(),
+                    renewal_custody: Some(KubernetesRenewalCustody {
+                        credential: ProviderCredential::new(plan.presented.as_str()),
+                        service_account_namespace: observation.service_account_namespace.clone(),
+                        service_account_name: observation.service_account_name.clone(),
+                        service_account_uid: observation.service_account_uid.clone(),
+                    }),
                 },
             },
             now,
@@ -1025,6 +1025,129 @@ impl AuthState {
             "role":plan.role_name
         });
         Ok(issued)
+    }
+}
+
+
+impl AuthState {
+    pub(super) fn prepare_kubernetes_renewal_target(
+        &self,
+        namespace: &str,
+        path: &str,
+        target: Zeroizing<String>,
+        increment: u64,
+        time: AuthorityTime,
+    ) -> Result<KubernetesRenewalPlan, AuthError> {
+        let time = self.token_api_observed_time(time);
+        let token = self.active_token_observed(&target, time, false)?;
+        if token.namespace != namespace || token.parent.is_some() || !token.renewable {
+            return Err(denied());
+        }
+        let (role_name, custody) = match &token.auth_provenance {
+            Some(TokenAuthProvenance::Kubernetes {
+                role_name, renewal_custody: Some(custody),
+            }) => (role_name, custody),
+            Some(TokenAuthProvenance::Kubernetes { .. }) => {
+                return Err(bad("Kubernetes token has no original JWT custody; log in again"));
+            }
+            _ => return Err(denied()),
+        };
+        if !credential(&custody.credential.0) {
+            return Err(denied());
+        }
+        let mount = token.auth_mount.as_ref().ok_or_else(denied)?;
+        let mount_revision = self.effective_auth_mounts(namespace)
+            .get(mount)
+            .cloned()
+            .filter(|entry| entry.kind == "kubernetes")
+            .ok_or_else(denied)?;
+        let state = self.kubernetes_at(AuthScope { namespace, mount }).ok_or_else(denied)?;
+        let config = state.config.clone().ok_or_else(|| err(503, "Kubernetes auth is not configured"))?;
+        let role = state.roles.get(role_name).cloned()
+            .ok_or_else(|| err(500, "Kubernetes role does not exist during renewal"))?;
+        let login = KubernetesLoginPlan {
+            namespace: namespace.to_owned(),
+            mount: mount.to_owned(),
+            mount_revision,
+            role_name: role_name.clone(),
+            presented: Zeroizing::new(custody.credential.0.clone()),
+            config,
+            role,
+            origin_peer: None,
+            now: time.seconds(),
+            started: std::time::Instant::now(),
+        };
+        Ok(KubernetesRenewalPlan {
+            login,
+            target_revision: super::provider_renewal::state_revision(token)?,
+            original_identity: KubernetesLoginObservation {
+                service_account_namespace: custody.service_account_namespace.clone(),
+                service_account_name: custody.service_account_name.clone(),
+                service_account_uid: custody.service_account_uid.clone(),
+            },
+            target,
+            path: path.to_owned(),
+            increment,
+        })
+    }
+
+    pub(super) fn finish_kubernetes_renewal(
+        &mut self,
+        plan: KubernetesRenewalPlan,
+        actor: &Principal,
+        observation: KubernetesLoginObservation,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        // A deleted and recreated ServiceAccount may have the same name but
+        // a different UID. All three original identity fields are immutable.
+        if observation != plan.original_identity {
+            return Err(denied());
+        }
+        let time = self.principal_token_api_time(actor, AuthorityTime::Coarse(now))?;
+        self.authorize_request_observed(actor, &plan.login.namespace, &plan.path, "update", time)?;
+        let time = self.principal_token_api_time(actor, time)?;
+        let now = time.seconds();
+        let login = &plan.login;
+        let token = self.active_token_observed(&plan.target, time, false)?;
+        if token.namespace != login.namespace || token.parent.is_some() || !token.renewable
+            || super::provider_renewal::state_revision(token)? != plan.target_revision
+            || self.effective_auth_mounts(&login.namespace).get(&login.mount)
+                != Some(&login.mount_revision)
+            || self.kubernetes_at(AuthScope { namespace: &login.namespace, mount: &login.mount })
+                .is_none_or(|state| state.config.as_ref() != Some(&login.config)
+                    || state.roles.get(&login.role_name) != Some(&login.role))
+        {
+            return Err(err(409, "Kubernetes renewal authority changed during TokenReview"));
+        }
+        let expires_at = self.native_token_expiry(
+            AuthScope { namespace: &login.namespace, mount: &login.mount },
+            login.role.limits(),
+            token.created_at,
+            token.max_expires_at,
+            plan.increment,
+            now,
+        )?;
+        let token = self.tokens.get_mut(plan.target.as_str()).ok_or_else(denied)?;
+        token.expires_at = Some(expires_at);
+        Ok(AuthResponse {
+            unwrapped_json: None,
+            approle_secret_consumption: None,
+            pending_batch: None,
+            pending_service: None,
+            login_identity: None,
+            external_groups: None,
+            status: 200,
+            mutated: true,
+            body: json!({"auth": {
+                "accessor":token.accessor,
+                "policies":token.policies,
+                "token_policies":token.policies,
+                "entity_id":token.entity_id.as_deref().unwrap_or(""),
+                "lease_duration":expires_at-now,
+                "renewable":true,
+                "token_type":"service"
+            }}),
+        })
     }
 }
 

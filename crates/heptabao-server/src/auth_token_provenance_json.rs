@@ -45,6 +45,8 @@ enum Wire {
     },
     Kubernetes {
         role_name: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        renewal_custody: Option<kubernetes::KubernetesRenewalCustody>,
     },
     Oidc {
         role_name: String,
@@ -131,7 +133,7 @@ impl<'de> Deserialize<'de> for TokenAuthProvenance {
                 credential,
             },
             Wire::Jwt { role_name } => Self::Jwt { role_name },
-            Wire::Kubernetes { role_name } => Self::Kubernetes { role_name },
+            Wire::Kubernetes { role_name, renewal_custody } => Self::Kubernetes { role_name, renewal_custody },
             Wire::Oidc { role_name } => Self::Oidc { role_name },
             Wire::Kerberos {
                 provider,

@@ -398,7 +398,7 @@ fn backup270_native_hmac_marker_preserves_legacy_bytes_and_new_key_size_across_r
             &json!({"type":"hmac","key_size":bad_size}),
             100,
         );
-        assert!(result.is_err_and(|e| e.status == 500));
+        assert!(result.is_err_and(|e| e.status == if bad_size == 0 { 500 } else { 400 }));
         assert!(capture(&t)?.as_slice() == before.as_slice());
     }
     call(

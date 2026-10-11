@@ -1446,6 +1446,9 @@ enum TokenAuthProvenance {
     },
     Kubernetes {
         role_name: String,
+        /// Sealed original JWT and login identity; missing on old tokens.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        renewal_custody: Option<kubernetes::KubernetesRenewalCustody>,
     },
     Oidc {
         role_name: String,

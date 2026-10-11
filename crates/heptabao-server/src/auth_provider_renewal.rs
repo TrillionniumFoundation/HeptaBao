@@ -22,11 +22,13 @@ impl Drop for ProviderCredential {
 pub(crate) enum ProviderRenewalPlan {
     Radius(RadiusRenewalPlan),
     Ldap(LdapRenewalPlan),
+    Kubernetes(kubernetes::KubernetesRenewalPlan),
 }
 
 pub(crate) enum ProviderRenewalObservation {
     Radius(RadiusRenewalObservation),
     Ldap(LdapRenewalObservation),
+    Kubernetes(KubernetesLoginObservation),
 }
 
 impl ProviderRenewalPlan {
@@ -39,6 +41,7 @@ impl ProviderRenewalPlan {
                 .execute(outbound)
                 .map(ProviderRenewalObservation::Radius),
             Self::Ldap(plan) => plan.execute(outbound).map(ProviderRenewalObservation::Ldap),
+            Self::Kubernetes(plan) => plan.execute(outbound).map(ProviderRenewalObservation::Kubernetes),
         }
     }
 
@@ -46,6 +49,7 @@ impl ProviderRenewalPlan {
         match self {
             Self::Radius(plan) => plan.observed_now_for(actor),
             Self::Ldap(plan) => plan.observed_now_for(actor),
+            Self::Kubernetes(plan) => plan.observed_now_for(actor),
         }
     }
 
@@ -53,6 +57,7 @@ impl ProviderRenewalPlan {
         match self {
             Self::Radius(plan) => plan.delivery_target(),
             Self::Ldap(plan) => plan.delivery_target(),
+            Self::Kubernetes(plan) => plan.delivery_target(),
         }
     }
 }
@@ -165,6 +170,10 @@ impl AuthState {
                 .prepare_ldap_renewal_target(namespace, path, target, increment, time)
                 .map(ProviderRenewalPlan::Ldap)
                 .map(Some),
+            Some(TokenAuthProvenance::Kubernetes { .. }) => self
+                .prepare_kubernetes_renewal_target(namespace, path, target, increment, time)
+                .map(ProviderRenewalPlan::Kubernetes)
+                .map(Some),
             _ => {
                 self.require_offline_renewal_origin(&target)?;
                 Ok(None)
@@ -204,6 +213,9 @@ impl AuthState {
             ) => self.finish_radius_renewal(plan, actor, observation, now),
             (ProviderRenewalPlan::Ldap(plan), ProviderRenewalObservation::Ldap(observation)) => {
                 self.finish_ldap_renewal(plan, actor, observation, now)
+            }
+            (ProviderRenewalPlan::Kubernetes(plan), ProviderRenewalObservation::Kubernetes(observation)) => {
+                self.finish_kubernetes_renewal(plan, actor, observation, now)
             }
             _ => Err(err(503, "provider renewal observation type mismatch")),
         }

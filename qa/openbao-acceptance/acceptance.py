@@ -577,7 +577,7 @@ def main(argv=None):
     parser.add_argument("--candidate-prefix", default="HB_CANDIDATE")
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
-    parser.add_argument("--oracle-version", choices=("2.6.2", "2.7.0"), default="2.6.2")
+    parser.add_argument("--oracle-version", choices=("2.6.2", "2.7.0", "2.7.1"), default="2.6.2")
     parser.add_argument("--allow-test-writes", action="store_true")
     parser.add_argument("--modules", default="core,kv,token,transit,pki,totp,userpass,approle,wrapping,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")

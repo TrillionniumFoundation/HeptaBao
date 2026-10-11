@@ -2608,9 +2608,17 @@ mod tests {
     {
         let (mut root, intermediate) = setup()?;
         let serial = intermediate.root.as_ref().ok_or("CA")?.serial.clone();
+        // These two independent engine owners must agree on the actual
+        // signed DER serial, including historical leading-zero spellings.
+        // Capture a distinct failure if randomized issuance disagrees.
+        assert!(
+            root.signed_ca_serials().any(|stored| stored == &serial),
+            "the root signed-CA registry must own the intermediate serial"
+        );
         root.validate("", "pki/", NOW)?;
-        let response =
-            root.handle_admin("POST", "revoke", &json!({"serial_number":serial}), NOW + 1)?;
+        let response = root
+            .handle_admin("POST", "revoke", &json!({"serial_number":serial}), NOW + 1)
+            .map_err(|error| format!("signed-CA revoke phase: {error:?}"))?;
         assert_eq!(response.body["data"]["state"], "revoked");
         root.validate("", "pki/", NOW + 1)?;
         let issuer = root.root.as_ref().ok_or("issuer")?;
@@ -2635,14 +2643,16 @@ mod tests {
         );
         let before = Zeroizing::new(serde_json::to_vec(&root)?);
         let read =
-            root.handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?;
+            root.handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)
+                .map_err(|error| format!("signed-CA public-read phase: {error:?}"))?;
         assert_eq!(read.body["data"]["revocation_time"], NOW + 1);
         assert_eq!(*before, serde_json::to_vec(&root)?);
         let mut reopened: Pki = serde_json::from_slice(&before)?;
         reopened.validate("", "pki/", NOW + 1)?;
         assert_eq!(
             reopened
-                .handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?
+                .handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)
+                .map_err(|error| format!("signed-CA reopen-read phase: {error:?}"))?
                 .body,
             read.body
         );
@@ -2665,7 +2675,8 @@ mod tests {
                 "indexed CA field {field} remains owned"
             );
         }
-        reopened.handle_admin("DELETE", "root", &json!({}), NOW + 2)?;
+        reopened.handle_admin("DELETE", "root", &json!({}), NOW + 2)
+            .map_err(|error| format!("signed-CA root-retire phase: {error:?}"))?;
         reopened.validate("", "pki/", NOW + 2)?;
         assert!(reopened.has_local_intermediate_state());
         assert!(reopened.local_certificate(&serial).is_some());
