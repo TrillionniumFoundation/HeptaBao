@@ -67,6 +67,10 @@ mod secret_serde;
 pub(crate) mod state_record_root;
 mod state_records;
 
+#[cfg(test)]
+#[path = "kv2_v6_record_trial.rs"]
+mod kv2_v6_record_trial;
+
 mod login_metadata;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]

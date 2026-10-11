@@ -48,60 +48,69 @@ impl Service {
         let opaque_owner_limit = self.opaque_owner_limit();
         let state_limit = opaque_owner_limit;
 
-        let (state_bytes, state_limit, storage_format, profile, chunk_target, size_basis) =
-            if let Some(root) = &self.record_root {
-                let owner_bytes = root
-                    .owners
-                    .iter()
-                    .map(|owner| owner.total_bytes)
-                    .sum::<u64>();
-                let kv_bytes = root
-                    .kv1
-                    .reference
-                    .as_ref()
-                    .map_or(0, |reference| reference.payload_bytes);
-                let Some(total) = owner_bytes
-                    .checked_add(kv_bytes)
-                    .and_then(|bytes| usize::try_from(bytes).ok())
-                else {
-                    return Response::error(503, "record capacity arithmetic failed");
-                };
-                #[cfg(not(test))]
-                let Some(record_limit) =
-                    opaque_owner_limit.checked_add(crate::state_records::MAX_GRAPH_BYTES)
-                else {
-                    return Response::error(503, "record capacity arithmetic failed");
-                };
-                #[cfg(test)]
-                let record_limit = if self.state_capacity == MAX_STATE_BYTES {
-                    opaque_owner_limit + crate::state_records::MAX_GRAPH_BYTES
-                } else {
-                    self.state_capacity
-                };
-                (
-                    total,
-                    record_limit,
-                    crate::state_record_root::STORAGE_FORMAT,
-                    "bounded-record-state-v5",
-                    crate::state_record_root::OWNER_CHUNK_BYTES,
-                    "opaque-owner-json-plus-kv1-canonical-values",
-                )
-            } else {
-                let bytes = match owner_store::serialize_owner(state) {
-                    Ok(bytes) => bytes.len(),
-                    Err(_) => {
-                        return Response::error(503, "server state serialization unavailable");
-                    }
-                };
-                (
-                    bytes,
-                    state_limit,
-                    owner_store::STATE_STORAGE_FORMAT,
-                    "bounded-owner-state-v4",
-                    owner_store::STATE_CHUNK_BYTES,
-                    "canonical-state-json",
-                )
+        let (
+            state_bytes,
+            state_limit,
+            storage_format,
+            profile,
+            chunk_target,
+            size_basis,
+            opaque_owner_bytes,
+        ) = if let Some(root) = &self.record_root {
+            let owner_bytes = root
+                .owners
+                .iter()
+                .map(|owner| owner.total_bytes)
+                .sum::<u64>();
+            let kv_bytes = root
+                .kv1
+                .reference
+                .as_ref()
+                .map_or(0, |reference| reference.payload_bytes);
+            let Some(total) = owner_bytes
+                .checked_add(kv_bytes)
+                .and_then(|bytes| usize::try_from(bytes).ok())
+            else {
+                return Response::error(503, "record capacity arithmetic failed");
             };
+            #[cfg(not(test))]
+            let Some(record_limit) =
+                opaque_owner_limit.checked_add(crate::state_records::MAX_GRAPH_BYTES)
+            else {
+                return Response::error(503, "record capacity arithmetic failed");
+            };
+            #[cfg(test)]
+            let record_limit = if self.state_capacity == MAX_STATE_BYTES {
+                opaque_owner_limit + crate::state_records::MAX_GRAPH_BYTES
+            } else {
+                self.state_capacity
+            };
+            (
+                total,
+                record_limit,
+                crate::state_record_root::STORAGE_FORMAT,
+                "bounded-record-state-v5",
+                crate::state_record_root::OWNER_CHUNK_BYTES,
+                "opaque-owner-json-plus-kv1-canonical-values",
+                Some(owner_bytes),
+            )
+        } else {
+            let bytes = match owner_store::serialize_owner(state) {
+                Ok(bytes) => bytes.len(),
+                Err(_) => {
+                    return Response::error(503, "server state serialization unavailable");
+                }
+            };
+            (
+                bytes,
+                state_limit,
+                owner_store::STATE_STORAGE_FORMAT,
+                "bounded-owner-state-v4",
+                owner_store::STATE_CHUNK_BYTES,
+                "canonical-state-json",
+                None,
+            )
+        };
         if state_bytes > state_limit {
             return Response::error(503, "committed server state exceeds configured capacity");
         }
@@ -121,6 +130,13 @@ impl Service {
             "durable_payload_bytes": capacity.logical_payload_bytes,
             "durable_artifact_limit_bytes": capacity.max_file_bytes,
             "opaque_owner_limit_bytes": opaque_owner_limit,
+            // A V5 record graph may have ample KV1 space while the still-opaque
+            // engines/auth owner aggregate has no room for its next mutation.
+            // This is observational headroom only, never a reservation.
+            "opaque_owner_aggregate_bytes": opaque_owner_bytes,
+            "opaque_owner_remaining_bytes": opaque_owner_bytes.map(|bytes|
+                (opaque_owner_limit as u64).saturating_sub(bytes)),
+            "opaque_owner_remaining_is_admission_budget": false,
             "kv1_encoded_graph_limit_bytes": crate::state_records::MAX_GRAPH_BYTES,
             "state_remaining_is_admission_budget": false,
             "state_limit_bytes": state_limit,
@@ -248,6 +264,54 @@ mod tests {
     }
 
     #[test]
+    fn v5_capacity_reports_opaque_owner_headroom_separate_from_kv_record_graph()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = super::super::tests::bootstrap_unmounted(&mut service)?;
+        let mounted = call(
+            &mut service,
+            "POST",
+            "sys/mounts/secret",
+            &token,
+            json!({"type":"kv","options":{"version":"2"}}),
+        );
+        assert_eq!(mounted.status, 204);
+        let capacity = call(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(capacity.status, 200);
+        let data = &capacity.body["data"];
+        assert_eq!(data["profile"], "bounded-record-state-v5");
+        let used = data["opaque_owner_aggregate_bytes"]
+            .as_u64()
+            .ok_or("owner bytes")?;
+        let remaining = data["opaque_owner_remaining_bytes"]
+            .as_u64()
+            .ok_or("remaining")?;
+        assert!(used > 0 && used <= MAX_STATE_BYTES as u64);
+        assert_eq!(used + remaining, MAX_STATE_BYTES as u64);
+        let exposed_total = data["state_limit_bytes"].as_u64().ok_or("state limit")?;
+        assert_eq!(
+            exposed_total,
+            (MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES) as u64
+        );
+        assert_eq!(data["state_remaining_is_admission_budget"], false);
+        assert_eq!(data["opaque_owner_remaining_is_admission_budget"], false);
+        assert!(
+            data["state_remaining_bytes"]
+                .as_u64()
+                .ok_or("total remaining")?
+                > remaining
+        );
+        Ok(())
+    }
+
+    #[test]
     fn capacity_is_root_namespace_only_and_does_not_mutate()
     -> Result<(), Box<dyn std::error::Error>> {
         let root = Root::new();
@@ -277,6 +341,9 @@ mod tests {
             owner_store::STATE_CHUNK_BYTES
         );
         assert_eq!(data["profile"], "bounded-owner-state-v4");
+        assert!(data["opaque_owner_aggregate_bytes"].is_null());
+        assert!(data["opaque_owner_remaining_bytes"].is_null());
+        assert_eq!(data["opaque_owner_remaining_is_admission_budget"], false);
         assert_eq!(data["operation_limit"], MAX_OPERATIONS);
         assert_eq!(data["admission_reserved"], false);
         assert_eq!(data["compaction_reclaims_operation_identities"], false);
