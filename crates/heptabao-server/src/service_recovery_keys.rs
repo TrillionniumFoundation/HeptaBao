@@ -446,26 +446,41 @@ impl Service {
     ) -> Result<ha_received::HaLocalPublicationProgress, Response> {
         use ha_received::HaLocalPublicationProgress;
         completed.mark_index_called();
+        // Diagnostic only. A Response converted before entering the index
+        // admission function carries a conservative write-possible failure
+        // class, not proof that an index write was attempted. Keep that
+        // safety class and all existing permanent fences unchanged.
+        let mut diagnostic_stage = "pre_index_deadline";
+        let mut index_admission_entered = false;
         let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {
             live(completed.deadline())?;
             // A completion token cannot mask later actual owner/object damage.
             // Reject before any possible public-index write under its original bound.
+            diagnostic_stage = "pre_index_verify_completed_owner";
             completed.verify_local_publication(self)?;
+            diagnostic_stage = "pre_index_verify_durable_fence";
             self.durable
                 .as_mut()
                 .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
                 .verify_live_ownership()
                 .map_err(|_| Response::error(503, "HA local durable writer fence lost"))?;
+            diagnostic_stage = "pre_index_state_present";
             let state = self
                 .state
                 .as_ref()
                 .ok_or_else(|| Response::error(503, "HA recovery state absent"))?;
+            // Reaching this function is not proof of writing seal.json:
+            // the inner function has separate prewrite phase guards.
+            diagnostic_stage = "index_admission_entered";
+            index_admission_entered = true;
             let admitted = self.admit_ha_recovery_seal_with_phase(
                 state,
                 completed.deadline(),
                 Some(completed),
             )?;
+            diagnostic_stage = "post_index_verify_completed_owner";
             completed.verify_local_publication(self)?;
+            diagnostic_stage = "post_index_verify_durable_fence";
             self.durable
                 .as_mut()
                 .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
@@ -477,6 +492,14 @@ impl Service {
         match result {
             Ok(()) => Ok(HaLocalPublicationProgress::Current),
             Err(mut failure) => {
+                // The existing failure.index_write_attempted flag is
+                // conservative by design for errors converted from Response.
+                // Report where the first failure actually propagated without
+                // revealing paths, credentials, identities or token material.
+                eprintln!(
+                    "heptabao-r795-sync: failure_stage={} index_admission_entered={} conservative_index_write_possible={}",
+                    diagnostic_stage, index_admission_entered, failure.index_write_attempted
+                );
                 eprintln!(
                     "HBHA-R73-LOCAL-B phase=index_failure completed_digest={:02x?} cached_digest={:02x?} loaded_schema={:?} durable_generation={:?} before_index={} index_write_attempted={} index_readback={}",
                     completed.identity().digest(),
