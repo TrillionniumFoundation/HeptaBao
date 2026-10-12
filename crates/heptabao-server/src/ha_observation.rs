@@ -30,6 +30,25 @@ fn category(error: &str) -> &'static str {
         .take(512)
         .collect::<String>()
         .to_ascii_lowercase();
+    // These variants are emitted by the current Raft runtime, and only
+    // exact, closed strings earn a stable diagnostic category. A prefix
+    // with attacker-controlled suffix must never masquerade as a known
+    // ReadIndex rejection or print that suffix to a log.
+    match text.as_str() {
+        "remote raft consensus failed: readindex own applied witness unavailable" => {
+            return "readindex_own_applied_unavailable";
+        }
+        "remote raft consensus failed: readindex application witness is not current" => {
+            return "readindex_application_witness_stale";
+        }
+        "remote raft consensus failed: readindex quorum or applied witness unavailable" => {
+            return "readindex_quorum_or_applied_unavailable";
+        }
+        "remote raft consensus failed: readindex leadership changed" => {
+            return "leadership";
+        }
+        _ => {}
+    }
     if text.contains("deadline") || text.contains("timed out") {
         "deadline"
     } else if text.contains("quorum") {
@@ -102,6 +121,37 @@ mod tests {
             assert!(!category(error).contains("synthetic-secret"));
         }
     }
+    #[test]
+    fn ha_observation_exact_readindex_consensus_variant_categories() {
+        // Known Raft ReadIndex rejection variants must stay separate, but
+        // never include error payload, actor identity or arbitrary strings.
+        for (input, expected) in [
+            (
+                "remote Raft consensus failed: ReadIndex own applied witness unavailable",
+                "readindex_own_applied_unavailable",
+            ),
+            (
+                "remote Raft consensus failed: ReadIndex application witness is not current",
+                "readindex_application_witness_stale",
+            ),
+            (
+                "remote Raft consensus failed: ReadIndex quorum or applied witness unavailable",
+                "readindex_quorum_or_applied_unavailable",
+            ),
+            (
+                "remote Raft consensus failed: ReadIndex leadership changed",
+                "leadership",
+            ),
+            (
+                "remote Raft consensus failed: ReadIndex own applied witness unavailable: synthetic-secret",
+                "consensus_other",
+            ),
+        ] {
+            assert_eq!(category(input), expected, "static ReadIndex category");
+            assert!(!category(input).contains("synthetic-secret"));
+        }
+    }
+
     #[test]
     fn ha_observation_rate_is_bounded_and_does_not_reset_on_clock_regression() {
         let rate = RateLimit::new();
