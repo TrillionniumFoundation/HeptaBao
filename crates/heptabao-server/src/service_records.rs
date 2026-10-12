@@ -287,6 +287,57 @@ fn owner_bytes(
     Ok(bytes)
 }
 
+/// Reauthenticate every durable owner chunk and every reachable KV1 graph
+/// object against the exact canonical state already materialized and validated
+/// from the committed HA ReadIndex. This avoids repeating the expensive JSON
+/// deserialize/canonicalize roundtrip during the *same bounded* HA admission.
+/// It is NOT a cached receipt or a replacement for fresh disk reads.
+pub(super) fn verify_received_record_graph(
+    root: &RecordStateRoot,
+    reader: &impl RecordReader,
+    received: &State,
+) -> Result<(), Response> {
+    root.validate().map_err(root_error)?;
+    let protected = received.protected_state()?;
+    if root.state_schema != protected.schema
+        || root.cluster_id != protected.cluster_id
+        || root.replay_epoch != protected.replay_epoch
+        || root.global_lossless_json_format != protected.global_lossless_json_format
+        || protected.engines.record_root().as_ref() != Some(&root.kv1)
+        || protected
+            .engines
+            .record_address_key()
+            .is_none_or(|key| key.expose() != root.address_key().expose())
+    {
+        return Err(unavailable_at("record_r345_target_binding"));
+    }
+    for (index, owner) in root.owners.iter().enumerate() {
+        let observed = owner_bytes(root, owner, reader)?;
+        // Recreate canonical protected owner bytes from the *admitted* target;
+        // a valid on-disk object with a different logical owner is still denied.
+        let expected = match index {
+            0 => owner_store::serialize_owner(&protected.namespaces),
+            1 => owner_store::serialize_owner(&protected.auth),
+            2 => owner_store::serialize_owner(&protected.engines),
+            3 => owner_store::serialize_owner(&protected.database),
+            _ => owner_store::serialize_owner(&protected.raft_admin),
+        }
+        .map_err(state_serialization_error)?;
+        if observed.as_slice() != expected.as_slice() {
+            return Err(unavailable_at("record_r345_owner_mismatch"));
+        }
+    }
+    // A root digest alone does not authenticate reachable pages or values.
+    // Reopen *all* child objects, including packed leaves and value blocks,
+    // and reject missing, malformed or tampered graph content.
+    let checked = Kv1Index::open(root.address_key(), root.kv1.clone(), reader)
+        .map_err(|_| unavailable_at("record_r345_graph_damage"))?;
+    if checked.root() != root.kv1 {
+        return Err(unavailable_at("record_r345_root_mismatch"));
+    }
+    Ok(())
+}
+
 impl Service {
     pub(super) fn current_state_identity(&self) -> Result<StateIdentity, Response> {
         let digest = self.current_state_digest()?;
@@ -1478,6 +1529,71 @@ mod tests {
             204
         );
     }
+    #[test]
+    fn received_graph_fast_reauth_rejects_durable_tamper_missing_object_and_wrong_target()
+    -> TestResult {
+        struct Damage<'a>(&'a DurableService<AeadBarrier>);
+        impl RecordReader for Damage<'_> {
+            fn read_object(
+                &self,
+                reference: &ObjectRef,
+            ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+                let mut raw = DurableReader(self.0).read_object(reference)?;
+                if raw.is_empty() {
+                    return Err(RecordError::Corrupt);
+                }
+                raw[0] ^= 0x40;
+                Ok(raw)
+            }
+        }
+        struct Missing;
+        impl RecordReader for Missing {
+            fn read_object(&self, _: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+                Err(RecordError::Missing)
+            }
+        }
+
+        let fixture = Root::new();
+        let mut service = fixture.service()?;
+        let (_key, token) = bootstrap(&mut service)?;
+        mount(&mut service, &token);
+        let mut candidate = service.state.as_ref().ok_or("state")?.clone();
+        candidate.engines.handle(
+            "",
+            "PUT",
+            "records/fast-readback",
+            &json!({"value":"durable-and-authenticated"}),
+            100,
+        )?;
+        let plan = service
+            .prepare_record_plan(&mut candidate)
+            .map_err(|_| "candidate")?;
+        let durable = service.durable.as_mut().ok_or("durable")?;
+        Service::persist_record_batch(durable, &plan, "r345-verified-durable-graph")?;
+        let reader = DurableReader(durable);
+        verify_received_record_graph(&plan.root, &reader, &candidate)
+            .map_err(|_| "intact graph rejected")?;
+
+        let mut altered = candidate.clone();
+        altered.cluster_id.push_str("-wrong");
+        assert!(verify_received_record_graph(&plan.root, &reader, &altered).is_err());
+        let mut changed = candidate.clone();
+        changed.engines.handle(
+            "",
+            "PUT",
+            "records/uncommitted",
+            &json!({"value":"must-not-match"}),
+            100,
+        )?;
+        assert!(verify_received_record_graph(&plan.root, &reader, &changed).is_err());
+
+        assert!(verify_received_record_graph(&plan.root, &Damage(durable), &candidate).is_err());
+        assert!(verify_received_record_graph(&plan.root, &Missing, &candidate).is_err());
+        verify_received_record_graph(&plan.root, &reader, &candidate)
+            .map_err(|_| "failed probe damaged actual immutable graph")?;
+        Ok(())
+    }
+
     #[test]
     fn kube_opaque_artifact_record_owner_rejects_old_plan_after_actual_mount_revision_commit()
     -> TestResult {

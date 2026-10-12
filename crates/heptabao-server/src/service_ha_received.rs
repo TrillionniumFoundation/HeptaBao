@@ -1554,23 +1554,45 @@ impl ReceivedHaState {
                 {
                     return Err(rejected());
                 }
+                // The committed receipt was fully materialized, canonicalized,
+                // and bound to ReadIndex before publication. Recheck fresh
+                // immutable objects and owner bytes rather than rebuilding a
+                // second decoded application State within the original clock.
+                records::verify_received_record_graph(
+                    &root,
+                    &records::DurableReader(durable),
+                    &self.state,
+                )?;
             }
         }
-        // The typed root/manifest names a graph, not proof that its actual
-        // reachable owner/object bytes remain intact after publication. Reload
-        // all of that graph from this live writer at its CURRENT generation.
-        let (loaded, _, rewrite) = Service::load_state_from_durable(durable)?;
-        if rewrite
-            || loaded.schema != self.state.schema
-            || loaded.cluster_id != self.state.cluster_id
-            || loaded.replay_epoch != self.state.replay_epoch
-            || durable.recovery_required()
-            || owner_store::serialize_owner(&loaded)
-                .map_err(state_serialization_error)?
-                .as_slice()
-                != logical
-        {
-            return Err(rejected());
+        if matches!(&self.publication, ReceivedPublication::Records { .. }) {
+            // Root and all referenced disk bytes were reauthenticated above.
+            // The original canonical receipt and recovery fence still bind
+            // actual application semantics, not merely a root descriptor.
+            if durable.recovery_required()
+                || owner_store::serialize_owner(&self.state)
+                    .map_err(state_serialization_error)?
+                    .as_slice()
+                    != logical
+            {
+                return Err(rejected());
+            }
+        } else {
+            // Historical unbound and V4 owner formats keep their original
+            // complete reload, including canonical semantic reconstruction.
+            let (loaded, _, rewrite) = Service::load_state_from_durable(durable)?;
+            if rewrite
+                || loaded.schema != self.state.schema
+                || loaded.cluster_id != self.state.cluster_id
+                || loaded.replay_epoch != self.state.replay_epoch
+                || durable.recovery_required()
+                || owner_store::serialize_owner(&loaded)
+                    .map_err(state_serialization_error)?
+                    .as_slice()
+                    != logical
+            {
+                return Err(rejected());
+            }
         }
         live(self.deadline)?;
         service
