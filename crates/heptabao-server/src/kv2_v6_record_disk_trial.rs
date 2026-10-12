@@ -1668,3 +1668,85 @@ fn kv2_v6_disk_trial_rejects_noncanonical_or_wrong_scope_cell_before_signed_root
     );
     Ok(())
 }
+
+// A signed record must not smuggle historical versions newer than the
+// advertised current version, alternate decimal spellings or a non-record.
+// Generation/history consistency is checked before writing any page to disk.
+#[test]
+fn kv2_v6_disk_trial_rejects_invalid_history_version_names_and_values()
+-> Result<(), Box<dyn std::error::Error>> {
+    let rejected = [
+        ("future", json!({"3":{"data":{"payload":"ok"}},"4":{}})),
+        ("zero", json!({"0":{},"3":{"data":{"payload":"ok"}}})),
+        (
+            "leading_zero",
+            json!({"03":{},"3":{"data":{"payload":"ok"}}}),
+        ),
+        (
+            "non_numeric",
+            json!({"legacy":{},"3":{"data":{"payload":"ok"}}}),
+        ),
+        (
+            "overflow",
+            json!({"18446744073709551616":{},"3":{"data":{"payload":"ok"}}}),
+        ),
+        (
+            "non_object",
+            json!({"2":null,"3":{"data":{"payload":"ok"}}}),
+        ),
+        ("wrong_type", json!({"1":[],"3":{"data":{"payload":"ok"}}})),
+    ];
+    for (case, versions) in rejected {
+        let disk = TrialDisk::fresh()?;
+        let signer = private_trial_key(&AddressKey::from_bytes([0x8e; 32]))?;
+        let scope = Scope {
+            namespace: "r650-history".into(),
+            mount: "secret/".into(),
+            incarnation: 5,
+            path: format!("record-{case}"),
+        };
+        let address = key(&scope)?;
+        let malformed = encode(
+            scope.clone(),
+            3,
+            json!({
+                "current_version": 3, "versions":versions,
+            }),
+        )?;
+        let mut malicious = Kv1Index::empty(Arc::clone(&signer));
+        let mut objects = LocalObjects(BTreeMap::new());
+        stage(
+            &mut malicious,
+            &mut objects,
+            address.clone(),
+            Some(&malformed),
+        )?;
+        assert!(
+            disk.publish(&malicious, &signer, 1, false).is_err(),
+            "{case}"
+        );
+        assert!(!disk.manifest_path().exists(), "{case}: root published");
+        assert_eq!(
+            fs::read_dir(disk.dir.join("objects"))?.count(),
+            0,
+            "{case}: invalid history left a staged object",
+        );
+        // Each negative test must prove that the fixture itself can publish
+        // an accepted sparse-but-canonical historical record after rejection.
+        let valid = encode(
+            scope,
+            3,
+            json!({
+                "current_version":3,"versions":{"3":{"data":{"payload":"ok"}}}
+            }),
+        )?;
+        let mut good = Kv1Index::empty(Arc::clone(&signer));
+        stage(&mut good, &mut objects, address.clone(), Some(&valid))?;
+        disk.publish(&good, &signer, 1, false)?;
+        assert_eq!(
+            disk.reopen(signer, 1)?.get(&address),
+            Some(valid.as_slice())
+        );
+    }
+    Ok(())
+}

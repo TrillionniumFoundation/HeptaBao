@@ -76,17 +76,28 @@ fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
     // The typed KV2 envelope and its retained history must agree. A valid
     // JSON encoding and keyed page digest do not authorize rewriting an
     // older current_version under a higher outer cell version.
+    let versions = cell.entry.get("versions").and_then(Value::as_object);
     let current_entry = cell.entry.get("current_version").and_then(Value::as_u64)
         == Some(cell.version)
-        && cell
-            .entry
-            .get("versions")
-            .and_then(Value::as_object)
-            .and_then(|versions| versions.get(&cell.version.to_string()))
+        && versions
+            .and_then(|history| history.get(&cell.version.to_string()))
             .is_some_and(Value::is_object);
+    // The immutable signed root must not authorize versions from the future,
+    // aliases such as "03", version zero, overflowed indices or non-record
+    // historical entries. Sparse history is legal (prior versions may have
+    // been retired before migration); every *retained* name is canonical.
+    let canonical_history = versions.is_some_and(|history| {
+        history.iter().all(|(name, record)| {
+            record.is_object()
+                && name.parse::<u64>().is_ok_and(|version| {
+                    version > 0 && version <= cell.version && version.to_string() == *name
+                })
+        })
+    });
     if cell.format != FORMAT
         || cell.version == 0
         || !current_entry
+        || !canonical_history
         || !cell.entry.is_object()
         || key(&cell.scope)
             .as_ref()
