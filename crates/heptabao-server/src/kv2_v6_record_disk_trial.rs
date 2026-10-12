@@ -1836,3 +1836,51 @@ fn kv2_v6_disk_trial_reopen_rejects_valid_mac_with_invalid_kv2_history()
     );
     Ok(())
 }
+
+#[test]
+fn kv2_v6_disk_trial_refuses_malformed_version_payload_before_object_staging()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signer = private_trial_key(&AddressKey::from_bytes([0xd3; 32]))?;
+    let scope = Scope {
+        namespace: "r670-version-fields".into(),
+        mount: "secret/".into(),
+        incarnation: 7,
+        path: "inconsistent-legacy-payload".into(),
+    };
+    let address = key(&scope)?;
+    let malformed = encode(
+        scope.clone(),
+        1,
+        json!({"current_version":1, "versions":{"1":{
+            "destroyed":false, "data":["invalid", "not_object"]
+        }}}),
+    )?;
+    let mut graph = Kv1Index::empty(Arc::clone(&signer));
+    let mut staging = LocalObjects(BTreeMap::new());
+    stage(&mut graph, &mut staging, address.clone(), Some(&malformed))?;
+    assert!(disk.publish(&graph, &signer, 1, false).is_err());
+    assert!(
+        !disk.manifest_path().exists(),
+        "rejected root was published"
+    );
+    assert_eq!(
+        fs::read_dir(disk.dir.join("objects"))?.count(),
+        0,
+        "rejected candidate staged durable objects"
+    );
+    let healthy = encode(
+        scope,
+        1,
+        json!({"current_version":1, "versions":{"1":{
+            "destroyed":false, "data":{"payload":"valid"}
+        }}}),
+    )?;
+    stage(&mut graph, &mut staging, address.clone(), Some(&healthy))?;
+    disk.publish(&graph, &signer, 1, false)?;
+    assert_eq!(
+        disk.reopen(signer, 1)?.get(&address),
+        Some(healthy.as_slice())
+    );
+    Ok(())
+}

@@ -88,7 +88,19 @@ fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
     // been retired before migration); every *retained* name is canonical.
     let canonical_history = versions.is_some_and(|history| {
         history.iter().all(|(name, record)| {
-            record.is_object()
+            let Some(version_fields) = record.as_object() else {
+                return false;
+            };
+            let data = version_fields.get("data");
+            let destroyed = version_fields.get("destroyed");
+            // A signed graph may not turn the typed KV2 data field into an
+            // array/scalar, reinterpret a string as the destroyed bit, or
+            // retain readable plaintext in an explicitly destroyed version.
+            // Missing/NULL fields remain accepted for older sparse records;
+            // this is a format integrity check, not a retention grant.
+            destroyed.is_none_or(Value::is_boolean)
+                && data.is_none_or(|value| value.is_object() || value.is_null())
+                && (destroyed != Some(&Value::Bool(true)) || data.is_none_or(Value::is_null))
                 && name.parse::<u64>().is_ok_and(|version| {
                     version > 0 && version <= cell.version && version.to_string() == *name
                 })
