@@ -73,8 +73,20 @@ fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
         return Err(RecordError::TooLarge);
     }
     let cell: Cell = serde_json::from_slice(bytes).map_err(|_| RecordError::Corrupt)?;
+    // The typed KV2 envelope and its retained history must agree. A valid
+    // JSON encoding and keyed page digest do not authorize rewriting an
+    // older current_version under a higher outer cell version.
+    let current_entry = cell.entry.get("current_version").and_then(Value::as_u64)
+        == Some(cell.version)
+        && cell
+            .entry
+            .get("versions")
+            .and_then(Value::as_object)
+            .and_then(|versions| versions.get(&cell.version.to_string()))
+            .is_some_and(Value::is_object);
     if cell.format != FORMAT
         || cell.version == 0
+        || !current_entry
         || !cell.entry.is_object()
         || key(&cell.scope)
             .as_ref()

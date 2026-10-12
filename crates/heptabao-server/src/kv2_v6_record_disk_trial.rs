@@ -379,17 +379,22 @@ impl TrialDisk {
         Ok(envelope)
     }
 
-    fn published_generation(&self, key: &Arc<AddressKey>) -> Result<Option<u64>, RecordError> {
+    fn published_generation(
+        &self,
+        key: &Arc<AddressKey>,
+    ) -> Result<Option<(u64, Kv1Index)>, RecordError> {
         match fs::symlink_metadata(self.manifest_path()) {
             Ok(metadata) => {
                 if !metadata.file_type().is_file() {
                     return Err(RecordError::Corrupt);
                 }
                 let previous = self.authenticated_root(key)?;
-                // The signed manifest alone is not enough: a corrupted
-                // referenced object must never be silently superseded.
-                Kv1Index::open(Arc::clone(key), previous.payload.root, self)?;
-                Ok(Some(previous.payload.generation))
+                // Retain the authenticated predecessor *under the same
+                // publication lock*. The next generation number alone does
+                // not prove that an independently staged graph preserves
+                // acknowledged KV2 cells.
+                let prior = Kv1Index::open(Arc::clone(key), previous.payload.root, self)?;
+                Ok(Some((previous.payload.generation, prior)))
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
             Err(_) => Err(RecordError::Corrupt),
@@ -419,13 +424,38 @@ impl TrialDisk {
         // Fail closed *before* persisting any immutable candidate object.
         // A stale, duplicate, skipped or wrapped generation may not overwrite
         // an acknowledged root, even with otherwise valid signed bytes.
-        let valid_next = match self.published_generation(key)? {
-            None => generation == 1,
-            Some(previous) => previous.checked_add(1) == Some(generation),
+        let predecessor = match self.published_generation(key)? {
+            None if generation == 1 => None,
+            Some((previous, index)) if previous.checked_add(1) == Some(generation) => Some(index),
+            _ => return Err(RecordError::Invalid),
         };
-        if !valid_next {
-            return Err(RecordError::Invalid);
+        // This deliberately conservative V6 trial has no authenticated
+        // physical-retirement capability. KV2 soft delete and destroy must
+        // remain represented by retained, versioned cells; the data plane
+        // cannot silently disappear just because a caller knows the next
+        // root generation. A production retirement protocol is still
+        // unimplemented and MUST NOT inherit this test-only permission.
+        // Validate before persisting any candidate object (no orphan
+        // staging side effect from a refused predecessor).
+        if let Some(previous) = predecessor.as_ref() {
+            previous.visit_keys(|previous_key| {
+                let original = previous.get(previous_key).ok_or(RecordError::Corrupt)?;
+                let next = graph.get(previous_key).ok_or(RecordError::Invalid)?;
+                let original_cell = decode(previous_key, original)?;
+                let next_cell = decode(previous_key, next)?;
+                if next_cell.version < original_cell.version {
+                    return Err(RecordError::Invalid);
+                }
+                Ok(())
+            })?;
         }
+        // Reject malformed or self-contradictory typed entries in memory,
+        // before durable staging. Even if a caller signs the correct graph
+        // address, this negative path may not create ghost object files.
+        graph.visit_keys(|record_key| {
+            let value = graph.get(record_key).ok_or(RecordError::Corrupt)?;
+            decode(record_key, value).map(|_| ())
+        })?;
         self.persist_objects(graph)?;
         // A signed manifest must never point at an unreopenable graph.
         // Reopen *all* persisted pages using the key that will sign the root,
@@ -1277,6 +1307,167 @@ fn kv2_v6_trial_drop_must_not_remove_replaced_objects_directory()
         untouched,
         "drop must never erase substituted object directories"
     );
+    Ok(())
+}
+
+// A new signed root must retain previously acknowledged typed KV2 record
+// addresses and never lower the visible version without retirement authority.
+#[test]
+fn kv2_v6_disk_trial_generation_cannot_erase_or_regress_committed_records()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0xa4; 32]))?;
+    let mut committed = Kv1Index::empty(Arc::clone(&key_material));
+    let mut original_objects = LocalObjects(BTreeMap::new());
+    let (protected, first) = v1_cell(3, "r610-protected", "original".repeat(150))?;
+    let (retained, second) = v1_cell(1, "r610-retained", "retained".repeat(150))?;
+    stage(
+        &mut committed,
+        &mut original_objects,
+        protected.clone(),
+        Some(&first),
+    )?;
+    stage(
+        &mut committed,
+        &mut original_objects,
+        retained.clone(),
+        Some(&second),
+    )?;
+    disk.publish(&committed, &key_material, 1, false)?;
+    let signed_original = fs::read(disk.manifest_path())?;
+    let objects_count = || fs::read_dir(disk.dir.join("objects")).map(|entries| entries.count());
+    let before = objects_count()?;
+
+    // A stale candidate was not edited from the committed graph. A caller
+    // with the exact next number must not erase the acknowledged record.
+    let mut lost = Kv1Index::empty(Arc::clone(&key_material));
+    let mut new_objects = LocalObjects(BTreeMap::new());
+    stage(&mut lost, &mut new_objects, retained.clone(), Some(&second))?;
+    let (new_key, new_bytes) = v1_cell(1, "r610-unrelated", "new".repeat(150))?;
+    stage(
+        &mut lost,
+        &mut new_objects,
+        new_key.clone(),
+        Some(&new_bytes),
+    )?;
+    assert!(
+        disk.publish(&lost, &key_material, 2, false).is_err(),
+        "a next-generation number cannot authorize losing an existing record"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, signed_original);
+    assert_eq!(objects_count()?, before);
+    assert_eq!(
+        disk.reopen(Arc::clone(&key_material), 1)?.get(&protected),
+        Some(first.as_slice())
+    );
+    assert!(
+        disk.reopen(Arc::clone(&key_material), 1)?
+            .get(&new_key)
+            .is_none()
+    );
+
+    // Replacing a record with an older signed cell is likewise inadmissible,
+    // even if every graph key remains present.
+    let mut regressed = committed.clone();
+    let mut regression_objects = LocalObjects(BTreeMap::new());
+    let (_, older) = v1_cell(2, "r610-protected", "rolled-back".repeat(150))?;
+    stage(
+        &mut regressed,
+        &mut regression_objects,
+        protected.clone(),
+        Some(&older),
+    )?;
+    assert!(
+        disk.publish(&regressed, &key_material, 2, false).is_err(),
+        "a signed generation must not lower an existing cell version"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, signed_original);
+    assert_eq!(objects_count()?, before);
+
+    // A correctly retained graph with an increasing cell version still
+    // publishes exactly once after the negative cases.
+    let mut next = committed;
+    let mut next_objects = LocalObjects(BTreeMap::new());
+    let (_, updated) = v1_cell(4, "r610-protected", "updated".repeat(150))?;
+    stage(
+        &mut next,
+        &mut next_objects,
+        protected.clone(),
+        Some(&updated),
+    )?;
+    disk.publish(&next, &key_material, 2, false)?;
+    let reopened = disk.reopen(key_material, 2)?;
+    assert_eq!(reopened.get(&protected), Some(updated.as_slice()));
+    assert_eq!(reopened.get(&retained), Some(second.as_slice()));
+    assert!(reopened.get(&new_key).is_none());
+    Ok(())
+}
+
+// Canonical JSON and a valid MAC are insufficient when the envelope version
+// disagrees with the embedded KV2 current_version / retained-version map.
+#[test]
+fn kv2_v6_disk_trial_refuses_inconsistent_entry_version_and_history()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signer = private_trial_key(&AddressKey::from_bytes([0xa5; 32]))?;
+    let scope = Scope {
+        namespace: "tenant-r310".into(),
+        mount: "secret/".into(),
+        incarnation: 7,
+        path: "r610-inconsistent".into(),
+    };
+    let record_key = key(&scope)?;
+    let malformed = encode(
+        scope.clone(),
+        2,
+        json!({"current_version":1,"versions":{"1":{"data":{"payload":"old"}},"2":{"data":{"payload":"claimed"}}}}),
+    )?;
+    let mut bad_graph = Kv1Index::empty(Arc::clone(&signer));
+    let mut bad_objects = LocalObjects(BTreeMap::new());
+    stage(
+        &mut bad_graph,
+        &mut bad_objects,
+        record_key.clone(),
+        Some(&malformed),
+    )?;
+    assert!(
+        disk.publish(&bad_graph, &signer, 1, false).is_err(),
+        "inner current_version must match the signed cell version"
+    );
+    assert!(!disk.manifest_path().exists());
+    assert_eq!(fs::read_dir(disk.dir.join("objects"))?.count(), 0);
+
+    let (first_key, first) = v1_cell(2, "r610-inconsistent", "accepted".into())?;
+    assert!(first_key == record_key);
+    let mut original = Kv1Index::empty(Arc::clone(&signer));
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage(&mut original, &mut objects, first_key.clone(), Some(&first))?;
+    disk.publish(&original, &signer, 1, false)?;
+    let signed = fs::read(disk.manifest_path())?;
+    let count = fs::read_dir(disk.dir.join("objects"))?.count();
+
+    // Even a higher envelope version cannot hide that its claimed current
+    // value has no matching entry in the versioned history.
+    let mut new_graph = original;
+    let missing_current = encode(
+        scope,
+        3,
+        json!({"current_version":3,"versions":{"2":{"data":{"payload":"retained"}}}}),
+    )?;
+    stage(
+        &mut new_graph,
+        &mut objects,
+        record_key.clone(),
+        Some(&missing_current),
+    )?;
+    assert!(
+        disk.publish(&new_graph, &signer, 2, false).is_err(),
+        "the claimed current KV2 version must exist in its history"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, signed);
+    assert_eq!(fs::read_dir(disk.dir.join("objects"))?.count(), count);
+    let reopened = disk.reopen(signer, 1)?;
+    assert_eq!(reopened.get(&record_key), Some(first.as_slice()));
     Ok(())
 }
 
