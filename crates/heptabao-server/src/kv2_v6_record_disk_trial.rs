@@ -427,6 +427,18 @@ impl TrialDisk {
             return Err(RecordError::Invalid);
         }
         self.persist_objects(graph)?;
+        // A signed manifest must never point at an unreopenable graph.
+        // Reopen *all* persisted pages using the key that will sign the root,
+        // then authenticate every typed KV2 cell against its indexed scope.
+        // Merely visiting staged objects proves neither property. A failure
+        // here leaves only inert, unpublished immutable objects on disk.
+        let authenticated = Kv1Index::open(Arc::clone(key), graph.root(), self)
+            .map_err(|_| RecordError::Corrupt)?;
+        authenticated.visit_keys(|record_key| {
+            let cell = authenticated.get(record_key).ok_or(RecordError::Corrupt)?;
+            decode(record_key, cell).map_err(|_| RecordError::Corrupt)?;
+            Ok(())
+        })?;
         // A crashed/aborted writer may leave reachable-looking object bytes:
         // without the authenticated published root they confer no read rights.
         if stop_before_root {
@@ -1264,6 +1276,110 @@ fn kv2_v6_trial_drop_must_not_remove_replaced_objects_directory()
     assert!(
         untouched,
         "drop must never erase substituted object directories"
+    );
+    Ok(())
+}
+
+// A correct signed manifest is useless when its B-tree pages were addressed
+// using a different authenticated key. Reject before publishing a root that
+// any admitted reader will be unable to reopen.
+#[test]
+fn kv2_v6_disk_trial_never_publishes_foreign_address_key_graph()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signer = private_trial_key(&AddressKey::from_bytes([0xa6; 32]))?;
+    let foreign = private_trial_key(&AddressKey::from_bytes([0xa7; 32]))?;
+    assert_ne!(signer.expose(), foreign.expose());
+
+    let mut wrong = Kv1Index::empty(Arc::clone(&foreign));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (foreign_key, foreign_record) =
+        v1_cell(1, "foreign-key", "should-not-be-visible".repeat(32))?;
+    stage(&mut wrong, &mut objects, foreign_key, Some(&foreign_record))?;
+    assert!(
+        disk.publish(&wrong, &signer, 1, false).is_err(),
+        "foreign-address graph must not obtain a signed generation"
+    );
+    assert!(
+        !disk.manifest_path().exists(),
+        "rejected initial graph must leave no authenticated root"
+    );
+
+    let mut valid = Kv1Index::empty(Arc::clone(&signer));
+    let (accepted_key, accepted_record) = v1_cell(1, "original-owner", "original".repeat(64))?;
+    stage(
+        &mut valid,
+        &mut objects,
+        accepted_key.clone(),
+        Some(&accepted_record),
+    )?;
+    disk.publish(&valid, &signer, 1, false)?;
+    let signed_generation_one = fs::read(disk.manifest_path())?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&signer), 1)?.get(&accepted_key),
+        Some(accepted_record.as_slice())
+    );
+
+    assert!(
+        disk.publish(&wrong, &signer, 2, false).is_err(),
+        "foreign-address graph must not replace an acknowledged root"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, signed_generation_one);
+    assert_eq!(
+        disk.reopen(signer, 1)?.get(&accepted_key),
+        Some(accepted_record.as_slice())
+    );
+    Ok(())
+}
+
+// Correctly addressed B-tree pages are not sufficient when a KV2 cell is
+// noncanonical or claims another scope. Both initial and successor roots must
+// reject these bytes before making a new authenticated publication visible.
+#[test]
+fn kv2_v6_disk_trial_rejects_noncanonical_or_wrong_scope_cell_before_signed_root()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signer = private_trial_key(&AddressKey::from_bytes([0xa8; 32]))?;
+    let mut objects = LocalObjects(BTreeMap::new());
+    let mut invalid = Kv1Index::empty(Arc::clone(&signer));
+    let (record_key, correct) = v1_cell(1, "scope-pinned", "canonical".repeat(40))?;
+    let mut other_scope: Value = serde_json::from_slice(&correct)?;
+    other_scope["scope"]["path"] = json!("impostor");
+    let wrong_scope = serde_json::to_vec(&other_scope)?;
+    stage(
+        &mut invalid,
+        &mut objects,
+        record_key.clone(),
+        Some(&wrong_scope),
+    )?;
+    assert!(
+        disk.publish(&invalid, &signer, 1, false).is_err(),
+        "valid B-tree pages cannot authenticate a cell claiming another key"
+    );
+    assert!(!disk.manifest_path().exists());
+
+    let mut valid = Kv1Index::empty(Arc::clone(&signer));
+    stage(&mut valid, &mut objects, record_key.clone(), Some(&correct))?;
+    disk.publish(&valid, &signer, 1, false)?;
+    let signed_generation_one = fs::read(disk.manifest_path())?;
+
+    let (second_key, second) = v1_cell(1, "format-pinned", "canonical".repeat(40))?;
+    let mut noncanonical: Value = serde_json::from_slice(&second)?;
+    noncanonical["format"] = json!("foreign-format");
+    stage(
+        &mut valid,
+        &mut objects,
+        second_key,
+        Some(&serde_json::to_vec(&noncanonical)?),
+    )?;
+    assert!(
+        disk.publish(&valid, &signer, 2, false).is_err(),
+        "noncanonical typed cell must not replace acknowledged generation"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, signed_generation_one);
+    assert_eq!(
+        disk.reopen(signer, 1)?.get(&record_key),
+        Some(correct.as_slice())
     );
     Ok(())
 }
