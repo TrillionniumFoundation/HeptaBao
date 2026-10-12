@@ -2399,3 +2399,64 @@ fn kv2_v6_disk_trial_canonical_shard_extra_data_rejected_by_closure()
     }
     Ok(())
 }
+
+// A signed V6 graph may contain legacy sparse KV2 cells without a private
+// shard_schema marker. Validation must not interpret an invalid *logical*
+// namespace or path as an ordinary cell merely because no shard is referenced.
+#[test]
+fn kv2_v6_signed_trial_root_rejects_control_scope_without_shard_discriminator()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xda; 32]))?;
+    let valid = Scope {
+        namespace: "tenant".into(),
+        mount: "secret/".into(),
+        incarnation: 91,
+        path: "invoice".into(),
+    };
+    for (field, scope) in [
+        (
+            "namespace",
+            Scope {
+                namespace: "tenant\u{0002}".into(),
+                ..valid.clone()
+            },
+        ),
+        (
+            "path",
+            Scope {
+                path: "invoice\u{0003}".into(),
+                ..valid.clone()
+            },
+        ),
+    ] {
+        let mut graph = Kv1Index::empty(Arc::clone(&signing));
+        let mut objects = LocalObjects(BTreeMap::new());
+        let record_key = key(&scope)?;
+        let cell = encode(
+            scope,
+            1,
+            json!({"current_version":1,"versions":{
+                "1":{"data":{"payload":"synthetic"},"destroyed":false}
+            }}),
+        )?;
+        assert!(
+            decode(&record_key, &cell).is_ok(),
+            "the test must reach the graph validator, not fail JSON decoding"
+        );
+        stage(&mut graph, &mut objects, record_key, Some(&cell))?;
+        assert!(
+            validate_sharded_trial_index(&graph).is_err(),
+            "unsigned logical control character in {field} bypassed V6 graph admission"
+        );
+        assert!(
+            disk.publish(&graph, &signing, 1, false).is_err(),
+            "invalid logical {field} must never publish a signed trial root"
+        );
+        assert!(
+            !disk.manifest_path().exists(),
+            "failed publication must leave no durable V6 root"
+        );
+    }
+    Ok(())
+}
