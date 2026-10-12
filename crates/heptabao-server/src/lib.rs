@@ -68,6 +68,8 @@ pub(crate) mod state_record_root;
 mod state_records;
 // Format validation only, no production V6 authority or route.
 mod kv2_v6_record_codec;
+// Format/graph read validation only: no Service writer, HA or migration authority.
+mod kv2_v6_shard_validator;
 
 #[cfg(test)]
 #[path = "kv2_v6_record_trial.rs"]
