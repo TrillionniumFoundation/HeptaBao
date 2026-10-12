@@ -228,8 +228,12 @@ impl Service {
         let mut phase = HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication;
         let mut index_readback = None;
         let mut index_write_attempted = false;
+        // Diagnostic only: never changes authority, persistence, or failure handling.
+        // A completed HA owner must remain fenced on any ambiguous outcome.
+        let mut diagnostic_stage = "entry";
         let result: Result<AdmittedRecoverySeal, Response> = (|| {
             live(deadline)?;
+            diagnostic_stage = "admitted_state";
             let admitted = self
                 .state
                 .as_ref()
@@ -246,6 +250,7 @@ impl Service {
                     "HA recovery candidate is not the admitted state",
                 ));
             }
+            diagnostic_stage = "state_identity";
             let identity = self.current_state_identity()?;
             self.verify_ha_state_identity(identity).inspect_err(|_| {
                 phase = HaRecoveryIndexFailurePhase::BeforeIndexPublication;
@@ -255,6 +260,7 @@ impl Service {
                 .auth
                 .validate_recovery_credential(&state.cluster_id)
                 .map_err(|_| Response::error(503, "invalid HA protected recovery credential"))?;
+            diagnostic_stage = "local_seal";
             let current = self
                 .seal
                 .as_ref()
@@ -297,6 +303,7 @@ impl Service {
                     return Err(Response::error(503, "HA recovery intent is inconsistent"));
                 }
             }
+            diagnostic_stage = "derive_local_recovery_seal";
             let target = match state.auth.recovery_credential.as_ref() {
                 Some(credential) => openbao_wrapper::barrier::seal_with_recovery(
                     current, credential,
@@ -319,11 +326,13 @@ impl Service {
             // phase before the attempt; later errors always require a fence.
             phase = HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication;
             index_write_attempted = true;
+            diagnostic_stage = "publish_local_recovery_index";
             let publication = self.publish_ha_recovery_index(current, &target, deadline)?;
             // A generic post-index failure still fences. Only a completed
             // local owner may distinguish a successful authority observation
             // of a newer identity from an unavailable/failed ReadIndex.
             if let Some(completed) = completed {
+                diagnostic_stage = "post_publication_authority_readindex";
                 if completed.identity() != identity {
                     return Err(Response::error(503, "HA completed owner identity differs"));
                 }
@@ -346,6 +355,15 @@ impl Service {
             }
             Ok(AdmittedRecoverySeal(Some(target)))
         })();
+        // No credential, identity, seal material, paths or tokens in this marker.
+        // Unlike the coarse index_failure marker, identifies which exact
+        // admission phase rejected the committed local publication.
+        if let Err(ref response) = result {
+            eprintln!(
+                "heptabao-ha-index: stage={} status={} write_attempted={}",
+                diagnostic_stage, response.status, index_write_attempted
+            );
+        }
         result.map_err(|response| HaRecoveryIndexAdmissionFailure {
             response,
             phase,
@@ -360,9 +378,12 @@ impl Service {
         target: &SealMetadata,
         deadline: Option<std::time::Instant>,
     ) -> Result<LocalRecoveryIndexPublication, Response> {
-        live(deadline)?;
+        live(deadline).inspect_err(|_| {
+            eprintln!("heptabao-ha-index: stage=before_disk_publication_deadline");
+        })?;
         let publication = if current != target {
             persist_seal_metadata(&self.data_dir, target).map_err(|_| {
+                eprintln!("heptabao-ha-index: stage=disk_publication_outcome_unknown");
                 Response::error(503, "HA node-local recovery index repair outcome unknown")
             })?;
             LocalRecoveryIndexPublication::KnownWritten {
@@ -374,8 +395,11 @@ impl Service {
                 seal: target.clone(),
             }
         };
-        live(deadline)?;
+        live(deadline).inspect_err(|_| {
+            eprintln!("heptabao-ha-index: stage=after_disk_publication_deadline");
+        })?;
         if load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(target) {
+            eprintln!("heptabao-ha-index: stage=disk_publication_readback_mismatch");
             return Err(Response::error(
                 503,
                 "HA node-local recovery index read-back failed",
@@ -389,13 +413,18 @@ impl Service {
         publication: LocalRecoveryIndexPublication,
         completed: &ha_received::CompletedLocalPublication<'_>,
     ) -> Result<Option<ReadbackRecoveryIndexPublication>, Response> {
-        live(completed.deadline())?;
+        live(completed.deadline()).inspect_err(|_| {
+            eprintln!("heptabao-ha-index: stage=before_readindex_deadline");
+        })?;
         let (observed, witness) = self
             .ha
             .as_ref()
             .ok_or_else(|| Response::error(503, "HA completed authority absent"))?
             .lock_for_request()
-            .map_err(|_| Response::error(503, "HA completed authority unavailable"))?
+            .map_err(|_| {
+                eprintln!("heptabao-ha-index: stage=readindex_lock_unavailable");
+                Response::error(503, "HA completed authority unavailable")
+            })?
             .application_identity_witness()
             .map_err(|_| {
                 eprintln!("heptabao-ha-index: stage=post_index_readindex_unavailable");
