@@ -4,7 +4,9 @@
 use super::*;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+#[cfg(not(unix))]
+use std::path::Path;
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const TRIAL_FORMAT: &str = "heptabao-kv2-v6-disk-staging-experiment";
@@ -31,6 +33,8 @@ struct TrialRootEnvelope {
 
 struct TrialDisk {
     dir: PathBuf,
+    #[cfg(unix)]
+    root_identity: (u64, u64),
 }
 impl TrialDisk {
     fn fresh() -> Result<Self, Box<dyn std::error::Error>> {
@@ -39,14 +43,27 @@ impl TrialDisk {
             "heptabao-kv2-v6-private-staging-{}-{id}",
             std::process::id()
         ));
-        fs::create_dir(&dir)?;
+        // No initial 0755 window before chmod: make both private directories
+        // restrictive in the creation syscall, even in a shared tmp parent.
+        let mut builder = fs::DirBuilder::new();
         #[cfg(unix)]
         {
-            use std::os::unix::fs::PermissionsExt;
-            fs::set_permissions(&dir, fs::Permissions::from_mode(0o700))?;
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
         }
-        fs::create_dir(dir.join("objects"))?;
-        Ok(Self { dir })
+        builder.create(&dir)?;
+        builder.create(dir.join("objects"))?;
+        #[cfg(unix)]
+        let root_identity = {
+            use std::os::unix::fs::MetadataExt;
+            let metadata = fs::symlink_metadata(&dir)?;
+            (metadata.dev(), metadata.ino())
+        };
+        Ok(Self {
+            dir,
+            #[cfg(unix)]
+            root_identity,
+        })
     }
     fn object_path(&self, id: &ObjectId) -> PathBuf {
         const HEX: &[u8; 16] = b"0123456789abcdef";
@@ -63,6 +80,7 @@ impl TrialDisk {
     // Reused immutable files must be opened directly and without following
     // a symlink. A correct MAC over bytes does not admit an arbitrary source
     // path outside the authenticated private object or manifest directory.
+    #[cfg(not(unix))]
     fn open_private_regular(path: &Path) -> Result<File, RecordError> {
         let mut options = OpenOptions::new();
         options.read(true);
@@ -77,18 +95,35 @@ impl TrialDisk {
         }
         Ok(file)
     }
-    // Pin the actual private objects-directory descriptor. A no-follow leaf
-    // by itself cannot prevent an ancestor-directory symlink redirection.
+    // Authenticate the same root inode captured at construction, rather than
+    // following a symlinked (or replaced regular-directory) ancestor.
     #[cfg(unix)]
-    fn open_objects_dir(&self) -> Result<File, RecordError> {
-        use std::os::unix::fs::OpenOptionsExt;
+    fn open_root_dir(&self) -> Result<File, RecordError> {
+        use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
         let mut options = OpenOptions::new();
         options
             .read(true)
             .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
-        let directory = options
-            .open(self.dir.join("objects"))
-            .map_err(|_| RecordError::Corrupt)?;
+        let directory = options.open(&self.dir).map_err(|_| RecordError::Corrupt)?;
+        let metadata = directory.metadata().map_err(|_| RecordError::Corrupt)?;
+        if !metadata.is_dir() || (metadata.dev(), metadata.ino()) != self.root_identity {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(directory)
+    }
+
+    #[cfg(unix)]
+    fn open_objects_dir(&self) -> Result<File, RecordError> {
+        use rustix::fs::{Mode, OFlags, openat};
+        let root = self.open_root_dir()?;
+        let descriptor = openat(
+            &root,
+            "objects",
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(|_| RecordError::Corrupt)?;
+        let directory = File::from(descriptor);
         if !directory
             .metadata()
             .map_err(|_| RecordError::Corrupt)?
@@ -280,6 +315,24 @@ impl TrialDisk {
     // objects. This remains an isolated single-writer trial, not cross-process
     // fencing or an authorization path for production KV2.
     fn authenticated_root(&self, key: &AddressKey) -> Result<TrialRootEnvelope, RecordError> {
+        #[cfg(unix)]
+        let mut source = {
+            use rustix::fs::{Mode, OFlags, openat};
+            let root = self.open_root_dir()?;
+            let descriptor = openat(
+                &root,
+                "root.json",
+                OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK,
+                Mode::empty(),
+            )
+            .map_err(|_| RecordError::Corrupt)?;
+            let file = File::from(descriptor);
+            if !file.metadata().map_err(|_| RecordError::Corrupt)?.is_file() {
+                return Err(RecordError::Corrupt);
+            }
+            file
+        };
+        #[cfg(not(unix))]
         let mut source = Self::open_private_regular(&self.manifest_path())?;
         if source.metadata().map_err(|_| RecordError::Corrupt)?.len()
             > crate::state_record_root::MAX_ROOT_BYTES as u64
@@ -340,12 +393,7 @@ impl TrialDisk {
         #[cfg(unix)]
         let _publication_guard = {
             use rustix::fs::{FlockOperation, flock};
-            use std::os::unix::fs::OpenOptionsExt;
-            let mut options = OpenOptions::new();
-            options
-                .read(true)
-                .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
-            let directory = options.open(&self.dir).map_err(|_| RecordError::Corrupt)?;
+            let directory = self.open_root_dir()?;
             flock(&directory, FlockOperation::NonBlockingLockExclusive)
                 .map_err(|_| RecordError::Invalid)?;
             directory
@@ -390,24 +438,51 @@ impl TrialDisk {
             staged_name.push(char::from(HEX[usize::from(byte >> 4)]));
             staged_name.push(char::from(HEX[usize::from(byte & 15)]));
         }
-        let staged = self.dir.join(staged_name);
-        let mut options = OpenOptions::new();
-        options.write(true).create_new(true);
         #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-        }
-        let mut writer = options.open(&staged).map_err(|_| RecordError::Corrupt)?;
+        let mut writer = {
+            use rustix::fs::{Mode, OFlags, openat};
+            let descriptor = openat(
+                &_publication_guard,
+                staged_name.as_str(),
+                OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::RUSR | Mode::WUSR,
+            )
+            .map_err(|_| RecordError::Corrupt)?;
+            File::from(descriptor)
+        };
+        #[cfg(not(unix))]
+        let mut writer = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(self.dir.join(&staged_name))
+            .map_err(|_| RecordError::Corrupt)?;
         writer
             .write_all(&manifest)
             .and_then(|()| writer.sync_all())
             .map_err(|_| RecordError::Corrupt)?;
         drop(writer);
-        fs::rename(staged, self.manifest_path()).map_err(|_| RecordError::Corrupt)?;
-        File::open(&self.dir)
-            .and_then(|dir| dir.sync_all())
-            .map_err(|_| RecordError::Corrupt)
+        #[cfg(unix)]
+        {
+            use rustix::fs::renameat;
+            renameat(
+                &_publication_guard,
+                staged_name.as_str(),
+                &_publication_guard,
+                "root.json",
+            )
+            .map_err(|_| RecordError::Corrupt)?;
+            _publication_guard
+                .sync_all()
+                .map_err(|_| RecordError::Corrupt)
+        }
+        #[cfg(not(unix))]
+        {
+            fs::rename(self.dir.join(&staged_name), self.manifest_path())
+                .map_err(|_| RecordError::Corrupt)?;
+            File::open(&self.dir)
+                .and_then(|directory| directory.sync_all())
+                .map_err(|_| RecordError::Corrupt)
+        }
     }
     fn reopen(
         &self,
@@ -859,5 +934,81 @@ fn kv2_v6_disk_trial_exclusive_generation_lock_denies_concurrent_writer()
     drop(competing_writer);
     disk.publish(&graph, &key, 1, false)?;
     assert_eq!(disk.reopen(key, 1)?.get(&item), Some(bytes.as_slice()));
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_redirected_trial_root_even_with_valid_mac()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::symlink;
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0x9b; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key_material));
+    let mut staged = LocalObjects(BTreeMap::new());
+    let (record_key, record) = v1_cell(1, "relocated-root", "trusted".repeat(512))?;
+    stage(&mut graph, &mut staged, record_key.clone(), Some(&record))?;
+    disk.publish(&graph, &key_material, 1, false)?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&key_material), 1)?.get(&record_key),
+        Some(record.as_slice())
+    );
+    // Redirect the entire root path, not just the leaf root.json or objects.
+    // All files and MACs remain valid; their *origin* has changed.
+    let relocated = disk.dir.with_extension("relocated-untrusted");
+    assert!(!relocated.exists());
+    fs::rename(&disk.dir, &relocated)?;
+    symlink(&relocated, &disk.dir)?;
+    let redirected = disk.reopen(Arc::clone(&key_material), 1);
+    // Restore and clean up before the assertion, including during the red run.
+    fs::remove_file(&disk.dir)?;
+    fs::rename(&relocated, &disk.dir)?;
+    assert!(
+        redirected.is_err(),
+        "a signed root redirected through a symlinked trial root must fail closed"
+    );
+    assert_eq!(
+        disk.reopen(key_material, 1)?.get(&record_key),
+        Some(record.as_slice())
+    );
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_replaced_regular_root_with_copied_signed_bytes()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0x9c; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key_material));
+    let mut staged = LocalObjects(BTreeMap::new());
+    let (record_key, record) = v1_cell(1, "copied-directory-root", "trusted".repeat(256))?;
+    stage(&mut graph, &mut staged, record_key.clone(), Some(&record))?;
+    disk.publish(&graph, &key_material, 1, false)?;
+    let old_dir = disk.dir.with_extension("original-pinned");
+    assert!(!old_dir.exists());
+    fs::rename(&disk.dir, &old_dir)?;
+    fs::create_dir(&disk.dir)?;
+    fs::create_dir(disk.dir.join("objects"))?;
+    fs::copy(old_dir.join("root.json"), disk.manifest_path())?;
+    for object in fs::read_dir(old_dir.join("objects"))? {
+        let object = object?;
+        fs::copy(
+            object.path(),
+            disk.dir.join("objects").join(object.file_name()),
+        )?;
+    }
+    // This is a different directory inode, despite byte-identical signed data.
+    let replacement = disk.reopen(Arc::clone(&key_material), 1);
+    fs::remove_dir_all(&disk.dir)?;
+    fs::rename(&old_dir, &disk.dir)?;
+    assert!(
+        replacement.is_err(),
+        "a copied signed tree must not replace the pinned private root"
+    );
+    assert_eq!(
+        disk.reopen(key_material, 1)?.get(&record_key),
+        Some(record.as_slice())
+    );
     Ok(())
 }
