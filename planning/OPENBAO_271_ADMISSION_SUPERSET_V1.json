@@ -255,6 +255,18 @@
       "http_read": 200,
       "exact_large_input_preserved": false,
       "receipt": "../HeptaBao-qualification-20261010-r134-assets/evidence/x230/hb-oracle271-r02.json"
+    },
+    "rog_exact_r670_openbao271_large_kv2_oracle": {
+      "candidate_source_head": "76ca00ad85bf5a30831cf9cb08220550a832d6fe",
+      "target": "official OpenBao 2.7.1",
+      "bounded_https_scoped_cases": 6,
+      "matched_cases": 5,
+      "mismatched_cases": 1,
+      "mismatch": "2560KiB KV2 POST: HeptaBao HTTP 413 versus OpenBao HTTP 200",
+      "synthetic_only": true,
+      "production_authority": false,
+      "evidence_path": "../HeptaBao-r207-multihost-20261011/r680-official271-large-public.json",
+      "evidence_sha256": "7304cb7218a167cebf78fffe48a91415694552e599697e510eb352a79722272b"
     }
   },
   "blocked_by": [
@@ -263,7 +275,8 @@
     "Linux current-candidate HA rolling upgrade, physical storage faults and long-horizon replay not qualified",
     "Full 2.7.1 asset migration and external real providers unqualified",
     "Scalable storage and replay identity lifecycle admission OPEN",
-    "Security release supply-chain and reproducibility unqualified"
+    "Security release supply-chain and reproducibility unqualified",
+    "Exact r670 OpenBao 2.7.1 KV2 HTTP 2560KiB POST mismatch: official 200, HeptaBao 413; safe bounded ingress and aggregate owner admission remain OPEN"
   ],
   "requirements": [
     "Never flip replacement_authority merely because this file exists",
