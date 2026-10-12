@@ -2084,8 +2084,18 @@ fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), RecordError> {
         {
             return Err(RecordError::Corrupt);
         }
-        let versions = cell
-            .entry
+        // The R740 private shard schema has exactly these three index
+        // fields. No unknown authority or retention metadata may piggyback
+        // on a valid authenticated pointer under this schema discriminator.
+        let index = cell.entry.as_object().ok_or(RecordError::Corrupt)?;
+        if index.len() != 3
+            || !index.contains_key("shard_schema")
+            || !index.contains_key("current_version")
+            || !index.contains_key("versions")
+        {
+            return Err(RecordError::Corrupt);
+        }
+        let versions = index
             .get("versions")
             .and_then(Value::as_object)
             .ok_or(RecordError::Corrupt)?;
@@ -2094,10 +2104,22 @@ fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), RecordError> {
         }
         for version in 1..=cell.version {
             let expected_scope = sharded_version_scope(&cell.scope, version)?;
-            let actual_pointer = versions
+            let pointer = versions
                 .get(&version.to_string())
-                .and_then(|v| v.get("data"))
-                .and_then(|v| v.get("shard_path"))
+                .and_then(Value::as_object)
+                .ok_or(RecordError::Corrupt)?;
+            if pointer.len() != 2 || pointer.get("destroyed") != Some(&Value::Bool(false)) {
+                return Err(RecordError::Corrupt);
+            }
+            let pointer_data = pointer
+                .get("data")
+                .and_then(Value::as_object)
+                .ok_or(RecordError::Corrupt)?;
+            if pointer_data.len() != 1 {
+                return Err(RecordError::Corrupt);
+            }
+            let actual_pointer = pointer_data
+                .get("shard_path")
                 .and_then(Value::as_str)
                 .ok_or(RecordError::Corrupt)?;
             if actual_pointer != expected_scope.path {
@@ -2106,16 +2128,31 @@ fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), RecordError> {
             let actual_key = key(&expected_scope)?;
             let raw = graph.get(&actual_key).ok_or(RecordError::Missing)?;
             let version_cell = decode(&actual_key, raw)?;
+            let shard = version_cell.entry.as_object().ok_or(RecordError::Corrupt)?;
+            let shards_versions = shard
+                .get("versions")
+                .and_then(Value::as_object)
+                .ok_or(RecordError::Corrupt)?;
+            let shard_version = shards_versions
+                .get(&version.to_string())
+                .and_then(Value::as_object)
+                .ok_or(RecordError::Corrupt)?;
+            let shard_data = shard_version
+                .get("data")
+                .and_then(Value::as_object)
+                .ok_or(RecordError::Corrupt)?;
+            // For this test-only v1 format, one physical shard is precisely
+            // one immutable payload, not a carrier for optional authority.
             if version_cell.scope != expected_scope
                 || version_cell.version != version
-                || version_cell
-                    .entry
-                    .get("versions")
-                    .and_then(Value::as_object)
-                    .is_none_or(|parts| parts.len() != 1)
-                || version_cell.entry["versions"][version.to_string()]["data"]["payload"]
-                    .as_str()
-                    .is_none()
+                || shard.len() != 2
+                || !shard.contains_key("current_version")
+                || !shard.contains_key("versions")
+                || shards_versions.len() != 1
+                || shard_version.len() != 2
+                || shard_version.get("destroyed") != Some(&Value::Bool(false))
+                || shard_data.len() != 1
+                || shard_data.get("payload").and_then(Value::as_str).is_none()
             {
                 return Err(RecordError::Corrupt);
             }
@@ -2218,10 +2255,14 @@ fn kv2_v6_disk_trial_two_2560k_retained_versions_survive_signed_root()
     // reference a missing shard. The refusal precedes object staging.
     let mut invalid = graph.clone();
     let mut more = LocalObjects(BTreeMap::new());
-    let mut bad_index: Value = serde_json::from_slice(&sharded_index_cell(logical.clone(), 3)?)?;
-    bad_index["entry"]["versions"]["3"]["data"]["shard_path"] =
+    let mut bad_index: Cell = serde_json::from_slice(&sharded_index_cell(logical.clone(), 3)?)?;
+    bad_index.entry["versions"]["3"]["data"]["shard_path"] =
         json!(sharded_version_scope(&logical, 1)?.path);
     let bad_bytes = serde_json::to_vec(&bad_index)?;
+    assert!(
+        decode(&key(&logical)?, &bad_bytes).is_ok(),
+        "wrong shard pointer must remain a canonically encoded Cell"
+    );
     stage(&mut invalid, &mut more, key(&logical)?, Some(&bad_bytes))?;
     let second_manifest = fs::read(disk.manifest_path())?;
     assert!(disk.publish(&invalid, &signing, 3, false).is_err());
@@ -2312,11 +2353,15 @@ fn kv2_v6_disk_trial_sharded_new_pointer_must_not_claim_destroyed()
 
     stage_sharded_version(&mut graph, &mut objects, &logical, 2, "next".into())?;
     let index_key = key(&logical)?;
-    let mut forged: Value = serde_json::from_slice(graph.get(&index_key).ok_or("missing index")?)?;
+    let mut forged: Cell = serde_json::from_slice(graph.get(&index_key).ok_or("missing index")?)?;
     // The indexed version 2 says destroyed; the actual version-2
-    // shard remains live. Both envelopes are individually valid JSON.
-    forged["entry"]["versions"]["2"]["destroyed"] = json!(true);
+    // shard remains live. A canonical Cell is still rejected at decoding.
+    forged.entry["versions"]["2"]["destroyed"] = json!(true);
     let bytes = serde_json::to_vec(&forged)?;
+    assert!(
+        decode(&index_key, &bytes).is_err(),
+        "destroyed pointer retaining data must fail typed Cell decoding"
+    );
     stage(&mut graph, &mut objects, index_key, Some(&bytes))?;
     assert!(
         disk.publish(&graph, &signing, 2, false).is_err(),
@@ -2389,9 +2434,13 @@ fn kv2_v6_disk_trial_sharded_pointer_extra_data_must_be_rejected()
 
     stage_sharded_version(&mut graph, &mut objects, &logical, 2, "new".into())?;
     let index_key = key(&logical)?;
-    let mut forged: Value = serde_json::from_slice(graph.get(&index_key).ok_or("missing header")?)?;
-    forged["entry"]["versions"]["2"]["data"]["alias"] = json!("privileged-alternative-shard");
+    let mut forged: Cell = serde_json::from_slice(graph.get(&index_key).ok_or("missing header")?)?;
+    forged.entry["versions"]["2"]["data"]["alias"] = json!("privileged-alternative-shard");
     let bytes = serde_json::to_vec(&forged)?;
+    assert!(
+        decode(&index_key, &bytes).is_ok(),
+        "the test must reach shard closure with canonical Cell encoding"
+    );
     stage(&mut graph, &mut objects, index_key, Some(&bytes))?;
     assert!(
         disk.publish(&graph, &signing, 2, false).is_err(),
@@ -2402,5 +2451,77 @@ fn kv2_v6_disk_trial_sharded_pointer_extra_data_must_be_rejected()
         sharded_payload(&disk.reopen(signing, 1)?, &logical, 1)?.as_str(),
         "original"
     );
+    Ok(())
+}
+
+// Canonical typed encoding is required here: converting the entire Cell
+// through a generic JSON Value changes its outer field order and can make a
+// rejection test pass before the shard-closure predicate is even reached.
+#[test]
+fn kv2_v6_disk_trial_canonical_shard_extra_data_rejected_by_closure()
+-> Result<(), Box<dyn std::error::Error>> {
+    let signer = private_trial_key(&AddressKey::from_bytes([0xcf; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r780-canonical".into(),
+        mount: "secret/".into(),
+        incarnation: 52,
+        path: "ledger".into(),
+    };
+    let mut graph = Kv1Index::empty(Arc::clone(&signer));
+    let mut cache = LocalObjects(BTreeMap::new());
+    stage_sharded_version(&mut graph, &mut cache, &logical, 1, "record".into())?;
+    assert!(validate_sharded_trial_index(&graph).is_ok());
+    let physical = key(&sharded_version_scope(&logical, 1)?)?;
+    let mut cell: Cell =
+        serde_json::from_slice(graph.get(&physical).ok_or("missing physical cell")?)?;
+    cell.entry["versions"]["1"]["data"]["unauthorized_alias"] = json!(true);
+    let raw = serde_json::to_vec(&cell)?;
+    assert!(
+        decode(&physical, &raw).is_ok(),
+        "test must preserve canonical Cell encoding"
+    );
+    let mut changed = graph.clone();
+    stage(
+        &mut changed,
+        &mut LocalObjects(BTreeMap::new()),
+        physical,
+        Some(&raw),
+    )?;
+    assert!(
+        validate_sharded_trial_index(&changed).is_err(),
+        "canonical physical shard gained an unauthorized data field"
+    );
+    let index_key = key(&logical)?;
+    for (kind, header) in [
+        ("pointer-extra", {
+            let mut cell: Cell =
+                serde_json::from_slice(graph.get(&index_key).ok_or("missing logical index")?)?;
+            cell.entry["versions"]["1"]["data"]["extra_acl_grant"] = json!(true);
+            cell
+        }),
+        ("header-extra", {
+            let mut cell: Cell =
+                serde_json::from_slice(graph.get(&index_key).ok_or("missing logical index")?)?;
+            cell.entry["alternate_index_authority"] = json!(true);
+            cell
+        }),
+    ] {
+        let raw = serde_json::to_vec(&header)?;
+        assert!(
+            decode(&index_key, &raw).is_ok(),
+            "canonical {kind} test must reach the shard closure"
+        );
+        let mut candidate = graph.clone();
+        stage(
+            &mut candidate,
+            &mut LocalObjects(BTreeMap::new()),
+            index_key.clone(),
+            Some(&raw),
+        )?;
+        assert!(
+            validate_sharded_trial_index(&candidate).is_err(),
+            "canonical {kind} field bypassed the closed V6 shard grammar"
+        );
+    }
     Ok(())
 }
