@@ -35,6 +35,8 @@ struct TrialDisk {
     dir: PathBuf,
     #[cfg(unix)]
     root_identity: (u64, u64),
+    #[cfg(unix)]
+    objects_identity: (u64, u64),
 }
 impl TrialDisk {
     fn fresh() -> Result<Self, Box<dyn std::error::Error>> {
@@ -59,10 +61,18 @@ impl TrialDisk {
             let metadata = fs::symlink_metadata(&dir)?;
             (metadata.dev(), metadata.ino())
         };
+        #[cfg(unix)]
+        let objects_identity = {
+            use std::os::unix::fs::MetadataExt;
+            let metadata = fs::symlink_metadata(dir.join("objects"))?;
+            (metadata.dev(), metadata.ino())
+        };
         Ok(Self {
             dir,
             #[cfg(unix)]
             root_identity,
+            #[cfg(unix)]
+            objects_identity,
         })
     }
     fn object_path(&self, id: &ObjectId) -> PathBuf {
@@ -124,11 +134,9 @@ impl TrialDisk {
         )
         .map_err(|_| RecordError::Corrupt)?;
         let directory = File::from(descriptor);
-        if !directory
-            .metadata()
-            .map_err(|_| RecordError::Corrupt)?
-            .is_dir()
-        {
+        use std::os::unix::fs::MetadataExt;
+        let metadata = directory.metadata().map_err(|_| RecordError::Corrupt)?;
+        if !metadata.is_dir() || (metadata.dev(), metadata.ino()) != self.objects_identity {
             return Err(RecordError::Corrupt);
         }
         Ok(directory)
@@ -820,6 +828,55 @@ fn kv2_v6_disk_trial_rejects_ancestor_object_directory_symlink()
         disk.reopen(address, 1).is_err(),
         "published graph must not read ordinary leaves through a symlinked parent"
     );
+    Ok(())
+}
+
+// The object directory itself has provenance, independent of its signed leaf
+// bytes. Replacing it with a different *regular directory*, filled with
+// byte-identical authenticated objects, must be rejected even without symlinks.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_replaced_regular_objects_directory()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let address = private_trial_key(&AddressKey::from_bytes([0x9d; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&address));
+    let mut staged = LocalObjects(BTreeMap::new());
+    let (item, bytes) = v1_cell(
+        1,
+        "same-object-bytes-different-directory",
+        "owned".repeat(512),
+    )?;
+    stage(&mut graph, &mut staged, item.clone(), Some(&bytes))?;
+    disk.publish(&graph, &address, 1, false)?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&address), 1)?.get(&item),
+        Some(bytes.as_slice())
+    );
+
+    let original = disk.dir.join("objects");
+    let relocated = disk.dir.join("objects-original-pinned");
+    assert!(!relocated.exists());
+    fs::rename(&original, &relocated)?;
+    fs::create_dir(&original)?;
+    for entry in fs::read_dir(&relocated)? {
+        let entry = entry?;
+        fs::copy(entry.path(), original.join(entry.file_name()))?;
+    }
+    let redirected_read = disk.reopen(Arc::clone(&address), 1);
+    let redirected_reuse = disk.persist_objects(&graph);
+    // Restore before asserting, including during the intentionally red test.
+    fs::remove_dir_all(&original)?;
+    fs::rename(&relocated, &original)?;
+    assert!(
+        redirected_read.is_err(),
+        "a substituted regular object directory cannot be read"
+    );
+    assert!(
+        redirected_reuse.is_err(),
+        "a substituted regular object directory cannot be reused"
+    );
+    assert_eq!(disk.reopen(address, 1)?.get(&item), Some(bytes.as_slice()));
     Ok(())
 }
 
