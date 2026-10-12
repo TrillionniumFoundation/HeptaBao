@@ -340,7 +340,12 @@ impl TrialDisk {
             )
             .map_err(|_| RecordError::Corrupt)?;
             let file = File::from(descriptor);
-            if !file.metadata().map_err(|_| RecordError::Corrupt)?.is_file() {
+            // O_NOFOLLOW rejects symlinks but not a regular inode exported by
+            // hard link to another path. Object reads already reject nlink>1;
+            // the authenticated root must obey the same custody boundary.
+            use std::os::unix::fs::MetadataExt;
+            let metadata = file.metadata().map_err(|_| RecordError::Corrupt)?;
+            if !metadata.is_file() || metadata.nlink() != 1 {
                 return Err(RecordError::Corrupt);
             }
             file
@@ -872,6 +877,47 @@ fn kv2_v6_disk_trial_rejects_hardlinked_object_with_identical_bytes()
     fs::remove_file(&outside_alias)?;
     assert_eq!(fs::metadata(&original)?.nlink(), 1);
     assert_eq!(disk.reopen(key, 1)?.get(&name), Some(bytes.as_slice()));
+    Ok(())
+}
+
+// A manifest hard link bypasses O_NOFOLLOW just like an object hard link.
+// A valid MAC over copied bytes cannot authorize a multiply-linked root inode.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_hardlinked_manifest_with_valid_mac()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::MetadataExt;
+    let disk = TrialDisk::fresh()?;
+    let key = private_trial_key(&AddressKey::from_bytes([0xa7; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (entry, bytes) = v1_cell(1, "root-hardlink", "trusted".repeat(1024))?;
+    stage(&mut graph, &mut objects, entry.clone(), Some(&bytes))?;
+    disk.publish(&graph, &key, 1, false)?;
+    let manifest = disk.manifest_path();
+    let original = fs::read(&manifest)?;
+    let alias = disk.dir.join("outside-manifest-hardlink");
+    fs::hard_link(&manifest, &alias)?;
+    assert_eq!(fs::symlink_metadata(&manifest)?.nlink(), 2);
+
+    let redirected_read = disk.reopen(Arc::clone(&key), 1);
+    let redirected_publication = disk.publish(&graph, &key, 2, false);
+    assert!(
+        redirected_read.is_err(),
+        "linked signed root must not authorize reads"
+    );
+    assert!(
+        redirected_publication.is_err(),
+        "linked signed root must not authorize a new generation"
+    );
+    assert_eq!(
+        fs::read(&manifest)?,
+        original,
+        "denial cannot mutate the prior root"
+    );
+    fs::remove_file(alias)?;
+    let recovered = disk.reopen(key, 1)?;
+    assert_eq!(recovered.get(&entry), Some(bytes.as_slice()));
     Ok(())
 }
 
