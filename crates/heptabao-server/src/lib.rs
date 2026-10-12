@@ -66,6 +66,8 @@ mod cubbyhole_service_tests;
 mod secret_serde;
 pub(crate) mod state_record_root;
 mod state_records;
+// Format validation only, no production V6 authority or route.
+mod kv2_v6_record_codec;
 
 #[cfg(test)]
 #[path = "kv2_v6_record_trial.rs"]
