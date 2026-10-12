@@ -572,7 +572,17 @@ impl TrialDisk {
         if envelope.payload.generation != expected_generation {
             return Err(RecordError::Corrupt);
         }
-        Kv1Index::open(key, envelope.payload.root, self)
+        let index = Kv1Index::open(key, envelope.payload.root, self)?;
+        // Authentication of the root and every object page is necessary but
+        // not sufficient: a historical data image may contain valid MACs
+        // yet violate the typed KV2 envelope/retained-version grammar.
+        // Reopen must validate *all* cells before exposing even one record.
+        index.visit_keys(|record_key| {
+            let cell = index.get(record_key).ok_or(RecordError::Corrupt)?;
+            decode(record_key, cell).map_err(|_| RecordError::Corrupt)?;
+            Ok(())
+        })?;
+        Ok(index)
     }
 }
 impl RecordReader for TrialDisk {
@@ -1748,5 +1758,81 @@ fn kv2_v6_disk_trial_rejects_invalid_history_version_names_and_values()
             Some(valid.as_slice())
         );
     }
+    Ok(())
+}
+
+// Reopen is also an admission boundary. A valid manifest MAC plus correctly
+// addressed object pages cannot make a malformed KV2 history authoritative.
+#[test]
+fn kv2_v6_disk_trial_reopen_rejects_valid_mac_with_invalid_kv2_history()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signer = private_trial_key(&AddressKey::from_bytes([0xc3; 32]))?;
+    let scope = Scope {
+        namespace: "r660-reopen".into(),
+        mount: "secret/".into(),
+        incarnation: 7,
+        path: "history".into(),
+    };
+    let address = key(&scope)?;
+    let invalid = encode(
+        scope.clone(),
+        3,
+        json!({
+            "current_version":3, "versions":{"3":{"data":{"payload":"ok"}},"4":{}}
+        }),
+    )?;
+    let mut graph = Kv1Index::empty(Arc::clone(&signer));
+    let mut staging = LocalObjects(BTreeMap::new());
+    stage(&mut graph, &mut staging, address.clone(), Some(&invalid))?;
+    // A disk image can contain valid object MACs and a valid signed root,
+    // yet still be internally inconsistent. Construct it without calling
+    // publish(), whose strict preflight intentionally rejects this image.
+    disk.persist_objects(&graph)?;
+    let raw_index = Kv1Index::open(Arc::clone(&signer), graph.root(), &disk)?;
+    assert_eq!(raw_index.get(&address), Some(invalid.as_slice()));
+    let payload = TrialPayload {
+        format: TRIAL_FORMAT.into(),
+        cluster: "synthetic-r310".into(),
+        epoch: 7,
+        generation: 1,
+        root: graph.root(),
+    };
+    let data = serde_json::to_vec(&payload)?;
+    let authenticated = TrialRootEnvelope {
+        mac: signer.digest(ROOT_DOMAIN, &data)?,
+        payload,
+    };
+    let root_bytes = serde_json::to_vec(&authenticated)?;
+    fs::write(disk.manifest_path(), &root_bytes)?;
+    assert!(
+        disk.authenticated_root(&signer).is_ok(),
+        "test requires a valid MAC"
+    );
+    assert!(
+        disk.reopen(Arc::clone(&signer), 1).is_err(),
+        "reopen must reject an authenticated but incoherent KV2 history"
+    );
+    assert_eq!(
+        fs::read(disk.manifest_path())?,
+        root_bytes,
+        "a negative reopen must not modify root bytes"
+    );
+    // Positive control: a canonical sparse history is still admissible.
+    let healthy = TrialDisk::fresh()?;
+    let valid = encode(
+        scope,
+        3,
+        json!({
+            "current_version":3,"versions":{"3":{"data":{"payload":"ok"}}}
+        }),
+    )?;
+    let mut good = Kv1Index::empty(Arc::clone(&signer));
+    stage(&mut good, &mut staging, address.clone(), Some(&valid))?;
+    healthy.publish(&good, &signer, 1, false)?;
+    assert_eq!(
+        healthy.reopen(signer, 1)?.get(&address),
+        Some(valid.as_slice())
+    );
     Ok(())
 }
