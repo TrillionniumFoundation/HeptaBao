@@ -18,7 +18,15 @@ pub(crate) fn sharded_version_scope(logical: &Scope, version: u64) -> Result<Sco
     // Bind this shard to a validated original namespace, mount, incarnation,
     // and path before deriving any physical identity.
     key(logical)?;
-    if version == 0 || version > 32 || logical.mount.contains('\u{001f}') {
+    // Kv1Key validates NUL, but its generic record namespace may contain
+    // other control bytes. Reject the original logical V6 scope before a
+    // normalized/hash-derived physical shard could be staged or published.
+    if version == 0
+        || version > 32
+        || logical.namespace.chars().any(char::is_control)
+        || logical.mount.chars().any(char::is_control)
+        || logical.path.chars().any(char::is_control)
+    {
         return Err(RecordError::Invalid);
     }
     let digest = Sha256::digest(logical.path.as_bytes());
@@ -186,5 +194,41 @@ mod tests {
         let first = key(&sharded_version_scope(&logical, 1).unwrap()).unwrap();
         let second = key(&sharded_version_scope(&logical, 2).unwrap()).unwrap();
         assert!(first != second, "version physical identifiers must differ");
+    }
+
+    // Ordinary Kv1Key admits non-NUL control characters, but a V6 logical
+    // owner must never derive an apparently safe physical shard from one.
+    // Reject BEFORE stage() can write a shard or signed-root publication.
+    #[test]
+    fn shard_scope_rejects_control_character_aliases_before_staging() {
+        let base = Scope {
+            namespace: "tenant".into(),
+            mount: "secret/".into(),
+            incarnation: 7,
+            path: "invoice".into(),
+        };
+        for invalid in [
+            Scope {
+                namespace: "tenant\u{0002}".into(),
+                ..base.clone()
+            },
+            Scope {
+                mount: "secret/\u{0001}alias/".into(),
+                ..base.clone()
+            },
+            Scope {
+                path: "invoice\u{0003}".into(),
+                ..base.clone()
+            },
+        ] {
+            assert!(
+                key(&invalid).is_ok(),
+                "regression must exercise V6 scope admission, not generic Kv1Key rejection"
+            );
+            assert!(
+                sharded_version_scope(&invalid, 1).is_err(),
+                "control-character logical aliases must be stopped before physical staging"
+            );
+        }
     }
 }
