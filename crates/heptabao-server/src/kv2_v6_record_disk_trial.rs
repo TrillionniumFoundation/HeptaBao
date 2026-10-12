@@ -135,30 +135,105 @@ impl TrialDisk {
     }
 
     #[cfg(unix)]
+    fn verify_existing_object_at(
+        &self,
+        directory: &File,
+        id: &ObjectId,
+        expected: &[u8],
+    ) -> Result<(), RecordError> {
+        let source = self.open_object_at(directory, id, false)?;
+        let length = source.metadata().map_err(|_| RecordError::Corrupt)?.len();
+        if length != expected.len() as u64 {
+            return Err(RecordError::Corrupt);
+        }
+        let mut bytes = Zeroizing::new(Vec::new());
+        source
+            .take(length + 1)
+            .read_to_end(&mut bytes)
+            .map_err(|_| RecordError::Corrupt)?;
+        if bytes.as_slice() != expected {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(())
+    }
+
+    /// A power loss during an object write must never leave the final identity
+    /// containing a truncated object. fsync the private temporary inode first,
+    /// atomically link its verified bytes into the immutable final name, then
+    /// fsync the objects directory before publishing any authenticated root.
+    /// The injection flag is used only by this isolated durability trial.
+    #[cfg(unix)]
+    fn install_new_object_at(
+        &self,
+        directory: &File,
+        id: &ObjectId,
+        contents: &[u8],
+        interrupt_partial_write: bool,
+    ) -> Result<(), RecordError> {
+        use rustix::fs::{AtFlags, Mode, OFlags, linkat, openat, unlinkat};
+        let entropy = crate::crypto::random::<16>().map_err(|_| RecordError::Corrupt)?;
+        let mut staged = String::from(".staged-");
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        for byte in entropy {
+            staged.push(char::from(HEX[usize::from(byte >> 4)]));
+            staged.push(char::from(HEX[usize::from(byte & 15)]));
+        }
+        let handle = openat(
+            directory,
+            staged.as_str(),
+            OFlags::WRONLY
+                | OFlags::CREATE
+                | OFlags::EXCL
+                | OFlags::NOFOLLOW
+                | OFlags::CLOEXEC
+                | OFlags::NONBLOCK,
+            Mode::RUSR | Mode::WUSR,
+        )
+        .map_err(|_| RecordError::Corrupt)?;
+        let mut writer = File::from(handle);
+        if interrupt_partial_write {
+            // Model a process killed after its first partial disk write.
+            // This file deliberately remains an untrusted orphan on disk.
+            writer
+                .write_all(&contents[..contents.len().div_ceil(2)])
+                .map_err(|_| RecordError::Corrupt)?;
+            return Err(RecordError::Corrupt);
+        }
+        writer
+            .write_all(contents)
+            .and_then(|()| writer.sync_all())
+            .map_err(|_| RecordError::Corrupt)?;
+        drop(writer);
+        let name = self.object_path(id);
+        let destination = name.file_name().ok_or(RecordError::Corrupt)?;
+        // Hard-link creation is no-replace, including with a concurrent writer.
+        // A prior immutable identity is accepted only if byte-for-byte equal.
+        let linked = linkat(
+            directory,
+            staged.as_str(),
+            directory,
+            destination,
+            AtFlags::empty(),
+        );
+        unlinkat(directory, staged.as_str(), AtFlags::empty()).map_err(|_| RecordError::Corrupt)?;
+        match linked {
+            Ok(()) => Ok(()),
+            Err(rustix::io::Errno::EXIST) => {
+                self.verify_existing_object_at(directory, id, contents)
+            }
+            Err(_) => Err(RecordError::Corrupt),
+        }
+    }
+
+    #[cfg(unix)]
     fn persist_objects(&self, graph: &Kv1Index) -> Result<(), RecordError> {
         let directory = self.open_objects_dir()?;
         graph.visit_objects(|object| {
             let identity = &object.reference().id;
-            match self.open_object_at(&directory, identity, false) {
-                Ok(source) => {
-                    let length = source.metadata().map_err(|_| RecordError::Corrupt)?.len();
-                    if length != object.bytes().len() as u64 {
-                        return Err(RecordError::Corrupt);
-                    }
-                    let mut bytes = Zeroizing::new(Vec::new());
-                    source
-                        .take(length + 1)
-                        .read_to_end(&mut bytes)
-                        .map_err(|_| RecordError::Corrupt)?;
-                    if bytes.as_slice() != object.bytes() {
-                        return Err(RecordError::Corrupt);
-                    }
-                }
+            match self.verify_existing_object_at(&directory, identity, object.bytes()) {
+                Ok(()) => {}
                 Err(RecordError::Missing) => {
-                    let mut file = self.open_object_at(&directory, identity, true)?;
-                    file.write_all(object.bytes())
-                        .and_then(|()| file.sync_all())
-                        .map_err(|_| RecordError::Corrupt)?;
+                    self.install_new_object_at(&directory, identity, object.bytes(), false)?
                 }
                 Err(failure) => return Err(failure),
             }
@@ -448,6 +523,67 @@ fn kv2_v6_disk_trial_34m_durable_root_failure_invisibility_and_tamper()
     assert!(disk.reopen(Arc::clone(&key_material), 2).is_err());
     fs::remove_file(&root_path)?;
     assert!(disk.reopen(key_material, 2).is_err());
+    Ok(())
+}
+
+// A short write followed by process death must leave only a private orphan,
+// never a corrupt file under the final immutable ID that blocks all restarts.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_partial_write_never_poison_final_identity()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0x91; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key_material));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (name, payload) = v1_cell(1, "partial-write-reopen", "validated".repeat(2048))?;
+    stage(&mut graph, &mut objects, name.clone(), Some(&payload))?;
+
+    let root = graph.root().reference.ok_or("missing root")?;
+    let mut root_bytes: Option<Zeroizing<Vec<u8>>> = None;
+    graph.visit_objects(|object| {
+        if object.reference().id == root.id {
+            root_bytes = Some(Zeroizing::new(object.bytes().to_vec()));
+        }
+        Ok(())
+    })?;
+    let root_bytes = root_bytes.ok_or("missing root payload")?;
+    let directory = disk.open_objects_dir()?;
+    assert!(matches!(
+        disk.install_new_object_at(&directory, &root.id, &root_bytes, true),
+        Err(RecordError::Corrupt)
+    ));
+    assert!(!disk.object_path(&root.id).exists());
+    assert!(!disk.manifest_path().exists());
+    assert_eq!(
+        fs::read_dir(disk.dir.join("objects"))?
+            .filter_map(Result::ok)
+            .filter(|item| item.file_name().to_string_lossy().starts_with(".staged-"))
+            .count(),
+        1,
+        "injected interrupted write must leave a private partial temp"
+    );
+
+    // A retry must publish the full authenticated graph without reusing the
+    // interrupted temp, or silently repairing an already-final corrupt file.
+    disk.publish(&graph, &key_material, 1, false)?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&key_material), 1)?.get(&name),
+        Some(payload.as_slice())
+    );
+    let final_bytes = fs::read(disk.object_path(&root.id))?;
+    assert_eq!(final_bytes, root_bytes.as_slice());
+    let original_root = fs::read(disk.manifest_path())?;
+
+    // A truncated *final* identity is tampering, not a crash retry; never
+    // auto-overwrite a previously advertised immutable object.
+    fs::write(
+        disk.object_path(&root.id),
+        &root_bytes[..root_bytes.len() / 2],
+    )?;
+    assert!(disk.persist_objects(&graph).is_err());
+    assert_eq!(fs::read(disk.manifest_path())?, original_root);
+    assert!(disk.reopen(key_material, 1).is_err());
     Ok(())
 }
 
