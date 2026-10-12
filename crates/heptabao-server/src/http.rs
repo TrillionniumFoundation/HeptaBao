@@ -996,7 +996,7 @@ fn execution_deadline_with_response_reserve(now: Instant, transport_deadline: In
     let Some(remaining) = transport_deadline.checked_duration_since(now) else {
         return transport_deadline;
     };
-    let reserve = (remaining / 4).min(Duration::from_millis(250));
+    let reserve = (remaining / 4).min(Duration::from_secs(1));
     transport_deadline - reserve
 }
 
@@ -3858,7 +3858,8 @@ mod service_lock_deadline_tests {
             (Duration::from_millis(4), Duration::from_millis(1)),
             (Duration::from_millis(200), Duration::from_millis(50)),
             (Duration::from_secs(1), Duration::from_millis(250)),
-            (Duration::from_secs(60), Duration::from_millis(250)),
+            (Duration::from_secs(5), Duration::from_secs(1)),
+            (Duration::from_secs(60), Duration::from_secs(1)),
         ] {
             let original = now + remaining;
             let execute = execution_deadline_with_response_reserve(now, original);
@@ -3873,6 +3874,46 @@ mod service_lock_deadline_tests {
             execution_deadline_with_response_reserve(late, original),
             original - Duration::from_millis(10)
         );
+    }
+
+    #[test]
+    fn bounded_read_denial_retains_original_transport_for_late_audit_and_tcp()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        client.set_read_timeout(Some(Duration::from_secs(2)))?;
+        let (socket, _) = listener.accept()?;
+        let now = Instant::now();
+        let deadline = now + Duration::from_secs(5);
+        let execution = execution_deadline_with_response_reserve(now, deadline);
+        // No caller may extend this five-second budget. A read that has
+        // consumed its admitted execution window must still be able to send
+        // a negative audited response through the original TCP writer.
+        assert!(
+            deadline.saturating_duration_since(execution) >= Duration::from_millis(900),
+            "bounded read execution left insufficient response delivery reserve",
+        );
+        std::thread::sleep(execution.saturating_duration_since(Instant::now()));
+        // Fault-only model of a slow mandatory audit/fsync after a negative
+        // read; no state, credential or mutation is ever published here.
+        std::thread::sleep(Duration::from_millis(400));
+        let mut transport = DeadlineStream {
+            stream: socket,
+            deadline,
+        };
+        let reply = Response::error(503, "synthetic bounded read rejected");
+        write_response(&mut transport, reply, false)?;
+        assert!(Instant::now() < deadline);
+        drop(transport);
+        let mut bytes = Vec::new();
+        client.read_to_end(&mut bytes)?;
+        assert!(bytes.starts_with(b"HTTP/1.1 503 "));
+        assert!(
+            bytes
+                .windows(b"synthetic bounded read rejected".len())
+                .any(|window| window == b"synthetic bounded read rejected")
+        );
+        Ok(())
     }
 
     #[test]
