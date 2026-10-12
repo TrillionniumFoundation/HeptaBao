@@ -538,8 +538,56 @@ impl RecordReader for TrialDisk {
         Ok(bytes)
     }
 }
+impl TrialDisk {
+    // Cleanup belongs only to the exact original private directory inodes.
+    // Never recursively traverse a pathname after validating its identity:
+    // it can be exchanged between the check and the removal. Descriptor-
+    // relative unlink removes only leaves in the pinned directories; a final
+    // rmdir cannot recursively erase a substituted directory's contents.
+    #[cfg(unix)]
+    fn cleanup_pinned_trial(&self) -> Result<(), RecordError> {
+        use rustix::fs::{AtFlags, Dir, unlinkat};
+        use std::os::unix::fs::MetadataExt;
+
+        fn unlink_leaves(directory: &File, skip_objects: bool) -> Result<(), RecordError> {
+            let mut entries = Dir::read_from(directory).map_err(|_| RecordError::Corrupt)?;
+            while let Some(entry) = entries.read() {
+                let entry = entry.map_err(|_| RecordError::Corrupt)?;
+                let name = entry.file_name();
+                if matches!(name.to_bytes(), b"." | b"..")
+                    || (skip_objects && name.to_bytes() == b"objects")
+                {
+                    continue;
+                }
+                // Neither a leaf symlink nor a regular-file hard link can
+                // redirect unlinkat outside this pinned directory. Unexpected
+                // nested directories are not traversed (unlinkat rejects).
+                unlinkat(directory, name, AtFlags::empty()).map_err(|_| RecordError::Corrupt)?;
+            }
+            Ok(())
+        }
+        // Both provenance checks precede the first mutation.
+        let root = self.open_root_dir()?;
+        let objects = self.open_objects_dir()?;
+        unlink_leaves(&objects, false)?;
+        unlink_leaves(&root, true)?;
+        // An exchanged "objects" entry may not be removed under a
+        // different inode, even if its current contents are empty.
+        self.open_objects_dir()?;
+        unlinkat(&root, "objects", AtFlags::REMOVEDIR).map_err(|_| RecordError::Corrupt)?;
+        let current = fs::symlink_metadata(&self.dir).map_err(|_| RecordError::Corrupt)?;
+        if !current.is_dir() || (current.dev(), current.ino()) != self.root_identity {
+            return Err(RecordError::Corrupt);
+        }
+        // Unlike remove_dir_all, rmdir cannot delete any substituted data.
+        fs::remove_dir(&self.dir).map_err(|_| RecordError::Corrupt)
+    }
+}
 impl Drop for TrialDisk {
     fn drop(&mut self) {
+        #[cfg(unix)]
+        let _ = self.cleanup_pinned_trial();
+        #[cfg(not(unix))]
         let _ = fs::remove_dir_all(&self.dir);
     }
 }
@@ -830,14 +878,21 @@ fn kv2_v6_disk_trial_rejects_ancestor_object_directory_symlink()
     let redirect = disk.dir.join("untrusted-objects-outside-the-owned-subdir");
     fs::rename(&official, &redirect)?;
     symlink(&redirect, &official)?;
+    let redirected_write = disk.persist_objects(&graph);
+    let redirected_read = disk.reopen(Arc::clone(&address), 1);
+    // Restore the exact pinned directory before Drop: the guarded destructor
+    // must refuse redirected trees, so test fixtures must not strand orphans.
+    fs::remove_file(&official)?;
+    fs::rename(&redirect, &official)?;
     assert!(
-        disk.persist_objects(&graph).is_err(),
+        redirected_write.is_err(),
         "valid bytes behind a symlinked parent must never be reused"
     );
     assert!(
-        disk.reopen(address, 1).is_err(),
+        redirected_read.is_err(),
         "published graph must not read ordinary leaves through a symlinked parent"
     );
+    assert_eq!(disk.reopen(address, 1)?.get(&name), Some(bytes.as_slice()));
     Ok(())
 }
 
@@ -1156,6 +1211,59 @@ fn kv2_v6_disk_trial_rejects_replaced_regular_root_with_copied_signed_bytes()
     assert_eq!(
         disk.reopen(key_material, 1)?.get(&record_key),
         Some(record.as_slice())
+    );
+    Ok(())
+}
+
+// A path-based recursive Drop can erase a different owner's unrelated
+// regular directory if the pinned private root was moved between test phases.
+// This is a synthetic fixture regression; no new storage authority is granted.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_trial_drop_must_not_remove_replaced_root() -> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let untrusted = disk.dir.clone();
+    let original = disk.dir.with_extension("r510-original-root");
+    assert!(!original.exists());
+    fs::rename(&untrusted, &original)?;
+    fs::create_dir(&untrusted)?;
+    let sentinel = untrusted.join("independent-owner-keeps-this");
+    fs::write(&sentinel, b"untrusted synthetic data")?;
+    drop(disk);
+    let untouched = fs::read(&sentinel).ok().as_deref() == Some(b"untrusted synthetic data");
+    if untrusted.exists() {
+        fs::remove_dir_all(&untrusted)?;
+    }
+    fs::remove_dir_all(original)?;
+    assert!(
+        untouched,
+        "drop must never recursively erase an untrusted replacement root"
+    );
+    Ok(())
+}
+
+// The root inode alone is insufficient: a different objects directory inside
+// the same root must also deny recursive cleanup.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_trial_drop_must_not_remove_replaced_objects_directory()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let original = disk.dir.join("objects");
+    let relocated = disk.dir.join("objects-original-r510");
+    fs::rename(&original, &relocated)?;
+    fs::create_dir(&original)?;
+    let sentinel = original.join("independent-owner-keeps-this");
+    fs::write(&sentinel, b"untrusted synthetic object")?;
+    let root = disk.dir.clone();
+    drop(disk);
+    let untouched = fs::read(&sentinel).ok().as_deref() == Some(b"untrusted synthetic object");
+    if root.exists() {
+        fs::remove_dir_all(&root)?;
+    }
+    assert!(
+        untouched,
+        "drop must never erase substituted object directories"
     );
     Ok(())
 }
