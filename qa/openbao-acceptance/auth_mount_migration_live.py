@@ -21,7 +21,7 @@ import tempfile
 from bao_http import BaoError, Client, SafeArgumentParser, private_write
 import migrate_auth_mount as migration
 from official_openbao_launcher import (
-    SUPPORTED_VERSIONS,
+    MIGRATION_ORACLE_VERSIONS,
     VERSION,
     verify_selected_oracle,
     file_digest,
@@ -522,7 +522,7 @@ def main(argv=None):
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
+    parser.add_argument("--oracle-version", choices=MIGRATION_ORACLE_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     if os.path.lexists(args.output):
         raise BaoError("output_already_exists")

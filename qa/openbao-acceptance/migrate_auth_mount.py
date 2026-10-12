@@ -26,6 +26,7 @@ from bao_http import (
     SafeArgumentParser,
     digest,
     distinct_endpoints,
+    supported_migration_source_version,
     private_json,
     private_write,
 )
@@ -445,7 +446,7 @@ def main(argv=None):
         source = Client.from_env(args.source_prefix)
         target = Client.from_env(args.target_prefix)
         source_health, target_health = source.health(), target.health()
-        if source_health["version"] not in ("2.6.2", "2.7.0"):
+        if not supported_migration_source_version(source_health["version"]):
             raise BaoError("unsupported_source_version")
         distinct_endpoints(source, source_health, target, target_health)
         if source.namespace != target.namespace:

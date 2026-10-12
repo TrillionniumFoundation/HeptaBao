@@ -159,7 +159,7 @@ class RunnerSelectionTests(unittest.TestCase):
         self.root.chmod(0o700)
 
     def test_kv_and_transit_cli_forward_explicit_and_historical_default(self):
-        for version in (None, "2.7.0"):
+        for version in (None, "2.7.0", "2.7.1"):
             selected = version or "2.6.2"
             flag = [] if version is None else ["--oracle-version", version]
             with patch.object(kv, "run", return_value=0) as run:
@@ -173,7 +173,7 @@ class RunnerSelectionTests(unittest.TestCase):
 
     def test_logical_asset_cli_keeps_exact_selected_version_and_default(self):
         for module in (policy, identity, ssh_role, auth_mount):
-            for version in (None, "2.7.0"):
+            for version in (None, "2.7.0", "2.7.1"):
                 with self.subTest(module=module.__name__, version=version):
                     flag = [] if version is None else ["--oracle-version", version]
                     with patch.object(module, "run", return_value={
@@ -194,7 +194,7 @@ class RunnerSelectionTests(unittest.TestCase):
     def test_snapshot_cli_forwards_selected_version_without_relabeling_default(self):
         inspector = self.root / "inspector"
         inspector.write_text("synthetic-not-executed")
-        for version in (None, "2.7.0"):
+        for version in (None, "2.7.0", "2.7.1"):
             flag = [] if version is None else ["--oracle-version", version]
             with patch.object(snapshot, "run_fixture", return_value={"synthetic": True}) as run, redirect_stdout(io.StringIO()):
                 self.assertEqual(snapshot.main(["--inspector", str(inspector), "--work-dir", str(self.root / "snapshot"), *flag]), 0)

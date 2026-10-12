@@ -13,7 +13,7 @@ import sys
 import tempfile
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_write, private_json, private_read
-from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, start_oracle, stop_oracle,
+from official_openbao_launcher import (MIGRATION_ORACLE_VERSIONS, VERSION, start_oracle, stop_oracle,
                                       file_digest, private_text, verify_selected_oracle)
 from heptabao.private_state import StateDirectory
 from heptabao.transit_migration import TransitMigrator, client_for
@@ -151,7 +151,7 @@ def main(argv=None):
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--oracle-version', choices=SUPPORTED_VERSIONS, default=VERSION)
+    parser.add_argument('--oracle-version', choices=MIGRATION_ORACLE_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     if os.path.lexists(args.output):
         raise BaoError('output_already_exists')

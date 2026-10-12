@@ -54,8 +54,24 @@ PINNED_RELEASES = {
             "binary_sha256": "c242fa4296f642e0e272994b0d7a6c23a4bfebbc36b5accbae554d0a804d60f2",
         },
     },
+    # Official 2.7.1 checksums.txt SHA-256:
+    # 95ad62d532df64dea20463ce513f0a56f792530bbefeb4e89525bc1eb773b750
+    # Only independently pinned Linux amd64 is admitted here. Other platforms
+    # are rejected before opening an archive; historical pins are unchanged.
+    "2.7.1": {
+        ("linux", "amd64"): {
+            "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+            "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+        },
+    },
 }
-SUPPORTED_VERSIONS = tuple(PINNED_RELEASES)
+# Historical non-migration Oracle comparison profiles have not independently
+# admitted 2.7.1.  Adding a release artifact must not silently expand those
+# behavioral profiles or replace their expected HTTP status denominators.
+SUPPORTED_VERSIONS = ("2.6.2", "2.7.0")
+# Migration rehearsals perform their own bounded source/target inventory and
+# may explicitly select the separately pinned 2.7.1 release.
+MIGRATION_ORACLE_VERSIONS = tuple(PINNED_RELEASES)
 
 
 def release_artifacts(version):
@@ -239,7 +255,7 @@ def storage_configuration(root, *, version=VERSION, raft_storage=False):
         raise BaoError("official_oracle_invalid_storage_profile")
     if raft_storage:
         return {"raft": {"path": str(root / "data"), "node_id": "synthetic-openbao-1"}}
-    backend = "pebbledb" if version == "2.7.0" else "file"
+    backend = "pebbledb" if version in ("2.7.0", "2.7.1") else "file"
     return {backend: {"path": str(root / "data")}}
 
 
@@ -302,7 +318,7 @@ def start_oracle(port, *, audit_file=False, raft_storage=False, version=VERSION)
         certificates(root)
         storage = storage_configuration(root, version=version, raft_storage=raft_storage)
         oracle["storage_backend"] = next(iter(storage))
-        if raft_storage or version == "2.7.0":
+        if raft_storage or version in ("2.7.0", "2.7.1"):
             (root / "data").mkdir(mode=0o700)
         config = {
             "disable_mlock": True, "ui": False,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded OpenBao 2.6.2/2.7.0 -> HeptaBao ACL policy transfer with durable resume.
+"""Bounded OpenBao 2.6.2/2.7.0/2.7.1 -> HeptaBao ACL policy transfer with durable resume.
 
 The adapter transfers only explicitly inventoried, user-defined ACL policies in
 one namespace. Built-in ``root`` and ``default`` policies are observed but never
@@ -21,6 +21,7 @@ from bao_http import (
     SafeArgumentParser,
     digest,
     distinct_endpoints,
+    supported_migration_source_version,
     key_path,
     private_json,
     private_write,
@@ -253,7 +254,7 @@ def main(argv=None):
         source = Client.from_env(args.source_prefix)
         target = Client.from_env(args.target_prefix)
         source_health, target_health = source.health(), target.health()
-        if source_health["version"] not in ("2.6.2", "2.7.0"):
+        if not supported_migration_source_version(source_health["version"]):
             raise BaoError("unsupported_source_version")
         distinct_endpoints(source, source_health, target, target_health)
         if source.namespace != target.namespace:

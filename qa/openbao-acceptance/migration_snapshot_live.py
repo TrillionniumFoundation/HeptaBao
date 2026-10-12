@@ -25,7 +25,7 @@ import tarfile
 
 from bao_http import Client
 from official_openbao_launcher import (
-    SUPPORTED_VERSIONS,
+    MIGRATION_ORACLE_VERSIONS,
     VERSION,
     oracle_cli_environment,
     start_oracle,
@@ -213,7 +213,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inspector", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
-    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
+    parser.add_argument("--oracle-version", choices=MIGRATION_ORACLE_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     try:
         report = run_fixture(args.inspector.resolve(strict=True), args.work_dir, oracle_version=args.oracle_version)

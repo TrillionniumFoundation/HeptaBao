@@ -20,7 +20,7 @@ from pathlib import Path
 
 from bao_http import BaoError, Client, SafeArgumentParser, digest, private_read, private_write
 import migrate_kv2 as migration
-from official_openbao_launcher import SUPPORTED_VERSIONS, VERSION, verify_selected_oracle
+from official_openbao_launcher import MIGRATION_ORACLE_VERSIONS, VERSION, verify_selected_oracle
 
 
 def load_module(name, filename):
@@ -531,7 +531,7 @@ def main(argv=None):
     parser.add_argument("--oracle-launcher", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--oracle-port", type=int, default=28500)
-    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
+    parser.add_argument("--oracle-version", choices=MIGRATION_ORACLE_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     return run(args.binary.resolve(), args.oracle_launcher.resolve(), args.work_dir.resolve(), args.oracle_port,
                oracle_version=args.oracle_version)

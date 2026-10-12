@@ -17,7 +17,7 @@ import tempfile
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
-from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, start_oracle,
+from official_openbao_launcher import (MIGRATION_ORACLE_VERSIONS, VERSION, start_oracle,
                                       stop_oracle, verify_selected_oracle)
 import migration_preflight as preflight
 
@@ -26,7 +26,7 @@ def main() -> int:
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument('--binary', required=True)
     parser.add_argument('--output', required=True)
-    parser.add_argument('--oracle-version', choices=SUPPORTED_VERSIONS, default=VERSION)
+    parser.add_argument('--oracle-version', choices=MIGRATION_ORACLE_VERSIONS, default=VERSION)
     args = parser.parse_args()
     output = Path(args.output).absolute()
     preflight.require_private_new_output(output)

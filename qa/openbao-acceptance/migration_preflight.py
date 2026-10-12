@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 import re
 
-from bao_http import BaoError, Client, SafeArgumentParser, digest, private_json, private_read, private_write
+from bao_http import BaoError, Client, SafeArgumentParser, digest, private_json, private_read, private_write, supported_migration_source_version
 from capacity_live import validate_observation
 from core_isolation import ScenarioFailure
 
@@ -118,7 +118,7 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
     left, right = source.health(), target.health()
     if source.address == target.address or left['cluster_id'] == right['cluster_id']:
         raise BaoError('same_endpoint_or_cluster_rejected')
-    if left['version'] not in ('2.6.2', '2.7.0') or not right['version'].startswith('HeptaBao-'):
+    if not supported_migration_source_version(left['version']) or not right['version'].startswith('HeptaBao-'):
         raise BaoError('migration_product_version_mismatch')
     report = {
         'schema': 'heptabao.migration-preflight.v1',

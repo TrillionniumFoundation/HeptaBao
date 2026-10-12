@@ -10,6 +10,13 @@ from heptabao.transport import (BaoError, Client, Response, SafeArgumentParser,
     MAX_BODY, canonical, digest, decode_json, private_read, private_json, transport_diagnostic,
     private_write, private_write_text, endpoint, key_path, NoRedirect)
 
+# Strict versions for source inventory and scoped recreation only. This is
+# not asset-completeness, cutover or rollback authority.
+MIGRATION_SOURCE_VERSIONS = frozenset(("2.6.2", "2.7.0", "2.7.1"))
+
+def supported_migration_source_version(version: object) -> bool:
+    return type(version) is str and version in MIGRATION_SOURCE_VERSIONS
+
 
 def distinct_endpoints(left: Client, left_health: dict, right: Client, right_health: dict):
     if left.address == right.address or left_health["cluster_id"] == right_health["cluster_id"]:
@@ -17,7 +24,7 @@ def distinct_endpoints(left: Client, left_health: dict, right: Client, right_hea
 
 
 def verify_oracle_identity(receipt: dict, oracle: Client, health: dict, *, version="2.6.2") -> dict:
-    if version not in ("2.6.2", "2.7.0", "2.7.1"):
+    if not supported_migration_source_version(version):
         raise BaoError("oracle_identity_unsupported_version")
     required = {"product", "version", "artifact_sha256", "provenance_url", "endpoint", "cluster_id"}
     if not isinstance(receipt, dict) or not required.issubset(receipt):

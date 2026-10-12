@@ -5,7 +5,7 @@ import contextlib, importlib.util, io, json, os, shutil, socket, tempfile
 from pathlib import Path
 from bao_http import BaoError, Client, SafeArgumentParser, private_write
 import migrate_ssh_roles as migration
-from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, file_digest,
+from official_openbao_launcher import (MIGRATION_ORACLE_VERSIONS, VERSION, file_digest,
                                       start_oracle, stop_oracle, verify_selected_oracle)
 from heptabao.private_state import StateDirectory
 ROOT=Path(__file__).resolve().parents[2]
@@ -81,7 +81,7 @@ def run(binary, output, *, oracle_version=VERSION):
             if oracle is not None: stop_oracle(oracle); shutil.rmtree(oracle["root"],ignore_errors=True)
 
 def main(argv=None):
-    p=SafeArgumentParser(description=__doc__); p.add_argument("--binary",type=Path,required=True); p.add_argument("--output",type=Path,required=True); p.add_argument("--oracle-version",choices=SUPPORTED_VERSIONS,default=VERSION); a=p.parse_args(argv)
+    p=SafeArgumentParser(description=__doc__); p.add_argument("--binary",type=Path,required=True); p.add_argument("--output",type=Path,required=True); p.add_argument("--oracle-version",choices=MIGRATION_ORACLE_VERSIONS,default=VERSION); a=p.parse_args(argv)
     if os.path.lexists(a.output): raise BaoError("output_already_exists")
     with StateDirectory(a.output.absolute().parent): pass
     r=run(a.binary.resolve(),a.output,oracle_version=a.oracle_version); print(json.dumps({"status":r["status"],"count":r["count"],"full_asset_migration":False})); return 0
