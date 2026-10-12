@@ -77,6 +77,97 @@ impl TrialDisk {
         }
         Ok(file)
     }
+    // Pin the actual private objects-directory descriptor. A no-follow leaf
+    // by itself cannot prevent an ancestor-directory symlink redirection.
+    #[cfg(unix)]
+    fn open_objects_dir(&self) -> Result<File, RecordError> {
+        use std::os::unix::fs::OpenOptionsExt;
+        let mut options = OpenOptions::new();
+        options
+            .read(true)
+            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
+        let directory = options
+            .open(self.dir.join("objects"))
+            .map_err(|_| RecordError::Corrupt)?;
+        if !directory
+            .metadata()
+            .map_err(|_| RecordError::Corrupt)?
+            .is_dir()
+        {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(directory)
+    }
+
+    // Safe descriptor-relative operations are mandatory: this workspace
+    // forbids unsafe code and a no-follow pathname check has a race.
+    #[cfg(unix)]
+    fn open_object_at(
+        &self,
+        directory: &File,
+        id: &ObjectId,
+        create_new: bool,
+    ) -> Result<File, RecordError> {
+        use rustix::fs::{Mode, OFlags, openat};
+        let path = self.object_path(id);
+        let component = path.file_name().ok_or(RecordError::Corrupt)?;
+        let flags = OFlags::NOFOLLOW
+            | OFlags::CLOEXEC
+            | OFlags::NONBLOCK
+            | if create_new {
+                OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL
+            } else {
+                OFlags::RDONLY
+            };
+        let descriptor =
+            openat(directory, component, flags, Mode::RUSR | Mode::WUSR).map_err(|error| {
+                if !create_new && error == rustix::io::Errno::NOENT {
+                    RecordError::Missing
+                } else {
+                    RecordError::Corrupt
+                }
+            })?;
+        let file = File::from(descriptor);
+        if !file.metadata().map_err(|_| RecordError::Corrupt)?.is_file() {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(file)
+    }
+
+    #[cfg(unix)]
+    fn persist_objects(&self, graph: &Kv1Index) -> Result<(), RecordError> {
+        let directory = self.open_objects_dir()?;
+        graph.visit_objects(|object| {
+            let identity = &object.reference().id;
+            match self.open_object_at(&directory, identity, false) {
+                Ok(source) => {
+                    let length = source.metadata().map_err(|_| RecordError::Corrupt)?.len();
+                    if length != object.bytes().len() as u64 {
+                        return Err(RecordError::Corrupt);
+                    }
+                    let mut bytes = Zeroizing::new(Vec::new());
+                    source
+                        .take(length + 1)
+                        .read_to_end(&mut bytes)
+                        .map_err(|_| RecordError::Corrupt)?;
+                    if bytes.as_slice() != object.bytes() {
+                        return Err(RecordError::Corrupt);
+                    }
+                }
+                Err(RecordError::Missing) => {
+                    let mut file = self.open_object_at(&directory, identity, true)?;
+                    file.write_all(object.bytes())
+                        .and_then(|()| file.sync_all())
+                        .map_err(|_| RecordError::Corrupt)?;
+                }
+                Err(failure) => return Err(failure),
+            }
+            Ok(())
+        })?;
+        directory.sync_all().map_err(|_| RecordError::Corrupt)
+    }
+
+    #[cfg(not(unix))]
     fn persist_objects(&self, graph: &Kv1Index) -> Result<(), RecordError> {
         graph.visit_objects(|object| {
             let path = self.object_path(&object.reference().id);
@@ -191,8 +282,13 @@ impl TrialDisk {
 }
 impl RecordReader for TrialDisk {
     fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-        let path = self.object_path(&reference.id);
-        let mut source = TrialDisk::open_private_regular(&path)?;
+        #[cfg(unix)]
+        let mut source = {
+            let directory = self.open_objects_dir()?;
+            self.open_object_at(&directory, &reference.id, false)?
+        };
+        #[cfg(not(unix))]
+        let mut source = TrialDisk::open_private_regular(&self.object_path(&reference.id))?;
         let metadata = source.metadata().map_err(|_| RecordError::Corrupt)?;
         if !metadata.is_file() || metadata.len() != u64::from(reference.encoded_bytes) {
             return Err(RecordError::Corrupt);
@@ -368,6 +464,41 @@ fn kv2_v6_disk_trial_rejects_symlink_object_and_root_paths()
     assert!(
         disk.reopen(key_material, 1).is_err(),
         "authenticated manifest must not follow a symbolic link"
+    );
+    Ok(())
+}
+
+// An O_NOFOLLOW on the leaf does not protect the parent "objects" directory.
+// A pinned root must not accept identical bytes redirected through a symlinked
+// ancestor, including when the attacker leaves all MACs valid.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_ancestor_object_directory_symlink()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::symlink;
+    let disk = TrialDisk::fresh()?;
+    let address = private_trial_key(&AddressKey::from_bytes([0x7a; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&address));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (name, bytes) = v1_cell(1, "ancestor-link-attack", "intact".repeat(1024))?;
+    stage(&mut graph, &mut objects, name.clone(), Some(&bytes))?;
+    disk.publish(&graph, &address, 1, false)?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&address), 1)?.get(&name),
+        Some(bytes.as_slice())
+    );
+
+    let official = disk.dir.join("objects");
+    let redirect = disk.dir.join("untrusted-objects-outside-the-owned-subdir");
+    fs::rename(&official, &redirect)?;
+    symlink(&redirect, &official)?;
+    assert!(
+        disk.persist_objects(&graph).is_err(),
+        "valid bytes behind a symlinked parent must never be reused"
+    );
+    assert!(
+        disk.reopen(address, 1).is_err(),
+        "published graph must not read ordinary leaves through a symlinked parent"
     );
     Ok(())
 }
