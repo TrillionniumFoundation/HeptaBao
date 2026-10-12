@@ -178,7 +178,14 @@ async fn exchange(
     ) {
         MAX_SNAPSHOT_BODY
     } else {
-        MAX_BODY
+        json_ingress_body_limit(
+            parts.method.as_str(),
+            path.strip_prefix("/v1/").unwrap_or(""),
+            parts
+                .headers
+                .get(::http::header::CONTENT_TYPE)
+                .and_then(|value| value.to_str().ok()),
+        )
     };
     let mut payload = Zeroizing::new(Vec::new());
     while let Some(chunk) = body.data().await {

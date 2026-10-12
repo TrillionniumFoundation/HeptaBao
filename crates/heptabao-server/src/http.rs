@@ -65,6 +65,54 @@ const MAX_HEADERS: usize = 16 * 1024;
 // This is ingress-only: V5 owner, value, and graph limits are unchanged.
 // Calls exceeding this bound never enter Service or commit state.
 pub(crate) const MAX_BODY: usize = 2 * 1024 * 1024;
+// OpenBao 2.7.1 accepts the 2560 KiB KV2 payload rejected by our 2 MiB
+// JSON front door. Only syntactically unambiguous KV2 data writes get a
+// narrowly larger budget. This is NOT a new state capacity, role, or writer.
+pub(crate) const MAX_KV2_JSON_WRITE_BODY: usize = 3 * 1024 * 1024;
+
+// Both HTTP/1.1 and HTTP/2 use precisely this predicate before accepting
+// body bytes. No TLS, authentication, namespaces or method semantics change.
+// It is an ingress grammar, not a grant that a path is actually a KV2 mount:
+// the Service still independently verifies mount ownership and ACLs.
+pub(crate) fn json_ingress_body_limit(
+    method: &str,
+    route: &str,
+    content_type: Option<&str>,
+) -> usize {
+    if !matches!(method, "POST" | "PUT")
+        || content_type.and_then(|media| media.split(';').next()) != Some("application/json")
+        || route
+            .bytes()
+            .any(|byte| matches!(byte, b'%' | b'?' | b'#' | b'\\'))
+        || route.contains("//")
+    {
+        return MAX_BODY;
+    }
+    let mut fields = route.splitn(3, '/');
+    let (Some(mount), Some("data"), Some(item)) = (fields.next(), fields.next(), fields.next())
+    else {
+        return MAX_BODY;
+    };
+    if mount.is_empty()
+        || mount.len() > 128
+        || !mount
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+        || matches!(
+            mount,
+            "sys" | "auth" | "identity" | "cubbyhole" | "pki" | "transit" | "database" | "ssh"
+        )
+        || item.is_empty()
+        || item.len() > 4096
+        || item
+            .split('/')
+            .any(|part| part.is_empty() || matches!(part, "." | ".."))
+    {
+        return MAX_BODY;
+    }
+    MAX_KV2_JSON_WRITE_BODY
+}
+
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
@@ -1348,10 +1396,11 @@ fn drain_bounded_413_body(
     reader: &mut impl Read,
     declared: usize,
     received: usize,
+    accepted_max: usize,
     start: Instant,
     timeout: Duration,
 ) {
-    if declared <= MAX_BODY || declared > MAX_413_DRAIN_BODY_BYTES || received > declared {
+    if declared <= accepted_max || declared > MAX_413_DRAIN_BODY_BYTES || received > declared {
         return;
     }
     let mut remaining = declared - received;
@@ -1764,7 +1813,11 @@ fn read_request_with_ui(
     } else if snapshot_route {
         MAX_SNAPSHOT_BODY
     } else {
-        MAX_BODY
+        json_ingress_body_limit(
+            &method,
+            route,
+            map.get("content-type").map(|value| value.as_str()),
+        )
     };
     if length > maximum_body {
         if !native_snapshot && !map.contains_key("transfer-encoding") && !map.contains_key("expect")
@@ -1773,6 +1826,7 @@ fn read_request_with_ui(
                 reader,
                 length,
                 bytes.len().saturating_sub(header_end),
+                maximum_body,
                 start,
                 timeout,
             );
@@ -3103,7 +3157,7 @@ mod tests {
             Some(320 * 1024)
         );
         // A request above the transport cap is rejected and never decoded.
-        let oversized = MAX_BODY + 1;
+        let oversized = MAX_KV2_JSON_WRITE_BODY + 1;
         let mut header = format!(
             "POST /v1/synthetic/data/exceeded HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {oversized}\r\n\r\n"
         ).into_bytes();
@@ -3121,7 +3175,7 @@ mod tests {
     }
 
     #[test]
-    fn kv2_768k_json_keeps_full_body_and_a_strict_over_2m_transport_fence() -> io::Result<()> {
+    fn kv2_768k_json_keeps_full_body_and_a_strict_scoped_transport_fence() -> io::Result<()> {
         // OpenBao 2.7.1 accepts this 768 KiB KV2 payload, while the former
         // 512 KiB front-door limit returned 413 before any Service decision.
         // Retain exactly one bounded JSON parser and reject larger requests.
@@ -3146,7 +3200,82 @@ mod tests {
     }
 
     #[test]
-    fn kv2_1536k_json_preserves_all_bytes_but_2m_plus_one_is_413() -> io::Result<()> {
+    fn kv2_2560k_ingress_matches_bounded_official_271_without_global_relaxation() -> io::Result<()>
+    {
+        let payload = "R".repeat(2560 * 1024);
+        let encoded = serde_json::to_vec(&json!({"data":{"payload":payload}}))?;
+        assert!(encoded.len() > MAX_BODY && encoded.len() < MAX_KV2_JSON_WRITE_BODY);
+        assert_eq!(
+            json_ingress_body_limit("POST", "secret/data/large", Some("application/json")),
+            MAX_KV2_JSON_WRITE_BODY,
+        );
+        assert_eq!(
+            json_ingress_body_limit("PUT", "openclaw-auth/data/large", Some("application/json")),
+            MAX_KV2_JSON_WRITE_BODY,
+        );
+        let mut input = format!(
+            "POST /v1/secret/data/large HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
+            encoded.len()
+        ).into_bytes();
+        input.extend_from_slice(&encoded);
+        let parsed = read_request_mode(&mut input.as_slice(), Duration::from_secs(7), false)
+            .map_err(|_| io::Error::other("official KV2 2560K input rejected by scoped ingress"))?;
+        assert_eq!(parsed.path, "secret/data/large");
+        assert_eq!(
+            parsed.body.0["data"]["payload"].as_str(),
+            Some(payload.as_str())
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn scoped_kv2_larger_json_does_not_promote_other_routes_or_ambiguous_framing() -> io::Result<()>
+    {
+        for (method, route, media) in [
+            ("POST", "sys/health", "application/json"),
+            ("POST", "auth/approle/login", "application/json"),
+            ("POST", "pki/data/large", "application/json"),
+            ("POST", "transit/data/large", "application/json"),
+            ("POST", "secret/data/large", "application/merge-patch+json"),
+            ("PATCH", "secret/data/large", "application/json"),
+            ("GET", "secret/data/large", "application/json"),
+            ("POST", "secret/%64ata/large", "application/json"),
+            ("POST", "secret/data/../large", "application/json"),
+            ("POST", "secret/data//large", "application/json"),
+        ] {
+            assert_eq!(
+                json_ingress_body_limit(method, route, Some(media)),
+                MAX_BODY
+            );
+        }
+        let count = MAX_BODY + 1;
+        for route in ["sys/health", "auth/approle/login", "pki/data/large"] {
+            let mut input = format!(
+                "POST /v1/{route} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {count}\r\n\r\n"
+            ).into_bytes();
+            input.extend(std::iter::repeat_n(b'Q', count));
+            let err = read_request_mode(&mut input.as_slice(), Duration::from_secs(5), false)
+                .err()
+                .ok_or_else(|| io::Error::other("non-KV2 body exceeded 2 MiB without rejection"))?;
+            assert_eq!(err.status, 413);
+        }
+        assert_eq!(
+            json_ingress_body_limit(
+                "POST",
+                "secret/data/item",
+                Some("application/json; charset=utf-8")
+            ),
+            MAX_KV2_JSON_WRITE_BODY,
+        );
+        assert_eq!(
+            json_ingress_body_limit("POST", "secret/data/item", None),
+            MAX_BODY
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn kv2_1536k_json_preserves_all_bytes_but_over_kv_bound_is_413() -> io::Result<()> {
         // Pinned OpenBao 2.7.1 accepted this previously rejected input.
         // The codec has no implicit truncation, rounding, or Service grant.
         let payload = "J".repeat(1536 * 1024);
@@ -3169,7 +3298,7 @@ mod tests {
 
         // First byte over the new cap is not parsed; declared bodies within the
         // independent drain budget can still yield a complete TLS 413 response.
-        let exceeded = MAX_BODY + 1;
+        let exceeded = MAX_KV2_JSON_WRITE_BODY + 1;
         let mut oversized = format!(
             "POST /v1/secret/data/over-limit HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {exceeded}\r\n\r\n"
         ).into_bytes();
@@ -3177,7 +3306,7 @@ mod tests {
         let mut remaining = oversized.as_slice();
         let denial = read_request_mode(&mut remaining, Duration::from_secs(5), false)
             .err()
-            .ok_or_else(|| io::Error::other("2 MiB cap bypass"))?;
+            .ok_or_else(|| io::Error::other("scoped KV2 JSON cap bypass"))?;
         assert_eq!(denial.status, 413);
         assert!(remaining.is_empty(), "bounded 413 body not drained");
         Ok(())
@@ -3185,7 +3314,11 @@ mod tests {
 
     #[test]
     fn oversized_json_413_drains_only_bounded_unambiguous_framing() {
-        for count in [MAX_BODY + 1, MAX_BODY + 64 * 1024, MAX_413_DRAIN_BODY_BYTES] {
+        for count in [
+            MAX_KV2_JSON_WRITE_BODY + 1,
+            MAX_KV2_JSON_WRITE_BODY + 64 * 1024,
+            MAX_413_DRAIN_BODY_BYTES,
+        ] {
             let mut wire = format!(
                 "POST /v1/secret/data/denied HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {count}\r\n\r\n"
             )

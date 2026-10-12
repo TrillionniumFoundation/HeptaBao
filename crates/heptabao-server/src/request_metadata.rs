@@ -127,8 +127,9 @@ thread_local! { static DATA: RefCell<Option<Bound>> = const { RefCell::new(None)
 // Request metadata is a data-only binding, not a storage or authorization
 // grant. Hash the exact canonical JSON stream without retaining a second
 // plaintext request copy. The 64 KiB allowance accounts for bounded
-// method/path/namespace tuple framing beyond the HTTP body budget.
-const MAX_LOGICAL_BINDING_BYTES: usize = crate::http::MAX_BODY + 64 * 1024;
+// method/path/namespace framing beyond the largest scoped JSON budget;
+// ordinary routes are still fenced by their original 2 MiB HTTP entry.
+const MAX_LOGICAL_BINDING_BYTES: usize = crate::http::MAX_KV2_JSON_WRITE_BODY + 64 * 1024;
 
 fn binding(
     method: &str,
