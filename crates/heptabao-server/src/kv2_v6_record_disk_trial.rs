@@ -171,7 +171,12 @@ impl TrialDisk {
                 }
             })?;
         let file = File::from(descriptor);
-        if !file.metadata().map_err(|_| RecordError::Corrupt)?.is_file() {
+        // A regular hard link can redirect the exact authenticated bytes to
+        // an inode that is also writable from outside our private object
+        // directory. Refuse such aliases even if the digest still matches.
+        use std::os::unix::fs::MetadataExt;
+        let metadata = file.metadata().map_err(|_| RecordError::Corrupt)?;
+        if !metadata.is_file() || metadata.nlink() != 1 {
             return Err(RecordError::Corrupt);
         }
         Ok(file)
@@ -828,6 +833,45 @@ fn kv2_v6_disk_trial_rejects_ancestor_object_directory_symlink()
         disk.reopen(address, 1).is_err(),
         "published graph must not read ordinary leaves through a symlinked parent"
     );
+    Ok(())
+}
+
+// A hard link is not blocked by O_NOFOLLOW and can point at identical
+// authenticated bytes outside the private objects directory. No write or
+// reopen may accept a multi-linked immutable inode.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_hardlinked_object_with_identical_bytes()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::MetadataExt;
+    let disk = TrialDisk::fresh()?;
+    let key = private_trial_key(&AddressKey::from_bytes([0x8d; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (name, bytes) = v1_cell(1, "hardlink-alias", "unchanged".repeat(1024))?;
+    stage(&mut graph, &mut objects, name.clone(), Some(&bytes))?;
+    disk.publish(&graph, &key, 1, false)?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&key), 1)?.get(&name),
+        Some(bytes.as_slice())
+    );
+
+    let object = graph.root().reference.ok_or("root object")?;
+    let original = disk.object_path(&object.id);
+    let outside_alias = disk.dir.join("outside-objects-hardlink-alias");
+    fs::hard_link(&original, &outside_alias)?;
+    assert_eq!(fs::metadata(&original)?.nlink(), 2);
+    assert!(
+        disk.persist_objects(&graph).is_err(),
+        "linked object cannot be reused"
+    );
+    assert!(
+        disk.reopen(Arc::clone(&key), 1).is_err(),
+        "published graph cannot read a multi-linked object"
+    );
+    fs::remove_file(&outside_alias)?;
+    assert_eq!(fs::metadata(&original)?.nlink(), 1);
+    assert_eq!(disk.reopen(key, 1)?.get(&name), Some(bytes.as_slice()));
     Ok(())
 }
 
