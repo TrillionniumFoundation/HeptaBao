@@ -475,6 +475,7 @@ impl TrialDisk {
             let value = graph.get(record_key).ok_or(RecordError::Corrupt)?;
             decode(record_key, value).map(|_| ())
         })?;
+        validate_sharded_trial_index(graph)?;
         self.persist_objects(graph)?;
         // A signed manifest must never point at an unreopenable graph.
         // Reopen *all* persisted pages using the key that will sign the root,
@@ -582,6 +583,7 @@ impl TrialDisk {
             decode(record_key, cell).map_err(|_| RecordError::Corrupt)?;
             Ok(())
         })?;
+        validate_sharded_trial_index(&index)?;
         Ok(index)
     }
 }
@@ -1988,6 +1990,298 @@ fn kv2_v6_disk_trial_actual_2560k_value_signed_root_reopen()
             .as_str()
             .map(str::len),
         Some(2560 * 1024),
+    );
+    Ok(())
+}
+
+// All helpers below belong solely to the private R740 V6 experiment.
+// Production still uses the opaque V5 engine owner. This is NOT a migration
+// adapter, record retirement authority, or alternative service dispatcher.
+const SHARD_INDEX_SCHEMA: &str = "heptabao-kv2-v6-private-sharded-index-qa-v1";
+const SHARD_RESERVED_MOUNT: &str = "\u{001f}shards/";
+
+fn sharded_version_scope(logical: &Scope, version: u64) -> Result<Scope, RecordError> {
+    use sha2::{Digest as _, Sha256};
+    if version == 0 || logical.mount.contains('\u{001f}') {
+        return Err(RecordError::Invalid);
+    }
+    let digest = Sha256::digest(logical.path.as_bytes());
+    let mut digest_hex = String::with_capacity(64);
+    for byte in digest {
+        use std::fmt::Write as _;
+        write!(&mut digest_hex, "{byte:02x}").map_err(|_| RecordError::Invalid)?;
+    }
+    let version_scope = Scope {
+        namespace: logical.namespace.clone(),
+        mount: format!("{}{}", logical.mount, SHARD_RESERVED_MOUNT),
+        incarnation: logical.incarnation,
+        path: format!("{digest_hex}/{version:020}"),
+    };
+    key(&version_scope)?;
+    Ok(version_scope)
+}
+
+fn sharded_index_cell(
+    logical: Scope,
+    current_version: u64,
+) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+    if current_version == 0 || current_version > 32 {
+        return Err(RecordError::Invalid);
+    }
+    let mut pointers = serde_json::Map::new();
+    for version in 1..=current_version {
+        let shard = sharded_version_scope(&logical, version)?;
+        pointers.insert(
+            version.to_string(),
+            json!({"data":{"shard_path":shard.path},"destroyed":false}),
+        );
+    }
+    encode(
+        logical,
+        current_version,
+        json!({"shard_schema":SHARD_INDEX_SCHEMA, "current_version":current_version,
+               "versions":Value::Object(pointers)}),
+    )
+}
+
+fn stage_sharded_version(
+    index: &mut Kv1Index,
+    objects: &mut LocalObjects,
+    logical: &Scope,
+    version: u64,
+    payload: String,
+) -> Result<(), RecordError> {
+    let scope = sharded_version_scope(logical, version)?;
+    let mut retained = serde_json::Map::new();
+    retained.insert(
+        version.to_string(),
+        json!({"data":{"payload":payload},"destroyed":false}),
+    );
+    let version_cell = encode(
+        scope.clone(),
+        version,
+        json!({"current_version":version, "versions":Value::Object(retained)}),
+    )?;
+    stage(index, objects, key(&scope)?, Some(&version_cell))?;
+    let indexed = sharded_index_cell(logical.clone(), version)?;
+    stage(index, objects, key(logical)?, Some(&indexed))
+}
+
+// Audit the complete immutable graph before any staged object or root is
+// published, and again after signed-root reopen. A caller must not publish a
+// valid MAC with missing/misbound version cells, or smuggle orphan shards.
+fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), RecordError> {
+    let mut referenced = std::collections::BTreeSet::new();
+    graph.visit_keys(|record_key| {
+        let bytes = graph.get(record_key).ok_or(RecordError::Corrupt)?;
+        let cell = decode(record_key, bytes)?;
+        let Some(schema) = cell.entry.get("shard_schema") else {
+            return Ok(());
+        };
+        if schema.as_str() != Some(SHARD_INDEX_SCHEMA)
+            || cell.scope.mount.contains('\u{001f}')
+            || cell.version > 32
+        {
+            return Err(RecordError::Corrupt);
+        }
+        let versions = cell
+            .entry
+            .get("versions")
+            .and_then(Value::as_object)
+            .ok_or(RecordError::Corrupt)?;
+        if versions.len() != cell.version as usize {
+            return Err(RecordError::Corrupt);
+        }
+        for version in 1..=cell.version {
+            let expected_scope = sharded_version_scope(&cell.scope, version)?;
+            let actual_pointer = versions
+                .get(&version.to_string())
+                .and_then(|v| v.get("data"))
+                .and_then(|v| v.get("shard_path"))
+                .and_then(Value::as_str)
+                .ok_or(RecordError::Corrupt)?;
+            if actual_pointer != expected_scope.path {
+                return Err(RecordError::Corrupt);
+            }
+            let actual_key = key(&expected_scope)?;
+            let raw = graph.get(&actual_key).ok_or(RecordError::Missing)?;
+            let version_cell = decode(&actual_key, raw)?;
+            if version_cell.scope != expected_scope
+                || version_cell.version != version
+                || version_cell
+                    .entry
+                    .get("versions")
+                    .and_then(Value::as_object)
+                    .is_none_or(|parts| parts.len() != 1)
+                || version_cell.entry["versions"][version.to_string()]["data"]["payload"]
+                    .as_str()
+                    .is_none()
+            {
+                return Err(RecordError::Corrupt);
+            }
+            referenced.insert(actual_key);
+        }
+        Ok(())
+    })?;
+    graph.visit_keys(|key| {
+        if key.mount().contains(SHARD_RESERVED_MOUNT) && !referenced.contains(key) {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(())
+    })
+}
+
+fn sharded_payload(
+    graph: &Kv1Index,
+    logical: &Scope,
+    version: u64,
+) -> Result<Zeroizing<String>, RecordError> {
+    validate_sharded_trial_index(graph)?;
+    let header_key = key(logical)?;
+    let header = decode(
+        &header_key,
+        graph.get(&header_key).ok_or(RecordError::Missing)?,
+    )?;
+    if header.entry.get("shard_schema").and_then(Value::as_str) != Some(SHARD_INDEX_SCHEMA)
+        || version == 0
+        || version > header.version
+    {
+        return Err(RecordError::Invalid);
+    }
+    let physical_key = key(&sharded_version_scope(logical, version)?)?;
+    let version_cell = decode(
+        &physical_key,
+        graph.get(&physical_key).ok_or(RecordError::Missing)?,
+    )?;
+    let payload = version_cell
+        .entry
+        .get("versions")
+        .and_then(Value::as_object)
+        .and_then(|versions| versions.get(&version.to_string()))
+        .and_then(|entry| entry.get("data"))
+        .and_then(|data| data.get("payload"))
+        .and_then(Value::as_str)
+        .ok_or(RecordError::Corrupt)?;
+    Ok(Zeroizing::new(payload.to_owned()))
+}
+
+#[test]
+fn kv2_v6_disk_trial_two_2560k_retained_versions_survive_signed_root()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xbb; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-sharded".into(),
+        mount: "secret/".into(),
+        incarnation: 17,
+        path: "two-retained-large-versions".into(),
+    };
+    let first = "A".repeat(2560 * 1024);
+    let second = "B".repeat(2560 * 1024);
+    // Old per-path layout cannot hold both acknowledged large versions.
+    assert!(matches!(
+        encode(
+            logical.clone(),
+            2,
+            json!({"current_version":2,"versions":{
+                "1":{"data":{"payload":first},"destroyed":false},
+                "2":{"data":{"payload":second},"destroyed":false}
+            }})
+        ),
+        Err(RecordError::TooLarge)
+    ));
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage_sharded_version(&mut graph, &mut objects, &logical, 1, first.clone())?;
+    disk.publish(&graph, &signing, 1, false)?;
+    let first_manifest = fs::read(disk.manifest_path())?;
+    let first_graph = disk.reopen(Arc::clone(&signing), 1)?;
+    assert_eq!(sharded_payload(&first_graph, &logical, 1)?.as_str(), first);
+
+    stage_sharded_version(&mut graph, &mut objects, &logical, 2, second.clone())?;
+    disk.publish(&graph, &signing, 2, true)?;
+    assert_eq!(fs::read(disk.manifest_path())?, first_manifest);
+    let pending = disk.reopen(Arc::clone(&signing), 1)?;
+    assert!(sharded_payload(&pending, &logical, 2).is_err());
+
+    disk.publish(&graph, &signing, 2, false)?;
+    let committed = disk.reopen(Arc::clone(&signing), 2)?;
+    assert_eq!(sharded_payload(&committed, &logical, 1)?.as_str(), first);
+    assert_eq!(sharded_payload(&committed, &logical, 2)?.as_str(), second);
+    assert!(disk.reopen(Arc::clone(&signing), 1).is_err());
+
+    // A next signed root may not point a version at a different shard or
+    // reference a missing shard. The refusal precedes object staging.
+    let mut invalid = graph.clone();
+    let mut more = LocalObjects(BTreeMap::new());
+    let mut bad_index: Value = serde_json::from_slice(&sharded_index_cell(logical.clone(), 3)?)?;
+    bad_index["entry"]["versions"]["3"]["data"]["shard_path"] =
+        json!(sharded_version_scope(&logical, 1)?.path);
+    let bad_bytes = serde_json::to_vec(&bad_index)?;
+    stage(&mut invalid, &mut more, key(&logical)?, Some(&bad_bytes))?;
+    let second_manifest = fs::read(disk.manifest_path())?;
+    assert!(disk.publish(&invalid, &signing, 3, false).is_err());
+    assert_eq!(fs::read(disk.manifest_path())?, second_manifest);
+    let still_committed = disk.reopen(Arc::clone(&signing), 2)?;
+    assert_eq!(
+        sharded_payload(&still_committed, &logical, 2)?.as_str(),
+        second
+    );
+
+    // A header pointing to a missing shard has no publication authority.
+    let mut missing = graph.clone();
+    let future_header = sharded_index_cell(logical.clone(), 3)?;
+    stage(
+        &mut missing,
+        &mut LocalObjects(BTreeMap::new()),
+        key(&logical)?,
+        Some(&future_header),
+    )?;
+    assert!(disk.publish(&missing, &signing, 3, false).is_err());
+
+    // An unreferenced version object cannot be admitted into an
+    // authenticated graph merely because its own envelope is valid.
+    let mut orphan = graph.clone();
+    let third_scope = sharded_version_scope(&logical, 3)?;
+    let mut retained_third = serde_json::Map::new();
+    retained_third.insert(
+        "3".into(),
+        json!({"data":{"payload":"unreferenced"},"destroyed":false}),
+    );
+    let third_bytes = encode(
+        third_scope.clone(),
+        3,
+        json!({"current_version":3,"versions":Value::Object(retained_third)}),
+    )?;
+    stage(
+        &mut orphan,
+        &mut LocalObjects(BTreeMap::new()),
+        key(&third_scope)?,
+        Some(&third_bytes),
+    )?;
+    assert!(disk.publish(&orphan, &signing, 3, false).is_err());
+
+    // The old acknowledged version is immutable across a later generation.
+    let mut altered = graph.clone();
+    let original_scope = sharded_version_scope(&logical, 1)?;
+    let forged = encode(
+        original_scope.clone(),
+        1,
+        json!({"current_version":1,"versions":{
+            "1":{"data":{"payload":"forged-old-version"},"destroyed":false}
+        }}),
+    )?;
+    stage(
+        &mut altered,
+        &mut LocalObjects(BTreeMap::new()),
+        key(&original_scope)?,
+        Some(&forged),
+    )?;
+    assert!(disk.publish(&altered, &signing, 3, false).is_err());
+    assert_eq!(fs::read(disk.manifest_path())?, second_manifest);
+    assert_eq!(
+        sharded_payload(&disk.reopen(signing, 2)?, &logical, 1)?.as_str(),
+        first
     );
     Ok(())
 }
