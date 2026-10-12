@@ -4,7 +4,7 @@
 use super::*;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const TRIAL_FORMAT: &str = "heptabao-kv2-v6-disk-staging-experiment";
@@ -60,12 +60,38 @@ impl TrialDisk {
     fn manifest_path(&self) -> PathBuf {
         self.dir.join("root.json")
     }
+    // Reused immutable files must be opened directly and without following
+    // a symlink. A correct MAC over bytes does not admit an arbitrary source
+    // path outside the authenticated private object or manifest directory.
+    fn open_private_regular(path: &Path) -> Result<File, RecordError> {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+        }
+        let file = options.open(path).map_err(|_| RecordError::Corrupt)?;
+        if !file.metadata().map_err(|_| RecordError::Corrupt)?.is_file() {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(file)
+    }
     fn persist_objects(&self, graph: &Kv1Index) -> Result<(), RecordError> {
         graph.visit_objects(|object| {
             let path = self.object_path(&object.reference().id);
             if path.exists() {
-                let bytes = fs::read(&path).map_err(|_| RecordError::Corrupt)?;
-                if bytes != object.bytes() {
+                let source = Self::open_private_regular(&path)?;
+                let length = source.metadata().map_err(|_| RecordError::Corrupt)?.len();
+                if length != object.bytes().len() as u64 {
+                    return Err(RecordError::Corrupt);
+                }
+                let mut bytes = Zeroizing::new(Vec::new());
+                source
+                    .take(length + 1)
+                    .read_to_end(&mut bytes)
+                    .map_err(|_| RecordError::Corrupt)?;
+                if bytes.as_slice() != object.bytes() {
                     return Err(RecordError::Corrupt);
                 }
             } else {
@@ -134,7 +160,7 @@ impl TrialDisk {
         key: Arc<AddressKey>,
         expected_generation: u64,
     ) -> Result<Kv1Index, RecordError> {
-        let mut source = File::open(self.manifest_path()).map_err(|_| RecordError::Missing)?;
+        let mut source = Self::open_private_regular(&self.manifest_path())?;
         if source.metadata().map_err(|_| RecordError::Corrupt)?.len()
             > crate::state_record_root::MAX_ROOT_BYTES as u64
         {
@@ -166,7 +192,7 @@ impl TrialDisk {
 impl RecordReader for TrialDisk {
     fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
         let path = self.object_path(&reference.id);
-        let mut source = File::open(&path).map_err(|_| RecordError::Missing)?;
+        let mut source = TrialDisk::open_private_regular(&path)?;
         let metadata = source.metadata().map_err(|_| RecordError::Corrupt)?;
         if !metadata.is_file() || metadata.len() != u64::from(reference.encoded_bytes) {
             return Err(RecordError::Corrupt);
@@ -292,5 +318,56 @@ fn kv2_v6_disk_trial_34m_durable_root_failure_invisibility_and_tamper()
     assert!(disk.reopen(Arc::clone(&key_material), 2).is_err());
     fs::remove_file(&root_path)?;
     assert!(disk.reopen(key_material, 2).is_err());
+    Ok(())
+}
+
+// A published MAC alone is insufficient if a path traversal can redirect disk
+// I/O outside the private immutable object and manifest storage roots.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_rejects_symlink_object_and_root_paths()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::symlink;
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0x79; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key_material));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (entry, bytes) = v1_cell(1, "link-attack", "trusted".repeat(1024))?;
+    stage(&mut graph, &mut objects, entry.clone(), Some(&bytes))?;
+    disk.publish(&graph, &key_material, 1, false)?;
+    assert_eq!(
+        disk.reopen(Arc::clone(&key_material), 1)?.get(&entry),
+        Some(bytes.as_slice())
+    );
+
+    let object = graph.root().reference.ok_or("root object")?;
+    let path = disk.object_path(&object.id);
+    let original = fs::read(&path)?;
+    let outside = disk.dir.join("untrusted-redirect-with-valid-bytes");
+    fs::write(&outside, &original)?;
+    fs::remove_file(&path)?;
+    symlink(&outside, &path)?;
+    assert!(
+        disk.persist_objects(&graph).is_err(),
+        "immutable object path may not follow a symbolic link"
+    );
+    assert!(
+        disk.reopen(Arc::clone(&key_material), 1).is_err(),
+        "published object root may not follow a symbolic link"
+    );
+
+    fs::remove_file(&path)?;
+    fs::write(&path, &original)?;
+    assert!(disk.reopen(Arc::clone(&key_material), 1).is_ok());
+    let manifest = disk.manifest_path();
+    let root_bytes = fs::read(&manifest)?;
+    let outside_root = disk.dir.join("untrusted-root-redirect-with-valid-bytes");
+    fs::write(&outside_root, root_bytes)?;
+    fs::remove_file(&manifest)?;
+    symlink(&outside_root, &manifest)?;
+    assert!(
+        disk.reopen(key_material, 1).is_err(),
+        "authenticated manifest must not follow a symbolic link"
+    );
     Ok(())
 }
