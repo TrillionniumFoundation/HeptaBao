@@ -1903,6 +1903,18 @@ fn kv2_v6_disk_trial_refuses_untyped_temporal_fields_before_signed_root()
         ("deleted_object", "deletion_time", json!({"when":"now"})),
         ("deleted_number", "deletion_time", json!(42)),
         ("deleted_invalid", "deletion_time", json!("tomorrow")),
+        // Valid RFC3339 syntax is not enough: a deletion cannot predate
+        // creation, including when the two clock offsets differ.
+        (
+            "deleted_before_created",
+            "deletion_time",
+            json!("2026-10-11T23:59:59Z"),
+        ),
+        (
+            "deleted_before_created_offset",
+            "deletion_time",
+            json!("2026-10-12T08:59:59+09:00"),
+        ),
     ];
     for (name, field, wrong_type) in attacks {
         let disk = TrialDisk::fresh()?;

@@ -81,6 +81,28 @@ fn valid_kv2_timestamp(value: Option<&Value>, empty_means_absent: bool) -> bool 
     }
 }
 
+// Both timestamps may be absent in the older sparse wire format. If both
+// are present, compare normalized instants rather than their string offsets.
+// This rejects a time-inverted signed tombstone before a V6 root is published.
+fn valid_kv2_temporal_order(fields: &serde_json::Map<String, Value>) -> bool {
+    let (Some(created), Some(deleted)) = (
+        fields.get("created_time").and_then(Value::as_str),
+        fields.get("deletion_time").and_then(Value::as_str),
+    ) else {
+        return true;
+    };
+    if created.is_empty() || deleted.is_empty() {
+        return true; // invalid created_time was rejected by the format gate
+    }
+    match (
+        chrono::DateTime::parse_from_rfc3339(created),
+        chrono::DateTime::parse_from_rfc3339(deleted),
+    ) {
+        (Ok(created), Ok(deleted)) => deleted >= created,
+        _ => false,
+    }
+}
+
 fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
     if bytes.len() > MAX_CELL {
         return Err(RecordError::TooLarge);
@@ -113,6 +135,7 @@ fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
             // this is a format integrity check, not a retention grant.
             valid_kv2_timestamp(version_fields.get("created_time"), false)
                 && valid_kv2_timestamp(version_fields.get("deletion_time"), true)
+                && valid_kv2_temporal_order(version_fields)
                 && destroyed.is_none_or(Value::is_boolean)
                 && data.is_none_or(|value| value.is_object() || value.is_null())
                 && (destroyed != Some(&Value::Bool(true)) || data.is_none_or(Value::is_null))
@@ -195,6 +218,17 @@ fn kv2_v6_trial_accepts_rfc3339_and_sparse_legacy_temporal_fields()
             "data":{"payload":"good"},"destroyed":false,
             "created_time":"2026-10-12T00:00:00+09:00",
             "deletion_time":"2026-10-13T10:00:00+09:00"
+        }}}),
+        // Two representations of the same instant are a valid boundary.
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"good"},"destroyed":false,
+            "created_time":"2026-10-12T00:00:00+09:00",
+            "deletion_time":"2026-10-11T15:00:00Z"
+        }}}),
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"good"},"destroyed":false,
+            "created_time":"2026-10-12T00:00:00+09:00",
+            "deletion_time":"2026-10-11T15:00:00.000000001Z"
         }}}),
     ];
     for (case, entry) in entries.into_iter().enumerate() {
