@@ -361,12 +361,26 @@ impl TrialDisk {
             payload,
         };
         let manifest = serde_json::to_vec(&envelope).map_err(|_| RecordError::Corrupt)?;
-        let staged = self.dir.join("root.json.staged");
-        let mut writer = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&staged)
-            .map_err(|_| RecordError::Corrupt)?;
+        // Every attempted publication gets a fresh private staged name. An
+        // interrupted manifest write can leave this file behind, but may not
+        // wedge the next admitted generation by monopolizing a fixed pathname.
+        // This remains a single-writer V6 experiment, not a cross-process CAS.
+        let entropy = crate::crypto::random::<16>().map_err(|_| RecordError::Corrupt)?;
+        let mut staged_name = String::from("root.json.staged-");
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        for byte in entropy {
+            staged_name.push(char::from(HEX[usize::from(byte >> 4)]));
+            staged_name.push(char::from(HEX[usize::from(byte & 15)]));
+        }
+        let staged = self.dir.join(staged_name);
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+        }
+        let mut writer = options.open(&staged).map_err(|_| RecordError::Corrupt)?;
         writer
             .write_all(&manifest)
             .and_then(|()| writer.sync_all())
@@ -583,6 +597,49 @@ fn kv2_v6_disk_trial_partial_write_never_poison_final_identity()
     )?;
     assert!(disk.persist_objects(&graph).is_err());
     assert_eq!(fs::read(disk.manifest_path())?, original_root);
+    assert!(disk.reopen(key_material, 1).is_err());
+    Ok(())
+}
+
+// An interrupted manifest write must not make the next authenticated
+// generation impossible to publish. The previous complete root remains
+// visible until an atomically installed successor is durably synchronized.
+#[test]
+fn kv2_v6_disk_trial_stale_root_staging_does_not_wedge_recovery()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0x92; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key_material));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (first_key, first_bytes) = v1_cell(1, "manifest-first", "first".repeat(256))?;
+    stage(
+        &mut graph,
+        &mut objects,
+        first_key.clone(),
+        Some(&first_bytes),
+    )?;
+    disk.publish(&graph, &key_material, 1, false)?;
+    let root_1 = fs::read(disk.manifest_path())?;
+
+    // Model the legacy fixed-name temporary file stranded by an OS crash.
+    let old_staged = disk.dir.join("root.json.staged");
+    fs::write(&old_staged, b"incomplete-root-write")?;
+    let (new_key, new_bytes) = v1_cell(1, "manifest-next", "second".repeat(512))?;
+    stage(&mut graph, &mut objects, new_key.clone(), Some(&new_bytes))?;
+    assert!(
+        disk.reopen(Arc::clone(&key_material), 1)?
+            .get(&new_key)
+            .is_none()
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, root_1);
+
+    // A fresh, generation-bound staged name must let the next single-writer
+    // publication finish, without trusting or erasing the stale file.
+    disk.publish(&graph, &key_material, 2, false)?;
+    assert_eq!(fs::read(old_staged)?, b"incomplete-root-write");
+    let reopened = disk.reopen(Arc::clone(&key_material), 2)?;
+    assert_eq!(reopened.get(&first_key), Some(first_bytes.as_slice()));
+    assert_eq!(reopened.get(&new_key), Some(new_bytes.as_slice()));
     assert!(disk.reopen(key_material, 1).is_err());
     Ok(())
 }
