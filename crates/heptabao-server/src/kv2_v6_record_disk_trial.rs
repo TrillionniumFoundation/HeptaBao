@@ -2124,7 +2124,11 @@ fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), RecordError> {
         Ok(())
     })?;
     graph.visit_keys(|key| {
-        if key.mount().contains(SHARD_RESERVED_MOUNT) && !referenced.contains(key) {
+        // A signed but unreferenced control-character mount is never an
+        // ordinary logical KV2 record. Only version keys named by an
+        // authenticated logical pointer may enter the private shard domain.
+        // Reject all controls, not only the exact U+001F shard suffix.
+        if key.mount().chars().any(char::is_control) && !referenced.contains(key) {
             return Err(RecordError::Corrupt);
         }
         Ok(())
@@ -2282,6 +2286,121 @@ fn kv2_v6_disk_trial_two_2560k_retained_versions_survive_signed_root()
     assert_eq!(
         sharded_payload(&disk.reopen(signing, 2)?, &logical, 1)?.as_str(),
         first
+    );
+    Ok(())
+}
+
+// The signed logical pointer must not contradict its referenced physical
+// version record. This rejects a metadata-only disguise on a newly
+// committed version, where prior-cell byte identity cannot yet fence it.
+#[test]
+fn kv2_v6_disk_trial_sharded_new_pointer_must_not_claim_destroyed()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xc3; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r760-pointer".into(),
+        mount: "secret/".into(),
+        incarnation: 31,
+        path: "ledger".into(),
+    };
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage_sharded_version(&mut graph, &mut objects, &logical, 1, "original".into())?;
+    disk.publish(&graph, &signing, 1, false)?;
+    let known_root = fs::read(disk.manifest_path())?;
+
+    stage_sharded_version(&mut graph, &mut objects, &logical, 2, "next".into())?;
+    let index_key = key(&logical)?;
+    let mut forged: Value = serde_json::from_slice(graph.get(&index_key).ok_or("missing index")?)?;
+    // The indexed version 2 says destroyed; the actual version-2
+    // shard remains live. Both envelopes are individually valid JSON.
+    forged["entry"]["versions"]["2"]["destroyed"] = json!(true);
+    let bytes = serde_json::to_vec(&forged)?;
+    stage(&mut graph, &mut objects, index_key, Some(&bytes))?;
+    assert!(
+        disk.publish(&graph, &signing, 2, false).is_err(),
+        "contradictory pointer must be denied before signed root"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, known_root);
+    assert_eq!(
+        sharded_payload(&disk.reopen(signing, 1)?, &logical, 1)?.as_str(),
+        "original"
+    );
+    Ok(())
+}
+
+// An unrelated control-character reserved mount must not be accepted as an
+// ordinary, unreferenced KV2 record just because it is not the exact
+// private version-shard mount suffix.
+#[test]
+fn kv2_v6_disk_trial_sharded_unreferenced_reserved_mount_rejected()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xc4; 32]))?;
+    let shadow = Scope {
+        namespace: "tenant-r760-orphan".into(),
+        mount: format!("secret/{}shadow/", char::from(0x1f)),
+        incarnation: 11,
+        path: "forged".into(),
+    };
+    let raw = encode(
+        shadow.clone(),
+        1,
+        json!({
+           "current_version":1,
+           "versions":{"1":{"data":{"payload":"unauthorized"},
+                            "destroyed":false}}
+        }),
+    )?;
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    stage(
+        &mut graph,
+        &mut LocalObjects(BTreeMap::new()),
+        key(&shadow)?,
+        Some(&raw),
+    )?;
+    assert!(
+        disk.publish(&graph, &signing, 1, false).is_err(),
+        "unreferenced reserved mount must not be publishable"
+    );
+    assert!(!disk.manifest_path().exists());
+    Ok(())
+}
+
+// An extra authenticated pointer field cannot confer a new interpretation
+// of a version that physically lives in one immutable shard.
+#[test]
+fn kv2_v6_disk_trial_sharded_pointer_extra_data_must_be_rejected()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xc5; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r760-pointer-alias".into(),
+        mount: "secret/".into(),
+        incarnation: 31,
+        path: "ledger".into(),
+    };
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage_sharded_version(&mut graph, &mut objects, &logical, 1, "original".into())?;
+    disk.publish(&graph, &signing, 1, false)?;
+    let previous_root = fs::read(disk.manifest_path())?;
+
+    stage_sharded_version(&mut graph, &mut objects, &logical, 2, "new".into())?;
+    let index_key = key(&logical)?;
+    let mut forged: Value = serde_json::from_slice(graph.get(&index_key).ok_or("missing header")?)?;
+    forged["entry"]["versions"]["2"]["data"]["alias"] = json!("privileged-alternative-shard");
+    let bytes = serde_json::to_vec(&forged)?;
+    stage(&mut graph, &mut objects, index_key, Some(&bytes))?;
+    assert!(
+        disk.publish(&graph, &signing, 2, false).is_err(),
+        "unauthorized pointer data extension must fail"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, previous_root);
+    assert_eq!(
+        sharded_payload(&disk.reopen(signing, 1)?, &logical, 1)?.as_str(),
+        "original"
     );
     Ok(())
 }
