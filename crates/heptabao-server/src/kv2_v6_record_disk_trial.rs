@@ -332,6 +332,24 @@ impl TrialDisk {
         generation: u64,
         stop_before_root: bool,
     ) -> Result<(), RecordError> {
+        // The single-writer trial must actually fence independent descriptors:
+        // generation validation, immutable object staging, and signed-root
+        // publication are one exclusive, nonblocking critical section.
+        // Kernel locks are released on process death, including hard SIGKILL.
+        // This protects a trial directory; it is NOT Raft or production CAS.
+        #[cfg(unix)]
+        let _publication_guard = {
+            use rustix::fs::{FlockOperation, flock};
+            use std::os::unix::fs::OpenOptionsExt;
+            let mut options = OpenOptions::new();
+            options
+                .read(true)
+                .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
+            let directory = options.open(&self.dir).map_err(|_| RecordError::Corrupt)?;
+            flock(&directory, FlockOperation::NonBlockingLockExclusive)
+                .map_err(|_| RecordError::Invalid)?;
+            directory
+        };
         // Fail closed *before* persisting any immutable candidate object.
         // A stale, duplicate, skipped or wrapped generation may not overwrite
         // an acknowledged root, even with otherwise valid signed bytes.
@@ -811,5 +829,35 @@ fn kv2_v6_disk_trial_rejects_generation_replay_gap_and_corrupt_predecessor()
         disk.reopen(key_material, 3)?.get(&third_key),
         Some(third_bytes.as_slice())
     );
+    Ok(())
+}
+
+// An independent file description holding the exclusive publication lock
+// must prevent even the first generation from staging or publishing bytes.
+#[cfg(unix)]
+#[test]
+fn kv2_v6_disk_trial_exclusive_generation_lock_denies_concurrent_writer()
+-> Result<(), Box<dyn std::error::Error>> {
+    use rustix::fs::{FlockOperation, flock};
+    let disk = TrialDisk::fresh()?;
+    let key = private_trial_key(&AddressKey::from_bytes([0x9a; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key));
+    let mut staged = LocalObjects(BTreeMap::new());
+    let (item, bytes) = v1_cell(1, "competing-publication", "locked".repeat(512))?;
+    stage(&mut graph, &mut staged, item.clone(), Some(&bytes))?;
+    let competing_writer = File::open(&disk.dir)?;
+    flock(&competing_writer, FlockOperation::NonBlockingLockExclusive)?;
+    assert!(
+        matches!(
+            disk.publish(&graph, &key, 1, false),
+            Err(RecordError::Invalid)
+        ),
+        "concurrent generation must be rejected"
+    );
+    assert!(!disk.manifest_path().exists());
+    assert_eq!(fs::read_dir(disk.dir.join("objects"))?.count(), 0);
+    drop(competing_writer);
+    disk.publish(&graph, &key, 1, false)?;
+    assert_eq!(disk.reopen(key, 1)?.get(&item), Some(bytes.as_slice()));
     Ok(())
 }
