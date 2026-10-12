@@ -1884,3 +1884,70 @@ fn kv2_v6_disk_trial_refuses_malformed_version_payload_before_object_staging()
     );
     Ok(())
 }
+
+// Metadata times participate in KV2 deletion/retention decisions. A valid
+// address and signed root must not legitimize arrays, numbers or maps as
+// creation/deletion timestamps for a later production migration reader.
+#[test]
+fn kv2_v6_disk_trial_refuses_untyped_temporal_fields_before_signed_root()
+-> Result<(), Box<dyn std::error::Error>> {
+    let attacks = [
+        ("created_bool", "created_time", json!(true)),
+        ("created_array", "created_time", json!([])),
+        ("created_empty", "created_time", json!("")),
+        (
+            "created_invalid_calendar",
+            "created_time",
+            json!("2026-13-52T00:00:00Z"),
+        ),
+        ("deleted_object", "deletion_time", json!({"when":"now"})),
+        ("deleted_number", "deletion_time", json!(42)),
+        ("deleted_invalid", "deletion_time", json!("tomorrow")),
+    ];
+    for (name, field, wrong_type) in attacks {
+        let disk = TrialDisk::fresh()?;
+        let signer = private_trial_key(&AddressKey::from_bytes([0xe8; 32]))?;
+        let scope = Scope {
+            namespace: "r680-temporal-type".into(),
+            mount: "secret/".into(),
+            incarnation: 9,
+            path: name.into(),
+        };
+        let address = key(&scope)?;
+        let mut malformed = json!({
+            "current_version":1, "versions":{"1":{
+                "data":{"payload":"present"}, "destroyed":false,
+                "created_time":"2026-10-12T00:00:00Z", "deletion_time":""
+            }}
+        });
+        malformed["versions"]["1"][field] = wrong_type;
+        let bad = encode(scope.clone(), 1, malformed)?;
+        let mut graph = Kv1Index::empty(Arc::clone(&signer));
+        let mut pending = LocalObjects(BTreeMap::new());
+        stage(&mut graph, &mut pending, address.clone(), Some(&bad))?;
+        assert!(
+            disk.publish(&graph, &signer, 1, false).is_err(),
+            "{name}: invalid time field signed into an acknowledged root"
+        );
+        assert!(!disk.manifest_path().exists(), "{name}: root published");
+        assert_eq!(
+            fs::read_dir(disk.dir.join("objects"))?.count(),
+            0,
+            "{name}: refused candidate left durable objects"
+        );
+        let good = encode(
+            scope,
+            1,
+            json!({
+                "current_version":1, "versions":{"1":{
+                    "data":{"payload":"present"}, "destroyed":false,
+                    "created_time":"2026-10-12T00:00:00Z", "deletion_time":""
+                }}
+            }),
+        )?;
+        stage(&mut graph, &mut pending, address.clone(), Some(&good))?;
+        disk.publish(&graph, &signer, 1, false)?;
+        assert_eq!(disk.reopen(signer, 1)?.get(&address), Some(good.as_slice()));
+    }
+    Ok(())
+}

@@ -68,6 +68,19 @@ fn encode(scope: Scope, version: u64, entry: Value) -> Result<Zeroizing<Vec<u8>>
     Ok(Zeroizing::new(bytes))
 }
 
+// The KV2 API carries RFC3339 times; an empty deletion_time means no
+// deletion. Missing/null fields remain valid only for legacy sparse records.
+// Do not publish a MAC-authenticated root that could later be misinterpreted
+// as an expiration/retention decision.
+fn valid_kv2_timestamp(value: Option<&Value>, empty_means_absent: bool) -> bool {
+    match value {
+        None | Some(Value::Null) => true,
+        Some(Value::String(stamp)) if stamp.is_empty() => empty_means_absent,
+        Some(Value::String(stamp)) => chrono::DateTime::parse_from_rfc3339(stamp).is_ok(),
+        _ => false,
+    }
+}
+
 fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
     if bytes.len() > MAX_CELL {
         return Err(RecordError::TooLarge);
@@ -98,7 +111,9 @@ fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
             // retain readable plaintext in an explicitly destroyed version.
             // Missing/NULL fields remain accepted for older sparse records;
             // this is a format integrity check, not a retention grant.
-            destroyed.is_none_or(Value::is_boolean)
+            valid_kv2_timestamp(version_fields.get("created_time"), false)
+                && valid_kv2_timestamp(version_fields.get("deletion_time"), true)
+                && destroyed.is_none_or(Value::is_boolean)
                 && data.is_none_or(|value| value.is_object() || value.is_null())
                 && (destroyed != Some(&Value::Bool(true)) || data.is_none_or(Value::is_null))
                 && name.parse::<u64>().is_ok_and(|version| {
@@ -151,6 +166,40 @@ fn kv2_v6_trial_refuses_malformed_version_field_types_and_destroyed_payload()
             decode(&record_key, &bytes).is_err(),
             "malformed KV2 version field accepted at case {index}"
         );
+    }
+    Ok(())
+}
+
+#[test]
+fn kv2_v6_trial_accepts_rfc3339_and_sparse_legacy_temporal_fields()
+-> Result<(), Box<dyn std::error::Error>> {
+    let scope = Scope {
+        namespace: "r680-temporal".into(),
+        mount: "secret/".into(),
+        incarnation: 8,
+        path: "good".into(),
+    };
+    let address = key(&scope)?;
+    let entries = [
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"good"},"destroyed":false
+        }}}),
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"good"},"created_time":null,"deletion_time":null
+        }}}),
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"good"},"destroyed":false,
+            "created_time":"2026-10-12T00:00:00.123456789Z","deletion_time":""
+        }}}),
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"good"},"destroyed":false,
+            "created_time":"2026-10-12T00:00:00+09:00",
+            "deletion_time":"2026-10-13T10:00:00+09:00"
+        }}}),
+    ];
+    for (case, entry) in entries.into_iter().enumerate() {
+        let raw = encode(scope.clone(), 1, entry)?;
+        assert_eq!(decode(&address, &raw)?.version, 1, "valid time case {case}");
     }
     Ok(())
 }
