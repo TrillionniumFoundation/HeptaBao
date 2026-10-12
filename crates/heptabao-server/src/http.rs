@@ -88,20 +88,27 @@ pub(crate) fn json_ingress_body_limit(
     {
         return MAX_BODY;
     }
-    let mut fields = route.splitn(3, '/');
-    let (Some(mount), Some("data"), Some(item)) = (fields.next(), fields.next(), fields.next())
-    else {
+    // A KV2 mount may have several canonical path components. This syntactic
+    // allowance does not decide mount ownership or grant write authority:
+    // Service must still independently resolve the live mount and ACL.
+    let Some((mount, item)) = route.rsplit_once("/data/") else {
         return MAX_BODY;
     };
+    let top = mount.split('/').next().unwrap_or_default();
     if mount.is_empty()
-        || mount.len() > 128
-        || !mount
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+        || mount.len() > 512
         || matches!(
-            mount,
+            top,
             "sys" | "auth" | "identity" | "cubbyhole" | "pki" | "transit" | "database" | "ssh"
         )
+        || mount.split('/').any(|segment| {
+            segment.is_empty()
+                || segment.len() > 128
+                || matches!(segment, "." | "..")
+                || !segment
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+        })
         || item.is_empty()
         || item.len() > 4096
         || item
@@ -3240,6 +3247,27 @@ mod tests {
             ),
             MAX_KV2_JSON_WRITE_BODY,
         );
+        for route in ["tenant/secret/data/nested", "tenant/data/secret/data/item"] {
+            assert_eq!(
+                json_ingress_body_limit("PUT", route, Some("application/json")),
+                MAX_KV2_JSON_WRITE_BODY,
+            );
+        }
+        for route in [
+            "sys/secret/data/item",
+            "auth/tenant/data/item",
+            "tenant/../secret/data/item",
+            "tenant//secret/data/item",
+            "tenant/%73ecret/data/item",
+            "tenant/secret/data/../item",
+            "tenant/secret/data",
+        ] {
+            assert_eq!(
+                json_ingress_body_limit("POST", route, Some("application/json")),
+                MAX_BODY,
+                "ambiguous or reserved path admitted: {route}",
+            );
+        }
     }
 
     #[test]
