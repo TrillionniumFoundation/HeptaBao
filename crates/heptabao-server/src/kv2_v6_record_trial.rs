@@ -266,3 +266,7 @@ fn kv2_v6_trial_incorrect_mount_incarnation_path_and_format_fail_closed()
     ));
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "kv2_v6_record_disk_trial.rs"]
+mod disk_trial;
