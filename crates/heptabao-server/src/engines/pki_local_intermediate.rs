@@ -137,6 +137,23 @@ pub(super) fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
     Ok(cert)
 }
 
+// A locally generated positive serial can lose a leading zero byte before
+// signing and regain DER's INTEGER sign-padding. The issuer's signed-CA map
+// must bind the *actual* certificate bytes, exactly as set-signed will observe
+// them, while still proving they denote the originally generated serial.
+fn locally_signed_ca_serial(der: &[u8], requested: &str) -> Result<String> {
+    let observed = normalize_serial(&certificate(der)?.raw_serial_as_string())?;
+    if canonical_serial_bytes(&serial_bytes(&observed)?)
+        != canonical_serial_bytes(&serial_bytes(requested)?)
+    {
+        return Err(error(
+            503,
+            "signed CA serial changed during certificate issuance",
+        ));
+    }
+    Ok(observed)
+}
+
 pub(super) fn certificate_signed_by(bytes: &[u8], parent: &[u8]) -> Result<()> {
     let cert = certificate(bytes)?;
     let issuer = certificate(parent)?;
@@ -1713,6 +1730,10 @@ impl Pki {
             },
         )?;
         certificate_signed_by(&cert, &root.certificate_der)?;
+        // Register the exact signed DER serial. The previous randomly
+        // generated number remains a strict numeric witness, not a second
+        // spelling that the intermediate cannot later use for revocation.
+        let serial = locally_signed_ca_serial(&cert, &serial)?;
         let format = RootOutputFormat::from_body(body)?;
         let mut chain = vec![public::stored_pem("CERTIFICATE", &cert)];
         let mut parent_chain = root.local_ca_chain_pem();
@@ -2600,6 +2621,58 @@ mod tests {
         let p: Pki = serde_json::from_slice(&raw)?;
         p.validate("", "pki/", NOW)?;
         assert!(p.has_local_intermediate_state());
+        Ok(())
+    }
+
+    #[test]
+    fn local_signed_ca_registry_reuses_exact_positive_der_serial_padding() -> TestResult {
+        let issuer = root()?;
+        let parent = issuer.root.as_ref().ok_or("parent")?;
+        let signer = parent.local_key()?;
+        let public = signer.public()?;
+        let issuer_name = root_fields::certificate_subject(&parent.certificate_der)?;
+        for requested in ["80a1b2c3d4e5f607", "00f1a2b3c4d5e607", "0123456789abcdef"] {
+            let cert = certificate_der_local(
+                &signer,
+                &public,
+                CertificateSpec {
+                    url_entries: None,
+                    serial: requested,
+                    issuer_cn: &parent.common_name,
+                    subject_cn: "reproducible signed CA serial",
+                    issuer_name_der: Some(&issuer_name),
+                    subject_name_der: None,
+                    public_key: &[],
+                    authority_key_id: None,
+                    not_before: role_time::signed_epoch(NOW - 30)?,
+                    not_after: NOW + 3600,
+                    is_ca: true,
+                    alt_names: &[],
+                    email_sans: &[],
+                    ip_sans: &[],
+                    uri_sans: &[],
+                    exclude_cn_from_sans: true,
+                    max_path_length: Some(0),
+                    permitted_dns_domains: &[],
+                    role_leaf_profile: None,
+                },
+            )?;
+            certificate_signed_by(&cert, &parent.certificate_der)?;
+            let observed = locally_signed_ca_serial(&cert, requested)?;
+            assert_eq!(
+                observed,
+                normalize_serial(&certificate(&cert)?.raw_serial_as_string())?,
+                "the registry must use the same DER serial as set-signed",
+            );
+            assert_eq!(
+                canonical_serial_bytes(&serial_bytes(&observed)?),
+                canonical_serial_bytes(&serial_bytes(requested)?),
+            );
+            if requested.starts_with("80") {
+                assert_ne!(observed, requested, "DER must encode a positive sign pad");
+            }
+            assert!(locally_signed_ca_serial(&cert, "1234567890abcdef").is_err());
+        }
         Ok(())
     }
 
