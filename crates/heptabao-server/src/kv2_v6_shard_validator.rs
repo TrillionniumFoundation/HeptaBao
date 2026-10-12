@@ -53,6 +53,16 @@ pub(crate) fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), Recor
     graph.visit_keys(|record_key| {
         let bytes = graph.get(record_key).ok_or(RecordError::Corrupt)?;
         let cell = decode(record_key, bytes)?;
+        // Ordinary sparse KV2 records do not carry shard_schema. They still
+        // belong to the authenticated V6 graph: reject invalid *logical*
+        // namespace/path control aliases before taking that legacy branch.
+        // The reserved U+001F physical mount is checked independently below;
+        // this does not grant any shard mount or publication authority.
+        if cell.scope.namespace.chars().any(char::is_control)
+            || cell.scope.path.chars().any(char::is_control)
+        {
+            return Err(RecordError::Corrupt);
+        }
         let Some(schema) = cell.entry.get("shard_schema") else {
             return Ok(());
         };
