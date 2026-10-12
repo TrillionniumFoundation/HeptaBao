@@ -112,6 +112,37 @@ fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordError> {
     Ok(cell)
 }
 
+#[test]
+fn kv2_v6_trial_refuses_malformed_version_field_types_and_destroyed_payload()
+-> Result<(), Box<dyn std::error::Error>> {
+    let scope = Scope {
+        namespace: "isolated".into(),
+        mount: "secret/".into(),
+        incarnation: 3,
+        path: "sealed-history".into(),
+    };
+    let record_key = key(&scope)?;
+    let cases = [
+        json!({"current_version": 1, "versions": {"1": {
+            "data": ["not", "a", "kv2", "object"], "destroyed": false
+        }}}),
+        json!({"current_version": 1, "versions": {"1": {
+            "data": {"payload": "value"}, "destroyed": "false"
+        }}}),
+        json!({"current_version": 1, "versions": {"1": {
+            "data": {"payload": "must_not_survive_destroy"}, "destroyed": true
+        }}}),
+    ];
+    for (index, entry) in cases.into_iter().enumerate() {
+        let bytes = encode(scope.clone(), 1, entry)?;
+        assert!(
+            decode(&record_key, &bytes).is_err(),
+            "malformed KV2 version field accepted at case {index}"
+        );
+    }
+    Ok(())
+}
+
 struct LocalObjects(BTreeMap<ObjectId, Arc<StagedObject>>);
 impl RecordReader for LocalObjects {
     fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
