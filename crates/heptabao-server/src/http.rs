@@ -3229,6 +3229,20 @@ mod tests {
     }
 
     #[test]
+    fn kv2_nested_mount_2560k_keeps_scoped_json_ingress_parity() {
+        // OpenBao 2.7.1 writes 2560 KiB at multi-segment mounts. A
+        // single-prefix-only parser must fail this regression before Service.
+        assert_eq!(
+            json_ingress_body_limit(
+                "POST",
+                "r721/team-secret/data/value-2560",
+                Some("application/json"),
+            ),
+            MAX_KV2_JSON_WRITE_BODY,
+        );
+    }
+
+    #[test]
     fn scoped_kv2_larger_json_does_not_promote_other_routes_or_ambiguous_framing() -> io::Result<()>
     {
         for (method, route, media) in [
