@@ -1963,3 +1963,31 @@ fn kv2_v6_disk_trial_refuses_untyped_temporal_fields_before_signed_root()
     }
     Ok(())
 }
+
+// Red gate for compatibility between the admitted 2560KiB KV2 HTTP ingress
+// and the independent V6 typed-record storage experiment. The latter must not
+// claim admission if a correctly typed large value cannot be published/reopened.
+#[test]
+fn kv2_v6_disk_trial_actual_2560k_value_signed_root_reopen()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let key_material = private_trial_key(&AddressKey::from_bytes([0xda; 32]))?;
+    let mut graph = Kv1Index::empty(Arc::clone(&key_material));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let (address, cell) = v1_cell(1, "official-kv2-2560k", "P".repeat(2560 * 1024))?;
+    assert!(cell.len() > crate::http::MAX_BODY);
+    assert!(cell.len() < crate::state_records::MAX_VALUE_BYTES);
+    stage(&mut graph, &mut objects, address.clone(), Some(&cell))?;
+    disk.publish(&graph, &key_material, 1, false)?;
+    let reopened = disk.reopen(Arc::clone(&key_material), 1)?;
+    assert_eq!(reopened.get(&address), Some(cell.as_slice()));
+    let verified = decode(&address, reopened.get(&address).ok_or("cell missing")?)?;
+    assert_eq!(verified.version, 1);
+    assert_eq!(
+        verified.entry["versions"]["1"]["data"]["payload"]
+            .as_str()
+            .map(str::len),
+        Some(2560 * 1024),
+    );
+    Ok(())
+}

@@ -13,7 +13,13 @@ use zeroize::Zeroizing;
 
 const FORMAT: &str = "heptabao-kv2-typed-record-trial-v6";
 const MOUNT_DOMAIN: &str = "@heptabao-kv2-v6/";
-const MAX_CELL: usize = 256 * 1024;
+// A 2560KiB authenticated KV2 write already fits the narrowly scoped 3MiB
+// production HTTP ingress. The V6 *trial* also stores an internal typed
+// envelope and canonical metadata; give a single trial cell at most 4MiB.
+// This changes neither the 16MiB opaque production-owner bound nor the 64MiB
+// total authenticated record graph. Retained multi-version large values will
+// need version-granular storage before V6 can replace production KV2.
+const MAX_CELL: usize = 4 * 1024 * 1024;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
