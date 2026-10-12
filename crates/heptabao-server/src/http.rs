@@ -70,6 +70,15 @@ pub(crate) const MAX_BODY: usize = 2 * 1024 * 1024;
 // narrowly larger budget. This is NOT a new state capacity, role, or writer.
 pub(crate) const MAX_KV2_JSON_WRITE_BODY: usize = 3 * 1024 * 1024;
 
+// RFC 9110 Section 8.3.1 defines type and subtype tokens as case-insensitive.
+// Only the media *type* is compared here: retain the existing parameter
+// framing and all independent route, method, ACL, and size restrictions.
+fn media_type_is(media: Option<&str>, expected: &str) -> bool {
+    media
+        .and_then(|value| value.split(';').next())
+        .is_some_and(|name| name.eq_ignore_ascii_case(expected))
+}
+
 // Both HTTP/1.1 and HTTP/2 use precisely this predicate before accepting
 // body bytes. No TLS, authentication, namespaces or method semantics change.
 // It is an ingress grammar, not a grant that a path is actually a KV2 mount:
@@ -80,7 +89,7 @@ pub(crate) fn json_ingress_body_limit(
     content_type: Option<&str>,
 ) -> usize {
     if !matches!(method, "POST" | "PUT")
-        || content_type.and_then(|media| media.split(';').next()) != Some("application/json")
+        || !media_type_is(content_type, "application/json")
         || route
             .bytes()
             .any(|byte| matches!(byte, b'%' | b'?' | b'#' | b'\\'))
@@ -1764,9 +1773,10 @@ fn read_request_with_ui(
     );
     let download =
         matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";
-    let json_body = map
-        .get("content-type")
-        .is_some_and(|value| value.split(';').next() == Some("application/json"));
+    let json_body = media_type_is(
+        map.get("content-type").map(|value| value.as_str()),
+        "application/json",
+    );
     let native_snapshot = native_wire
         && !help_selected
         && snapshot_route
@@ -1885,10 +1895,8 @@ fn read_request_with_ui(
         && !help_selected
         && !jose_acme
         && map.get("content-type").is_some_and(|v| {
-            !matches!(
-                v.split(';').next(),
-                Some("application/json" | "application/merge-patch+json")
-            )
+            !media_type_is(Some(v.as_str()), "application/json")
+                && v.split(';').next() != Some("application/merge-patch+json")
         })
     {
         return Err(bad("JSON content type required"));
@@ -3232,6 +3240,65 @@ mod tests {
             parsed.body.0["data"]["payload"].as_str(),
             Some(payload.as_str())
         );
+        Ok(())
+    }
+
+    #[test]
+    fn kv2_2560k_json_media_case_parity_fixture() -> io::Result<()> {
+        // Official OpenBao 2.7.1 HTTPS oracle returns 200 for each media
+        // variant. This fixture must not broaden privileged routes.
+        for media in [
+            "application/json",
+            "Application/JSON",
+            "application/JSON",
+            "APPLICATION/JSON",
+        ] {
+            assert_eq!(
+                json_ingress_body_limit("POST", "r752/team-secret/data/test", Some(media)),
+                MAX_KV2_JSON_WRITE_BODY,
+                "KV2 media rejected: {media}",
+            );
+            for denied in [
+                "sys/mounts/r752/data/item",
+                "auth/approle/data/item",
+                "pki/data/item",
+                "r752/../secret/data/item",
+                "r752//secret/data/item",
+                "r752/%2e/data/item",
+            ] {
+                assert_eq!(
+                    json_ingress_body_limit("POST", denied, Some(media)),
+                    MAX_BODY,
+                    "privileged/ambiguous route widened: {denied}",
+                );
+            }
+        }
+        let body = serde_json::to_vec(&serde_json::json!({
+            "data": {"payload": "J".repeat(2560 * 1024)}
+        }))?;
+        assert!(body.len() > MAX_BODY && body.len() < MAX_KV2_JSON_WRITE_BODY);
+        let mut frame = format!(
+            "POST /v1/r752/team-secret/data/item HTTP/1.1\r\nHost: localhost\r\nContent-Type: Application/JSON\r\nContent-Length: {}\r\n\r\n",
+            body.len()
+        ).into_bytes();
+        frame.extend_from_slice(&body);
+        let parsed = read_request_mode(&mut frame.as_slice(), Duration::from_secs(10), false)
+            .map_err(|err| io::Error::other(format!("scoped JSON parse status {}", err.status)))?;
+        assert_eq!(parsed.path, "r752/team-secret/data/item");
+        assert_eq!(
+            parsed.body.0["data"]["payload"].as_str().map(str::len),
+            Some(2560 * 1024),
+        );
+        // The scoped large body does not permit a privileged API request.
+        let mut denied = format!(
+            "POST /v1/sys/mounts/r752/data/item HTTP/1.1\r\nHost: localhost\r\nContent-Type: Application/JSON\r\nContent-Length: {}\r\n\r\n",
+            body.len()
+        ).into_bytes();
+        denied.extend_from_slice(&body);
+        let rejected = read_request_mode(&mut denied.as_slice(), Duration::from_secs(10), false)
+            .err()
+            .ok_or_else(|| io::Error::other("privileged large JSON admitted"))?;
+        assert_eq!(rejected.status, 413);
         Ok(())
     }
 
