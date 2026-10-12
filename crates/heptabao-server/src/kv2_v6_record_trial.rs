@@ -107,15 +107,65 @@ fn stage(
     payload: Option<&[u8]>,
 ) -> Result<(), RecordError> {
     let result = index.edit(record_key, payload)?;
+    // Validate the complete edit before publishing *any* of its objects.
+    // A late address conflict must never leave earlier objects in the
+    // staging cache while the original index still points at the old root.
+    let mut pending = BTreeMap::new();
     for object in result.objects {
         let identity = object.reference().id;
-        if let Some(previous) = objects.0.insert(identity, Arc::clone(&object))
+        if let Some(previous) = pending.get(&identity).or_else(|| objects.0.get(&identity))
             && (previous.reference() != object.reference() || previous.bytes() != object.bytes())
         {
             return Err(RecordError::Corrupt);
         }
+        pending.insert(identity, object);
     }
+    objects.0.extend(pending);
     *index = result.next;
+    Ok(())
+}
+
+#[test]
+fn kv2_v6_trial_conflicting_late_object_preserves_all_pre_stage_state()
+-> Result<(), Box<dyn std::error::Error>> {
+    let address_key = AddressKey::from_bytes([0x64; 32]);
+    let mut index = Kv1Index::empty(Arc::clone(&address_key));
+    let scope = Scope {
+        namespace: "synthetic".into(),
+        mount: "secret/".into(),
+        incarnation: 1,
+        path: "ledger".into(),
+    };
+    let record_key = key(&scope)?;
+    let cell = encode(scope, 1, json!({"data":{"payload":"x".repeat(64 * 1024)}}))?;
+    let expected = index.edit(record_key.clone(), Some(&cell))?;
+    assert!(
+        expected.objects.len() >= 2,
+        "fixture must include multiple staged objects"
+    );
+    let first = Arc::clone(&expected.objects[0]);
+    let last = expected.objects.last().ok_or("missing last object")?;
+    assert_ne!(first.reference().id, last.reference().id);
+
+    // Poison the last address with an unrelated valid object. Failed staging
+    // must not insert earlier objects or change the original index root.
+    let mut objects = LocalObjects(BTreeMap::new());
+    objects.0.insert(last.reference().id, Arc::clone(&first));
+    let root_before = index.root();
+    assert!(matches!(
+        stage(&mut index, &mut objects, record_key, Some(&cell)),
+        Err(RecordError::Corrupt)
+    ));
+    assert_eq!(index.root(), root_before);
+    assert_eq!(objects.0.len(), 1, "failed stage left partial objects");
+    assert!(Arc::ptr_eq(
+        objects
+            .0
+            .get(&last.reference().id)
+            .ok_or("poison disappeared")?,
+        &first
+    ));
+    assert!(!objects.0.contains_key(&first.reference().id));
     Ok(())
 }
 
