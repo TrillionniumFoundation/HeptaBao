@@ -443,7 +443,26 @@ impl TrialDisk {
                 let next = graph.get(previous_key).ok_or(RecordError::Invalid)?;
                 let original_cell = decode(previous_key, original)?;
                 let next_cell = decode(previous_key, next)?;
-                if next_cell.version < original_cell.version {
+                let original_versions = original_cell
+                    .entry
+                    .get("versions")
+                    .and_then(Value::as_object)
+                    .ok_or(RecordError::Corrupt)?;
+                let next_versions = next_cell
+                    .entry
+                    .get("versions")
+                    .and_then(Value::as_object)
+                    .ok_or(RecordError::Invalid)?;
+                // There is no production-grade destruction/retirement proof in
+                // this isolated trial. A new signed root cannot rewrite an
+                // acknowledged version or omit/tamper with its history.
+                // This check precedes *any* immutable object staging.
+                if next_cell.version < original_cell.version
+                    || (next_cell.version == original_cell.version && next != original)
+                    || original_versions
+                        .iter()
+                        .any(|(version, value)| next_versions.get(version) != Some(value))
+                {
                     return Err(RecordError::Invalid);
                 }
                 Ok(())
@@ -1310,6 +1329,76 @@ fn kv2_v6_trial_drop_must_not_remove_replaced_objects_directory()
     Ok(())
 }
 
+// Before a V6 record has a real tombstone authority, its acknowledged
+// version history is immutable. A future signed *root* alone cannot authorize
+// rewriting the same KV2 version or deleting/replacing past version entries.
+fn history_attack_must_not_publish(case: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signer = private_trial_key(&AddressKey::from_bytes([0xbb; 32]))?;
+    let (address, original) = v1_cell(1, "r612-history", "original".into())?;
+    let mut base = Kv1Index::empty(Arc::clone(&signer));
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage(&mut base, &mut objects, address.clone(), Some(&original))?;
+    disk.publish(&base, &signer, 1, false)?;
+    let frozen_root = fs::read(disk.manifest_path())?;
+    let frozen_count = fs::read_dir(disk.dir.join("objects"))?.count();
+    let scope = Scope {
+        namespace: "tenant-r310".into(),
+        mount: "secret/".into(),
+        incarnation: 7,
+        path: "r612-history".into(),
+    };
+    let forged = match case {
+        "same_version_rewrite" => v1_cell(1, "r612-history", "mutated".into())?.1,
+        "missing_prior" => v1_cell(2, "r612-history", "later".into())?.1,
+        "modified_prior" => encode(
+            scope,
+            2,
+            json!({
+                "current_version":2,
+                "versions":{
+                    "1":{"data":{"payload":"forged"},"destroyed":false},
+                    "2":{"data":{"payload":"later"},"destroyed":false}
+                }
+            }),
+        )?,
+        _ => return Err("unrecognized history attack".into()),
+    };
+    let mut proposed = base;
+    let mut next_objects = LocalObjects(BTreeMap::new());
+    stage(
+        &mut proposed,
+        &mut next_objects,
+        address.clone(),
+        Some(&forged),
+    )?;
+    assert!(
+        disk.publish(&proposed, &signer, 2, false).is_err(),
+        "{case} must be rejected before the signed root and object staging"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, frozen_root);
+    assert_eq!(
+        fs::read_dir(disk.dir.join("objects"))?.count(),
+        frozen_count
+    );
+    let visible = disk.reopen(signer, 1)?;
+    assert_eq!(visible.get(&address), Some(original.as_slice()));
+    Ok(())
+}
+#[test]
+fn kv2_v6_disk_trial_rejects_same_version_payload_rewrite() -> Result<(), Box<dyn std::error::Error>>
+{
+    history_attack_must_not_publish("same_version_rewrite")
+}
+#[test]
+fn kv2_v6_disk_trial_rejects_disappeared_prior_version() -> Result<(), Box<dyn std::error::Error>> {
+    history_attack_must_not_publish("missing_prior")
+}
+#[test]
+fn kv2_v6_disk_trial_rejects_changed_prior_version() -> Result<(), Box<dyn std::error::Error>> {
+    history_attack_must_not_publish("modified_prior")
+}
+
 // A new signed root must retain previously acknowledged typed KV2 record
 // addresses and never lower the visible version without retirement authority.
 #[test]
@@ -1388,7 +1477,12 @@ fn kv2_v6_disk_trial_generation_cannot_erase_or_regress_committed_records()
     // publishes exactly once after the negative cases.
     let mut next = committed;
     let mut next_objects = LocalObjects(BTreeMap::new());
-    let (_, updated) = v1_cell(4, "r610-protected", "updated".repeat(150))?;
+    let prior = decode(&protected, &first)?;
+    let mut updated_entry = prior.entry;
+    updated_entry["current_version"] = json!(4);
+    updated_entry["versions"]["4"] =
+        json!({"data":{"payload":"updated".repeat(150)},"destroyed":false});
+    let updated = encode(prior.scope, 4, updated_entry)?;
     stage(
         &mut next,
         &mut next_objects,
