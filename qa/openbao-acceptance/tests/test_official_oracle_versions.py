@@ -70,6 +70,18 @@ class OracleVersionTests(unittest.TestCase):
             with self.assertRaisesRegex(BaoError, "official_oracle_binary_not_archive_member"):
                 launcher.verify_inputs(version="2.7.0")
 
+    def test_271_darwin_validation_checks_archive_and_member_before_process(self):
+        for host in (("darwin", "arm64"), ("darwin", "amd64")):
+            with self.subTest(host=host):
+                with self.archive_fixture(host=host) as (binary, _archive):
+                    self.assertEqual(launcher.verify_inputs(version="2.7.1"), binary)
+                    binary.write_bytes(b"wrong-platform-binary")
+                    with self.assertRaisesRegex(BaoError, "official_oracle_pinned_digest_mismatch"):
+                        launcher.verify_inputs(version="2.7.1")
+                with self.archive_fixture(host=host, payload=b"wrong-archive-member"):
+                    with self.assertRaisesRegex(BaoError, "official_oracle_binary_not_archive_member"):
+                        launcher.verify_inputs(version="2.7.1")
+
     def test_returned_pin_does_not_mutate_registry(self):
         original = launcher.pinned_artifact(version="2.7.0")
         changed = launcher.pinned_artifact(version="2.7.0")

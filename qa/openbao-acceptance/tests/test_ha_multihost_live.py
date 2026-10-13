@@ -1,16 +1,20 @@
 """The private three-host HA profile remains bounded, secret-safe and manual."""
 import argparse
 import ast
+import contextlib
 import importlib.util
+import io
 import json
 import sys
 import tempfile
 from pathlib import Path
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[3]
 SOURCE = ROOT / "qa/openbao-acceptance/ha_multihost_live.py"
 DOC = ROOT / "docs/operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md"
+sys.path.insert(0, str(SOURCE.parent))
 SPEC = importlib.util.spec_from_file_location("ha_multihost_live", SOURCE)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
@@ -98,6 +102,80 @@ class MultiHostHaContractTests(unittest.TestCase):
             self.assertEqual(first.read_bytes(), second.read_bytes())
             import gzip
             self.assertEqual(gzip.decompress(first.read_bytes()), source.read_bytes())
+
+    def test_explicit_lan_nodes_accept_only_exact_rfc1918_ipv4_ranges(self):
+        for address in (
+            "10.0.0.0", "10.255.255.255", "172.16.0.0", "172.31.255.255",
+            "192.168.0.0", "192.168.255.255",
+        ):
+            with self.subTest(address=address):
+                text = f"host-a,{address},/home/operator/run"
+                with self.assertRaises(argparse.ArgumentTypeError):
+                    MODULE.parse_node(text, 1, 31080, 31081)
+                node = MODULE.parse_node(text, 1, 31080, 31081, allow_private_lan=True)
+                self.assertEqual(node.ip, address)
+                self.assertEqual(node.root, "/home/operator/run")
+        for address in (
+            "9.255.255.255", "11.0.0.0", "172.15.255.255", "172.32.0.0",
+            "192.167.255.255", "192.169.0.0", "100.64.12.34", "8.8.8.8",
+            "127.0.0.1", "169.254.1.2", "224.0.0.1", "0.0.0.0", "255.255.255.255",
+            "192.0.0.8", "198.18.0.1", "::1", "fe80::1", "fc00::1", "ff02::1",
+            "::ffff:192.168.0.1", "2001:db8::1",
+        ):
+            with self.subTest(address=address), self.assertRaises(argparse.ArgumentTypeError):
+                MODULE.parse_node(f"host-a,{address},/home/operator/run", 1, 31080, 31081,
+                                  allow_private_lan=True)
+        for root in ("/tmp/run", "/home/operator/../run", "/home/operator//run"):
+            with self.subTest(root=root), self.assertRaises(argparse.ArgumentTypeError):
+                MODULE.parse_node(f"host-a,192.168.0.1,{root}", 1, 31080, 31081,
+                                  allow_private_lan=True)
+
+    @staticmethod
+    def _scope_argv(work, addresses, flags):
+        argv = [str(SOURCE), "--binary-source", "builder:/home/builder/heptabao-server",
+                "--expected-binary-sha256", "c" * 64, "--source-commit", "a" * 40,
+                "--source-tree", "b" * 40, "--work-root", str(work), *flags]
+        for index, address in enumerate(addresses, 1):
+            argv.extend(("--node", f"host-{index},{address},/home/operator/run-{index}"))
+        return argv
+
+    def test_cli_requires_exactly_one_explicit_network_scope_before_candidate_copy(self):
+        for flags in ([], ["--allow-private-tailnet", "--allow-private-lan"]):
+            with self.subTest(flags=flags), tempfile.TemporaryDirectory() as directory:
+                work = Path(directory).resolve() / "new-fixture"
+                argv = self._scope_argv(work, ["100.64.1.1", "100.64.1.2", "100.64.1.3"], flags)
+                with mock.patch.object(sys, "argv", argv), \
+                        mock.patch.object(MODULE, "copy_candidate_source") as copy, \
+                        mock.patch.object(MODULE, "ssh") as ssh, \
+                        contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as denial:
+                    MODULE.main()
+                self.assertEqual(denial.exception.code, 2)
+                self.assertFalse(work.exists())
+                copy.assert_not_called()
+                ssh.assert_not_called()
+
+    def test_cli_scope_reaches_candidate_boundary_and_reports_matching_transport(self):
+        for flag, addresses, transport in (
+            ("--allow-private-tailnet", ["100.64.1.1", "100.64.1.2", "100.64.1.3"],
+             "private-tailnet-mtls"),
+            ("--allow-private-lan", ["10.0.0.1", "172.16.0.2", "192.168.0.3"],
+             "private-lan-mtls"),
+        ):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as directory:
+                work = Path(directory).resolve() / "new-fixture"
+                argv = self._scope_argv(work, addresses, [flag])
+                with mock.patch.object(sys, "argv", argv), \
+                        mock.patch.object(MODULE, "copy_candidate_source",
+                                          side_effect=MODULE.FixtureError("scope_only_probe")) as copy, \
+                        mock.patch.object(MODULE, "ssh", return_value=""), \
+                        contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(MODULE.main(), 1)
+                copy.assert_called_once()
+                report = json.loads((work / "summary.json").read_text())
+                self.assertEqual(report["transport"], transport)
+                self.assertEqual(report["failure_code"], "scope_only_probe")
+                self.assertEqual(report["required_check_count"], 54)
+                self.assertIs(report["production_authority"], False)
 
     def test_response_failure_codes_are_bounded_and_secret_independent(self):
         self.assertEqual(

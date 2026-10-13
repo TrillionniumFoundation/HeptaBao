@@ -5,10 +5,10 @@ cutover, rollback, token transfer, HA metadata import, production use, or releas
 
 ## Exact source and fixture custody
 
-The new source version is selected explicitly with `--oracle-version 2.7.1` in
-the migration-specific QA runners. The historical 2.6.2 default is unchanged.
-The broader legacy Oracle comparison profiles remain constrained to their
-previously qualified versions, 2.6.2 and 2.7.0.
+The source version is selected explicitly with `--oracle-version 2.7.1` in
+the migration QA runners and the normal bounded official comparison runner.
+The historical 2.6.2 default and each profile's existing case denominator are
+unchanged. Release selection alone grants no compatibility or migration admission.
 
 For the Linux amd64 official 2.7.1 release, the launcher requires all of:
 * Archive `openbao_2.7.1_linux_amd64.tar.gz`, SHA-256

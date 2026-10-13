@@ -57,8 +57,8 @@ class SelectedReferenceTests(unittest.TestCase):
         private_write(self.root / "server.json", configuration)
         return launcher.verify_selected_oracle(oracle, health, version=version, raft_storage=raft)
 
-    def test_both_exact_versions_preserve_non_ha_and_explicit_raft(self):
-        for version, backend in (("2.6.2", "file"), ("2.7.0", "pebbledb")):
+    def test_exact_versions_preserve_non_ha_and_explicit_raft(self):
+        for version, backend in (("2.6.2", "file"), ("2.7.0", "pebbledb"), ("2.7.1", "pebbledb")):
             for raft in (False, True):
                 with self.subTest(version=version, raft=raft):
                     result = self.verify(*self.fixture(version, raft=raft), version=version, raft=raft)
@@ -201,17 +201,23 @@ class RunnerSelectionTests(unittest.TestCase):
                 self.assertEqual(run.call_args.kwargs, {"oracle_version": version or "2.6.2"})
 
     def test_fixed_comparison_passes_version_to_launcher_before_candidate_allocation(self):
-        spec = SimpleNamespace(loader=SimpleNamespace(exec_module=lambda module: None))
-        smoke = SimpleNamespace(Instance=unittest.mock.Mock())
-        with patch.object(comparison.subprocess, "check_output", return_value="synthetic-source\n"), \
-             patch.object(comparison.importlib.util, "spec_from_file_location", return_value=spec), \
-             patch.object(comparison.importlib.util, "module_from_spec", return_value=smoke), \
-             patch.object(comparison, "start_oracle", side_effect=BaoError("synthetic-stop")) as start:
-            with self.assertRaisesRegex(BaoError, "synthetic-stop"):
-                comparison.main(["--binary", "/absent", "--candidate-source", str(self.root),
-                                 "--work-dir", str(self.root / "comparison"), "--oracle-version", "2.7.0"])
-            start.assert_called_once_with(28262, version="2.7.0")
-            smoke.Instance.assert_not_called()
+        before = copy.deepcopy(acceptance.CASES)
+        for version in (None, "2.7.0", "2.7.1"):
+            selected = version or "2.6.2"
+            spec = SimpleNamespace(loader=SimpleNamespace(exec_module=lambda module: None))
+            smoke = SimpleNamespace(Instance=unittest.mock.Mock())
+            flags = [] if version is None else ["--oracle-version", version]
+            with self.subTest(version=version), \
+                 patch.object(comparison.subprocess, "check_output", return_value="synthetic-source\n"), \
+                 patch.object(comparison.importlib.util, "spec_from_file_location", return_value=spec), \
+                 patch.object(comparison.importlib.util, "module_from_spec", return_value=smoke), \
+                 patch.object(comparison, "start_oracle", side_effect=BaoError("synthetic-stop")) as start:
+                with self.assertRaisesRegex(BaoError, "synthetic-stop"):
+                    comparison.main(["--binary", "/absent", "--candidate-source", str(self.root),
+                                     "--work-dir", str(self.root / ("comparison-" + selected)), *flags])
+                start.assert_called_once_with(28262, version=selected)
+                smoke.Instance.assert_not_called()
+        self.assertEqual(acceptance.CASES, before)
 
     def test_unsupported_versions_fail_before_runner_work(self):
         invocations = ((kv, "run", ["--binary", "/absent", "--oracle-launcher", "/launcher", "--work-dir", "/absent"]),

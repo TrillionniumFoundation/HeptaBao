@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a private synthetic three-host HeptaBao HA lifecycle over a tailnet.
+"""Run a private synthetic three-host HeptaBao HA lifecycle over a tailnet or LAN.
 
 The runner creates new owner-only roots, transfers one checksum-bound candidate,
 uses a fixture-only CA, performs no firewall or system-service changes, attempts
@@ -32,6 +32,9 @@ from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
 
 MAX_BODY = 32 * 1024 * 1024
 TAILNET = ipaddress.ip_network("100.64.0.0/10")
+PRIVATE_LAN = tuple(ipaddress.ip_network(value) for value in (
+    "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",
+))
 FORBIDDEN_REPORT_KEYS = frozenset({
     "root_token", "unseal_key", "replication_key", "ca_private_key",
     "tls_private_key", "private_key", "client_token", "service_account_token",
@@ -718,7 +721,8 @@ def provision_seed_kv2(context: ssl.SSLContext, node: Node, token: str) -> dict:
     return metadata
 
 
-def parse_node(text: str, node_id: int, api_port: int, raft_port: int) -> Node:
+def parse_node(text: str, node_id: int, api_port: int, raft_port: int,
+               *, allow_private_lan: bool = False) -> Node:
     parts = text.split(",", 2)
     if len(parts) != 3:
         raise argparse.ArgumentTypeError("node must be alias,ip,absolute-root")
@@ -729,7 +733,11 @@ def parse_node(text: str, node_id: int, api_port: int, raft_port: int) -> Node:
             or any(character.isspace() or ord(character) < 0x20 for character in root)):
         raise argparse.ArgumentTypeError("invalid node alias or canonical private root")
     address = ipaddress.ip_address(raw_ip)
-    if address not in TAILNET:
+    if allow_private_lan:
+        if (not isinstance(address, ipaddress.IPv4Address)
+                or not any(address in network for network in PRIVATE_LAN)):
+            raise argparse.ArgumentTypeError("nodes must use private LAN RFC1918 IPv4 addresses")
+    elif address not in TAILNET:
         raise argparse.ArgumentTypeError("nodes must use private tailnet CGNAT addresses")
     return Node(node_id, alias, str(address), root.rstrip("/"), api_port, raft_port)
 
@@ -761,10 +769,10 @@ def main(*, extension=None) -> int:
     parser.add_argument("--api-port", type=int, default=46230)
     parser.add_argument("--raft-port", type=int, default=46231)
     parser.add_argument("--work-root", type=Path, required=True)
-    parser.add_argument("--allow-private-tailnet", action="store_true")
+    network_scope = parser.add_mutually_exclusive_group(required=True)
+    network_scope.add_argument("--allow-private-tailnet", action="store_true")
+    network_scope.add_argument("--allow-private-lan", action="store_true")
     args = parser.parse_args()
-    if not args.allow_private_tailnet:
-        parser.error("explicit private tailnet scope is required")
     if len(args.node) != 3 or len(set(args.node)) != 3:
         parser.error("exactly three distinct nodes are required")
     if not re.fullmatch(r"[0-9a-f]{40}", args.source_commit) or not re.fullmatch(r"[0-9a-f]{40}", args.source_tree):
@@ -787,7 +795,8 @@ def main(*, extension=None) -> int:
         parser.error("work-root parent must be canonical, owner-controlled and not broadly writable")
     os.umask(0o077)
     work.mkdir(mode=0o700)
-    nodes = [parse_node(value, index + 1, args.api_port, args.raft_port)
+    nodes = [parse_node(value, index + 1, args.api_port, args.raft_port,
+                        allow_private_lan=args.allow_private_lan)
              for index, value in enumerate(args.node)]
     if len({node.ip for node in nodes}) != 3 or len({node.root for node in nodes}) != 3:
         parser.error("node IPs and roots must be unique")
@@ -808,7 +817,7 @@ def main(*, extension=None) -> int:
         "runner_sha256": initial_runner_sha256,
         "required_check_count": len(required_checks),
         "host_count": 3,
-        "transport": "private-tailnet-mtls",
+        "transport": "private-lan-mtls" if args.allow_private_lan else "private-tailnet-mtls",
         "checks": checks,
         "events": events,
         "qualification": False,

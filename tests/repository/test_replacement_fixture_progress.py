@@ -40,6 +40,8 @@ class ReplacementFixtureProgressTests(unittest.TestCase):
                 ('oracle_ready', '${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz'),
             '${{ runner.temp }}/heptabao-official-oracle270/bao':
                 ('oracle270_ready', '${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz'),
+            '${{ runner.temp }}/heptabao-official-oracle271/bao':
+                ('oracle271_ready', '${{ runner.temp }}/heptabao-official-oracle271/oracle-official.tar.gz'),
         }
         binary = step['env']['HB_ORACLE_BINARY']
         self.assertIn(binary, lanes)
@@ -48,6 +50,32 @@ class ReplacementFixtureProgressTests(unittest.TestCase):
         self.assertEqual(step['env'].get('HB_ORACLE_ARCHIVE'), archive)
         if prerequisite == 'oracle270_ready':
             self.assertIn('--oracle-version 2.7.0', step['run'])
+        elif prerequisite == 'oracle271_ready':
+            self.assertIn('--oracle-version 2.7.1', step['run'])
+
+    def test_271_corpus_keeps_default_scope_and_secret_directories_private(self):
+        step = self.named['Exercise OpenBao 2.7.1 bounded official corpus']
+        self.assert_bound_oracle_prerequisite(step)
+        self.assertEqual(step['env']['HB_ORACLE_WORK_ROOT'],
+                         '${{ runner.temp }}/heptabao-fixed-corpus271-private')
+        run = step['run']
+        self.assertIn('umask 077', run)
+        self.assertIn('mkdir -m 700 "$work" "$reports"', run)
+        self.assertIn('timeout 300 python qa/openbao-acceptance/run_official_comparison.py', run)
+        self.assertIn('--candidate-source "$PWD"', run)
+        self.assertIn('--work-dir "$work/comparison"', run)
+        self.assertNotIn('--modules', run)
+        self.assertIn('assert report["full_openbao_compatibility"] is False', run)
+        self.assertIn('assert report["production_qualified"] is False', run)
+        self.assertIn('cp "$work/comparison/comparison-bound.json" "$reports/comparison.json"', run)
+        self.assertNotIn('cp -r', run)
+        for job in self.workflow['jobs'].values():
+            for upload in job.get('steps', []):
+                if not upload.get('uses', '').startswith('actions/upload-artifact@'):
+                    continue
+                paths = upload.get('with', {}).get('path', '')
+                self.assertNotIn('heptabao-fixed-corpus271-private', paths)
+                self.assertNotIn('heptabao-official-oracle271', paths)
 
     def test_oracle_lanes_cannot_swap_artifacts_or_readiness_requirements(self):
         for original in self.steps:

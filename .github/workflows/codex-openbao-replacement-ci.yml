@@ -643,6 +643,56 @@ jobs:
           python scripts/prepare_openbao_oracle.py --version 2.7.0 \
             --output "$RUNNER_TEMP/heptabao-official-oracle270"
 
+      - name: Acquire the separately pinned OpenBao 2.7.1 reference
+        id: oracle271_ready
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          timeout 180 python scripts/prepare_openbao_oracle.py --version 2.7.1 \
+            --output "$RUNNER_TEMP/heptabao-official-oracle271"
+
+      - name: Exercise OpenBao 2.7.1 bounded official corpus
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle271_ready.outcome == 'success' }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle271/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle271/oracle-official.tar.gz
+          HB_ORACLE_WORK_ROOT: ${{ runner.temp }}/heptabao-fixed-corpus271-private
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          work="$RUNNER_TEMP/heptabao-fixed-corpus271-private"
+          reports="$RUNNER_TEMP/heptabao-safe-reports/openbao271"
+          mkdir -m 700 "$work" "$reports"
+          timeout 300 python qa/openbao-acceptance/run_official_comparison.py \
+            --oracle-version 2.7.1 --oracle-port 28271 \
+            --binary "$PWD/target/debug/heptabao-server" --candidate-source "$PWD" \
+            --work-dir "$work/comparison"
+          python - <<'PY'
+          import json, os, pathlib
+          report = json.loads(pathlib.Path(os.environ["HB_ORACLE_WORK_ROOT"], "comparison", "comparison-bound.json").read_text())
+          assert report["target"] == "OpenBao 2.7.1"
+          assert report["mode"] == "differential"
+          assert report["status"] == "passed_scoped_cases"
+          assert report["cases_match"] is True
+          assert report["full_openbao_compatibility"] is False
+          assert report["production_qualified"] is False
+          binding = report["execution_binding"]
+          assert binding["candidate_source_sha"] == os.environ["EXPECTED_SOURCE"]
+          assert binding["candidate_source_has_uncommitted_changes"] is False
+          assert binding["official_oracle"]["version"] == "2.7.1"
+          assert binding["official_oracle"]["storage"] == "pebbledb"
+          PY
+          # Retain only the bounded semantic receipt in the safe report directory.
+          # Tokens, unseal keys, TLS keys, logs and raw state stay in private work.
+          cp "$work/comparison/comparison-bound.json" "$reports/comparison.json"
+          # Default modules remain scoped; this lane grants no release or cutover authority.
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Compare strict OpenBao 2.7.0 runtime and ACL error contracts
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
         shell: bash

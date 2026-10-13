@@ -56,21 +56,31 @@ PINNED_RELEASES = {
     },
     # Official 2.7.1 checksums.txt SHA-256:
     # 95ad62d532df64dea20463ce513f0a56f792530bbefeb4e89525bc1eb773b750
-    # Only independently pinned Linux amd64 is admitted here. Other platforms
-    # are rejected before opening an archive; historical pins are unchanged.
+    # Primary immutable release metadata and checksums:
+    # https://github.com/openbao/openbao/releases/expanded_assets/v2.7.1
+    # Darwin assets 603348971 (amd64) and 603349032 (arm64) were fully rehashed;
+    # each unique regular bao archive member supplies its independent binary pin.
+    # Other platforms are rejected before reading files; historical pins stay fixed.
     "2.7.1": {
         ("linux", "amd64"): {
             "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
             "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
         },
+        ("darwin", "amd64"): {
+            "artifact_sha256": "c1d6d3e2ff72a6fc47b9efc2ed82482c30c70fc216f67f1c3b56edafd2f396e2",
+            "binary_sha256": "0981251fd59cfbcfbc7d0faf664ab328a4272e5f7e8e9688efa31fd1f02d9a49",
+        },
+        ("darwin", "arm64"): {
+            "artifact_sha256": "15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91",
+            "binary_sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+        },
     },
 }
-# Historical non-migration Oracle comparison profiles have not independently
-# admitted 2.7.1.  Adding a release artifact must not silently expand those
-# behavioral profiles or replace their expected HTTP status denominators.
-SUPPORTED_VERSIONS = ("2.6.2", "2.7.0")
-# Migration rehearsals perform their own bounded source/target inventory and
-# may explicitly select the separately pinned 2.7.1 release.
+# Explicit release selection permits isolated executable comparison only.
+# The default and behavioral case denominators remain unchanged; selecting
+# 2.7.1 never qualifies a surface or grants replacement/migration authority.
+SUPPORTED_VERSIONS = ("2.6.2", "2.7.0", "2.7.1")
+# Migration rehearsals still perform their own bounded source/target inventory.
 MIGRATION_ORACLE_VERSIONS = tuple(PINNED_RELEASES)
 
 

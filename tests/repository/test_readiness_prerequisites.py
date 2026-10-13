@@ -147,6 +147,37 @@ class ReadinessPrerequisiteTests(unittest.TestCase):
             self.assertFalse(out.exists())
             self.assertEqual(module.VERSION, '2.6.2')
 
+    def test_271_cli_selects_primary_metadata_on_only_pinned_hosts(self):
+        for system, machine in (('Linux', 'x86_64'), ('Darwin', 'arm64'), ('Darwin', 'x86_64')):
+            with self.subTest(system=system, machine=machine), tempfile.TemporaryDirectory() as temp:
+                out = Path(temp)/'new-oracle271'
+                with patch.object(sys, 'argv', ['prepare', '--version', '2.7.1', '--output', str(out)]), \
+                     patch.object(module.platform, 'system', return_value=system), \
+                     patch.object(module.platform, 'machine', return_value=machine), \
+                     patch.object(module, 'download', side_effect=OSError('unavailable')) as download:
+                    self.assertEqual(module.main(), 77)
+                    download.assert_called_once_with('https://api.github.com/repos/openbao/openbao/releases/tags/v2.7.1', 2*1024*1024)
+                self.assertFalse(out.exists())
+        self.assertEqual(module.VERSION, '2.6.2')
+
+    def test_271_acquisition_rejects_old_release_or_old_digest(self):
+        for system, machine in (('Linux', 'x86_64'), ('Darwin', 'arm64'), ('Darwin', 'x86_64')):
+            with self.subTest(system=system, machine=machine), \
+                 patch.object(module.platform, 'system', return_value=system), \
+                 patch.object(module.platform, 'machine', return_value=machine):
+                pin = module.pinned_artifact(system, machine, version='2.7.1')
+                release = {'tag_name': 'v2.7.1', 'draft': False, 'prerelease': False,
+                           'assets': [{'digest': 'sha256:' + pin['artifact_sha256'], 'size': 10,
+                                       'browser_download_url': 'https://github.com/openbao/openbao/releases/download/v2.7.1/fixture.tar.gz'}]}
+                self.assertEqual(module.select_asset(release, version='2.7.1'), release['assets'][0])
+                for transform in (lambda x:x.update(tag_name='v2.7.0'),
+                                  lambda x:x['assets'][0].update(digest='sha256:'+module.ARTIFACT_SHA256),
+                                  lambda x:x['assets'][0].update(browser_download_url=module.PREFIX+'fixture.tar.gz')):
+                    changed = copy.deepcopy(release)
+                    transform(changed)
+                    with self.assertRaises(ValueError):
+                        module.select_asset(changed, version='2.7.1')
+
     def test_unverified_270_platform_rejected_before_allocating_or_downloading(self):
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp)/'not-created'
@@ -176,6 +207,27 @@ class ReadinessPrerequisiteTests(unittest.TestCase):
         self.assertNotIn(' policy_templates_live ', legacy['run'])
         self.assertIn('remote_jwks_compare', legacy['run'])
         self.assertIn('test "$failed" -eq 0', legacy['run'])
+
+    def test_271_ci_binds_explicit_reference_and_keeps_bounded_case_denominator(self):
+        import yaml
+        workflow = yaml.safe_load((ROOT/'.github/workflows/codex-openbao-replacement-ci.yml').read_text())
+        steps = workflow['jobs']['qualify']['steps']
+        acquisition = next(step for step in steps if step.get('id') == 'oracle271_ready')
+        self.assertIn('--version 2.7.1', acquisition['run'])
+        self.assertIn('heptabao-official-oracle271', acquisition['run'])
+        comparison = next(step for step in steps if step.get('name') == 'Exercise OpenBao 2.7.1 bounded official corpus')
+        self.assertIn("steps.oracle271_ready.outcome == 'success'", comparison['if'])
+        self.assertIn("steps.runtime_ready.outcome == 'success'", comparison['if'])
+        self.assertIn('run_official_comparison.py', comparison['run'])
+        self.assertIn('--oracle-version 2.7.1', comparison['run'])
+        self.assertIn('--candidate-source "$PWD"', comparison['run'])
+        self.assertNotIn('--modules', comparison['run'])
+        self.assertEqual(comparison['env']['HB_ORACLE_BINARY'], '${{ runner.temp }}/heptabao-official-oracle271/bao')
+        self.assertEqual(comparison['env']['HB_ORACLE_ARCHIVE'], '${{ runner.temp }}/heptabao-official-oracle271/oracle-official.tar.gz')
+        self.assertNotIn('continue-on-error', acquisition)
+        self.assertNotIn('continue-on-error', comparison)
+        self.assertTrue(any(step.get('id') == 'oracle270_ready' for step in steps))
+        self.assertTrue(any(step.get('name') == 'Execute all bounded official-binary differential profiles' for step in steps))
 
     def test_current_ci_invokes_real_not_model_only_acceptance(self):
         workflow=(ROOT/'.github/workflows/codex-openbao-replacement-ci.yml').read_text()

@@ -15,13 +15,14 @@ class OpenBao271MigrationGateTests(unittest.TestCase):
     ARCHIVE = "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243"
     BINARY = "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
 
-    def test_legacy_oracle_behavior_profiles_remain_explicitly_unqualified(self):
-        self.assertEqual(launcher.SUPPORTED_VERSIONS, ("2.6.2", "2.7.0"))
+    def test_explicit_271_selection_keeps_historical_default(self):
+        self.assertEqual(launcher.VERSION, "2.6.2")
+        self.assertEqual(launcher.SUPPORTED_VERSIONS, ("2.6.2", "2.7.0", "2.7.1"))
         self.assertEqual(launcher.MIGRATION_ORACLE_VERSIONS, ("2.6.2", "2.7.0", "2.7.1"))
 
     def test_exact_271_release_pins_and_no_unverified_architecture(self):
         assets=launcher.release_artifacts("2.7.1")
-        self.assertEqual(set(assets), {("linux","amd64")})
+        self.assertEqual(set(assets), {("linux","amd64"), ("darwin","arm64"), ("darwin","amd64")})
         self.assertEqual(assets[("linux","amd64")],
                          {"artifact_sha256":self.ARCHIVE,"binary_sha256":self.BINARY})
         self.assertEqual(launcher.pinned_artifact("linux","amd64",version="2.7.1"),assets[("linux","amd64")])
@@ -44,11 +45,12 @@ class OpenBao271MigrationGateTests(unittest.TestCase):
                 self.assertFalse(bao_http.supported_migration_source_version(value))
 
     def test_271_unsupported_platform_denied_before_artifact_or_private_reads(self):
-        with patch.object(launcher,"_platform_key",return_value=("darwin","arm64")), \
-             patch.object(launcher,"file_digest") as read:
-            with self.assertRaisesRegex(bao_http.BaoError,"unsupported_platform"):
-                launcher.verify_inputs(version="2.7.1")
-            read.assert_not_called()
+        for host in (("linux", "arm64"), ("darwin", "s390x"), ("windows", "amd64")):
+            with self.subTest(host=host), patch.object(launcher,"_platform_key",return_value=host), \
+                 patch.object(launcher,"file_digest") as read:
+                with self.assertRaisesRegex(bao_http.BaoError,"unsupported_platform"):
+                    launcher.verify_inputs(version="2.7.1")
+                read.assert_not_called()
 
     def test_271_selected_fixture_requires_exact_hash_version_and_pebble_backend(self):
         with tempfile.TemporaryDirectory() as d:
