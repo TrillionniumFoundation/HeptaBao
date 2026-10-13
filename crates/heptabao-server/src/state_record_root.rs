@@ -338,8 +338,7 @@ mod tests {
         let key = root.address_key();
         let payload = vec![0x6bu8; OWNER_CHUNK_BYTES];
         let object = StagedObject::owner_chunk(&key, &payload)?;
-        for index in 0..2 {
-            let name = OWNER_NAMES[index];
+        for (index, name) in OWNER_NAMES.into_iter().enumerate().take(2) {
             let refs = vec![object.reference().clone(); MAX_OWNER_CHUNKS / 2 + 1];
             let bytes = payload.repeat(refs.len());
             root.owners[index] = OpaqueOwnerRef {

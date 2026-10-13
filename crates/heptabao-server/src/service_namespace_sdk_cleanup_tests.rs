@@ -1772,7 +1772,7 @@ fn namespace109_owned_storage_rebase_rejects_actual_owned_cell_changes() -> Test
         crate::secret_serde::to_vec(&*current.auth, 4 * 1024 * 1024)
             .map_err(|_| "current Auth snapshot rejected")?,
     );
-    assert!(&*engine_before == &*engine_after && &*auth_before == &*auth_after);
+    assert!(*engine_before == *engine_after && *auth_before == *auth_after);
     Ok(())
 }
 #[test]
@@ -1857,7 +1857,7 @@ fn namespace109_owned_storage_cut_rejects_wrong_family_scope_and_namespace_seal(
     assert_eq!(target.status, 400);
     assert_eq!(target.body["errors"][0], "unable to seal tainted namespace");
     let current = f.service.state.as_ref().ok_or("preserved state")?;
-    assert!(&*owner_store::serialize_owner(current)? == &*bytes);
+    assert!(*owner_store::serialize_owner(current)? == *bytes);
     assert!(
         f.service
             .current_state_identity()
@@ -2034,17 +2034,18 @@ fn namespace109_owned_storage_native_role_stable_publish_and_post_stage_return_v
     let observed = Arc::clone(&entered);
     let processes = cluster.processes.clone();
     f.service.native_record_role_hook = Some(Box::new(move |process| {
-        let next = process
-            .step_down()
-            .expect("actual post-Stage first handoff");
-        assert_ne!(next, 1);
-        let returned = processes[(next - 1) as usize]
-            .lock()
-            .expect("real successor mutex")
-            .step_down()
-            .expect("actual post-Stage return handoff");
-        assert_eq!(returned, 1);
-        observed.store(true, std::sync::atomic::Ordering::Release);
+        let handoff = (|| -> Result<(), String> {
+            let next = process.step_down()?;
+            assert_ne!(next, 1);
+            let returned = processes[(next - 1) as usize]
+                .lock()
+                .map_err(|_| "real successor mutex".to_owned())?
+                .step_down()?;
+            assert_eq!(returned, 1);
+            observed.store(true, std::sync::atomic::Ordering::Release);
+            Ok(())
+        })();
+        assert!(handoff.is_ok(), "actual post-Stage handoff must complete");
     }));
     let failure = f
         .service
@@ -2533,7 +2534,7 @@ fn namespace109_authenticated_inherited_seal_keeps_actual_auth_retirement_attemp
         crate::secret_serde::to_vec(&reopened_credential, 4 * 1024 * 1024)
             .map_err(|_| "reopened retained credential snapshot rejected")?,
     );
-    assert!(&*reopened_bytes == &*credential_bytes);
+    assert!(*reopened_bytes == *credential_bytes);
     state
         .validate_format()
         .map_err(|_| "reopened full typed graph")?;
@@ -2712,7 +2713,7 @@ fn namespace109_authenticated_independent_seal_preserves_two_original_descendant
         crate::secret_serde::to_vec(&reopened_credential, 4 * 1024 * 1024)
             .map_err(|_| "reopened retained credential snapshot rejected")?,
     );
-    assert!(&*reopened_bytes == &*credential_bytes);
+    assert!(*reopened_bytes == *credential_bytes);
     let read = reopened.begin_request_before(
         ServiceRequest {
             method: "GET",
@@ -2962,7 +2963,7 @@ fn namespace109_authenticated_seal_same_generation_ciphertext_install_is_rejecte
     proof
         .validate(f.service.state.as_ref(), identity, &f.service.ha)
         .map_err(|_| "unchanged complete proof remains valid")?;
-    assert!(&*owner_store::serialize_owner(proof.closed_state())? == &*proof_bytes);
+    assert!(*owner_store::serialize_owner(proof.closed_state())? == *proof_bytes);
     assert!(
         f.service
             .current_state_identity()
@@ -2973,7 +2974,7 @@ fn namespace109_authenticated_seal_same_generation_ciphertext_install_is_rejecte
         f.service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
-    assert!(&*current_published_physical_bytes(&f.service)? == &*current_bytes);
+    assert!(*current_published_physical_bytes(&f.service)? == *current_bytes);
     assert_original_sdk_and_storage(
         f.service.state.as_ref().ok_or("preserved SDK")?,
         &f.logical,
@@ -3034,7 +3035,7 @@ fn namespace109_authenticated_seal_rejects_preserved_header_same_generation_reso
         f.service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
-    assert!(&*current_published_physical_bytes(&f.service)? == &*current_bytes);
+    assert!(*current_published_physical_bytes(&f.service)? == *current_bytes);
     assert_original_sdk_and_storage(
         f.service.state.as_ref().ok_or("original SDK")?,
         &f.logical,
@@ -3128,7 +3129,7 @@ fn namespace109_authenticated_seal_rejects_original_captured_deadline_after_proo
     assert!(f.service.namespace_runtime.is_loaded(NS));
     assert!(actual.namespaces.deletions == jobs);
     let actual_bytes = current_published_physical_bytes(&f.service)?;
-    assert!(&*actual_bytes == &*owner_bytes);
+    assert!(*actual_bytes == *owner_bytes);
     assert_original_sdk_and_storage(actual, &f.logical, &f.credential)?;
     assert!(
         f.service.pending_sdk_request.is_none() && f.service.pending_sdk_auth_request.is_none()
@@ -3205,7 +3206,7 @@ fn namespace109_public_tainted_seal400_preserves_full_sdk_jobs_owner_slots_and_d
         );
         let current = f.service.state.as_ref().ok_or("actual preserved state")?;
         let after = owner_store::serialize_owner(current)?;
-        assert!(&*after == &*full);
+        assert!(*after == *full);
         assert!(
             f.service
                 .current_state_identity()
@@ -3282,7 +3283,7 @@ fn namespace109_ordinary_unseal_keeps_primary_nonempty400_and_emptykey500_withou
             .as_ref()
             .ok_or("actual unchanged inherited graph")?;
         let after = owner_store::serialize_owner(current)?;
-        assert!(&*after == &*full);
+        assert!(*after == *full);
         assert!(
             f.service
                 .current_state_identity()
@@ -3862,7 +3863,7 @@ fn model_late_ack114_mode(
         assert!(
             rejected_bytes
                 .as_ref()
-                .is_some_and(|before| &**before == &*after)
+                .is_some_and(|before| **before == *after)
         );
         assert!(
             rejected_identity
@@ -4005,7 +4006,7 @@ fn model_late_ack114_mode(
         crate::secret_serde::to_vec(&expected_logical, 512 * 1024)
             .map_err(|_| "complete original revoked logical bytes")?,
     );
-    assert!(&*actual_bytes == &*expected_bytes);
+    assert!(*actual_bytes == *expected_bytes);
     let actual_bytes = Zeroizing::new(
         crate::secret_serde::to_vec(&actual_credential, 512 * 1024)
             .map_err(|_| "complete actual reopened credential bytes")?,
@@ -4014,7 +4015,7 @@ fn model_late_ack114_mode(
         crate::secret_serde::to_vec(&expected_credential, 512 * 1024)
             .map_err(|_| "complete original revoked credential bytes")?,
     );
-    assert!(&*actual_bytes == &*expected_bytes);
+    assert!(*actual_bytes == *expected_bytes);
     assert!(actual_logical.registration.is_some() && actual_credential.registration.is_some());
     if failure.is_some() {
         assert!(
@@ -4323,7 +4324,7 @@ fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_reje
         crate::secret_serde::to_vec(&expected, 512 * 1024)
             .map_err(|_| "original complete retained logical bytes")?,
     );
-    assert!(&*actual == &*expected);
+    assert!(*actual == *expected);
     state
         .validate_format()
         .map_err(|_| "actual complete reopened graph")?;
@@ -4606,7 +4607,7 @@ fn model_retirement_late_ack114(independent: bool) -> TestResult {
             .map_err(|_| "complete revoked original bytes")?,
     );
     assert!(
-        &*actual_bytes == &*expected_bytes
+        *actual_bytes == *expected_bytes
             && actual.callback().is_null()
             && actual.response_data().is_null()
     );
@@ -4624,7 +4625,7 @@ fn model_retirement_late_ack114(independent: bool) -> TestResult {
         crate::secret_serde::to_vec(&expected_sibling, 512 * 1024)
             .map_err(|_| "complete original sibling bytes")?,
     );
-    assert!(&*actual_bytes == &*expected_bytes && !actual_sibling.callback().is_null());
+    assert!(*actual_bytes == *expected_bytes && !actual_sibling.callback().is_null());
     assert!(
         state
             .auth

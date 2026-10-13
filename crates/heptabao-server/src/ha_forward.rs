@@ -897,15 +897,13 @@ fn decode_framed_response_for_cluster(
     }
     if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) =
         response.unwrapped_json
-    {
-        if response.raw_wrapped_reply.is_some()
+        && (response.raw_wrapped_reply.is_some()
             || response.body != crate::workflow_runtime::FailedOutput::logical()
             || serde_json::to_vec(&response.body).is_err()
             || serde_json::to_vec(&response.body)
-                .is_ok_and(|bytes| crate::crypto::digest(&bytes) != logical_digest)
-        {
-            return Err("HA workflow serialization failure projection differs".into());
-        }
+                .is_ok_and(|bytes| crate::crypto::digest(&bytes) != logical_digest))
+    {
+        return Err("HA workflow serialization failure projection differs".into());
     }
     validate_direction(response.source, response.target)?;
     validate_cluster_id(&response.cluster_id)?;

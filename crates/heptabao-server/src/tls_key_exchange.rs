@@ -213,7 +213,7 @@ impl ActiveKeyExchange for P521Active {
         // Enforce TLS's uncompressed encoding before the SDK's real on-curve
         // and subgroup validation. The consumed private key cannot be reused.
         let peer = agreement::UnparsedPublicKey::new(&agreement::ECDH_P521, peer);
-        agreement::agree_ephemeral(self.private, &peer, invalid_share(), |secret| {
+        agreement::agree_ephemeral(self.private, peer, invalid_share(), |secret| {
             Ok(SharedSecret::from(secret))
         })
     }

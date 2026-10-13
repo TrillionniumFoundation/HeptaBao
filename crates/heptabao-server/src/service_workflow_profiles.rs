@@ -737,74 +737,6 @@ impl Service {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    const PROFILE: &str = r#"flow "controlled" {
-      request "write" { operation = "update" path = "secret/data/cg/workflow"
-        data = { data = { value = "after" } } }
-    }
-    output { data = { marker = "controlled-workflow-completed"
-      wrapping = { eval_source = "response" eval_type = "interface{}"
-        flow_name = "controlled" response_name = "write" field_selector = ["wrap_info"] } } }"#;
-    #[test]
-    fn hcl_profile_bounds_sources_and_unknown_expressions_are_checked() {
-        let profile = Profile {
-            document: PROFILE.into(),
-            description: "synthetic".into(),
-            cas_required: false,
-        };
-        let compiled = profile
-            .compile()
-            .unwrap_or_else(|_| panic!("actual static HCL shape"));
-        assert_eq!(compiled.steps.len(), 1);
-        assert_eq!(compiled.steps[0].method, "POST");
-        assert_eq!(compiled.steps[0].body, json!({"data":{"value":"after"}}));
-        let responses = BTreeMap::from([(
-            "controlled/write".into(),
-            json!({"wrap_info":{"ttl":60,"token":"synthetic"}}),
-        )]);
-        assert_eq!(
-            evaluate_output(&compiled.output, &responses)
-                .unwrap_or_else(|_| panic!("response mapping")),
-            json!({"marker":"controlled-workflow-completed","wrapping":{"ttl":60,"token":"synthetic"}})
-        );
-        for text in [
-            PROFILE.replace("eval_source = \"response\"", "eval_source = \"cel\""),
-            PROFILE.replace("response_name = \"write\"", "response_name = \"missing\""),
-            PROFILE.replace("operation = \"update\"", "operation = \"sudo\""),
-            PROFILE.replace("data = { data", "unknown = { data"),
-            format!("{PROFILE}\noutput {{ data = {{}} }}"),
-            format!(
-                "flow \"deep\" {{ request \"x\" {{ operation=\"read\" path=\"secret/a\" data={} }} }}",
-                "[".repeat(80)
-            ),
-        ] {
-            assert!(
-                Profile {
-                    document: text,
-                    description: String::new(),
-                    cas_required: false
-                }
-                .compile()
-                .is_err()
-            );
-        }
-        let mut unknown = serde_json::to_value(profile).expect("encode");
-        unknown["extra"] = json!(true);
-        assert!(serde_json::from_value::<Profile>(unknown).is_err());
-        assert!(
-            Profile {
-                document: "x".repeat(MAX_PROFILE_BYTES + 1),
-                description: String::new(),
-                cas_required: false
-            }
-            .compile()
-            .is_err()
-        );
-    }
-}
-
 #[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 pub(super) fn logical_first_step_fixture(
     profile: &Profile,
@@ -834,4 +766,71 @@ pub(super) fn logical_first_step_fixture(
         allow_failure: resolved.step.allow_failure,
     };
     Ok((step, resolved.data_frame.take()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    const PROFILE: &str = r#"flow "controlled" {
+      request "write" { operation = "update" path = "secret/data/cg/workflow"
+        data = { data = { value = "after" } } }
+    }
+    output { data = { marker = "controlled-workflow-completed"
+      wrapping = { eval_source = "response" eval_type = "interface{}"
+        flow_name = "controlled" response_name = "write" field_selector = ["wrap_info"] } } }"#;
+    #[test]
+    fn hcl_profile_bounds_sources_and_unknown_expressions_are_checked()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let profile = Profile {
+            document: PROFILE.into(),
+            description: "synthetic".into(),
+            cas_required: false,
+        };
+        let compiled = profile.compile().map_err(|_| "actual static HCL shape")?;
+        assert_eq!(compiled.steps.len(), 1);
+        assert_eq!(compiled.steps[0].method, "POST");
+        assert_eq!(compiled.steps[0].body, json!({"data":{"value":"after"}}));
+        let responses = BTreeMap::from([(
+            "controlled/write".into(),
+            json!({"wrap_info":{"ttl":60,"token":"synthetic"}}),
+        )]);
+        assert_eq!(
+            evaluate_output(&compiled.output, &responses).map_err(|_| "response mapping")?,
+            json!({"marker":"controlled-workflow-completed","wrapping":{"ttl":60,"token":"synthetic"}})
+        );
+        for text in [
+            PROFILE.replace("eval_source = \"response\"", "eval_source = \"cel\""),
+            PROFILE.replace("response_name = \"write\"", "response_name = \"missing\""),
+            PROFILE.replace("operation = \"update\"", "operation = \"sudo\""),
+            PROFILE.replace("data = { data", "unknown = { data"),
+            format!("{PROFILE}\noutput {{ data = {{}} }}"),
+            format!(
+                "flow \"deep\" {{ request \"x\" {{ operation=\"read\" path=\"secret/a\" data={} }} }}",
+                "[".repeat(80)
+            ),
+        ] {
+            assert!(
+                Profile {
+                    document: text,
+                    description: String::new(),
+                    cas_required: false
+                }
+                .compile()
+                .is_err()
+            );
+        }
+        let mut unknown = serde_json::to_value(profile)?;
+        unknown["extra"] = json!(true);
+        assert!(serde_json::from_value::<Profile>(unknown).is_err());
+        assert!(
+            Profile {
+                document: "x".repeat(MAX_PROFILE_BYTES + 1),
+                description: String::new(),
+                cas_required: false
+            }
+            .compile()
+            .is_err()
+        );
+        Ok(())
+    }
 }

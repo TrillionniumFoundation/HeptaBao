@@ -42,6 +42,12 @@ impl WorkflowOutputFailure {
     }
 }
 pub(crate) struct UnwrappedJson {
+    // Keep private response authority affine without embedding every optional
+    // projection in ordinary Response errors. Dropping the box still runs each
+    // secret owner's existing zeroizing destructor.
+    state: Box<UnwrappedJsonState>,
+}
+struct UnwrappedJsonState {
     // Keep the secret-bearing owner affine without inflating every Response result.
     // Box destruction still runs StoredWrappedReply's zeroizing destructor.
     stored_reply: Option<Box<StoredWrappedReply>>,
@@ -57,15 +63,17 @@ impl UnwrappedJson {
         value: crate::workflow_runtime::FailedOutput,
     ) -> Self {
         Self {
-            stored_reply: None,
-            selected_json_http: None,
-            selected_response: None,
-            workflow_output_failure: Some(WorkflowOutputFailure::Local(Box::new(value))),
-            workflow_failure_audited: false,
+            state: Box::new(UnwrappedJsonState {
+                stored_reply: None,
+                selected_json_http: None,
+                selected_response: None,
+                workflow_output_failure: Some(WorkflowOutputFailure::Local(Box::new(value))),
+                workflow_failure_audited: false,
+            }),
         }
     }
     pub(crate) fn workflow_value(&self) -> Option<&crate::workflow_runtime::Value> {
-        match &self.workflow_output_failure {
+        match &self.state.workflow_output_failure {
             Some(WorkflowOutputFailure::Local(value)) => Some(value.value()),
             _ => None,
         }
@@ -74,8 +82,8 @@ impl UnwrappedJson {
         &self,
         logical: &Value,
     ) -> Result<crate::ha_forward::UnwrapFramingWire, AuthError> {
-        if let Some(value) = &self.workflow_output_failure {
-            if self.stored_reply.is_some() || !value.matches(logical) {
+        if let Some(value) = &self.state.workflow_output_failure {
+            if self.state.stored_reply.is_some() || !value.matches(logical) {
                 return Err(bad("workflow private output projection differs"));
             }
             let (output_digest, logical_digest) = value.digests();
@@ -84,7 +92,7 @@ impl UnwrappedJson {
                 logical_digest,
             });
         }
-        if let Some(stored) = &self.stored_reply {
+        if let Some(stored) = &self.state.stored_reply {
             stored.validate(logical)?;
         }
         Ok(crate::ha_forward::UnwrapFramingWire::StoredJson)
@@ -102,11 +110,13 @@ impl UnwrappedJson {
             return Err(bad("SSH public key native projection rejected"));
         }
         Ok(Self {
-            stored_reply: Some(Box::new(stored)),
-            selected_json_http: None,
-            selected_response: None,
-            workflow_output_failure: None,
-            workflow_failure_audited: false,
+            state: Box::new(UnwrappedJsonState {
+                stored_reply: Some(Box::new(stored)),
+                selected_json_http: None,
+                selected_response: None,
+                workflow_output_failure: None,
+                workflow_failure_audited: false,
+            }),
         })
     }
     pub(crate) fn from_completed_raw_forward(
@@ -142,27 +152,30 @@ impl UnwrappedJson {
             _ => None,
         };
         Ok(Self {
-            stored_reply: response.raw_wrapped_reply.clone().map(Box::new),
-            selected_json_http: None,
-            selected_response: None,
-            workflow_output_failure,
-            workflow_failure_audited: false,
+            state: Box::new(UnwrappedJsonState {
+                stored_reply: response.raw_wrapped_reply.clone().map(Box::new),
+                selected_json_http: None,
+                selected_response: None,
+                workflow_output_failure,
+                workflow_failure_audited: false,
+            }),
         })
     }
     pub(crate) fn has_native_http_projection(&self) -> bool {
-        self.has_stored_reply() || self.workflow_output_failure.is_some()
+        self.has_stored_reply() || self.state.workflow_output_failure.is_some()
     }
     pub(crate) fn has_stored_reply(&self) -> bool {
-        self.stored_reply.is_some()
+        self.state.stored_reply.is_some()
     }
     pub(crate) fn stored_reply(&self) -> Option<&StoredWrappedReply> {
-        self.stored_reply.as_deref()
+        self.state.stored_reply.as_deref()
     }
     pub(crate) fn raw_error_header(
         &self,
         logical: &Value,
     ) -> Result<Option<&'static str>, AuthError> {
-        self.stored_reply
+        self.state
+            .stored_reply
             .as_ref()
             .map(|stored| stored.raw_error_header(logical))
             .transpose()
@@ -172,13 +185,14 @@ impl UnwrappedJson {
         &'a self,
         logical: &Value,
     ) -> Result<Option<(u16, &'a str)>, AuthError> {
-        if let Some(value) = &self.workflow_output_failure {
+        if let Some(value) = &self.state.workflow_output_failure {
             if !value.matches(logical) {
                 return Err(bad("workflow private output projection differs"));
             }
             return Ok(Some((200, "application/json")));
         }
-        self.stored_reply
+        self.state
+            .stored_reply
             .as_ref()
             .map(|stored| stored.raw_http_transport(logical))
             .transpose()
@@ -188,8 +202,8 @@ impl UnwrappedJson {
         &mut self,
         logical: &Value,
     ) -> Result<Option<Zeroizing<Vec<u8>>>, AuthError> {
-        if let Some(value) = &self.workflow_output_failure {
-            if !value.matches(logical) || self.workflow_failure_audited {
+        if let Some(value) = &self.state.workflow_output_failure {
+            if !value.matches(logical) || self.state.workflow_failure_audited {
                 return Err(bad("workflow output mandatory audit projection differs"));
             }
             let binding = match value {
@@ -208,13 +222,13 @@ impl UnwrappedJson {
                     .map_err(|_| bad("workflow output audit binding unavailable"))?,
                 ),
             };
-            self.workflow_failure_audited = true;
+            self.state.workflow_failure_audited = true;
             return Ok(Some(binding));
         }
-        let Some(stored) = &self.stored_reply else {
+        let Some(stored) = &self.state.stored_reply else {
             return Ok(None);
         };
-        if self.selected_response.is_some() {
+        if self.state.selected_response.is_some() {
             return Err(bad(
                 "selected response mandatory audit was already prepared",
             ));
@@ -223,7 +237,7 @@ impl UnwrappedJson {
             return Ok(None);
         };
         let binding = prepared.audit_binding()?;
-        self.selected_response = Some(Box::new(prepared));
+        self.state.selected_response = Some(Box::new(prepared));
         Ok(Some(binding))
     }
     pub(crate) fn bind_selected_http_ingress(
@@ -231,48 +245,51 @@ impl UnwrappedJson {
         logical: &Value,
         actual_ingress: &[u8; 16],
     ) -> Result<(), AuthError> {
-        if self.selected_json_http.is_some() {
+        if self.state.selected_json_http.is_some() {
             return Err(bad("selected JSON ingress was already bound"));
         }
-        if let Some(value) = &self.workflow_output_failure {
-            if !value.matches(logical) || !self.workflow_failure_audited {
+        if let Some(value) = &self.state.workflow_output_failure {
+            if !value.matches(logical) || !self.state.workflow_failure_audited {
                 return Err(bad("workflow output lacks mandatory audited ingress"));
             }
             // Existing HTTP boundary supplies the actual ingress. The private
             // native producer owns zero bytes after failed JSON serialization.
             let _ = actual_ingress;
-            self.selected_json_http = Some(Zeroizing::new(Vec::new()));
+            self.state.selected_json_http = Some(Zeroizing::new(Vec::new()));
             return Ok(());
         }
-        if let Some(stored) = &self.stored_reply {
-            if stored.uses_selected_json_ingress() {
-                let prepared = self.selected_response.as_deref().ok_or_else(|| {
+        if let Some(stored) = &self.state.stored_reply
+            && stored.uses_selected_json_ingress()
+        {
+            let prepared =
+                self.state.selected_response.as_deref().ok_or_else(|| {
                     bad("selected JSON lacks mandatory response audit projection")
                 })?;
-                self.selected_json_http =
-                    stored.selected_json_for_ingress(logical, actual_ingress, prepared)?;
-            }
+            self.state.selected_json_http =
+                stored.selected_json_for_ingress(logical, actual_ingress, prepared)?;
         }
         Ok(())
     }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
-        if let Some(value) = &self.workflow_output_failure {
-            if !value.matches(logical) || !self.workflow_failure_audited {
+        if let Some(value) = &self.state.workflow_output_failure {
+            if !value.matches(logical) || !self.state.workflow_failure_audited {
                 return Err(bad("workflow output lacks mandatory audit"));
             }
             return self
+                .state
                 .selected_json_http
                 .as_deref()
                 .map(Vec::as_slice)
                 .map(Some)
                 .ok_or_else(|| bad("workflow output lacks actual HTTP ingress"));
         }
-        let Some(stored) = &self.stored_reply else {
+        let Some(stored) = &self.state.stored_reply else {
             return Ok(None);
         };
         stored.validate(logical)?;
         if stored.uses_selected_json_ingress() {
             return self
+                .state
                 .selected_json_http
                 .as_deref()
                 .map(Vec::as_slice)
@@ -815,11 +832,13 @@ impl AuthState {
         }
         Ok(AuthResponse {
             unwrapped_json: Some(UnwrappedJson {
-                selected_json_http: None,
-                selected_response: None,
-                workflow_output_failure: None,
-                workflow_failure_audited: false,
-                stored_reply: wrapped.stored_reply.clone().map(Box::new),
+                state: Box::new(UnwrappedJsonState {
+                    selected_json_http: None,
+                    selected_response: None,
+                    workflow_output_failure: None,
+                    workflow_failure_audited: false,
+                    stored_reply: wrapped.stored_reply.clone().map(Box::new),
+                }),
             }),
             approle_secret_consumption: None,
             pending_batch: None,

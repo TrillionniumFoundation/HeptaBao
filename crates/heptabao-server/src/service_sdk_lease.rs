@@ -739,16 +739,15 @@ impl Service {
             if !warnings.is_null() {
                 body["warnings"] = std::mem::take(&mut warnings.0);
             }
-            if let Some(wrapping) = &plan.wrapping {
-                if status == 200 {
-                    let wrap_at = expiry::precise(&authority, &state)?;
-                    let wrapped =
-                        wrapping.apply(&mut state.auth, &plan.namespace, &body, wrap_at)?;
-                    erase_json(&mut body);
-                    body.0 = wrapped;
-                    headers.clear();
-                    changed = true;
-                }
+            if let Some(wrapping) = &plan.wrapping
+                && status == 200
+            {
+                let wrap_at = expiry::precise(&authority, &state)?;
+                let wrapped = wrapping.apply(&mut state.auth, &plan.namespace, &body, wrap_at)?;
+                erase_json(&mut body);
+                body.0 = wrapped;
+                headers.clear();
+                changed = true;
             }
             if changed && private_view.is_some() {
                 let view = private_view

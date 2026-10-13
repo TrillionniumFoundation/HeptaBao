@@ -7,7 +7,7 @@
 use crate::state_records::{Kv1Key, RecordError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
 pub(crate) const FORMAT: &str = "heptabao-kv2-typed-record-trial-v6";
 const MOUNT_DOMAIN: &str = "@heptabao-kv2-v6/";
@@ -19,13 +19,21 @@ const MOUNT_DOMAIN: &str = "@heptabao-kv2-v6/";
 // need version-granular storage before V6 can replace production KV2.
 pub(crate) const MAX_CELL: usize = 4 * 1024 * 1024;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Scope {
     pub(crate) namespace: String,
     pub(crate) mount: String,
     pub(crate) incarnation: u64,
     pub(crate) path: String,
+}
+impl Zeroize for Scope {
+    fn zeroize(&mut self) {
+        self.namespace.zeroize();
+        self.mount.zeroize();
+        self.incarnation.zeroize();
+        self.path.zeroize();
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -35,6 +43,29 @@ pub(crate) struct Cell {
     pub(crate) scope: Scope,
     pub(crate) version: u64,
     pub(crate) entry: Value,
+}
+impl Drop for Cell {
+    fn drop(&mut self) {
+        crate::service::erase_json(&mut self.entry);
+        self.scope.zeroize();
+        self.format.zeroize();
+    }
+}
+impl Cell {
+    pub(crate) fn into_parts(mut self) -> (Scope, u64, Value) {
+        (
+            std::mem::take(&mut self.scope),
+            self.version,
+            std::mem::take(&mut self.entry),
+        )
+    }
+}
+
+fn canonical_bytes(cell: &Cell) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+    crate::secret_serde::to_vec(cell, MAX_CELL).map_err(|error| match error {
+        crate::secret_serde::Error::TooLarge => RecordError::TooLarge,
+        crate::secret_serde::Error::Serialization => RecordError::Invalid,
+    })
 }
 
 pub(crate) fn key(scope: &Scope) -> Result<Kv1Key, RecordError> {
@@ -59,21 +90,17 @@ pub(crate) fn encode(
     version: u64,
     entry: Value,
 ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-    if version == 0 || !entry.is_object() {
-        return Err(RecordError::Invalid);
-    }
-    key(&scope)?;
-    let bytes = serde_json::to_vec(&Cell {
+    let cell = Cell {
         format: FORMAT.into(),
         scope,
         version,
         entry,
-    })
-    .map_err(|_| RecordError::Invalid)?;
-    if bytes.len() > MAX_CELL {
-        return Err(RecordError::TooLarge);
+    };
+    if version == 0 || !cell.entry.is_object() {
+        return Err(RecordError::Invalid);
     }
-    Ok(Zeroizing::new(bytes))
+    key(&cell.scope)?;
+    canonical_bytes(&cell)
 }
 
 // The KV2 API carries RFC3339 times; an empty deletion_time means no
@@ -157,10 +184,8 @@ pub(crate) fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordErro
         || !current_entry
         || !canonical_history
         || !cell.entry.is_object()
-        || key(&cell.scope)
-            .as_ref()
-            .map_or(true, |actual| actual != expected)
-        || serde_json::to_vec(&cell)
+        || key(&cell.scope).as_ref() != Ok(expected)
+        || canonical_bytes(&cell)
             .map_err(|_| RecordError::Corrupt)?
             .as_slice()
             != bytes

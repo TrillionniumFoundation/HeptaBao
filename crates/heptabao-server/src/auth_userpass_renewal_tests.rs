@@ -539,7 +539,8 @@ fn userpass_configured_policies_do_not_store_or_remove_the_tokens_implicit_defau
 }
 
 #[test]
-fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_reconstructed() {
+fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_reconstructed()
+-> Result<(), Box<dyn std::error::Error>> {
     let (mut state, root) = configured("staff");
     write(
         &mut state,
@@ -580,7 +581,7 @@ fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_rec
         ..
     }) = &mut old.tokens.get_mut(&id).unwrap().auth_provenance
     else {
-        panic!("actual native Userpass owner")
+        return Err("actual native Userpass owner".into());
     };
     *issued_creation_ttl = None;
     old.userpass_issuance_floor = None;
@@ -616,7 +617,7 @@ fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_rec
         ..
     }) = &mut wrong.tokens.get_mut(&id).unwrap().auth_provenance
     else {
-        panic!("actual native Userpass owner")
+        return Err("actual native Userpass owner".into());
     };
     *issued_creation_ttl = Some(19);
     assert!(
@@ -637,4 +638,5 @@ fn userpass132_original_grant_survives_live_renewal_and_legacy_none_is_never_rec
             .validate_userpass_issuance_state(Some(&previous))
             .is_err()
     );
+    Ok(())
 }

@@ -1053,6 +1053,12 @@ fn sdk_natural(object: &serde_json::Map<String, Value>, name: &str) -> Result<u6
             .ok_or_else(|| bad("SDK Auth nonnegative integer field required")),
     }
 }
+impl TokenOrigin {
+    pub(super) fn has_lossless_json_state(&self) -> bool {
+        heptabao_domain::json::requires_lossless_format(&self.internal_data)
+    }
+}
+
 #[cfg(test)]
 mod sdk_auth100_tests {
     use super::*;
@@ -1387,11 +1393,5 @@ mod sdk_auth100_tests {
             assert!(serde_json::from_slice::<TokenAuthProvenance>(invalid).is_err());
         }
         Ok(())
-    }
-}
-
-impl TokenOrigin {
-    pub(super) fn has_lossless_json_state(&self) -> bool {
-        heptabao_domain::json::requires_lossless_format(&self.internal_data)
     }
 }

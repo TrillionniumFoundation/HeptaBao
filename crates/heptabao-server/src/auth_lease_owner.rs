@@ -25,7 +25,7 @@ pub(crate) enum ServiceOwnerProfile {
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub(crate) enum LeaseOwner {
     ServiceToken(ServiceOwner),
-    BatchClaims(BatchLeaseClaims),
+    BatchClaims(Box<BatchLeaseClaims>),
 }
 
 /// No public field or constructor: new service owners must validate a digest;
@@ -211,7 +211,7 @@ impl LeaseOwner {
         Ok(Self::ServiceToken(ServiceOwner(digest.to_owned())))
     }
     pub(crate) fn from_batch(claims: &VerifiedBatchClaims) -> Self {
-        Self::BatchClaims(BatchLeaseClaims::from_verified(claims))
+        Self::BatchClaims(Box::new(BatchLeaseClaims::from_verified(claims)))
     }
     pub(crate) fn service_digest(&self) -> Option<&str> {
         match self {
@@ -299,6 +299,7 @@ impl<'de> Deserialize<'de> for LeaseOwner {
             fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
                 // No untagged fallback and no buffering through serde_json::Value.
                 BatchLeaseClaims::deserialize(de::value::MapAccessDeserializer::new(map))
+                    .map(Box::new)
                     .map(LeaseOwner::BatchClaims)
             }
         }

@@ -165,7 +165,7 @@ fn digest(s: &str) -> Result<[u8; 32], String> {
     if s.len() != 64
         || !s
             .bytes()
-            .all(|b| b.is_ascii_digit() || b'a' <= b && b <= b'f')
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
     {
         return Err("invalid genuine KMS SHA256".into());
     }

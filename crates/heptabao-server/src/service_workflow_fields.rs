@@ -1,7 +1,6 @@
 //! Public SDK2.7 FieldData coercions, bounded before any workflow effects.
 //! Input remains data: the original raw parameter ACL and live actor own authorization.
 use super::*;
-use base64::Engine as _;
 use chrono::{Datelike, Timelike};
 
 fn invalid() -> Response {

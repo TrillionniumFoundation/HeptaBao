@@ -581,6 +581,39 @@ fn parse_url(url: &str) -> Result<Value> {
     Ok(std::mem::take(&mut params.0))
 }
 
+/// Enrollment rendering is independent of validation/replay ownership.
+pub(crate) fn mfa_totp_enrollment(
+    secret: &[u8],
+    issuer: &str,
+    account: &str,
+    algorithm: &str,
+    digits: u32,
+    period: u64,
+    qr_size: u32,
+) -> Result<(Zeroizing<String>, Zeroizing<String>)> {
+    if secret.is_empty() || period == 0 || qr_size > 4096 || !matches!(digits, 6 | 8) {
+        return Err(bad("invalid TOTP enrollment parameters"));
+    }
+    hmac_algorithm(algorithm)?;
+    let encoded = Zeroizing::new(encode_base32(secret));
+    let url = Zeroizing::new(format!(
+        "otpauth://totp/{}:{}?algorithm={}&digits={}&issuer={}&period={}&secret={}",
+        percent_encode(issuer),
+        percent_encode(account),
+        algorithm,
+        digits,
+        percent_encode(issuer),
+        period,
+        encoded.as_str(),
+    ));
+    let barcode = if qr_size == 0 {
+        String::new()
+    } else {
+        Totp::generate_barcode(&url, qr_size)?
+    };
+    Ok((url, Zeroizing::new(barcode)))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -641,37 +674,4 @@ mod tests {
         }
         Ok(())
     }
-}
-
-/// Enrollment rendering is independent of validation/replay ownership.
-pub(crate) fn mfa_totp_enrollment(
-    secret: &[u8],
-    issuer: &str,
-    account: &str,
-    algorithm: &str,
-    digits: u32,
-    period: u64,
-    qr_size: u32,
-) -> Result<(Zeroizing<String>, Zeroizing<String>)> {
-    if secret.is_empty() || period == 0 || qr_size > 4096 || !matches!(digits, 6 | 8) {
-        return Err(bad("invalid TOTP enrollment parameters"));
-    }
-    hmac_algorithm(algorithm)?;
-    let encoded = Zeroizing::new(encode_base32(secret));
-    let url = Zeroizing::new(format!(
-        "otpauth://totp/{}:{}?algorithm={}&digits={}&issuer={}&period={}&secret={}",
-        percent_encode(issuer),
-        percent_encode(account),
-        algorithm,
-        digits,
-        percent_encode(issuer),
-        period,
-        encoded.as_str(),
-    ));
-    let barcode = if qr_size == 0 {
-        String::new()
-    } else {
-        Totp::generate_barcode(&url, qr_size)?
-    };
-    Ok((url, Zeroizing::new(barcode)))
 }

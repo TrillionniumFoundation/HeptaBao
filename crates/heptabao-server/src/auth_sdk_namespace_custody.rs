@@ -312,8 +312,8 @@ impl AuthState {
             ));
         }
         let parcel = owned.detach_sdk_namespace(actual)?;
-        if let Some(parcel) = &parcel {
-            if parcel.namespace_owner.incarnation() != binding.incarnation()
+        if let Some(parcel) = &parcel
+            && (parcel.namespace_owner.incarnation() != binding.incarnation()
                 || parcel
                     .retirements
                     .as_ref()
@@ -325,13 +325,12 @@ impl AuthState {
                         record.stage(),
                         namespace_sdk_cleanup::Stage::Terminal { .. }
                     )
-                })
-            {
-                return Err(err(
-                    503,
-                    "namespace terminal SDK history lacks actual completion",
-                ));
-            }
+                }))
+        {
+            return Err(err(
+                503,
+                "namespace terminal SDK history lacks actual completion",
+            ));
         }
         self.attach_sdk_namespace(actual, parcel)
     }

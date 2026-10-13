@@ -332,7 +332,7 @@ impl TrialDisk {
     // fencing or an authorization path for production KV2.
     fn authenticated_root(&self, key: &AddressKey) -> Result<TrialRootEnvelope, RecordError> {
         #[cfg(unix)]
-        let mut source = {
+        let source = {
             use rustix::fs::{Mode, OFlags, openat};
             let root = self.open_root_dir()?;
             let descriptor = openat(
@@ -354,7 +354,7 @@ impl TrialDisk {
             file
         };
         #[cfg(not(unix))]
-        let mut source = Self::open_private_regular(&self.manifest_path())?;
+        let source = Self::open_private_regular(&self.manifest_path())?;
         if source.metadata().map_err(|_| RecordError::Corrupt)?.len()
             > crate::state_record_root::MAX_ROOT_BYTES as u64
         {
@@ -593,12 +593,12 @@ impl TrialDisk {
 impl RecordReader for TrialDisk {
     fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
         #[cfg(unix)]
-        let mut source = {
+        let source = {
             let directory = self.open_objects_dir()?;
             self.open_object_at(&directory, &reference.id, false)?
         };
         #[cfg(not(unix))]
-        let mut source = TrialDisk::open_private_regular(&self.object_path(&reference.id))?;
+        let source = TrialDisk::open_private_regular(&self.object_path(&reference.id))?;
         let metadata = source.metadata().map_err(|_| RecordError::Corrupt)?;
         if !metadata.is_file() || metadata.len() != u64::from(reference.encoded_bytes) {
             return Err(RecordError::Corrupt);
@@ -1492,12 +1492,11 @@ fn kv2_v6_disk_trial_generation_cannot_erase_or_regress_committed_records()
     // publishes exactly once after the negative cases.
     let mut next = committed;
     let mut next_objects = LocalObjects(BTreeMap::new());
-    let prior = decode(&protected, &first)?;
-    let mut updated_entry = prior.entry;
+    let (prior_scope, _, mut updated_entry) = decode(&protected, &first)?.into_parts();
     updated_entry["current_version"] = json!(4);
     updated_entry["versions"]["4"] =
         json!({"data":{"payload":"updated".repeat(150)},"destroyed":false});
-    let updated = encode(prior.scope, 4, updated_entry)?;
+    let updated = encode(prior_scope, 4, updated_entry)?;
     stage(
         &mut next,
         &mut next_objects,

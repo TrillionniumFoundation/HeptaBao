@@ -3197,7 +3197,7 @@ mod tests {
         let value = "R".repeat(768 * 1024);
         let encoded = serde_json::to_vec(&json!({"data":{"payload":value}}))?;
         assert!(encoded.len() > 512 * 1024 && encoded.len() <= MAX_BODY);
-        assert!(MAX_413_DRAIN_BODY_BYTES > MAX_BODY);
+        const { assert!(MAX_413_DRAIN_BODY_BYTES > MAX_BODY) };
         let mut wire = format!(
             "POST /v1/secret/data/768k HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
             encoded.len()
@@ -3422,7 +3422,7 @@ mod tests {
     }
 
     #[test]
-    fn oversized_json_413_drains_only_bounded_unambiguous_framing() {
+    fn oversized_json_413_drains_only_bounded_unambiguous_framing() -> io::Result<()> {
         for count in [
             MAX_KV2_JSON_WRITE_BODY + 1,
             MAX_KV2_JSON_WRITE_BODY + 64 * 1024,
@@ -3436,7 +3436,7 @@ mod tests {
             let mut reader = wire.as_slice();
             let err = read_request_mode(&mut reader, Duration::from_secs(3), false)
                 .err()
-                .expect("oversized body must not enter service");
+                .ok_or_else(|| io::Error::other("oversized body must not enter service"))?;
             assert_eq!(err.status, 413);
             assert!(
                 reader.is_empty(),
@@ -3451,7 +3451,7 @@ mod tests {
         let mut reader = wire.as_slice();
         let err = read_request_mode(&mut reader, Duration::from_secs(3), false)
             .err()
-            .expect("oversized body must be rejected");
+            .ok_or_else(|| io::Error::other("oversized body must be rejected"))?;
         assert_eq!(err.status, 413);
         assert!(!reader.is_empty(), "large bodies must not be fully drained");
 
@@ -3459,10 +3459,11 @@ mod tests {
         let mut invalid = b"POST /v1/secret/data/denied HTTP/1.1\r\nHost: localhost\r\nContent-Length: 400000\r\nTransfer-Encoding: chunked\r\n\r\nbody".as_slice();
         let error = read_request_mode(&mut invalid, Duration::from_secs(1), false)
             .err()
-            .expect("ambiguous framing rejected");
+            .ok_or_else(|| io::Error::other("ambiguous framing rejected"))?;
         assert_eq!(error.status, 400);
         // The bounded header read may already contain the short trailing body.
         // The framing itself must be rejected before parsing any JSON.
+        Ok(())
     }
 
     #[test]

@@ -288,16 +288,16 @@ impl Service {
             .as_ref()
             .ok_or_else(|| Response::error(503, "SDK private namespace cleanup task absent"))?;
         work.check_private_graph(self, view)?;
-        view.matches_origin(
-            &value.record.namespace,
-            value.namespace_incarnation,
-            &value.cluster,
-            &value.activation,
-            &value.ha,
-            &value.binding,
-            value.clock,
-            value.deadline,
-        )?;
+        view.matches_origin(namespace_sdk_cleanup::CapturedOrigin {
+            namespace: &value.record.namespace,
+            incarnation: value.namespace_incarnation,
+            cluster: &value.cluster,
+            activation: &value.activation,
+            ha: &value.ha,
+            delivery: &value.binding,
+            clock: value.clock,
+            deadline: value.deadline,
+        })?;
         let current = view
             .state()
             .engines

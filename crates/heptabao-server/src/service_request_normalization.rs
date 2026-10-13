@@ -103,10 +103,7 @@ pub(super) fn operation_with_owner(
                 return Err(Response::error(400, "invalid request-local GET carrier"));
             };
             let actual_kv = owner.is_some_and(|owner| owner.is_kv(path));
-            ordinary_get = Some(match carrier.ordinary(actual_kv) {
-                Ok(request) => request,
-                Err(response) => return Err(response),
-            });
+            ordinary_get = Some(carrier.ordinary(actual_kv)?);
             None
         } else {
             return Err(Response::error(404, "OCSP mount not found"));
@@ -156,15 +153,15 @@ pub(super) fn operation_with_owner(
     let post_body = if let Some(carrier) = crate::http::ocsp::json_post_request(method, path, body)
     {
         let actual_pki_ocsp = owner.is_some_and(|owner| owner.is_ocsp(path));
-        match carrier.resolve(actual_pki_ocsp) {
-            Ok(body) => Some(body),
-            Err(response) => return Err(response),
+        {
+            let body = carrier.resolve(actual_pki_ocsp)?;
+            Some(body)
         }
     } else if let Some(carrier) = crate::http::ocsp::raw_post_request(method, path, body) {
         let actual_pki_ocsp = owner.is_some_and(|owner| owner.is_ocsp(path));
-        match carrier.resolve(actual_pki_ocsp) {
-            Ok(body) => Some(body),
-            Err(response) => return Err(response),
+        {
+            let body = carrier.resolve(actual_pki_ocsp)?;
+            Some(body)
         }
     } else {
         None

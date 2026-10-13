@@ -392,15 +392,7 @@ impl Service {
         }
         let deadline = crate::request_deadline::current().ok_or_else(unavailable)?;
         let candidate = Candidate {
-            bytes: checked_bytes(state).map_err(|error| {
-                #[cfg(test)]
-                eprintln!(
-                    "LEGACY_UPGRADE_PROFILE_DIAGNOSTIC candidate_schema={} writer_schema={}",
-                    state.schema,
-                    state.writer_schema()
-                );
-                error
-            })?,
+            bytes: checked_bytes(state)?,
             base_digest: self.current_state_digest()?,
             cluster_id: state.cluster_id.clone(),
             deadline,

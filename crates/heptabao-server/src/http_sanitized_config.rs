@@ -81,7 +81,7 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-    fn fixture() -> Config {
+    fn fixture() -> Result<Config, serde_json::Error> {
         serde_json::from_value(json!({
             "listen": "127.0.0.1:38413",
             "data_dir": "/tmp/unexposed-durable-storage",
@@ -91,12 +91,11 @@ mod tests {
             "ui": true,
             "storage": {"pebbledb":{"path":"/tmp/private-db-sentinel"}}
         }))
-        .expect("valid typed synthetic test config")
     }
 
     #[test]
-    fn sanitized_projection_only_emits_safe_runtime_fields() {
-        let config = fixture();
+    fn sanitized_projection_only_emits_safe_runtime_fields() -> Result<(), serde_json::Error> {
+        let config = fixture()?;
         let projection = project(&config);
         let encoded = projection.to_string().to_lowercase();
         for forbidden in [
@@ -121,11 +120,13 @@ mod tests {
         assert!(projection.get("telemetry").is_none());
         assert_eq!(projection["storage"]["type"], "pebbledb");
         assert_eq!(projection["seals"][0]["type"], "shamir");
+        Ok(())
     }
 
     #[test]
-    fn raft_configuration_excludes_node_id_and_private_storage_path() {
-        let mut config = fixture();
+    fn raft_configuration_excludes_node_id_and_private_storage_path()
+    -> Result<(), serde_json::Error> {
+        let mut config = fixture()?;
         config.storage = Some(StorageConfig::Raft {
             path: "/tmp/private-raft-path-sentinel".into(),
             node_id: Some("private-raft-node-sentinel".to_string()),
@@ -141,5 +142,6 @@ mod tests {
         );
         assert!(!serialized.contains("private-raft-node-sentinel"));
         assert!(!serialized.contains("private-raft-path-sentinel"));
+        Ok(())
     }
 }

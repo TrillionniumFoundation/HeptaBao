@@ -93,6 +93,7 @@ pub(super) fn parse(payload: &[u8]) -> Result<Value, &'static str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
 
     fn request(path: &str, media: &str, form: &[u8]) -> Vec<u8> {
         let mut wire = format!(
@@ -104,16 +105,14 @@ mod tests {
     }
 
     #[test]
-    fn valid_form_decodes_and_keeps_credential_fields_exact() {
-        let result = parse(b"role_id=uuid%2D1&secret_id=p%2Bss+one").unwrap();
+    fn valid_form_decodes_and_keeps_credential_fields_exact() -> TestResult {
+        let result = parse(b"role_id=uuid%2D1&secret_id=p%2Bss+one")?;
         assert_eq!(
             result,
             serde_json::json!({"role_id":"uuid-1","secret_id":"p+ss one"})
         );
-        assert_eq!(
-            parse(b"role_id=one").unwrap(),
-            serde_json::json!({"role_id":"one"})
-        );
+        assert_eq!(parse(b"role_id=one")?, serde_json::json!({"role_id":"one"}));
+        Ok(())
     }
 
     #[test]
@@ -165,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn real_http_parser_uses_closed_approle_form_codec() {
+    fn real_http_parser_uses_closed_approle_form_codec() -> TestResult {
         let bytes = request(
             "auth/approle/login",
             "application/x-www-form-urlencoded",
@@ -176,12 +175,12 @@ mod tests {
             std::time::Duration::from_secs(2),
             false,
         )
-        .map_err(|error| error.message)
-        .unwrap();
+        .map_err(|error| error.message)?;
         assert_eq!(
             parsed.body.0,
             serde_json::json!({"role_id":"abc","secret_id":"xyz"})
         );
+        Ok(())
     }
 
     #[test]

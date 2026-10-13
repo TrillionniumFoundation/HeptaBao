@@ -557,9 +557,8 @@ mod tests {
             let mut forged: Value =
                 serde_json::from_slice(&stored).map_err(|_| "synthetic private test decode")?;
             forged["cache_config"] = invalid;
-            match serde_json::from_value::<Transit>(forged) {
-                Ok(forged) => assert!(forged.validate_policy_cache_state(Some(&t)).is_err()),
-                Err(_) => {}
+            if let Ok(forged) = serde_json::from_value::<Transit>(forged) {
+                assert!(forged.validate_policy_cache_state(Some(&t)).is_err());
             }
         }
         let mut erased = t.clone();

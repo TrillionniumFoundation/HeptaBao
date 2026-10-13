@@ -757,6 +757,7 @@ impl AuthState {
     pub(crate) fn control_group_owners(&self) -> impl Iterator<Item = &DeferredRequest> {
         self.control_groups.requests.values()
     }
+    #[cfg(test)]
     pub(crate) fn control_group_time(&self, now: u64) -> u64 {
         now.max(self.control_groups.clock)
     }
@@ -798,6 +799,7 @@ impl AuthState {
                 .flat_map(|p| p.values())
                 .any(|p| !p.control_groups.is_empty())
     }
+    #[cfg(test)]
     pub(crate) fn control_group_policy(
         &self,
         actor: &Principal,

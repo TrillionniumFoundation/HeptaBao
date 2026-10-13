@@ -70,6 +70,7 @@ mod state_records;
 mod kv2_v6_record_codec;
 // Format/graph read validation only: no Service writer, HA or migration authority.
 mod kv2_v6_shard_validator;
+pub mod kv2_v6_validation;
 
 #[cfg(test)]
 #[path = "kv2_v6_record_trial.rs"]

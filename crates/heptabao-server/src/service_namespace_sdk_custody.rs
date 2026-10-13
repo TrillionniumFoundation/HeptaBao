@@ -8,6 +8,19 @@ use std::sync::Weak;
 struct Maintenance {
     keys: BTreeMap<String, (Owner, Key)>,
 }
+pub(in crate::service) struct RetirementCallbackParts {
+    pub(in crate::service) clock: crate::auth::RequestClock,
+    pub(in crate::service) deadline: std::time::Instant,
+    pub(in crate::service) control: Arc<sdk_backend::Control>,
+}
+pub(in crate::service) struct RetirementCaptureParts {
+    callback: RetirementCallbackParts,
+    activation: String,
+    seal: [u8; 32],
+    barrier: [u8; 32],
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    role: Option<(u64, u64)>,
+}
 pub(in crate::service) struct Original {
     binding: SdkBinding,
     job: String,
@@ -292,15 +305,21 @@ impl Runtime {
         binding: &SdkBinding,
         job: &str,
         resource: &str,
-        clock: crate::auth::RequestClock,
-        deadline: std::time::Instant,
-        control: Arc<sdk_backend::Control>,
-        activation: String,
-        seal: [u8; 32],
-        barrier: [u8; 32],
-        ha: Option<Arc<Mutex<HaProcess>>>,
-        role: Option<(u64, u64)>,
+        parts: RetirementCaptureParts,
     ) -> Result<RetirementPermit, Response> {
+        let RetirementCaptureParts {
+            callback:
+                RetirementCallbackParts {
+                    clock,
+                    deadline,
+                    control,
+                },
+            activation,
+            seal,
+            barrier,
+            ha,
+            role,
+        } = parts;
         if binding.namespace.is_empty() || std::time::Instant::now() >= deadline {
             return Err(failed());
         }
@@ -379,10 +398,9 @@ impl Service {
         binding: &SdkBinding,
         job: &str,
         resource: &str,
-        clock: crate::auth::RequestClock,
-        deadline: std::time::Instant,
-        control: Arc<sdk_backend::Control>,
+        callback: RetirementCallbackParts,
     ) -> Result<RetirementPermit, Response> {
+        let deadline = callback.deadline;
         let role = if let Some(ha) = &self.ha {
             let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
             let node = ha.lock_for_request().map_err(|_| failed())?;
@@ -410,14 +428,14 @@ impl Service {
             binding,
             job,
             resource,
-            clock,
-            deadline,
-            control,
-            self.unseal_nonce.clone(),
-            seal,
-            barrier,
-            self.ha.clone(),
-            role,
+            RetirementCaptureParts {
+                callback,
+                activation: self.unseal_nonce.clone(),
+                seal,
+                barrier,
+                ha: self.ha.clone(),
+                role,
+            },
         )
     }
 }
@@ -1158,25 +1176,9 @@ impl CleanupView {
     }
     pub(in crate::service) fn matches_origin(
         &self,
-        namespace: &str,
-        incarnation: Option<u64>,
-        cluster: &str,
-        activation: &str,
-        ha: &Option<Arc<Mutex<HaProcess>>>,
-        delivery: &DeliveryBinding,
-        clock: crate::auth::RequestClock,
-        deadline: std::time::Instant,
+        origin: namespace_sdk_cleanup::CapturedOrigin<'_>,
     ) -> Result<(), Response> {
-        self.original.captured.matches_origin(
-            namespace,
-            incarnation,
-            cluster,
-            activation,
-            ha,
-            delivery,
-            clock,
-            deadline,
-        )
+        self.original.captured.matches_origin(origin)
     }
 
     pub(in crate::service) fn role(&self) -> Option<(u64, u64)> {

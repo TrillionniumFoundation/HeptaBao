@@ -579,6 +579,7 @@ impl Kv2 {
 }
 
 impl Kv2 {
+    #[cfg(test)]
     pub(in crate::engines) fn has_lossless_json_state(&self) -> bool {
         self.entries.values().any(|entry| {
             entry.versions.values().any(|version| {

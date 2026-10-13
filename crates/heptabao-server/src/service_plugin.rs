@@ -1600,10 +1600,10 @@ impl Service {
                         "genuine KMS verification original HA owner changed",
                     );
                 }
-                if let Some(admission) = &plan.genuine_ha {
-                    if let Err(cause) = admission.lock_original(plan.expected_identity) {
-                        return cause;
-                    }
+                if let Some(admission) = &plan.genuine_ha
+                    && let Err(cause) = admission.lock_original(plan.expected_identity)
+                {
+                    return cause;
                 }
                 Some(guard)
             }

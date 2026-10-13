@@ -232,11 +232,7 @@ impl Parser<'_> {
                 return serde_json::from_slice::<String>(&self.bytes[start..self.position])
                     .map_err(|_| bad("invalid lexical JSON string"));
             }
-            if !escaped && byte == b'\\' {
-                escaped = true;
-            } else {
-                escaped = false;
-            }
+            escaped = !escaped && byte == b'\\';
         }
         Err(bad("unterminated lexical JSON string"))
     }
@@ -380,8 +376,10 @@ impl Parser<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
     #[test]
-    fn raw113_actual_numeric_grammar_retains_literal_and_keeps_sdk_float_encoding_distinct() {
+    fn raw113_actual_numeric_grammar_retains_literal_and_keeps_sdk_float_encoding_distinct()
+    -> TestResult {
         for literal in [
             "1.0",
             "1E+0",
@@ -392,42 +390,44 @@ mod tests {
             "1e309",
             "18446744073709551616",
         ] {
-            let value = LexicalJson::parse_listener(literal.as_bytes()).unwrap();
+            let value = LexicalJson::parse_listener(literal.as_bytes())?;
             assert!(matches!(&value, LexicalJson::Number(number) if number == literal));
-            assert_eq!(value.encode(65536).unwrap().as_slice(), literal.as_bytes());
-            value.validate().unwrap();
+            assert_eq!(value.encode(65536)?.as_slice(), literal.as_bytes());
+            value.validate()?;
         }
-        let typed_float = serde_json::Number::from_f64(1.0).unwrap();
-        assert_eq!(super::super::go_float(&typed_float).unwrap(), "1");
+        let typed_float = serde_json::Number::from_f64(1.0).ok_or("finite SDK float required")?;
+        assert_eq!(super::super::go_float(&typed_float)?, "1");
         assert_eq!(
-            LexicalJson::parse_listener(b"1.0")
-                .unwrap()
-                .encode(65536)
-                .unwrap()
+            LexicalJson::parse_listener(b"1.0")?
+                .encode(65536)?
                 .as_slice(),
             b"1.0"
         );
         assert!(matches!(
-            LexicalJson::parse_listener(br#""1.0""#).unwrap(),
+            LexicalJson::parse_listener(br#""1.0""#)?,
             LexicalJson::String(_)
         ));
+        Ok(())
     }
     #[test]
-    fn raw113_actual_nested_numbers_do_not_confuse_string_or_private_number_named_object() {
+    fn raw113_actual_nested_numbers_do_not_confuse_string_or_private_number_named_object()
+    -> TestResult {
         let source = br#"{"array":[1.0,"1.0"],"nested":{"number":1e309},"$serde_json::private::Number":"not-a-number"}"#;
-        let parsed = LexicalJson::parse_listener(source).unwrap();
+        let parsed = LexicalJson::parse_listener(source)?;
         let LexicalJson::Object(values) = &parsed else {
-            panic!("actual object required")
+            return Err("actual object required".into());
         };
         assert!(
             matches!(values.get("$serde_json::private::Number"), Some(LexicalJson::String(value)) if value == "not-a-number")
         );
-        let LexicalJson::Array(array) = &values["array"] else {
-            panic!("actual array required")
+        let LexicalJson::Array(array) = values.get("array").ok_or("actual array field required")?
+        else {
+            return Err("actual array required".into());
         };
         assert!(matches!(&array[0], LexicalJson::Number(n) if n == "1.0"));
         assert!(matches!(&array[1], LexicalJson::String(n) if n == "1.0"));
-        parsed.validate().unwrap();
+        parsed.validate()?;
+        Ok(())
     }
     #[test]
     fn raw113_actual_malformed_deep_and_forged_number_claims_are_rejected() {

@@ -147,7 +147,7 @@ impl Drop for Challenge {
     }
 }
 impl PendingServiceGrant {
-    pub(crate) fn response(
+    pub(in crate::auth) fn response(
         token: Token,
         mount_revision: AuthMount,
         user_binding: Vec<u8>,

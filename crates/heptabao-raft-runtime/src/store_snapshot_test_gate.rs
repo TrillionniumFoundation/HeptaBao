@@ -76,13 +76,12 @@ impl SnapshotPause {
 impl Drop for SnapshotPause {
     fn drop(&mut self) {
         self.release();
-        if let Ok(mut entries) = gates().lock() {
-            if entries
+        if let Ok(mut entries) = gates().lock()
+            && entries
                 .get(&self.path)
                 .is_some_and(|current| Arc::ptr_eq(current, &self.gate))
-            {
-                entries.remove(&self.path);
-            }
+        {
+            entries.remove(&self.path);
         }
     }
 }

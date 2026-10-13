@@ -705,10 +705,9 @@ fn select<'a>(mut value: &'a RuntimeValue, selector: &[String]) -> Option<&'a Ru
     for field in selector {
         value = if let Some(object) = value.as_object() {
             object.get(field)?
-        } else if let Some(array) = value.as_array() {
-            array.get(field.parse::<usize>().ok()?)?
         } else {
-            return None;
+            let array = value.as_array()?;
+            array.get(field.parse::<usize>().ok()?)?
         };
     }
     Some(value)
@@ -1275,10 +1274,6 @@ impl Program {
             steps,
             output,
         }))
-    }
-    #[cfg(test)]
-    pub(super) fn context(&self, body: &Value) -> Result<Context, Response> {
-        self.context_at(body, std::time::Instant::now())
     }
     pub(super) fn context_at(
         &self,

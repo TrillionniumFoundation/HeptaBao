@@ -447,7 +447,13 @@ mod tests {
             "audit_selector_bound"
         };
         let mut wrong = positive.clone();
-        wrong["lifecycle"].as_object_mut().unwrap().remove(owner);
+        assert!(
+            wrong["lifecycle"]
+                .as_object_mut()
+                .ok_or(PluginHostError::MalformedResponse)?
+                .remove(owner)
+                .is_some()
+        );
         wrong["lifecycle"][foreign] = json!(true);
         assert!(inv.decode(&secret(wrong)?).is_err());
         let mut missing = positive.clone();
@@ -466,7 +472,13 @@ mod tests {
                 "sandbox_bound",
             ] {
                 let mut missing = positive.clone();
-                missing["lifecycle"].as_object_mut().unwrap().remove(field);
+                assert!(
+                    missing["lifecycle"]
+                        .as_object_mut()
+                        .ok_or(PluginHostError::MalformedResponse)?
+                        .remove(field)
+                        .is_some()
+                );
                 assert!(inv.decode(&secret(missing)?).is_err());
                 let mut denied = positive.clone();
                 denied["lifecycle"][field] = json!(false);

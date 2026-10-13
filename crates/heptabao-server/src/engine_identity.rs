@@ -268,16 +268,4 @@ impl EngineState {
             .identity
             .control_group_entity(id, namespace_id, mount_type)
     }
-    pub(crate) fn control_group_mount_binding(
-        &self,
-        namespace: &str,
-        path: &str,
-    ) -> Option<(String, u64)> {
-        self.namespaces
-            .get(namespace)?
-            .mounts
-            .iter()
-            .find(|(mount, _)| path.starts_with(mount.as_str()))
-            .map(|(mount, value)| (mount.clone(), value.incarnation))
-    }
 }

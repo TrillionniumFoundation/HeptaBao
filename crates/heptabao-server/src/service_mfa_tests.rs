@@ -246,8 +246,11 @@ fn precise_call(
     seconds: u64,
     nanos: u32,
 ) -> Response {
-    let clock = RequestClock::anchored(Duration::new(seconds, nanos), Instant::now())
-        .expect("synthetic captured request clock");
+    let clock = RequestClock::anchored(Duration::new(seconds, nanos), Instant::now());
+    assert!(clock.is_ok(), "synthetic captured request clock");
+    let Ok(clock) = clock else {
+        return Response::error(500, "synthetic captured request clock unavailable");
+    };
     precise_call_clock(service, method, path, token, body, clock)
 }
 fn precise_call_clock(
@@ -267,7 +270,7 @@ fn precise_call_clock(
             token,
             body,
             wrap_ttl_seconds: None,
-            origin_peer: Some("127.0.0.1".parse().expect("synthetic peer")),
+            origin_peer: Some(std::net::Ipv4Addr::LOCALHOST.into()),
             client_certificates: None,
         },
         seconds,
@@ -326,7 +329,7 @@ fn mfa_challenge(
     nanos: u32,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let clock = RequestClock::anchored(Duration::new(seconds, nanos), Instant::now())
-        .expect("synthetic captured challenge clock");
+        .map_err(|_| "synthetic captured challenge clock")?;
     mfa_challenge_clock(service, clock)
 }
 fn mfa_challenge_clock(
@@ -1374,10 +1377,9 @@ fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypte
 
 // New controls exercise the actual native first-factor grant and commit. The
 // fixture holds only its own synthetic enrollment secret and never logs it.
-fn janitor_native_fixture() -> Result<
-    (Root, Service, Zeroizing<String>, String, Zeroizing<Vec<u8>>),
-    Box<dyn std::error::Error>,
-> {
+type NativeJanitorFixture = (Root, Service, Zeroizing<String>, String, Zeroizing<Vec<u8>>);
+
+fn janitor_native_fixture() -> Result<NativeJanitorFixture, Box<dyn std::error::Error>> {
     let files = Root::new();
     let mut service = files.service()?;
     let (key, admin) = bootstrap(&mut service)?;
@@ -1750,8 +1752,11 @@ fn closed_janitor_call(
     seconds: u64,
 ) -> Response {
     let started = Instant::now();
-    let clock = RequestClock::anchored(Duration::from_secs(seconds), started)
-        .expect("synthetic original native clock");
+    let clock = RequestClock::anchored(Duration::from_secs(seconds), started);
+    assert!(clock.is_ok(), "synthetic original native clock");
+    let Ok(clock) = clock else {
+        return Response::error(500, "synthetic original native clock unavailable");
+    };
     // Unit callers have no HTTP worker. Keep one original request budget from
     // the same clock anchor, using the existing native namespace fixture's
     // fifteen-second budget. An enclosing earlier deadline remains earlier.
@@ -1796,7 +1801,7 @@ fn closed_janitor_call(
             token,
             body,
             wrap_ttl_seconds: None,
-            origin_peer: Some("127.0.0.1".parse().expect("synthetic peer")),
+            origin_peer: Some(std::net::Ipv4Addr::LOCALHOST.into()),
             client_certificates: None,
         },
         seconds,
@@ -3341,11 +3346,13 @@ fn multi_mfa_code(
         .map_err(|_| "native multi TOTP")?,
     ))
 }
+type MfaAttempts = Option<(u64, Option<u64>)>;
+
 fn multi_mfa_attempts(
     service: &Service,
     entity: &str,
     method: &str,
-) -> Result<Option<(u64, Option<u64>)>, Box<dyn std::error::Error>> {
+) -> Result<MfaAttempts, Box<dyn std::error::Error>> {
     let encoded = crate::secret_serde::to_vec(
         &service.state.as_ref().ok_or("actual multi state")?.auth,
         16 * 1024 * 1024,
@@ -3912,8 +3919,11 @@ fn mfa_namespace_precise_call(
     body: Value,
     seconds: u64,
 ) -> Response {
-    let clock = RequestClock::anchored(Duration::new(seconds, 125_000_000), Instant::now())
-        .expect("synthetic captured namespace MFA clock");
+    let clock = RequestClock::anchored(Duration::new(seconds, 125_000_000), Instant::now());
+    assert!(clock.is_ok(), "synthetic captured namespace MFA clock");
+    let Ok(clock) = clock else {
+        return Response::error(500, "synthetic captured namespace MFA clock unavailable");
+    };
     service.handle_request_clock(
         ServiceRequest {
             method,
@@ -3922,7 +3932,7 @@ fn mfa_namespace_precise_call(
             token,
             body,
             wrap_ttl_seconds: None,
-            origin_peer: Some("127.0.0.1".parse().expect("synthetic peer")),
+            origin_peer: Some(std::net::Ipv4Addr::LOCALHOST.into()),
             client_certificates: None,
         },
         seconds,

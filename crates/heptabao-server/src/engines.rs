@@ -36,6 +36,7 @@ pub(crate) mod kubernetes_artifact;
 mod kv;
 #[path = "engine_kv2_import.rs"]
 mod kv2_import;
+#[cfg(test)]
 pub(crate) use kv::lossless::decode_lossless_json;
 pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
 mod kv1_records;
@@ -2623,17 +2624,6 @@ impl EngineState {
         Some((engine, &path[mount_path.len()..]))
     }
 
-    /// Select the longest actual mount across all backends before accepting an
-    /// opaque GET carrier. A more specific non-PKI mount cannot fall through to
-    /// a parent PKI responder, and the suffix never participates in routing.
-    pub(crate) fn canonical_pki_ocsp_get(
-        &self,
-        namespace: &str,
-        path: &str,
-    ) -> Option<(String, String)> {
-        self.query_owner(namespace, path)?.pki_ocsp_get(path)
-    }
-
     /// Capture classification follows the longest actual PKI owner and its
     /// closed route enum, never an untrusted reply key or request media header.
     pub(crate) fn wrapping_uses_raw_pki_transport(
@@ -2689,18 +2679,6 @@ impl EngineState {
     pub(crate) fn is_actual_pki_ocsp_path(&self, namespace: &str, path: &str) -> bool {
         self.query_owner(namespace, path)
             .is_some_and(|owner| owner.is_pki_path(path))
-    }
-
-    pub(crate) fn is_actual_kv_query_owner(&self, namespace: &str, path: &str) -> bool {
-        self.query_owner(namespace, path)
-            .is_some_and(|owner| owner.is_kv(path))
-    }
-
-    // URL fields are admitted only after namespace and longest actual mount
-    // selection. A path named "transit" does not grant another backend formats.
-    pub(crate) fn is_actual_transit_export_query_owner(&self, namespace: &str, path: &str) -> bool {
-        self.query_owner(namespace, path)
-            .is_some_and(|owner| owner.is_transit_export(path))
     }
 
     pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {
@@ -3190,27 +3168,6 @@ impl EngineState {
         now: u64,
         display_name: &str,
     ) -> Result<Option<EngineResponse>> {
-        self.handle_in_identity_namespace_with_ssh_principal(
-            scope,
-            method,
-            path,
-            body,
-            now,
-            display_name,
-            None,
-        )
-    }
-
-    pub(crate) fn handle_in_identity_namespace_with_ssh_principal(
-        &mut self,
-        scope: IdentityNamespace<'_>,
-        method: &str,
-        path: &str,
-        body: &Value,
-        now: u64,
-        display_name: &str,
-        ssh_principal: Option<&crate::auth::Principal>,
-    ) -> Result<Option<EngineResponse>> {
         let at = crate::auth::Timestamp::whole(now)
             .map_err(|_| error(503, "KV2 accepted request clock is unavailable"))?;
         self.handle_in_identity_namespace_with_ssh_principal_precise(
@@ -3220,7 +3177,7 @@ impl EngineState {
             body,
             now,
             display_name,
-            ssh_principal,
+            None,
             at,
         )
     }
@@ -3989,6 +3946,7 @@ mod batch_lease_tests;
 impl EngineState {
     /// Inline JSON owners and this candidate's actual KV1 record writes.
     /// Opaque records not loaded into this owner are not scanned or claimed.
+    #[cfg(test)]
     pub(crate) fn has_lossless_json_state(&self) -> bool {
         self.records
             .as_ref()

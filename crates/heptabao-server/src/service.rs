@@ -3460,13 +3460,13 @@ impl Service {
             return response;
         }
 
-        if let Some(current) = self.state.as_ref() {
-            if let Err(error) = current.engines.synchronize_transit_policy_caches(
+        if let Some(current) = self.state.as_ref()
+            && let Err(error) = current.engines.synchronize_transit_policy_caches(
                 self.durable.as_ref().map(|durable| durable.generation()),
                 |namespace| current.namespaces.incarnation(namespace),
-            ) {
-                return Response::from_engine_error(error);
-            }
+            )
+        {
+            return Response::from_engine_error(error);
         }
         let Some(mut admitted) = self.state.clone() else {
             return Response::error(503, "server is sealed");

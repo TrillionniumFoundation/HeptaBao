@@ -447,12 +447,11 @@ pub(super) fn decorate_descriptor(key: &Key, descriptor: &mut Value) {
             .backup_metadata
             .as_ref()
             .is_some_and(|m| m.hmac_key_size.is_some())
+        && let Some(fields) = descriptor.as_object_mut()
     {
-        if let Some(fields) = descriptor.as_object_mut() {
-            fields.remove("keys");
-            fields.remove("supports_hmac");
-            fields.insert("key_size".into(), json!(hmac_key_size(key)));
-        }
+        fields.remove("keys");
+        fields.remove("supports_hmac");
+        fields.insert("key_size".into(), json!(hmac_key_size(key)));
     }
     if let Some(m) = &key.backup_metadata {
         for (name, stamp) in [

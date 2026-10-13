@@ -363,13 +363,12 @@ fn mfa129_closed_reference_successors_reject_erasure_and_forged_parcels_after_en
     retired.retire_closed_mfa_namespace(&binding, "actual-cluster")?;
     retired.validate_identity_mfa_state(Some(&closed))?;
     assert!(
-        retired
+        !retired
             .identity_mfa
             .as_ref()
             .ok_or("registry")?
             .closed_references
-            .get("child")
-            .is_none()
+            .contains_key("child")
     );
     assert_eq!(
         retired

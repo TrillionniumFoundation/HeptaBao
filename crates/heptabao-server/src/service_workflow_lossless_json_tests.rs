@@ -1,7 +1,9 @@
 //! Persisted workflow inputs, outputs, and actual Service execution after reopen.
+#[cfg(target_os = "linux")]
 use super::*;
 #[cfg(target_os = "linux")]
 use crate::service::tests::{Root, bootstrap, call};
+#[cfg(target_os = "linux")]
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 #[test]

@@ -196,7 +196,8 @@ fn api_tls_alpn_negotiates_supported_protocols_and_rejects_wrong_hostname() -> T
                 ClientConnection::new(Arc::new(config), ServerName::try_from(hostname)?)?;
             let mut server = ServerConnection::new(server_config.clone())?;
             let error = handshake(&mut client, &mut server)
-                .expect_err("negative real TLS handshake must fail");
+                .err()
+                .ok_or("negative real TLS handshake must fail")?;
             if wrong_hostname {
                 assert!(
                     matches!(

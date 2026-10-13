@@ -175,7 +175,7 @@ impl Drop for WorkerJob {
     }
 }
 enum WorkerCommand {
-    Invoke(WorkerJob),
+    Invoke(Box<WorkerJob>),
     Stop,
 }
 pub(super) struct Control {
@@ -541,7 +541,7 @@ impl Plan {
                 }
                 self.control
                     .sender
-                    .try_send(WorkerCommand::Invoke(job))
+                    .try_send(WorkerCommand::Invoke(Box::new(job)))
                     .map_err(|_| {
                         Response::error(503, "SDK owner queue unavailable before entry")
                     })?;
@@ -549,7 +549,7 @@ impl Plan {
             } else {
                 self.control
                     .sender
-                    .try_send(WorkerCommand::Invoke(job))
+                    .try_send(WorkerCommand::Invoke(Box::new(job)))
                     .map_err(|_| {
                         Response::error(503, "SDK owner queue unavailable before entry")
                     })?;
@@ -1323,7 +1323,7 @@ impl Service {
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             None,
         )?;
-        self.install_committed_namespace_view_copy(&state);
+        self.install_committed_namespace_view_copy(state);
         Ok(())
     }
 

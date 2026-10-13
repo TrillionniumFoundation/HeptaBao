@@ -1310,18 +1310,17 @@ impl AuthState {
         if registry.closed_references.contains_key(namespace) {
             return Err(err(409, "MFA namespace owner is independently closed"));
         }
-        if let Some(owner) = registry.namespaces.get(namespace) {
-            if owner.incarnation != incarnation
+        if let Some(owner) = registry.namespaces.get(namespace)
+            && (owner.incarnation != incarnation
                 || !owner.methods.is_empty()
                 || !owner.enforcements.is_empty()
                 || !owner.enrollments.is_empty()
-                || !owner.challenges.is_empty()
-            {
-                return Err(err(
-                    409,
-                    "MFA namespace still owns configuration or enrollments",
-                ));
-            }
+                || !owner.challenges.is_empty())
+        {
+            return Err(err(
+                409,
+                "MFA namespace still owns configuration or enrollments",
+            ));
         }
         let changed = registry.namespaces.contains_key(namespace)
             || registry

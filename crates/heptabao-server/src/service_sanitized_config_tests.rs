@@ -1,7 +1,6 @@
 //! OpenBao 2.7.1 sanitized configuration is process-owned, ACL-gated,
 //! audited by the original Service request pipeline, and fail-closed.
 use super::tests::{Root, bootstrap_unmounted, call};
-use super::*;
 use serde_json::json;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;

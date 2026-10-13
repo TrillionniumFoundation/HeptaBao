@@ -743,6 +743,18 @@ impl State {
 #[path = "service_namespace_sdk_cleanup_tests.rs"]
 mod tests;
 
+// Borrowed original request fields supplied solely to verify captured custody.
+pub(in crate::service) struct CapturedOrigin<'a> {
+    pub(in crate::service) namespace: &'a str,
+    pub(in crate::service) incarnation: Option<u64>,
+    pub(in crate::service) cluster: &'a str,
+    pub(in crate::service) activation: &'a str,
+    pub(in crate::service) ha: &'a Option<Arc<Mutex<HaProcess>>>,
+    pub(in crate::service) delivery: &'a namespace_runtime::DeliveryBinding,
+    pub(in crate::service) clock: RequestClock,
+    pub(in crate::service) deadline: Instant,
+}
+
 // This process-local value can only be made by the actual owning Authority.
 // It is neither a saved-record reader nor an SDK admission or retry grant.
 pub(in crate::service) struct CapturedCleanup {
@@ -763,12 +775,12 @@ pub(in crate::service) struct CapturedCleanup {
     host_key: String,
 }
 enum CleanupResource {
-    Logical(crate::engines::sdk_lease::Lease),
-    Credential(crate::auth::sdk_credential::Record),
+    Logical(Box<crate::engines::sdk_lease::Lease>),
+    Credential(Box<crate::auth::sdk_credential::Record>),
 }
 enum CleanupStorage {
     Logical(LogicalStorageCut),
-    Credential(CredentialStorageCut),
+    Credential(Box<CredentialStorageCut>),
 }
 impl Authority {
     pub(in crate::service) fn logical_native_role_private(
@@ -833,7 +845,7 @@ impl Authority {
             CleanupStorage::Logical(self.logical_storage_cut(service, namespace, mount, owner)?);
         let captured = self.capture_private(
             service,
-            CleanupResource::Logical(lease),
+            CleanupResource::Logical(Box::new(lease)),
             storage,
             control,
             service.sdk_host_key(namespace, mount, owner),
@@ -857,10 +869,11 @@ impl Authority {
         self.selected
             .check_credential(&lease, false)
             .map_err(auth_error)?;
-        let storage = CleanupStorage::Credential(self.credential_storage_cut(service, binding)?);
+        let storage =
+            CleanupStorage::Credential(Box::new(self.credential_storage_cut(service, binding)?));
         let captured = self.capture_private(
             service,
-            CleanupResource::Credential(lease),
+            CleanupResource::Credential(Box::new(lease)),
             storage,
             control,
             sdk_backend::auth100::sdk_auth_key(&self.cluster, binding)?,
@@ -931,15 +944,18 @@ impl CapturedCleanup {
     }
     pub(in crate::service) fn matches_origin(
         &self,
-        namespace: &str,
-        incarnation: Option<u64>,
-        cluster: &str,
-        activation: &str,
-        ha: &Option<Arc<Mutex<HaProcess>>>,
-        delivery: &namespace_runtime::DeliveryBinding,
-        clock: RequestClock,
-        deadline: Instant,
+        origin: CapturedOrigin<'_>,
     ) -> Result<(), Response> {
+        let CapturedOrigin {
+            namespace,
+            incarnation,
+            cluster,
+            activation,
+            ha,
+            delivery,
+            clock,
+            deadline,
+        } = origin;
         let selected = self.selected.lock().map_err(|_| unavailable())?;
         if namespace != selected.binding().namespace()
             || incarnation != Some(selected.binding().incarnation())
@@ -1173,7 +1189,7 @@ impl CapturedCleanup {
         self.merge_owned_storage(&mut expected, incoming)?;
         match &*self.resource.lock().map_err(|_| unavailable())? {
             CleanupResource::Logical(lease) => {
-                let mut terminal = lease.clone();
+                let mut terminal = lease.as_ref().clone();
                 terminal.revoke();
                 expected.engines.observe_sdk_lease_clock(at);
                 expected
@@ -1183,7 +1199,7 @@ impl CapturedCleanup {
                 expected.finish_namespace_sdk_logical(&self.key, &terminal)?;
             }
             CleanupResource::Credential(lease) => {
-                let mut terminal = lease.clone();
+                let mut terminal = lease.as_ref().clone();
                 terminal.revoke();
                 expected.auth.observe_sdk_auth_clock(at);
                 expected
@@ -1211,7 +1227,7 @@ impl CapturedCleanup {
                     .engines
                     .sdk_lease(&old.namespace, &old.id)
                     .ok_or_else(unavailable)?;
-                let mut expected = old.clone();
+                let mut expected = old.as_ref().clone();
                 if terminal {
                     expected.revoke();
                 }
@@ -1225,14 +1241,14 @@ impl CapturedCleanup {
                     owner: old.backend.clone(),
                 };
                 *self.storage.lock().map_err(|_| unavailable())? = CleanupStorage::Logical(cut);
-                *old = next;
+                **old = next;
             }
             CleanupResource::Credential(old) => {
                 let next = state
                     .auth
                     .sdk_credential_record(&old.namespace, &old.id)
                     .ok_or_else(unavailable)?;
-                let mut expected = old.clone();
+                let mut expected = old.as_ref().clone();
                 if terminal {
                     expected.revoke();
                 }
@@ -1246,8 +1262,9 @@ impl CapturedCleanup {
                         .sdk_auth_storage_witness(&old.backend)
                         .map_err(auth_error)?,
                 };
-                *self.storage.lock().map_err(|_| unavailable())? = CleanupStorage::Credential(cut);
-                *old = next;
+                *self.storage.lock().map_err(|_| unavailable())? =
+                    CleanupStorage::Credential(Box::new(cut));
+                **old = next;
             }
         }
         *selected = next;

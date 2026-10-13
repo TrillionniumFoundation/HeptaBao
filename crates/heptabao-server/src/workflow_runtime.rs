@@ -374,21 +374,23 @@ mod lossless_response_tests {
     use super::*;
 
     #[test]
-    fn workflow_response_keeps_exact_json_numbers_and_public_marker_objects() {
+    fn workflow_response_keeps_exact_json_numbers_and_public_marker_objects()
+    -> Result<(), Box<dyn std::error::Error>> {
         let original = heptabao_domain::json::decode(
             br#"{"big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"nested":[{"big":184467440737095516160001}],"fake":{"$serde_json::private::Number":"7"}}"#
-        ).expect("lossless source JSON");
+        )?;
         let carried = Value::from_response_json(&original);
-        assert_eq!(carried.to_json().expect("response JSON"), original);
-        assert!(carried.to_json().expect("response JSON")["fake"].is_object());
+        assert_eq!(carried.to_json().map_err(|_| "response JSON")?, original);
+        assert!(carried.to_json().map_err(|_| "response JSON")?["fake"].is_object());
 
         // Runtime computations, unlike pass-through JSON, retain a distinct
         // float variant and must not turn NaN/Infinity into public null.
         assert_eq!(
-            Value::float(1.5).to_json().expect("finite float"),
+            Value::float(1.5).to_json().map_err(|_| "finite float")?,
             Json::from(1.5)
         );
         assert!(Value::float(f64::NAN).to_json().is_err());
         assert!(Value::float(f64::INFINITY).to_json().is_err());
+        Ok(())
     }
 }

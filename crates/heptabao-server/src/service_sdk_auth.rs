@@ -343,7 +343,7 @@ impl Plan {
                 if self
                     .control
                     .sender
-                    .try_send(WorkerCommand::Invoke(job))
+                    .try_send(WorkerCommand::Invoke(Box::new(job)))
                     .is_err()
                 {
                     return Err(Response::error(503, "SDK Auth owner queue unavailable"));
@@ -364,7 +364,7 @@ impl Plan {
         } else if self
             .control
             .sender
-            .try_send(WorkerCommand::Invoke(job))
+            .try_send(WorkerCommand::Invoke(Box::new(job)))
             .is_err()
         {
             self.control.busy.store(false, Ordering::Release);
@@ -1236,9 +1236,11 @@ impl Service {
                 &binding,
                 &value.job,
                 &first.id,
-                context.clock,
-                deadline,
-                Arc::clone(&control),
+                namespace_runtime::RetirementCallbackParts {
+                    clock: context.clock,
+                    deadline,
+                    control: Arc::clone(&control),
+                },
             ) {
                 Ok(permit) => {
                     if value
@@ -1793,18 +1795,18 @@ impl Service {
         } else {
             empty_response()
         };
-        if let Some(wrapping) = &plan.wrapping {
-            if response.status == 200 {
-                let wrapped = wrapping.apply(
-                    &mut candidate.auth,
-                    &plan.context.namespace,
-                    &response.body,
-                    at,
-                )?;
-                erase_json(&mut response.body);
-                response.body = wrapped;
-                response.response_headers.clear();
-            }
+        if let Some(wrapping) = &plan.wrapping
+            && response.status == 200
+        {
+            let wrapped = wrapping.apply(
+                &mut candidate.auth,
+                &plan.context.namespace,
+                &response.body,
+                at,
+            )?;
+            erase_json(&mut response.body);
+            response.body = wrapped;
+            response.response_headers.clear();
         }
         let publication = (|| {
             candidate.schema = candidate.writer_schema();
@@ -2625,9 +2627,11 @@ impl Service {
             &plan.binding,
             &job,
             id,
-            plan.context.clock,
-            plan.deadline,
-            Arc::clone(&plan.control),
+            namespace_runtime::RetirementCallbackParts {
+                clock: plan.context.clock,
+                deadline: plan.deadline,
+                control: Arc::clone(&plan.control),
+            },
         )?;
         if next.role() != role {
             return Err(Response::error(
@@ -3005,16 +3009,16 @@ impl Service {
         }
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
         let view = permit.open(self)?;
-        view.matches_origin(
-            &plan.context.namespace,
-            plan.context.incarnation,
-            &plan.context.cluster,
-            &plan.context.activation,
-            &plan.context.ha,
-            &plan.context.delivery,
-            plan.context.clock,
-            plan.deadline,
-        )?;
+        view.matches_origin(namespace_sdk_cleanup::CapturedOrigin {
+            namespace: &plan.context.namespace,
+            incarnation: plan.context.incarnation,
+            cluster: &plan.context.cluster,
+            activation: &plan.context.activation,
+            ha: &plan.context.ha,
+            delivery: &plan.context.delivery,
+            clock: plan.context.clock,
+            deadline: plan.deadline,
+        })?;
         if view
             .state()
             .auth

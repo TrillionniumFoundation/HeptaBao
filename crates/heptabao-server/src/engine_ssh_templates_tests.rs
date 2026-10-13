@@ -254,7 +254,7 @@ fn ssh_identity_time_uses_actual_wall_data_without_grant_or_clock_rearm() -> Tes
     let before = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() as i64;
     let rendered = id.render("{{time.now.plus.1.5s}}", true)?.parse::<i64>()?;
     let after = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() as i64;
-    assert!(rendered >= before + 1 && rendered <= after + 2);
+    assert!(rendered > before && rendered <= after + 2);
     for input in [
         "{{time.never}}",
         "{{time.now.plus}}",

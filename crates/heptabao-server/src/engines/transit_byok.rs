@@ -1664,12 +1664,12 @@ mod hmac_export270_tests {
                         .decode(
                             exported.body["data"]["keys"]["1"]
                                 .as_str()
-                                .expect("HMAC key"),
+                                .ok_or_else(|| error(503, "test HMAC key missing"))?,
                         )
-                        .expect("base64 HMAC key");
+                        .map_err(|_| error(503, "test HMAC key base64 invalid"))?;
                     assert_eq!(material.len(), 32);
-                    let mut independent =
-                        <Hmac<Sha256> as Mac>::new_from_slice(&material).expect("HMAC material");
+                    let mut independent = <Hmac<Sha256> as Mac>::new_from_slice(&material)
+                        .map_err(|_| error(503, "test HMAC material invalid"))?;
                     Mac::update(&mut independent, b"asymmetric HMAC fixture");
                     let tag = Mac::finalize(independent).into_bytes();
                     assert_eq!(mac, format!("vault:v1:{}", BASE64.encode(tag)));

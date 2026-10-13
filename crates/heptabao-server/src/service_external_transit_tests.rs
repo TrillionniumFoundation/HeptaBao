@@ -1964,7 +1964,7 @@ fn wrapping_unwrap_envelope(service: &mut Service, admin: &str, token: &str) -> 
         .ok_or("stored ingress origin")?
         .raw_bytes(&response.body)?
         .ok_or("stored original HTTP envelope")?;
-    let envelope: Value = serde_json::from_slice(&bytes)?;
+    let envelope: Value = serde_json::from_slice(bytes)?;
     assert_eq!(envelope.as_object().ok_or("complete envelope")?.len(), 8);
     assert!(envelope["wrap_info"].is_null());
     Ok(envelope)
@@ -2646,17 +2646,18 @@ fn external_transit270_wrapped_actual_returned_leader_new_term_vetoes_all_phases
             let observed = Arc::clone(&entered);
             let processes = cluster.processes.clone();
             service.native_record_role_hook = Some(Box::new(move |process| {
-                let next = process
-                    .step_down()
-                    .expect("actual post-Stage first handoff");
-                assert_ne!(next, 1);
-                let returned = processes[(next - 1) as usize]
-                    .lock()
-                    .expect("actual successor mutex")
-                    .step_down()
-                    .expect("actual post-Stage return handoff");
-                assert_eq!(returned, 1);
-                observed.store(true, Ordering::Release);
+                let handoff = (|| -> Result<(), String> {
+                    let next = process.step_down()?;
+                    assert_ne!(next, 1);
+                    let returned = processes[(next - 1) as usize]
+                        .lock()
+                        .map_err(|_| "actual successor mutex".to_owned())?
+                        .step_down()?;
+                    assert_eq!(returned, 1);
+                    observed.store(true, Ordering::Release);
+                    Ok(())
+                })();
+                assert!(handoff.is_ok(), "actual post-Stage handoff must complete");
             }));
             let response = service.finalize_external_transit(&mut plan, result);
             service.native_record_role_hook = None;

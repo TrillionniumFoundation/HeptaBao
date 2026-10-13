@@ -60,18 +60,17 @@ impl DataFrame {
         if bytes > 64 * 1024 {
             return Err("workflow query exceeds byte bound");
         }
-        if let Some(profile) = &self.profile {
-            if profile.namespace_id.is_empty()
+        if let Some(profile) = &self.profile
+            && (profile.namespace_id.is_empty()
                 || (profile.namespace_id == "root") != (profile.incarnation == 0)
                 || profile.version == 0
                 || profile.path.is_empty()
                 || profile.path.len() > 256
                 || profile.document.is_empty()
                 || profile.document.len() > 64 * 1024
-                || crate::crypto::digest(profile.document.as_bytes()) != profile.digest
-            {
-                return Err("invalid workflow query definition binding");
-            }
+                || crate::crypto::digest(profile.document.as_bytes()) != profile.digest)
+        {
+            return Err("invalid workflow query definition binding");
         }
         Ok(())
     }
@@ -236,50 +235,40 @@ pub(crate) fn current(
 mod large_binding_tests {
     use super::*;
     use serde_json::json;
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
 
     #[test]
-    fn streaming_binding_matches_legacy_canonical_bytes() {
+    fn streaming_binding_matches_legacy_canonical_bytes() -> TestResult {
         let body = json!({"data":{"string":"abc","signed":-7,"number":1.5}});
         let tuple = ("logical-data-v1", "POST", "secret/data/item", "team", &body);
         let old = crate::secret_serde::to_vec(&tuple, 1024 * 1024)
-            .ok()
-            .expect("small canonical old digest");
+            .map_err(|_| "small canonical old digest unavailable")?;
         assert_eq!(
-            binding("POST", "secret/data/item", "team", &body).unwrap(),
+            binding("POST", "secret/data/item", "team", &body)?,
             crate::crypto::digest(&old),
         );
+        Ok(())
     }
 
     #[test]
-    fn streaming_binding_accepts_1536k_and_rejects_changed_request_identity() {
+    fn streaming_binding_accepts_1536k_and_rejects_changed_request_identity() -> TestResult {
         let original = json!({"data":{"payload":"J".repeat(1536 * 1024)}});
         let mut changed = original.clone();
         changed["data"]["payload"] = json!("K".repeat(1536 * 1024));
-        let digest = binding("POST", "secret/data/large", "", &original).unwrap();
-        assert_ne!(
-            digest,
-            binding("POST", "secret/data/large", "", &changed).unwrap(),
-        );
+        let digest = binding("POST", "secret/data/large", "", &original)?;
+        assert_ne!(digest, binding("POST", "secret/data/large", "", &changed)?,);
         let scope = Scope::enter(
             Some(DataFrame::default()),
             "POST",
             "secret/data/large",
             "",
             &original,
-        )
-        .expect("bounded data-only original scope");
-        assert!(
-            current("POST", "secret/data/large", "", &original)
-                .unwrap()
-                .is_some()
-        );
+        )?;
+        assert!(current("POST", "secret/data/large", "", &original)?.is_some());
         assert!(current("POST", "secret/data/large", "", &changed).is_err());
         drop(scope);
-        assert!(
-            current("POST", "secret/data/large", "", &original)
-                .unwrap()
-                .is_none()
-        );
+        assert!(current("POST", "secret/data/large", "", &original)?.is_none());
+        Ok(())
     }
 
     #[test]
