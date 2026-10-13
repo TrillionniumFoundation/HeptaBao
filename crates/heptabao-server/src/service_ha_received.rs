@@ -6,7 +6,7 @@ use crate::ha::{CommittedApplicationState, CommittedRecordState, CommittedStateR
 use crate::state_record_root::StateIdentity;
 use heptabao_raft_runtime::ApplicationReadWitness;
 use std::cell::Cell;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 // This private result can be constructed only after the same authenticated
 // local publication owner proved supersession. It carries the original public
@@ -1258,6 +1258,29 @@ impl KnownIndexPublicationCompleted<'_> {
 fn rejected() -> Response {
     Response::error(503, "HA received authority admission rejected")
 }
+// A verified Shamir receipt is NOT permission to start a durable B publication
+// with almost no time remaining for the subsequent mandatory index proof.
+// R985 observed 229ms before durable B and 4ms before the index; the resulting
+// known local B could not complete its original authenticated operation.
+// This is an EARLY DENIAL only. It neither extends a request's original bound,
+// retries a committed result, grants application authority, nor promises the
+// remaining filesystem/index work will finish within the reserve.
+const SHAMIR_PRESTAGE_MIN_REMAINING: Duration = Duration::from_millis(750);
+
+fn shamir_prestage_has_original_budget(
+    original: Option<Instant>,
+    current: Option<Instant>,
+    now: Instant,
+) -> bool {
+    let (Some(original), Some(current)) = (original, current) else {
+        return false;
+    };
+    original
+        .min(current)
+        .checked_duration_since(now)
+        .is_some_and(|remaining| remaining >= SHAMIR_PRESTAGE_MIN_REMAINING)
+}
+
 fn live(deadline: Option<Instant>) -> Result<(), Response> {
     let deadline = match (deadline, crate::request_deadline::current()) {
         (Some(original), Some(current)) => Some(original.min(current)),
@@ -1771,6 +1794,13 @@ impl Service {
         &mut self,
         received: ReceivedHaRecords,
     ) -> Result<HaRecordPublicationProgress, Response> {
+        // Liveness checks bind the received owner's original clock. HA lock
+        // and ReadIndex waits must observe that same clock through their scope,
+        // even when a later caller has a longer ambient request budget.
+        let _original_scope = received
+            .owner
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
         match received.owner.before_record_publication(self) {
             Ok(true) => {}
             Ok(false) => return Ok(HaRecordPublicationProgress::UnpublishedSuperseded),
@@ -1784,6 +1814,23 @@ impl Service {
                 .retain_original_a(self)?;
                 return Ok(HaRecordPublicationProgress::BeforePublicationNoWrite);
             }
+        }
+        if received.owner.shamir_owner.is_some()
+            && !shamir_prestage_has_original_budget(
+                received.owner.deadline,
+                crate::request_deadline::current(),
+                Instant::now(),
+            )
+        {
+            // Actual original-A physical/generation/nonce proof is mandatory.
+            // If this read-only negative proof also misses its deadline,
+            // existing permanent recovery fencing remains in force.
+            eprintln!("R990_SHAMIR_PRESTAGE_WITHHELD=insufficient_original_budget");
+            BeforePublicationNoWrite {
+                receipt: &received.owner,
+            }
+            .retain_original_a(self)?;
+            return Ok(HaRecordPublicationProgress::BeforePublicationNoWrite);
         }
         if received.owner.shamir_owner.is_some() {
             eprintln!(
@@ -2831,6 +2878,19 @@ mod tests {
         actual_unpublished_shamir_case("beforepub_budget")
     }
     #[test]
+    fn real_raft_shamir_precommit_owner_deadline_overrides_extended_ambient() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_owner_budget")
+    }
+    #[test]
+    fn real_raft_shamir_precommit_owner_deadline_bounds_ha_lock_under_extended_ambient()
+    -> TestResult {
+        actual_unpublished_shamir_case("beforepub_owner_lock")
+    }
+    #[test]
+    fn real_raft_shamir_precommit_absent_owner_deadline_must_not_publish_b() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_missing_owner_deadline")
+    }
+    #[test]
     fn real_raft_before_publication_no_write_rejects_actual_physical_mac_damage() -> TestResult {
         actual_unpublished_shamir_case("beforepub_damage")
     }
@@ -2885,6 +2945,34 @@ mod tests {
         actual_unpublished_shamir_case("completed_no_write_epoch")
     }
 
+    #[test]
+    fn shamir_prestage_never_ignores_original_or_nested_request_budget() {
+        let now = Instant::now();
+        let long = Some(now + Duration::from_secs(2));
+        let short = Some(now + Duration::from_millis(700));
+        assert!(shamir_prestage_has_original_budget(long, long, now));
+        assert!(shamir_prestage_has_original_budget(
+            Some(now + SHAMIR_PRESTAGE_MIN_REMAINING),
+            long,
+            now,
+        ));
+        assert!(!shamir_prestage_has_original_budget(long, short, now));
+        assert!(!shamir_prestage_has_original_budget(short, long, now));
+        assert!(!shamir_prestage_has_original_budget(None, long, now));
+        assert!(!shamir_prestage_has_original_budget(long, None, now));
+        assert!(!shamir_prestage_has_original_budget(
+            long,
+            long,
+            now + Duration::from_secs(3),
+        ));
+    }
+
+    #[test]
+    fn real_raft_shamir_low_budget_withholds_before_local_b_and_fresh_sync_recovers() -> TestResult
+    {
+        actual_unpublished_shamir_case("beforepub_prestage_budget")
+    }
+
     fn actual_unpublished_shamir_case(case: &str) -> TestResult {
         let root = Root::new();
         let mut service = root.service()?;
@@ -2927,25 +3015,85 @@ mod tests {
             let process = cluster.processes[1].lock().map_err(|_| "HA")?;
             process.record_application_witness()?.ok_or("actual B")?.0
         };
-        let received = service
+        let mut received = service
             .receive_ha_records(&cluster.processes[1], &committed_b)
             .map_err(|_| "actual B receipt")?;
         assert!(received.owner.shamir_owner.is_some());
-        if case == "beforepub_budget" {
+        if matches!(
+            case,
+            "beforepub_budget"
+                | "beforepub_owner_budget"
+                | "beforepub_owner_lock"
+                | "beforepub_missing_owner_deadline"
+        ) {
             let generation_a = service.durable.as_ref().ok_or("durable A")?.generation();
             let nonce_a = service.unseal_nonce.clone();
-            // Shorter than the required precommit reserve but not expired.
-            // This must keep the original A, never stage records B.
-            let result = {
-                let _short = crate::request_deadline::RequestDeadlineScope::enter(
-                    Instant::now() + Duration::from_millis(850),
-                );
-                service.install_committed_ha_records(received)
+            let lock_holder = if case == "beforepub_owner_lock" {
+                let ha = Arc::clone(service.ha.as_ref().ok_or("original HA")?);
+                let (locked_tx, locked_rx) = std::sync::mpsc::sync_channel(0);
+                let (release_tx, release_rx) = std::sync::mpsc::channel();
+                let holder = std::thread::spawn(move || -> Result<bool, &'static str> {
+                    let _held = ha.lock().map_err(|_| "original HA poisoned")?;
+                    locked_tx.send(()).map_err(|_| "lock admission lost")?;
+                    // The original clock must release the installer while this
+                    // lock is still held. A watchdog also makes the old ambient
+                    // clock implementation fail deterministically without hanging.
+                    Ok(release_rx.recv_timeout(Duration::from_secs(3)).is_ok())
+                });
+                locked_rx.recv_timeout(Duration::from_secs(3))?;
+                Some((release_tx, holder))
+            } else {
+                None
             };
-            assert!(matches!(
-                result,
-                Ok(HaRecordPublicationProgress::BeforePublicationNoWrite)
-            ));
+            // The original captured deadline must always dominate a later
+            // longer request scope. A missing owner clock must fail closed.
+            if matches!(case, "beforepub_owner_budget" | "beforepub_owner_lock") {
+                let short_owner = Instant::now() + Duration::from_millis(850);
+                received.owner.deadline = Some(short_owner);
+                received
+                    .owner
+                    .shamir_owner
+                    .as_mut()
+                    .ok_or("missing Shamir owner")?
+                    .deadline = short_owner;
+            } else if case == "beforepub_missing_owner_deadline" {
+                received.owner.deadline = None;
+            }
+            let result = {
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now()
+                        + if case == "beforepub_budget" {
+                            Duration::from_millis(850)
+                        } else {
+                            Duration::from_secs(15)
+                        },
+                );
+                let ambient = crate::request_deadline::current();
+                if case == "beforepub_owner_lock" {
+                    assert!(ambient > received.owner.deadline);
+                }
+                let result = service.install_committed_ha_records(received);
+                assert_eq!(crate::request_deadline::current(), ambient);
+                result
+            };
+            if let Some((release, holder)) = lock_holder {
+                let _ = release.send(());
+                assert!(
+                    holder.join().map_err(|_| "lock holder panicked")??,
+                    "HA lock waited for its watchdog instead of the original owner deadline"
+                );
+            }
+            if case == "beforepub_missing_owner_deadline" {
+                // Missing original authority is a malformed local Shamir
+                // receipt, rejected earlier by the exact-instance guard.
+                // Either path must leave A intact and must never stage B.
+                assert!(matches!(result, Err(ref error) if error.status == 503));
+            } else {
+                assert!(matches!(
+                    result,
+                    Ok(HaRecordPublicationProgress::BeforePublicationNoWrite)
+                ));
+            }
             assert_eq!(
                 service
                     .durable
@@ -3220,17 +3368,19 @@ mod tests {
             100,
         )?;
         let c_plan = service.prepare_record_plan(&mut c).map_err(|_| "C plan")?;
-        cluster.processes[0]
-            .lock()
-            .map_err(|_| "HA")?
-            .commit_record_state(
-                "unpublished-C",
-                &b_plan.identity,
-                &c_plan.bytes,
-                &c_plan.objects,
-            )?;
+        if case != "beforepub_prestage_budget" {
+            cluster.processes[0]
+                .lock()
+                .map_err(|_| "HA")?
+                .commit_record_state(
+                    "unpublished-C",
+                    &b_plan.identity,
+                    &c_plan.bytes,
+                    &c_plan.objects,
+                )?;
+        }
         match case {
-            "beforepub_quorum" | "beforepub_expired" => {
+            "beforepub_quorum" | "beforepub_expired" | "beforepub_prestage_budget" => {
                 let bytes_before = ["state.hbs", "journal.hbj", "ledger.hbl", "seal.json"]
                     .map(|leaf| fs::read(service.data_dir.join(leaf)));
                 if case == "beforepub_quorum" {
@@ -3238,6 +3388,8 @@ mod tests {
                 }
                 let original_bound = if case == "beforepub_expired" {
                     Instant::now() - Duration::from_millis(1)
+                } else if case == "beforepub_prestage_budget" {
+                    Instant::now() + Duration::from_millis(700)
                 } else {
                     Instant::now() + Duration::from_millis(250)
                 };
@@ -3304,10 +3456,16 @@ mod tests {
                 // genuine ReadIndex and install C.
                 service
                     .sync_from_ha()
-                    .map_err(|_| "independent current C sync")?;
+                    .map_err(|_| "independent current B/C sync")?;
                 assert_eq!(
-                    service.current_state_identity().map_err(|_| "C")?,
-                    c_plan.identity
+                    service
+                        .current_state_identity()
+                        .map_err(|_| "fresh independent B/C")?,
+                    if case == "beforepub_prestage_budget" {
+                        b_plan.identity
+                    } else {
+                        c_plan.identity
+                    }
                 );
             }
             "beforepub_damage" | "beforepub_changed" | "beforepub_instance" => {
