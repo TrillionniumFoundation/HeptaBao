@@ -4,7 +4,7 @@ The manual synthetic `ha_multihost_live.py` lifecycle can use a separately built
 native artifact for an individual voter. Every artifact is bound to its expected
 SHA-256 and the same frozen source commit and tree. The original single-binary
 Linux invocation remains supported, and the baseline denominator remains 54.
-The composed 24 MiB KV1 denominator remains 69. These profiles exercise the V5
+The composed 24 MiB KV1 denominator remains 69. Native profiles add exactly three source/build receipt checks, producing denominators 57 and 72. These profiles exercise the V5
 application writer and cannot qualify the closed V6 production writer.
 
 Provide an override with:
@@ -15,9 +15,23 @@ Provide an override with:
 
 The node alias must name exactly one configured node. Duplicate node overrides,
 unknown nodes, noncanonical source paths, malformed hashes, and different source
-freezes are rejected before any remote process starts. Source build receipts
-must independently establish that each supplied hash was built from the stated
-freeze; passing command-line metadata alone is not a build attestation.
+freezes are rejected before any remote process starts. Native mode requires a
+hash-bound receipt for every voter, including voters using the default binary:
+
+```
+--native-build-receipt node-alias,source-alias:/canonical/build-receipt.json,SHA256
+```
+
+The receipt schema is `heptabao.native-build.v1`. Required fields are
+`source_commit`, `source_tree`, `binary_sha256`, integer `build_exit_code: 0`,
+`source_freeze_verified: true`, and a bounded `native_abi` such as
+`aarch64-apple-darwin` or `x86_64-unknown-linux-gnu`. Its source and binary binding
+must match this exact run. Different Linux voter aliases may reference the same
+verified build receipt. The native profile must pass all three receipt checks;
+it cannot borrow a legacy profile's denominator or a receipt for another build.
+Source build receipts must independently establish that each supplied hash was
+built from the stated freeze; passing command-line metadata alone is not a build
+attestation.
 
 A Mac node root and its native binary source use the existing `/Volumes/T5/`
 storage admission. Select its actual RFC1918 LAN address and an unused permitted

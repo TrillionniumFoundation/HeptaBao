@@ -222,6 +222,30 @@ def parse_node_binary(value: str, commit: str, tree: str) -> tuple[str, tuple[st
     return parts[0], (alias, path, parts[2])
 
 
+def parse_build_receipt(value: str) -> tuple[str, tuple[str, str, str]]:
+    parts = value.split(",")
+    if (len(parts) != 3 or re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", parts[0]) is None
+            or re.fullmatch(r"[0-9a-f]{64}", parts[2]) is None):
+        raise argparse.ArgumentTypeError("receipt must name a node, canonical source and SHA256")
+    alias, path = parse_binary_source(parts[1])
+    return parts[0], (alias, path, parts[2])
+
+
+def validate_build_receipt(receipt: dict, commit: str, tree: str, binary_digest: str) -> str:
+    if (not isinstance(receipt, dict)
+            or receipt.get("schema") != "heptabao.native-build.v1"
+            or receipt.get("source_commit") != commit
+            or receipt.get("source_tree") != tree
+            or receipt.get("binary_sha256") != binary_digest
+            or type(receipt.get("build_exit_code")) is not int
+            or receipt["build_exit_code"] != 0
+            or receipt.get("source_freeze_verified") is not True
+            or not isinstance(receipt.get("native_abi"), str)
+            or re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", receipt["native_abi"]) is None):
+        raise FixtureError("native_build_receipt_binding_invalid")
+    return receipt["native_abi"]
+
+
 def remote_binary_digest(node: Node) -> str:
     return ssh(node, f"""
 python3 - {shlex.quote(node.root + '/heptabao-server')} <<'PY2'
@@ -232,7 +256,7 @@ PY2
 """).strip()
 
 
-def copy_candidate_source(alias: str, path: str, destination: Path) -> None:
+def copy_candidate_source(alias: str, path: str, destination: Path, *, executable: bool = True) -> None:
     if alias != "local":
         checked_run([
             "scp", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
@@ -247,7 +271,7 @@ def copy_candidate_source(alias: str, path: str, destination: Path) -> None:
         raise FixtureError("local_candidate_source_unavailable") from error
     if (resolved != source or source.is_symlink() or not stat.S_ISREG(info.st_mode)
             or info.st_uid != os.getuid() or info.st_mode & 0o022
-            or not os.access(source, os.R_OK | os.X_OK)):
+            or not os.access(source, os.R_OK | (os.X_OK if executable else 0))):
         raise FixtureError("unsafe_local_candidate_source")
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
     with source.open("rb") as input_stream, os.fdopen(
@@ -859,6 +883,8 @@ def main(*, extension=None) -> int:
     parser.add_argument("--expected-binary-sha256", required=True)
     parser.add_argument("--node-binary", action="append", default=[],
                         help="node-alias,source-alias:absolute-path,SHA256,source-commit,source-tree")
+    parser.add_argument("--native-build-receipt", action="append", default=[],
+                        help="node-alias,source-alias:absolute-receipt-path,SHA256; required for every native voter")
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree", required=True)
     parser.add_argument("--node", action="append", required=True)
@@ -907,6 +933,19 @@ def main(*, extension=None) -> int:
         parser.error(str(error))
     expected_digests = {str(node.node_id): native_sources.get(
         node.alias, (None, None, args.expected_binary_sha256))[2] for node in nodes}
+    receipt_sources = {}
+    try:
+        for specification in args.native_build_receipt:
+            alias, receipt = parse_build_receipt(specification)
+            if alias in receipt_sources or alias not in {node.alias for node in nodes}:
+                parser.error("native build receipt must name one unique configured node")
+            receipt_sources[alias] = receipt
+    except argparse.ArgumentTypeError as error:
+        parser.error(str(error))
+    if native_sources or receipt_sources:
+        if set(receipt_sources) != {node.alias for node in nodes}:
+            parser.error("every native voter requires its own hash-bound source/build receipt")
+        required_checks = required_checks | {f"node_{node.node_id}_native_build_receipt" for node in nodes}
     checks: list[dict] = []
     events: list[dict] = []
     started: set[Node] = set()
@@ -924,6 +963,8 @@ def main(*, extension=None) -> int:
         "expected_node_binary_sha256": expected_digests,
         "source_binding": "all native artifacts bound to the exact source commit and tree",
         "process_identity_scope": "Linux start ticks or macOS BSD ps; macOS PID check is non-atomic",
+        "native_build_receipts_verified": False,
+        "native_build_check_count": len(receipt_sources),
         "runner_sha256": initial_runner_sha256,
         "required_check_count": len(required_checks),
         "host_count": 3,
@@ -983,6 +1024,26 @@ def main(*, extension=None) -> int:
             source_alias, source_path = parse_binary_source(args.binary_source)
         except argparse.ArgumentTypeError as error:
             raise FixtureError("invalid_binary_source") from error
+        stage = "native_build_receipt_binding"
+        verified_abis = {}
+        for node in nodes:
+            if node.alias not in receipt_sources:
+                continue
+            alias, path, receipt_digest = receipt_sources[node.alias]
+            destination = work / ("native-build-" + node.alias + ".json")
+            copy_candidate_source(alias, path, destination, executable=False)
+            destination.chmod(0o600)
+            if (destination.stat().st_size > 64 * 1024
+                    or sha256_file(destination) != receipt_digest):
+                raise FixtureError("native_build_receipt_digest_mismatch_" + node.alias)
+            verified_abis[node.alias] = validate_build_receipt(
+                json.loads(destination.read_text()), args.source_commit, args.source_tree,
+                expected_digests[str(node.node_id)])
+            check(f"node_{node.node_id}_native_build_receipt", True,
+                  receipt_sha256=receipt_digest, native_abi=verified_abis[node.alias])
+        if receipt_sources:
+            report["native_build_receipts_verified"] = True
+            report["native_build_abis"] = verified_abis
         stage = "candidate_copy"
         copy_candidate_source(source_alias, source_path, local_binary)
         local_binary.chmod(0o500)

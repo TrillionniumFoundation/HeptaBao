@@ -421,6 +421,19 @@ class NativeProcessIdentityTests(unittest.TestCase):
             with self.assertRaises(argparse.ArgumentTypeError):
                 MODULE.parse_node_binary(value + suffix, commit, tree)
 
+    def test_native_build_receipt_cannot_borrow_another_build_or_failed_exit(self):
+        commit, tree, binary = "a" * 40, "b" * 40, "c" * 64
+        receipt = {"schema": "heptabao.native-build.v1", "source_commit": commit,
+                   "source_tree": tree, "binary_sha256": binary, "build_exit_code": 0,
+                   "source_freeze_verified": True, "native_abi": "aarch64-apple-darwin"}
+        self.assertEqual(MODULE.validate_build_receipt(receipt, commit, tree, binary),
+                         "aarch64-apple-darwin")
+        for field, value in (("source_commit", "d" * 40), ("source_tree", "e" * 40),
+                             ("binary_sha256", "f" * 64), ("build_exit_code", 1),
+                             ("build_exit_code", False), ("source_freeze_verified", False)):
+            with self.subTest(field=field, value=value), self.assertRaises(MODULE.FixtureError):
+                MODULE.validate_build_receipt(dict(receipt, **{field: value}), commit, tree, binary)
+
 
 if __name__ == "__main__":
     unittest.main()
