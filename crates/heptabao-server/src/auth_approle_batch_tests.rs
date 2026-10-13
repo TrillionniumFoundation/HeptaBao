@@ -298,3 +298,53 @@ fn approle_missing_role_reads_are_empty_after_authorization_and_invalid_writes()
         );
     }
 }
+
+#[test]
+fn approle_role_id_edge_whitespace_uses_canonical_identity_and_consumes_once()
+-> Result<(), Box<dyn std::error::Error>> {
+    for edge in [
+        " ", "\t", "\r\n", "\u{0085}", "\u{00a0}", "\u{1680}", "\u{2000}", "\u{2028}", "\u{2029}",
+        "\u{202f}", "\u{205f}", "\u{3000}",
+    ] {
+        let (mut state, _admin, credentials) = setup("service", 1);
+        let canonical = credentials["role_id"]
+            .as_str()
+            .ok_or("missing fixture RoleID")?
+            .to_owned();
+        let mut wrong = credentials.clone();
+        let exact_secret = credentials["secret_id"]
+            .as_str()
+            .ok_or("missing fixture SecretID")?;
+        wrong["secret_id"] = json!(format!("{edge}{exact_secret}{edge}"));
+        let before = serde_json::to_vec(&state)?;
+        assert!(
+            state
+                .handle(None, "", "POST", "auth/approle/login", &wrong, 100)
+                .is_err(),
+            "SecretID must remain exact"
+        );
+        assert_eq!(
+            serde_json::to_vec(&state)?,
+            before,
+            "failed login consumed credential"
+        );
+        let mut normalized = credentials.clone();
+        normalized["role_id"] = json!(format!("{edge}{canonical}{edge}"));
+        let response = login(&mut state, &normalized);
+        assert_eq!(response.status, 200);
+        assert_eq!(
+            response
+                .login_identity
+                .as_ref()
+                .map(|identity| identity.alias.as_str()),
+            Some(canonical.as_str())
+        );
+        assert!(
+            state
+                .handle(None, "", "POST", "auth/approle/login", &normalized, 100)
+                .is_err(),
+            "single-use SecretID was reused"
+        );
+    }
+    Ok(())
+}

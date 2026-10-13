@@ -48,9 +48,6 @@ fn decode(input: &[u8]) -> Result<String, &'static str> {
         }
         cursor += 1;
     }
-    if decoded.iter().any(|value| *value < b' ' || *value == 0x7f) {
-        return Err("AppRole form contains control bytes");
-    }
     std::str::from_utf8(decoded.as_slice())
         .map(str::to_owned)
         .map_err(|_| "AppRole form must be UTF-8")
@@ -70,7 +67,19 @@ pub(super) fn parse(payload: &[u8]) -> Result<Value, &'static str> {
             .position(|v| *v == b'=')
             .ok_or("AppRole form field requires a value")?;
         let field = Zeroizing::new(decode(&pair[..index])?);
-        let value = Zeroizing::new(decode(&pair[index + 1..])?);
+        let mut value = Zeroizing::new(decode(&pair[index + 1..])?);
+        if field.as_str() == "role_id" {
+            // Match native JSON login normalization before rejecting interior
+            // controls. Never normalize SecretID or a form field name.
+            value = Zeroizing::new(value.trim().to_owned());
+        }
+        if value
+            .as_bytes()
+            .iter()
+            .any(|byte| *byte < b' ' || *byte == 0x7f)
+        {
+            return Err("AppRole form contains control bytes");
+        }
         if value.len() > 256 {
             return Err("AppRole credential exceeds limit");
         }
@@ -115,6 +124,28 @@ mod tests {
             serde_json::json!({"role_id":"uuid-1","secret_id":"p+ss one"})
         );
         assert_eq!(parse(b"role_id=one")?, serde_json::json!({"role_id":"one"}));
+        Ok(())
+    }
+
+    #[test]
+    fn role_id_edge_whitespace_is_normalized_without_changing_secret_id() -> TestResult {
+        let parsed = parse(b"role_id=%09%0D%0Auuid-1%C2%A0%E3%80%80&secret_id=+p%2Bss+one+")?;
+        assert_eq!(
+            parsed,
+            serde_json::json!({"role_id":"uuid-1","secret_id":" p+ss one "})
+        );
+        for body in [
+            b"role_id=uu%09id-1&secret_id=good".as_slice(),
+            b"role_id=uuid-1&secret_id=%09good",
+            b"role_id=uuid-1&secret_id=good%0D%0A",
+            b"%09role_id=uuid-1&secret_id=good",
+            b"role_id=%09uuid-1&role_id=uuid-1",
+        ] {
+            assert!(
+                parse(body).is_err(),
+                "interior or non-role control accepted"
+            );
+        }
         Ok(())
     }
 
