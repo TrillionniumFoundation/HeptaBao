@@ -12,6 +12,7 @@ import threading
 import time
 
 from .deadline_transport import DeadlineClient
+from .token_authority import TokenAuthority
 from .private_state import StateDirectory, read_trusted_ca, token_snapshot
 from .transport import BaoError, canonical, key_path
 
@@ -43,10 +44,12 @@ def configuration(value,agent):
 
 
 class ManagedSecrets:
-    def __init__(self,config,agent,stop,*,client_factory=DeadlineClient,owner_deadline=None):
+    def __init__(self,config,agent,stop,*,client_factory=DeadlineClient,owner_deadline=None,token_authority=None):
         self.config=configuration(config,agent);self.agent=agent;self.stop=stop
         self.client_factory=client_factory;self.lock=threading.RLock()
         self.owner_deadline=owner_deadline
+        if not callable(token_authority):raise BaoError('managed_secret_original_token_authority_required')
+        self.token_authority=token_authority
         self.storage_failed=False
         self.directory=StateDirectory(self.config['state_dir'],writer=True)
         try:
@@ -89,20 +92,29 @@ class ManagedSecrets:
 
     def _context(self,end=None):
         if self.storage_failed:raise BaoError('managed_secret_durable_publication_unknown')
+        authority=self.token_authority()
+        if not isinstance(authority,TokenAuthority) or authority.phase!='ready':
+            raise BaoError('managed_secret_token_authority_withdrawn')
         if self.stop.is_set():raise BaoError('managed_secret_owner_stopped')
         if self.agent.binding()!=self.agent_binding or read_trusted_ca(self.agent.ca_file)!=self.trust:
             raise BaoError('managed_secret_trust_changed')
         with StateDirectory(self.agent.state_dir) as directory:
             token,state=token_snapshot(directory,time.time(),self.agent.binding())
+        token_hash=hashlib.sha256(token.encode('ascii')).hexdigest()
+        if (self.token_authority() is not authority or token_hash!=authority.token_hash
+                or state.get('generation')!=authority.generation or state.get('phase')!='ready'
+                or state.get('expires_at')!=authority.wall_deadline):
+            raise BaoError('managed_secret_token_generation_changed')
+        state={**state,'_authority':authority}
         if type(state.get('token_num_uses')) is not int or state['token_num_uses']!=0:
             raise BaoError('managed_secret_requires_admitted_unlimited_token')
-        deadline=time.monotonic()+self.agent.timeout
+        deadline=min(time.monotonic()+self.agent.timeout,authority.mono_deadline)
         if self.owner_deadline is not None:deadline=min(deadline,self.owner_deadline)
         if end is not None:deadline=min(deadline,end)
         if deadline<=time.monotonic():raise BaoError('managed_secret_deadline')
         client=self.client_factory(self.agent.address,self.agent.ca_file,token,self.agent.namespace,
             self.agent.timeout,trusted_ca_pem=self.trust,deadline=deadline,cancellation=self.stop)
-        return client,state,hashlib.sha256(token.encode('ascii')).hexdigest()
+        return client,state,token_hash
 
     def delivery(self,paths,token_hash,*,end=None,include_wall=False):
         """Recheck the same token and every subscription at the release boundary."""
@@ -110,8 +122,9 @@ class ManagedSecrets:
             _,state,current=self._context(end)
             if current!=token_hash:raise BaoError('managed_secret_token_generation_changed')
             wall,mono=time.time(),time.monotonic()
-            deadline=mono+max(0,state['expires_at']-wall)
-            wall_deadline=state['expires_at'];observed_wall=state['observed_wall']
+            authority=state['_authority']
+            deadline=authority.mono_deadline
+            wall_deadline=authority.wall_deadline;observed_wall=authority.observed_wall
             for path in paths:
                 row=self.rows.get(path)
                 if row is None or row.get('phase')!='ready' or row.get('token_hash')!=token_hash:
@@ -125,7 +138,26 @@ class ManagedSecrets:
                     wall_deadline=min(wall_deadline,row['wall_deadline'])
             if self.stop.is_set() or deadline<=time.monotonic() or end is not None and time.monotonic()>=end:
                 raise BaoError('managed_secret_deadline')
-            return (deadline,wall_deadline,observed_wall) if include_wall else deadline
+            if self.token_authority() is not authority:raise BaoError('managed_secret_token_generation_changed')
+            return (deadline,wall_deadline,observed_wall,authority.generation) if include_wall else deadline
+
+    def sink_authority(self,paths,token_hash,generation):
+        """Expiry cleaner's immutable snapshot read; no file, lock, or network."""
+        authority=self.token_authority()
+        if (self.storage_failed or self.stop.is_set() or not isinstance(authority,TokenAuthority)
+                or authority.phase!='ready' or authority.token_hash!=token_hash or authority.generation!=generation):
+            raise BaoError('managed_secret_token_authority_withdrawn')
+        rows=[dict(self.rows.get(path) or {}) for path in paths]
+        wall,mono=time.time(),time.monotonic()
+        if (wall<authority.observed_wall or wall>=authority.wall_deadline or mono>=authority.mono_deadline
+                or self.owner_deadline is not None and mono>=self.owner_deadline):
+            raise BaoError('managed_secret_deadline')
+        for row in rows:
+            if row.get('phase')!='ready' or row.get('token_hash')!=token_hash:
+                raise BaoError('managed_secret_subscription_not_ready')
+            if wall<row['observed_wall'] or row.get('lease_id') and (wall>=row['wall_deadline'] or mono>=row['deadline']):
+                raise BaoError('managed_secret_lease_expired_before_delivery')
+        if self.token_authority() is not authority:raise BaoError('managed_secret_token_generation_changed')
 
     def token_generation(self,*,end=None):
         with self.lock:return self._context(end)[2]
@@ -195,7 +227,7 @@ class ManagedSecrets:
             if lease:
                 if not isinstance(lease,str) or type(ttl) is not int or ttl<=0:
                     raise BaoError('managed_secret_lease_shape')
-                duration=min(ttl,state['expires_at']-start_wall)
+                duration=min(ttl,state['_authority'].wall_deadline-start_wall,state['_authority'].mono_deadline-start_mono)
                 if duration<=0:raise BaoError('managed_secret_lease_expired_during_admission')
                 row.update(wall_deadline=start_wall+duration,deadline=start_mono+duration,
                            renew_at=start_mono+max(.1,duration/2))
@@ -239,7 +271,7 @@ class ManagedSecrets:
                     if response.body.get('lease_id')!=lease or type(response.body.get('renewable')) is not bool:continue
                     ttl=response.body.get('lease_duration');renewable=response.body['renewable']
                 if type(ttl) is not int or ttl<=0:continue
-                duration=min(ttl,state['expires_at']-start_wall)
+                duration=min(ttl,state['_authority'].wall_deadline-start_wall,state['_authority'].mono_deadline-start_mono)
                 if duration<=0:continue
                 row['body']['lease_duration']=ttl
                 row['body']['renewable']=renewable

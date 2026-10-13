@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 from heptabao import managed_secrets as managed
 from heptabao import templates
+from heptabao.token_authority import TokenAuthority
 from heptabao.private_state import StateDirectory
 from heptabao.transport import BaoError, canonical
 
@@ -52,8 +53,9 @@ class ManagedCustodyTests(unittest.TestCase):
         with StateDirectory(self.agent_path,writer=True) as directory:
             directory.write('token',raw)
             directory.publish('state.json',{'schema':1,'binding':self.agent.binding(),
-                'phase':'ready','observed_wall':99.,'expires_at':1000.,'token_num_uses':0,
+                'phase':'ready','generation':0,'observed_wall':99.,'expires_at':1000.,'token_num_uses':0,
                 'token_sha256':hashlib.sha256(raw).hexdigest()})
+        self.authority=TokenAuthority('ready',0,TOKEN_HASH,1000.,1000.,99.)
         self.requests=[]
         self.answer=lambda method,path,payload=None:response(lease_body())
         test=self
@@ -63,7 +65,7 @@ class ManagedCustodyTests(unittest.TestCase):
                 return test.answer(method,path,payload)
         self.owner=managed.ManagedSecrets({'state_dir':str(self.managed_path),
             'routes':[{'path':PATH,'effectful':True}]},self.agent,threading.Event(),
-            client_factory=lambda *args,**kwargs:SyntheticClient())
+            client_factory=lambda *args,**kwargs:SyntheticClient(),token_authority=lambda:self.authority)
         self.addCleanup(self.owner.close)
 
     def ready(self, *, phase='ready', deadline=130.):
@@ -122,6 +124,51 @@ class ManagedCustodyTests(unittest.TestCase):
         self.assertEqual(renderer.events['rendered'],0)
         self.assertEqual(renderer.events['blocked'],1)
 
+    def token_grant(self,wall=120.,mono=120.,observed=100.,generation=0):
+        self.authority=TokenAuthority('ready',generation,TOKEN_HASH,wall,mono,observed)
+        with StateDirectory(self.agent_path,writer=True) as directory:
+            state=directory.json('state.json')
+            directory.publish('state.json',{**state,'expires_at':wall,'observed_wall':observed,'generation':generation})
+
+    def test_wall_rollback_above_observed_cannot_extend_original_token_mono_grant(self):
+        self.token_grant()
+        with patch.object(managed.time,'time',lambda:110.),patch.object(managed.time,'monotonic',lambda:110.):
+            self.assertEqual(self.owner.delivery(set(),TOKEN_HASH),120.)
+        with patch.object(managed.time,'time',lambda:105.),patch.object(managed.time,'monotonic',lambda:115.):
+            self.assertEqual(self.owner.delivery(set(),TOKEN_HASH),120.)
+        with patch.object(managed.time,'time',lambda:110.),patch.object(managed.time,'monotonic',lambda:120.):
+            with self.assertRaises(BaoError):self.owner.delivery(set(),TOKEN_HASH)
+        self.assertEqual(self.requests,[])
+
+    def test_cleaner_keeps_original_token_expiry_during_wall_rollback(self):
+        self.token_grant()
+        value,published=self.cleaner_tick(wall=105.,mono=120.,paths=set(),wall_deadline=120.)
+        self.assertIsNone(value);self.assertEqual(published,{})
+        self.assertEqual(self.requests,[])
+
+    def test_pending_token_capsule_withdraws_output_even_with_same_sink_digest(self):
+        self.authority=None
+        value,published=self.cleaner_tick(wall=105.,mono=105.,paths=set())
+        self.assertIsNone(value);self.assertEqual(published,{})
+        with self.assertRaises(BaoError):self.owner.delivery(set(),TOKEN_HASH)
+        self.assertEqual(self.requests,[])
+
+    def test_new_generation_same_token_cannot_reauthorize_prior_published_sink(self):
+        self.token_grant(wall=140.,mono=140.,generation=1)
+        value,published=self.cleaner_tick(wall=105.,mono=105.,paths=set())
+        self.assertIsNone(value);self.assertEqual(published,{})
+        self.assertEqual(self.owner.delivery(set(),TOKEN_HASH,include_wall=True)[-1],1)
+        self.assertEqual(self.requests,[])
+
+    def test_cleaner_expiry_does_not_wait_for_subscription_network_lock(self):
+        self.token_grant()
+        result=[]
+        with self.owner.lock:
+            worker=threading.Thread(target=lambda:result.append(self.cleaner_tick(wall=105.,mono=120.,paths=set())))
+            worker.start();worker.join(.3)
+            self.assertFalse(worker.is_alive())
+        self.assertEqual(result,[(None,{})]);self.assertEqual(self.requests,[])
+
     def cleaner_tick(self,*,wall,mono,paths=None,wall_deadline=130.,observed_wall=100.):
         renderer=templates.Templates.__new__(templates.Templates)
         class Directory:
@@ -133,7 +180,7 @@ class ManagedCustodyTests(unittest.TestCase):
         directory=Directory();renderer.directories={'unit':directory}
         renderer.publication_lock=threading.RLock();renderer.stop=self.owner.stop
         renderer.secrets=self.owner;renderer.cleaner_stop=OneTick()
-        renderer.published={('unit','unit'):(130.,set([PATH]) if paths is None else paths,TOKEN_HASH,wall_deadline,observed_wall)}
+        renderer.published={('unit','unit'):(130.,set([PATH]) if paths is None else paths,TOKEN_HASH,wall_deadline,observed_wall,0)}
         with patch.object(templates.time,'time',lambda:wall),patch.object(templates.time,'monotonic',lambda:mono):
             renderer._clean_expired()
         return directory.value,renderer.published
@@ -227,7 +274,7 @@ class ManagedCustodyTests(unittest.TestCase):
         directory=self.root/'mislabelled';directory.mkdir(mode=0o700)
         owner=managed.ManagedSecrets({'state_dir':str(directory),
             'routes':[{'path':PATH,'effectful':False}]},self.agent,threading.Event(),
-            client_factory=self.owner.client_factory)
+            client_factory=self.owner.client_factory,token_authority=lambda:self.authority)
         self.addCleanup(owner.close)
         def unknown(*args):raise BaoError('upstream_outcome_unknown')
         self.answer=unknown
@@ -260,7 +307,7 @@ class ManagedCustodyTests(unittest.TestCase):
         binding=hashlib.sha256(canonical({'agent':self.agent.binding(),'managed':config})).hexdigest()
         with StateDirectory(bad,writer=True) as directory:
             directory.publish('subscriptions.json',{'schema':1,'binding':binding,'rows':{PATH:None}})
-        with self.assertRaises(BaoError):managed.ManagedSecrets(config,self.agent,threading.Event(),client_factory=lambda *a,**k:None)
+        with self.assertRaises(BaoError):managed.ManagedSecrets(config,self.agent,threading.Event(),client_factory=lambda *a,**k:None,token_authority=lambda:self.authority)
         # Constructor failure must release the writer lock as well.
         with StateDirectory(bad,writer=True):pass
 
@@ -307,7 +354,7 @@ class TemplateCustodyTests(unittest.TestCase):
             owner.stop.set()
             return b'synthetic',set(),TOKEN_HASH,time.monotonic()+1
         owner._render=render
-        owner.secrets=SimpleNamespace(delivery=lambda *args,**kwargs:(time.monotonic()+1,time.time()+1,time.time()) if kwargs.get('include_wall') else time.monotonic()+1)
+        owner.secrets=SimpleNamespace(delivery=lambda *args,**kwargs:(time.monotonic()+1,time.time()+1,time.time(),0) if kwargs.get('include_wall') else time.monotonic()+1)
         owner.step()
         self.assertEqual(sink.writes,0)
         self.assertTrue(sink.removed)

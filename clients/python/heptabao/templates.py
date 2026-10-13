@@ -175,14 +175,14 @@ class Templates:
                 output,paths,token_hash,deadline=self._render(job)
                 directory=self.directories[job['destination_dir']];name=job['destination_name']
                 with self.publication_lock:
-                    expires,wall_expires,observed_wall=self.secrets.delivery(paths,token_hash,end=deadline,include_wall=True)
+                    expires,wall_expires,observed_wall,generation=self.secrets.delivery(paths,token_hash,end=deadline,include_wall=True)
                     if self.stop.is_set():raise BaoError('template_owner_stopped')
                     before=directory.read(name,optional=True)
                     if before!=output:
                         directory.write(name,output)
-                        expires,wall_expires,observed_wall=self.secrets.delivery(paths,token_hash,end=deadline,include_wall=True)
+                        expires,wall_expires,observed_wall,generation=self.secrets.delivery(paths,token_hash,end=deadline,include_wall=True)
                         self.written.add((job['destination_dir'],name));self.events['changed']+=1
-                    self.published[(job['destination_dir'],name)]=(expires,paths,token_hash,wall_expires,observed_wall)
+                    self.published[(job['destination_dir'],name)]=(expires,paths,token_hash,wall_expires,observed_wall,generation)
                 self.events['rendered']+=1
             except (BaoError,OSError,ValueError,TypeError,UnicodeError,subprocess.SubprocessError):
                 self.events['blocked']+=1
@@ -196,20 +196,14 @@ class Templates:
     def _clean_expired(self):
         while not self.cleaner_stop.wait(.05):
             with self.publication_lock:
-                for target,(expires,paths,token_hash,wall_expires,observed_wall) in list(self.published.items()):
+                for target,(expires,paths,token_hash,wall_expires,observed_wall,generation) in list(self.published.items()):
                     try:
                         wall,mono=time.time(),time.monotonic()
                         if self.stop.is_set() or mono>=expires or wall>=wall_expires or wall<observed_wall or self.secrets.storage_failed:
                             raise BaoError('template_sink_expired')
-                        # Never wait for a network operation holding the
-                        # subscription lock. Its durable pending marker itself
-                        # withdraws permission for a previously published sink.
-                        for path in paths:
-                            row=self.secrets.rows.get(path)
-                            if row is None or row.get('phase')!='ready' or row.get('token_hash')!=token_hash:
-                                raise BaoError('template_sink_subscription_fenced')
-                            if wall<row['observed_wall'] or row.get('lease_id') and (wall>=row['wall_deadline'] or mono>=row['deadline']):
-                                raise BaoError('template_sink_subscription_expired')
+                        # The actual Agent capsule and copied subscription rows
+                        # are checked without its network/owner lock.
+                        self.secrets.sink_authority(paths,token_hash,generation)
                     except (BaoError,OSError,ValueError,TypeError):
                         try:self.directories[target[0]].remove(target[1])
                         except (BaoError,OSError,ValueError,TypeError):self.stop.set()

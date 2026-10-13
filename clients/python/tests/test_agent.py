@@ -45,6 +45,36 @@ class AgentTests(unittest.TestCase):
         agent=Agent(self.config,state,client_factory=self.fake,wall=self.clock,monotonic=self.clock)
         return agent,state
 
+    def test_actual_owner_capsule_is_original_frozen_grant(self):
+        agent,state=self.open();self.fake.token(ttl=20);agent.step()
+        capsule=agent.token_authority()
+        self.assertEqual(capsule.mono_deadline,120.)
+        self.assertEqual(capsule.wall_deadline,120.)
+        with self.assertRaises(dataclasses.FrozenInstanceError):capsule.mono_deadline=130.
+        self.clock.now=105.;agent.monotonic=lambda:115.
+        self.assertIs(agent.token_authority(),capsule)
+        agent.monotonic=lambda:120.
+        self.assertIsNone(agent.token_authority())
+        agent.monotonic=lambda:115.
+        self.assertIsNone(agent.token_authority())
+
+    def test_actual_owner_pending_checkpoint_failure_withdraws_same_token_grant(self):
+        agent,state=self.open();self.fake.token();agent.step()
+        self.assertIsNotNone(agent.token_authority())
+        with patch.object(state,'publish',side_effect=BaoError('state_publication_unknown')):
+            with self.assertRaises(BaoError):agent._checkpoint('renew_pending')
+        self.assertIsNone(agent.token_authority())
+        self.assertEqual(agent.state['phase'],'ready')
+
+    def test_resumed_owner_cannot_publish_capsule_before_authoritative_lookup(self):
+        agent,state=self.open();self.fake.token();agent.step();state.close()
+        agent,state=self.open();self.assertIsNone(agent.token_authority())
+        self.fake.queued.append(Response(200,{'data':{'num_uses':0,'ttl':10,'renewable':True,'type':'service','policies':['default']}}))
+        agent.step();capsule=agent.token_authority()
+        self.assertEqual(capsule.mono_deadline,110.)
+        self.assertEqual(capsule.wall_deadline,110.)
+        self.assertEqual(capsule.generation,state.json('state.json')['generation'])
+
     def test_optional_secret_id_configuration_keeps_required_paths_private(self):
         config_file = self.root / 'agent.json'
         raw = dataclasses.asdict(self.config)

@@ -18,6 +18,7 @@ import time
 from .transport import BaoError, Client, SafeArgumentParser, canonical, endpoint, key_path, private_read, private_json
 from .private_state import StateDirectory, token_snapshot, read_trusted_ca
 from .deadline_transport import DeadlineClient
+from .token_authority import TokenAuthority
 
 
 @dataclass(frozen=True, repr=False)
@@ -132,6 +133,7 @@ class Agent:
             raise BaoError('agent_trust_configuration_changed')
         self.factory, self.wall, self.monotonic = client_factory, wall, monotonic
         self.cancellation,self.owner_deadline=cancellation,owner_deadline
+        self._authority = None
         self._deadline = None
         self._token = None
         self.state = directory.json('state.json', optional=True)
@@ -164,6 +166,9 @@ class Agent:
         self._resumed = self._token is not None
 
     def _checkpoint(self, phase, **updates):
+        # Withdraw before entering any state publication or upstream effect.
+        # A failed checkpoint must never leave an older ready capsule reusable.
+        self._authority = None
         current = self.wall()
         if (not math.isfinite(current) or type(self.state.get('observed_wall')) not in (int, float)
                 or current < self.state['observed_wall']):
@@ -172,6 +177,23 @@ class Agent:
                  'observed_wall': current}
         self.directory.publish('state.json', state)
         self.state = state
+
+    def _publish_authority(self):
+        self._authority = TokenAuthority('ready',self.state['generation'],
+            hashlib.sha256(self._token.encode('ascii')).hexdigest(),
+            self.state['expires_at'],self._deadline,self.state['observed_wall'])
+
+    def token_authority(self):
+        """Bounded immutable read; no directory, transport, or owner lock."""
+        authority=self._authority
+        if authority is None:return None
+        if (self.cancellation is not None and self.cancellation.is_set()
+                or self.owner_deadline is not None and self.monotonic()>=self.owner_deadline
+                or self.wall()<authority.observed_wall or self.wall()>=authority.wall_deadline
+                or self.monotonic()>=authority.mono_deadline):
+            if self._authority is authority:self._authority=None
+            return None
+        return authority if self._authority is authority else None
 
     def _client(self, token: str):
         if self.config.binding() != self.binding:
@@ -189,6 +211,7 @@ class Agent:
         self._token, self._deadline = None, None
 
     def _admit_token(self, response, start_wall, start_mono):
+        self._authority = None
         auth = response.body.get('auth')
         if (response.status != 200 or response.body.get('wrap_info') is not None or not isinstance(auth, dict)
                 or auth.get('token_type') != 'service' or auth.get('renewable') is not True
@@ -216,6 +239,7 @@ class Agent:
         self._checkpoint('ready', token_sha256=hashlib.sha256(raw).hexdigest(), expires_at=expiry,
                          ttl=ttl, renew_at=start_wall + ttl / 2, token_num_uses=0)
         self._token, self._deadline, self._resumed = token, deadline, False
+        self._publish_authority()
 
     def step(self) -> str:
         self.directory.check()
@@ -250,7 +274,13 @@ class Agent:
                         or data.get('type') != 'service' or data.get('renewable') is not True
                         or 'root' in data.get('policies', [])):
                     raise BaoError('agent_resumed_token_rejected')
+                # Lookup may only cap the original persisted grant. Its TTL
+                # cannot extend this process's already admitted monotonic bound.
+                self._deadline=min(self._deadline,mono+data['ttl'])
+                self._checkpoint('ready',expires_at=min(self.state['expires_at'],now+data['ttl']),
+                    ttl=min(self.state['ttl'],data['ttl']),renew_at=min(self.state['renew_at'],now+data['ttl']/2))
                 self._resumed = False
+                self._publish_authority()
             if now < self.state['renew_at'] and mono < self._deadline - self.state['ttl'] / 2:
                 return 'ready'
             self._checkpoint('renew_pending')
@@ -305,7 +335,8 @@ def main(argv=None):
             try:
                 if config.managed_secrets is not None:
                     from .managed_secrets import ManagedSecrets
-                    managed_secrets=ManagedSecrets(config.managed_secrets,config,stop,owner_deadline=end)
+                    managed_secrets=ManagedSecrets(config.managed_secrets,config,stop,owner_deadline=end,
+                        token_authority=agent.token_authority)
                 if config.templates is not None:
                     from .templates import Templates
                     templates=Templates(config.templates,config,managed_secrets,stop)

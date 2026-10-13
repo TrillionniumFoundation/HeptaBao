@@ -200,16 +200,20 @@ def main():
                 if len(response)>16777216:raise RuntimeError('unbounded_unix_response')
         header,data=response.split(b'\r\n\r\n',1)
         return int(header.split(b' ')[1]),json.loads(data) if data else {}
+    stage='upstream_bootstrap'
     try:
         if args.backend=='oracle':
+            stage='official_271_pinned_inputs_and_bootstrap'
             oracle=start_oracle(free_loopback_port(),version='2.7.1')
             tls_root=Path(oracle['root']);address=oracle['address'];ca=oracle['ca_file']
             root_token=Path(oracle['token_file']).read_text().strip()
             report['oracle_identity']=json.loads(Path(oracle['identity_file']).read_text())
         else:
+            stage='candidate_private_upstream_bootstrap'
             instance=Instance(args.binary,root/'upstream')
             tls_root=instance.root;address=instance.address;ca=str(tls_root/'ca.crt')
         if not args.skip_postgres:
+            stage='real_postgres_tls_scram_setup'
             pg=Postgres(args.postgres_bin,root/'postgres',tls_root/'tls.crt',tls_root/'tls.key',Path(ca))
             pg.start();pg.install()
             report['real_postgresql']=True
@@ -516,6 +520,31 @@ def main():
     except (BaoError,OSError,ValueError,RuntimeError,subprocess.SubprocessError,KeyError,TypeError) as error:
         report['failure']='owned_runtime_check_failed'
         report['failure_type']=type(error).__name__
+        report['failure_stage']=stage
+        trace=[];node=error.__traceback__
+        while node is not None:
+            trace.append({'file':Path(node.tb_frame.f_code.co_filename).name,'line':node.tb_lineno,'function':node.tb_frame.f_code.co_name})
+            node=node.tb_next
+        report['failure_traceback_frames']=trace
+        # Shape/timing-only diagnostics are captured before private cleanup.
+        # Never copy token bytes, lease IDs, credential bodies, or exception text.
+        report['owned_process_returncodes']=[p.poll() for p in processes]
+        if 'template_state' in locals():
+            state_file=template_state/'state.json';status_file=template_state/'template-status.json'
+            if state_file.exists():
+                state_shape=json.loads(state_file.read_text())
+                report['failure_agent_state']={k:state_shape.get(k) for k in ('phase','generation','observed_wall','expires_at','renew_at','ttl','authentications')}
+            if status_file.exists():report['failure_template_status']=json.loads(status_file.read_text())
+        if 'managed_state' in locals() and (managed_state/'subscriptions.json').exists():
+            saved=json.loads((managed_state/'subscriptions.json').read_text());wall,mono=time.time(),time.monotonic()
+            report['failure_subscriptions']={path:{'phase':row.get('phase'),'renewable':row.get('renewable'),
+                'lease_id_sha256':hashlib.sha256(row.get('lease_id','').encode()).hexdigest(),
+                'wall_remaining':row.get('wall_deadline',wall)-wall,'monotonic_remaining':row.get('deadline',mono)-mono,
+                'renew_in_seconds':row.get('renew_at',mono)-mono} for path,row in saved.get('rows',{}).items()}
+        report['owned_process_log_metadata']=[{'bytes':p.stat().st_size,'sha256':digest(p),
+            'sanitized_owner_block_count':p.read_bytes().count(b'blocked; inspect private state and reconcile before restart')}
+            for p in sorted(root.glob('agent-*.log'))+sorted(root.glob('proxy-*.log'))]
+
     finally:
         for process in processes:
             if process.poll() is None:process.terminate()
