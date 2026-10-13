@@ -100,6 +100,8 @@ mod cert_batch;
 mod cert_metadata;
 #[path = "auth_cert_ttl.rs"]
 mod cert_ttl;
+#[path = "auth_cert_validity.rs"]
+mod cert_validity;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
 #[path = "auth_token_go_print.rs"]
@@ -458,7 +460,10 @@ fn normalized_certificate_sha256(value: &str) -> Option<String> {
         .then_some(normalized)
 }
 
-fn parse_presented_certificate(chain: &[Vec<u8>]) -> Result<PresentedCertificate, AuthError> {
+fn parse_presented_certificate(
+    chain: &[Vec<u8>],
+    time: AuthorityTime,
+) -> Result<PresentedCertificate, AuthError> {
     if chain.is_empty()
         || chain.len() > 8
         || chain
@@ -468,6 +473,7 @@ fn parse_presented_certificate(chain: &[Vec<u8>]) -> Result<PresentedCertificate
         return Err(denied());
     }
     let leaf = chain.first().ok_or_else(denied)?;
+    cert_validity::validate(leaf, time)?;
     Ok(PresentedCertificate {
         sha256: certificate_sha256(leaf),
     })
@@ -4464,7 +4470,7 @@ impl AuthState {
                     method,
                     suffix,
                     body,
-                    now,
+                    time,
                     peer_certificates,
                 ),
                 "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
@@ -5594,9 +5600,10 @@ impl AuthState {
         method: &str,
         suffix: &str,
         body: &Value,
-        now: u64,
+        time: AuthorityTime,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<AuthResponse, AuthError> {
+        let now = time.seconds();
         let AuthScope { namespace, mount } = scope;
         let route = format!("auth/{mount}/{suffix}");
         if suffix == "login" {
@@ -5613,17 +5620,15 @@ impl AuthState {
                 ),
             };
             reject_unknown(body, &["name"])?;
-            let presented = parse_presented_certificate(peer_certificates.ok_or_else(denied)?)?;
+            let presented =
+                parse_presented_certificate(peer_certificates.ok_or_else(denied)?, time)?;
             let roles = self
                 .cert_roles
                 .get(namespace)
                 .and_then(|mounts| mounts.get(mount))
                 .ok_or_else(denied)?;
-            // Parse the leaf whenever it is a valid X.509 certificate so the
-            // login response can expose OpenBao-compatible certificate
-            // metadata. A malformed synthetic/legacy leaf remains usable for
-            // an unconstrained exact-digest role; constrained roles still
-            // fail closed through `matches_cert_role`.
+            // The leaf has already passed strict DER and request-time validity
+            // checks. Derive metadata only from this presented certificate.
             let attributes = peer_certificates
                 .and_then(|chain| chain.first())
                 .and_then(|leaf| parse_certificate_attributes(leaf));
@@ -7011,7 +7016,7 @@ impl AuthState {
                     return Ok(response);
                 }
                 if let Some(response) =
-                    self.renew_cert_token(namespace, &id, body, now, peer_certificates)?
+                    self.renew_cert_token(namespace, &id, body, time, peer_certificates)?
                 {
                     return Ok(response);
                 }
@@ -7097,6 +7102,7 @@ impl AuthState {
     fn cert_renewal_limits(
         &self,
         id: &str,
+        time: AuthorityTime,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Option<(String, u64, u64, u64)>, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
@@ -7125,6 +7131,7 @@ impl AuthState {
             .ok_or_else(denied)?;
         let presented = parse_presented_certificate(
             peer_certificates.ok_or_else(|| bad("TLS client certificate required for renewal"))?,
+            time,
         )?;
         if presented.sha256 != digest {
             return Err(denied());
@@ -9773,6 +9780,10 @@ mod cert_ttl_tests;
 #[cfg(test)]
 #[path = "auth_cert_metadata_tests.rs"]
 mod cert_metadata_tests;
+
+#[cfg(test)]
+#[path = "auth_cert_validity_tests.rs"]
+mod cert_validity_tests;
 
 #[path = "auth_public_origin.rs"]
 mod public_origin;

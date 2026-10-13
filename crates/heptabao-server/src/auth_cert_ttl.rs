@@ -147,11 +147,12 @@ impl AuthState {
         namespace: &str,
         id: &str,
         body: &Value,
-        now: u64,
+        time: AuthorityTime,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        let now = time.seconds();
         let Some((mount, ttl, max_ttl, period)) =
-            self.cert_renewal_limits(id, peer_certificates)?
+            self.cert_renewal_limits(id, time, peer_certificates)?
         else {
             return Ok(None);
         };

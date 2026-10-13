@@ -2441,7 +2441,7 @@ fn auth_mount_registry_requires_sudo_for_mutation() {
 fn certificate_role_login_requires_the_verified_leaf_digest() {
     let (mut state, _raw, root) = setup();
     mount_auth(&mut state, &root, "", "cert", "cert");
-    let leaf = vec![1_u8, 2, 3, 4];
+    let leaf = include_bytes!("../testdata/cert-selector.der").to_vec();
     let digest = certificate_sha256(&leaf);
     call(
         &mut state,
@@ -2467,7 +2467,7 @@ fn certificate_role_login_requires_the_verified_leaf_digest() {
     );
     assert!(matches!(no_peer, Err(error) if error.status == 403));
 
-    let wrong_leaf = vec![9_u8, 8, 7, 6];
+    let wrong_leaf = include_bytes!("../testdata/cert-selector-other.der").to_vec();
     let wrong = state.handle_with_client_certificates(
         None,
         "",
@@ -2492,19 +2492,15 @@ fn certificate_role_login_requires_the_verified_leaf_digest() {
         .unwrap()
         .unwrap();
     assert_eq!(login.status, 200);
-    assert_eq!(login.login_identity.unwrap().alias, "operator");
-    assert!(
-        login.body["auth"]["metadata"]
-            .as_object()
-            .is_some_and(serde_json::Map::is_empty)
-    );
+    assert_eq!(login.login_identity.unwrap().alias, "client.example.test");
+    assert_eq!(login.body["auth"]["metadata"]["cert_name"], "operator");
 }
 
 #[test]
 fn certificate_role_login_name_selects_the_requested_matching_role() {
     let (mut state, _raw, root) = setup();
     mount_auth(&mut state, &root, "", "cert", "cert");
-    let leaf = vec![11_u8, 12, 13, 14];
+    let leaf = include_bytes!("../testdata/cert-selector.der").to_vec();
     let digest = certificate_sha256(&leaf);
     for role in ["operator", "reader"] {
         call(
@@ -2534,7 +2530,11 @@ fn certificate_role_login_name_selects_the_requested_matching_role() {
         .unwrap()
         .unwrap();
     assert_eq!(selected.status, 200);
-    assert_eq!(selected.login_identity.unwrap().alias, "reader");
+    assert_eq!(
+        selected.login_identity.unwrap().alias,
+        "client.example.test"
+    );
+    assert_eq!(selected.body["auth"]["metadata"]["cert_name"], "reader");
 
     let unknown = state.handle_with_client_certificates(
         None,
@@ -2627,7 +2627,7 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         102,
     );
     assert!(matches!(renewal_without_certificate, Err(error) if error.status == 400));
-    let wrong_leaf = vec![91_u8, 92, 93];
+    let wrong_leaf = include_bytes!("../testdata/cert-selector-other.der").to_vec();
     let renewal_with_wrong_certificate = state.handle_with_client_certificates(
         Some(&actor),
         "",

@@ -336,8 +336,7 @@ fn cert_metadata_validation_allows_empty_certificate_attributes_but_rejects_wron
 }
 
 #[test]
-fn cert_opaque_leaf_test_profile_records_empty_metadata_without_claiming_x509_attributes()
--> TestResult {
+fn cert_opaque_leaf_digest_match_cannot_issue_a_token() -> TestResult {
     let (mut state, root, _) = setup()?;
     let opaque = b"synthetic opaque leaf, not a TLS certificate".to_vec();
     call(
@@ -348,22 +347,10 @@ fn cert_opaque_leaf_test_profile_records_empty_metadata_without_claiming_x509_at
         json!({"certificate_sha256":certificate_sha256(&opaque),"allowed_metadata_extensions":[]}),
         100,
     )?;
-    let issued = login(&mut state, &opaque)?;
-    assert_eq!(issued.body["auth"]["metadata"], json!({}));
-    let raw = token_text(&issued)?;
-    state.validate_cert_issued_metadata()?;
-    assert_eq!(
-        call(
-            &mut state,
-            &root,
-            "POST",
-            "auth/token/lookup",
-            json!({"token":raw}),
-            100
-        )?
-        .body["data"]["meta"],
-        json!({})
-    );
+    let before = bytes(&state)?;
+    let issued = login(&mut state, &opaque);
+    assert!(matches!(issued, Err(error) if error.status == 403));
+    assert!(before.as_slice() == bytes(&state)?.as_slice());
     Ok(())
 }
 
