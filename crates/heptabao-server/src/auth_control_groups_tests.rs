@@ -532,3 +532,36 @@ fn cg122_exact_fractional_deadline_and_old118_absence_are_checked() -> TestResul
     old.validate_control_group_state()?;
     Ok(())
 }
+
+#[test]
+fn cg271_global_self_auth_allowed_resolves_into_existing_factor_owners() -> TestResult {
+    let base = policy("60s", "\"update\"").replace("self_authorization = false", "");
+    for allowed in [false, true] {
+        let source = base.replace(
+            "control_group = {",
+            &format!("control_group = {{ self_auth_allowed = {allowed}"),
+        );
+        let parsed = parse_policy(&Value::String(source))?;
+        assert_eq!(
+            parsed.control_groups["secret/data/+"][0].control.factors[0].self_authorization,
+            allowed
+        );
+    }
+    let malformed = base.replace(
+        "control_group = {",
+        "control_group = { self_auth_allowed = \"true\"",
+    );
+    assert!(parse_policy(&Value::String(malformed)).is_err());
+    // The OpenBao stanza flag takes precedence over the established local extension.
+    let local = policy("60s", "\"update\"").replace(
+        "control_group = {",
+        "control_group = { self_auth_allowed = true",
+    );
+    assert!(
+        parse_policy(&Value::String(local))?.control_groups["secret/data/+"][0]
+            .control
+            .factors[0]
+            .self_authorization
+    );
+    Ok(())
+}

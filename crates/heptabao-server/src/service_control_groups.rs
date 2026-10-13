@@ -415,7 +415,7 @@ fn review(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> Value 
         .collect::<Vec<_>>();
     json!({"approved":approved(state, owner, time),"authorizations":authorizations,
         "request_data":owner.body,"request_entity":owner.actor_entity,
-        "request_operation":match owner.capability.as_str() { "create" => "update", other => other },
+        "request_operation":owner.capability,
         "request_path":owner.path})
 }
 fn wrapping_raw<'a>(request: &'a RequestView<'a>) -> Result<&'a str, Response> {

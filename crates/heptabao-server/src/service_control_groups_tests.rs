@@ -4392,3 +4392,143 @@ mod credential_tests;
 
 #[path = "service_workflow_logical_input_tests.rs"]
 mod logical_input_tests;
+
+#[test]
+fn cg271_global_self_authorization_create_review_restart_and_single_claim() -> TestResult {
+    let mut f = setup()?;
+    let policy = requester_policy("60s", "")
+        .replace("ttl = \"60s\"", "ttl = \"60s\" self_auth_allowed = true")
+        .replace(
+            "controlled_capabilities = [\"update\"]",
+            "controlled_capabilities = [\"create\",\"update\"]",
+        )
+        .replace("approvals = 2 self_authorization = false", "approvals = 1");
+    policy_write(&mut f.service, &f.admin, "cg-requester", &policy);
+    let pending = call(
+        &mut f.service,
+        &f.requester.token,
+        "POST",
+        "secret/data/cg/new",
+        json!({"data":{"value":"synthetic-global-self"}}),
+        100,
+    );
+    assert_eq!(pending.status, 200);
+    let wrapper = Zeroizing::new(text(&pending.body, "/wrap_info/token")?);
+    let accessor = text(&pending.body, "/wrap_info/accessor")?;
+    let reviewed = review_request(&mut f, &accessor);
+    assert_eq!(reviewed.status, 200);
+    assert_eq!(reviewed.body["data"]["request_operation"], "create");
+    assert_eq!(reviewed.body["data"]["approved"], false);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "GET",
+            "secret/data/cg/new",
+            json!({}),
+            100
+        )
+        .status,
+        404
+    );
+    let approved = call(
+        &mut f.service,
+        &f.requester.token,
+        "POST",
+        "sys/control-group/authorize",
+        json!({"accessor":accessor}),
+        100,
+    );
+    assert_eq!(approved.status, 200);
+    assert_eq!(approved.body["data"]["approved"], true);
+    f = restart(f, 100)?;
+    let reviewed = review_request(&mut f, &accessor);
+    assert_eq!(reviewed.body["data"]["request_operation"], "create");
+    assert_eq!(reviewed.body["data"]["approved"], true);
+    assert_eq!(
+        call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut f.service,
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({}),
+            100
+        )
+        .status,
+        400
+    );
+    let metadata = call(
+        &mut f.service,
+        &f.admin,
+        "GET",
+        "secret/metadata/cg/new",
+        json!({}),
+        100,
+    );
+    assert_eq!(metadata.body["data"]["current_version"], 1);
+    Ok(())
+}
+
+#[test]
+fn cg271_expired_accessor_and_foreign_namespace_wrapper_are_unavailable_without_execution()
+-> TestResult {
+    let mut f = setup()?;
+    create(&mut f);
+    let (wrapper, accessor) = pending(&mut f)?;
+    assert_eq!(
+        call(
+            &mut f.service,
+            &f.admin,
+            "POST",
+            "sys/namespaces/foreign",
+            json!({}),
+            100
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        f.service
+            .handle_at(
+                "POST",
+                "sys/wrapping/unwrap",
+                "foreign",
+                &wrapper,
+                json!({}),
+                100
+            )
+            .status,
+        400,
+    );
+    let retained = review_request(&mut f, &accessor);
+    assert_eq!(retained.body["data"]["approved"], false);
+    assert_eq!(retained.body["data"]["authorizations"], json!([]));
+    for path in ["sys/control-group/request", "sys/control-group/authorize"] {
+        assert_eq!(
+            call(
+                &mut f.service,
+                &f.first.token,
+                "POST",
+                path,
+                json!({"accessor":accessor}),
+                161
+            )
+            .status,
+            400,
+        );
+    }
+    read(&mut f, 1, "before", 161);
+    Ok(())
+}

@@ -141,7 +141,15 @@ impl PolicyControl {
         }
     }
     pub(super) fn parse(value: &Value, capabilities: &BTreeSet<String>) -> Result<Self, AuthError> {
-        reject_unknown(value, &["ttl", "factor"])?;
+        reject_unknown(value, &["ttl", "factor", "self_auth_allowed"])?;
+        // OpenBao 2.7.1 admits this flag on the control_group stanza. Resolve
+        // it into each existing factor owner so persistence and live identity
+        // checks retain the same authority boundary as factor-local policies.
+        let inherited_self_authorization = match value.get("self_auth_allowed") {
+            None => None,
+            Some(Value::Bool(value)) => Some(*value),
+            _ => return Err(bad("self_auth_allowed must be boolean")),
+        };
         let explicit_ttl = value
             .get("ttl")
             .map(|v| {
@@ -201,8 +209,8 @@ impl PolicyControl {
                 .ok_or_else(|| bad("control group approvals must be a positive bounded integer"))?
                 as usize;
             let self_authorization = match identity.get("self_authorization") {
-                None => false,
-                Some(Value::Bool(value)) => *value,
+                None => inherited_self_authorization.unwrap_or(false),
+                Some(Value::Bool(value)) => inherited_self_authorization.unwrap_or(*value),
                 _ => return Err(bad("self_authorization must be boolean")),
             };
             let controlled_capabilities = factor
@@ -1159,7 +1167,9 @@ impl AuthState {
             .get(&id)
             .ok_or_else(|| bad("wrapping token is not valid or does not exist"))?;
         if token.namespace != namespace || owner.namespace != namespace {
-            return Err(denied());
+            // A wrapping token in another namespace is unavailable here;
+            // reject before token admission or deferred-owner consumption.
+            return Err(bad("wrapping token is not valid or does not exist"));
         }
         if !owner.live(time) {
             return Err(bad("wrapping token is not valid or does not exist"));
@@ -1214,7 +1224,7 @@ impl AuthState {
                     })
                     .map(|_| owner)
             })
-            .ok_or_else(|| err(500, "control group request is unavailable"))
+            .ok_or_else(|| bad("control group request is unavailable"))
     }
     pub(crate) fn control_group_authorize(
         &mut self,
