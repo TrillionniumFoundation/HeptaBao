@@ -1808,6 +1808,27 @@ impl Service {
                     .as_millis())
             );
         }
+        // The one-shot Shamir request must retain enough of its ORIGINAL
+        // budget to publish both local B and the required recovery index.
+        // R985 observed an irreversible B attempt with only 229ms remaining,
+        // then post-graph expiry and a permanently unavailable peer.
+        // A finite pre-publication reserve is a DENIAL, never an extension,
+        // quorum bypass or claimed successful recovery. Unknown later fsync/
+        // ReadIndex outcomes remain covered by the existing permanent fence.
+        if received.owner.shamir_owner.is_some() {
+            let effective = received.owner.deadline.map(|original| {
+                crate::request_deadline::current().map_or(original, |clock| clock.min(original))
+            });
+            let required = Instant::now().checked_add(std::time::Duration::from_secs(1));
+            if required.is_none() || effective.is_none() || required >= effective {
+                eprintln!("R990_SHAMIR_B_PRECOMMIT=insufficient_original_budget");
+                BeforePublicationNoWrite {
+                    receipt: &received.owner,
+                }
+                .retain_original_a(self)?;
+                return Ok(HaRecordPublicationProgress::BeforePublicationNoWrite);
+            }
+        }
         self.persist_record_plan_local(&received.plan, &operation, true)
             .map_err(|_| rejected())?;
         if received.owner.shamir_owner.is_some() {
@@ -2806,6 +2827,10 @@ mod tests {
         actual_unpublished_shamir_case("beforepub_expired")
     }
     #[test]
+    fn real_raft_shamir_precommit_original_budget_prevents_partial_b_and_keeps_a() -> TestResult {
+        actual_unpublished_shamir_case("beforepub_budget")
+    }
+    #[test]
     fn real_raft_before_publication_no_write_rejects_actual_physical_mac_damage() -> TestResult {
         actual_unpublished_shamir_case("beforepub_damage")
     }
@@ -2906,6 +2931,39 @@ mod tests {
             .receive_ha_records(&cluster.processes[1], &committed_b)
             .map_err(|_| "actual B receipt")?;
         assert!(received.owner.shamir_owner.is_some());
+        if case == "beforepub_budget" {
+            let generation_a = service.durable.as_ref().ok_or("durable A")?.generation();
+            let nonce_a = service.unseal_nonce.clone();
+            // Shorter than the required precommit reserve but not expired.
+            // This must keep the original A, never stage records B.
+            let result = {
+                let _short = crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() + Duration::from_millis(850),
+                );
+                service.install_committed_ha_records(received)
+            };
+            assert!(matches!(
+                result,
+                Ok(HaRecordPublicationProgress::BeforePublicationNoWrite)
+            ));
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .ok_or("durable after")?
+                    .generation(),
+                generation_a
+            );
+            assert_eq!(
+                service
+                    .current_state_identity()
+                    .map_err(|_| "A identity after")?,
+                a_identity
+            );
+            assert_eq!(service.unseal_nonce, nonce_a);
+            assert!(!service.recovery_required);
+            return Ok(());
+        }
         if case.starts_with("completed_no_write_") {
             assert!(
                 received
