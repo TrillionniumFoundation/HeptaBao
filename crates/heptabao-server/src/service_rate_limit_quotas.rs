@@ -568,17 +568,27 @@ mod service_tests {
                 .validate_publication_schema(Some(&current))
                 .is_err()
         );
-        assert_eq!(
-            call(
+        {
+            // Match the actual listener deadline. Missing ingress authority is
+            // a separate 503 guard and must not stand in for quota rejection.
+            let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(5),
+            );
+            let rejected = call(
                 &mut service,
                 "POST",
                 "sys/remount",
                 &admin,
-                json!({"from":"auth/forms/","to":"auth/moved/"})
-            )
-            .status,
-            400
-        );
+                json!({"from":"auth/forms/","to":"auth/moved/"}),
+            );
+            assert_eq!(
+                rejected.status, 400,
+                "remount rejection errors: {:?}",
+                rejected.body["errors"]
+            );
+        }
+        drop(current);
+        drop(previous);
         drop(service);
         let mut reopened = root.service()?;
         assert_eq!(
