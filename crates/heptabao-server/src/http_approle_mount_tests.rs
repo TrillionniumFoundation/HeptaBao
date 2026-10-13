@@ -21,7 +21,8 @@ impl Read for SplitBody<'_> {
 }
 
 #[test]
-fn unsupported_media_and_query_form_drain_only_bounded_body_before_rejection() {
+fn unsupported_media_and_query_form_drain_only_bounded_body_before_rejection()
+-> Result<(), Box<dyn std::error::Error>> {
     for (path, media) in [
         ("secret/data/a", "text/plain"),
         (
@@ -41,7 +42,7 @@ fn unsupported_media_and_query_form_drain_only_bounded_body_before_rejection() {
         };
         let error = match read_request_mode(&mut reader, Duration::from_secs(2), false) {
             Err(error) => error,
-            Ok(_) => panic!("unsupported carrier was accepted"),
+            Ok(_) => return Err("unsupported carrier was accepted".into()),
         };
         assert_eq!(error.status, 400);
         assert!(
@@ -50,10 +51,12 @@ fn unsupported_media_and_query_form_drain_only_bounded_body_before_rejection() {
         );
         assert!(reader.reads > 1, "split body must actually be read");
     }
+    Ok(())
 }
 
 #[test]
-fn client_codec_header_is_filtered_but_actual_form_gets_body_bound_marker() {
+fn client_codec_header_is_filtered_but_actual_form_gets_body_bound_marker()
+-> Result<(), Box<dyn std::error::Error>> {
     let marker = crate::request_metadata::AUTH_FORM_CODEC_HEADER;
     for (media, payload, actual_form) in [
         (
@@ -72,7 +75,7 @@ fn client_codec_header_is_filtered_but_actual_form_gets_body_bound_marker() {
             payload.len()
         );
         let parsed = read_request_mode(&mut wire.as_bytes(), Duration::from_secs(2), false)
-            .unwrap_or_else(|_| panic!("well-framed carrier was rejected"));
+            .map_err(|_| "well-framed carrier was rejected")?;
         assert_eq!(
             parsed
                 .logical_data
@@ -81,4 +84,5 @@ fn client_codec_header_is_filtered_but_actual_form_gets_body_bound_marker() {
             actual_form
         );
     }
+    Ok(())
 }

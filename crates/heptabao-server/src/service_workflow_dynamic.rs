@@ -1591,7 +1591,8 @@ impl Drop for Resolved {
 mod approle_form_tests {
     use super::*;
     #[test]
-    fn workflow_cannot_forge_transport_codec_but_content_type_is_data() {
+    fn workflow_cannot_forge_transport_codec_but_content_type_is_data()
+    -> Result<(), Box<dyn std::error::Error>> {
         let context = Context {
             input: BTreeMap::new(),
             requests: BTreeMap::new(),
@@ -1623,8 +1624,9 @@ mod approle_form_tests {
                     assert_eq!(name, "content-type");
                     assert!(!data.is_approle_form());
                 }
-                Ok(None) => panic!("declared headers disappeared"),
+                Ok(None) => return Err("declared headers disappeared".into()),
             }
         }
+        Ok(())
     }
 }
