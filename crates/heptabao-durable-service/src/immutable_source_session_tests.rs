@@ -637,3 +637,107 @@ fn immutable_same_directory_backend_reopen_changes_private_physical_lineage() ->
     );
     Ok(())
 }
+
+#[test]
+fn immutable_read_observation_records_actual_open_but_never_bypasses_late_gate() -> TestResult {
+    let _serial = serial_test();
+    let root = TestRoot::new("immutable-observation-late-gate")?;
+    let mut owner = DurableService::create_new(&root.0, NonceBarrier::new(), 16)?;
+    owner.put(put_request("source", SOURCE)?)?;
+    let generation = owner.generation();
+    let session = source_session(&mut owner)?;
+    let payload = b"owned observation fixture";
+    let pin = owner.stage_immutable_object_before_publish(
+        &session,
+        locator(11)?,
+        CONTEXT,
+        payload,
+        &mut no_gate,
+    )?;
+    let opened = std::cell::Cell::new(false);
+    let mut observations = Vec::new();
+    let mut gate = || {
+        if opened.get() {
+            Err(ServiceError::ReplayEpochMismatch)
+        } else {
+            Ok(())
+        }
+    };
+    let rejected = owner.read_immutable_object_before_delivery_observed(
+        &session,
+        &pin,
+        CONTEXT,
+        &mut gate,
+        &mut |event| {
+            if matches!(
+                event,
+                ImmutableObjectReadObservation::PlaintextOpened { .. }
+            ) {
+                opened.set(true);
+            }
+            observations.push(event);
+        },
+    );
+    assert!(matches!(rejected, Err(ServiceError::ReplayEpochMismatch)));
+    assert_eq!(
+        observations,
+        vec![
+            ImmutableObjectReadObservation::CiphertextRead {
+                bytes: pin.ciphertext_len()
+            },
+            ImmutableObjectReadObservation::PlaintextOpened {
+                bytes: payload.len()
+            },
+        ]
+    );
+    source_unchanged(&owner, generation)?;
+    Ok(())
+}
+
+#[test]
+fn immutable_read_observation_separates_bad_aead_and_before_read_rejection() -> TestResult {
+    let _serial = serial_test();
+    let root = TestRoot::new("immutable-observation-bad-context")?;
+    let mut owner = DurableService::create_new(&root.0, NonceBarrier::new(), 16)?;
+    owner.put(put_request("source", SOURCE)?)?;
+    let generation = owner.generation();
+    let session = source_session(&mut owner)?;
+    let pin = owner.stage_immutable_object_before_publish(
+        &session,
+        locator(12)?,
+        CONTEXT,
+        b"owned observer",
+        &mut no_gate,
+    )?;
+    let mut observations = Vec::new();
+    assert!(matches!(
+        owner.read_immutable_object_before_delivery_observed(
+            &session,
+            &pin,
+            b"foreign-domain",
+            &mut no_gate,
+            &mut |event| observations.push(event),
+        ),
+        Err(ServiceError::BarrierFailure)
+    ));
+    assert_eq!(
+        observations,
+        vec![ImmutableObjectReadObservation::CiphertextRead {
+            bytes: pin.ciphertext_len()
+        },]
+    );
+    observations.clear();
+    assert!(matches!(
+        owner.read_immutable_object_before_delivery_observed(
+            &session,
+            &pin,
+            CONTEXT,
+            &mut || Err(ServiceError::ReplayEpochMismatch),
+            &mut |event| observations.push(event),
+        ),
+        Err(ServiceError::ReplayEpochMismatch)
+    ));
+    assert!(observations.is_empty());
+    source_unchanged(&owner, generation)?;
+    Ok(())
+}

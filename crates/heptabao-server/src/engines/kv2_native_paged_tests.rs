@@ -305,7 +305,8 @@ fn transition_fixture() -> CodecResult<(NativeReadView, NativeReadView, GraphObj
 }
 
 fn view_payload_ids(view: &NativeReadView) -> CodecResult<BTreeSet<ObjectId>> {
-    Ok(view.graph
+    Ok(view
+        .graph
         .as_ref()
         .ok_or(RecordError::Corrupt)?
         .paged
@@ -319,8 +320,8 @@ fn view_payload_ids(view: &NativeReadView) -> CodecResult<BTreeSet<ObjectId>> {
 }
 
 #[test]
-fn paged_transition_reuses_old_closure_without_old_reads_and_verifies_new_blocks()
--> CodecResult<()> {
+fn paged_transition_reuses_old_closure_without_old_reads_and_verifies_new_blocks() -> CodecResult<()>
+{
     let (prior, candidate, staged) = transition_fixture()?;
     let empty = GraphObjects::default();
     let old_counted = Counting {
@@ -337,19 +338,27 @@ fn paged_transition_reuses_old_closure_without_old_reads_and_verifies_new_blocks
     };
     candidate.verify_paged_transition(Some(&prior), &counted, &|| Ok(()))?;
     assert_eq!(counted.blocks.get(), 3);
-    assert!(candidate.verify_paged_transition(None, &staged, &|| Ok(())).is_err());
-    assert!(candidate.owner
-        .entries
-        .values()
-        .flat_map(|entry| entry.versions.values())
-        .all(|version| version.data.is_none()));
+    assert!(
+        candidate
+            .verify_paged_transition(None, &staged, &|| Ok(()))
+            .is_err()
+    );
+    assert!(
+        candidate
+            .owner
+            .entries
+            .values()
+            .flat_map(|entry| entry.versions.values())
+            .all(|version| version.data.is_none())
+    );
     Ok(())
 }
 
 #[test]
 fn paged_transition_missing_new_block_rejects_without_prior_fallback() -> CodecResult<()> {
     let (prior, candidate, mut staged) = transition_fixture()?;
-    let first = candidate.graph
+    let first = candidate
+        .graph
         .as_ref()
         .ok_or(RecordError::Corrupt)?
         .paged
@@ -362,7 +371,11 @@ fn paged_transition_missing_new_block_rejects_without_prior_fallback() -> CodecR
         .ok_or(RecordError::Missing)?
         .id;
     assert!(staged.0.remove(&first).is_some());
-    assert!(candidate.verify_paged_transition(Some(&prior), &staged, &|| Ok(())).is_err());
+    assert!(
+        candidate
+            .verify_paged_transition(Some(&prior), &staged, &|| Ok(()))
+            .is_err()
+    );
     Ok(())
 }
 
@@ -379,21 +392,24 @@ fn paged_transition_changed_staged_block_rejects_typed_address_mismatch() -> Cod
         .and_then(|versions| versions.get(&4))
         .and_then(|descriptor| descriptor.blocks.first())
         .ok_or(RecordError::Missing)?;
-    let replacement = StagedObject::payload_block(
-        &graph.key,
-        &vec![b'q'; reference.payload_bytes as usize],
-    )?;
+    let replacement =
+        StagedObject::payload_block(&graph.key, &vec![b'q'; reference.payload_bytes as usize])?;
     // The source returns a valid same-domain block at the requested slot, but
     // its authenticated typed address differs from the candidate descriptor.
     staged.0.insert(reference.id, replacement);
-    assert!(candidate.verify_paged_transition(Some(&prior), &staged, &|| Ok(())).is_err());
+    assert!(
+        candidate
+            .verify_paged_transition(Some(&prior), &staged, &|| Ok(()))
+            .is_err()
+    );
     Ok(())
 }
 
 #[test]
 fn paged_transition_changed_old_digest_never_inherits_prior_closure() -> CodecResult<()> {
     let (prior, mut candidate, staged) = transition_fixture()?;
-    let descriptor = candidate.graph
+    let descriptor = candidate
+        .graph
         .as_mut()
         .ok_or(RecordError::Corrupt)?
         .paged
@@ -404,7 +420,11 @@ fn paged_transition_changed_old_digest_never_inherits_prior_closure() -> CodecRe
         .and_then(|versions| versions.get_mut(&1))
         .ok_or(RecordError::Missing)?;
     descriptor.digest[0] ^= 1;
-    assert!(candidate.verify_paged_transition(Some(&prior), &staged, &|| Ok(())).is_err());
+    assert!(
+        candidate
+            .verify_paged_transition(Some(&prior), &staged, &|| Ok(()))
+            .is_err()
+    );
     Ok(())
 }
 
@@ -414,12 +434,18 @@ fn paged_transition_prior_scope_or_graph_key_mismatch_rejects_before_payload_rea
     let (prior, _, _) = transition_fixture()?;
     for (parent, incarnation) in [([26; 32], 7), ([25; 32], 8)] {
         let parent = AddressKey::from_bytes(parent);
-        let different = NativeScope { incarnation, ..scope() };
+        let different = NativeScope {
+            incarnation,
+            ..scope()
+        };
         let graph = NativeCellGraph::encode_paged(&owner()?, &parent, different, &|| Ok(()))?;
         let source = objects(&graph)?;
         let candidate = NativeReadView::open_paged(
             &parent,
-            NativeScope { incarnation, ..scope() },
+            NativeScope {
+                incarnation,
+                ..scope()
+            },
             graph.root(),
             &source,
         )?;
@@ -429,7 +455,11 @@ fn paged_transition_prior_scope_or_graph_key_mismatch_rejects_before_payload_rea
             payloads: view_payload_ids(&candidate)?,
             blocks: Cell::new(0),
         };
-        assert!(candidate.verify_paged_transition(Some(&prior), &counted, &|| Ok(())).is_err());
+        assert!(
+            candidate
+                .verify_paged_transition(Some(&prior), &counted, &|| Ok(()))
+                .is_err()
+        );
         assert_eq!(counted.blocks.get(), 0);
     }
     Ok(())
@@ -450,9 +480,11 @@ fn paged_transition_initial_admission_reads_entire_staged_closure_and_retains_ch
     candidate.verify_paged_transition(None, &counted, &|| Ok(()))?;
     assert_eq!(counted.blocks.get(), 9);
     counted.blocks.set(0);
-    assert!(candidate
-        .verify_paged_transition(None, &counted, &|| Err(RecordError::Invalid))
-        .is_err());
+    assert!(
+        candidate
+            .verify_paged_transition(None, &counted, &|| Err(RecordError::Invalid))
+            .is_err()
+    );
     assert_eq!(counted.blocks.get(), 0);
     Ok(())
 }
@@ -470,8 +502,10 @@ fn paged_transition_reused_closure_cannot_drop_prior_lossless_floor() -> CodecRe
     // A prior admitted format flag is sticky when its payloads are inherited;
     // metadata-only candidate validation cannot inspect their numeric grammar.
     candidate.owner.lossless_format = None;
-    assert!(candidate
-        .verify_paged_transition(Some(&prior), &GraphObjects::default(), &|| Ok(()))
-        .is_err());
+    assert!(
+        candidate
+            .verify_paged_transition(Some(&prior), &GraphObjects::default(), &|| Ok(()))
+            .is_err()
+    );
     Ok(())
 }

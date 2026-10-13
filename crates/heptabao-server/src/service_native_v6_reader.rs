@@ -638,21 +638,33 @@ fn load_from_environment_checked(
         reader_format: crate::state_record_root_v6::READER_FORMAT,
     };
     let source = super::native_blob_source::NativeSource::new_checked(
-        durable, permit.activation.deadline,
+        durable,
+        permit.activation.deadline,
         || original_gate().map_err(|_| ServiceError::BarrierFailure),
-    ).map_err(|_| unavailable())?
-        .with_observations(Arc::clone(&permit.activation.observations));
+    )
+    .map_err(|_| unavailable())?
+    .with_observations(Arc::clone(&permit.activation.observations));
     let (metadata, native) = if full_payloads && root.reader_floor.native_kv2_format == 1 {
         v6_records::materialize_for_service(&root, context, &source)
     } else {
         v6_records::materialize_metadata_for_service(&root, context, &source)
-    }.map_err(|_| unavailable())?;
+    }
+    .map_err(|_| unavailable())?;
     if full_payloads && root.reader_floor.native_kv2_format == 2 {
         for (scope, view) in &native {
             view.visit_paged_payload_references(
-                |reference| source.pin_payload_location(&ObjectDomain::Kv2(scope.clone()), reference),
-                &|| permit.activation.deadline.check().map_err(|_| RecordError::Invalid),
-            ).map_err(|_| unavailable())?;
+                |reference| {
+                    source.pin_payload_location(&ObjectDomain::Kv2(scope.clone()), reference)
+                },
+                &|| {
+                    permit
+                        .activation
+                        .deadline
+                        .check()
+                        .map_err(|_| RecordError::Invalid)
+                },
+            )
+            .map_err(|_| unavailable())?;
         }
     }
     drop(source);
@@ -687,13 +699,20 @@ impl Service {
         let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
         let mut durable = self.durable.take().ok_or_else(unavailable)?;
         let result = (|| {
-            let profile = self.native_candidate_profile.as_ref().ok_or_else(unavailable)?;
-            let environment = ActivationEnvironment::capture(self, profile, &key, deadline)?;
-            let loaded = load_from_environment_checked(environment, &mut durable, false, original_gate)?
+            let profile = self
+                .native_candidate_profile
+                .as_ref()
                 .ok_or_else(unavailable)?;
+            let environment = ActivationEnvironment::capture(self, profile, &key, deadline)?;
+            let loaded =
+                load_from_environment_checked(environment, &mut durable, false, original_gate)?
+                    .ok_or_else(unavailable)?;
             Self::check_native_installed(
-                self.state.as_ref().ok_or_else(unavailable)?, &loaded.metadata,
-                &loaded.native, &loaded.root, deadline,
+                self.state.as_ref().ok_or_else(unavailable)?,
+                &loaded.metadata,
+                &loaded.native,
+                &loaded.root,
+                deadline,
             )?;
             Ok(Some(loaded.proof))
         })();
@@ -767,10 +786,15 @@ impl Service {
             .validate_native_roots(&parent, &root.kv2, &check)
             .map_err(|_| unavailable())?;
         let (opaque, graphs) = if root.reader_floor.native_kv2_format == 2 {
-            installed.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+            installed
+                .engines
+                .project_v6_native_paged(&parent, &check, |_, _| check())
         } else {
-            installed.engines.project_v6_native(&parent, &check, |_, _| check())
-        }.map_err(|_| unavailable())?;
+            installed
+                .engines
+                .project_v6_native(&parent, &check, |_, _| check())
+        }
+        .map_err(|_| unavailable())?;
         if crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
             .map_err(|_| unavailable())?
             .as_slice()

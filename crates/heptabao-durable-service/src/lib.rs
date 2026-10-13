@@ -35,7 +35,7 @@ pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
 mod immutable_source_session;
-pub use immutable_source_session::ImmutableSourceSession;
+pub use immutable_source_session::{ImmutableObjectReadObservation, ImmutableSourceSession};
 mod negative_current_publication;
 pub use capacity::{BatchPublication, CapacityStatus, PublicationCondition};
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};

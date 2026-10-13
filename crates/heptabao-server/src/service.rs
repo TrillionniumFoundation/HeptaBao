@@ -1904,7 +1904,9 @@ impl Service {
             #[cfg(feature = "fixture-native-v6-service")]
             native_root: None,
             #[cfg(feature = "fixture-native-v6-service")]
-            native_payload_observations: Arc::new(native_blob_source::PayloadObservations::default()),
+            native_payload_observations: Arc::new(
+                native_blob_source::PayloadObservations::default(),
+            ),
             #[cfg(feature = "fixture-native-v6-service")]
             native_candidate_profile: None,
             #[cfg(feature = "fixture-native-v6-service")]

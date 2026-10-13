@@ -18,7 +18,9 @@ impl Service {
             return error;
         }
         let original_nonce = self.unseal_nonce.clone();
-        let proof = match self.capture_native_request_proof(&mut || authority.check(candidate, &actual_auth, &original_nonce)) {
+        let proof = match self.capture_native_request_proof(&mut || {
+            authority.check(candidate, &actual_auth, &original_nonce)
+        }) {
             Ok(Some(proof)) => proof,
             _ => return rejected(),
         };
@@ -60,7 +62,9 @@ impl Service {
             request.path,
             request.body,
             at,
-            |scope, reference| source.read_paged_payload(&ObjectDomain::Kv2(scope.clone()), reference),
+            |scope, reference| {
+                source.read_paged_payload(&ObjectDomain::Kv2(scope.clone()), reference)
+            },
         );
         drop(source);
         if let Err(error) = authority.check(candidate, &actual_auth, &nonce) {

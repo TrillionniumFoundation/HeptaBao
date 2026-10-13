@@ -219,9 +219,9 @@ impl Service {
         if deadline.check().is_err() {
             return rejected();
         }
-        let plan = match self
-            .prepare_native_root_migration_paged(&|| deadline.check().map_err(|_| RecordError::Invalid))
-        {
+        let plan = match self.prepare_native_root_migration_paged(&|| {
+            deadline.check().map_err(|_| RecordError::Invalid)
+        }) {
             Ok(plan) => plan,
             Err(error) => return error,
         };
@@ -502,8 +502,10 @@ impl Service {
                 if observed_source.expose() != retained_source.as_slice() {
                     return Err(ServiceError::CorruptState);
                 }
-                v6_records::verify_durable_native_candidate(&committed, durable, deadline, &mut gate)
-                    .map_err(|_| ServiceError::CorruptState)?;
+                v6_records::verify_durable_native_candidate(
+                    &committed, durable, deadline, &mut gate,
+                )
+                .map_err(|_| ServiceError::CorruptState)?;
                 gate()?;
                 Ok(())
             })()
@@ -618,15 +620,25 @@ impl Service {
             .validate_native_roots(&parent, &root.kv2, &check)
             .map_err(|_| rejected())?;
         let (actual, _) = if root.reader_floor.native_kv2_format == 2 {
-            candidate.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+            candidate
+                .engines
+                .project_v6_native_paged(&parent, &check, |_, _| check())
         } else {
-            candidate.engines.project_v6_native(&parent, &check, |_, _| check())
-        }.map_err(|_| rejected())?;
+            candidate
+                .engines
+                .project_v6_native(&parent, &check, |_, _| check())
+        }
+        .map_err(|_| rejected())?;
         let (expected, _) = if root.reader_floor.native_kv2_format == 2 {
-            source.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+            source
+                .engines
+                .project_v6_native_paged(&parent, &check, |_, _| check())
         } else {
-            source.engines.project_v6_native(&parent, &check, |_, _| check())
-        }.map_err(|_| rejected())?;
+            source
+                .engines
+                .project_v6_native(&parent, &check, |_, _| check())
+        }
+        .map_err(|_| rejected())?;
         live()?;
         if owner_store::serialize_owner(&actual)
             .map_err(|_| rejected())?
@@ -655,31 +667,29 @@ impl Service {
         live()?;
         let candidate_auth_owner = candidate.auth.clone();
         let mut original_gate = |auth: &AuthState| {
-                live()?;
-                if !principal.consumed_use()
-                    || request.token_clock.is_none()
-                    || owner_store::serialize_owner(auth)
-                        .map_err(|_| rejected())?
-                        .as_slice()
-                        != source_auth.as_slice()
-                {
-                    return Err(rejected());
-                }
-                // Observe the original trusted request clock, without reauthenticating
-                // a bearer or granting its requested resource capability.
-                auth.validate_native_consumed_auth_candidate(
-                    principal,
-                    &candidate_auth_owner,
-                    request.token_time()?,
-                )
-                .map_err(|error| Response::error(error.status, &error.message))?;
-                live()
-
+            live()?;
+            if !principal.consumed_use()
+                || request.token_clock.is_none()
+                || owner_store::serialize_owner(auth)
+                    .map_err(|_| rejected())?
+                    .as_slice()
+                    != source_auth.as_slice()
+            {
+                return Err(rejected());
+            }
+            // Observe the original trusted request clock, without reauthenticating
+            // a bearer or granting its requested resource capability.
+            auth.validate_native_consumed_auth_candidate(
+                principal,
+                &candidate_auth_owner,
+                request.token_time()?,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
+            live()
         };
         let plan = self.prepare_native_live_root_checked(candidate, &mut original_gate)?;
-        let installed = self.commit_native_root_plan(
-            candidate, plan, false, "auth-use", &mut original_gate,
-        )?;
+        let installed =
+            self.commit_native_root_plan(candidate, plan, false, "auth-use", &mut original_gate)?;
         *candidate = installed;
         Ok(())
     }
@@ -781,15 +791,25 @@ impl Service {
             .validate_native_roots(&parent, &root.kv2, &check)
             .map_err(|_| rejected())?;
         let (actual_meta, _) = if root.reader_floor.native_kv2_format == 2 {
-            candidate.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+            candidate
+                .engines
+                .project_v6_native_paged(&parent, &check, |_, _| check())
         } else {
-            candidate.engines.project_v6_native(&parent, &check, |_, _| check())
-        }.map_err(|_| rejected())?;
+            candidate
+                .engines
+                .project_v6_native(&parent, &check, |_, _| check())
+        }
+        .map_err(|_| rejected())?;
         let (expected_meta, _) = if root.reader_floor.native_kv2_format == 2 {
-            expected.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+            expected
+                .engines
+                .project_v6_native_paged(&parent, &check, |_, _| check())
         } else {
-            expected.engines.project_v6_native(&parent, &check, |_, _| check())
-        }.map_err(|_| rejected())?;
+            expected
+                .engines
+                .project_v6_native(&parent, &check, |_, _| check())
+        }
+        .map_err(|_| rejected())?;
         live()?;
         if owner_store::serialize_owner(&actual_meta)
             .map_err(|_| rejected())?
@@ -804,31 +824,34 @@ impl Service {
         let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
         let expected_auth = owner_store::serialize_owner(&expected.auth).map_err(|_| rejected())?;
         let mut original_gate = |auth: &AuthState| {
-                live()?;
-                if owner_store::serialize_owner(auth)
-                    .map_err(|_| rejected())?
-                    .as_slice()
-                    != source_auth.as_slice()
-                {
-                    return Err(rejected());
-                }
-                let mut checked = auth.clone();
-                checked
-                    .observe_token_api_time(time)
-                    .map_err(|error| Response::error(503, &error.message))?;
-                if owner_store::serialize_owner(&checked)
-                    .map_err(|_| rejected())?
-                    .as_slice()
-                    != expected_auth.as_slice()
-                {
-                    return Err(rejected());
-                }
-                live()
-
+            live()?;
+            if owner_store::serialize_owner(auth)
+                .map_err(|_| rejected())?
+                .as_slice()
+                != source_auth.as_slice()
+            {
+                return Err(rejected());
+            }
+            let mut checked = auth.clone();
+            checked
+                .observe_token_api_time(time)
+                .map_err(|error| Response::error(503, &error.message))?;
+            if owner_store::serialize_owner(&checked)
+                .map_err(|_| rejected())?
+                .as_slice()
+                != expected_auth.as_slice()
+            {
+                return Err(rejected());
+            }
+            live()
         };
         let plan = self.prepare_native_live_root_checked(candidate, &mut original_gate)?;
         let installed = self.commit_native_root_plan(
-            candidate, plan, false, "clock-observation", &mut original_gate,
+            candidate,
+            plan,
+            false,
+            "clock-observation",
+            &mut original_gate,
         )?;
         *candidate = installed;
         Ok(())

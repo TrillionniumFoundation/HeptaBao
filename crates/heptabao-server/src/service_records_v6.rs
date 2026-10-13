@@ -309,9 +309,10 @@ fn materialize_mode(
         native.insert(graph.scope.clone(), view);
     }
     let usage = usage.into_inner();
-    if full_payloads && source
-        .object_count()
-        .is_some_and(|count| count != usage.seen.len())
+    if full_payloads
+        && source
+            .object_count()
+            .is_some_and(|count| count != usage.seen.len())
     {
         return Err(ReadError::Invalid);
     }
@@ -1105,8 +1106,13 @@ fn verify_incremental_views(
     }
     impl RecordReader for StagedOnly<'_> {
         fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-            self.plan.deadline.check().map_err(|_| RecordError::Invalid)?;
-            let object = self.plan.objects
+            self.plan
+                .deadline
+                .check()
+                .map_err(|_| RecordError::Invalid)?;
+            let object = self
+                .plan
+                .objects
                 .get(&(ObjectDomain::Kv2(self.scope.clone()), reference.id))
                 .ok_or(RecordError::Missing)?;
             if object.reference() != reference {
@@ -1148,9 +1154,16 @@ fn validate_native_live_plan(
         maximum_state_schema: plan.root.state_schema,
         reader_format: crate::state_record_root_v6::READER_FORMAT,
     };
-    let read = materialize_mode(&plan.root, context, &NativeMigrationObjects {
-        objects: &plan.objects, deadline: plan.deadline, fallback,
-    }, false)?;
+    let read = materialize_mode(
+        &plan.root,
+        context,
+        &NativeMigrationObjects {
+            objects: &plan.objects,
+            deadline: plan.deadline,
+            fallback,
+        },
+        false,
+    )?;
     verify_incremental_views(plan, &read.native, prior)
 }
 
@@ -1172,7 +1185,10 @@ impl Service {
                 authority.check_token_api_candidate(candidate, auth, &nonce)
             })
         } else {
-            Err(Response::error(503, "native preparation requires original request authority"))
+            Err(Response::error(
+                503,
+                "native preparation requires original request authority",
+            ))
         };
         self.pending_ordinary_kv_authority = authority;
         self.pending_token_api_authority = token_authority;
@@ -1335,14 +1351,17 @@ impl Service {
                 },
             ],
         };
-        let source = super::native_blob_source::NativeSource::new_checked(
-            durable,
-            deadline,
-            || original_gate(&actual_auth).map_err(|_| ServiceError::BarrierFailure),
+        let source =
+            super::native_blob_source::NativeSource::new_checked(durable, deadline, || {
+                original_gate(&actual_auth).map_err(|_| ServiceError::BarrierFailure)
+            })
+            .map_err(|_| rejected())?;
+        validate_native_live_plan(
+            &plan,
+            Some(&source),
+            self.state.as_ref().ok_or_else(rejected)?,
         )
         .map_err(|_| rejected())?;
-        validate_native_live_plan(&plan, Some(&source), self.state.as_ref().ok_or_else(rejected)?)
-            .map_err(|_| rejected())?;
         drop(source);
         check().map_err(|_| rejected())?;
         Ok(plan)
@@ -1372,10 +1391,11 @@ impl Service {
         let current = self.state.as_ref().ok_or_else(rejected)?;
         let actual_auth = current.auth.clone();
         original_gate(&actual_auth)?;
-        let source = super::native_blob_source::NativeSource::new_checked(
-            durable, plan.deadline,
-            || original_gate(&actual_auth).map_err(|_| ServiceError::BarrierFailure),
-        ).map_err(|_| rejected())?;
+        let source =
+            super::native_blob_source::NativeSource::new_checked(durable, plan.deadline, || {
+                original_gate(&actual_auth).map_err(|_| ServiceError::BarrierFailure)
+            })
+            .map_err(|_| rejected())?;
         let (mut metadata, native) = materialize_metadata_for_service(
             &plan.root,
             context,

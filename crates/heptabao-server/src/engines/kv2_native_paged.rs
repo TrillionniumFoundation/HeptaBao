@@ -137,10 +137,10 @@ impl PayloadDescriptor {
         for chunk in bytes.chunks(BLOCK_BYTES) {
             check()?;
             let object = StagedObject::payload_block(key, chunk)?;
-            if let Some(prior) = blocks.insert(object.reference().id, Arc::clone(&object)) {
-                if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
-                    return Err(RecordError::Corrupt);
-                }
+            if let Some(prior) = blocks.insert(object.reference().id, Arc::clone(&object))
+                && (prior.reference() != object.reference() || prior.bytes() != object.bytes())
+            {
+                return Err(RecordError::Corrupt);
             }
             references.push(object.reference().clone());
             check()?;
@@ -277,10 +277,10 @@ impl PagedPayloads {
                 } else {
                     let descriptor = descriptor.ok_or(RecordError::Missing)?;
                     descriptor.validate(key, path, *number)?;
-                    if let Some(data) = &version.data {
-                        if !descriptor.matches_data(key, data)? {
-                            return Err(RecordError::Corrupt);
-                        }
+                    if let Some(data) = &version.data
+                        && !descriptor.matches_data(key, data)?
+                    {
+                        return Err(RecordError::Corrupt);
                     }
                     count += 1;
                 }
@@ -366,10 +366,10 @@ impl NativeGraph {
                     continue;
                 }
                 let descriptor = if let Some(previous) = old.get(number) {
-                    if let Some(data) = data {
-                        if !previous.matches_data(&self.key, &data)? {
-                            return Err(RecordError::Corrupt);
-                        }
+                    if let Some(data) = data
+                        && !previous.matches_data(&self.key, &data)?
+                    {
+                        return Err(RecordError::Corrupt);
                     }
                     previous.clone()
                 } else {
@@ -632,7 +632,8 @@ impl NativeReadView {
         if !self.is_paged() {
             return Ok(());
         }
-        let graph = self.graph
+        let graph = self
+            .graph
             .as_ref()
             .ok_or_else(|| error(503, "native paged graph missing"))?;
         let paged = graph
@@ -646,16 +647,15 @@ impl NativeReadView {
                     .get(path)
                     .and_then(|values| values.get(number))
                 {
-                    if let Some(data) = &version.data {
-                        if !descriptor
+                    if let Some(data) = &version.data
+                        && !descriptor
                             .matches_data(&graph.key, data)
                             .map_err(|_| error(503, "native hydrated payload check failed"))?
-                        {
-                            return Err(error(
-                                503,
-                                "native hydrated payload changed its old descriptor",
-                            ));
-                        }
+                    {
+                        return Err(error(
+                            503,
+                            "native hydrated payload changed its old descriptor",
+                        ));
                     }
                     version.data = None;
                 }
@@ -700,7 +700,11 @@ impl NativeReadView {
         };
         let owner = graph.decode_paged(check)?;
         check()?;
-        Ok(Self { owner, graph: Some(graph), pending: mutation::PendingPaths::default() })
+        Ok(Self {
+            owner,
+            graph: Some(graph),
+            pending: mutation::PendingPaths::default(),
+        })
     }
     pub(crate) fn encode_paged(
         &self,
@@ -709,9 +713,13 @@ impl NativeReadView {
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<NativeCellGraph> {
         match &self.graph {
-            Some(graph) if graph.paged.is_some() => Ok(NativeCellGraph(
-                graph.with_paged_updates(&self.owner, parent, scope, &self.pending, check)?,
-            )),
+            Some(graph) if graph.paged.is_some() => Ok(NativeCellGraph(graph.with_paged_updates(
+                &self.owner,
+                parent,
+                scope,
+                &self.pending,
+                check,
+            )?)),
             _ => NativeCellGraph::encode_paged(&self.owner, parent, scope, check),
         }
     }
@@ -723,7 +731,13 @@ impl NativeReadView {
         check()?;
         self.validate_paged_metadata()?;
         let graph = self.graph.as_ref().ok_or(RecordError::Corrupt)?;
-        for descriptors in graph.paged.as_ref().ok_or(RecordError::Corrupt)?.descriptors.values() {
+        for descriptors in graph
+            .paged
+            .as_ref()
+            .ok_or(RecordError::Corrupt)?
+            .descriptors
+            .values()
+        {
             for descriptor in descriptors.values() {
                 for reference in &descriptor.blocks {
                     check()?;
@@ -860,27 +874,27 @@ impl NativeReadView {
                 .flatten()
                 .unwrap_or(entry.current_version);
             let precise = entry.version_precision(selected);
-            if let Some(version) = entry.versions.get_mut(&selected) {
-                if !version.destroyed
-                    && version
-                        .deletion_at
-                        .is_none_or(|at| lossless::time_before(now, at, precise.deletion_at))
-                {
-                    let graph = self.graph
-                        .as_ref()
-                        .ok_or_else(|| error(503, "native paged graph missing"))?;
-                    let descriptor = graph
-                        .paged
-                        .as_ref()
-                        .and_then(|p| p.descriptors.get(resource))
-                        .and_then(|p| p.get(&selected))
-                        .ok_or_else(|| error(503, "native paged descriptor missing"))?;
-                    version.data = Some(
-                        descriptor
-                            .read(&graph.key, resource, selected, reader, &|| Ok(()))
-                            .map_err(|_| error(503, "native paged point read rejected"))?,
-                    );
-                }
+            if let Some(version) = entry.versions.get_mut(&selected)
+                && !version.destroyed
+                && version
+                    .deletion_at
+                    .is_none_or(|at| lossless::time_before(now, at, precise.deletion_at))
+            {
+                let graph = self
+                    .graph
+                    .as_ref()
+                    .ok_or_else(|| error(503, "native paged graph missing"))?;
+                let descriptor = graph
+                    .paged
+                    .as_ref()
+                    .and_then(|p| p.descriptors.get(resource))
+                    .and_then(|p| p.get(&selected))
+                    .ok_or_else(|| error(503, "native paged descriptor missing"))?;
+                version.data = Some(
+                    descriptor
+                        .read(&graph.key, resource, selected, reader, &|| Ok(()))
+                        .map_err(|_| error(503, "native paged point read rejected"))?,
+                );
             }
         }
         owner.handle_read_precise(method, path, body, now)
@@ -907,7 +921,8 @@ impl NativeReadView {
         if version.destroyed {
             return Ok(());
         }
-        let graph = self.graph
+        let graph = self
+            .graph
             .as_ref()
             .ok_or_else(|| error(503, "native paged graph missing"))?;
         let descriptor = graph

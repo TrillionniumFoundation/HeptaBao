@@ -449,7 +449,7 @@ fn native_graph_rejects_missing_payload_orphan_noncanonical_and_inline_data() ->
         scope: graph.scope.clone(),
         key: Arc::clone(&graph.key),
         index: graph.index.clone(),
-        format: graph.format,
+        format: graph.format.clone(),
         paged: graph.paged.clone(),
     };
     let payload = payload_key(&graph.scope, &graph.key, "item", 1)?;

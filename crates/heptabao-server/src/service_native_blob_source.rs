@@ -6,7 +6,9 @@ use crate::state_record_root_v6::ObjectDomain;
 use crate::state_records::{ObjectRef, RecordError, StagedObject};
 use crate::v6_native_custody::OriginalDeadline;
 use crate::v6_read_validation::ObjectSource;
-use heptabao_durable_service::{BlobLocator, ImmutableSourceSession};
+use heptabao_durable_service::{
+    BlobLocator, ImmutableObjectReadObservation, ImmutableSourceSession,
+};
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -19,21 +21,29 @@ pub(super) struct PayloadObservations {
 }
 impl PayloadObservations {
     pub(super) fn snapshot(&self) -> [u64; 4] {
-        [self.blocks_pinned.load(Ordering::Relaxed),
-         self.blocks_opened.load(Ordering::Relaxed),
-         self.ciphertext_bytes_read.load(Ordering::Relaxed),
-         self.plaintext_bytes_opened.load(Ordering::Relaxed)]
+        [
+            self.blocks_pinned.load(Ordering::Relaxed),
+            self.blocks_opened.load(Ordering::Relaxed),
+            self.ciphertext_bytes_read.load(Ordering::Relaxed),
+            self.plaintext_bytes_opened.load(Ordering::Relaxed),
+        ]
     }
     fn pinned(&self, bytes: usize) {
         self.blocks_pinned.fetch_add(1, Ordering::Relaxed);
         let _ = bytes;
     }
-    fn opened(&self, bytes: usize, ciphertext_bytes: usize) {
-        // Bytes count only actual successfully read/AEAD-opened payloads.
-        // Pinning metadata/locators and failed delivery do not mint read proof.
-        self.ciphertext_bytes_read.fetch_add(ciphertext_bytes as u64, Ordering::Relaxed);
-        self.blocks_opened.fetch_add(1, Ordering::Relaxed);
-        self.plaintext_bytes_opened.fetch_add(bytes as u64, Ordering::Relaxed);
+    fn observed(&self, event: ImmutableObjectReadObservation) {
+        match event {
+            ImmutableObjectReadObservation::CiphertextRead { bytes } => {
+                self.ciphertext_bytes_read
+                    .fetch_add(bytes as u64, Ordering::Relaxed);
+            }
+            ImmutableObjectReadObservation::PlaintextOpened { bytes } => {
+                self.blocks_opened.fetch_add(1, Ordering::Relaxed);
+                self.plaintext_bytes_opened
+                    .fetch_add(bytes as u64, Ordering::Relaxed);
+            }
+        }
     }
 }
 
@@ -179,29 +189,50 @@ impl<'a> NativeSource<'a> {
     // pin at a time; it does not decrypt or parse historical JSON. The selected
     // point reader still must authenticate AEAD and the typed plaintext address.
     pub(super) fn pin_payload_location(
-        &self, domain: &ObjectDomain, reference: &ObjectRef,
+        &self,
+        domain: &ObjectDomain,
+        reference: &ObjectRef,
     ) -> Result<(), RecordError> {
-        if reference.kind != crate::state_records::ObjectKind::Block {
+        if !matches!(domain, ObjectDomain::Kv2(_))
+            || reference.kind != crate::state_records::ObjectKind::Block
+        {
             return Err(RecordError::Invalid);
         }
-        let mut gate = self.original_gate.try_borrow_mut().map_err(|_| RecordError::Invalid)?;
+        let mut gate = self
+            .original_gate
+            .try_borrow_mut()
+            .map_err(|_| RecordError::Invalid)?;
         let mut before = || {
-            self.deadline.check().map_err(|_| ServiceError::BarrierFailure)?;
+            self.deadline
+                .check()
+                .map_err(|_| ServiceError::BarrierFailure)?;
             gate()?;
-            self.deadline.check().map_err(|_| ServiceError::BarrierFailure)
+            self.deadline
+                .check()
+                .map_err(|_| ServiceError::BarrierFailure)
         };
         before().map_err(|_| RecordError::Invalid)?;
-        let mut durable = self.durable.try_borrow_mut().map_err(|_| RecordError::Corrupt)?;
-        let stored = durable.get("system", &v6_records::native_resource(domain, reference))
-            .map_err(|_| RecordError::Corrupt)?.ok_or(RecordError::Missing)?;
+        let mut durable = self
+            .durable
+            .try_borrow_mut()
+            .map_err(|_| RecordError::Corrupt)?;
+        let stored = durable
+            .get("system", &v6_records::native_resource(domain, reference))
+            .map_err(|_| RecordError::Corrupt)?
+            .ok_or(RecordError::Missing)?;
         before().map_err(|_| RecordError::Invalid)?;
         let slot = Slot::decode(stored.expose(), reference)?;
         if slot.locator.store_id() != self.session.store_id() {
             return Err(RecordError::Corrupt);
         }
-        let pin = durable.pin_immutable_object_before_read(
-            &self.session, slot.locator, slot.ciphertext_bytes, &mut before,
-        ).map_err(|_| RecordError::Corrupt)?;
+        let pin = durable
+            .pin_immutable_object_before_read(
+                &self.session,
+                slot.locator,
+                slot.ciphertext_bytes,
+                &mut before,
+            )
+            .map_err(|_| RecordError::Corrupt)?;
         if let Some(observations) = &self.observations {
             observations.pinned(pin.ciphertext_len());
         }
@@ -255,7 +286,9 @@ impl NativeSource<'_> {
         domain: &ObjectDomain,
         reference: &ObjectRef,
     ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-        if reference.kind != crate::state_records::ObjectKind::Block {
+        if !matches!(domain, ObjectDomain::Kv2(_))
+            || reference.kind != crate::state_records::ObjectKind::Block
+        {
             return Err(RecordError::Invalid);
         }
         self.read_checked(domain, reference, true)
@@ -310,24 +343,23 @@ impl NativeSource<'_> {
                 &mut before,
             )
             .map_err(|_| RecordError::Corrupt)?;
-        if observe_payload {
-            if let Some(observations) = &self.observations {
-                observations.pinned(pin.ciphertext_len());
-            }
+        if observe_payload && let Some(observations) = &self.observations {
+            observations.pinned(pin.ciphertext_len());
         }
         let plaintext = durable
-            .read_immutable_object_before_delivery(
+            .read_immutable_object_before_delivery_observed(
                 &self.session,
                 &pin,
                 &context(domain, reference),
                 &mut before,
+                &mut |event| {
+                    if observe_payload && let Some(observations) = &self.observations {
+                        observations.observed(event);
+                    }
+                },
             )
             .map_err(|_| RecordError::Corrupt)?;
-        if observe_payload {
-            if let Some(observations) = &self.observations {
-                observations.opened(plaintext.len(), pin.ciphertext_len());
-            }
-        }
+
         if plaintext.len() != slot.plaintext_bytes {
             return Err(RecordError::Corrupt);
         }

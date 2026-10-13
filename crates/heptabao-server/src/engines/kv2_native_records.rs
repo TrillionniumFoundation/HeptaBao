@@ -521,7 +521,8 @@ impl NativeReadView {
         )
     }
     pub(crate) fn has_lossless_state(&self) -> bool {
-        self.owner.has_lossless_import_state() || (self.is_paged() && self.owner.lossless_format == Some(1))
+        self.owner.has_lossless_import_state()
+            || (self.is_paged() && self.owner.lossless_format == Some(1))
     }
     /// Mutate only a detached owner. This grants no Service or storage authority.
     pub(crate) fn mutate(
@@ -551,9 +552,13 @@ impl NativeReadView {
             return self.encode_paged(parent, scope, check);
         }
         match &self.graph {
-            Some(graph) => Ok(NativeCellGraph(
-                graph.with_updates(&self.owner, parent, scope, &self.pending, check)?,
-            )),
+            Some(graph) => Ok(NativeCellGraph(graph.with_updates(
+                &self.owner,
+                parent,
+                scope,
+                &self.pending,
+                check,
+            )?)),
             None => NativeCellGraph::encode(&self.owner, parent, scope, check),
         }
     }

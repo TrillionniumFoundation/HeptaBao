@@ -1,8 +1,8 @@
 //! Native-only logical dispatch with an explicit, custody-checked point source.
 //! The caller must own the original real Service request admission.
 use super::*;
-use crate::state_record_root_v6::MountScope;
 use crate::engines::kv2_native_records::NativeReadView;
+use crate::state_record_root_v6::MountScope;
 use crate::state_records::{ObjectRef, RecordError, RecordReader};
 use zeroize::Zeroizing;
 
@@ -25,7 +25,11 @@ impl EngineState {
     // Only exact actual mount ownership may supply a prior live descriptor
     // witness; a detached or newly opened metadata view cannot be substituted.
     pub(crate) fn native_paged_view(&self, scope: &MountScope) -> Option<&NativeReadView> {
-        let mount = self.namespaces.get(&scope.namespace)?.mounts.get(&scope.mount)?;
+        let mount = self
+            .namespaces
+            .get(&scope.namespace)?
+            .mounts
+            .get(&scope.mount)?;
         if mount.incarnation != scope.incarnation {
             return None;
         }

@@ -39,6 +39,14 @@ impl ImmutableSourceSession {
     }
 }
 
+/// Size observations grant no Actor, delivery or publication authority.
+/// Later gates and typed address/grammar checks still may reject plaintext.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ImmutableObjectReadObservation {
+    CiphertextRead { bytes: usize },
+    PlaintextOpened { bytes: usize },
+}
+
 impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Establish only an actual current physical source binding. The server must
     /// separately prove its authenticated typed root, layout, Actor and original
@@ -233,6 +241,23 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         context: &[u8],
         before: &mut impl FnMut() -> Result<(), ServiceError>,
     ) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
+        self.read_immutable_object_before_delivery_observed(
+            session,
+            pin,
+            context,
+            before,
+            &mut |_| {},
+        )
+    }
+
+    pub fn read_immutable_object_before_delivery_observed(
+        &mut self,
+        session: &ImmutableSourceSession,
+        pin: &ImmutableBlobReadPin,
+        context: &[u8],
+        before: &mut impl FnMut() -> Result<(), ServiceError>,
+        observe: &mut impl FnMut(ImmutableObjectReadObservation),
+    ) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
         before()?;
         self.check_immutable_source_session(session)?;
         if pin.locator().store_id() != session.store_id
@@ -254,6 +279,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                     PinReadError::Backend(error) => map_backend_error(error),
                     PinReadError::Gate(error) => error,
                 })?;
+        observe(ImmutableObjectReadObservation::CiphertextRead {
+            bytes: protected.len(),
+        });
         before()?;
         self.check_immutable_source_session(session)?;
         let plaintext = Zeroizing::new(
@@ -261,6 +289,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 .open(context, protected.as_slice())
                 .map_err(|_| ServiceError::BarrierFailure)?,
         );
+        observe(ImmutableObjectReadObservation::PlaintextOpened {
+            bytes: plaintext.len(),
+        });
         before()?;
         self.check_immutable_source_session(session)?;
         if plaintext.is_empty() || plaintext.len() > session.profile.max_ciphertext_bytes {
