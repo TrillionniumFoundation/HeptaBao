@@ -1115,3 +1115,144 @@ fn genuine_service_native_migration_plan_requires_original_deadline() -> TestRes
     );
     Ok(())
 }
+
+#[test]
+fn genuine_native_publication_uses_real_aead_root_last_and_reopens_exact_cursor() -> TestResult {
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let token = Zeroizing::new(token);
+    let marker = "native-service-aead-persisted-marker";
+    assert_eq!(
+        super::super::tests::call(
+            &mut service,
+            "POST",
+            "secret/data/native-source",
+            &token,
+            json!({"data":{"value":marker,"nested":[false,null,17]}})
+        )
+        .status,
+        200
+    );
+    let path = service.data_dir.clone();
+    let barrier_key = Zeroizing::new(**service.barrier_key.as_ref().ok_or("barrier key")?);
+    let plan = service
+        .prepare_native_root_migration(&|| Ok(()))
+        .map_err(|_| "prepare")?;
+    let receipt = service
+        .publish_native_root_migration_fenced(plan, &|| Ok(()))
+        .map_err(|_| "publish")?;
+    assert!(
+        service.recovery_required,
+        "stale V5 runtime must be fenced after publication"
+    );
+    drop(service);
+    let durable = DurableService::reopen(&path, AeadBarrier::new(*barrier_key)?, MAX_OPERATIONS)?;
+    let bytes = durable.get("system", "state")?.ok_or("root")?;
+    let root = RecordStateRootV6::decode(bytes.expose()).map_err(|_| "decode published root")?;
+    assert_eq!(root.identity().map_err(|_| "identity")?, receipt.identity);
+    let cursor_bytes = durable
+        .get("system", "state-native-v6/publication-cursor")?
+        .ok_or("cursor")?;
+    let cursor: NativePublicationCursor = serde_json::from_slice(cursor_bytes.expose())?;
+    assert_eq!(cursor.root_digest, receipt.identity.digest());
+    assert_eq!(cursor.generation, receipt.publication_generation);
+    assert_eq!(
+        cursor.generation,
+        durable.generation(),
+        "publication cursor must match real atomic journal generation"
+    );
+    assert_eq!(cursor.cluster_id, root.cluster_id);
+    assert_eq!(cursor.replay_epoch, root.replay_epoch);
+    let StateIdentity::RecordsV6(identity) = receipt.identity else {
+        return Err("identity kind".into());
+    };
+    let context = ReadContext {
+        expected_identity: ReadIdentity::RecordsV6(identity),
+        cluster_id: &root.cluster_id,
+        replay_epoch: root.replay_epoch,
+        minimum_state_schema: root.state_schema,
+        maximum_state_schema: root.state_schema,
+        reader_format: 6,
+    };
+    let recovered = materialize(&root, context, &NativeDurableSource(&durable))?;
+    let scope = root
+        .kv2
+        .iter()
+        .find(|graph| graph.scope.mount == "secret/" && graph.scope.namespace.is_empty())
+        .ok_or("scope")?
+        .scope
+        .clone();
+    let response = recovered.native.get(&scope).ok_or("view")?.read(
+        "GET",
+        "data/native-source",
+        &json!({}),
+        crate::auth::Timestamp::whole(1000)?,
+    )?;
+    assert_eq!(response.body["data"]["data"]["value"], marker);
+    let mut directories = vec![path];
+    while let Some(directory) = directories.pop() {
+        for entry in std::fs::read_dir(directory)? {
+            let entry = entry?;
+            if entry.file_type()?.is_dir() {
+                directories.push(entry.path());
+            } else if entry.file_type()?.is_file() {
+                let bytes = Zeroizing::new(std::fs::read(entry.path())?);
+                assert!(
+                    !bytes
+                        .windows(marker.len())
+                        .any(|window| window == marker.as_bytes()),
+                    "plaintext marker must not reach persisted artifacts"
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn genuine_native_publication_expired_original_gate_keeps_old_root_and_fences_staging() -> TestResult
+{
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let _token = Zeroizing::new(token);
+    let old = service
+        .durable
+        .as_ref()
+        .ok_or("durable")?
+        .get("system", "state")?
+        .ok_or("root")?;
+    let plan = service
+        .prepare_native_root_migration(&|| Ok(()))
+        .map_err(|_| "prepare")?;
+    let calls = std::cell::Cell::new(0);
+    let denied = service.publish_native_root_migration_fenced(plan, &|| {
+        calls.set(calls.get() + 1);
+        if calls.get() > 4 {
+            Err(RecordError::Corrupt)
+        } else {
+            Ok(())
+        }
+    });
+    assert!(denied.is_err());
+    assert!(calls.get() > 4, "real post-crypto original gate must run");
+    let durable = service.durable.as_ref().ok_or("durable")?;
+    assert_eq!(
+        durable.get("system", "state")?.ok_or("root")?.expose(),
+        old.expose()
+    );
+    assert!(
+        durable
+            .get("system", "state-native-v6/publication-cursor")?
+            .is_some()
+    );
+    assert!(service.recovery_required);
+    assert!(
+        service.prepare_native_root_migration(&|| Ok(())).is_err(),
+        "partial staging cannot retry implicitly"
+    );
+    Ok(())
+}

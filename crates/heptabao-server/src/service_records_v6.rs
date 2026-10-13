@@ -1,4 +1,5 @@
-//! Authenticated V6 read kernel. No mutable Service installation/publication.
+//! Authenticated V6 kernel with live-source preparation and fenced persistence.
+//! Runtime reader, request writer, HA and migration admission remain closed.
 use super::*;
 use crate::engines::kv2_native_records::NativeReadView;
 use crate::state_record_root_v6::{ENGINE_FORMAT, MountScope, ObjectDomain, RecordStateRootV6};
@@ -630,5 +631,244 @@ impl Service {
         validate_native_root_migration_plan(&plan).map_err(|_| rejected())?;
         check().map_err(|_| rejected())?;
         Ok(plan)
+    }
+}
+
+fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> String {
+    let role = match domain {
+        ObjectDomain::Owner(role) => format!("owner/{}", role.name()),
+        ObjectDomain::Kv1 => "kv1".into(),
+        ObjectDomain::Kv2(_) => "kv2".into(),
+    };
+    // IDs already authenticate the role/scoped address key. A V5 collector
+    // must never collect a staged or published V6 object.
+    format!(
+        "state-records/v6/{role}/{}",
+        reference.resource().trim_start_matches("state-records/v5/")
+    )
+}
+struct PreparedSource<'a>(
+    &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
+);
+impl ObjectSource for PreparedSource<'_> {
+    fn read(
+        &self,
+        domain: &ObjectDomain,
+        reference: &ObjectRef,
+    ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        let object = self
+            .0
+            .get(&(domain.clone(), reference.id))
+            .ok_or(RecordError::Missing)?;
+        if object.reference() != reference {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(Zeroizing::new(object.bytes().to_vec()))
+    }
+    fn object_count(&self) -> Option<usize> {
+        Some(self.0.len())
+    }
+}
+pub(super) struct NativeDurableSource<'a>(pub &'a DurableService<AeadBarrier>);
+impl ObjectSource for NativeDurableSource<'_> {
+    fn read(
+        &self,
+        domain: &ObjectDomain,
+        reference: &ObjectRef,
+    ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        let value = self
+            .0
+            .get("system", &native_resource(domain, reference))
+            .map_err(|_| RecordError::Corrupt)?
+            .ok_or(RecordError::Missing)?;
+        Ok(Zeroizing::new(value.expose().to_vec()))
+    }
+}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NativePublicationCursor {
+    format: String,
+    cluster_id: String,
+    replay_epoch: u64,
+    generation: u64,
+    root_digest: [u8; 32],
+}
+pub(super) struct NativePublicationReceipt {
+    pub identity: crate::state_record_root::StateIdentity,
+    pub publication_generation: u64,
+}
+impl Service {
+    /// Actual encrypted durable publication, with a monotonic cursor anchored
+    /// before child staging and committed with the root in the final batch.
+    /// Until runtime reader admission is wired, a success fences this Service;
+    /// it must not release a normal request response from the stale V5 runtime.
+    pub(super) fn publish_native_root_migration_fenced(
+        &mut self,
+        plan: NativeRootMigrationPlan,
+        check: &impl Fn() -> Result<(), RecordError>,
+    ) -> Result<NativePublicationReceipt, Response> {
+        let rejected = || {
+            Response::error(
+                503,
+                "native publication rejected; runtime admission remains closed",
+            )
+        };
+        if self.ha.is_some()
+            || self.recovery_required
+            || plan.conditions.len() != 2
+            || plan.conditions[0].resource != "state"
+            || plan.conditions[1].resource != "state-native-v6/publication-cursor"
+            || plan.conditions[1].expected.is_some()
+            || plan.root.encode().map_err(|_| rejected())?.as_slice() != plan.bytes.as_slice()
+        {
+            return Err(rejected());
+        }
+        check().map_err(|_| rejected())?;
+        let identity = plan.root.identity().map_err(|_| rejected())?;
+        let crate::state_record_root::StateIdentity::RecordsV6(id) = identity else {
+            return Err(rejected());
+        };
+        let context = ReadContext {
+            expected_identity: crate::v6_read_validation::ReadIdentity::RecordsV6(id),
+            cluster_id: &plan.root.cluster_id,
+            replay_epoch: plan.root.replay_epoch,
+            minimum_state_schema: plan.root.state_schema,
+            maximum_state_schema: plan.root.state_schema,
+            reader_format: 6,
+        };
+        let verified = materialize(&plan.root, context, &PreparedSource(&plan.objects))
+            .map_err(|_| rejected())?;
+        let current = self.state.as_ref().ok_or_else(rejected)?;
+        // Bind the actual authenticated policy/token owner before any effect.
+        let actual = owner_store::serialize_owner(&current.auth).map_err(|_| rejected())?;
+        let expected =
+            owner_store::serialize_owner(&verified.protected.auth).map_err(|_| rejected())?;
+        if actual.as_slice() != expected.as_slice() {
+            return Err(rejected());
+        }
+        let base_identity = self.current_state_identity()?;
+        let anchor_generation = plan.source_generation.checked_add(1).ok_or_else(rejected)?;
+        let operation = format!(
+            "native6-{}",
+            hex(&crypto::random::<16>().map_err(|_| rejected())?)
+        );
+        let mut cursor = NativePublicationCursor {
+            format: "heptabao-native-v6-publication-cursor-v1".into(),
+            cluster_id: plan.root.cluster_id.clone(),
+            replay_epoch: plan.root.replay_epoch,
+            generation: anchor_generation,
+            root_digest: base_identity.digest(),
+        };
+        let anchor = owner_store::serialize_owner(&cursor).map_err(|_| rejected())?;
+        let durable = self.durable.as_mut().ok_or_else(rejected)?;
+        durable.verify_live_ownership().map_err(|_| rejected())?;
+        if durable.generation() != plan.source_generation {
+            return Err(rejected());
+        }
+        let mut conditions = plan.conditions;
+        fn copied(
+            conditions: &[heptabao_durable_service::PublicationCondition],
+        ) -> Vec<heptabao_durable_service::PublicationCondition> {
+            conditions
+                .iter()
+                .map(|condition| heptabao_durable_service::PublicationCondition {
+                    resource: condition.resource.clone(),
+                    expected: condition.expected.clone(),
+                })
+                .collect()
+        }
+        let mut gate = || check().map_err(|_| ServiceError::BarrierFailure);
+        let result = (|| -> Result<u64, ServiceError> {
+            durable.apply_batch_conditionally_before_publish(
+                heptabao_durable_service::BatchPublication {
+                    replay_epoch: plan.root.replay_epoch,
+                    principal: "heptabao-server".into(),
+                    namespace: "system".into(),
+                    request_id: format!("{operation}-anchor"),
+                    authorization_digest: id,
+                    mutations: vec![(
+                        "state-native-v6/publication-cursor".into(),
+                        Some(Secret::new(anchor.to_vec())?),
+                    )],
+                },
+                copied(&conditions),
+                &mut gate,
+            )?;
+            conditions[1].expected = Some(Secret::new(anchor.to_vec())?);
+            let objects = plan.objects.iter().collect::<Vec<_>>();
+            for (number, chunk) in objects
+                .chunks(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
+                .enumerate()
+            {
+                check().map_err(|_| ServiceError::BarrierFailure)?;
+                let mutations = chunk
+                    .iter()
+                    .map(|((domain, _), object)| {
+                        Ok((
+                            native_resource(domain, object.reference()),
+                            Some(Secret::new(object.bytes().to_vec())?),
+                        ))
+                    })
+                    .collect::<Result<Vec<_>, ServiceError>>()?;
+                durable.apply_batch_conditionally_before_publish(
+                    heptabao_durable_service::BatchPublication {
+                        replay_epoch: plan.root.replay_epoch,
+                        principal: "heptabao-server".into(),
+                        namespace: "system".into(),
+                        request_id: format!("{operation}-objects-{number}"),
+                        authorization_digest: id,
+                        mutations,
+                    },
+                    copied(&conditions),
+                    &mut gate,
+                )?;
+            }
+            // Read the actual encrypted staged objects before publishing a root.
+            materialize(&plan.root, context, &NativeDurableSource(durable))
+                .map_err(|_| ServiceError::CorruptState)?;
+            // Each encrypted object batch advances the durable journal once.
+            // Bind the final cursor to the *actual* next journal generation,
+            // not a fixed offset from the migration's starting generation.
+            let publication_generation = durable
+                .generation()
+                .checked_add(1)
+                .ok_or(ServiceError::GenerationOverflow)?;
+            cursor.generation = publication_generation;
+            cursor.root_digest = id;
+            let cursor_bytes =
+                owner_store::serialize_owner(&cursor).map_err(|_| ServiceError::CorruptState)?;
+            durable.apply_batch_conditionally_before_publish(
+                heptabao_durable_service::BatchPublication {
+                    replay_epoch: plan.root.replay_epoch,
+                    principal: "heptabao-server".into(),
+                    namespace: "system".into(),
+                    request_id: format!("{operation}-root"),
+                    authorization_digest: id,
+                    mutations: vec![
+                        ("state".into(), Some(Secret::new(plan.bytes.to_vec())?)),
+                        (
+                            "state-native-v6/publication-cursor".into(),
+                            Some(Secret::new(cursor_bytes.to_vec())?),
+                        ),
+                    ],
+                },
+                copied(&conditions),
+                &mut gate,
+            )?;
+            if durable.generation() != publication_generation {
+                return Err(ServiceError::CorruptState);
+            }
+            Ok(publication_generation)
+        })();
+        // Even a partial migration must reconcile its anchored cursor before
+        // another request can mutate the old runtime. Never retry implicitly.
+        self.recovery_required = true;
+        self.ha_activation = None;
+        crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+        let publication_generation = result.map_err(|_| rejected())?;
+        Ok(NativePublicationReceipt {
+            identity,
+            publication_generation,
+        })
     }
 }
