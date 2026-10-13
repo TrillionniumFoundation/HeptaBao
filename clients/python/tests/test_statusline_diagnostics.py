@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import socket
 import sys
+import threading
 import unittest
 from unittest.mock import MagicMock
 import urllib.error
@@ -26,14 +27,36 @@ class StatusLineBoundaryTests(unittest.TestCase):
             left, right = socket.socketpair()
             stack.enter_context(left)
             stack.enter_context(right)
-            right.sendall(wire)
-            right.shutdown(socket.SHUT_WR)
+            left.settimeout(5)
+            right.settimeout(5)
+            writer_errors = []
+            def write_wire():
+                try:
+                    right.sendall(wire)
+                    right.shutdown(socket.SHUT_WR)
+                except BaseException as error:
+                    writer_errors.append(error)
+                finally:
+                    right.close()
+            writer = threading.Thread(target=write_wire, daemon=True)
             response = http.client.HTTPResponse(left)
             stack.callback(response.close)
             opener = MagicMock()
             opener.open.side_effect = lambda *args, **kwargs: response.begin()
-            with self.assertRaises(BaoError) as caught:
-                self.client(opener).request("POST", "/v1/synthetic-fixture", {})
+            writer.start()
+            try:
+                with self.assertRaises(BaoError) as caught:
+                    self.client(opener).request("POST", "/v1/synthetic-fixture", {})
+            finally:
+                writer.join(timeout=5)
+                if writer.is_alive():
+                    response.close()
+                    left.close()
+                    right.close()
+                    writer.join(timeout=5)
+                self.assertFalse(writer.is_alive(), "fixture writer must retire")
+                if writer_errors:
+                    raise writer_errors[0]
             self.assertEqual(caught.exception.code, "transport_outcome_unknown")
             self.assertEqual(str(caught.exception), "transport_outcome_unknown")
             self.assertEqual(opener.open.call_count, 1)

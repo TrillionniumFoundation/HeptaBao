@@ -5,8 +5,10 @@ import importlib.metadata
 import json
 from pathlib import Path
 import re
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+MINIMUM_RUNTIME = (3, 11)
 
 
 def required(path: Path) -> dict[str, str]:
@@ -28,7 +30,8 @@ def required(path: Path) -> dict[str, str]:
     return result
 
 
-def inspect(path: Path = ROOT / 'requirements-plan.txt', version=importlib.metadata.version) -> dict:
+def inspect(path: Path = ROOT / 'requirements-plan.txt', version=importlib.metadata.version,
+            runtime=None) -> dict:
     pins = required(path)
     installed = {}
     for name in pins:
@@ -36,7 +39,11 @@ def inspect(path: Path = ROOT / 'requirements-plan.txt', version=importlib.metad
             installed[name] = version(name)
         except importlib.metadata.PackageNotFoundError:
             installed[name] = None
+    runtime = tuple(sys.version_info[:3] if runtime is None else runtime)
     return {'schema':'heptabao.python-environment.v1', 'required':pins, 'installed':installed,
+            'python_runtime':'.'.join(str(part) for part in runtime),
+            'minimum_python_runtime':'.'.join(str(part) for part in MINIMUM_RUNTIME),
+            'runtime_supported':runtime[:2] >= MINIMUM_RUNTIME,
             'exact_direct_pins':installed == pins, 'transitive_dependency_lock':False,
             'qualification':False}
 
@@ -44,7 +51,7 @@ def inspect(path: Path = ROOT / 'requirements-plan.txt', version=importlib.metad
 def main() -> int:
     result = inspect()
     print(json.dumps(result, sort_keys=True))
-    return 0 if result['exact_direct_pins'] else 1
+    return 0 if result['runtime_supported'] and result['exact_direct_pins'] else 1
 
 
 if __name__ == '__main__':
