@@ -3457,7 +3457,7 @@ impl Service {
         // The listener may decode form fields for a syntactic login carrier,
         // but only the synchronized live native AppRole mount can consume them.
         // This runs under the ordinary Service writer, after HA forwarding and
-        // canonical namespace/path resolution, before auth/quota or any effect.
+        // canonical namespace/path resolution, before authentication or any effect.
         if logical_data
             .as_ref()
             .is_some_and(|data| data.is_approle_form())
