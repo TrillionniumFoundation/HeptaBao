@@ -183,7 +183,10 @@ def checked_run(argv: list[str], *, input_bytes: bytes | None = None,
 
 def sha256_file(path: Path) -> str:
     with path.open("rb") as source:
-        return hashlib.file_digest(source, "sha256").hexdigest()
+        digest = hashlib.sha256()
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+        return digest.hexdigest()
 
 
 def admitted_storage_prefix(alias: str, path: str, *, binary_source: bool = False) -> bool:
@@ -251,7 +254,10 @@ def remote_binary_digest(node: Node) -> str:
 python3 - {shlex.quote(node.root + '/heptabao-server')} <<'PY2'
 import hashlib, sys
 with open(sys.argv[1], 'rb') as source:
-    print(hashlib.file_digest(source, 'sha256').hexdigest())
+    digest = hashlib.sha256()
+    for chunk in iter(lambda: source.read(1024 * 1024), b''):
+        digest.update(chunk)
+    print(digest.hexdigest())
 PY2
 """).strip()
 
@@ -369,7 +375,10 @@ with gzip.open(archive, "rb") as source, os.fdopen(
     output.flush()
     os.fsync(output.fileno())
 with temporary.open("rb") as stream:
-    actual = hashlib.file_digest(stream, "sha256").hexdigest()
+    digest = hashlib.sha256()
+    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(chunk)
+    actual = digest.hexdigest()
 if actual != expected:
     temporary.unlink(missing_ok=True)
     raise SystemExit(72)

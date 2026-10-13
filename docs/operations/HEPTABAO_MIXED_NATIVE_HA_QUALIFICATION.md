@@ -62,3 +62,10 @@ kill, followed by legitimate termination and idempotent no-process cleanup.
 Existing fixed denominator, read frontier, strict certificate and KV1 profile
 checks remain required. Actual mixed Mac/Linux lifecycle evidence is necessary
 in addition to these controller tests.
+
+macOS command-line Python 3.9 is supported. Hashing streams bounded 1 MiB chunks
+and does not require Python 3.11's `hashlib.file_digest`. The target verifies the
+installed native binary after fsync and publication. A real Mac/T5 fixture tested
+the complete compressed transfer, installation, directory fsync and SHA-256
+comparison under Python 3.9.6; this compatibility check is separate from native
+HeptaBao HA qualification.
