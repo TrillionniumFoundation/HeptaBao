@@ -436,7 +436,7 @@ impl NativeReadView {
 /// before allowing a retained pin to leave that callback.
 pub(crate) struct NativeCellGraph(NativeGraph);
 impl NativeCellGraph {
-    pub(crate) fn encode(
+    fn encode(
         owner: &Kv2,
         parent: &AddressKey,
         scope: NativeScope<'_>,
