@@ -671,7 +671,7 @@ pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> S
         reference.resource().trim_start_matches("state-records/v5/")
     )
 }
-#[cfg(test)]
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 const NATIVE_SIDE_ROOT: &str = "state-native-v6/root";
 
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
