@@ -358,6 +358,7 @@ struct NativeGraph {
     index: Kv1Index,
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 #[path = "kv2_native_install.rs"]
 mod install;
 #[path = "kv2_native_mutation.rs"]

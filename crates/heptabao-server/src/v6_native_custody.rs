@@ -3,19 +3,20 @@
 #[cfg(test)]
 use crate::engines::kv2_native_records::{NativeCellGraph, NativeReadView, NativeScope};
 #[cfg(test)]
-use crate::namespace_custody::{Binding, InheritedParent, Key};
+use crate::namespace_custody::Key;
+use crate::namespace_custody::{Binding, InheritedParent};
 #[cfg(test)]
 use crate::state_record_root_v6::MountScope;
 use crate::state_records::RecordError;
 #[cfg(test)]
 use crate::state_records::{Kv1Root, ObjectId, ObjectRef, RecordReader, StagedObject};
 #[cfg(test)]
-use crate::v6_record_resources::{CipherDomain, CipherObject, CipherReference};
-#[cfg(test)]
+use crate::v6_record_resources::CipherDomain;
+use crate::v6_record_resources::{CipherObject, CipherReference};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 #[cfg(test)]
-use std::collections::{BTreeMap, BTreeSet};
-#[cfg(test)]
+use std::collections::BTreeSet;
 use std::sync::Arc;
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
 use std::time::Instant;
@@ -86,7 +87,6 @@ impl OriginalDeadline {
 }
 
 /// Authenticated normal namespace owner facts, never a key/capability grant.
-#[cfg(test)]
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct NamespaceFrontier {
@@ -110,13 +110,13 @@ struct NativeHeader {
 
 /// An encrypted native graph pin. There are deliberately no NamespaceKey,
 /// AddressKey, decoded Kv2 or plaintext namespace/header fields in this type.
-#[cfg(test)]
 pub struct NativeCipherPin {
+    #[cfg(test)]
     pub(crate) header: CipherReference,
     pub(crate) objects: Arc<BTreeMap<String, Arc<CipherObject>>>,
 }
 #[cfg(test)]
-struct NamespaceContext<'a> {
+pub(crate) struct NamespaceContext<'a> {
     key: &'a Key,
     frontier: &'a NamespaceFrontier,
     cluster: &'a str,
@@ -125,14 +125,13 @@ struct NamespaceContext<'a> {
     deadline: OriginalDeadline,
 }
 #[cfg(test)]
-struct MutationRequest<'a> {
+pub(crate) struct MutationRequest<'a> {
     method: &'a str,
     path: &'a str,
     body: &'a serde_json::Value,
     now: crate::auth::Timestamp,
 }
 
-#[cfg(test)]
 impl NativeCipherPin {
     pub fn object_count(&self) -> usize {
         self.objects.len()
@@ -143,6 +142,7 @@ impl NativeCipherPin {
     pub fn references(&self) -> impl Iterator<Item = &CipherReference> {
         self.objects.values().map(|object| &object.reference)
     }
+    #[cfg(test)]
     pub(crate) fn project_namespace(
         owner: &NativeReadView,
         key: &Key,
@@ -346,6 +346,7 @@ impl NativeCipherPin {
         }
         Ok(view)
     }
+    #[cfg(test)]
     pub(crate) fn inspect_namespace(
         &self,
         context: NamespaceContext<'_>,
@@ -382,6 +383,7 @@ impl NativeCipherPin {
     /// real KV2 mutation. The returned candidate is detached encrypted data,
     /// never an installed owner or a published root. Its caller must retain
     /// the original key/lease callback until after publication admission.
+    #[cfg(test)]
     pub(crate) fn mutate_namespace(
         &self,
         context: NamespaceContext<'_>,
@@ -581,12 +583,12 @@ impl NativePublicationFence {
             &before,
             prepared,
             NamespaceContext {
-                key: key,
-                frontier: frontier,
-                cluster: cluster,
-                epoch: epoch,
-                scope: scope,
-                deadline: deadline,
+                key,
+                frontier,
+                cluster,
+                epoch,
+                scope,
+                deadline,
             },
             check_owner,
         )?;
@@ -650,7 +652,6 @@ impl NativePublicationFence {
         }))
     }
 }
-#[cfg(test)]
 #[derive(Debug, Serialize)]
 pub struct NativeCustodyReceipt {
     pub paths: usize,

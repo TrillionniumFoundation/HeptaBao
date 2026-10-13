@@ -1,5 +1,5 @@
-//! Authenticated V6 kernel with live-source preparation and isolated side snapshots.
-//! Active Service reader, request writer, HA and migration admission remain closed.
+//! Authenticated V6 kernel with guarded root-only fixture admission and side snapshots.
+//! Default Service, namespace, HA and production migration admission remain closed.
 use super::*;
 use crate::engines::kv2_native_records::NativeReadView;
 use crate::state_record_root_v6::{ENGINE_FORMAT, MountScope, ObjectDomain, RecordStateRootV6};

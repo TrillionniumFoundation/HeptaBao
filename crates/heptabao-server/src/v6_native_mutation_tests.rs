@@ -113,12 +113,12 @@ fn compare_read(
     let original = view.read(method, path, body, at(2000)?);
     pin.inspect_namespace(
         NamespaceContext {
-            key: key,
-            frontier: frontier,
+            key,
+            frontier,
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         |opened| {
             let restored = opened.read(
@@ -160,12 +160,12 @@ fn apply(
     let original = view.mutate(method, path, body, at(seconds)?);
     let result = pin.mutate_namespace(
         NamespaceContext {
-            key: key,
-            frontier: frontier,
+            key,
+            frontier,
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: method,
@@ -331,7 +331,7 @@ fn encrypted_native_mutation_reopens_real_large_history_and_preserves_business_s
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         |old| {
             assert_eq!(old.counts(), (2, 40, 40));
@@ -345,7 +345,7 @@ fn encrypted_native_mutation_reopens_real_large_history_and_preserves_business_s
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         |_| Ok(()),
     )?;
@@ -397,7 +397,7 @@ fn encrypted_native_mutation_authenticates_full_source_before_engine_and_recheck
                 cluster: CLUSTER,
                 epoch: EPOCH,
                 scope: scope(),
-                deadline: deadline,
+                deadline,
             },
             MutationRequest {
                 method: "POST",
@@ -570,7 +570,7 @@ fn encrypted_native_mutation_authenticates_full_source_before_engine_and_recheck
                     cluster: CLUSTER,
                     epoch: EPOCH,
                     scope: scope(),
-                    deadline: deadline
+                    deadline
                 },
                 MutationRequest {
                     method: "POST",
@@ -775,7 +775,7 @@ fn encrypted_native_publication_preflight_rejects_aba_stale_generation() -> Test
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: "POST",
@@ -844,7 +844,7 @@ fn encrypted_native_publication_preflight_rejects_zero_rollover_and_malformed_ca
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: "POST",
@@ -897,7 +897,7 @@ fn encrypted_native_publication_preflight_preserves_noop_owner_and_original_dead
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: "DELETE",
@@ -957,7 +957,7 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: "POST",
@@ -985,7 +985,7 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
                 cluster: CLUSTER,
                 epoch: EPOCH,
                 scope: scope(),
-                deadline: deadline
+                deadline
             },
             &|| Ok(())
         )?
@@ -1017,7 +1017,7 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
                 cluster: CLUSTER,
                 epoch: EPOCH,
                 scope: scope(),
-                deadline: deadline
+                deadline
             },
             &|| Ok(())
         )
@@ -1053,7 +1053,7 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
                 cluster: CLUSTER,
                 epoch: EPOCH,
                 scope: scope(),
-                deadline: deadline
+                deadline
             },
             &|| Ok(())
         )
@@ -1095,7 +1095,7 @@ fn encrypted_native_live_cursor_second_read_detects_aba_after_aead() -> TestResu
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: "POST",
@@ -1115,7 +1115,7 @@ fn encrypted_native_live_cursor_second_read_detects_aba_after_aead() -> TestResu
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         &|| Ok(()),
         &|| {
@@ -1169,7 +1169,7 @@ fn encrypted_native_live_cursor_stable_success_and_owner_revoke() -> TestResult 
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         MutationRequest {
             method: "POST",
@@ -1189,7 +1189,7 @@ fn encrypted_native_live_cursor_stable_success_and_owner_revoke() -> TestResult 
                 cluster: CLUSTER,
                 epoch: EPOCH,
                 scope: scope(),
-                deadline: deadline,
+                deadline,
             },
             &|| Ok(()),
             &|| {
@@ -1218,7 +1218,7 @@ fn encrypted_native_live_cursor_stable_success_and_owner_revoke() -> TestResult 
             cluster: CLUSTER,
             epoch: EPOCH,
             scope: scope(),
-            deadline: deadline,
+            deadline,
         },
         &|| {
             if revoked.get() {

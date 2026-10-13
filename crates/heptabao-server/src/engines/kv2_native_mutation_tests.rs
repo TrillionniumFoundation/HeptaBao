@@ -179,8 +179,8 @@ fn selected_cell_mutations_preserve_cas_metadata_history_and_retention() -> Test
         }),
         111,
     )?;
-    assert_eq!(view.0.entries["hot"].versions.len(), 2);
-    assert!(!view.0.entries["hot"].versions.contains_key(&1));
+    assert_eq!(view.owner.entries["hot"].versions.len(), 2);
+    assert!(!view.owner.entries["hot"].versions.contains_key(&1));
     mutation(&mut view, &mut owner, "DELETE", "data/hot", json!({}), 112)?;
     mutation(
         &mut view,
@@ -268,11 +268,14 @@ fn cached_graph_rejects_rekey_scope_and_expired_checks_without_changing_source()
         view.encode(&base(), scope(), &fail_during_edit),
         Err(RecordError::Invalid)
     ));
-    assert_eq!(view.1.as_ref().ok_or("cached graph")?.index.root(), source);
+    assert_eq!(
+        view.graph.as_ref().ok_or("cached graph")?.index.root(),
+        source
+    );
     assert!(checks.get() >= 7);
     let candidate = graph(&view)?;
     assert_ne!(candidate.root(), source);
-    check_owner(&view, &view.0)?;
+    check_owner(&view, &view.owner)?;
     Ok(())
 }
 
