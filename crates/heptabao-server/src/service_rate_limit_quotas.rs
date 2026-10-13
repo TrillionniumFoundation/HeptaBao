@@ -301,6 +301,100 @@ mod service_tests {
         )
     }
     #[test]
+    fn rate_limit_failed_role_resolution_charges_fallback_and_management_resolves_login_role()
+    -> TestResult {
+        for fallback in ["auth/approle/login", "auth/approle/"] {
+            let root = Root::new();
+            let mut service = root.service()?;
+            let (_, admin) = bootstrap(&mut service)?;
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/auth/approle",
+                    &admin,
+                    json!({"type":"approle"})
+                )
+                .status,
+                204
+            );
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "auth/approle/role/limited",
+                    &admin,
+                    json!({})
+                )
+                .status,
+                204
+            );
+            let role_id = call(
+                &mut service,
+                "GET",
+                "auth/approle/role/limited/role-id",
+                &admin,
+                json!({}),
+            )
+            .body["data"]["role_id"]
+                .as_str()
+                .ok_or("role ID")?
+                .to_owned();
+            for (name, path, role) in [
+                ("specific", "auth/approle/", "limited"),
+                ("fallback", fallback, ""),
+            ] {
+                assert_eq!(
+                    call(
+                        &mut service,
+                        "POST",
+                        &format!("sys/quotas/rate-limit/{name}"),
+                        &admin,
+                        json!({"path":path,"role":role,"rate":1,"interval":"1h"})
+                    )
+                    .status,
+                    204
+                );
+            }
+            let invalid = json!({"role_id":"unknown-role-id","secret_id":"wrong-secret"});
+            assert_eq!(
+                peer_call(
+                    &mut service,
+                    "POST",
+                    "auth/approle/login",
+                    "",
+                    invalid.clone()
+                )
+                .status,
+                400
+            );
+            let exhausted = peer_call(&mut service, "POST", "auth/approle/login", "", invalid);
+            assert_eq!(exhausted.status, 429);
+            assert!(exhausted.body.get("auth").is_none());
+            // A non-login request still resolves its actual role_id before
+            // dispatch; it consumes the separate role bucket, not fallback.
+            let management = peer_call(
+                &mut service,
+                "POST",
+                "auth/approle/role/limited",
+                &admin,
+                json!({"role_id":role_id}),
+            );
+            assert_ne!(management.status, 429);
+            let named_exhausted = peer_call(
+                &mut service,
+                "POST",
+                "auth/approle/login",
+                "",
+                json!({"role_id":role_id,"secret_id":"wrong-secret"}),
+            );
+            assert_eq!(named_exhausted.status, 429);
+            assert!(named_exhausted.body.get("auth").is_none());
+        }
+        Ok(())
+    }
+
+    #[test]
     fn rate_limit_denial_preserves_single_use_secret_id_and_invalid_secret_still_counts()
     -> TestResult {
         let root = Root::new();

@@ -197,7 +197,7 @@ impl AuthState {
     pub(crate) fn rate_limit_approle_scope(
         &self,
         namespace: &str,
-        method: &str,
+        _method: &str,
         path: &str,
         body: &Value,
     ) -> Result<Option<(String, String)>, AuthError> {
@@ -208,7 +208,7 @@ impl AuthState {
             return Ok(None);
         };
         let mounts = self.effective_auth_mounts(namespace);
-        let Some((mount, entry, suffix)) = mounts.iter().find_map(|(mount, entry)| {
+        let Some((mount, entry, _suffix)) = mounts.iter().find_map(|(mount, entry)| {
             relative
                 .strip_prefix(&format!("{mount}/"))
                 .map(|suffix| (mount, entry, suffix))
@@ -224,12 +224,19 @@ impl AuthState {
                 .values()
                 .any(|d| d.path == prefix && !d.role.is_empty())
         });
-        let role = if suffix == "login" && matches!(method, "POST" | "PUT") && has_role_quota {
-            let role_id = string_field(body, "role_id")?.trim();
-            self.roles_at(AuthScope { namespace, mount })
-                .and_then(|roles| roles.iter().find(|(_, r)| r.role_id == role_id))
+        // The 2.7.1 HTTP quota owner resolves the fixed login role for all
+        // requests on a mount with role rules. Resolution failure is an empty
+        // role, so the exact path and mount fallback counters still apply.
+        // Authentication and its stricter body validation happen afterward.
+        let role = if has_role_quota {
+            body.get("role_id")
+                .and_then(Value::as_str)
+                .and_then(|role_id| {
+                    self.roles_at(AuthScope { namespace, mount })
+                        .and_then(|roles| roles.iter().find(|(_, r)| r.role_id == role_id.trim()))
+                })
                 .map(|(name, _)| name.clone())
-                .ok_or_else(|| bad("invalid role or secret ID"))?
+                .unwrap_or_default()
         } else {
             String::new()
         };
