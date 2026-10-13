@@ -356,10 +356,22 @@ enum Backend {
     /// V5 data belongs to the separate authenticated record root.
     Kv1Records,
     Kv2(kv::Kv2),
+    /// Live V6 owner; never serializable as inline fallback data.
+    Kv2Native(kv::native_records::NativeReadView),
     Transit(transit::Transit),
     Pki(Box<pki::Pki>),
     Ssh(ssh::SshOtp),
     Totp(totp::Totp),
+}
+
+impl Backend {
+    fn kv2_has_lossless_import_state(&self) -> bool {
+        match self {
+            Self::Kv2(engine) => engine.has_lossless_import_state(),
+            Self::Kv2Native(view) => view.has_lossless_state(),
+            _ => false,
+        }
+    }
 }
 
 impl Drop for Backend {
@@ -438,6 +450,20 @@ impl Mount {
         })
     }
 
+    // Native V6 tune CAS compares only descriptor metadata. This is not a
+    // persistence/export encoder; all live native serialization still rejects.
+    fn encode_tune_state(&self) -> Result<zeroize::Zeroizing<Vec<u8>>> {
+        if matches!(self.backend, Backend::Kv2Native(_)) {
+            let mut metadata = self.clone();
+            metadata.backend = Backend::Kv2(kv::Kv2::default());
+            crate::secret_serde::to_vec(&metadata, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| error(507, "mount metadata exceeds serialization capacity"))
+        } else {
+            crate::secret_serde::to_vec(self, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| error(507, "mount state exceeds serialization capacity"))
+        }
+    }
+
     fn descriptor(&self) -> Value {
         let (kind, options) = match &self.backend {
             Backend::Database => ("database", json!({})),
@@ -446,7 +472,7 @@ impl Mount {
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::OpenLdap(_) => ("ldap", json!({"schema":"openldap"})),
             Backend::Kv1(_) | Backend::Kv1Records => ("kv", json!({"version":"1"})),
-            Backend::Kv2(_) => ("kv", json!({"version":"2"})),
+            Backend::Kv2(_) | Backend::Kv2Native(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
             Backend::Pki(_) => ("pki", json!({})),
             Backend::Ssh(_) => ("ssh", json!({})),
@@ -2520,6 +2546,7 @@ impl EngineState {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| match &mount.backend {
                 Backend::Kv2(engine) => engine.has_metadata_cas_state(),
+                Backend::Kv2Native(view) => view.has_metadata_cas_state(),
                 _ => false,
             })
         })
@@ -2600,7 +2627,7 @@ impl EngineState {
             .is_some_and(|(_, mount)| {
                 matches!(
                     mount.backend,
-                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_)
                 )
             })
     }
@@ -2671,7 +2698,7 @@ impl EngineState {
             .and_then(|(path, mount)| {
                 matches!(
                     mount.backend,
-                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_)
                 )
                 .then_some((path.as_str(), mount.incarnation, mount.revision))
             })
@@ -2783,6 +2810,7 @@ impl EngineState {
                 engine.handle_read(method, relative, &params, at.seconds())
             }
             Backend::Kv2(engine) => engine.handle_read_precise(method, relative, &params, at),
+            Backend::Kv2Native(view) => view.read(method, relative, &params, at),
             _ => Err(unsupported()),
         }
     }
@@ -2817,6 +2845,12 @@ impl EngineState {
         let kind = match &mount.backend {
             Backend::Kv1(_) | Backend::Kv1Records => "kv1",
             Backend::Kv2(_) => "kv2",
+            Backend::Kv2Native(_) => {
+                return Err(error(
+                    501,
+                    "native KV2 remount requires authenticated graph readdressing",
+                ));
+            }
             Backend::Transit(_) => "transit",
             Backend::Pki(_) => "pki",
             Backend::Ssh(_) => "ssh",
@@ -3077,6 +3111,9 @@ impl EngineState {
                     self.record_kv1_exists(namespace, mount_path, mount.incarnation, relative)
                 }
                 Backend::Kv2(engine) => relative.strip_prefix("data/").map(|p| engine.contains(p)),
+                Backend::Kv2Native(view) => {
+                    relative.strip_prefix("data/").map(|p| view.contains(p))
+                }
                 Backend::Totp(engine) => relative
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
@@ -3282,9 +3319,11 @@ impl EngineState {
             )?;
             if response.mutated {
                 self.update_record_registry(namespace, &mut candidate)?;
-                if candidate.mounts.values().any(|mount| {
-                    matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state())
-                }) {
+                if candidate
+                    .mounts
+                    .values()
+                    .any(|mount| mount.backend.kv2_has_lossless_import_state())
+                {
                     self.kv2_lossless_format = Some(1);
                 }
                 self.namespaces.insert(namespace.into(), candidate);
@@ -3367,6 +3406,7 @@ impl EngineState {
                 engine.handle(method, relative, &params, at.seconds())?
             }
             Backend::Kv2(engine) => engine.handle_precise(method, relative, &params, at)?,
+            Backend::Kv2Native(view) => view.mutate(method, relative, &params, at)?,
             Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
             Backend::Transit(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
                 engine.handle(namespace, &mount_path, method, relative, &params, now)?
@@ -3394,8 +3434,7 @@ impl EngineState {
             {
                 self.transit_cache_format = Some(1);
             }
-            if matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state())
-            {
+            if mount.backend.kv2_has_lossless_import_state() {
                 self.kv2_lossless_format = Some(1);
             }
             if matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()) {
@@ -3511,8 +3550,7 @@ fn handle_mounts(
         let body = &sanitized_body;
         let expected = optional_u64(body, "cas_revision")?;
         require_mount_revision(expected, mount.revision)?;
-        let before = crate::secret_serde::to_vec(&*mount, crate::MAX_APPLICATION_STATE_BYTES)
-            .map_err(|_| error(507, "mount state exceeds serialization capacity"))?;
+        let before = mount.encode_tune_state()?;
         let mut converted = false;
         let mut tune = body.clone();
         tune.as_object_mut()
@@ -3543,7 +3581,7 @@ fn handle_mounts(
             engine.tune(&tune)?;
         } else if matches!(
             mount.backend,
-            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_)
         ) {
             reject_unknown(
                 body,
@@ -3589,20 +3627,22 @@ fn handle_mounts(
                 .and_then(Value::as_str)
                 .ok_or_else(|| bad("KV version must be a string"))?;
             match (&mount.backend, version) {
-                (Backend::Kv1(_) | Backend::Kv1Records, "1") | (Backend::Kv2(_), "2") => {}
+                (Backend::Kv1(_) | Backend::Kv1Records, "1")
+                | (Backend::Kv2(_) | Backend::Kv2Native(_), "2") => {}
                 (Backend::Kv1(_) | Backend::Kv1Records, "2") => {
                     mount.backend = Backend::Kv2(upgrade(&name, mount)?);
                     converted = true;
                 }
-                (Backend::Kv2(_), "1") => return Err(bad("KV version cannot be downgraded")),
+                (Backend::Kv2(_) | Backend::Kv2Native(_), "1") => {
+                    return Err(bad("KV version cannot be downgraded"));
+                }
                 _ => return Err(bad("KV version must be 1 or 2 on a KV mount")),
             }
         }
         if let Some(visibility) = visibility {
             mount.listing_visibility = visibility;
         }
-        let after = crate::secret_serde::to_vec(&*mount, crate::MAX_APPLICATION_STATE_BYTES)
-            .map_err(|_| error(507, "mount state exceeds serialization capacity"))?;
+        let after = mount.encode_tune_state()?;
         if before == after {
             return Ok(empty(false));
         }
@@ -3966,6 +4006,7 @@ impl EngineState {
                             heptabao_domain::json::requires_lossless_format(data.expose())
                         }),
                         Backend::Kv2(engine) => engine.has_lossless_json_state(),
+                        Backend::Kv2Native(view) => view.has_lossless_json_state(),
                         _ => false,
                     })
             })

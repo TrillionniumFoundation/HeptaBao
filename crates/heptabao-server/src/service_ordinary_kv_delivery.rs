@@ -408,6 +408,70 @@ impl Service {
         result
     }
 
+    #[cfg(feature = "fixture-native-v6-service")]
+    pub(super) fn commit_ordinary_native_kv_plan(
+        &mut self,
+        state: &mut State,
+        plan: v6_records::NativeRootMigrationPlan,
+    ) -> Result<(), Response> {
+        if self.pending_ordinary_kv_commit_notice.is_some() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "ordinary KV commit observation is unavailable",
+            ));
+        }
+        let mut authority = self.pending_ordinary_kv_authority.take();
+        let token_authority = self.pending_token_api_authority.take();
+        self.pending_ordinary_kv_commit_notice =
+            authority
+                .as_ref()
+                .map(|authority| OrdinaryKvCommitNoticeCapture {
+                    binding: authority.request_binding(),
+                    notice: None,
+                });
+        let candidate_result = if let Some(authority) = authority.as_mut() {
+            let activation_nonce = self.unseal_nonce.clone();
+            self.commit_native_root_plan(state, plan, false, "resource", &mut |auth| {
+                authority.check(state, auth, &activation_nonce)
+            })
+        } else if let Some(authority) = token_authority.as_ref() {
+            let activation = self.unseal_nonce.clone();
+            self.commit_native_root_plan(state, plan, false, "resource", &mut |auth| {
+                authority.check_token_api_candidate(state, auth, &activation)
+            })
+        } else {
+            Err(Response::error(
+                503,
+                "native mutation requires original request authority",
+            ))
+        };
+        let mut result = candidate_result.map(|installed| {
+            *state = installed;
+        });
+        let capture = self.pending_ordinary_kv_commit_notice.take();
+        match (authority.as_mut(), capture) {
+            (Some(authority), Some(capture)) if capture.binding == authority.request_binding() => {
+                authority.indeterminate_commit = capture.notice;
+            }
+            (None, None) => {}
+            _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                result = Err(Response::error(
+                    503,
+                    "ordinary KV commit observation was lost",
+                ));
+            }
+        }
+        self.pending_ordinary_kv_authority = authority;
+        self.pending_token_api_authority = token_authority;
+        result
+    }
+
     pub(super) fn complete_ordinary_kv_delivery(
         &mut self,
         mut authority: OrdinaryKvAuthority,

@@ -358,6 +358,16 @@ pub(super) fn verify_received_record_graph(
 impl Service {
     pub(super) fn current_state_identity(&self) -> Result<StateIdentity, Response> {
         let digest = self.current_state_digest()?;
+        #[cfg(feature = "fixture-native-v6-service")]
+        if let Some(root) = &self.native_root {
+            let identity = root
+                .identity()
+                .map_err(|_| Response::error(503, "native identity rejected"))?;
+            if identity.digest() != digest || self.record_root.is_some() {
+                return Err(Response::error(503, "native selected identity rejected"));
+            }
+            return Ok(identity);
+        }
         match &self.record_root {
             Some(root) => {
                 let identity = root.identity().map_err(root_error)?;

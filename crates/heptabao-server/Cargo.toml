@@ -9,6 +9,7 @@ publish = false
 default = []
 fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
+fixture-native-v6-service = []
 
 [dependencies]
 chrono = { version = "=0.4.45", default-features = false, features = ["clock", "std"] }

@@ -26,7 +26,7 @@ type CodecResult<T> = std::result::Result<T, RecordError>;
 // Own decoded runtime state even while typed closure is still being checked.
 // Actual EntryState/SecretJson destructors wipe metadata and payloads; this
 // detached owner additionally erases the owning path map on every exit.
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(transparent)]
 struct DetachedOwner(Kv2);
 impl Deref for DetachedOwner {
@@ -351,24 +351,104 @@ fn validate_owner(owner: &Kv2) -> CodecResult<()> {
     Ok(())
 }
 
+#[derive(Clone)]
 struct NativeGraph {
     scope: Scope,
     key: Arc<AddressKey>,
     index: Kv1Index,
 }
 
-/// A private decoded graph view. It never becomes a writable Service owner.
-pub(crate) struct NativeReadView(DetachedOwner);
+#[path = "kv2_native_install.rs"]
+mod install;
+#[path = "kv2_native_mutation.rs"]
+mod mutation;
+
+/// A private decoded graph view and its authenticated graph cache. This type
+/// grants no storage writes or authority to install a writable Service owner.
+#[derive(Clone)]
+pub(crate) struct NativeReadView(DetachedOwner, Option<NativeGraph>, mutation::PendingPaths);
+// A live native view cannot be saved or reconstructed as inline KV2 JSON.
+// The independent graph and actual custody reader are mandatory.
+impl Serialize for NativeReadView {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        _serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        Err(serde::ser::Error::custom(
+            "native KV2 owner requires separate authenticated records",
+        ))
+    }
+}
+impl<'de> Deserialize<'de> for NativeReadView {
+    fn deserialize<D: serde::Deserializer<'de>>(
+        _decoder: D,
+    ) -> std::result::Result<Self, D::Error> {
+        Err(serde::de::Error::custom(
+            "native KV2 owner requires an authenticated graph reader",
+        ))
+    }
+}
+
 impl NativeReadView {
+    pub(crate) fn contains(&self, path: &str) -> bool {
+        self.0.contains(path)
+    }
+
+    pub(crate) fn has_metadata_cas_state(&self) -> bool {
+        self.0.has_metadata_cas_state()
+    }
+    pub(crate) fn validate_lossless_state(&self) -> Result<()> {
+        self.0.validate_lossless_state()
+    }
+    #[cfg(test)]
+    pub(crate) fn has_lossless_json_state(&self) -> bool {
+        self.0.has_lossless_json_state()
+    }
+    pub(crate) fn matches_authenticated_root(
+        &self,
+        parent: &AddressKey,
+        scope: NativeScope<'_>,
+        root: &Kv1Root,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<bool> {
+        check()?;
+        let candidate = self.encode(parent, scope, check)?;
+        let matches = candidate.root() == *root;
+        check()?;
+        Ok(matches)
+    }
+    fn advance_authenticated_cache(
+        &mut self,
+        parent: &AddressKey,
+        scope: NativeScope<'_>,
+        expected: &Kv1Root,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<()> {
+        let graph = self.encode(parent, scope, check)?;
+        if graph.root() != *expected {
+            return Err(RecordError::Corrupt);
+        }
+        check()?;
+        self.1 = Some(graph.0);
+        self.2 = mutation::PendingPaths::default();
+        check()
+    }
+    fn cached_scope_matches(&self, input: NativeScope<'_>) -> CodecResult<bool> {
+        let scope = Scope::new(input)?;
+        Ok(self
+            .1
+            .as_ref()
+            .is_some_and(|graph| graph.scope.matches(&scope)))
+    }
     pub(crate) fn open(
         base: &AddressKey,
         scope: NativeScope<'_>,
         root: Kv1Root,
         reader: &impl RecordReader,
     ) -> CodecResult<Self> {
-        Ok(Self(
-            NativeGraph::open(base, scope, root, reader)?.decode()?,
-        ))
+        let graph = NativeGraph::open(base, scope, root, reader)?;
+        let owner = graph.decode()?;
+        Ok(Self(owner, Some(graph), mutation::PendingPaths::default()))
     }
     pub(crate) fn read(
         &self,
@@ -406,7 +486,14 @@ impl NativeReadView {
         body: &Value,
         now: Timestamp,
     ) -> Result<EngineResponse> {
-        self.0.handle_precise(method, path, body, now)
+        // Keep only a shared baseline for the selected path. Existing payloads
+        // remain shared and are never serialized merely to detect a change.
+        let captured = self.2.capture(&self.0, path)?;
+        let response = self.0.handle_precise(method, path, body, now);
+        if !response.as_ref().is_ok_and(|response| response.mutated) {
+            self.2.discard(captured);
+        }
+        response
     }
     pub(crate) fn encode(
         &self,
@@ -414,20 +501,29 @@ impl NativeReadView {
         scope: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<NativeCellGraph> {
-        NativeCellGraph::encode(&self.0, parent, scope, check)
+        match &self.1 {
+            Some(graph) => Ok(NativeCellGraph(
+                graph.with_updates(&self.0, parent, scope, &self.2, check)?,
+            )),
+            None => NativeCellGraph::encode(&self.0, parent, scope, check),
+        }
     }
     #[cfg(test)]
     pub(crate) fn fixture_lossless_import(bytes: &[u8]) -> CodecResult<Self> {
         let owner = Kv2::from_lossless_import_json(bytes).map_err(|_| RecordError::Corrupt)?;
         validate_owner(&owner)?;
-        Ok(Self(DetachedOwner(owner)))
+        Ok(Self(
+            DetachedOwner(owner),
+            None,
+            mutation::PendingPaths::default(),
+        ))
     }
     #[cfg(test)]
     pub(crate) fn fixture_owner(bytes: &[u8]) -> CodecResult<Self> {
         preflight_owner(bytes)?;
         let owner: DetachedOwner = canonical(bytes, MAX_GRAPH_BYTES)?;
         validate_owner(&owner)?;
-        Ok(Self(owner))
+        Ok(Self(owner, None, mutation::PendingPaths::default()))
     }
 }
 
@@ -472,8 +568,12 @@ impl NativeCellGraph {
         let key = graph_key(parent, &scope)?;
         let index = Kv1Index::open(Arc::clone(&key), root, reader)?;
         check()?;
+        let graph = NativeGraph { scope, key, index };
+        let owner = graph.decode_checked(check)?;
         Ok(NativeReadView(
-            NativeGraph { scope, key, index }.decode_checked(check)?,
+            owner,
+            Some(graph),
+            mutation::PendingPaths::default(),
         ))
     }
 }
@@ -497,6 +597,12 @@ impl EngineState {
         let mut actual = BTreeSet::new();
         for (namespace, owner) in &self.namespaces {
             for (mount, descriptor) in &owner.mounts {
+                if matches!(descriptor.backend, Backend::Kv2Native(_)) {
+                    return Err(error(
+                        503,
+                        "V6 engines metadata contains a live native owner",
+                    ));
+                }
                 if let Backend::Kv2(engine) = &descriptor.backend {
                     if !engine.is_pristine_for_import() {
                         return Err(error(
@@ -610,7 +716,7 @@ impl EngineState {
         for (namespace, owner) in &mut opaque.namespaces {
             for (mount, descriptor) in &mut owner.mounts {
                 check()?;
-                if let Backend::Kv2(engine) = &descriptor.backend {
+                if matches!(descriptor.backend, Backend::Kv2(_) | Backend::Kv2Native(_)) {
                     if pending.len() >= crate::state_record_root_v6::MAX_KV2_MOUNTS {
                         return Err(RecordError::TooLarge);
                     }
@@ -619,7 +725,13 @@ impl EngineState {
                         mount: mount.clone(),
                         incarnation: descriptor.incarnation,
                     };
-                    let graph = NativeCellGraph::encode(engine, parent, scope.borrowed(), check)?;
+                    let graph = match &descriptor.backend {
+                        Backend::Kv2(engine) => {
+                            NativeCellGraph::encode(engine, parent, scope.borrowed(), check)?
+                        }
+                        Backend::Kv2Native(view) => view.encode(parent, scope.borrowed(), check)?,
+                        _ => return Err(RecordError::Corrupt),
+                    };
                     let root = graph.root();
                     let reference = root.reference.as_ref().ok_or(RecordError::Corrupt)?;
                     total_bytes = total_bytes
@@ -944,3 +1056,7 @@ pub fn verify_native_owner_records(
 #[cfg(test)]
 #[path = "kv2_native_records_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "kv2_native_mutation_tests.rs"]
+mod mutation_tests;

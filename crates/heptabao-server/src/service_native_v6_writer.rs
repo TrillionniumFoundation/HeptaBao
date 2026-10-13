@@ -1,0 +1,1651 @@
+//! Opt-in, root-namespace single-node candidate writer. No HA or default admission.
+use super::native_v6_reader::{
+    ACTIVE_CURSOR_RESOURCE, ACTIVE_SOURCE_ROOT_RESOURCE, NativeActiveCursor,
+};
+use super::*;
+use crate::state_records::RecordError;
+use crate::v6_native_custody::OriginalDeadline;
+
+// These affine values carry only a typed negative outcome. They never grant
+// actor/resource publication, response payload delivery or a new time budget.
+pub(super) struct NativeRequestBinding {
+    fingerprint: String,
+    clock: RequestClock,
+    admission_started: std::time::Instant,
+    deadline: OriginalDeadline,
+    nonce: String,
+    data_dir: std::path::PathBuf,
+}
+pub(super) struct NativeFailureNotice {
+    fingerprint: String,
+    clock: RequestClock,
+    admission_started: std::time::Instant,
+    deadline: OriginalDeadline,
+    nonce: String,
+    data_dir: std::path::PathBuf,
+    source_identity: crate::state_record_root::StateIdentity,
+    source_generation: u64,
+    recovery_reference: String,
+}
+impl Service {
+    pub(super) fn bind_native_request_failure(
+        &mut self,
+        fingerprint: &str,
+        clock: Option<RequestClock>,
+        admission_started: std::time::Instant,
+        path: &str,
+    ) {
+        if self.native_root.is_none() && path != "sys/internal/native-v6/activate" {
+            return;
+        }
+        let (Some(clock), Ok(deadline)) = (clock, OriginalDeadline::capture()) else {
+            return;
+        };
+        if clock.started() != admission_started {
+            return;
+        }
+        self.native_request_binding = Some(NativeRequestBinding {
+            fingerprint: fingerprint.to_owned(),
+            clock,
+            admission_started,
+            deadline,
+            nonce: self.unseal_nonce.clone(),
+            data_dir: self.data_dir.clone(),
+        });
+    }
+    fn capture_native_failure_notice(&mut self, error: &ServiceError) {
+        let ServiceError::OutcomeUnknown { recovery_reference } = error else {
+            return;
+        };
+        let Some(binding) = self.native_request_binding.as_ref() else {
+            return;
+        };
+        let Ok(source_identity) = self.current_state_identity() else {
+            return;
+        };
+        let Some(source_generation) = self.durable.as_ref().map(|durable| durable.generation())
+        else {
+            return;
+        };
+        self.native_failure_notice = Some(NativeFailureNotice {
+            fingerprint: binding.fingerprint.clone(),
+            clock: binding.clock,
+            admission_started: binding.admission_started,
+            deadline: binding.deadline,
+            nonce: binding.nonce.clone(),
+            data_dir: binding.data_dir.clone(),
+            source_identity,
+            source_generation,
+            recovery_reference: recovery_reference.clone(),
+        });
+    }
+    pub(super) fn take_native_failure_response(
+        &mut self,
+        fingerprint: &str,
+        clock: Option<RequestClock>,
+    ) -> Option<Response> {
+        let notice = self.native_failure_notice.take()?;
+        let binding = self.native_request_binding.as_ref()?;
+        let clock = clock?;
+        if !self.recovery_required
+            || self.barrier_key.is_none()
+            || notice.fingerprint != fingerprint
+            || notice.fingerprint != binding.fingerprint
+            || notice.clock.started() != clock.started()
+            || notice.clock.admitted_at() != clock.admitted_at()
+            || notice.admission_started != clock.started()
+            || binding.admission_started != notice.admission_started
+            || binding.deadline.instant() != notice.deadline.instant()
+            || crate::request_deadline::current() != Some(notice.deadline.instant())
+            || notice.nonce != self.unseal_nonce
+            || notice.nonce != binding.nonce
+            || notice.data_dir != self.data_dir
+            || notice.data_dir != binding.data_dir
+            || self.current_state_identity().ok().as_ref() != Some(&notice.source_identity)
+            || self.durable.as_ref().map(|durable| durable.generation())
+                != Some(notice.source_generation)
+        {
+            return None;
+        }
+        Some(Response {
+            status: 503,
+            body: json!({"errors":["native durable outcome unknown; reopen and reconcile; do not blindly retry"],"recovery_reference":notice.recovery_reference}),
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+        })
+    }
+}
+
+fn rejected() -> Response {
+    Response::error(503, "native V6 Service candidate publication rejected")
+}
+fn conditions_copy(
+    conditions: &[heptabao_durable_service::PublicationCondition],
+) -> Vec<heptabao_durable_service::PublicationCondition> {
+    conditions
+        .iter()
+        .map(|condition| heptabao_durable_service::PublicationCondition {
+            resource: condition.resource.clone(),
+            expected: condition.expected.clone(),
+        })
+        .collect()
+}
+
+impl Service {
+    pub fn configure_native_v6_candidate(&mut self) -> Result<(), String> {
+        if self.native_candidate_profile.is_some() {
+            return Err("native candidate already configured".into());
+        }
+        self.native_candidate_profile = Some(
+            native_v6_reader::NativeCandidateProfile::capture(self)
+                .map_err(|_| "native candidate requires sealed single-node file custody")?,
+        );
+        Ok(())
+    }
+
+    pub(super) fn require_native_root_candidate(&self, state: &State) -> Result<(), Response> {
+        self.native_candidate_profile
+            .as_ref()
+            .ok_or_else(rejected)?
+            .check_environment(self)?;
+        if self.native_candidate_profile.is_none()
+            || self.ha.is_some()
+            || self.postgres_durable.is_some()
+            || self.durable_profile.is_some()
+            || self.openbao_wrapper_owner.is_some()
+            || self.recovery_required
+            || self.audit_failed
+            || state.namespace_protected.is_some()
+            || state
+                .engines
+                .v6_namespace_paths()
+                .any(|path| !path.is_empty())
+            || !state.namespaces.is_empty()
+            || !state.namespace_leases.is_empty()
+        {
+            return Err(rejected());
+        }
+        Ok(())
+    }
+
+    pub(super) fn activate_native_v6_route(
+        &mut self,
+        admitted: State,
+        principal: Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        if request.token_clock.is_none() {
+            return Response::error(503, "trusted token clock is required");
+        }
+        if request.method != "POST"
+            || !request.namespace.is_empty()
+            || !request
+                .body
+                .as_object()
+                .is_some_and(|object| object.is_empty())
+            || self.native_root.is_some()
+        {
+            return rejected();
+        }
+        let Some(principal) = principal.filter(Principal::is_root) else {
+            return Response::error(403, "root token required");
+        };
+        let deadline = match OriginalDeadline::capture() {
+            Ok(d) => d,
+            Err(_) => return rejected(),
+        };
+        let state = match self.state.as_ref() {
+            Some(state) => state,
+            None => return rejected(),
+        };
+        if let Err(error) = self.require_native_root_candidate(state) {
+            return error;
+        }
+        // consumed_use was durably published by the ordinary authentication
+        // prelude before this selector. Never replace that current source with
+        // an earlier Auth snapshot or silently drop admitted Auth changes.
+        let source_auth = match owner_store::serialize_owner(&state.auth) {
+            Ok(bytes) => bytes,
+            Err(_) => return rejected(),
+        };
+        let admitted_auth = match owner_store::serialize_owner(&admitted.auth) {
+            Ok(bytes) => bytes,
+            Err(_) => return rejected(),
+        };
+        if source_auth.as_slice() != admitted_auth.as_slice() {
+            return rejected();
+        }
+        if deadline.check().is_err() {
+            return rejected();
+        }
+        let plan = match self
+            .prepare_native_root_migration(&|| deadline.check().map_err(|_| RecordError::Invalid))
+        {
+            Ok(plan) => plan,
+            Err(error) => return error,
+        };
+        let Some(state) = self.state.as_ref().cloned() else {
+            return rejected();
+        };
+        let mut authority = |auth: &AuthState| {
+            deadline.check().map_err(|_| rejected())?;
+            auth.authorize_request_parameters_observed(
+                &principal,
+                "",
+                "POST",
+                request.path,
+                request.body,
+                request.token_time()?,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
+            deadline.check().map_err(|_| rejected())
+        };
+        match self.commit_native_root_plan(&state, plan, true, "migration", &mut authority) {
+            Ok(installed) => {
+                self.state = Some(installed);
+                Response {
+                    status: 204,
+                    body: Value::Null,
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                }
+            }
+            Err(error) => error,
+        }
+    }
+
+    // Uses the same actual durable conditional append primitive, request Actor
+    // and captured deadline for every physical effect. It never recaptures time.
+    pub(super) fn commit_native_root_plan(
+        &mut self,
+        state: &State,
+        plan: v6_records::NativeRootMigrationPlan,
+        migration: bool,
+        purpose: &'static str,
+        before_publish: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        let deadline = plan.deadline;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        check().map_err(|_| rejected())?;
+        self.require_native_root_candidate(state)?;
+        let owner_bytes = plan
+            .root
+            .owners
+            .iter()
+            .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+            .ok_or_else(|| Response::error(507, "native opaque owner capacity exhausted"))?;
+        if owner_bytes > self.opaque_owner_limit() as u64 {
+            return Err(Response::error(
+                507,
+                "native opaque owner capacity exhausted",
+            ));
+        }
+        let installed = Self::install_prepared_native_candidate(&plan)?;
+        self.require_native_root_candidate(&installed)?;
+        let identity = plan.root.identity().map_err(|_| rejected())?;
+        let actual_auth = self.state.as_ref().ok_or_else(rejected)?.auth.clone();
+        before_publish(&actual_auth)?;
+        let durable = self.durable.as_mut().ok_or_else(rejected)?;
+        durable.verify_live_ownership().map_err(|_| rejected())?;
+        check().map_err(|_| rejected())?;
+        if durable.generation() != plan.source_generation {
+            return Err(rejected());
+        }
+        let current = durable
+            .get("system", "state")
+            .map_err(|_| rejected())?
+            .ok_or_else(rejected)?;
+        let (source, old_cursor) = if migration {
+            let source = records::decode_root(current.expose())?.ok_or_else(rejected)?;
+            if self.native_root.is_some()
+                || self
+                    .record_root
+                    .as_ref()
+                    .ok_or_else(rejected)?
+                    .encode()
+                    .map_err(|_| rejected())?
+                    .as_slice()
+                    != current.expose()
+                || plan.conditions.len() != 2
+                || plan.conditions[0]
+                    .expected
+                    .as_ref()
+                    .is_none_or(|bytes| bytes.expose() != current.expose())
+                || durable
+                    .get("system", ACTIVE_CURSOR_RESOURCE)
+                    .map_err(|_| rejected())?
+                    .is_some()
+                || durable
+                    .get("system", ACTIVE_SOURCE_ROOT_RESOURCE)
+                    .map_err(|_| rejected())?
+                    .is_some()
+            {
+                return Err(rejected());
+            }
+            (source, None)
+        } else {
+            let source_bytes = durable
+                .get("system", ACTIVE_SOURCE_ROOT_RESOURCE)
+                .map_err(|_| rejected())?
+                .ok_or_else(rejected)?;
+            let source = records::decode_root(source_bytes.expose())?.ok_or_else(rejected)?;
+            let cursor_bytes = durable
+                .get("system", ACTIVE_CURSOR_RESOURCE)
+                .map_err(|_| rejected())?
+                .ok_or_else(rejected)?;
+            let cursor = NativeActiveCursor::decode(cursor_bytes.expose())?;
+            let old = self.native_root.as_ref().ok_or_else(rejected)?;
+            cursor.validate(&source, old, durable.generation())?;
+            if old.encode().map_err(|_| rejected())?.as_slice() != current.expose()
+                || plan.conditions.len() != 3
+            {
+                return Err(rejected());
+            }
+            (source, Some(cursor))
+        };
+        let conditions = if migration {
+            vec![
+                heptabao_durable_service::PublicationCondition {
+                    resource: "state".into(),
+                    expected: Some(current.clone()),
+                },
+                heptabao_durable_service::PublicationCondition {
+                    resource: ACTIVE_CURSOR_RESOURCE.into(),
+                    expected: None,
+                },
+                heptabao_durable_service::PublicationCondition {
+                    resource: ACTIVE_SOURCE_ROOT_RESOURCE.into(),
+                    expected: None,
+                },
+            ]
+        } else {
+            plan.conditions
+        };
+        // Immutable source objects are retained. No V5 collector is used once active.
+        let operation = format!(
+            "native6-{purpose}-{}",
+            hex(&crypto::random::<16>().map_err(|_| rejected())?)
+        );
+        let retained_source = source.encode().map_err(|_| rejected())?;
+        let mut root_committed = false;
+        let result = {
+            let mut gate = || {
+                check().map_err(|_| ServiceError::BarrierFailure)?;
+                before_publish(&actual_auth).map_err(|_| ServiceError::BarrierFailure)?;
+                check().map_err(|_| ServiceError::BarrierFailure)
+            };
+            (|| -> Result<(), ServiceError> {
+                let mut missing = Vec::new();
+                for ((domain, _), object) in &plan.objects {
+                    check().map_err(|_| ServiceError::BarrierFailure)?;
+                    let resource = v6_records::native_resource(domain, object.reference());
+                    let existing = durable.get("system", &resource)?;
+                    check().map_err(|_| ServiceError::BarrierFailure)?;
+                    match existing {
+                        Some(value) if value.expose() == object.bytes() => {}
+                        Some(_) => return Err(ServiceError::CorruptState),
+                        None => missing.push((resource, Arc::clone(object))),
+                    }
+                }
+                for (number, chunk) in missing
+                    .chunks(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
+                    .enumerate()
+                {
+                    gate()?;
+                    let mutations = chunk
+                        .iter()
+                        .map(|(resource, object)| {
+                            Ok((
+                                resource.clone(),
+                                Some(Secret::new(object.bytes().to_vec())?),
+                            ))
+                        })
+                        .collect::<Result<Vec<_>, ServiceError>>()?;
+                    durable.apply_batch_conditionally_before_publish(
+                        heptabao_durable_service::BatchPublication {
+                            replay_epoch: plan.root.replay_epoch,
+                            principal: "heptabao-server".into(),
+                            namespace: "system".into(),
+                            request_id: format!("{operation}-objects-{number}"),
+                            authorization_digest: identity.digest(),
+                            mutations,
+                        },
+                        conditions_copy(&conditions),
+                        &mut gate,
+                    )?;
+                    gate()?;
+                }
+                v6_records::verify_durable_native_candidate(&plan.root, durable, deadline)
+                    .map_err(|_| ServiceError::CorruptState)?;
+                gate()?;
+                let publication_generation = durable
+                    .generation()
+                    .checked_add(1)
+                    .ok_or(ServiceError::GenerationOverflow)?;
+                let cursor = match old_cursor {
+                    Some(cursor) => cursor.advance(&plan.root, publication_generation),
+                    None => NativeActiveCursor::for_migration(
+                        &source,
+                        plan.source_generation,
+                        &plan.root,
+                        publication_generation,
+                    ),
+                }
+                .map_err(|_| ServiceError::CorruptState)?;
+                let cursor_bytes = cursor.encode().map_err(|_| ServiceError::CorruptState)?;
+                let mut mutations = vec![
+                    ("state".into(), Some(Secret::new(plan.bytes.to_vec())?)),
+                    (
+                        ACTIVE_CURSOR_RESOURCE.into(),
+                        Some(Secret::new(cursor_bytes.to_vec())?),
+                    ),
+                ];
+                if migration {
+                    mutations.push((
+                        ACTIVE_SOURCE_ROOT_RESOURCE.into(),
+                        Some(Secret::new(current.expose().to_vec())?),
+                    ));
+                }
+                durable.apply_batch_conditionally_before_publish(
+                    heptabao_durable_service::BatchPublication {
+                        replay_epoch: plan.root.replay_epoch,
+                        principal: "heptabao-server".into(),
+                        namespace: "system".into(),
+                        request_id: format!("{operation}-root"),
+                        authorization_digest: identity.digest(),
+                        mutations,
+                    },
+                    conditions_copy(&conditions),
+                    &mut gate,
+                )?;
+                root_committed = true;
+                gate()?;
+                durable.verify_live_ownership()?;
+                gate()?;
+                if durable.generation() != publication_generation {
+                    return Err(ServiceError::CorruptState);
+                }
+                let committed_bytes = durable
+                    .get("system", "state")?
+                    .ok_or(ServiceError::CorruptState)?;
+                gate()?;
+                if committed_bytes.expose() != plan.bytes.as_slice() {
+                    return Err(ServiceError::CorruptState);
+                }
+                let committed = crate::state_record_root_v6::RecordStateRootV6::decode(
+                    committed_bytes.expose(),
+                )
+                .map_err(|_| ServiceError::CorruptState)?;
+                gate()?;
+                if committed
+                    .identity()
+                    .map_err(|_| ServiceError::CorruptState)?
+                    != identity
+                {
+                    return Err(ServiceError::CorruptState);
+                }
+                let observed_cursor = durable
+                    .get("system", ACTIVE_CURSOR_RESOURCE)?
+                    .ok_or(ServiceError::CorruptState)?;
+                gate()?;
+                if observed_cursor.expose() != cursor_bytes.as_slice() {
+                    return Err(ServiceError::CorruptState);
+                }
+                let observed_cursor = NativeActiveCursor::decode(observed_cursor.expose())
+                    .map_err(|_| ServiceError::CorruptState)?;
+                observed_cursor
+                    .validate(&source, &committed, durable.generation())
+                    .map_err(|_| ServiceError::CorruptState)?;
+                gate()?;
+                let observed_source = durable
+                    .get("system", ACTIVE_SOURCE_ROOT_RESOURCE)?
+                    .ok_or(ServiceError::CorruptState)?;
+                gate()?;
+                if observed_source.expose() != retained_source.as_slice() {
+                    return Err(ServiceError::CorruptState);
+                }
+                v6_records::verify_durable_native_candidate(&committed, durable, deadline)
+                    .map_err(|_| ServiceError::CorruptState)?;
+                gate()?;
+                Ok(())
+            })()
+        };
+        let unknown = (root_committed && result.is_err())
+            || durable.capacity_status().recovery_required
+            || matches!(
+                &result,
+                Err(ServiceError::OutcomeUnknown { .. } | ServiceError::RecoveryRequired)
+            );
+        if unknown {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+        }
+        if let Err(error) = result {
+            self.capture_native_failure_notice(&error);
+            self.capture_ordinary_kv_outcome_unknown(&error, true);
+            return Err(match error {
+                ServiceError::OutcomeUnknown { recovery_reference } => Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: 503,
+                    body: json!({"errors":["native durable outcome unknown; reopen and reconcile; do not blindly retry"],"recovery_reference":recovery_reference}),
+                },
+                ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted => {
+                    Response::error(507, "native state capacity exhausted")
+                }
+                _ => rejected(),
+            });
+        }
+        // The typed root was actually committed. A late caller cannot keep a
+        // stale V5/native cache live or turn a late append into a success.
+        if check().is_err() || before_publish(&actual_auth).is_err() {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(rejected());
+        }
+        self.state_digest = Some(identity.digest());
+        self.record_root = None;
+        self.native_root = Some(plan.root);
+        self.record_writes_since_gc = 0;
+        Ok(installed)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
+    fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Value) -> Response {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+            std::time::Instant::now() + Duration::from_secs(60),
+        );
+        service.handle(method, path, "", token, body)
+    }
+
+    #[test]
+    fn genuine_native_service_large_history_cold_reopen_and_point_write() -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, token) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(60),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let key = Zeroizing::new(key);
+        let token = Zeroizing::new(token);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/bootstrap",
+                &token,
+                json!({"data":{"value":"source"}})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/config",
+                &token,
+                json!({"max_versions":32})
+            )
+            .status,
+            204
+        );
+        assert!(service.record_root.is_some());
+        let migration = call(
+            &mut service,
+            "POST",
+            "sys/internal/native-v6/activate",
+            &token,
+            json!({}),
+        );
+        assert_eq!(
+            migration.status, 204,
+            "migration rejected: {}",
+            migration.body
+        );
+        assert!(service.record_root.is_none());
+        assert!(service.native_root.is_some());
+        assert!(matches!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            crate::state_record_root::StateIdentity::RecordsV6(_)
+        ));
+        for path in ["sys/internal/storage/capacity", "sys/internal/capacity"] {
+            let capacity = call(&mut service, "GET", path, &token, json!({}));
+            assert_eq!(capacity.status, 200, "native capacity: {}", capacity.body);
+            assert!(
+                capacity.body["data"]["state_storage_format"]
+                    .as_str()
+                    .is_some_and(|format| format.contains("v6"))
+            );
+        }
+        for version in 1..=16 {
+            let payload = char::from(b'A' + version as u8)
+                .to_string()
+                .repeat(2560 * 1024);
+            let response = call(
+                &mut service,
+                "POST",
+                "secret/data/capacity",
+                &token,
+                json!({"options":{"cas":version-1},"data":{"payload":payload}}),
+            );
+            assert_eq!(response.status, 200, "version {version}: {}", response.body);
+            assert_eq!(response.body["data"]["version"], version);
+        }
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let denied = call(
+            &mut service,
+            "POST",
+            "secret/data/capacity",
+            &token,
+            json!({"options":{"cas":15},"data":{"payload":"stale"}}),
+        );
+        assert_eq!(denied.status, 400);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "secret/data/capacity",
+                &token,
+                json!({"version":1})
+            )
+            .body["data"]["data"]["payload"]
+                .as_str()
+                .ok_or("history")?
+                .len(),
+            2560 * 1024
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/delete/capacity",
+                &token,
+                json!({"versions":[3]})
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "secret/data/capacity",
+                &token,
+                json!({"version":3})
+            )
+            .status,
+            404
+        );
+        let digest = service
+            .current_state_identity()
+            .map_err(|_| "identity")?
+            .digest();
+        drop(service);
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let unsealed = call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":key.as_str()}),
+        );
+        assert_eq!(unsealed.status, 200, "cold unseal: {}", unsealed.body);
+        assert_eq!(
+            service
+                .current_state_identity()
+                .map_err(|_| "reopened identity")?
+                .digest(),
+            digest
+        );
+        let metadata = call(
+            &mut service,
+            "GET",
+            "secret/metadata/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(metadata.status, 200, "metadata: {}", metadata.body);
+        assert_eq!(metadata.body["data"]["current_version"], 16);
+        assert!(
+            !metadata.body["data"]["versions"]["3"]["deletion_time"]
+                .as_str()
+                .ok_or("deleted metadata")?
+                .is_empty()
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "secret/data/capacity",
+                &token,
+                json!({"version":1})
+            )
+            .body["data"]["data"]["payload"]
+                .as_str()
+                .ok_or("cold history")?
+                .len(),
+            2560 * 1024
+        );
+        let response = call(
+            &mut service,
+            "POST",
+            "secret/data/capacity",
+            &token,
+            json!({"options":{"cas":16},"data":{"payload":"after-cold"}}),
+        );
+        assert_eq!(response.status, 200, "cold point writer: {}", response.body);
+        assert_eq!(response.body["data"]["version"], 17);
+        drop(service);
+        let mut default_reader = directory.service()?;
+        let refused = call(
+            &mut default_reader,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":key.as_str()}),
+        );
+        assert_eq!(refused.status, 503);
+        assert!(default_reader.state.is_none());
+        drop(default_reader);
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":key.as_str()})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "secret/data/capacity",
+                &token,
+                json!({})
+            )
+            .body["data"]["data"]["payload"],
+            "after-cold"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn genuine_native_service_activation_rejects_missing_profile_and_unsealed_configuration()
+    -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        let (_, token) = super::super::tests::bootstrap(&mut service)?;
+        let token = Zeroizing::new(token);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/seed",
+                &token,
+                json!({"data":{"x":1}})
+            )
+            .status,
+            200
+        );
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &token,
+                json!({})
+            )
+            .status,
+            503
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert!(service.native_root.is_none());
+        assert!(service.configure_native_v6_candidate().is_err());
+        Ok(())
+    }
+    #[test]
+    fn genuine_native_service_failed_audit_and_original_plan_deadline_have_no_effect() -> TestResult
+    {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (_, token) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(30),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let token = Zeroizing::new(token);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/seed",
+                &token,
+                json!({"data":{"x":1}})
+            )
+            .status,
+            200
+        );
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let plan = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(2),
+            );
+            service
+                .prepare_native_root_migration(&|| Ok(()))
+                .map_err(|_| "source plan")?
+        };
+        std::thread::sleep(Duration::from_millis(2100));
+        let state = service.state.as_ref().ok_or("state")?.clone();
+        let _new_ambient = crate::request_deadline::RequestDeadlineScope::enter(
+            std::time::Instant::now() + Duration::from_secs(30),
+        );
+        assert!(
+            service
+                .commit_native_root_plan(&state, plan, true, "migration", &mut |_| Ok(()))
+                .is_err()
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert!(service.native_root.is_none());
+        service.audit_failed = true;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &token,
+                json!({})
+            )
+            .status,
+            503
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert!(service.native_root.is_none());
+        Ok(())
+    }
+    #[test]
+    fn genuine_native_consumed_actor_publishes_auth_only_for_permitted_and_denied_resource()
+    -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, primary) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(30),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let key = Zeroizing::new(key);
+        let primary = Zeroizing::new(primary);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/seed",
+                &primary,
+                json!({"data":{"x":1}})
+            )
+            .status,
+            200
+        );
+        let mut tokens = Vec::new();
+        for (policy, status) in [("root", 200), ("default", 403)] {
+            let created = call(
+                &mut service,
+                "POST",
+                "auth/token/create",
+                &primary,
+                json!({"policies":[policy],"num_uses":1,"ttl":"1h","no_default_policy":true}),
+            );
+            assert_eq!(created.status, 200, "token create: {}", created.body);
+            tokens.push((
+                Zeroizing::new(
+                    created.body["auth"]["client_token"]
+                        .as_str()
+                        .ok_or("finite token")?
+                        .to_owned(),
+                ),
+                status,
+            ));
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &primary,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let source_graph = service
+            .native_root
+            .as_ref()
+            .ok_or("native root")?
+            .kv1
+            .clone();
+        for (token, status) in &tokens {
+            let response = call(&mut service, "GET", "secret/data/seed", token, json!({}));
+            assert_eq!(
+                response.status, *status,
+                "first limited use: {}",
+                response.body
+            );
+            assert_eq!(
+                call(&mut service, "GET", "secret/data/seed", token, json!({})).status,
+                403
+            );
+            assert_eq!(
+                service.native_root.as_ref().ok_or("native root")?.kv1,
+                source_graph
+            );
+        }
+        drop(service);
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":key.as_str()})
+            )
+            .status,
+            200
+        );
+        for (token, _) in &tokens {
+            assert_eq!(
+                call(&mut service, "GET", "secret/data/seed", token, json!({})).status,
+                403
+            );
+        }
+        assert_eq!(
+            call(&mut service, "GET", "secret/data/seed", &primary, json!({})).status,
+            200
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn genuine_native_activation_keeps_existing_preconsumption_on_success_and_rejection()
+    -> TestResult {
+        for configured in [false, true] {
+            let directory = super::super::tests::Root::new();
+            let mut service = directory.service()?;
+            if configured {
+                service.configure_native_v6_candidate()?;
+            }
+            let (key, primary) = {
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                    std::time::Instant::now() + Duration::from_secs(30),
+                );
+                super::super::tests::bootstrap(&mut service)?
+            };
+            let key = Zeroizing::new(key);
+            let primary = Zeroizing::new(primary);
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "secret/data/seed",
+                    &primary,
+                    json!({"data":{"x":1}})
+                )
+                .status,
+                200
+            );
+            let created = call(
+                &mut service,
+                "POST",
+                "auth/token/create",
+                &primary,
+                json!({"policies":["root"],"num_uses":1,"ttl":"1h","no_default_policy":true}),
+            );
+            assert_eq!(created.status, 200);
+            let finite = Zeroizing::new(
+                created.body["auth"]["client_token"]
+                    .as_str()
+                    .ok_or("finite root")?
+                    .to_owned(),
+            );
+            let response = call(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &finite,
+                json!({}),
+            );
+            assert_eq!(
+                response.status,
+                if configured { 204 } else { 503 },
+                "activation finite: {}",
+                response.body
+            );
+            assert_eq!(
+                call(&mut service, "GET", "secret/data/seed", &finite, json!({})).status,
+                403
+            );
+            drop(service);
+            let mut service = directory.service()?;
+            if configured {
+                service.configure_native_v6_candidate()?;
+            }
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/unseal",
+                    "",
+                    json!({"key":key.as_str()})
+                )
+                .status,
+                200
+            );
+            assert_eq!(
+                call(&mut service, "GET", "secret/data/seed", &finite, json!({})).status,
+                403
+            );
+        }
+        Ok(())
+    }
+    struct LostApplyAck {
+        inner: heptabao_durable_service::FileBackend,
+        barrier: AeadBarrier,
+        lost: Arc<std::sync::atomic::AtomicBool>,
+    }
+    impl LostApplyAck {
+        // Inspect only this owned fixture's real barrier-authenticated journal.
+        // Selection uses the actual Apply kind and request_id. It is independent
+        // of prelude/terminal writes, batching or append-frame counts.
+        fn is_consumed_auth_root_apply(
+            &self,
+            frame: &[u8],
+        ) -> Result<bool, heptabao_durable_service::BackendError> {
+            use heptabao_durable_service::BackendError;
+            let invalid = || BackendError::OutcomeUnknown;
+            let u32_at = |offset: usize| -> Result<usize, BackendError> {
+                let end = offset.checked_add(4).ok_or_else(invalid)?;
+                let bytes: [u8; 4] = frame
+                    .get(offset..end)
+                    .ok_or_else(invalid)?
+                    .try_into()
+                    .map_err(|_| invalid())?;
+                Ok(u32::from_le_bytes(bytes) as usize)
+            };
+            let encoded_length = u32_at(0)?;
+            if frame.len().checked_sub(4) != Some(encoded_length) {
+                return Err(invalid());
+            }
+            let sequence = frame.get(4..12).ok_or_else(invalid)?;
+            let protected_end = 16usize.checked_add(u32_at(12)?).ok_or_else(invalid)?;
+            if protected_end.checked_add(32) != Some(frame.len()) {
+                return Err(invalid());
+            }
+            let protected = frame.get(16..protected_end).ok_or_else(invalid)?;
+            let mut context = b"heptabao.durable-service.journal.v2".to_vec();
+            context.extend_from_slice(sequence);
+            let plain = Zeroizing::new(
+                heptabao_durable_service::Barrier::open(&self.barrier, &context, protected)
+                    .map_err(|_| invalid())?,
+            );
+            if plain.first() != Some(&5) {
+                return Ok(false);
+            }
+            let mut offset = 1usize;
+            let mut selected = false;
+            for number in 0..3 {
+                let length_end = offset.checked_add(4).ok_or_else(invalid)?;
+                let length: [u8; 4] = plain
+                    .get(offset..length_end)
+                    .ok_or_else(invalid)?
+                    .try_into()
+                    .map_err(|_| invalid())?;
+                let end = length_end
+                    .checked_add(u32::from_le_bytes(length) as usize)
+                    .ok_or_else(invalid)?;
+                let field = std::str::from_utf8(plain.get(length_end..end).ok_or_else(invalid)?)
+                    .map_err(|_| invalid())?;
+                if number == 2 {
+                    selected = field.starts_with("native6-auth-use-") && field.ends_with("-root");
+                }
+                offset = end;
+            }
+            Ok(selected)
+        }
+    }
+    impl heptabao_durable_service::DurableBackend for LostApplyAck {
+        fn verify(&self) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.verify()
+        }
+        fn verify_live_ownership(&mut self) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.verify_live_ownership()
+        }
+        fn load(
+            &mut self,
+        ) -> Result<heptabao_durable_service::BackendBundle, heptabao_durable_service::BackendError>
+        {
+            self.inner.load()
+        }
+        fn initialize_empty(
+            &mut self,
+            initial: &heptabao_durable_service::BackendBundle,
+        ) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.initialize_empty(initial)
+        }
+        fn append_journal(
+            &mut self,
+            expected_len: usize,
+            frame: &[u8],
+        ) -> Result<usize, heptabao_durable_service::BackendError> {
+            let written = self.inner.append_journal(expected_len, frame)?;
+            if self.is_consumed_auth_root_apply(frame)? {
+                self.lost.store(true, std::sync::atomic::Ordering::SeqCst);
+                return Err(heptabao_durable_service::BackendError::OutcomeUnknown);
+            }
+            Ok(written)
+        }
+        fn truncate_journal(
+            &mut self,
+            expected_len: usize,
+            new_len: usize,
+        ) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.truncate_journal(expected_len, new_len)
+        }
+        fn publish_checkpoint(
+            &mut self,
+            expected: &heptabao_durable_service::BackendBundle,
+            replacement: &heptabao_durable_service::BackendBundle,
+        ) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.publish_checkpoint(expected, replacement)
+        }
+        fn restore_profile(
+            &self,
+        ) -> Result<heptabao_durable_service::RestoreProfile, heptabao_durable_service::BackendError>
+        {
+            self.inner.restore_profile()
+        }
+        fn publish_restore(
+            &mut self,
+            expected: &heptabao_durable_service::BackendBundle,
+            replacement: &heptabao_durable_service::BackendBundle,
+            intent: Option<&[u8]>,
+        ) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.publish_restore(expected, replacement, intent)
+        }
+        fn staged_restore_commitments(
+            &self,
+        ) -> Result<
+            heptabao_durable_service::StagedRestoreCommitments,
+            heptabao_durable_service::BackendError,
+        > {
+            self.inner.staged_restore_commitments()
+        }
+        fn staged_restore_replacement(
+            &self,
+        ) -> Result<heptabao_durable_service::BackendBundle, heptabao_durable_service::BackendError>
+        {
+            self.inner.staged_restore_replacement()
+        }
+        fn finish_restore(
+            &mut self,
+            intent: &[u8],
+            replacement: &heptabao_durable_service::BackendBundle,
+        ) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.finish_restore(intent, replacement)
+        }
+        fn close(self) -> Result<(), heptabao_durable_service::BackendError> {
+            self.inner.close()
+        }
+    }
+
+    #[test]
+    fn genuine_native_auth_use_lost_filesystem_apply_ack_fences_and_cold_recovers_once()
+    -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, primary) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(30),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let key = Zeroizing::new(key);
+        let primary = Zeroizing::new(primary);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/seed",
+                &primary,
+                json!({"data":{"x":1}})
+            )
+            .status,
+            200
+        );
+        let created = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &primary,
+            json!({"policies":["root"],"num_uses":1,"ttl":"1h","no_default_policy":true}),
+        );
+        assert_eq!(created.status, 200);
+        let finite = Zeroizing::new(
+            created.body["auth"]["client_token"]
+                .as_str()
+                .ok_or("finite root")?
+                .to_owned(),
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &primary,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let before = service.current_state_identity().map_err(|_| "identity")?;
+        let barrier = Zeroizing::new(**service.barrier_key.as_ref().ok_or("barrier key")?);
+        drop(service.durable.take().ok_or("durable")?);
+        let lost = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        // Authenticate the real journal frame using this fixture's actual
+        // barrier. Lose only the consumed-auth root/cursor Apply acknowledgement
+        // after the actual FilesystemBackend append+fsync has completed.
+        let backend = LostApplyAck {
+            inner: heptabao_durable_service::FileBackend::open(&service.data_dir)?,
+            barrier: AeadBarrier::new(*barrier)?,
+            lost: Arc::clone(&lost),
+        };
+        service.durable = Some(DurableService::reopen_with_backend(
+            Box::new(backend) as Box<dyn heptabao_durable_service::DurableBackend>,
+            AeadBarrier::new(*barrier)?,
+            MAX_OPERATIONS,
+        )?);
+        let response = call(&mut service, "GET", "secret/data/seed", &finite, json!({}));
+        assert_eq!(response.status, 503);
+        assert!(lost.load(std::sync::atomic::Ordering::SeqCst));
+        assert!(service.recovery_required);
+        assert!(response.body.get("data").is_none());
+        assert!(response.body["recovery_reference"].as_str().is_some());
+        assert_eq!(
+            call(&mut service, "GET", "secret/data/seed", &primary, json!({})).status,
+            503
+        );
+        drop(service);
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":key.as_str()})
+            )
+            .status,
+            200
+        );
+        assert_ne!(
+            service
+                .current_state_identity()
+                .map_err(|_| "reconciled identity")?,
+            before
+        );
+        assert_eq!(
+            call(&mut service, "GET", "secret/data/seed", &finite, json!({})).status,
+            403
+        );
+        let before_tokens: Value = serde_json::from_slice(
+            owner_store::serialize_owner(&service.state.as_ref().ok_or("state")?.auth)?.as_slice(),
+        )?;
+        let before_graph = service
+            .native_root
+            .as_ref()
+            .ok_or("native root")?
+            .kv1
+            .clone();
+        assert!(before_tokens["tokens"].as_object().is_some_and(|tokens| {
+            tokens
+                .values()
+                .any(|token| token["uses_remaining"].as_u64() == Some(0))
+        }));
+        assert_eq!(
+            call(&mut service, "GET", "secret/data/seed", &finite, json!({})).status,
+            403
+        );
+        let after_tokens: Value = serde_json::from_slice(
+            owner_store::serialize_owner(&service.state.as_ref().ok_or("state")?.auth)?.as_slice(),
+        )?;
+        assert_eq!(
+            before_tokens["tokens"], after_tokens["tokens"],
+            "rejected use must not restore or reconsume any token"
+        );
+        assert_eq!(
+            service.native_root.as_ref().ok_or("native root")?.kv1,
+            before_graph
+        );
+        assert_eq!(
+            call(&mut service, "GET", "secret/data/seed", &primary, json!({})).status,
+            200
+        );
+        Ok(())
+    }
+}
+
+impl Service {
+    /// Authentication consumption only. This borrowed, non-clone Principal was
+    /// produced and Clock-bound by the real authentication prelude; it grants
+    /// no resource ACL, reply delivery, opaque-owner edit or namespace action.
+    pub(super) fn commit_native_consumed_auth_use(
+        &mut self,
+        candidate: &mut State,
+        principal: &Principal,
+        request: &RequestView<'_>,
+    ) -> Result<(), Response> {
+        if !principal.consumed_use() || request.token_clock.is_none() {
+            return Err(Response::error(
+                503,
+                "native token use requires original authentication clock",
+            ));
+        }
+        let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
+        let live = || deadline.check().map_err(|_| rejected());
+        live()?;
+        let source = self.state.as_ref().ok_or_else(rejected)?;
+        let root = self.native_root.as_ref().ok_or_else(rejected)?;
+        if candidate.cluster_id != source.cluster_id
+            || candidate.replay_epoch != source.replay_epoch
+            || candidate.global_lossless_json_format != source.global_lossless_json_format
+            || candidate.namespace_protected.is_some()
+            || !candidate.namespace_leases.is_empty()
+        {
+            return Err(rejected());
+        }
+        for (actual, expected) in [
+            (
+                owner_store::serialize_owner(&candidate.namespaces),
+                owner_store::serialize_owner(&source.namespaces),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.database),
+                owner_store::serialize_owner(&source.database),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.raft_admin),
+                owner_store::serialize_owner(&source.raft_admin),
+            ),
+        ] {
+            live()?;
+            if actual.map_err(|_| rejected())?.as_slice()
+                != expected.map_err(|_| rejected())?.as_slice()
+            {
+                return Err(rejected());
+            }
+            live()?;
+        }
+        let key = root.kv1_key().map_err(|_| rejected())?;
+        if candidate.engines.record_root().as_ref() != Some(&root.kv1)
+            || candidate
+                .engines
+                .record_address_key()
+                .is_none_or(|observed| observed.expose() != key.expose())
+        {
+            return Err(rejected());
+        }
+        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        candidate
+            .engines
+            .validate_native_roots(&parent, &root.kv2, &check)
+            .map_err(|_| rejected())?;
+        let (actual, _) = candidate
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        let (expected, _) = source
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        live()?;
+        if owner_store::serialize_owner(&actual)
+            .map_err(|_| rejected())?
+            .as_slice()
+            != owner_store::serialize_owner(&expected)
+                .map_err(|_| rejected())?
+                .as_slice()
+        {
+            return Err(rejected());
+        }
+        source
+            .auth
+            .validate_native_consumed_auth_candidate(
+                principal,
+                &candidate.auth,
+                request.token_time()?,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        live()?;
+        let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
+        let candidate_auth =
+            owner_store::serialize_owner(&candidate.auth).map_err(|_| rejected())?;
+        if source_auth.as_slice() == candidate_auth.as_slice() {
+            return Err(rejected());
+        }
+        live()?;
+        let candidate_auth_owner = candidate.auth.clone();
+        let plan = self.prepare_native_live_root(candidate)?;
+        let installed =
+            self.commit_native_root_plan(candidate, plan, false, "auth-use", &mut |auth| {
+                live()?;
+                if !principal.consumed_use()
+                    || request.token_clock.is_none()
+                    || owner_store::serialize_owner(auth)
+                        .map_err(|_| rejected())?
+                        .as_slice()
+                        != source_auth.as_slice()
+                {
+                    return Err(rejected());
+                }
+                // Observe the original trusted request clock, without reauthenticating
+                // a bearer or granting its requested resource capability.
+                auth.validate_native_consumed_auth_candidate(
+                    principal,
+                    &candidate_auth_owner,
+                    request.token_time()?,
+                )
+                .map_err(|error| Response::error(error.status, &error.message))?;
+                live()
+            })?;
+        *candidate = installed;
+        Ok(())
+    }
+}
+
+impl Service {
+    /// A private terminal observation write, never resource authorization.
+    /// `at` is the first actual observation of the original trusted request
+    /// Clock in the terminal writer. Subsequent checks observe that same Clock;
+    /// the exact floor delta remains fixed rather than refreshing its budget.
+    pub(super) fn commit_native_terminal_clock_floor(
+        &mut self,
+        candidate: &mut State,
+        clock: RequestClock,
+        fixed_time: AuthorityTime,
+    ) -> Result<(), Response> {
+        let AuthorityTime::Precise(at) = fixed_time else {
+            return Err(rejected());
+        };
+        let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
+        let live = || {
+            deadline.check().map_err(|_| rejected())?;
+            let observed = clock.observed_at().map_err(|_| rejected())?;
+            if observed < at {
+                return Err(rejected());
+            }
+            deadline.check().map_err(|_| rejected())
+        };
+        live()?;
+        let source = self.state.as_ref().ok_or_else(rejected)?;
+        let root = self.native_root.as_ref().ok_or_else(rejected)?;
+        let mut expected = source.clone();
+        let time = expected
+            .engines
+            .kubernetes_artifact_time(fixed_time)
+            .map_err(|error| Response::error(503, &error.message))?;
+        let time = expected.auth.token_api_observed_time(time);
+        let mut changed = expected
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(503, &error.message))?;
+        changed |= expected
+            .engines
+            .observe_kubernetes_artifact_time(time)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if !changed {
+            return Err(rejected());
+        }
+        expected.schema = expected.writer_schema();
+        live()?;
+        if candidate.schema != expected.schema
+            || candidate.cluster_id != expected.cluster_id
+            || candidate.replay_epoch != expected.replay_epoch
+            || candidate.global_lossless_json_format != expected.global_lossless_json_format
+            || candidate.namespace_protected.is_some()
+            || !candidate.namespace_leases.is_empty()
+        {
+            return Err(rejected());
+        }
+        for (actual, expected) in [
+            (
+                owner_store::serialize_owner(&candidate.auth),
+                owner_store::serialize_owner(&expected.auth),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.namespaces),
+                owner_store::serialize_owner(&expected.namespaces),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.database),
+                owner_store::serialize_owner(&expected.database),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.raft_admin),
+                owner_store::serialize_owner(&expected.raft_admin),
+            ),
+        ] {
+            live()?;
+            if actual.map_err(|_| rejected())?.as_slice()
+                != expected.map_err(|_| rejected())?.as_slice()
+            {
+                return Err(rejected());
+            }
+            live()?;
+        }
+        let key = root.kv1_key().map_err(|_| rejected())?;
+        if candidate.engines.record_root().as_ref() != Some(&root.kv1)
+            || candidate
+                .engines
+                .record_address_key()
+                .is_none_or(|observed| observed.expose() != key.expose())
+        {
+            return Err(rejected());
+        }
+        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        candidate
+            .engines
+            .validate_native_roots(&parent, &root.kv2, &check)
+            .map_err(|_| rejected())?;
+        let (actual_meta, _) = candidate
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        let (expected_meta, _) = expected
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        live()?;
+        if owner_store::serialize_owner(&actual_meta)
+            .map_err(|_| rejected())?
+            .as_slice()
+            != owner_store::serialize_owner(&expected_meta)
+                .map_err(|_| rejected())?
+                .as_slice()
+        {
+            return Err(rejected());
+        }
+        live()?;
+        let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
+        let expected_auth = owner_store::serialize_owner(&expected.auth).map_err(|_| rejected())?;
+        let plan = self.prepare_native_live_root(candidate)?;
+        let installed = self.commit_native_root_plan(
+            candidate,
+            plan,
+            false,
+            "clock-observation",
+            &mut |auth| {
+                live()?;
+                if owner_store::serialize_owner(auth)
+                    .map_err(|_| rejected())?
+                    .as_slice()
+                    != source_auth.as_slice()
+                {
+                    return Err(rejected());
+                }
+                let mut checked = auth.clone();
+                checked
+                    .observe_token_api_time(time)
+                    .map_err(|error| Response::error(503, &error.message))?;
+                if owner_store::serialize_owner(&checked)
+                    .map_err(|_| rejected())?
+                    .as_slice()
+                    != expected_auth.as_slice()
+                {
+                    return Err(rejected());
+                }
+                live()
+            },
+        )?;
+        *candidate = installed;
+        Ok(())
+    }
+}

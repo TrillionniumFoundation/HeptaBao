@@ -5,9 +5,10 @@ impl EngineState {
     pub(crate) fn has_kv2_lossless_state(&self) -> bool {
         self.kv2_lossless_format.is_some()
             || self.namespaces.values().any(|namespace| {
-                namespace.mounts.values().any(|mount| {
-                    matches!(&mount.backend, Backend::Kv2(engine) if engine.has_lossless_import_state())
-                })
+                namespace
+                    .mounts
+                    .values()
+                    .any(|mount| mount.backend.kv2_has_lossless_import_state())
             })
     }
 
@@ -15,9 +16,16 @@ impl EngineState {
         let mut present = false;
         for namespace in self.namespaces.values() {
             for mount in namespace.mounts.values() {
-                if let Backend::Kv2(engine) = &mount.backend {
-                    engine.validate_lossless_state()?;
-                    present |= engine.has_lossless_import_state();
+                match &mount.backend {
+                    Backend::Kv2(engine) => {
+                        engine.validate_lossless_state()?;
+                        present |= engine.has_lossless_import_state();
+                    }
+                    Backend::Kv2Native(view) => {
+                        view.validate_lossless_state()?;
+                        present |= view.has_lossless_state();
+                    }
+                    _ => {}
                 }
             }
         }
@@ -45,6 +53,17 @@ impl EngineState {
         }
         self.validate_kv2_lossless_state(None)?;
         let name = format!("{canonical}/");
+        if self
+            .namespaces
+            .get(namespace)
+            .and_then(|owner| owner.mounts.get(&name))
+            .is_some_and(|mount| matches!(mount.backend, Backend::Kv2Native(_)))
+        {
+            return Err(error(
+                501,
+                "native KV2 aggregate import requires a dedicated graph import writer",
+            ));
+        }
         let imported = kv::Kv2::from_lossless_import_json(bundle)?;
         let mut candidate = self.clone();
         let owner = candidate

@@ -22,6 +22,8 @@ pub(super) struct LocalUnsealOwner {
     generation: u64,
     logical: Zeroizing<Vec<u8>>,
     published: Zeroizing<Vec<u8>>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native: Option<super::native_v6_reader::NativeProof>,
 }
 
 fn unavailable() -> Response {
@@ -34,13 +36,46 @@ impl LocalUnsealOwner {
         clock: Option<RequestClock>,
         deadline: Option<Instant>,
     ) -> Result<Self, Response> {
+        let clock = clock.ok_or_else(|| Response::error(503, "trusted token clock is required"))?;
+        if deadline.is_some_and(|end| Instant::now() >= end) {
+            return Err(Response::error(
+                503,
+                "local unseal original deadline elapsed",
+            ));
+        }
+        clock
+            .observed_at()
+            .map_err(|_| Response::error(503, "local unseal original clock unavailable"))?;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native = service.capture_native_unseal_proof()?;
         let durable = service.durable.as_ref().ok_or_else(unavailable)?;
         let publication = durable
             .get("system", "state")
             .map_err(|_| unavailable())?
             .ok_or_else(unavailable)?;
+        let identity = service.current_state_identity()?;
+        let generation = durable.generation();
+        #[cfg(feature = "fixture-native-v6-service")]
+        if native.is_some() != matches!(identity, StateIdentity::RecordsV6(_))
+            || native.as_ref().is_some_and(|proof| {
+                proof.identity() != identity || proof.generation() != generation
+            })
+        {
+            return Err(unavailable());
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        let logical = match &native {
+            // Empty bytes are never whole-owner evidence. They are permitted
+            // only beside the actual affine V6 reader proof captured above.
+            Some(_) => Zeroizing::new(Vec::new()),
+            None => owner_store::serialize_owner(service.state.as_ref().ok_or_else(unavailable)?)
+                .map_err(state_serialization_error)?,
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let logical = owner_store::serialize_owner(service.state.as_ref().ok_or_else(unavailable)?)
+            .map_err(state_serialization_error)?;
         let owner = Self {
-            clock: clock.ok_or_else(|| Response::error(503, "trusted token clock is required"))?,
+            clock,
             deadline,
             seal: service.seal.clone().ok_or_else(unavailable)?,
             nonce: Zeroizing::new(service.unseal_nonce.clone()),
@@ -52,11 +87,12 @@ impl LocalUnsealOwner {
                     .as_slice(),
             ),
             ha: service.ha.as_ref().map(Arc::clone),
-            identity: service.current_state_identity()?,
-            generation: durable.generation(),
-            logical: owner_store::serialize_owner(service.state.as_ref().ok_or_else(unavailable)?)
-                .map_err(state_serialization_error)?,
+            identity,
+            generation,
+            logical,
             published: Zeroizing::new(publication.expose().to_vec()),
+            #[cfg(feature = "fixture-native-v6-service")]
+            native,
         };
         owner.check(service)?;
         Ok(owner)
@@ -111,14 +147,32 @@ impl LocalUnsealOwner {
         }
         self.seal.validate().map_err(|_| unavailable())?;
         let state = service.state.as_ref().ok_or_else(unavailable)?;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_selected = self.native.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_selected = false;
         if state.auth.has_recovery_state()
             || !state.has_token_api_precision_state()
                 && !state.engines.has_kubernetes_opaque_artifact_state()
+                && !native_selected
         {
             return Err(unavailable());
         }
         state.namespace_leases.validate()?;
         state.validate_format()?;
+        self.live()?;
+        #[cfg(feature = "fixture-native-v6-service")]
+        if let Some(native) = &self.native {
+            if !self.logical.is_empty()
+                || !matches!(self.identity, StateIdentity::RecordsV6(_))
+                || native.identity() != self.identity
+                || native.generation() != self.generation
+            {
+                return Err(unavailable());
+            }
+            native.check_warm(service)?;
+            return self.live();
+        }
         if owner_store::serialize_owner(state)
             .map_err(state_serialization_error)?
             .as_slice()
@@ -131,6 +185,27 @@ impl LocalUnsealOwner {
 
     fn check(&self, service: &mut Service) -> Result<(), Response> {
         self.check_instance(service)?;
+        #[cfg(feature = "fixture-native-v6-service")]
+        if let Some(native) = &self.native {
+            // Normal mandatory-audit response handling invokes this before and
+            // after audit. A warm cache or small root is never its substitute.
+            native.check_with(service, Service::check_native_installed)?;
+            self.live()?;
+            let durable = service.durable.as_ref().ok_or_else(unavailable)?;
+            if durable.recovery_required() || durable.generation() != self.generation {
+                return Err(unavailable());
+            }
+            let publication = durable
+                .get("system", "state")
+                .map_err(|_| unavailable())?
+                .ok_or_else(unavailable)?;
+            self.live()?;
+            if publication.expose() != self.published.as_slice() {
+                return Err(unavailable());
+            }
+            self.check_instance(service)?;
+            return self.live();
+        }
         service
             .durable
             .as_mut()
@@ -226,6 +301,10 @@ impl Service {
         clock: Option<RequestClock>,
         deadline: Option<Instant>,
     ) {
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_selected = self.native_root.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_selected = false;
         let selected = response.status == 200
             && response.body["sealed"] == false
             && self.openbao_wrapper_owner.is_none()
@@ -236,6 +315,7 @@ impl Service {
             && self.state.as_ref().is_some_and(|state| {
                 state.has_token_api_precision_state()
                     || state.engines.has_kubernetes_opaque_artifact_state()
+                    || native_selected
             });
         if !selected {
             return;
@@ -606,6 +686,47 @@ mod tests {
             generation
         );
         assert_eq!(f.service.seal_status().body["sealed"], false);
+        Ok(())
+    }
+
+    #[cfg(feature = "fixture-native-v6-service")]
+    #[test]
+    fn native_feature_does_not_turn_empty_legacy_logical_bytes_into_unseal_evidence() -> TestResult
+    {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_share, token) = bootstrap_unmounted(&mut service)?;
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_secs(15),
+        );
+        let minted = service.handle_request(ServiceRequest::new(
+            "POST",
+            "auth/token/create",
+            "",
+            &token,
+            json!({"ttl":"1h"}),
+        ));
+        assert_eq!(minted.status, 200);
+        let response = service.seal_status();
+        let mut owner = LocalUnsealOwner::capture(
+            &mut service,
+            Some(original_clock()?),
+            crate::request_deadline::current(),
+        )
+        .map_err(|_| "actual non-native local owner")?;
+        assert!(owner.native.is_none());
+        assert!(!owner.logical.is_empty());
+        owner
+            .check_response(&mut service, &response)
+            .map_err(|_| "ordinary local owner")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        owner.logical.clear();
+        assert!(owner.check_response(&mut service, &response).is_err());
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert!(!service.recovery_required);
         Ok(())
     }
 }

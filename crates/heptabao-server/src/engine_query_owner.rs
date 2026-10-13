@@ -15,7 +15,9 @@ pub(crate) enum QueryKind {
 impl QueryKind {
     pub(super) fn from_backend(backend: &Backend) -> Self {
         match backend {
-            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) => Self::Kv,
+            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_) => {
+                Self::Kv
+            }
             Backend::Pki(_) => Self::Pki,
             Backend::Transit(_) => Self::Transit,
             _ => Self::Ordinary,

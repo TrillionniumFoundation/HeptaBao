@@ -63,7 +63,7 @@ impl EngineState {
                 },
                 false,
             ),
-            Backend::Kv2(_) => (
+            Backend::Kv2(_) | Backend::Kv2Native(_) => (
                 if relative.is_empty() {
                     include_str!("help_templates/kv2-root.json")
                 } else if relative.starts_with("data/") {

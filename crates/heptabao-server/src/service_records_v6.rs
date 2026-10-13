@@ -652,7 +652,7 @@ impl Service {
     }
 }
 
-fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> String {
+pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> String {
     let role = match domain {
         ObjectDomain::Owner(role) => format!("owner/{}", role.name()),
         ObjectDomain::Kv1 => "kv1".into(),
@@ -973,4 +973,228 @@ fn materialize_native_side_snapshot(
     let state = materialize(&root, context, &NativeDurableSource { durable, deadline })?;
     deadline.check().map_err(|_| ReadError::Invalid)?;
     Ok(state)
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
+pub(super) fn materialize_for_service(
+    root: &RecordStateRootV6,
+    context: ReadContext<'_>,
+    source: &impl ObjectSource,
+) -> Result<(State, BTreeMap<MountScope, NativeReadView>), ReadError> {
+    let read = materialize(root, context, source)?;
+    Ok((read.protected, read.native))
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
+impl Service {
+    pub(super) fn prepare_native_live_root(
+        &mut self,
+        candidate: &State,
+    ) -> Result<NativeRootMigrationPlan, Response> {
+        let rejected = || Response::error(503, "native live candidate custody rejected");
+        let deadline =
+            crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| rejected())?;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        check().map_err(|_| rejected())?;
+        self.require_native_root_candidate(candidate)?;
+        candidate.validate_publication_schema(self.state.as_ref())?;
+        candidate.validate_format()?;
+        let proof = self.capture_native_unseal_proof()?.ok_or_else(rejected)?;
+        proof.check_warm(self)?;
+        let mut candidate = candidate.clone();
+        let mut root = self.native_root.as_ref().ok_or_else(rejected)?.clone();
+        if root.replay_epoch != candidate.replay_epoch || root.cluster_id != candidate.cluster_id {
+            return Err(rejected());
+        }
+        root.state_schema = candidate.schema;
+        root.reader_floor.minimum_state_schema = candidate.schema;
+        root.global_lossless_json_format = candidate.global_lossless_json_format;
+        let durable = self.durable.as_mut().ok_or_else(rejected)?;
+        durable.verify_live_ownership().map_err(|_| rejected())?;
+        let source = durable
+            .get("system", "state")
+            .map_err(|_| rejected())?
+            .ok_or_else(rejected)?;
+        let prior = self
+            .native_root
+            .as_ref()
+            .ok_or_else(rejected)?
+            .encode()
+            .map_err(|_| rejected())?;
+        if prior.as_slice() != source.expose() {
+            return Err(rejected());
+        }
+        let cursor = durable
+            .get("system", native_v6_reader::ACTIVE_CURSOR_RESOURCE)
+            .map_err(|_| rejected())?
+            .ok_or_else(rejected)?;
+        let retained = durable
+            .get("system", native_v6_reader::ACTIVE_SOURCE_ROOT_RESOURCE)
+            .map_err(|_| rejected())?
+            .ok_or_else(rejected)?;
+        let source_generation = durable.generation();
+        use crate::state_record_root::OpaqueOwnerRef;
+        use crate::state_record_root_v6::OwnerDomain;
+        let recorded = (*candidate.engines).clone();
+        root.kv1 = recorded.record_root().ok_or_else(rejected)?;
+        let mut objects = BTreeMap::new();
+        fn stage(
+            objects: &mut BTreeMap<
+                (ObjectDomain, ObjectId),
+                Arc<crate::state_records::StagedObject>,
+            >,
+            domain: ObjectDomain,
+            object: &Arc<crate::state_records::StagedObject>,
+        ) -> Result<(), RecordError> {
+            let key = (domain, object.reference().id);
+            if let Some(prior) = objects.get(&key) {
+                if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
+                    return Err(RecordError::Corrupt);
+                }
+            } else {
+                objects.insert(key, Arc::clone(object));
+            }
+            Ok(())
+        }
+        recorded
+            .visit_record_objects(|object| {
+                check()?;
+                stage(&mut objects, ObjectDomain::Kv1, object)?;
+                check()
+            })
+            .map_err(|_| rejected())?;
+        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
+        let (opaque, graphs) = recorded
+            .project_v6_native(&parent, &check, |scope, object| {
+                stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
+            })
+            .map_err(|_| rejected())?;
+        root.kv2 = graphs;
+        let metadata = EngineMetadata {
+            format: ENGINE_FORMAT.into(),
+            opaque,
+            kv2_scopes: root.kv2.iter().map(|graph| graph.scope.clone()).collect(),
+        };
+        candidate.engines = recorded.into();
+        let owners = [
+            owner_store::serialize_owner(&candidate.namespaces),
+            owner_store::serialize_owner(&candidate.auth),
+            owner_store::serialize_owner(&metadata),
+            owner_store::serialize_owner(&candidate.database),
+            owner_store::serialize_owner(&candidate.raft_admin),
+        ];
+        for (index, bytes) in owners.into_iter().enumerate() {
+            check().map_err(|_| rejected())?;
+            let bytes = bytes.map_err(|_| rejected())?;
+            let domain = OwnerDomain::ALL[index];
+            let key = root.owner_key(domain).map_err(|_| rejected())?;
+            let mut chunks = Vec::new();
+            for chunk in bytes.chunks(crate::state_record_root::OWNER_CHUNK_BYTES) {
+                check().map_err(|_| rejected())?;
+                let object = crate::state_records::StagedObject::owner_chunk(&key, chunk)
+                    .map_err(|_| rejected())?;
+                chunks.push(object.reference().clone());
+                stage(&mut objects, ObjectDomain::Owner(domain), &object)
+                    .map_err(|_| rejected())?;
+                check().map_err(|_| rejected())?;
+            }
+            root.owners[index].owner = OpaqueOwnerRef {
+                name: domain.name().into(),
+                total_bytes: bytes.len() as u64,
+                chunks,
+                digest: root.owner_digest(domain, &bytes).map_err(|_| rejected())?,
+            };
+        }
+
+        let bytes = root.encode().map_err(|_| rejected())?;
+        check().map_err(|_| rejected())?;
+        durable.verify_live_ownership().map_err(|_| rejected())?;
+        if durable.generation() != source_generation {
+            return Err(rejected());
+        }
+        let plan = NativeRootMigrationPlan {
+            root,
+            bytes,
+            candidate,
+            objects,
+            source_generation,
+            deadline,
+            conditions: vec![
+                heptabao_durable_service::PublicationCondition {
+                    resource: "state".into(),
+                    expected: Some(source),
+                },
+                heptabao_durable_service::PublicationCondition {
+                    resource: native_v6_reader::ACTIVE_CURSOR_RESOURCE.into(),
+                    expected: Some(cursor),
+                },
+                heptabao_durable_service::PublicationCondition {
+                    resource: native_v6_reader::ACTIVE_SOURCE_ROOT_RESOURCE.into(),
+                    expected: Some(retained),
+                },
+            ],
+        };
+        validate_native_root_migration_plan(&plan).map_err(|_| rejected())?;
+        check().map_err(|_| rejected())?;
+        Ok(plan)
+    }
+
+    pub(super) fn install_prepared_native_candidate(
+        plan: &NativeRootMigrationPlan,
+    ) -> Result<State, Response> {
+        let rejected = || Response::error(503, "native staged candidate installation rejected");
+        plan.deadline.check().map_err(|_| rejected())?;
+        let crate::state_record_root::StateIdentity::RecordsV6(identity) =
+            plan.root.identity().map_err(|_| rejected())?
+        else {
+            return Err(rejected());
+        };
+        let context = ReadContext {
+            expected_identity: crate::v6_read_validation::ReadIdentity::RecordsV6(identity),
+            cluster_id: &plan.root.cluster_id,
+            replay_epoch: plan.root.replay_epoch,
+            minimum_state_schema: plan.root.state_schema,
+            maximum_state_schema: plan.root.state_schema,
+            reader_format: crate::state_record_root_v6::READER_FORMAT,
+        };
+        let (mut metadata, native) = materialize_for_service(
+            &plan.root,
+            context,
+            &NativeMigrationObjects {
+                objects: &plan.objects,
+                deadline: plan.deadline,
+            },
+        )
+        .map_err(|_| rejected())?;
+        metadata
+            .engines
+            .install_native_views(native)
+            .map_err(Response::from_engine_error)?;
+        metadata.validate_format()?;
+        plan.deadline.check().map_err(|_| rejected())?;
+        Ok(metadata)
+    }
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
+pub(super) fn verify_durable_native_candidate(
+    root: &RecordStateRootV6,
+    durable: &DurableService<AeadBarrier>,
+    deadline: crate::v6_native_custody::OriginalDeadline,
+) -> Result<(), ReadError> {
+    deadline.check().map_err(|_| ReadError::Invalid)?;
+    let crate::state_record_root::StateIdentity::RecordsV6(identity) = root.identity()? else {
+        return Err(ReadError::Authentication);
+    };
+    let context = ReadContext {
+        expected_identity: crate::v6_read_validation::ReadIdentity::RecordsV6(identity),
+        cluster_id: &root.cluster_id,
+        replay_epoch: root.replay_epoch,
+        minimum_state_schema: root.state_schema,
+        maximum_state_schema: root.state_schema,
+        reader_format: crate::state_record_root_v6::READER_FORMAT,
+    };
+    let _ = materialize(root, context, &NativeDurableSource { durable, deadline })?;
+    deadline.check().map_err(|_| ReadError::Invalid)?;
+    Ok(())
 }

@@ -48,6 +48,52 @@ impl Service {
         let opaque_owner_limit = self.opaque_owner_limit();
         let state_limit = opaque_owner_limit;
 
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_capacity = if let Some(root) = self.native_root.as_ref() {
+            let owner_bytes = root.owners.iter().try_fold(0u64, |total, owner| {
+                total.checked_add(owner.owner.total_bytes)
+            });
+            let kv_bytes = root.kv2.iter().try_fold(
+                root.kv1
+                    .reference
+                    .as_ref()
+                    .map_or(0, |reference| reference.payload_bytes),
+                |total, graph| {
+                    total.checked_add(
+                        graph
+                            .root
+                            .reference
+                            .as_ref()
+                            .map_or(0, |reference| reference.payload_bytes),
+                    )
+                },
+            );
+            let total = owner_bytes
+                .and_then(|owners| kv_bytes.and_then(|values| owners.checked_add(values)))
+                .and_then(|bytes| usize::try_from(bytes).ok());
+            let limit = root
+                .kv2
+                .len()
+                .checked_add(1)
+                .and_then(|graphs| graphs.checked_mul(crate::state_records::MAX_GRAPH_BYTES))
+                .and_then(|bytes| bytes.checked_add(opaque_owner_limit));
+            let (Some(total), Some(limit), Some(owner_bytes)) = (total, limit, owner_bytes) else {
+                return Response::error(503, "native capacity arithmetic failed");
+            };
+            Some((
+                total,
+                limit,
+                crate::state_record_root_v6::STORAGE_FORMAT,
+                "bounded-native-record-state-v6-candidate",
+                crate::state_record_root::OWNER_CHUNK_BYTES,
+                "opaque-owner-json-plus-native-kv-canonical-cells",
+                Some(owner_bytes),
+            ))
+        } else {
+            None
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_capacity = None;
         let (
             state_bytes,
             state_limit,
@@ -56,7 +102,9 @@ impl Service {
             chunk_target,
             size_basis,
             opaque_owner_bytes,
-        ) = if let Some(root) = &self.record_root {
+        ) = if let Some(observation) = native_capacity {
+            observation
+        } else if let Some(root) = &self.record_root {
             let owner_bytes = root
                 .owners
                 .iter()

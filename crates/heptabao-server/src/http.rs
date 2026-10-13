@@ -338,6 +338,8 @@ pub fn serve(config: Config) -> Result<(), String> {
     serve_inner(
         config,
         None,
+        #[cfg(feature = "fixture-native-v6-service")]
+        false,
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         None,
     )
@@ -347,6 +349,8 @@ pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), St
     serve_inner(
         config,
         Some(ha),
+        #[cfg(feature = "fixture-native-v6-service")]
+        false,
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         None,
     )
@@ -358,7 +362,24 @@ pub fn serve_with_ha_fixture(
     ha: Arc<Mutex<HaProcess>>,
     fixture: crate::fixture_native_restore::NativeRestoreFaultGate,
 ) -> Result<(), String> {
-    serve_inner(config, Some(ha), Some(fixture))
+    serve_inner(
+        config,
+        Some(ha),
+        #[cfg(feature = "fixture-native-v6-service")]
+        false,
+        Some(fixture),
+    )
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
+pub fn serve_native_v6_candidate(config: Config) -> Result<(), String> {
+    serve_inner(
+        config,
+        None,
+        true,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
 fn configure_api_alpn(tls: &mut ServerConfig) {
@@ -368,6 +389,7 @@ fn configure_api_alpn(tls: &mut ServerConfig) {
 fn serve_inner(
     config: Config,
     ha: Option<Arc<Mutex<HaProcess>>>,
+    #[cfg(feature = "fixture-native-v6-service")] native_candidate: bool,
     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))] fixture: Option<
         crate::fixture_native_restore::NativeRestoreFaultGate,
     >,
@@ -518,6 +540,14 @@ fn serve_inner(
         }
         service.install_openbao_wrapper(config.openbao_wrapper)?
     };
+    #[cfg(feature = "fixture-native-v6-service")]
+    if native_candidate {
+        service
+            .lock()
+            .map_err(|_| "service lock unavailable")?
+            .configure_native_v6_candidate()?;
+    }
+
     // Startup process work is outside the Service writer; no API can install or
     // reattach an endpoint. Failed admission aborts listener startup explicitly.
     let startup: Result<(), String> = (|| {

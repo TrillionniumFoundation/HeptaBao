@@ -18,6 +18,19 @@ fn main() -> std::process::ExitCode {
 
 fn run() -> Result<(), String> {
     let arguments: Vec<_> = std::env::args().skip(1).collect();
+    #[cfg(feature = "fixture-native-v6-service")]
+    let (arguments, native_candidate) = {
+        let mut arguments = arguments;
+        let count = arguments
+            .iter()
+            .filter(|argument| argument.as_str() == "--fixture-native-v6-service")
+            .count();
+        if count > 1 {
+            return Err("duplicate native Service candidate option".into());
+        }
+        arguments.retain(|argument| argument.as_str() != "--fixture-native-v6-service");
+        (arguments, count == 1)
+    };
     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
     let (arguments, fixture) = {
         let mut arguments = arguments;
@@ -36,6 +49,13 @@ fn run() -> Result<(), String> {
     let server_bytes = read_bounded_config(server_path)?;
     let config = heptabao_server::configuration::parse_server(&server_bytes)?;
 
+    #[cfg(feature = "fixture-native-v6-service")]
+    if native_candidate {
+        if arguments.len() != 2 {
+            return Err("native Service candidate requires standalone root namespace".into());
+        }
+        return heptabao_server::http::serve_native_v6_candidate(config);
+    }
     if arguments.len() == 2 {
         return heptabao_server::http::serve(config);
     }

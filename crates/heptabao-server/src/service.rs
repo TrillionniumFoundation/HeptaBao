@@ -364,6 +364,12 @@ mod owner_store;
 pub(crate) use owner_store::OwnerPublicationBinding;
 #[cfg(test)]
 pub(crate) use owner_store::OwnerWritePlan;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_v6_reader.rs"]
+mod native_v6_reader;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_v6_writer.rs"]
+mod native_v6_writer;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
 #[path = "service_records.rs"]
@@ -1445,6 +1451,14 @@ pub struct Service {
     namespace_runtime: namespace_runtime::Runtime,
     state_digest: Option<[u8; 32]>,
     record_root: Option<RecordStateRoot>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_root: Option<crate::state_record_root_v6::RecordStateRootV6>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_candidate_profile: Option<native_v6_reader::NativeCandidateProfile>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_failure_notice: Option<native_v6_writer::NativeFailureNotice>,
     record_writes_since_gc: u64,
     ha_read_cache: Option<ha_read::HaReadCache>,
     ha_activation: Option<ha_activation::LeaderActivation>,
@@ -1879,6 +1893,14 @@ impl Service {
             namespace_runtime: namespace_runtime::Runtime::default(),
             state_digest: None,
             record_root: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_root: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_candidate_profile: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_request_binding: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_failure_notice: None,
             record_writes_since_gc: 0,
             ha_read_cache: None,
             ha_activation: None,
@@ -2037,6 +2059,10 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.native_root = None;
+        }
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         self.durable = None;
@@ -2495,12 +2521,21 @@ impl Service {
         if let Err(error) = &terminal_floor {
             crate::ha_forward_completion::diagnostic_response("terminal_floor_veto", error);
         }
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_failure = self.take_native_failure_response(fingerprint, token_clock);
         let terminal_floor_succeeded = terminal_floor.is_ok();
         let receipt = match terminal_floor {
             Ok(receipt) => receipt,
             Err(cause) => {
                 erase_json(&mut response.body);
-                response = cause;
+                #[cfg(feature = "fixture-native-v6-service")]
+                {
+                    response = native_failure.unwrap_or(cause);
+                }
+                #[cfg(not(feature = "fixture-native-v6-service"))]
+                {
+                    response = cause;
+                }
                 None
             }
         };
@@ -2877,6 +2912,17 @@ impl Service {
             }
             return RequestExecution::Complete(response);
         }
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
+                self.recovery_required = true;
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "native request failure custody was retained",
+                ));
+            }
+            self.bind_native_request_failure(&fingerprint, token_clock, admission_started, path);
+        }
         let response = self.handle_inner(RequestView {
             method,
             path,
@@ -3090,6 +3136,10 @@ impl Service {
             response,
             &fingerprint,
         );
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.native_request_binding = None;
+        }
         RequestExecution::Complete(response)
     }
 
@@ -3516,7 +3566,34 @@ impl Service {
             };
             if changed {
                 admitted.schema = admitted.writer_schema();
-                if let Err(error) = self.commit_state(&mut admitted) {
+                #[cfg(feature = "fixture-native-v6-service")]
+                let publication = if self.native_root.is_some() {
+                    let source_floor = self
+                        .state
+                        .as_ref()
+                        .map_or(0, |state| state.engines.lease_clock());
+                    let clock = match request
+                        .token_clock
+                        .and_then(|clock| clock.with_seconds_floor(now.max(source_floor)).ok())
+                    {
+                        Some(clock) => clock,
+                        None => return Response::error(503, "trusted token clock is required"),
+                    };
+                    let fixed = match time.with_seconds_floor(source_floor) {
+                        Ok(time) => time,
+                        Err(_) => {
+                            return Response::error(503, "trusted token clock is unavailable");
+                        }
+                    };
+                    // This candidate must be the exact observation-only delta.
+                    // Real lease retirement or CRL changes remain unsupported.
+                    self.commit_native_terminal_clock_floor(&mut admitted, clock, fixed)
+                } else {
+                    self.commit_state(&mut admitted)
+                };
+                #[cfg(not(feature = "fixture-native-v6-service"))]
+                let publication = self.commit_state(&mut admitted);
+                if let Err(error) = publication {
                     return error;
                 }
                 admitted = self.install_committed_namespace_view(admitted);
@@ -3706,7 +3783,23 @@ impl Service {
         }
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             admitted.schema = admitted.writer_schema();
-            if let Err(error) = self.commit_state(&mut admitted) {
+            #[cfg(feature = "fixture-native-v6-service")]
+            let consumption = if self.native_root.is_some() {
+                match principal.as_ref() {
+                    Some(actor) => {
+                        self.commit_native_consumed_auth_use(&mut admitted, actor, &request)
+                    }
+                    None => Err(Response::error(
+                        503,
+                        "original consumed actor is unavailable",
+                    )),
+                }
+            } else {
+                self.commit_state(&mut admitted)
+            };
+            #[cfg(not(feature = "fixture-native-v6-service"))]
+            let consumption = self.commit_state(&mut admitted);
+            if let Err(error) = consumption {
                 return error;
             }
             admitted = self.install_committed_namespace_view(admitted);
@@ -3822,6 +3915,51 @@ impl Service {
             )
         {
             return Response::error(error.status, &error.message);
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            if path == "sys/internal/native-v6/activate" {
+                return self.activate_native_v6_route(admitted, principal.take(), &request);
+            }
+            if self.native_root.is_some() && request.token_clock.is_none() {
+                return Response::error(503, "trusted token clock is required");
+            }
+            if self.native_root.is_some()
+                && admitted
+                    .engines
+                    .ordinary_kv_mount_binding(namespace, path)
+                    .is_none()
+                && !(matches!(method, "GET" | "HEAD")
+                    && matches!(
+                        path,
+                        "sys/mounts"
+                            | "sys/auth"
+                            | "sys/internal/storage/capacity"
+                            | "sys/internal/capacity"
+                            | "sys/seal-status"
+                            | "sys/health"
+                    ))
+                && path != "sys/seal"
+            {
+                return Response::error(
+                    501,
+                    "native candidate supports root ordinary KV and local seal observations",
+                );
+            }
+            if self.native_root.is_some()
+                && (!namespace.is_empty()
+                    || namespaces::owns(path)
+                    || path.starts_with("sys/remount")
+                    || path.starts_with("sys/restore")
+                    || path.starts_with("sys/replication")
+                    || path.starts_with("sys/raft")
+                    || path.starts_with("sys/storage/raft")
+                    || path.starts_with("sys/rekey")
+                    || path.starts_with("sys/raw")
+                    || path.starts_with("sys/migrate"))
+            {
+                return Response::error(501, "native candidate requires root single-node custody");
+            }
         }
         // Ordinary closure removes the actual resource owners. A valid actor
         // from another namespace still fails the existing ACL scope check
@@ -4123,6 +4261,10 @@ impl Service {
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
+            #[cfg(feature = "fixture-native-v6-service")]
+            {
+                self.native_root = None;
+            }
             self.record_writes_since_gc = 0;
             self.ha_read_cache = None;
             self.durable = None;
@@ -4569,6 +4711,32 @@ impl Service {
             || admitted.auth.has_userpass_issuance_state()
         {
             admitted.schema = admitted.writer_schema();
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if self.native_root.is_some() {
+            let plan = match self.prepare_native_live_root(&admitted) {
+                Ok(plan) => plan,
+                Err(error) => {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+            };
+            let identity = match plan.root.identity() {
+                Ok(identity) => identity,
+                Err(_) => return Response::error(503, "native candidate identity rejected"),
+            };
+            let current = match self.current_state_identity() {
+                Ok(identity) => identity,
+                Err(error) => return error,
+            };
+            if identity != current {
+                if let Err(error) = self.commit_ordinary_native_kv_plan(&mut admitted, plan) {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+                self.state = Some(admitted);
+            }
+            return response;
         }
         if admitted.engines.record_root().is_some() {
             let mut plan = match self.prepare_record_plan(&mut admitted) {
@@ -5565,6 +5733,12 @@ impl Service {
     }
 
     fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
+        #[cfg(feature = "fixture-native-v6-service")]
+        if self.native_root.is_some() {
+            let plan = self.prepare_native_live_root(state)?;
+            return self.commit_ordinary_native_kv_plan(state, plan);
+        }
+
         #[cfg(test)]
         let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
         namespace_diagnostic!(
@@ -5618,6 +5792,17 @@ impl Service {
         next_digest: [u8; 32],
         allow_legacy_migration: bool,
     ) -> Result<(), Response> {
+        #[cfg(feature = "fixture-native-v6-service")]
+        if self.native_root.is_some() {
+            if allow_legacy_migration {
+                return Err(Response::error(
+                    503,
+                    "native candidate cannot publish legacy bytes",
+                ));
+            }
+            let plan = self.prepare_native_live_root(state)?;
+            return self.commit_ordinary_native_kv_plan(state, plan);
+        }
         state.validate_publication_schema(self.state.as_ref())?;
         if state.engines.record_root().is_some() {
             let plan = self.prepare_record_plan(state)?;
@@ -6375,6 +6560,10 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.native_root = None;
+        }
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         self.durable = None;
@@ -6562,6 +6751,10 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.native_root = None;
+        }
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         self.durable = None;
@@ -6848,6 +7041,10 @@ impl Service {
                     self.state = None;
                     self.ha_activation = None;
                     self.record_root = None;
+                    #[cfg(feature = "fixture-native-v6-service")]
+                    {
+                        self.native_root = None;
+                    }
                     self.record_writes_since_gc = 0;
                     self.ha_read_cache = None;
                     self.durable = None;
@@ -6863,6 +7060,10 @@ impl Service {
                 self.state = None;
                 self.ha_activation = None;
                 self.record_root = None;
+                #[cfg(feature = "fixture-native-v6-service")]
+                {
+                    self.native_root = None;
+                }
                 self.record_writes_since_gc = 0;
                 self.ha_read_cache = None;
                 self.durable = None;
@@ -6911,6 +7112,10 @@ impl Service {
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
+            #[cfg(feature = "fixture-native-v6-service")]
+            {
+                self.native_root = None;
+            }
             self.record_writes_since_gc = 0;
             self.ha_read_cache = None;
             self.durable = None;
@@ -6941,6 +7146,10 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.native_root = None;
+        }
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         let barrier =
@@ -6980,9 +7189,55 @@ impl Service {
             None => DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
                 .map_err(|_| Response::error(400, "unseal or recovery failed"))?,
         };
-        let (state, bytes, state_rewrite_required) = Self::load_state_from_durable(&durable)?;
-        let record_root = records::decode_root(&bytes)?;
-        self.validate_loaded_capacity(&state, record_root.as_ref())?;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let cold_native = if let Some(profile) = self.native_candidate_profile.as_ref() {
+            let original = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|_| Response::error(503, "native unseal requires original deadline"))?;
+            native_v6_reader::load_cold_root(self, profile, &mut durable, key, original)?
+        } else {
+            None
+        };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let (state, bytes, state_rewrite_required, record_root, native_root) = if let Some(cold) =
+            cold_native
+        {
+            let mut metadata = cold.metadata;
+            metadata
+                .engines
+                .install_native_views(cold.native)
+                .map_err(Response::from_engine_error)?;
+            self.require_native_root_candidate(&metadata)?;
+            metadata.validate_format()?;
+            let owner_bytes = cold
+                .root
+                .owners
+                .iter()
+                .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+                .ok_or_else(|| Response::error(507, "native opaque owner capacity exhausted"))?;
+            if owner_bytes > self.opaque_owner_limit() as u64 {
+                return Err(Response::error(
+                    507,
+                    "native opaque owner capacity exhausted",
+                ));
+            }
+            let bytes = cold
+                .root
+                .encode()
+                .map_err(|_| Response::error(503, "native cold identity rejected"))?;
+            (metadata, bytes, false, None, Some(cold.root))
+        } else {
+            let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
+            let root = records::decode_root(&bytes)?;
+            self.validate_loaded_capacity(&state, root.as_ref())?;
+            (state, bytes, rewrite, root, None)
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let (state, bytes, state_rewrite_required, record_root) = {
+            let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
+            let root = records::decode_root(&bytes)?;
+            self.validate_loaded_capacity(&state, root.as_ref())?;
+            (state, bytes, rewrite, root)
+        };
         // Bind durable identity before any local state is admitted into an HA epoch.
 
         // A PostgreSQL owner must still hold the same server-side session
@@ -7085,13 +7340,34 @@ impl Service {
         self.durable = Some(durable);
         self.state = Some(state);
         self.record_root = record_root;
-        self.state_digest = Some(match &self.record_root {
-            Some(root) => root
-                .identity()
-                .map_err(|_| Response::error(503, "record identity failed"))?
-                .digest(),
-            None => crypto::digest(&bytes),
-        });
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.native_root = native_root;
+        }
+        self.state_digest = Some(
+            #[cfg(feature = "fixture-native-v6-service")]
+            if let Some(root) = &self.native_root {
+                root.identity()
+                    .map_err(|_| Response::error(503, "native identity rejected"))?
+                    .digest()
+            } else {
+                match &self.record_root {
+                    Some(root) => root
+                        .identity()
+                        .map_err(|_| Response::error(503, "record identity failed"))?
+                        .digest(),
+                    None => crypto::digest(&bytes),
+                }
+            },
+            #[cfg(not(feature = "fixture-native-v6-service"))]
+            match &self.record_root {
+                Some(root) => root
+                    .identity()
+                    .map_err(|_| Response::error(503, "record identity failed"))?
+                    .digest(),
+                None => crypto::digest(&bytes),
+            },
+        );
         self.record_writes_since_gc = 64;
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
@@ -7638,10 +7914,40 @@ impl Service {
             Ok(value) => value,
             Err(_) => return Response::error(503, "durable capacity unavailable"),
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native = self.native_root.as_ref();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let storage_format = if native.is_some() {
+            crate::state_record_root_v6::STORAGE_FORMAT
+        } else if self.record_root.is_some() {
+            crate::state_record_root::STORAGE_FORMAT
+        } else {
+            owner_store::STATE_STORAGE_FORMAT
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let storage_format = if self.record_root.is_some() {
+            crate::state_record_root::STORAGE_FORMAT
+        } else {
+            owner_store::STATE_STORAGE_FORMAT
+        };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let state_limit = if native.is_some() {
+            MAX_STATE_BYTES + 2 * crate::state_records::MAX_GRAPH_BYTES
+        } else if self.record_root.is_some() {
+            MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
+        } else {
+            MAX_STATE_BYTES
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let state_limit = if self.record_root.is_some() {
+            MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
+        } else {
+            MAX_STATE_BYTES
+        };
         Response::ok(json!({"data": {
             "scope": "local_node_bounded_runtime",
-            "state_storage_format": if self.record_root.is_some() {crate::state_record_root::STORAGE_FORMAT} else {owner_store::STATE_STORAGE_FORMAT},
-            "state_limit_bytes": if self.record_root.is_some() {MAX_STATE_BYTES+crate::state_records::MAX_GRAPH_BYTES} else {MAX_STATE_BYTES},
+            "state_storage_format": storage_format,
+            "state_limit_bytes": state_limit,
             "state_limit_is_admission_budget": false,
             "durable_artifact_limit_bytes": capacity.max_file_bytes,
             "stored_value_bytes": capacity.logical_payload_bytes,

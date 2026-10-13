@@ -98,7 +98,19 @@ impl Service {
         } else {
             None
         };
-        if let Err(cause) = self.commit_state(&mut candidate) {
+        #[cfg(feature = "fixture-native-v6-service")]
+        let publication = if self.native_root.is_some() {
+            self.commit_native_terminal_clock_floor(
+                &mut candidate,
+                clock,
+                AuthorityTime::Precise(at),
+            )
+        } else {
+            self.commit_state(&mut candidate)
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let publication = self.commit_state(&mut candidate);
+        if let Err(cause) = publication {
             let message = cause.body["errors"]
                 .as_array()
                 .and_then(|errors| errors.first())
