@@ -31,6 +31,8 @@ use std::os::fd::AsRawFd;
 #[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
 
+mod immutable;
+pub use immutable::{ImmutablePublication, ImmutablePublicationError};
 mod relative;
 pub use relative::FileAccess;
 
