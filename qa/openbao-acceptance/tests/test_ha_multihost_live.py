@@ -360,6 +360,78 @@ class MultiHostHaContractTests(unittest.TestCase):
         self.assertIn("production_custody", source)
 
 
+    @staticmethod
+    def _actual_terminal_return(report, checks, required):
+        tree = ast.parse(SOURCE.read_text())
+        main = next(node for node in tree.body
+                    if isinstance(node, ast.FunctionDef) and node.name == "main")
+        terminal = main.body[-1]
+        if not isinstance(terminal, ast.Return):
+            raise AssertionError("controller terminal return absent")
+        expression = ast.fix_missing_locations(ast.Expression(terminal.value))
+        return eval(compile(expression, str(SOURCE), "eval"),
+                    {"report": report, "checks": checks, "required_checks": required})
+
+    def test_actual_cleanup_failure_revokes_pass_with_complete_runtime_denominator(self):
+        nodes = [mock.Mock(node_id=index) for index in (1, 2, 3)]
+        checks = [{"case": case, "passed": True} for case in MODULE.REQUIRED_CHECKS]
+        report = {"status": "passed", "checks": checks}
+        with mock.patch.object(MODULE, "remote_stop",
+                               side_effect=MODULE.FixtureError("owned identity changed")) as stop:
+            MODULE.stop_owned_processes(nodes, set(nodes), report, mock.Mock())
+        self.assertEqual(stop.call_count, 3)
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["cleanup_failure"], [3, 2, 1])
+        self.assertEqual(report["failure_code"], "owned_process_cleanup_failed")
+        self.assertEqual(self._actual_terminal_return(report, checks, MODULE.REQUIRED_CHECKS), 1)
+        # The terminal gate independently rejects cleanup failure even when an
+        # upstream caller supplies an otherwise complete "passed" classification.
+        report["status"] = "passed"
+        self.assertEqual(self._actual_terminal_return(report, checks, MODULE.REQUIRED_CHECKS), 1)
+        self.assertEqual(len(checks), 54)
+
+    def test_cleanup_preserves_original_failure_and_only_stops_started_nodes(self):
+        nodes = [mock.Mock(node_id=index) for index in (1, 2, 3)]
+        report = {"status": "failed", "failure_code": "original_runtime_failure"}
+        with mock.patch.object(MODULE, "remote_stop",
+                               side_effect=MODULE.FixtureError("stop failed")) as stop:
+            MODULE.stop_owned_processes(nodes, {nodes[1]}, report, mock.Mock())
+        stop.assert_called_once_with(nodes[1])
+        self.assertEqual(report["cleanup_failure"], [2])
+        self.assertEqual(report["failure_code"], "original_runtime_failure")
+        clean = {"status": "passed"}
+        with mock.patch.object(MODULE, "remote_stop", return_value="none"):
+            MODULE.stop_owned_processes(nodes, {nodes[0]}, clean, mock.Mock())
+        checks = [{"case": case, "passed": True} for case in MODULE.REQUIRED_CHECKS]
+        self.assertNotIn("cleanup_failure", clean)
+        self.assertEqual(self._actual_terminal_return(clean, checks, MODULE.REQUIRED_CHECKS), 0)
+
+    def test_real_bash_inventory_keeps_evidence_when_stopped_identity_is_absent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            node = mock.Mock(root=str(root))
+            wanted = MODULE.REMOTE_EVIDENCE_FILES[0]
+            (root / wanted).write_text("bounded fixture evidence")
+            self.assertEqual(MODULE.REMOTE_EVIDENCE_FILES[-1], "process.identity.json")
+            self.assertFalse((root / "process.identity.json").exists())
+            def local_bash(_node, script, timeout):
+                self.assertIs(_node, node)
+                result = subprocess.run(["/bin/bash", "-c", script], capture_output=True,
+                                        text=True, timeout=timeout, check=True)
+                return result.stdout
+            with mock.patch.object(MODULE, "ssh", side_effect=local_bash):
+                self.assertEqual(MODULE.remote_evidence_inventory(node), [wanted])
+                (root / wanted).unlink()
+                self.assertEqual(MODULE.remote_evidence_inventory(node), [])
+
+    def test_inventory_transport_failure_remains_an_observed_error(self):
+        node = mock.Mock(root="/home/operator/fresh-private-fixture")
+        with mock.patch.object(MODULE, "ssh",
+                               side_effect=subprocess.CalledProcessError(255, ["ssh"])):
+            with self.assertRaises(subprocess.CalledProcessError):
+                MODULE.remote_evidence_inventory(node)
+
+
 class NativeProcessIdentityTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("cc"), "native process fixture requires a C compiler")
     def test_stale_identity_and_other_fixture_pid_are_rejected_before_sigkill(self):

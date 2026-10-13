@@ -898,6 +898,36 @@ def snapshot_strategy(extension):
     return ("GET", "sys/storage/raft/snapshot", None, 20)
 
 
+def stop_owned_processes(nodes, started, report, event) -> None:
+    """A completed runtime profile remains failed until owned cleanup succeeds."""
+    for node in reversed(nodes):
+        try:
+            if node in started:
+                pid = remote_stop(node)
+                event("final_process_stop", node=node.node_id, pid=pid)
+        except Exception:
+            report.setdefault("cleanup_failure", []).append(node.node_id)
+    if report.get("cleanup_failure"):
+        report["status"] = "failed"
+        report.setdefault("failure_code", "owned_process_cleanup_failed")
+
+
+def remote_evidence_inventory(node) -> list[str]:
+    # A successfully stopped process removes its identity file. Its absence
+    # cannot turn earlier existing evidence into a failed shell invocation.
+    return ssh(node, f"""
+set -eu
+root={shlex.quote(node.root)}
+test -d "$root" || exit 0
+for name in {' '.join(shlex.quote(name) for name in REMOTE_EVIDENCE_FILES)}; do
+  if test -f "$root/$name"; then
+    printf '%s\n' "$name"
+  fi
+done
+:
+""", timeout=12).splitlines()
+
+
 def main(*, extension=None) -> int:
     # The baseline retains its original fixed denominator. A separately named
     # composed profile must satisfy both sets; it cannot borrow baseline success.
@@ -1545,25 +1575,12 @@ test -d "$root/data"
         report["failure_code"] = f"{stage}_{type(error).__name__}"
     finally:
         restore_signal_handlers(handlers)
-        for node in reversed(nodes):
-            try:
-                if node in started:
-                    pid = remote_stop(node)
-                    event("final_process_stop", node=node.node_id, pid=pid)
-            except Exception:
-                report.setdefault("cleanup_failure", []).append(node.node_id)
+        stop_owned_processes(nodes, started, report, event)
         for node in nodes:
             local = work / f"remote-{node.node_id}"
             local.mkdir(exist_ok=True)
             try:
-                names = ssh(node, f"""
-set -eu
-root={shlex.quote(node.root)}
-test -d "$root" || exit 0
-for name in {' '.join(shlex.quote(name) for name in REMOTE_EVIDENCE_FILES)}; do
-  test -f "$root/$name" && printf '%s\n' "$name"
-done
-""", timeout=12).splitlines()
+                names = remote_evidence_inventory(node)
             except (OSError, subprocess.SubprocessError):
                 continue
             for name in names:
@@ -1594,6 +1611,7 @@ done
                           "failure_code": None if public_status == "passed" else "fixture_failed"},
                          sort_keys=True))
     return 0 if (report["status"] == "passed"
+                 and not report.get("cleanup_failure")
                  and len(checks) == len(required_checks)
                  and {row.get("case") for row in checks} == required_checks
                  and all(row.get("passed") is True for row in checks)) else 1
