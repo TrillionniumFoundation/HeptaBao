@@ -3,7 +3,7 @@
 
 use std::error::Error;
 use std::fs;
-use std::os::unix::fs::PermissionsExt;
+use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::os::unix::process::CommandExt;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
@@ -30,8 +30,32 @@ impl Temp {
 }
 impl Drop for Temp {
     fn drop(&mut self) {
+        let _ = fs::remove_file(self.0.join("true-elf"));
         let _ = fs::remove_dir(&self.0);
     }
+}
+
+fn elf_image(owned: &Temp) -> Result<(std::path::PathBuf, OwnedExecutableImage), Box<dyn Error>> {
+    // Some distributions expose /usr/bin/true as a symlink. Executable
+    // admission still forbids symlink traversal; give it an owned regular ELF.
+    let source = fs::canonicalize("/usr/bin/true")?;
+    let bytes = fs::read(source)?;
+    if !bytes.starts_with(b"\x7fELF") {
+        return Err(std::io::Error::other("system fixture is not an ELF image").into());
+    }
+    let path = owned.0.join("true-elf");
+    fs::write(&path, &bytes)?;
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o500))?;
+    let metadata = fs::symlink_metadata(&path)?;
+    assert!(metadata.is_file());
+    assert_eq!(metadata.uid(), rustix::process::geteuid().as_raw());
+    assert_eq!(metadata.permissions().mode() & 0o7777, 0o500);
+    let digest: [u8; 32] = ring::digest::digest(&ring::digest::SHA256, &bytes)
+        .as_ref()
+        .try_into()?;
+    let image = OwnedExecutableImage::open(&path, digest)
+        .map_err(|_| std::io::Error::other("test image admission failed"))?;
+    Ok((path, image))
 }
 
 fn wait(mut child: Child) -> Result<std::process::ExitStatus, Box<dyn Error>> {
@@ -93,16 +117,10 @@ fn command(path: &Path, owned: &Temp) -> Result<Command, Box<dyn Error>> {
 #[test]
 fn actual_sealed_elf_handoff_executes_and_returns_original_owned_wait() -> Result<(), Box<dyn Error>>
 {
-    // This proves descriptor handoff only. /usr/bin/true is no KMS provider and
+    // This proves descriptor handoff only. The true ELF is no KMS provider and
     // no HBR1 response or cryptographic success is asserted by this test.
     let owned = Temp::new()?;
-    let path = Path::new("/usr/bin/true");
-    let bytes = fs::read(path)?;
-    let digest: [u8; 32] = ring::digest::digest(&ring::digest::SHA256, &bytes)
-        .as_ref()
-        .try_into()?;
-    let image = OwnedExecutableImage::open(path, digest)
-        .map_err(|_| std::io::Error::other("test image admission failed"))?;
+    let (_, image) = elf_image(&owned)?;
     let child = command(image.descriptor_path(), &owned)?.spawn()?;
     let original_pid = child.id();
     let status = wait(child)?;
@@ -116,19 +134,13 @@ fn actual_sealed_elf_handoff_executes_and_returns_original_owned_wait() -> Resul
 #[test]
 fn mutable_path_and_unenrolled_environment_fail_without_execution() -> Result<(), Box<dyn Error>> {
     let owned = Temp::new()?;
-    let status = wait(command(Path::new("/usr/bin/true"), &owned)?.spawn()?)?;
+    let (path, image) = elf_image(&owned)?;
+    let status = wait(command(&path, &owned)?.spawn()?)?;
     assert_eq!(
         status.code(),
         Some(2),
         "ordinary pathname never replaces admitted descriptor"
     );
-    let path = Path::new("/usr/bin/true");
-    let bytes = fs::read(path)?;
-    let digest: [u8; 32] = ring::digest::digest(&ring::digest::SHA256, &bytes)
-        .as_ref()
-        .try_into()?;
-    let image = OwnedExecutableImage::open(path, digest)
-        .map_err(|_| std::io::Error::other("test image admission failed"))?;
     let mut command = command(image.descriptor_path(), &owned)?;
     command.env("PATH", "/usr/bin");
     assert_eq!(
