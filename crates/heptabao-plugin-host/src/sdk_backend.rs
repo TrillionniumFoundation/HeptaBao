@@ -28,6 +28,9 @@ use crate::OwnedExecutableImage;
 const MAX_FRAME: usize = 1024 * 1024;
 const MAX_VALUE: usize = 256 * 1024;
 const MAX_STORAGE_CALLS: usize = 4096;
+const MAX_INVALIDATION_KEYS: usize = 256;
+const MAX_INVALIDATION_KEY_BYTES: usize = 64 * 1024;
+const STORAGE_INVALIDATION_CONTROL: &str = "storage_key_v1";
 
 /// Registered lease metadata supplied by the owning Service writer. These
 /// values carry SDK callback input only and never create caller authority.
@@ -210,6 +213,7 @@ pub struct SdkBackendHost {
     timeout: Duration,
     backend_type: SdkBackendType,
     auth_paths: Option<Value>,
+    storage_invalidation: bool,
     call: u64,
     storage_rpc: u64,
     fenced: bool,
@@ -394,6 +398,7 @@ impl SdkBackendHost {
             timeout: config.timeout,
             backend_type,
             auth_paths: None,
+            storage_invalidation: false,
             call: 1,
             storage_rpc: 0,
             fenced: false,
@@ -415,6 +420,11 @@ impl SdkBackendHost {
         if ready.get("backend_type").and_then(Value::as_str) != Some(backend_type.label()) {
             return Err(SdkBridgeError::OutcomeUnknown);
         }
+        host.storage_invalidation = match ready.get("storage_invalidation") {
+            None => false, // An old companion cannot acknowledge this control.
+            Some(Value::String(control)) if control == STORAGE_INVALIDATION_CONTROL => true,
+            Some(_) => return Err(SdkBridgeError::OutcomeUnknown),
+        };
         if backend_type == SdkBackendType::Auth {
             host.auth_paths = Some(
                 normalized_auth_paths(ready.get("auth_paths"))
@@ -427,6 +437,59 @@ impl SdkBackendHost {
     /// Actual SDK SpecialPaths captured at owned Setup, without a caller grant.
     pub fn auth_special_paths(&self) -> Option<&Value> {
         self.auth_paths.as_ref()
+    }
+
+    /// Deliver committed mount-relative StorageKey changes to this exact owned
+    /// SDK instance. This is control IPC: no logical response, caller authority
+    /// or Storage callback can complete it. The original deadline is retained.
+    pub fn invalidate(
+        &mut self,
+        keys: &[String],
+        original_deadline: Instant,
+    ) -> Result<(), SdkBridgeError> {
+        if self.fenced {
+            return Err(SdkBridgeError::Fenced);
+        }
+        if Instant::now() >= original_deadline {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        validate_invalidation_keys(keys)?;
+        if !self.storage_invalidation {
+            self.fenced = true;
+            return Err(SdkBridgeError::Fenced);
+        }
+        let deadline = original_deadline.min(Instant::now() + self.timeout);
+        // Both processes sample the same-host CLOCK_MONOTONIC domain. Sample
+        // it before Instant so this absolute deadline is conservative.
+        let monotonic_now = monotonic_nanoseconds().ok_or(SdkBridgeError::BeforeEntry)?;
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        let deadline_monotonic_ns = u64::try_from(remaining.as_nanos())
+            .ok()
+            .and_then(|remaining| monotonic_now.checked_add(remaining))
+            .ok_or(SdkBridgeError::BeforeEntry)?;
+        let Some(call) = self.call.checked_add(1) else {
+            self.fenced = true;
+            return Err(SdkBridgeError::Fenced);
+        };
+        self.call = call;
+        let result = (|| {
+            let request = SensitiveJson(json!({"version":1,"kind":"invalidate","call":call,
+                "control":STORAGE_INVALIDATION_CONTROL,"keys":keys,"deadline_monotonic_ns":deadline_monotonic_ns}));
+            self.send(&request, deadline)?;
+            let ack = self.receive_with(deadline, decode_invalidation_ack)?;
+            validate_invalidation_ack(&ack, call, keys.len())?;
+            if Instant::now() >= deadline {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
 
     pub fn handle_request(
@@ -703,14 +766,20 @@ impl SdkBackendHost {
         Ok(())
     }
     fn receive(&mut self, deadline: Instant) -> Result<Value, SdkBridgeError> {
+        self.receive_with(deadline, decode_sdk_frame)
+    }
+    fn receive_with<T>(
+        &mut self,
+        deadline: Instant,
+        decode: fn(&[u8]) -> Result<T, SdkBridgeError>,
+    ) -> Result<T, SdkBridgeError> {
         let mut buffer = Zeroizing::new([0u8; 8192]);
         loop {
             if Instant::now() >= deadline {
                 return Err(SdkBridgeError::OutcomeUnknown);
             }
             if let Some(end) = self.buffered.iter().position(|b| *b == b'\n') {
-                let message = decode_sdk_frame(&self.buffered[..end])
-                    .map_err(|_| SdkBridgeError::OutcomeUnknown)?;
+                let message = decode(&self.buffered[..end])?;
                 self.buffered.drain(..=end);
                 return Ok(message);
             }
@@ -728,6 +797,115 @@ impl SdkBackendHost {
         }
     }
 }
+
+struct InvalidationAck {
+    version: u8,
+    kind: String,
+    call: u64,
+    control: String,
+    count: usize,
+}
+fn monotonic_nanoseconds() -> Option<u64> {
+    let now = rustix::time::clock_gettime(rustix::time::ClockId::Monotonic);
+    let seconds = u64::try_from(now.tv_sec).ok()?;
+    let nanoseconds = u64::try_from(now.tv_nsec).ok()?;
+    if nanoseconds >= 1_000_000_000 {
+        return None;
+    }
+    seconds.checked_mul(1_000_000_000)?.checked_add(nanoseconds)
+}
+fn decode_invalidation_ack(bytes: &[u8]) -> Result<InvalidationAck, SdkBridgeError> {
+    // This exact control schema rejects duplicate, missing and unknown fields. The
+    // logical-response last-wins decoder must never decode a control receipt.
+    if bytes.len() > MAX_FRAME {
+        return Err(SdkBridgeError::OutcomeUnknown);
+    }
+    let value = SensitiveJson(
+        heptabao_domain::json::decode_with_policy(
+            bytes,
+            heptabao_domain::json::DuplicatePolicy::Reject,
+        )
+        .map_err(|_| SdkBridgeError::OutcomeUnknown)?,
+    );
+    let object = value.as_object().ok_or(SdkBridgeError::OutcomeUnknown)?;
+    if object.len() != 5
+        || object.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "version" | "kind" | "call" | "control" | "count"
+            )
+        })
+    {
+        return Err(SdkBridgeError::OutcomeUnknown);
+    }
+    Ok(InvalidationAck {
+        version: object
+            .get("version")
+            .and_then(Value::as_u64)
+            .and_then(|v| u8::try_from(v).ok())
+            .ok_or(SdkBridgeError::OutcomeUnknown)?,
+        kind: object
+            .get("kind")
+            .and_then(Value::as_str)
+            .ok_or(SdkBridgeError::OutcomeUnknown)?
+            .to_owned(),
+        call: object
+            .get("call")
+            .and_then(Value::as_u64)
+            .ok_or(SdkBridgeError::OutcomeUnknown)?,
+        control: object
+            .get("control")
+            .and_then(Value::as_str)
+            .ok_or(SdkBridgeError::OutcomeUnknown)?
+            .to_owned(),
+        count: object
+            .get("count")
+            .and_then(Value::as_u64)
+            .and_then(|v| usize::try_from(v).ok())
+            .ok_or(SdkBridgeError::OutcomeUnknown)?,
+    })
+}
+fn validate_invalidation_ack(
+    ack: &InvalidationAck,
+    call: u64,
+    count: usize,
+) -> Result<(), SdkBridgeError> {
+    if ack.version != 1
+        || ack.kind != "invalidation_ack"
+        || ack.call != call
+        || ack.control != STORAGE_INVALIDATION_CONTROL
+        || ack.count != count
+    {
+        return Err(SdkBridgeError::OutcomeUnknown);
+    }
+    Ok(())
+}
+fn validate_invalidation_keys(keys: &[String]) -> Result<(), SdkBridgeError> {
+    let mut bytes = 0usize;
+    if keys.is_empty() || keys.len() > MAX_INVALIDATION_KEYS {
+        return Err(SdkBridgeError::BeforeEntry);
+    }
+    for (index, key) in keys.iter().enumerate() {
+        if key.is_empty()
+            || key.len() > 4096
+            || key.contains('\0')
+            || index > 0 && keys[index - 1] >= *key
+        {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        bytes = bytes
+            .checked_add(key.len())
+            .ok_or(SdkBridgeError::BeforeEntry)?;
+    }
+    if bytes > MAX_INVALIDATION_KEY_BYTES {
+        return Err(SdkBridgeError::BeforeEntry);
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "sdk_invalidation_tests.rs"]
+mod invalidation_tests;
 
 struct PendingChild(Option<Child>);
 impl Drop for PendingChild {

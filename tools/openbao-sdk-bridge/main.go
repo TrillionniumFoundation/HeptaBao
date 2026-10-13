@@ -23,6 +23,7 @@ import (
 	goplugin "github.com/hashicorp/go-plugin"
 	"github.com/openbao/openbao/sdk/v2/logical"
 	sdkplugin "github.com/openbao/openbao/sdk/v2/plugin"
+	"github.com/openbao/openbao/sdk/v2/plugin/pb"
 )
 
 const version = 1
@@ -44,35 +45,38 @@ type ownedImage struct {
 }
 
 type message struct {
-	OwnedImages       []ownedImage        `json:"owned_images,omitempty"`
-	Version           int                 `json:"version"`
-	Kind              string              `json:"kind"`
-	Call              uint64              `json:"call"`
-	RPC               uint64              `json:"rpc,omitempty"`
-	Plugin            string              `json:"plugin,omitempty"`
-	Args              []string            `json:"args,omitempty"`
-	SocketDir         string              `json:"socket_dir,omitempty"`
-	TimeoutMS         int64               `json:"timeout_ms,omitempty"`
-	DefaultTTLSeconds int64               `json:"default_ttl_seconds,omitempty"`
-	MaxTTLSeconds     int64               `json:"max_ttl_seconds,omitempty"`
-	Operation         string              `json:"operation,omitempty"`
-	Path              string              `json:"path,omitempty"`
-	Data              map[string]any      `json:"data,omitempty"`
-	Headers           map[string][]string `json:"headers,omitempty"`
-	Secret            *logical.Secret     `json:"secret,omitempty"`
-	Auth              *logical.Auth       `json:"auth,omitempty"`
-	IssueTimeNS       int64               `json:"issue_time_ns,omitempty"`
-	IncrementNS       int64               `json:"increment_ns,omitempty"`
-	Method            string              `json:"method,omitempty"`
-	Key               string              `json:"key,omitempty"`
-	After             string              `json:"after,omitempty"`
-	Limit             int                 `json:"limit,omitempty"`
-	Entry             *entry              `json:"entry,omitempty"`
-	Keys              []string            `json:"keys,omitempty"`
-	Response          *logical.Response   `json:"response"`
-	Error             string              `json:"error,omitempty"`
-	BackendType       string              `json:"backend_type,omitempty"`
-	AuthPaths         *logical.Paths      `json:"auth_paths"`
+	OwnedImages         []ownedImage        `json:"owned_images,omitempty"`
+	Version             int                 `json:"version"`
+	Kind                string              `json:"kind"`
+	Call                uint64              `json:"call"`
+	RPC                 uint64              `json:"rpc,omitempty"`
+	Plugin              string              `json:"plugin,omitempty"`
+	Args                []string            `json:"args,omitempty"`
+	SocketDir           string              `json:"socket_dir,omitempty"`
+	TimeoutMS           int64               `json:"timeout_ms,omitempty"`
+	DefaultTTLSeconds   int64               `json:"default_ttl_seconds,omitempty"`
+	MaxTTLSeconds       int64               `json:"max_ttl_seconds,omitempty"`
+	Operation           string              `json:"operation,omitempty"`
+	Path                string              `json:"path,omitempty"`
+	Data                map[string]any      `json:"data,omitempty"`
+	Headers             map[string][]string `json:"headers,omitempty"`
+	Secret              *logical.Secret     `json:"secret,omitempty"`
+	Auth                *logical.Auth       `json:"auth,omitempty"`
+	IssueTimeNS         int64               `json:"issue_time_ns,omitempty"`
+	IncrementNS         int64               `json:"increment_ns,omitempty"`
+	Method              string              `json:"method,omitempty"`
+	Key                 string              `json:"key,omitempty"`
+	After               string              `json:"after,omitempty"`
+	Limit               int                 `json:"limit,omitempty"`
+	Entry               *entry              `json:"entry,omitempty"`
+	Keys                []string            `json:"keys,omitempty"`
+	Response            *logical.Response   `json:"response"`
+	Error               string              `json:"error,omitempty"`
+	BackendType         string              `json:"backend_type,omitempty"`
+	AuthPaths           *logical.Paths      `json:"auth_paths"`
+	StorageInvalidation string              `json:"storage_invalidation,omitempty"`
+	Control             string              `json:"control,omitempty"`
+	DeadlineMonotonicNS uint64              `json:"deadline_monotonic_ns,omitempty"`
 }
 type wire struct {
 	writes    sync.Mutex
@@ -112,6 +116,16 @@ func newWire() *wire {
 				}
 				select {
 				case ch <- m:
+				default:
+					return
+				}
+			case "invalidate":
+				m, err := decodeInvalidationControl(raw)
+				if err != nil {
+					return
+				}
+				select {
+				case w.requests <- m:
 				default:
 					return
 				}
@@ -243,6 +257,10 @@ func (s *storage) Delete(ctx context.Context, key string) error {
 // authority or storage acknowledgement is created by this cancellation.
 func (w *wire) ownerContext(timeout time.Duration) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	w.cancelOnOwnerClosed(ctx, cancel)
+	return ctx, cancel
+}
+func (w *wire) cancelOnOwnerClosed(ctx context.Context, cancel context.CancelFunc) {
 	go func() {
 		select {
 		case <-w.failed:
@@ -250,7 +268,6 @@ func (w *wire) ownerContext(timeout time.Duration) (context.Context, context.Can
 		case <-ctx.Done():
 		}
 	}()
-	return ctx, cancel
 }
 
 func run() (outcome error) {
@@ -303,6 +320,14 @@ func run() (outcome error) {
 	if err != nil {
 		return err
 	}
+	// Retain the already admitted AutoMTLS connection. logical.Backend's void
+	// InvalidateKey wrapper drops transport errors; the official typed RPC must
+	// return successfully before a control acknowledgement can be emitted.
+	grpcClient, ok := rpc.(*goplugin.GRPCClient)
+	if !ok || grpcClient.Conn == nil {
+		return errors.New("missing admitted SDK gRPC connection")
+	}
+	invalidationClient := pb.NewBackendClient(grpcClient.Conn)
 	select {
 	case <-w.failed:
 		return io.EOF
@@ -344,7 +369,7 @@ func run() (outcome error) {
 	if actualType == "auth" {
 		authPaths = backend.SpecialPaths()
 	}
-	if err = w.send(message{Kind: "ready", Call: 1, BackendType: actualType, AuthPaths: authPaths}); err != nil {
+	if err = w.send(message{Kind: "ready", Call: 1, BackendType: actualType, AuthPaths: authPaths, StorageInvalidation: storageInvalidationControl}); err != nil {
 		return err
 	}
 	last := uint64(1)
@@ -357,6 +382,23 @@ func run() (outcome error) {
 			return errors.New("call sequence")
 		}
 		last = m.Call
+		if m.Kind == "invalidate" {
+			// active remains zero: invalidation cannot borrow Storage mutation
+			// authority from an earlier invocation or synthesize a logical result.
+			ctx, cancel, err := w.ownerContextMonotonic(m.DeadlineMonotonicNS)
+			if err != nil {
+				return err
+			}
+			err = invalidateStorageKeys(ctx, invalidationClient, m.Keys, w.failed)
+			if err == nil {
+				err = w.sendInvalidationAck(ctx, m.Call, len(m.Keys))
+			}
+			cancel()
+			if err != nil {
+				return err
+			}
+			continue
+		}
 		if m.Kind == "close" {
 			ctx, cancel := w.ownerContext(timeout)
 			w.active.Store(m.Call)
@@ -366,7 +408,7 @@ func run() (outcome error) {
 			client.Kill()
 			return w.send(message{Kind: "closed", Call: m.Call})
 		}
-		if m.Kind != "request" || m.Plugin != "" || m.SocketDir != "" || m.Path == "" {
+		if m.Kind != "request" || m.Plugin != "" || m.SocketDir != "" || m.Path == "" || m.Control != "" || m.DeadlineMonotonicNS != 0 || m.Keys != nil {
 			return errors.New("invalid request")
 		}
 		switch logical.Operation(m.Operation) {

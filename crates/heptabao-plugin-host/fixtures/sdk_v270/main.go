@@ -124,6 +124,7 @@ func factory(ctx context.Context, config *logical.BackendConfig) (logical.Backen
 			select {}
 		},
 	}})
+	configureStorageInvalidation(backend, config)
 	if err := backend.Setup(ctx, config); err != nil {
 		return nil, err
 	}
