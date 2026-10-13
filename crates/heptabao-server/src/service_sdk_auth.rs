@@ -2397,6 +2397,7 @@ mod durable_tests {
                 sender,
                 busy: Arc::new(AtomicBool::new(false)),
                 fenced: Arc::new(AtomicBool::new(false)),
+                storage_epoch: Arc::new(std::sync::atomic::AtomicU64::new(1)),
                 retiring: AtomicBool::new(false),
             }),
             storage: Mutex::new(state.auth.sdk_auth_storage_witness(&binding)?),

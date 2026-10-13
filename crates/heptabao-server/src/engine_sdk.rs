@@ -2,6 +2,8 @@
 //! owner. No callback writes a separate DurableService namespace.
 use super::*;
 #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+use crate::crypto;
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
 use crate::state_records::Kv1Scope;
 use crate::state_records::{Kv1Key, RecordError};
 #[cfg(any(test, target_os = "linux", target_os = "macos"))]
@@ -16,6 +18,16 @@ impl std::fmt::Debug for StorageEntry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str("SDK StorageEntry([REDACTED])")
     }
+}
+
+/// An exact committed Storage delta for one unchanged SDK mount owner.
+/// Only key names and canonical scoped record-owner hashes leave the engine;
+/// opaque values remain in the authenticated record graph.
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
+pub(crate) struct SdkStorageInvalidation {
+    pub old_resource_owner: [u8; 32],
+    pub new_resource_owner: [u8; 32],
+    pub keys: Vec<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -206,6 +218,141 @@ fn response_config_revision_is_one(value: &u64) -> bool {
 }
 
 impl EngineState {
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+    pub(crate) fn sdk_secret_mount_owners(&self) -> Vec<(String, String, MountOwner)> {
+        self.namespaces
+            .iter()
+            .flat_map(|(namespace, state)| {
+                state
+                    .sdk_owners
+                    .iter()
+                    .map(move |(mount, owner)| (namespace.clone(), mount.clone(), owner.clone()))
+            })
+            .collect()
+    }
+
+    /// Compare the actual SDK record scope under the original mount owner.
+    /// This is notification evidence, never a Storage mutation capability.
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+    pub(crate) fn sdk_committed_storage_invalidation(
+        &self,
+        previous: &Self,
+        namespace: &str,
+        mount: &str,
+        owner: &MountOwner,
+    ) -> Result<Option<SdkStorageInvalidation>> {
+        self.sdk_owner_gate(namespace, mount, owner)?;
+        previous.sdk_owner_gate(namespace, mount, owner)?;
+        let scope = Kv1Scope::new(namespace, mount, owner.mount_incarnation)
+            .map_err(kv1_records::record_error)?;
+        let owner_bytes = serde_json::to_vec(owner)
+            .map_err(|_| error(503, "SDK invalidation owner serialization failed"))?;
+        let mut basis = Vec::new();
+        basis.extend_from_slice(b"heptabao-sdk-storage-owner-v1\0");
+        basis.extend_from_slice(namespace.as_bytes());
+        basis.push(0);
+        basis.extend_from_slice(mount.as_bytes());
+        basis.push(0);
+        basis.extend_from_slice(&owner_bytes);
+        let seed = crypto::digest(&basis);
+        let collect = |graph: &Self| -> Result<([u8; 32], BTreeMap<String, (String, [u8; 32])>)> {
+            let root = graph
+                .records
+                .as_ref()
+                .ok_or_else(|| error(503, "SDK invalidation record owner absent"))?;
+            let mut entries = BTreeMap::new();
+            let mut cursor = None;
+            let mut hash = seed;
+            loop {
+                crate::engines::kv_versioning::deadline()?;
+                let page = root
+                    .index
+                    .scan(&scope, "sdk92/", cursor.as_deref(), 256, true)
+                    .map_err(kv1_records::record_error)?;
+                if page.next_after.is_some() && (page.keys.is_empty() || page.next_after == cursor)
+                {
+                    return Err(error(503, "SDK invalidation cursor did not advance"));
+                }
+                for path in page.keys {
+                    crate::engines::kv_versioning::deadline()?;
+                    let key = Kv1Key::new(
+                        namespace,
+                        mount,
+                        owner.mount_incarnation,
+                        &format!("sdk92/{path}"),
+                    )
+                    .map_err(kv1_records::record_error)?;
+                    let bytes = root
+                        .index
+                        .get(&key)
+                        .ok_or_else(|| error(503, "SDK invalidation record missing"))?;
+                    let (name, _, _) = decode_record(owner, key.path(), bytes)
+                        .map_err(kv1_records::record_error)?;
+                    let digest = crypto::digest(bytes);
+                    let mut step = Vec::with_capacity(72 + path.len());
+                    step.extend_from_slice(&hash);
+                    step.extend_from_slice(&(path.len() as u64).to_be_bytes());
+                    step.extend_from_slice(path.as_bytes());
+                    step.extend_from_slice(&digest);
+                    hash = crypto::digest(&step);
+                    if entries.insert(path, (name, digest)).is_some() || entries.len() > 10000 {
+                        return Err(error(507, "SDK invalidation observation exceeds bound"));
+                    }
+                }
+                cursor = page.next_after;
+                if cursor.is_none() {
+                    break;
+                }
+            }
+            Ok((hash, entries))
+        };
+        let (old_resource_owner, old) = collect(previous)?;
+        let (new_resource_owner, new) = collect(self)?;
+        if old_resource_owner == new_resource_owner {
+            return Ok(None);
+        }
+        let paths: BTreeSet<_> = old.keys().chain(new.keys()).collect();
+        let mut keys = BTreeSet::new();
+        for path in paths {
+            crate::engines::kv_versioning::deadline()?;
+            let before = old.get(path);
+            let after = new.get(path);
+            if before == after {
+                continue;
+            }
+            if let (Some(before), Some(after)) = (before, after)
+                && before.0 != after.0
+            {
+                return Err(error(503, "SDK invalidation logical key binding changed"));
+            }
+            let name = after
+                .or(before)
+                .ok_or_else(|| error(503, "SDK invalidation changed key missing"))?
+                .0
+                .clone();
+            keys.insert(name);
+            if keys.len() > 256 {
+                return Err(error(
+                    507,
+                    "SDK invalidation changed-key count exceeds bound",
+                ));
+            }
+        }
+        let keys: Vec<_> = keys.into_iter().collect();
+        if keys.is_empty()
+            || serde_json::to_vec(&keys)
+                .map_err(|_| error(503, "SDK invalidation key encoding failed"))?
+                .len()
+                > 60 * 1024
+        {
+            return Err(error(507, "SDK invalidation key frame exceeds bound"));
+        }
+        Ok(Some(SdkStorageInvalidation {
+            old_resource_owner,
+            new_resource_owner,
+            keys,
+        }))
+    }
     pub(crate) fn has_sdk_state(&self) -> bool {
         !self.sdk_catalog.is_empty() || self.namespaces.values().any(|ns| !ns.sdk_owners.is_empty())
     }

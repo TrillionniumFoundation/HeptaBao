@@ -8757,13 +8757,25 @@ impl Service {
         }
         let publication: Result<ha_received::HaLocalPublicationProgress, Response> = (|| {
             let completed = received.after_publication(self)?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let sdk_invalidations = self.reserve_committed_sdk_invalidations(
+                received.state(),
+                completed.previous_identity(),
+                completed.identity(),
+                completed.deadline(),
+            )?;
             self.state = Some(received.state().clone());
             self.state_digest = Some(committed.digest);
             let progress = completed.publication_progress(self)?;
             if progress == ha_received::HaLocalPublicationProgress::Superseded {
                 return Ok(progress);
             }
-            self.reconcile_completed_ha_recovery_index(&completed)
+            let progress = self.reconcile_completed_ha_recovery_index(&completed)?;
+            if progress == ha_received::HaLocalPublicationProgress::Current {
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                self.finish_committed_sdk_invalidations(sdk_invalidations)?;
+            }
+            Ok(progress)
         })();
         match publication {
             Ok(ha_received::HaLocalPublicationProgress::Current) => {}

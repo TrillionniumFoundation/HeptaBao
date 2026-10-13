@@ -311,6 +311,7 @@ fn retirement_terminal_fixture() -> Result<RetirementFixture, Box<dyn std::error
         sender,
         busy: Arc::new(AtomicBool::new(false)),
         fenced: Arc::new(AtomicBool::new(true)),
+        storage_epoch: Arc::new(std::sync::atomic::AtomicU64::new(1)),
         retiring: AtomicBool::new(true),
     });
     let bytes = Zeroizing::new(
@@ -1281,6 +1282,7 @@ fn sdk_auth_retirement107_native_service_busy_owner_dispatches_no_setup_or_phase
         sender,
         busy: Arc::new(AtomicBool::new(true)),
         fenced: Arc::new(AtomicBool::new(false)),
+        storage_epoch: Arc::new(std::sync::atomic::AtomicU64::new(1)),
         retiring: AtomicBool::new(false),
     });
     let host_key =

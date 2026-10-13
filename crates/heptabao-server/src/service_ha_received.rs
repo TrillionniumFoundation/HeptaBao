@@ -1012,6 +1012,10 @@ impl CompletedLocalPublication<'_> {
         self.receipt.identity
     }
 
+    pub(super) fn previous_identity(&self) -> StateIdentity {
+        self.receipt.previous
+    }
+
     pub(super) fn deadline(&self) -> Option<Instant> {
         self.receipt.deadline
     }
@@ -1898,6 +1902,13 @@ impl Service {
                     error.status
                 );
             })?;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_invalidations = self.reserve_committed_sdk_invalidations(
+            &received.owner.state,
+            completed.previous_identity(),
+            completed.identity(),
+            completed.deadline(),
+        )?;
         self.record_root = Some(received.plan.root);
         self.state_digest = Some(received.owner.identity.digest());
         self.state = Some(received.owner.state.clone());
@@ -1940,6 +1951,8 @@ impl Service {
                     .as_millis())
             );
         }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.finish_committed_sdk_invalidations(sdk_invalidations)?;
         self.finish_completed_ha_publication(&completed, activation)
             .inspect_err(|error| {
                 eprintln!(

@@ -7,7 +7,7 @@ use heptabao_plugin_host::sdk_backend::{
     SdkLogicalRequest, SdkStorage, SdkStorageEntry,
 };
 use std::collections::BTreeSet;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender, SyncSender};
 use std::time::{Duration, Instant};
 
@@ -176,12 +176,26 @@ impl Drop for WorkerJob {
 }
 enum WorkerCommand {
     Invoke(Box<WorkerJob>),
+    InvokeStorageEpoch(Box<WorkerJob>, u64),
+    Invalidate(InvalidationJob),
     Stop,
+}
+#[derive(Clone, Copy)]
+enum InvalidationAck {
+    Hook,
+    NoCache,
+}
+struct InvalidationJob {
+    keys: Vec<String>,
+    epoch: u64,
+    deadline: Instant,
+    reply: Sender<Result<InvalidationAck, SdkBridgeError>>,
 }
 pub(super) struct Control {
     sender: SyncSender<WorkerCommand>,
     busy: Arc<AtomicBool>,
     fenced: Arc<AtomicBool>,
+    storage_epoch: Arc<AtomicU64>,
     retiring: AtomicBool,
 }
 impl Control {
@@ -275,22 +289,58 @@ fn start_worker_typed(
     let (sender, commands) = mpsc::sync_channel(1);
     let busy = Arc::new(AtomicBool::new(false));
     let fenced = Arc::new(AtomicBool::new(false));
+    let storage_epoch = Arc::new(AtomicU64::new(1));
     let worker_busy = Arc::clone(&busy);
     let worker_fenced = Arc::clone(&fenced);
+    let worker_epoch = Arc::clone(&storage_epoch);
     std::thread::Builder::new()
         .name("sdk-mount-owner".into())
         .spawn(move || {
             let mut host: Option<SdkBackendHost> = None;
             while let Ok(command) = commands.recv() {
-                let WorkerCommand::Invoke(mut job) = command else {
-                    break;
+                let (mut job, admitted_epoch) = match command {
+                    WorkerCommand::Stop => break,
+                    WorkerCommand::Invoke(job) => (job, None),
+                    WorkerCommand::InvokeStorageEpoch(job, epoch) => (job, Some(epoch)),
+                    WorkerCommand::Invalidate(job) => {
+                        let result = (|| {
+                            if worker_fenced.load(Ordering::Acquire)
+                                || worker_epoch.load(Ordering::Acquire) != job.epoch
+                                || Instant::now() >= job.deadline
+                            {
+                                return Err(SdkBridgeError::Fenced);
+                            }
+                            // This command grants no Storage callback authority.
+                            // A cold worker has no cache to invalidate.
+                            let acknowledgement = if let Some(host) = host.as_mut() {
+                                host.invalidate(&job.keys, job.deadline)?;
+                                InvalidationAck::Hook
+                            } else { InvalidationAck::NoCache };
+                            if worker_fenced.load(Ordering::Acquire)
+                                || worker_epoch.load(Ordering::Acquire) != job.epoch
+                                || Instant::now() >= job.deadline
+                            {
+                                return Err(SdkBridgeError::Fenced);
+                            }
+                            Ok(acknowledgement)
+                        })();
+                        if result.is_err() {
+                            worker_fenced.store(true, Ordering::Release);
+                        }
+                        let _ = job.reply.send(result);
+                        worker_busy.store(false, Ordering::Release);
+                        if worker_fenced.load(Ordering::Acquire) { break; }
+                        continue;
+                    }
                 };
                 let mut view = CallbackView {
                     events: job.events.clone(),
                     deadline: job.deadline,
                 };
                 let result = (|| {
-                    if worker_fenced.load(Ordering::Acquire) || Instant::now() >= job.deadline {
+                    if worker_fenced.load(Ordering::Acquire) || Instant::now() >= job.deadline
+                        || admitted_epoch.is_some_and(|epoch| worker_epoch.load(Ordering::Acquire) != epoch)
+                    {
                         return Err(SdkBridgeError::Fenced);
                     }
                     if host.is_none() {
@@ -344,6 +394,7 @@ fn start_worker_typed(
         sender,
         busy,
         fenced,
+        storage_epoch,
         retiring: AtomicBool::new(false),
     }))
 }
@@ -370,12 +421,77 @@ struct StorageTransaction {
     changed: bool,
 }
 
+/// A process-local delivery owner derived from the authenticated committed
+/// graph. It carries key notifications, never a client or Storage capability.
+pub(super) struct CommittedInvalidations {
+    previous: Option<CowOwner<EngineState>>,
+    previous_identity: Option<crate::state_record_root::StateIdentity>,
+    installed_identity: crate::state_record_root::StateIdentity,
+    unseal_nonce: String,
+    deadline: Option<Instant>,
+    owners: Vec<CommittedInvalidation>,
+}
+struct CommittedInvalidation {
+    namespace: String,
+    namespace_incarnation: Option<u64>,
+    mount: String,
+    owner: MountOwner,
+    descriptor: Descriptor,
+    control: Arc<Control>,
+    epoch: u64,
+    old_resource_owner: [u8; 32],
+    new_resource_owner: [u8; 32],
+    keys: Vec<String>,
+    queued: bool,
+    delivered: bool,
+}
+impl CommittedInvalidation {
+    fn trace(
+        &self,
+        disposition: &str,
+        installed: crate::state_record_root::StateIdentity,
+        deadline: Instant,
+    ) {
+        // Bounded owner metadata only: neither SDK values nor key names leave
+        // the authenticated graph. Disposal never appears as a hook ACK.
+        eprintln!(
+            "HBSDK-INVALIDATION disposition={disposition} namespace_sha={} mount_sha={} namespace_incarnation={:?} mount_incarnation={} catalog_generation={} epoch={} key_count={} old_resource_owner={} new_resource_owner={} installed_identity={} remaining_ms={}",
+            hex(&crypto::digest(self.namespace.as_bytes())),
+            hex(&crypto::digest(self.mount.as_bytes())),
+            self.namespace_incarnation,
+            self.owner.mount_incarnation,
+            self.owner.catalog_generation,
+            self.epoch,
+            self.keys.len(),
+            hex(&self.old_resource_owner),
+            hex(&self.new_resource_owner),
+            hex(&installed.digest()),
+            deadline
+                .saturating_duration_since(Instant::now())
+                .as_millis()
+        );
+    }
+}
+impl Drop for CommittedInvalidation {
+    fn drop(&mut self) {
+        if !self.delivered {
+            // An incomplete, superseded or expired install cannot preserve a
+            // held cache. Busy remains owned by a queued/running worker.
+            self.control.retire();
+            if !self.queued {
+                self.control.busy.store(false, Ordering::Release);
+            }
+        }
+    }
+}
+
 pub(super) struct Plan {
     namespace: String,
     mount: String,
     owner: MountOwner,
     descriptor: Descriptor,
     control: Arc<Control>,
+    storage_epoch: u64,
     authority: Mutex<expiry::Authority>,
     operation: String,
     path: String,
@@ -465,6 +581,7 @@ impl Plan {
     ) -> Result<Option<Value>, Response> {
         let deadline = deadline.min(self.deadline);
         if self.control.fenced.load(Ordering::Acquire)
+            || self.control.storage_epoch.load(Ordering::Acquire) != self.storage_epoch
             || Instant::now() >= deadline
             || (self.control.retiring.load(Ordering::Acquire)
                 && self.retirement.is_none()
@@ -498,9 +615,11 @@ impl Plan {
         {
             return Err(Response::error(503, "SDK mount is busy before entry"));
         }
-        if self.control.retiring.load(Ordering::Acquire)
-            && self.retirement.is_none()
-            && !self.namespace_cleanup
+        if self.control.storage_epoch.load(Ordering::Acquire) != self.storage_epoch
+            || self.control.fenced.load(Ordering::Acquire)
+            || (self.control.retiring.load(Ordering::Acquire)
+                && self.retirement.is_none()
+                && !self.namespace_cleanup)
         {
             self.control.busy.store(false, Ordering::Release);
             return Err(Response::error(
@@ -541,7 +660,10 @@ impl Plan {
                 }
                 self.control
                     .sender
-                    .try_send(WorkerCommand::Invoke(Box::new(job)))
+                    .try_send(WorkerCommand::InvokeStorageEpoch(
+                        Box::new(job),
+                        self.storage_epoch,
+                    ))
                     .map_err(|_| {
                         Response::error(503, "SDK owner queue unavailable before entry")
                     })?;
@@ -549,7 +671,10 @@ impl Plan {
             } else {
                 self.control
                     .sender
-                    .try_send(WorkerCommand::Invoke(Box::new(job)))
+                    .try_send(WorkerCommand::InvokeStorageEpoch(
+                        Box::new(job),
+                        self.storage_epoch,
+                    ))
                     .map_err(|_| {
                         Response::error(503, "SDK owner queue unavailable before entry")
                     })?;
@@ -1344,9 +1469,254 @@ impl Service {
         }
         self.sdk_hosts.clear();
     }
+
+    pub(super) fn reserve_committed_sdk_invalidations(
+        &self,
+        next: &State,
+        previous_identity: crate::state_record_root::StateIdentity,
+        installed_identity: crate::state_record_root::StateIdentity,
+        deadline: Option<Instant>,
+    ) -> Result<CommittedInvalidations, Response> {
+        let deadline = deadline.map(|original| {
+            crate::request_deadline::current().map_or(original, |current| original.min(current))
+        });
+        let mut batch = CommittedInvalidations {
+            previous: None,
+            previous_identity: None,
+            installed_identity,
+            unseal_nonce: self.unseal_nonce.clone(),
+            deadline,
+            owners: Vec::new(),
+        };
+        let Some(previous) = self.state.as_ref() else {
+            return Ok(batch);
+        };
+        // No independent timer is minted for this notification. Its scope is
+        // the original completed publication's remaining monotonic budget.
+        let _scope = deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        for (namespace, mount, owner) in previous.engines.sdk_secret_mount_owners() {
+            let Some(control) = self
+                .sdk_hosts
+                .get(&self.sdk_host_key(&namespace, &mount, &owner))
+            else {
+                continue;
+            };
+            let descriptor = previous
+                .engines
+                .sdk_descriptor(&owner.plugin, &owner.version);
+            if deadline.is_none_or(|clock| Instant::now() >= clock)
+                || control.fenced.load(Ordering::Acquire)
+                || control.retiring.load(Ordering::Acquire)
+                || previous.namespaces.incarnation(&namespace)
+                    != next.namespaces.incarnation(&namespace)
+                || next.engines.sdk_mount_binding(&namespace, &mount)
+                    != Some((mount.clone(), owner.clone()))
+                || descriptor.is_none()
+                || next.engines.sdk_descriptor(&owner.plugin, &owner.version) != descriptor
+            {
+                control.retire();
+                continue;
+            }
+            let delta = match next.engines.sdk_committed_storage_invalidation(
+                &previous.engines,
+                &namespace,
+                &mount,
+                &owner,
+            ) {
+                Ok(Some(delta)) => delta,
+                Ok(None) => continue,
+                Err(_) => {
+                    // A bounded diff that cannot be proved is safe only by
+                    // discarding the entire old cache, never a guessed fanout.
+                    control.retire();
+                    continue;
+                }
+            };
+            if batch.previous.is_none() {
+                if self.current_state_identity()? != previous_identity {
+                    control.retire();
+                    return Err(Response::error(
+                        503,
+                        "SDK committed previous publication owner changed",
+                    ));
+                }
+                batch.previous_identity = Some(previous_identity);
+                batch.previous = Some(previous.engines.clone());
+            }
+            let descriptor = descriptor
+                .ok_or_else(|| Response::error(503, "SDK committed descriptor absent"))?;
+            if control
+                .busy
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
+            {
+                control.retire();
+                continue;
+            }
+            let epoch = match control.storage_epoch.fetch_update(
+                Ordering::AcqRel,
+                Ordering::Acquire,
+                |epoch| epoch.checked_add(1),
+            ) {
+                Ok(previous) => previous + 1,
+                Err(_) => {
+                    control.busy.store(false, Ordering::Release);
+                    control.retire();
+                    continue;
+                }
+            };
+            batch.owners.push(CommittedInvalidation {
+                namespace_incarnation: previous.namespaces.incarnation(&namespace),
+                namespace,
+                mount,
+                owner,
+                descriptor,
+                control: Arc::clone(control),
+                epoch,
+                old_resource_owner: delta.old_resource_owner,
+                new_resource_owner: delta.new_resource_owner,
+                keys: delta.keys,
+                queued: false,
+                delivered: false,
+            });
+        }
+        Ok(batch)
+    }
+
+    pub(super) fn finish_committed_sdk_invalidations(
+        &self,
+        mut batch: CommittedInvalidations,
+    ) -> Result<(), Response> {
+        if batch.owners.is_empty() {
+            return Ok(());
+        }
+        let deadline = batch
+            .deadline
+            .ok_or_else(|| Response::error(503, "SDK committed original deadline absent"))?;
+        let deadline =
+            crate::request_deadline::current().map_or(deadline, |current| deadline.min(current));
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        let previous = batch
+            .previous
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK committed original graph absent"))?;
+        if batch.previous_identity.is_none()
+            || self.unseal_nonce != batch.unseal_nonce
+            || self.current_state_identity()? != batch.installed_identity
+        {
+            return Err(Response::error(
+                503,
+                "SDK committed publication owner changed",
+            ));
+        }
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "SDK committed state absent"))?;
+        for notification in &mut batch.owners {
+            if Instant::now() >= deadline {
+                return Err(Response::error(
+                    503,
+                    "SDK committed original deadline expired",
+                ));
+            }
+            let actual = state
+                .engines
+                .sdk_committed_storage_invalidation(
+                    previous,
+                    &notification.namespace,
+                    &notification.mount,
+                    &notification.owner,
+                )
+                .map_err(Response::from_engine_error)?;
+            if notification.control.fenced.load(Ordering::Acquire)
+                || notification.control.retiring.load(Ordering::Acquire)
+                || notification.control.storage_epoch.load(Ordering::Acquire) != notification.epoch
+                || state.namespaces.incarnation(&notification.namespace)
+                    != notification.namespace_incarnation
+                || state
+                    .engines
+                    .sdk_descriptor(&notification.owner.plugin, &notification.owner.version)
+                    != Some(notification.descriptor.clone())
+                || self
+                    .sdk_hosts
+                    .get(&self.sdk_host_key(
+                        &notification.namespace,
+                        &notification.mount,
+                        &notification.owner,
+                    ))
+                    .is_none_or(|current| !Arc::ptr_eq(current, &notification.control))
+                || actual.is_none_or(|delta| {
+                    delta.old_resource_owner != notification.old_resource_owner
+                        || delta.new_resource_owner != notification.new_resource_owner
+                        || delta.keys != notification.keys
+                })
+            {
+                return Err(Response::error(
+                    503,
+                    "SDK committed Storage notification owner changed",
+                ));
+            }
+            if Instant::now() >= deadline {
+                return Err(Response::error(
+                    503,
+                    "SDK committed effective deadline expired before hook",
+                ));
+            }
+            let (reply, received) = mpsc::channel();
+            let command = WorkerCommand::Invalidate(InvalidationJob {
+                keys: notification.keys.clone(),
+                epoch: notification.epoch,
+                deadline,
+                reply,
+            });
+            if notification.control.sender.try_send(command).is_err() {
+                notification.control.busy.store(false, Ordering::Release);
+                notification.control.retire();
+                notification.trace("discarded_queue", batch.installed_identity, deadline);
+                notification.delivered = true; // Cache was discarded, not acknowledged.
+                continue;
+            }
+            notification.queued = true;
+            let remaining = deadline
+                .checked_duration_since(Instant::now())
+                .ok_or_else(|| {
+                    Response::error(503, "SDK committed original deadline expired before hook")
+                })?;
+            let acknowledgement = received.recv_timeout(remaining);
+            let acknowledged = matches!(acknowledgement, Ok(Ok(_)));
+            if !acknowledged
+                || Instant::now() >= deadline
+                || notification.control.storage_epoch.load(Ordering::Acquire) != notification.epoch
+                || notification.control.fenced.load(Ordering::Acquire)
+            {
+                notification.control.retire();
+                notification.trace("discarded", batch.installed_identity, deadline);
+            } else {
+                notification.trace(
+                    match acknowledgement {
+                        Ok(Ok(InvalidationAck::Hook)) => "hook_acknowledged",
+                        Ok(Ok(InvalidationAck::NoCache)) => "no_cache",
+                        _ => unreachable!("only a guarded successful acknowledgement enters here"),
+                    },
+                    batch.installed_identity,
+                    deadline,
+                );
+            }
+            notification.delivered = true;
+            if Instant::now() >= deadline {
+                return Err(Response::error(
+                    503,
+                    "SDK committed hook consumed original deadline",
+                ));
+            }
+        }
+        Ok(())
+    }
     fn sdk_binding_gate(&self, plan: &Plan) -> Result<(), SdkBridgeError> {
         if Instant::now() >= plan.deadline
             || plan.control.fenced.load(Ordering::Acquire)
+            || plan.control.storage_epoch.load(Ordering::Acquire) != plan.storage_epoch
             || self.recovery_required
             || (plan.control.retiring.load(Ordering::Acquire)
                 && plan.retirement.is_none()
@@ -1755,6 +2125,7 @@ impl Service {
             mount,
             owner,
             descriptor,
+            storage_epoch: control.storage_epoch.load(Ordering::Acquire),
             control,
             authority: Mutex::new(authority),
             operation: operation.into(),
@@ -2120,6 +2491,7 @@ impl Service {
             || plan.operation != "revoke"
             || Instant::now() >= plan.deadline
             || plan.control.fenced.load(Ordering::Acquire)
+            || plan.control.storage_epoch.load(Ordering::Acquire) != plan.storage_epoch
         {
             return Err(Response::error(
                 503,
@@ -2153,6 +2525,7 @@ impl Service {
             || plan.retirement.is_some()
             || Instant::now() >= plan.deadline
             || plan.control.fenced.load(Ordering::Acquire)
+            || plan.control.storage_epoch.load(Ordering::Acquire) != plan.storage_epoch
             || self.recovery_required
             || state
                 .engines
@@ -2296,6 +2669,7 @@ pub(in crate::service) fn model_revoke_queue() -> (Arc<Control>, ModelQueue) {
         sender,
         busy: Arc::new(AtomicBool::new(false)),
         fenced: Arc::new(AtomicBool::new(false)),
+        storage_epoch: Arc::new(AtomicU64::new(1)),
         retiring: AtomicBool::new(false),
     });
     (Arc::clone(&control), ModelQueue { commands, control })
@@ -2314,7 +2688,9 @@ impl ModelQueue {
             .recv_timeout(remaining)
             .map_err(|_| Response::error(503, "model original Invoke not observed"))?
         {
-            WorkerCommand::Invoke(job) if job.operation == "revoke" && job.lease.is_some() => {
+            WorkerCommand::Invoke(job) | WorkerCommand::InvokeStorageEpoch(job, _)
+                if job.operation == "revoke" && job.lease.is_some() =>
+            {
                 Ok(ModelRevoke {
                     events: job.events.clone(),
                     deadline: job.deadline,
@@ -2327,7 +2703,12 @@ impl ModelQueue {
     pub(in crate::service) fn unexpected_invokes(&self) -> usize {
         self.commands
             .try_iter()
-            .filter(|value| matches!(value, WorkerCommand::Invoke(_)))
+            .filter(|value| {
+                matches!(
+                    value,
+                    WorkerCommand::Invoke(_) | WorkerCommand::InvokeStorageEpoch(_, _)
+                )
+            })
             .count()
     }
 }
@@ -2355,3 +2736,7 @@ impl ModelRevoke {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_sdk_invalidation_tests.rs"]
+mod invalidation_tests;
