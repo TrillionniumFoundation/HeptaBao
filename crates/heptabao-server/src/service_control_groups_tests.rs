@@ -2797,7 +2797,7 @@ fn cg270_last_use_resumes_once_and_batch_self_echo_use_sealed_issuer_custody() -
                 100
             )
             .status,
-            403
+            400
         );
     }
     assert_eq!(
