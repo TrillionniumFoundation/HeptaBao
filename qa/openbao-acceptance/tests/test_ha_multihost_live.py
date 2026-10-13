@@ -7,6 +7,9 @@ import io
 import json
 import sys
 import tempfile
+import os
+import shutil
+import subprocess
 from pathlib import Path
 import unittest
 from unittest import mock
@@ -282,10 +285,10 @@ class MultiHostHaContractTests(unittest.TestCase):
         self.assertIsInstance(method, ast.Constant)
         self.assertEqual(method.value, "GET")
         for marker in (
-            'exe=$(readlink -f "/proc/$pid/exe")',
-            'test "$exe" = "$root/heptabao-server"',
-            'case "$cmd" in (*"$root/server.json"*)',
-            'kill -KILL "$pid"',
+            "actual_exe = os.readlink(proc / 'exe')",
+            "observed['executable'] != exe",
+            "prior != observed or not expected(observed)",
+            "os.kill(pid, signal.SIGKILL)",
             '"mutating_requests_retried": False',
             "parent_mode.st_uid != os.getuid()",
             "parent_mode.st_mode & 0o022",
@@ -355,6 +358,68 @@ class MultiHostHaContractTests(unittest.TestCase):
         self.assertIn("physical_power_loss", source)
         self.assertIn("long_horizon_linearizability", source)
         self.assertIn("production_custody", source)
+
+
+class NativeProcessIdentityTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("cc"), "native process fixture requires a C compiler")
+    def test_stale_identity_and_other_fixture_pid_are_rejected_before_sigkill(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary).resolve(strict=True)
+            source = directory / "probe.c"
+            source.write_text("#include <unistd.h>\nint main(void) { for (;;) pause(); }\n")
+            subprocess.run([shutil.which("cc"), str(source), "-o", str(directory / "probe")],
+                           check=True, capture_output=True)
+            roots = [directory / "fixture-a", directory / "fixture-b"]
+            owned = []
+            def invoke(action, root):
+                return subprocess.run([sys.executable, "-c", MODULE.REMOTE_PROCESS_SCRIPT,
+                                       action, str(root), "0"], capture_output=True, text=True)
+            try:
+                for root in roots:
+                    root.mkdir(mode=0o700)
+                    shutil.copyfile(directory / "probe", root / "heptabao-server")
+                    (root / "heptabao-server").chmod(0o500)
+                    (root / "server.json").write_text("{}")
+                    result = invoke("start", root)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    owned.append(int(result.stdout.strip()))
+                identity_path = roots[0] / "process.identity.json"
+                original = identity_path.read_text()
+                forged = json.loads(original)
+                forged["start"] += "stale"
+                identity_path.write_text(json.dumps(forged))
+                self.assertEqual(invoke("stop", roots[0]).returncode, 79)
+                os.kill(owned[0], 0)
+                identity_path.write_text(original)
+                # A valid identity from another fixture must not confer kill authority.
+                pid_path = roots[0] / "process.pid"
+                original_pid = pid_path.read_text()
+                pid_path.write_text(str(owned[1]))
+                identity_path.write_text((roots[1] / "process.identity.json").read_text())
+                self.assertEqual(invoke("stop", roots[0]).returncode, 79)
+                os.kill(owned[0], 0); os.kill(owned[1], 0)
+                pid_path.write_text(original_pid); identity_path.write_text(original)
+                for root in roots:
+                    result = invoke("stop", root)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertFalse((root / "process.pid").exists())
+                    self.assertFalse((root / "process.identity.json").exists())
+                    self.assertEqual(invoke("stop", root).stdout.strip(), "none")
+            finally:
+                for pid in owned:
+                    try:
+                        os.kill(pid, 9)
+                    except ProcessLookupError:
+                        pass
+
+    def test_native_binary_rejects_a_different_source_freeze(self):
+        commit, tree = "a" * 40, "b" * 40
+        value = "mac-ts,mac-ts:/Volumes/T5/private/heptabao-server," + "c" * 64
+        self.assertEqual(MODULE.parse_node_binary(value + "," + commit + "," + tree,
+                                                commit, tree)[0], "mac-ts")
+        for suffix in ("," + "d" * 40 + "," + tree, "," + commit + "," + "e" * 40):
+            with self.assertRaises(argparse.ArgumentTypeError):
+                MODULE.parse_node_binary(value + suffix, commit, tree)
 
 
 if __name__ == "__main__":

@@ -54,6 +54,7 @@ SAFE_RESPONSE_ERRORS = {
 }
 REMOTE_EVIDENCE_FILES = (
     "process.log", "pids.log", "server.json", "ha.json", "audit.jsonl",
+    "process.identity.json",
 )
 REQUIRED_CHECKS = frozenset({
     'candidate_binary_digest',
@@ -210,6 +211,27 @@ def parse_binary_source(value: str) -> tuple[str, str]:
     return alias, path
 
 
+def parse_node_binary(value: str, commit: str, tree: str) -> tuple[str, tuple[str, str, str]]:
+    """Bind one native artifact to the same frozen source as the other voters."""
+    parts = value.split(",")
+    if (len(parts) != 5 or re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", parts[0]) is None
+            or re.fullmatch(r"[0-9a-f]{64}", parts[2]) is None
+            or parts[3] != commit or parts[4] != tree):
+        raise argparse.ArgumentTypeError("native binary must bind node, source, SHA256 and exact source commit/tree")
+    alias, path = parse_binary_source(parts[1])
+    return parts[0], (alias, path, parts[2])
+
+
+def remote_binary_digest(node: Node) -> str:
+    return ssh(node, f"""
+python3 - {shlex.quote(node.root + '/heptabao-server')} <<'PY2'
+import hashlib, sys
+with open(sys.argv[1], 'rb') as source:
+    print(hashlib.file_digest(source, 'sha256').hexdigest())
+PY2
+""").strip()
+
+
 def copy_candidate_source(alias: str, path: str, destination: Path) -> None:
     if alias != "local":
         checked_run([
@@ -358,26 +380,125 @@ mv {shlex.quote(temporary)} {shlex.quote(destination)}
 """)
 
 
+REMOTE_PROCESS_SCRIPT = r"""
+from pathlib import Path
+import hashlib, json, os, platform, signal, stat, subprocess, sys, time
+
+action, raw_root, has_ha = sys.argv[1:]
+root = Path(raw_root)
+if root.resolve(strict=True) != root or root.is_symlink():
+    raise SystemExit(70)
+info = root.stat()
+if info.st_uid != os.getuid() or info.st_mode & 0o077:
+    raise SystemExit(71)
+exe = str(root / 'heptabao-server')
+config = str(root / 'server.json')
+pid_path = root / 'process.pid'
+identity_path = root / 'process.identity.json'
+argv = [exe, '--config', config]
+if has_ha == '1':
+    argv += ['--ha-config', str(root / 'ha.json')]
+
+def observe(pid):
+    if platform.system() == 'Linux':
+        proc = Path('/proc') / str(pid)
+        try:
+            text = (proc / 'stat').read_text()
+            fields = text[text.rfind(')') + 2:].split()
+            if fields[0] == 'Z':
+                return None
+            actual_exe = os.readlink(proc / 'exe')
+            actual_argv = (proc / 'cmdline').read_bytes().rstrip(b'\0').split(b'\0')
+            return {'platform': 'Linux', 'pid': pid, 'start': fields[19],
+                    'executable': actual_exe,
+                    'arguments': [item.decode() for item in actual_argv]}
+        except FileNotFoundError:
+            return None
+    if platform.system() != 'Darwin':
+        raise SystemExit(72)
+    env = dict(os.environ, LC_ALL='C')
+    def field(name):
+        result = subprocess.run(['/bin/ps', '-p', str(pid), '-o', name + '='],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        return result.stdout.decode().strip() if result.returncode == 0 else ''
+    actual_exe, start, command, state = field('comm'), field('lstart'), field('command'), field('state')
+    if not start or state.startswith('Z'):
+        return None
+    return {'platform': 'Darwin', 'pid': pid, 'start': start,
+            'executable': actual_exe, 'command': command}
+
+def expected(observed):
+    if observed is None or observed['executable'] != exe:
+        return False
+    if observed['platform'] == 'Linux':
+        return observed['arguments'] in ([exe, '--config', config], [exe, '--config', config, '--ha-config', str(root / 'ha.json')])
+    return observed['command'] in (' '.join([exe, '--config', config]), ' '.join([exe, '--config', config, '--ha-config', str(root / 'ha.json')]))
+
+def write_owned(path, payload):
+    temporary = path.with_name(path.name + '.copying')
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, 'O_NOFOLLOW', 0)
+    with os.fdopen(os.open(temporary, flags, 0o600), 'w') as output:
+        output.write(payload); output.flush(); os.fsync(output.fileno())
+    os.replace(temporary, path)
+
+if action == 'start':
+    if pid_path.exists() or identity_path.exists():
+        raise SystemExit(73)
+    if not all(Path(item).is_file() and not Path(item).is_symlink()
+               for item in (exe, config, *([argv[-1]] if has_ha == '1' else []))):
+        raise SystemExit(74)
+    with (root / 'process.log').open('ab') as output:
+        child = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=output, stderr=output,
+                                 start_new_session=True, close_fds=True)
+    time.sleep(0.4)
+    observed = observe(child.pid)
+    if child.poll() is not None or not expected(observed) or os.getpgid(child.pid) != child.pid:
+        if child.poll() is None:
+            child.kill(); child.wait(timeout=5)
+        raise SystemExit(75)
+    write_owned(identity_path, json.dumps(observed, sort_keys=True) + '\n')
+    write_owned(pid_path, str(child.pid) + '\n')
+    with (root / 'pids.log').open('a') as output:
+        output.write(str(time.time()) + ' ' + str(child.pid) + ' started\n')
+    print(child.pid)
+elif action == 'stop':
+    if not pid_path.exists():
+        if identity_path.exists():
+            raise SystemExit(76)
+        print('none'); raise SystemExit(0)
+    for path in (pid_path, identity_path):
+        info = path.lstat()
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
+            raise SystemExit(77)
+    raw_pid = pid_path.read_text().strip()
+    if not raw_pid.isdecimal() or int(raw_pid) <= 0:
+        raise SystemExit(78)
+    pid = int(raw_pid)
+    prior = json.loads(identity_path.read_text())
+    observed = observe(pid)
+    if observed is not None:
+        if prior != observed or not expected(observed) or os.getpgid(pid) != pid:
+            raise SystemExit(79)
+        # Linux has start ticks; macOS uses bounded BSD ps identity checks and
+        # cannot claim atomic PID-reuse exclusion. Only this fixture PID is killed.
+        os.kill(pid, signal.SIGKILL)
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline and observe(pid) is not None:
+            time.sleep(0.05)
+        if observe(pid) is not None:
+            raise SystemExit(80)
+    pid_path.unlink(); identity_path.unlink()
+    with (root / 'pids.log').open('a') as output:
+        output.write(str(time.time()) + ' ' + str(pid) + ' stopped\n')
+    print(pid)
+else:
+    raise SystemExit(81)
+"""
+
+
 def remote_start(node: Node, *, ha: bool) -> int:
-    root = shlex.quote(node.root)
-    ha_args = f" --ha-config {root}/ha.json" if ha else ""
-    output = ssh(node, f"""
-set -eu
-umask 077
-root={root}
-test -x "$root/heptabao-server"
-test -f "$root/server.json"
-{"test -f \"$root/ha.json\"" if ha else ":"}
-test ! -e "$root/process.pid"
-nohup setsid "$root/heptabao-server" --config "$root/server.json"{ha_args} >>"$root/process.log" 2>&1 </dev/null &
-pid=$!
-printf '%s\n' "$pid" > "$root/process.pid.tmp"
-mv "$root/process.pid.tmp" "$root/process.pid"
-printf '%s %s\n' "$(date -Is)" "$pid" >> "$root/pids.log"
-sleep 0.4
-kill -0 "$pid"
-printf '%s\n' "$pid"
-""")
+    output = ssh(node, f"python3 - start {shlex.quote(node.root)} {'1' if ha else '0'} <<'PY2'\n"
+                 + REMOTE_PROCESS_SCRIPT + "\nPY2\n")
     try:
         return int(output.strip().splitlines()[-1])
     except (ValueError, IndexError) as error:
@@ -385,35 +506,8 @@ printf '%s\n' "$pid"
 
 
 def remote_stop(node: Node) -> int | None:
-    root = shlex.quote(node.root)
-    output = ssh(node, f"""
-set -eu
-root={root}
-if test ! -f "$root/process.pid"; then
-  echo none
-  exit 0
-fi
-pid=$(cat "$root/process.pid")
-case "$pid" in (*[!0-9]*|'') exit 71;; esac
-if test ! -e "/proc/$pid"; then
-  rm -f "$root/process.pid"
-  echo "$pid"
-  exit 0
-fi
-exe=$(readlink -f "/proc/$pid/exe")
-test "$exe" = "$root/heptabao-server"
-cmd=$(tr '\000' ' ' < "/proc/$pid/cmdline")
-case "$cmd" in (*"$root/server.json"*) :;; (*) exit 72;; esac
-kill -KILL "$pid"
-for i in $(seq 1 100); do
-  test ! -e "/proc/$pid" && break
-  sleep 0.05
-done
-test ! -e "/proc/$pid"
-rm -f "$root/process.pid"
-printf '%s %s killed\n' "$(date -Is)" "$pid" >> "$root/pids.log"
-echo "$pid"
-""")
+    output = ssh(node, f"python3 - stop {shlex.quote(node.root)} 0 <<'PY2'\n"
+                 + REMOTE_PROCESS_SCRIPT + "\nPY2\n")
     value = output.strip().splitlines()[-1] if output.strip() else "none"
     return None if value == "none" else int(value)
 
@@ -763,6 +857,8 @@ def main(*, extension=None) -> int:
     parser.add_argument("--binary-source", required=True,
                         help="ssh-alias:/absolute/path/to/heptabao-server")
     parser.add_argument("--expected-binary-sha256", required=True)
+    parser.add_argument("--node-binary", action="append", default=[],
+                        help="node-alias,source-alias:absolute-path,SHA256,source-commit,source-tree")
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree", required=True)
     parser.add_argument("--node", action="append", required=True)
@@ -800,6 +896,17 @@ def main(*, extension=None) -> int:
              for index, value in enumerate(args.node)]
     if len({node.ip for node in nodes}) != 3 or len({node.root for node in nodes}) != 3:
         parser.error("node IPs and roots must be unique")
+    native_sources = {}
+    try:
+        for specification in args.node_binary:
+            alias, native = parse_node_binary(specification, args.source_commit, args.source_tree)
+            if alias in native_sources or alias not in {node.alias for node in nodes}:
+                parser.error("native binary must name one unique configured node")
+            native_sources[alias] = native
+    except argparse.ArgumentTypeError as error:
+        parser.error(str(error))
+    expected_digests = {str(node.node_id): native_sources.get(
+        node.alias, (None, None, args.expected_binary_sha256))[2] for node in nodes}
     checks: list[dict] = []
     events: list[dict] = []
     started: set[Node] = set()
@@ -814,6 +921,9 @@ def main(*, extension=None) -> int:
         "source_commit": args.source_commit,
         "source_tree": args.source_tree,
         "binary_sha256": args.expected_binary_sha256,
+        "expected_node_binary_sha256": expected_digests,
+        "source_binding": "all native artifacts bound to the exact source commit and tree",
+        "process_identity_scope": "Linux start ticks or macOS BSD ps; macOS PID check is non-atomic",
         "runner_sha256": initial_runner_sha256,
         "required_check_count": len(required_checks),
         "host_count": 3,
@@ -834,14 +944,33 @@ def main(*, extension=None) -> int:
                        "baseline_check_count": len(REQUIRED_CHECKS),
                        "extension_check_count": len(extension.required_checks)})
 
+    phase_dir = work / "phases"
+    phase_dir.mkdir(mode=0o700)
+    phase_counter = 0
+
+    def checkpoint() -> None:
+        nonlocal phase_counter
+        runtime = (root_token, unseal_key)
+        if extension is not None:
+            runtime += extension.runtime_secrets()
+        safe = secret_safe_report(report, runtime)
+        phase_counter += 1
+        path = phase_dir / f"{phase_counter:05d}.json"
+        with path.open("x") as output:
+            output.write(json.dumps(safe, indent=2, sort_keys=True) + "\n")
+            output.flush()
+            os.fsync(output.fileno())
+
     def check(name: str, condition: bool, **metadata) -> None:
         row = {"case": name, "passed": condition is True, **metadata}
         checks.append(row)
+        checkpoint()
         if condition is not True:
             raise FixtureError(name)
 
     def event(name: str, **metadata) -> None:
         events.append({"event": name, "time": time.time(), **metadata})
+        checkpoint()
 
     local_binary = work / "heptabao-server"
     ca_key, ca_cert = work / "ca.key", work / "ca.crt"
@@ -863,6 +992,18 @@ def main(*, extension=None) -> int:
         compress_candidate(local_binary, payload)
         report["candidate_payload_sha256"] = sha256_file(payload)
         report["candidate_payload_bytes"] = payload.stat().st_size
+        node_payloads = {node.alias: payload for node in nodes}
+        native_copies = {}
+        for alias, (native_alias, native_path, native_digest) in native_sources.items():
+            native_copy = work / ("native-" + alias)
+            copy_candidate_source(native_alias, native_path, native_copy)
+            native_copy.chmod(0o500)
+            if sha256_file(native_copy) != native_digest:
+                raise FixtureError("native_candidate_digest_mismatch_" + alias)
+            native_payload = work / ("native-" + alias + ".gz")
+            compress_candidate(native_copy, native_payload)
+            node_payloads[alias] = native_payload
+            native_copies[alias] = native_copy
 
         stage = "fixture_ca"
         create_fixture_ca(ca_key, ca_cert)
@@ -870,13 +1011,14 @@ def main(*, extension=None) -> int:
         peers: dict[str, dict] = {}
         node_files: dict[Node, Path] = {}
         remote_hosts: dict[int, str] = {}
+        remote_platforms: dict[int, str] = {}
         stage = "remote_node_setup"
         for node in nodes:
             remote = ssh(node, f"""
 set -eu
 umask 077
 test ! -e {shlex.quote(node.root)}
-command -v setsid >/dev/null
+command -v python3 >/dev/null
 python3 - <<'PY2'
 import socket
 ip={node.ip!r}
@@ -885,8 +1027,10 @@ for port in ({node.api_port}, {node.raft_port}):
 PY2
 mkdir -m 700 {shlex.quote(node.root)}
 hostname
+uname -s
 """)
-            remote_hosts[node.node_id] = remote.strip().splitlines()[-1]
+            remote_hosts[node.node_id] = remote.strip().splitlines()[-2]
+            remote_platforms[node.node_id] = remote.strip().splitlines()[-1]
             check(f"node_{node.node_id}_private_root_and_ports", True)
             node_dir = work / node.name
             node_dir.mkdir(mode=0o700)
@@ -916,13 +1060,14 @@ hostname
             server_path = node_dir / "server.json"
             server_path.write_text(json.dumps(server, sort_keys=True))
             server_path.chmod(0o600)
-            install_candidate(node, payload, digest)
+            install_candidate(node, node_payloads[node.alias], expected_digests[str(node.node_id)])
             upload(node, ca_cert, f"{node.root}/ca.crt", 0o600)
             upload(node, cert, f"{node.root}/tls.crt", 0o600)
             upload(node, key, f"{node.root}/tls.key", 0o600)
             upload(node, server_path, f"{node.root}/server.json", 0o600)
-            remote_digest = ssh(node, f"sha256sum {shlex.quote(node.root + '/heptabao-server')} | cut -d ' ' -f1").strip()
-            check(f"node_{node.node_id}_binary_digest", remote_digest == digest)
+            remote_digest = remote_binary_digest(node)
+            check(f"node_{node.node_id}_binary_digest",
+                  remote_digest == expected_digests[str(node.node_id)], sha256=remote_digest)
 
         stage = "single_node_initialization"
         seed = nodes[0]
@@ -1259,18 +1404,16 @@ test -d "$root/data"
         final = wait_leader(context, nodes, root_token)
         stage = "final_integrity"
         remote_digests = {
-            str(node.node_id): ssh(
-                node,
-                "sha256sum " + shlex.quote(node.root + "/heptabao-server")
-                + " | cut -d ' ' -f1",
-            ).strip()
+            str(node.node_id): remote_binary_digest(node)
             for node in nodes
         }
         unchanged = (
             sha256_file(local_binary) == args.expected_binary_sha256
             and sha256_file(runner_path) == initial_runner_sha256
             and sha256_file(shared_runner_path) == initial_shared_runner_sha256
-            and set(remote_digests.values()) == {args.expected_binary_sha256}
+            and remote_digests == expected_digests
+            and all(sha256_file(path) == native_sources[alias][2]
+                    for alias, path in native_copies.items())
         )
         check("source_and_binary_unchanged", unchanged)
         runtime_secrets = (root_token, unseal_key)
@@ -1292,8 +1435,10 @@ test -d "$root/data"
             "leader_epochs": epochs,
             "final_leader": final.node_id,
             "remote_hosts": remote_hosts,
+            "remote_platforms": remote_platforms,
             "root_locations": {str(node.node_id): node.root for node in nodes},
-            "binary_identical_on_all_hosts": True,
+            "binary_identical_on_all_hosts": len(set(expected_digests.values())) == 1,
+            "native_binary_bound_on_all_hosts": True,
             "source_and_binary_unchanged": unchanged,
             "remote_binary_sha256": remote_digests,
             "mutating_requests_retried": False,
