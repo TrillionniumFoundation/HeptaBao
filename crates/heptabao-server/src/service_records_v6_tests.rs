@@ -747,6 +747,9 @@ fn v6_projection_rejects_aggregate_multimount_overflow_before_any_object_visits(
 #[test]
 fn genuine_service_native_migration_plan_authenticates_all_source_owners_without_publishing()
 -> TestResult {
+    let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+    );
     let directory = super::super::tests::Root::new();
     let mut service = directory.service()?;
     let (key, token) = super::super::tests::bootstrap(&mut service)?;
@@ -770,6 +773,7 @@ fn genuine_service_native_migration_plan_authenticates_all_source_owners_without
     let plan = service
         .prepare_native_root_migration(&|| Ok(()))
         .map_err(|_| "prepare genuine source")?;
+    plan.deadline.check()?;
     assert_eq!(plan.source_generation, before);
     assert_eq!(plan.conditions.len(), 2);
     assert_eq!(
@@ -880,6 +884,9 @@ fn genuine_service_native_migration_plan_rejects_missing_and_tampered_staged_clo
 
 #[test]
 fn genuine_service_native_migration_plan_rejects_uncommitted_kv1_graph() -> TestResult {
+    let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+    );
     let directory = super::super::tests::Root::new();
     let mut service = directory.service()?;
     let (key, token) = super::super::tests::bootstrap(&mut service)?;
@@ -928,6 +935,183 @@ fn genuine_service_native_migration_plan_rejects_uncommitted_kv1_graph() -> Test
             .current_state_identity()
             .map_err(|_| "current identity")?,
         old
+    );
+    Ok(())
+}
+
+#[test]
+fn genuine_service_native_migration_plan_rejects_damaged_durable_source() -> TestResult {
+    let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(60),
+    );
+    // Each protected owner and the real KV1 closure must be reread even when
+    // the warm State and published root are both unchanged and authenticated.
+    for target in 0..8 {
+        for missing in [true, false] {
+            let directory = super::super::tests::Root::new();
+            let mut service = directory.service()?;
+            let (key, token) = super::super::tests::bootstrap(&mut service)?;
+            let _key = Zeroizing::new(key);
+            let token = Zeroizing::new(token);
+            assert_eq!(
+                super::super::tests::call(
+                    &mut service,
+                    "POST",
+                    "sys/mounts/source-kv1",
+                    &token,
+                    json!({"type":"kv","options":{"version":"1"}}),
+                )
+                .status,
+                204
+            );
+            assert_eq!(
+                super::super::tests::call(
+                    &mut service,
+                    "PUT",
+                    "source-kv1/item",
+                    &token,
+                    json!({"value":"source closure"}),
+                )
+                .status,
+                204
+            );
+            if target == 7 {
+                assert_eq!(super::super::tests::call(
+                    &mut service, "POST", "secret/data/owner-chunks", &token,
+                    json!({"data":{"blob":"Q".repeat(2 * crate::state_record_root::OWNER_CHUNK_BYTES)}}),
+                ).status, 200);
+            }
+            let root = service.record_root.as_ref().ok_or("source root")?.clone();
+            let reference = if target < 5 {
+                root.owners[target]
+                    .chunks
+                    .first()
+                    .cloned()
+                    .ok_or("source owner chunk")?
+            } else if target == 5 {
+                root.kv1.reference.clone().ok_or("source KV1 root")?
+            } else if target == 6 {
+                let mut block = None;
+                service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .engines
+                    .visit_record_objects(|object| {
+                        if block.is_none()
+                            && object.reference().kind == crate::state_records::ObjectKind::Block
+                        {
+                            block = Some(object.reference().clone());
+                        }
+                        Ok(())
+                    })?;
+                let block = block.ok_or("source KV1 non-root value block")?;
+                assert_ne!(
+                    root.kv1.reference.as_ref().ok_or("graph root")?.id,
+                    block.id
+                );
+                block
+            } else {
+                root.owners[2]
+                    .chunks
+                    .get(1)
+                    .cloned()
+                    .ok_or("second source engines-owner chunk")?
+            };
+            let identity = service.current_state_identity().map_err(|_| "identity")?;
+            let durable = service.durable.as_mut().ok_or("durable")?;
+            let value = if missing {
+                None
+            } else {
+                let mut bytes = Zeroizing::new(
+                    durable
+                        .get("system", &reference.resource())?
+                        .ok_or("object")?
+                        .expose()
+                        .to_vec(),
+                );
+                let last = bytes.last_mut().ok_or("nonempty object")?;
+                *last ^= 1;
+                Some(Secret::new(bytes.to_vec())?)
+            };
+            durable.apply_batch_with_compaction_in_replay_epoch(
+                root.replay_epoch,
+                "heptabao-server",
+                "system",
+                "damage-migration-source",
+                identity.digest(),
+                vec![(reference.resource(), value)],
+            )?;
+            let before = durable.generation();
+            assert!(
+                service.prepare_native_root_migration(&|| Ok(())).is_err(),
+                "damaged target {target}, missing {missing} must reject migration"
+            );
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                before
+            );
+            assert_eq!(
+                service.current_state_identity().map_err(|_| "identity")?,
+                identity
+            );
+            assert!(
+                service
+                    .durable
+                    .as_ref()
+                    .ok_or("durable")?
+                    .get("system", "state-native-v6/publication-cursor")?
+                    .is_none()
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn genuine_service_native_migration_plan_requires_original_deadline() -> TestResult {
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let _token = Zeroizing::new(token);
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    assert!(crate::request_deadline::current().is_none());
+    assert!(service.prepare_native_root_migration(&|| Ok(())).is_err());
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let shortened = RefCell::new(None);
+    let checks = std::cell::Cell::new(0_usize);
+    assert!(
+        service
+            .prepare_native_root_migration(&|| {
+                checks.set(checks.get() + 1);
+                if checks.get() == 4 {
+                    *shortened.borrow_mut() =
+                        Some(crate::request_deadline::RequestDeadlineScope::enter(
+                            std::time::Instant::now() - std::time::Duration::from_secs(1),
+                        ));
+                }
+                Ok(())
+            })
+            .is_err()
+    );
+    assert_eq!(
+        checks.get(),
+        4,
+        "expired original scope must stop immediately"
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        before
+    );
+    assert!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("durable")?
+            .get("system", "state-native-v6/publication-cursor")?
+            .is_none()
     );
     Ok(())
 }

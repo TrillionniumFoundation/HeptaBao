@@ -331,6 +331,7 @@ pub(super) struct NativeRootMigrationPlan {
     pub candidate: State,
     pub objects: BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
     pub source_generation: u64,
+    pub deadline: crate::v6_native_custody::OriginalDeadline,
     pub conditions: Vec<heptabao_durable_service::PublicationCondition>,
 }
 
@@ -387,6 +388,15 @@ impl Service {
         check: &impl Fn() -> Result<(), RecordError>,
     ) -> Result<NativeRootMigrationPlan, Response> {
         let rejected = || Response::error(503, "native migration source or custody rejected");
+        // Capture the real original request before any projection work. A caller's
+        // successful check closure cannot create or extend a request budget.
+        let deadline =
+            crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| rejected())?;
+        let check = || {
+            deadline.check().map_err(|_| RecordError::Invalid)?;
+            check()?;
+            deadline.check().map_err(|_| RecordError::Invalid)
+        };
         if self.ha.is_some() || self.recovery_required {
             return Err(rejected());
         }
@@ -451,7 +461,37 @@ impl Service {
             return Err(rejected());
         }
         let source_generation = durable.generation();
-        if source_generation == 0 {
+        // Warm owners and an unchanged root do not prove the durable source.
+        // Authenticate every source owner chunk and the entire KV1 closure with
+        // the same original budget, including missing/corrupt durable objects.
+        struct CheckedSource<'a, C> {
+            durable: &'a DurableService<AeadBarrier>,
+            check: &'a C,
+        }
+        impl<C: Fn() -> Result<(), RecordError>> RecordReader for CheckedSource<'_, C> {
+            fn read_object(
+                &self,
+                reference: &ObjectRef,
+            ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+                (self.check)()?;
+                let bytes = records::DurableReader(self.durable).read_object(reference)?;
+                (self.check)()?;
+                Ok(bytes)
+            }
+        }
+        check().map_err(|_| rejected())?;
+        records::verify_received_record_graph(
+            &old,
+            &CheckedSource {
+                durable,
+                check: &check,
+            },
+            &candidate,
+        )
+        .map_err(|_| rejected())?;
+        check().map_err(|_| rejected())?;
+        durable.verify_live_ownership().map_err(|_| rejected())?;
+        if source_generation == 0 || durable.generation() != source_generation {
             return Err(rejected());
         }
         use crate::state_record_root::OpaqueOwnerRef;
@@ -482,7 +522,7 @@ impl Service {
         };
         let recorded = candidate
             .engines
-            .rekey_root_records_checked(root.kv1_key().map_err(|_| rejected())?, check)
+            .rekey_root_records_checked(root.kv1_key().map_err(|_| rejected())?, &check)
             .map_err(|_| rejected())?;
         root.kv1 = recorded.record_root().ok_or_else(rejected)?;
         let mut objects = BTreeMap::new();
@@ -513,7 +553,7 @@ impl Service {
             .map_err(|_| rejected())?;
         let parent = root.kv2_parent_key().map_err(|_| rejected())?;
         let (opaque, graphs) = recorded
-            .project_v6_native(&parent, check, |scope, object| {
+            .project_v6_native(&parent, &check, |scope, object| {
                 stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
             })
             .map_err(|_| rejected())?;
@@ -564,12 +604,16 @@ impl Service {
         {
             return Err(rejected());
         }
+        // Final ownership/root I/O must not return a plan after the captured
+        // original request budget has elapsed.
+        check().map_err(|_| rejected())?;
         let plan = NativeRootMigrationPlan {
             root,
             bytes,
             candidate,
             objects,
             source_generation,
+            deadline,
             conditions: vec![
                 heptabao_durable_service::PublicationCondition {
                     resource: "state".into(),
