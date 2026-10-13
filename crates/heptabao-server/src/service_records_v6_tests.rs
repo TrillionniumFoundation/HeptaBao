@@ -651,3 +651,38 @@ fn v6_declared_graph_payload_and_record_budgets_fail_before_frame_copies() -> Te
     }
     Ok(())
 }
+
+#[test]
+fn actual_engine_projection_rechecks_custody_after_object_visit() -> TestResult {
+    let fixture = fixture(false)?;
+    let before = crate::secret_serde::to_vec(&fixture.logical, MAX_STATE_BYTES)
+        .map_err(|_| "serialize source")?;
+    let visited = std::cell::Cell::new(false);
+    let result = fixture.logical.project_v6_native(
+        &fixture.root.kv2_parent_key().map_err(|_| "parent key")?,
+        &|| {
+            if visited.get() {
+                Err(RecordError::Corrupt)
+            } else {
+                Ok(())
+            }
+        },
+        |_, _| {
+            visited.set(true);
+            Ok(())
+        },
+    );
+    assert!(visited.get(), "actual native object visitor must run");
+    assert!(
+        result.is_err(),
+        "revoked custody after visitor must reject metadata"
+    );
+    let after = crate::secret_serde::to_vec(&fixture.logical, MAX_STATE_BYTES)
+        .map_err(|_| "serialize source")?;
+    assert_eq!(
+        before.as_slice(),
+        after.as_slice(),
+        "source owner must remain exact"
+    );
+    Ok(())
+}

@@ -585,43 +585,76 @@ pub(crate) struct ReaderFixture {
     pub roots: Vec<crate::state_record_root_v6::Kv2GraphRef>,
     pub objects: Vec<(crate::state_record_root_v6::MountScope, Arc<StagedObject>)>,
 }
+/// Project actual runtime KV2 owners into independent native graphs. Objects
+/// leave only through the caller's checked visitor; no publication is granted.
+/// The caller must encrypt each object before retaining it outside custody.
+impl EngineState {
+    pub(crate) fn project_v6_native(
+        &self,
+        parent: &AddressKey,
+        check: &impl Fn() -> CodecResult<()>,
+        mut visit: impl FnMut(
+            &crate::state_record_root_v6::MountScope,
+            &Arc<StagedObject>,
+        ) -> CodecResult<()>,
+    ) -> CodecResult<(EngineState, Vec<crate::state_record_root_v6::Kv2GraphRef>)> {
+        check()?;
+        let mut opaque = self.clone();
+        let mut roots = Vec::new();
+        for (namespace, owner) in &mut opaque.namespaces {
+            for (mount, descriptor) in &mut owner.mounts {
+                check()?;
+                if let Backend::Kv2(engine) = &descriptor.backend {
+                    if roots.len() >= crate::state_record_root_v6::MAX_KV2_MOUNTS {
+                        return Err(RecordError::TooLarge);
+                    }
+                    let scope = crate::state_record_root_v6::MountScope {
+                        namespace: namespace.clone(),
+                        mount: mount.clone(),
+                        incarnation: descriptor.incarnation,
+                    };
+                    let graph = NativeCellGraph::encode(engine, parent, scope.borrowed(), check)?;
+                    graph.visit_objects(|object| visit(&scope, object), check)?;
+                    roots.push(crate::state_record_root_v6::Kv2GraphRef {
+                        scope,
+                        graph_format: FORMAT.into(),
+                        root: graph.root(),
+                    });
+                    descriptor.backend = Backend::Kv2(Kv2::default());
+                    check()?;
+                }
+            }
+        }
+        roots.sort_by(|a, b| a.scope.cmp(&b.scope));
+        opaque
+            .validate_v6_kv2_placeholders(
+                &roots
+                    .iter()
+                    .map(|graph| graph.scope.clone())
+                    .collect::<Vec<_>>(),
+            )
+            .map_err(|_| RecordError::Corrupt)?;
+        check()?;
+        Ok((opaque, roots))
+    }
+}
 #[cfg(test)]
 pub(crate) fn reader_fixture(
     engines: &EngineState,
     parent: &AddressKey,
 ) -> CodecResult<ReaderFixture> {
-    let mut opaque = engines.clone();
-    let mut roots = Vec::new();
     let mut objects = Vec::new();
-    for (namespace, owner) in &mut opaque.namespaces {
-        for (mount, descriptor) in &mut owner.mounts {
-            if let Backend::Kv2(engine) = &descriptor.backend {
-                let scope = crate::state_record_root_v6::MountScope {
-                    namespace: namespace.clone(),
-                    mount: mount.clone(),
-                    incarnation: descriptor.incarnation,
-                };
-                let graph = NativeGraph::encode(engine, parent, scope.borrowed())?;
-                graph.index.visit_objects(|object| {
-                    objects.push((scope.clone(), Arc::clone(object)));
-                    Ok(())
-                })?;
-                roots.push(crate::state_record_root_v6::Kv2GraphRef {
-                    scope,
-                    graph_format: FORMAT.into(),
-                    root: graph.index.root(),
-                });
-                descriptor.backend = Backend::Kv2(Kv2::default());
-            }
-        }
-    }
-    roots.sort_by(|a, b| a.scope.cmp(&b.scope));
+    let (opaque, roots) = engines.project_v6_native(parent, &|| Ok(()), |scope, object| {
+        objects.push((scope.clone(), Arc::clone(object)));
+        Ok(())
+    })?;
     Ok(ReaderFixture {
         opaque,
         roots,
         objects,
     })
 }
+
 impl NativeGraph {
     fn encode(owner: &Kv2, base: &AddressKey, input: NativeScope<'_>) -> CodecResult<Self> {
         Self::encode_checked(owner, base, input, &|| Ok(()))
