@@ -337,6 +337,67 @@ impl EngineState {
         Ok(candidate)
     }
 
+    /// Readdress the actual authenticated root-only KV1 graph for a new record
+    /// format. No publication or independent namespace custody is granted.
+    pub(crate) fn rekey_root_records_checked(
+        &self,
+        key: Arc<AddressKey>,
+        check: &impl Fn() -> std::result::Result<(), RecordError>,
+    ) -> Result<Self> {
+        check().map_err(record_error)?;
+        self.validate_record_registry()?;
+        let source = self
+            .records
+            .as_ref()
+            .ok_or_else(|| error(503, "record rekey requires an authenticated source"))?;
+        if !source.loaded_namespaces.is_empty()
+            || !self.namespace_record_owners.is_empty()
+            || self
+                .namespaces
+                .keys()
+                .any(|namespace| !namespace.is_empty())
+            || source.index.root() != source.protected.root()
+        {
+            return Err(error(
+                503,
+                "record rekey requires independent namespace custody",
+            ));
+        }
+        let mut index = Kv1Index::empty(Arc::clone(&key));
+        source
+            .protected
+            .visit_keys(|record| {
+                check()?;
+                if !record.namespace().is_empty() {
+                    return Err(RecordError::Corrupt);
+                }
+                let bytes = source.protected.get(record).ok_or(RecordError::Missing)?;
+                index = index.edit(record.clone(), Some(bytes))?.next;
+                check()
+            })
+            .map_err(record_error)?;
+        let mut objects = Vec::new();
+        index
+            .visit_objects(|object| {
+                check()?;
+                objects.push(Arc::clone(object));
+                check()
+            })
+            .map_err(record_error)?;
+        let mut candidate = self.clone();
+        candidate.records = Some(Runtime {
+            key,
+            protected: index.clone(),
+            index,
+            loaded_namespaces: BTreeSet::new(),
+            observed_lossless_json: source.observed_lossless_json,
+            pending: Mutex::new(Pending::Ready(objects)),
+        });
+        candidate.validate_record_registry()?;
+        check().map_err(record_error)?;
+        Ok(candidate)
+    }
+
     pub(crate) fn install_record_index(
         &mut self,
         key: Arc<AddressKey>,
@@ -775,6 +836,41 @@ mod tests {
         let objects = candidate.record_objects().unwrap().len();
         assert!(!call(&mut candidate, "PUT", "raw/a", json!({"value":"changed"})).mutated);
         assert_eq!(candidate.record_objects().unwrap().len(), objects);
+    }
+    #[test]
+    fn actual_record_rekey_preserves_values_and_checks_original_custody() {
+        let legacy = populated();
+        let mut original = legacy
+            .migrate_kv1_records(AddressKey::from_bytes([17; 32]))
+            .unwrap();
+        let old_root = original.record_root().unwrap();
+        let mut candidate = original
+            .rekey_root_records_checked(AddressKey::from_bytes([18; 32]), &|| Ok(()))
+            .unwrap();
+        assert_ne!(candidate.record_root().unwrap(), old_root);
+        for path in ["raw/a", "raw/false", "raw/m/x", "raw/z"] {
+            assert_eq!(
+                call(&mut candidate, "GET", path, json!({})).body,
+                call(&mut original, "GET", path, json!({})).body
+            );
+        }
+        assert_eq!(
+            call(&mut candidate, "LIST", "raw/", json!({})).body,
+            call(&mut original, "LIST", "raw/", json!({})).body
+        );
+        let calls = std::cell::Cell::new(0);
+        let denied = original.rekey_root_records_checked(AddressKey::from_bytes([19; 32]), &|| {
+            calls.set(calls.get() + 1);
+            if calls.get() > 2 {
+                Err(RecordError::Corrupt)
+            } else {
+                Ok(())
+            }
+        });
+        assert!(denied.is_err());
+        assert!(calls.get() > 2);
+        assert_eq!(original.record_root().unwrap(), old_root);
+        assert!(!candidate.record_objects().unwrap().is_empty());
     }
     #[test]
     fn metadata_without_authenticated_graph_is_not_readable_and_disable_drops_scope() {
