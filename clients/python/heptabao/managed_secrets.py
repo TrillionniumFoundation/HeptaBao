@@ -160,8 +160,11 @@ class ManagedSecrets:
                             del self.rows[path];self._save();raise BaoError('managed_secret_token_denied')
                         self.delivery([path],token_hash,end=end)
                         result=self._envelope(row['body'])
-                        result['LeaseDuration']=max(0,math.floor(min(row['wall_deadline']-time.time(),row['deadline']-time.monotonic())))
-                        if result['LeaseDuration']<=0:raise BaoError('managed_secret_lease_expired_before_delivery')
+                        remaining=min(row['wall_deadline']-time.time(),row['deadline']-time.monotonic())
+                        if remaining<=0:raise BaoError('managed_secret_lease_expired_before_delivery')
+                        # Integer metadata may floor a still-positive original
+                        # grant to zero. It never grants a new or extended TTL.
+                        result['LeaseDuration']=max(0,math.floor(remaining))
                         return result
                     del self.rows[path];row=None;self.events['invalidated']+=1;self._save()
                 elif row.get('phase')=='ready' and time.time()<row['refresh_wall']:

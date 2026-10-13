@@ -486,7 +486,7 @@ def main():
         check('template.cold_restart_persists_refreshed_static_data',json.loads((managed_state/'subscriptions.json').read_text())['rows']['apps/data/item']['body']['data']['data']=={'value':marker3})
         if pg is not None:
             check('managed.cold_restart_authoritative_reconcile',wait(lambda:template_status()['managed']['events']['reconciled']>=1,timeout=8))
-            check('managed.cold_restart_reuses_same_live_credential',(rendered/'database.env').read_text()==initial_output and pg.login(username,password))
+            check('managed.cold_restart_reuses_same_live_credential',wait(lambda:(rendered/'database.env').read_text()==initial_output and pg.login(username,password),timeout=8))
         check('template.shutdown_control_positive',request(template_port,'POST','/agent/v1/quit')[0]==200)
         check('template.actual_process_exit_zero',template_agent.wait(timeout=6)==0)
         check('template.shutdown_cleans_permissioned_destinations',all(not (rendered/job['destination_name']).exists() for job in template_jobs))
@@ -513,8 +513,9 @@ def main():
             except OSError:closed=True
             check(kind+'.listener_socket_closed',closed)
         report['status']='passed'
-    except (BaoError,OSError,ValueError,RuntimeError,subprocess.SubprocessError,KeyError,TypeError):
+    except (BaoError,OSError,ValueError,RuntimeError,subprocess.SubprocessError,KeyError,TypeError) as error:
         report['failure']='owned_runtime_check_failed'
+        report['failure_type']=type(error).__name__
     finally:
         for process in processes:
             if process.poll() is None:process.terminate()

@@ -74,6 +74,54 @@ class ManagedCustodyTests(unittest.TestCase):
         self.owner._save()
         return row
 
+    def test_subsecond_original_grant_is_live_with_zero_integer_metadata(self):
+        self.ready(deadline=100.9)
+        self.answer=lambda *args:response({'data':{}})
+        result=self.owner.secret(PATH)
+        self.assertEqual(result['Data'],{'value':'synthetic-unit-only'})
+        self.assertEqual(result['LeaseDuration'],0)
+        self.assertEqual(self.owner.delivery([PATH],TOKEN_HASH),100.9)
+        self.clock=100.9
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
+    def test_zero_metadata_cannot_release_an_expired_original_grant(self):
+        row=self.ready(deadline=100.)
+        row['body']['lease_duration']=0
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+        self.assertEqual(self.requests,[])
+
+    def test_zero_lookup_ttl_cannot_mint_reconciled_authority(self):
+        row=self.ready(phase='lookup_pending')
+        self.answer=lambda *args:response({'data':{'id':'unit-lease','ttl':0,'renewable':True}})
+        self.owner.maintain()
+        self.assertEqual(row['phase'],'lookup_pending')
+        self.assertEqual(self.owner.events['reconciled'],0)
+        with self.assertRaises(BaoError):self.owner.secret(PATH)
+        self.assertEqual(self.requests,[('POST','/v1/sys/leases/lookup')])
+
+    def test_publication_crossing_exact_lease_deadline_removes_output(self):
+        self.ready(deadline=101.)
+        test=self
+        class Directory:
+            value=None
+            def read(self,*args,**kwargs):return self.value
+            def write(self,name,value):self.value=value;test.clock=101.
+            def remove(self,name):self.value=None
+        directory=Directory()
+        renderer=templates.Templates.__new__(templates.Templates)
+        job={'destination_dir':'/synthetic','destination_name':'unit'}
+        renderer.config={'jobs':[job],'poll_interval_seconds':1}
+        renderer.next_poll=0;renderer.stop=self.owner.stop;renderer.secrets=self.owner
+        renderer.directories={'/synthetic':directory};renderer.written=set();renderer.published={}
+        renderer.publication_lock=threading.RLock()
+        renderer.events={'changed':0,'rendered':0,'blocked':0}
+        renderer._render=lambda job:(b'synthetic-only',{PATH},TOKEN_HASH,105.)
+        renderer.step()
+        self.assertIsNone(directory.value)
+        self.assertEqual(renderer.published,{})
+        self.assertEqual(renderer.events['rendered'],0)
+        self.assertEqual(renderer.events['blocked'],1)
+
     def test_cache_lookup_cannot_deliver_after_lease_expiry(self):
         self.ready(deadline=101.)
         def late_lookup(*args):
