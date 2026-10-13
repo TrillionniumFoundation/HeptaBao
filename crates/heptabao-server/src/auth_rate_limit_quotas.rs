@@ -175,6 +175,7 @@ impl AuthState {
     /// Preserve process-local quota ownership only after native readback has
     /// proved the complete Auth owner equal to the admitted candidate. Cold
     /// readers and snapshot activation do not call this hook.
+    #[cfg(feature = "fixture-native-v6-service")]
     pub(crate) fn retain_quota_runtime_owner(&mut self, candidate: &Self) -> Result<(), AuthError> {
         match (&mut self.rate_limit_quotas, &candidate.rate_limit_quotas) {
             (None, None) => Ok(()),
