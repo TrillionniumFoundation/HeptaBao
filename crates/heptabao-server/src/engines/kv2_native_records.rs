@@ -398,6 +398,37 @@ impl NativeReadView {
     pub(crate) fn has_lossless_state(&self) -> bool {
         self.0.has_lossless_import_state()
     }
+    /// Mutate only a detached owner. This grants no Service or storage authority.
+    pub(crate) fn mutate(
+        &mut self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: Timestamp,
+    ) -> Result<EngineResponse> {
+        self.0.handle_precise(method, path, body, now)
+    }
+    pub(crate) fn encode(
+        &self,
+        parent: &AddressKey,
+        scope: NativeScope<'_>,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<NativeCellGraph> {
+        NativeCellGraph::encode(&self.0, parent, scope, check)
+    }
+    #[cfg(test)]
+    pub(crate) fn fixture_lossless_import(bytes: &[u8]) -> CodecResult<Self> {
+        let owner = Kv2::from_lossless_import_json(bytes).map_err(|_| RecordError::Corrupt)?;
+        validate_owner(&owner)?;
+        Ok(Self(DetachedOwner(owner)))
+    }
+    #[cfg(test)]
+    pub(crate) fn fixture_owner(bytes: &[u8]) -> CodecResult<Self> {
+        preflight_owner(bytes)?;
+        let owner: DetachedOwner = canonical(bytes, MAX_GRAPH_BYTES)?;
+        validate_owner(&owner)?;
+        Ok(Self(owner))
+    }
 }
 
 /// Actual native codec graph for custody projection. The caller must keep the
@@ -411,7 +442,9 @@ impl NativeCellGraph {
         scope: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<Self> {
-        Ok(Self(NativeGraph::encode_checked(owner, parent, scope, check)?))
+        Ok(Self(NativeGraph::encode_checked(
+            owner, parent, scope, check,
+        )?))
     }
     pub(crate) fn root(&self) -> Kv1Root {
         self.0.index.root()

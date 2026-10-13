@@ -332,7 +332,7 @@ impl TrialDisk {
     // fencing or an authorization path for production KV2.
     fn authenticated_root(&self, key: &AddressKey) -> Result<TrialRootEnvelope, RecordError> {
         #[cfg(unix)]
-        let source = {
+        let mut source = {
             use rustix::fs::{Mode, OFlags, openat};
             let root = self.open_root_dir()?;
             let descriptor = openat(
@@ -354,7 +354,7 @@ impl TrialDisk {
             file
         };
         #[cfg(not(unix))]
-        let source = Self::open_private_regular(&self.manifest_path())?;
+        let mut source = Self::open_private_regular(&self.manifest_path())?;
         if source.metadata().map_err(|_| RecordError::Corrupt)?.len()
             > crate::state_record_root::MAX_ROOT_BYTES as u64
         {
@@ -441,35 +441,13 @@ impl TrialDisk {
         // Validate before persisting any candidate object (no orphan
         // staging side effect from a refused predecessor).
         if let Some(previous) = predecessor.as_ref() {
-            previous.visit_keys(|previous_key| {
-                let original = previous.get(previous_key).ok_or(RecordError::Corrupt)?;
-                let next = graph.get(previous_key).ok_or(RecordError::Invalid)?;
-                let original_cell = decode(previous_key, original)?;
-                let next_cell = decode(previous_key, next)?;
-                let original_versions = original_cell
-                    .entry
-                    .get("versions")
-                    .and_then(Value::as_object)
-                    .ok_or(RecordError::Corrupt)?;
-                let next_versions = next_cell
-                    .entry
-                    .get("versions")
-                    .and_then(Value::as_object)
-                    .ok_or(RecordError::Invalid)?;
-                // There is no production-grade destruction/retirement proof in
-                // this isolated trial. A new signed root cannot rewrite an
-                // acknowledged version or omit/tamper with its history.
-                // This check precedes *any* immutable object staging.
-                if next_cell.version < original_cell.version
-                    || (next_cell.version == original_cell.version && next != original)
-                    || original_versions
-                        .iter()
-                        .any(|(version, value)| next_versions.get(version) != Some(value))
-                {
-                    return Err(RecordError::Invalid);
-                }
-                Ok(())
-            })?;
+            // One authenticated root is not automatically valid KV2 state.
+            // Reopen alone verifies the object tree, not complete physical
+            // shard custody. Validate BOTH root closures and immutable
+            // predecessor continuity while this exact publication lock is held,
+            // before staging any candidate object or publishing a signed root.
+            // This remains strictly an isolated V6 trial, not production CAS.
+            crate::kv2_v6_shard_validator::validate_immutable_transition(previous, graph)?;
         }
         // Reject malformed or self-contradictory typed entries in memory,
         // before durable staging. Even if a caller signs the correct graph
@@ -593,12 +571,12 @@ impl TrialDisk {
 impl RecordReader for TrialDisk {
     fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
         #[cfg(unix)]
-        let source = {
+        let mut source = {
             let directory = self.open_objects_dir()?;
             self.open_object_at(&directory, &reference.id, false)?
         };
         #[cfg(not(unix))]
-        let source = TrialDisk::open_private_regular(&self.object_path(&reference.id))?;
+        let mut source = TrialDisk::open_private_regular(&self.object_path(&reference.id))?;
         let metadata = source.metadata().map_err(|_| RecordError::Corrupt)?;
         if !metadata.is_file() || metadata.len() != u64::from(reference.encoded_bytes) {
             return Err(RecordError::Corrupt);
@@ -1492,7 +1470,10 @@ fn kv2_v6_disk_trial_generation_cannot_erase_or_regress_committed_records()
     // publishes exactly once after the negative cases.
     let mut next = committed;
     let mut next_objects = LocalObjects(BTreeMap::new());
-    let (prior_scope, _, mut updated_entry) = decode(&protected, &first)?.into_parts();
+    let prior = decode(&protected, &first)?;
+    // Preserve the zeroizing Drop contract of the signed V6 Cell: use the
+    // audited consuming API instead of moving secret-bearing fields directly.
+    let (prior_scope, _prior_version, mut updated_entry) = prior.into_parts();
     updated_entry["current_version"] = json!(4);
     updated_entry["versions"]["4"] =
         json!({"data":{"payload":"updated".repeat(150)},"destroyed":false});
@@ -2347,7 +2328,7 @@ fn kv2_v6_disk_trial_canonical_shard_extra_data_rejected_by_closure()
     let physical = key(&sharded_version_scope(&logical, 1)?)?;
     let mut cell: Cell =
         serde_json::from_slice(graph.get(&physical).ok_or("missing physical cell")?)?;
-    cell.entry["versions"]["1"]["data"]["unauthorized_alias"] = json!(true);
+    cell.entry["versions"]["1"]["unauthorized_alias"] = json!(true);
     let raw = serde_json::to_vec(&cell)?;
     assert!(
         decode(&physical, &raw).is_ok(),
@@ -2362,7 +2343,7 @@ fn kv2_v6_disk_trial_canonical_shard_extra_data_rejected_by_closure()
     )?;
     assert!(
         validate_sharded_trial_index(&changed).is_err(),
-        "canonical physical shard gained an unauthorized data field"
+        "canonical physical shard gained an unauthorized version metadata field"
     );
     let index_key = key(&logical)?;
     for (kind, header) in [
@@ -2457,5 +2438,589 @@ fn kv2_v6_signed_trial_root_rejects_control_scope_without_shard_discriminator()
             "failed publication must leave no durable V6 root"
         );
     }
+    Ok(())
+}
+
+// R1040: the next graph may itself be completely closed and authenticated,
+// yet rewrite the previously acknowledged version-1 payload. Validate
+// monotonicity against the *original* signed root, not just each graph alone.
+#[test]
+fn kv2_v6_signed_transition_refuses_rewrite_of_acknowledged_shard()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::kv2_v6_shard_validator::validate_immutable_transition;
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xdb; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r1040".into(),
+        mount: "secret/".into(),
+        incarnation: 1040,
+        path: "retained-two-versions".into(),
+    };
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    let first = "A".repeat(2560 * 1024);
+    let second = "B".repeat(2560 * 1024);
+    stage_sharded_version(&mut graph, &mut objects, &logical, 1, first.clone())?;
+    disk.publish(&graph, &signing, 1, false)?;
+    let previous = disk.reopen(Arc::clone(&signing), 1)?;
+    stage_sharded_version(&mut graph, &mut objects, &logical, 2, second.clone())?;
+    disk.publish(&graph, &signing, 2, false)?;
+    let current = disk.reopen(Arc::clone(&signing), 2)?;
+    assert!(validate_immutable_transition(&previous, &current).is_ok());
+
+    let old_scope = sharded_version_scope(&logical, 1)?;
+    let forged = encode(
+        old_scope.clone(),
+        1,
+        json!({"current_version":1, "versions":{
+            "1":{"data":{"payload":"changed-after-ack"},"destroyed":false}
+        }}),
+    )?;
+    let mut changed = current.clone();
+    stage(
+        &mut changed,
+        &mut LocalObjects(BTreeMap::new()),
+        key(&old_scope)?,
+        Some(&forged),
+    )?;
+    assert!(
+        validate_sharded_trial_index(&changed).is_ok(),
+        "red test must reach monotonic predecessor comparison"
+    );
+    assert!(
+        validate_immutable_transition(&previous, &changed).is_err(),
+        "valid-looking changed shard must not rewrite an acknowledged version"
+    );
+    assert_eq!(sharded_payload(&current, &logical, 1)?.as_str(), first);
+    assert_eq!(sharded_payload(&current, &logical, 2)?.as_str(), second);
+    Ok(())
+}
+
+// A MAC-valid predecessor root is insufficient to authorize publication
+// if its logical shard pointer never resolved to a physical version. A new
+// candidate must not launder this invalid predecessor by silently adding
+// missing shards. The rejection must precede ALL candidate object staging.
+#[test]
+fn kv2_v6_disk_trial_rejects_signed_but_unclosed_predecessor_before_staging()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xe5; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r1050".into(),
+        mount: "secret/".into(),
+        incarnation: 1050,
+        path: "predecessor-incomplete".into(),
+    };
+    let logical_key = key(&logical)?;
+    let logical_cell = sharded_index_cell(logical.clone(), 1)?;
+    let mut incomplete = Kv1Index::empty(Arc::clone(&signing));
+    let mut pending = LocalObjects(BTreeMap::new());
+    stage(
+        &mut incomplete,
+        &mut pending,
+        logical_key.clone(),
+        Some(&logical_cell),
+    )?;
+    assert!(validate_sharded_trial_index(&incomplete).is_err());
+    disk.persist_objects(&incomplete)?;
+
+    // A synthetic privileged signer commits a correctly MAC-bound generation
+    // with a missing shard. This root authenticates, but never passed the
+    // independent V6 closure reader and must not become predecessor authority.
+    let payload = TrialPayload {
+        format: TRIAL_FORMAT.into(),
+        cluster: "synthetic-r310".into(),
+        epoch: 7,
+        generation: 1,
+        root: incomplete.root(),
+    };
+    let mac = signing.digest(ROOT_DOMAIN, &serde_json::to_vec(&payload)?)?;
+    let envelope = TrialRootEnvelope { payload, mac };
+    fs::write(disk.manifest_path(), serde_json::to_vec(&envelope)?)?;
+    assert!(disk.authenticated_root(&signing).is_ok());
+    assert!(disk.reopen(Arc::clone(&signing), 1).is_err());
+
+    // The new graph itself is fully closed, with the exact same logical
+    // pointer plus the previously absent physical version.
+    let mut next = incomplete.clone();
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage_sharded_version(&mut next, &mut objects, &logical, 1, "new-version".into())?;
+    assert_eq!(next.get(&logical_key), incomplete.get(&logical_key));
+    assert!(validate_sharded_trial_index(&next).is_ok());
+    let frozen_manifest = fs::read(disk.manifest_path())?;
+    let frozen_objects = fs::read_dir(disk.dir.join("objects"))?.count();
+
+    assert!(
+        disk.publish(&next, &signing, 2, false).is_err(),
+        "the next signed root must not repair an unclosed prior authority"
+    );
+    assert_eq!(fs::read(disk.manifest_path())?, frozen_manifest);
+    assert_eq!(
+        fs::read_dir(disk.dir.join("objects"))?.count(),
+        frozen_objects,
+        "refused predecessor must not even stage new physical shards"
+    );
+    Ok(())
+}
+
+// R1090: the real lossless KV2 bridge preserves destroyed versions and
+// per-version timestamps. A V6 indexed graph must prove their safe read
+// representation; an all-live-payload-only validator cannot migrate it.
+#[test]
+fn r1090_signed_v6_shards_accept_real_tombstone_and_timestamp()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xf1; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r1090".into(),
+        mount: "secret/".into(),
+        incarnation: 1090,
+        path: "retained-deleted-and-live".into(),
+    };
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+
+    let gone = sharded_version_scope(&logical, 1)?;
+    let gone_cell = encode(
+        gone.clone(),
+        1,
+        json!({"current_version":1,"versions":{"1":{
+            "data":null,"destroyed":true,
+            "created_time":"2026-10-12T09:00:00.123456789Z",
+            "deletion_time":""
+        }}}),
+    )?;
+    assert!(decode(&key(&gone)?, &gone_cell).is_ok());
+    stage(&mut graph, &mut objects, key(&gone)?, Some(&gone_cell))?;
+
+    let retained = sharded_version_scope(&logical, 2)?;
+    let retained_cell = encode(
+        retained.clone(),
+        2,
+        json!({"current_version":2,"versions":{"2":{
+            "data":{"payload":"retained-after-soft-deletion"},
+            "destroyed":false,
+            "created_time":"2026-10-12T09:00:01.000000001Z",
+            "deletion_time":"2026-10-13T10:00:00+09:00",
+            "source_deletion_time":"2026-10-14T10:00:00+09:00"
+        }}}),
+    )?;
+    assert!(decode(&key(&retained)?, &retained_cell).is_ok());
+    stage(
+        &mut graph,
+        &mut objects,
+        key(&retained)?,
+        Some(&retained_cell),
+    )?;
+    let index = sharded_index_cell(logical.clone(), 2)?;
+    stage(&mut graph, &mut objects, key(&logical)?, Some(&index))?;
+
+    assert!(
+        validate_sharded_trial_index(&graph).is_ok(),
+        "the closed version-shard validator must admit typed KV2 tombstones and timestamps"
+    );
+    disk.publish(&graph, &signing, 1, false)?;
+    let reopened = disk.reopen(signing, 1)?;
+    assert!(sharded_payload(&reopened, &logical, 1).is_err());
+    assert_eq!(
+        sharded_payload(&reopened, &logical, 2)?.as_str(),
+        "retained-after-soft-deletion"
+    );
+    Ok(())
+}
+
+// Source deletion times are historical replay data, not an arbitrary
+// authorization channel. Reject malformed times before a signed root, and
+// refuse extra fields despite their valid canonical JSON representation.
+#[test]
+fn r1090_source_deletion_time_type_and_unknown_authority_are_rejected()
+-> Result<(), Box<dyn std::error::Error>> {
+    let scope = sharded_version_scope(
+        &Scope {
+            namespace: "tenant-r1090-negative".into(),
+            mount: "secret/".into(),
+            incarnation: 1090,
+            path: "strict-history".into(),
+        },
+        1,
+    )?;
+    let record_key = key(&scope)?;
+    for invalid in [
+        json!(42),
+        json!("yesterday"),
+        json!({"timestamp":"2026-10-12T09:00:00Z"}),
+    ] {
+        let version_cell = encode(
+            scope.clone(),
+            1,
+            json!({"current_version":1,"versions":{"1":{
+                "data":{"payload":"known"},"destroyed":false,
+                "source_deletion_time":invalid
+            }}}),
+        )?;
+        assert!(
+            decode(&record_key, &version_cell).is_err(),
+            "malformed historical source deletion time reached an authenticated record"
+        );
+    }
+    let valid = encode(
+        scope.clone(),
+        1,
+        json!({"current_version":1,"versions":{"1":{
+            "data":{"payload":"known"},"destroyed":false,
+            "source_deletion_time":"2026-10-14T10:00:00+09:00",
+            "permission_override":"owner"
+        }}}),
+    )?;
+    assert!(decode(&record_key, &valid).is_ok());
+    // The outer codec accepts historical extensions, but the private shard
+    // signed-graph grammar must not authorize arbitrary extension metadata.
+    let logical = Scope {
+        namespace: "tenant-r1090-negative".into(),
+        mount: "secret/".into(),
+        incarnation: 1090,
+        path: "strict-history".into(),
+    };
+    let mut graph = Kv1Index::empty(private_trial_key(&AddressKey::from_bytes([0xf2; 32]))?);
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage(&mut graph, &mut objects, record_key, Some(&valid))?;
+    let indexed = sharded_index_cell(logical.clone(), 1)?;
+    stage(&mut graph, &mut objects, key(&logical)?, Some(&indexed))?;
+    assert!(
+        validate_sharded_trial_index(&graph).is_err(),
+        "unknown shard metadata acquired signed-root authority"
+    );
+    Ok(())
+}
+
+// A valid lossless OpenBao KV2 owner may have oldest_version > 1 after
+// authorized historical retirement. The *initial* private shard graph must
+// permit a closed retained suffix while rejecting a hole in that suffix.
+#[test]
+fn r1090_signed_v6_shards_accept_contiguous_retained_suffix()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xf3; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r1090-suffix".into(),
+        mount: "secret/".into(),
+        incarnation: 1090,
+        path: "oldest-version-2".into(),
+    };
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    for (version, payload) in [(2_u64, "retained-two"), (3, "retained-three")] {
+        let physical = sharded_version_scope(&logical, version)?;
+        let mut single = serde_json::Map::new();
+        single.insert(
+            version.to_string(),
+            json!({"data":{"payload":payload},"destroyed":false}),
+        );
+        let cell = encode(
+            physical.clone(),
+            version,
+            json!({"current_version":version,"versions":Value::Object(single)}),
+        )?;
+        stage(&mut graph, &mut objects, key(&physical)?, Some(&cell))?;
+    }
+    let index_key = key(&logical)?;
+    let mut index: Cell = serde_json::from_slice(&sharded_index_cell(logical.clone(), 3)?)?;
+    index.entry["versions"]
+        .as_object_mut()
+        .ok_or("index versions")?
+        .remove("1");
+    let index_bytes = serde_json::to_vec(&index)?;
+    assert!(decode(&index_key, &index_bytes).is_ok());
+    stage(
+        &mut graph,
+        &mut objects,
+        index_key.clone(),
+        Some(&index_bytes),
+    )?;
+
+    assert!(
+        validate_sharded_trial_index(&graph).is_ok(),
+        "lossless KV2 history oldest_version=2/current_version=3 is valid"
+    );
+    disk.publish(&graph, &signing, 1, false)?;
+    let original = disk.reopen(Arc::clone(&signing), 1)?;
+    assert_eq!(
+        sharded_payload(&original, &logical, 3)?.as_str(),
+        "retained-three"
+    );
+    assert!(sharded_payload(&original, &logical, 1).is_err());
+
+    let mut hole: Cell = serde_json::from_slice(&index_bytes)?;
+    let entries = hole.entry["versions"]
+        .as_object_mut()
+        .ok_or("hole versions")?;
+    entries.remove("2");
+    entries.insert(
+        "1".into(),
+        json!({"data":{"shard_path":sharded_version_scope(&logical, 1)?.path},
+               "destroyed":false}),
+    );
+    let damaged = serde_json::to_vec(&hole)?;
+    assert!(decode(&index_key, &damaged).is_ok());
+    let mut rejected = graph.clone();
+    stage(
+        &mut rejected,
+        &mut LocalObjects(BTreeMap::new()),
+        index_key,
+        Some(&damaged),
+    )?;
+    assert!(
+        validate_sharded_trial_index(&rejected).is_err(),
+        "a hole between retained version pointers must never look like retirement"
+    );
+    Ok(())
+}
+
+// R1100: migrate genuine KV2 JSON objects, not merely the synthetic
+// one-string payload shape. Signed historical versions must retain data
+// exactly, while the typed codec still refuses array/scalar data roots.
+#[test]
+fn r1100_signed_shards_preserve_arbitrary_kv2_json_object_versions()
+-> Result<(), Box<dyn std::error::Error>> {
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xa1; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r1100".into(),
+        mount: "secret/".into(),
+        incarnation: 1100,
+        path: "user-defined-complex-json".into(),
+    };
+    let first = json!({
+        "enabled": true,
+        "retry_count": 0,
+        "unauthorized_alias": true,
+        "large_integer": 9_007_199_254_740_993_u64,
+        "tags": ["🚀", false, null, 7],
+        "nested": {"array": [1, {"name": "HeptaBao"}, []], "empty": {}}
+    });
+    let second = json!({
+        "enabled": false,
+        "ratio": 1.25,
+        "numbers": [-4, 0, 9_007_199_254_740_993_u64],
+        "records": [{"id": 1, "ok": true}, {"id": 2, "ok": false}],
+        "nullable": null
+    });
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    for (version, payload) in [(1_u64, first.clone()), (2_u64, second.clone())] {
+        let scope = sharded_version_scope(&logical, version)?;
+        let mut versions = serde_json::Map::new();
+        versions.insert(
+            version.to_string(),
+            json!({
+                "data": payload,
+                "destroyed": false,
+                "created_time": "2026-10-13T00:00:00.000000001Z",
+                "deletion_time": ""
+            }),
+        );
+        let bytes = encode(
+            scope.clone(),
+            version,
+            json!({"current_version":version,"versions":Value::Object(versions)}),
+        )?;
+        assert!(decode(&key(&scope)?, &bytes).is_ok());
+        stage(&mut graph, &mut objects, key(&scope)?, Some(&bytes))?;
+    }
+    let index = sharded_index_cell(logical.clone(), 2)?;
+    stage(&mut graph, &mut objects, key(&logical)?, Some(&index))?;
+    assert!(
+        validate_sharded_trial_index(&graph).is_ok(),
+        "genuine KV2 objects must be accepted, not only synthetic payload strings"
+    );
+    disk.publish(&graph, &signing, 1, false)?;
+    let reopened = disk.reopen(signing, 1)?;
+    for (version, expected) in [(1_u64, first), (2_u64, second)] {
+        let physical = sharded_version_scope(&logical, version)?;
+        let address = key(&physical)?;
+        let decoded = decode(&address, reopened.get(&address).ok_or("missing V6 shard")?)?;
+        assert_eq!(
+            decoded.entry["versions"][version.to_string()]["data"],
+            expected,
+            "historical user KV2 JSON changed after signed-root reopen"
+        );
+    }
+    let invalid_scope = sharded_version_scope(&logical, 1)?;
+    let array = encode(
+        invalid_scope.clone(),
+        1,
+        json!({"current_version":1,"versions":{"1":{
+            "data":["not","a","kv2","object"],"destroyed":false
+        }}}),
+    )?;
+    assert!(decode(&key(&invalid_scope)?, &array).is_err());
+    Ok(())
+}
+
+// R1120 isolated pre-admission test. V1 must keep its historical <=32
+// version grammar; a distinct V2 signed discriminator can describe a high
+// *absolute* version with only one retained physical shard.
+#[test]
+fn r1120_v2_high_absolute_version_shards_have_separate_signed_authority()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::kv2_v6_shard_validator::{SHARD_INDEX_SCHEMA_V2, sharded_version_scope_v2};
+    for version in [33_u64, 10_001, i64::MAX as u64] {
+        let disk = TrialDisk::fresh()?;
+        let signing = private_trial_key(&AddressKey::from_bytes([0xb6; 32]))?;
+        let logical = Scope {
+            namespace: "r1120".into(),
+            mount: "secret/".into(),
+            incarnation: 1120,
+            path: format!("v{version}"),
+        };
+        assert!(sharded_version_scope(&logical, 33).is_err());
+        assert!(sharded_version_scope_v2(&logical, i64::MAX as u64 + 1).is_err());
+        let physical = sharded_version_scope_v2(&logical, version)?;
+        let mut graph = Kv1Index::empty(Arc::clone(&signing));
+        let mut objects = LocalObjects(BTreeMap::new());
+        let mut history = serde_json::Map::new();
+        history.insert(
+            version.to_string(),
+            json!({"data":{"value":version},"destroyed":false}),
+        );
+        let version_bytes = encode(
+            physical.clone(),
+            version,
+            json!({"current_version":version,"versions":Value::Object(history)}),
+        )?;
+        stage(
+            &mut graph,
+            &mut objects,
+            key(&physical)?,
+            Some(&version_bytes),
+        )?;
+        let mut pointers = serde_json::Map::new();
+        pointers.insert(
+            version.to_string(),
+            json!({
+                "data":{"shard_path":physical.path},"destroyed":false
+            }),
+        );
+        let index_bytes = encode(
+            logical.clone(),
+            version,
+            json!({
+                "shard_schema":SHARD_INDEX_SCHEMA_V2,
+                "current_version":version,
+                "versions":Value::Object(pointers)
+            }),
+        )?;
+        let index_key = key(&logical)?;
+        stage(
+            &mut graph,
+            &mut objects,
+            index_key.clone(),
+            Some(&index_bytes),
+        )?;
+        assert!(validate_sharded_trial_index(&graph).is_ok());
+        disk.publish(&graph, &signing, 1, false)?;
+        let reopened = disk.reopen(Arc::clone(&signing), 1)?;
+        assert_eq!(
+            reopened.get(&key(&physical)?),
+            Some(version_bytes.as_slice())
+        );
+        let cell = decode(
+            &key(&physical)?,
+            reopened.get(&key(&physical)?).ok_or("missing V2 shard")?,
+        )?;
+        assert_eq!(
+            cell.entry["versions"][version.to_string()]["data"]["value"].as_u64(),
+            Some(version)
+        );
+        // Alter only the discriminator, not the underlying authenticated
+        // graph. The historical V1 parser must still reject version >32.
+        let mut forged: Cell = serde_json::from_slice(&index_bytes)?;
+        forged.entry["shard_schema"] = json!(SHARD_INDEX_SCHEMA);
+        let forged_bytes = serde_json::to_vec(&forged)?;
+        let mut invalid = graph.clone();
+        stage(
+            &mut invalid,
+            &mut LocalObjects(BTreeMap::new()),
+            index_key,
+            Some(&forged_bytes),
+        )?;
+        assert!(validate_sharded_trial_index(&invalid).is_err());
+    }
+    Ok(())
+}
+
+// Independent negative V2 closure: a digest-valid physical version has no
+// authority by itself, a retargeted pointer cannot authorize it, and signed
+// metadata cannot acquire an unrecognized policy/retirement flag.
+#[test]
+fn r1120_v2_dangling_or_retargeted_shard_remains_unpublishable()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::kv2_v6_shard_validator::{SHARD_INDEX_SCHEMA_V2, sharded_version_scope_v2};
+    let disk = TrialDisk::fresh()?;
+    let signing = private_trial_key(&AddressKey::from_bytes([0xb7; 32]))?;
+    let logical = Scope {
+        namespace: "tenant-r1120-closed".into(),
+        mount: "secret/".into(),
+        incarnation: 33,
+        path: "ledger".into(),
+    };
+    let version = 33_u64;
+    let physical = sharded_version_scope_v2(&logical, version)?;
+    let mut entries = serde_json::Map::new();
+    entries.insert(
+        version.to_string(),
+        json!({"data":{"payload":"unchanged"},"destroyed":false}),
+    );
+    let cell = encode(
+        physical.clone(),
+        version,
+        json!({"current_version":version,"versions":Value::Object(entries)}),
+    )?;
+    let mut graph = Kv1Index::empty(Arc::clone(&signing));
+    let mut objects = LocalObjects(BTreeMap::new());
+    stage(&mut graph, &mut objects, key(&physical)?, Some(&cell))?;
+    assert!(validate_sharded_trial_index(&graph).is_err());
+    assert!(disk.publish(&graph, &signing, 1, false).is_err());
+    assert!(!disk.manifest_path().exists());
+    let index_key = key(&logical)?;
+    let mut pointers = serde_json::Map::new();
+    pointers.insert(
+        "33".into(),
+        json!({"data":{"shard_path":"invalid/00000000000000000033"},
+                "destroyed":false}),
+    );
+    let wrong = encode(
+        logical.clone(),
+        version,
+        json!({
+            "shard_schema":SHARD_INDEX_SCHEMA_V2,
+            "current_version":version, "versions":Value::Object(pointers)
+        }),
+    )?;
+    stage(&mut graph, &mut objects, index_key.clone(), Some(&wrong))?;
+    assert!(validate_sharded_trial_index(&graph).is_err());
+    assert!(disk.publish(&graph, &signing, 1, false).is_err());
+    assert!(!disk.manifest_path().exists());
+    let mut fixed: Cell = serde_json::from_slice(&wrong)?;
+    fixed.entry["versions"]["33"]["data"]["shard_path"] = json!(physical.path);
+    let valid = serde_json::to_vec(&fixed)?;
+    stage(&mut graph, &mut objects, index_key.clone(), Some(&valid))?;
+    assert!(validate_sharded_trial_index(&graph).is_ok());
+    disk.publish(&graph, &signing, 1, false)?;
+    let frozen = fs::read(disk.manifest_path())?;
+    fixed.entry["authority_extension"] = json!({"allow_retirement":true});
+    let unauthorized = serde_json::to_vec(&fixed)?;
+    let mut altered = graph.clone();
+    stage(
+        &mut altered,
+        &mut LocalObjects(BTreeMap::new()),
+        index_key,
+        Some(&unauthorized),
+    )?;
+    assert!(validate_sharded_trial_index(&altered).is_err());
+    assert!(disk.publish(&altered, &signing, 2, false).is_err());
+    assert_eq!(fs::read(disk.manifest_path())?, frozen);
+    let reopened = disk.reopen(signing, 1)?;
+    assert_eq!(reopened.get(&key(&physical)?), Some(cell.as_slice()));
     Ok(())
 }

@@ -44,6 +44,8 @@ pub(crate) struct Cell {
     pub(crate) version: u64,
     pub(crate) entry: Value,
 }
+// Authenticated V6 payloads are secret-bearing. Preserve the zeroizing
+// Drop and lossless decomposition required by the independent native reader.
 impl Drop for Cell {
     fn drop(&mut self) {
         crate::service::erase_json(&mut self.entry);
@@ -59,13 +61,6 @@ impl Cell {
             std::mem::take(&mut self.entry),
         )
     }
-}
-
-fn canonical_bytes(cell: &Cell) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-    crate::secret_serde::to_vec(cell, MAX_CELL).map_err(|error| match error {
-        crate::secret_serde::Error::TooLarge => RecordError::TooLarge,
-        crate::secret_serde::Error::Serialization => RecordError::Invalid,
-    })
 }
 
 pub(crate) fn key(scope: &Scope) -> Result<Kv1Key, RecordError> {
@@ -90,17 +85,21 @@ pub(crate) fn encode(
     version: u64,
     entry: Value,
 ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-    let cell = Cell {
+    if version == 0 || !entry.is_object() {
+        return Err(RecordError::Invalid);
+    }
+    key(&scope)?;
+    let bytes = serde_json::to_vec(&Cell {
         format: FORMAT.into(),
         scope,
         version,
         entry,
-    };
-    if version == 0 || !cell.entry.is_object() {
-        return Err(RecordError::Invalid);
+    })
+    .map_err(|_| RecordError::Invalid)?;
+    if bytes.len() > MAX_CELL {
+        return Err(RecordError::TooLarge);
     }
-    key(&cell.scope)?;
-    canonical_bytes(&cell)
+    Ok(Zeroizing::new(bytes))
 }
 
 // The KV2 API carries RFC3339 times; an empty deletion_time means no
@@ -170,6 +169,7 @@ pub(crate) fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordErro
             // this is a format integrity check, not a retention grant.
             valid_kv2_timestamp(version_fields.get("created_time"), false)
                 && valid_kv2_timestamp(version_fields.get("deletion_time"), true)
+                && valid_kv2_timestamp(version_fields.get("source_deletion_time"), true)
                 && valid_kv2_temporal_order(version_fields)
                 && destroyed.is_none_or(Value::is_boolean)
                 && data.is_none_or(|value| value.is_object() || value.is_null())
@@ -184,8 +184,10 @@ pub(crate) fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordErro
         || !current_entry
         || !canonical_history
         || !cell.entry.is_object()
-        || key(&cell.scope).as_ref() != Ok(expected)
-        || canonical_bytes(&cell)
+        || key(&cell.scope)
+            .as_ref()
+            .map_or(true, |actual| actual != expected)
+        || serde_json::to_vec(&cell)
             .map_err(|_| RecordError::Corrupt)?
             .as_slice()
             != bytes

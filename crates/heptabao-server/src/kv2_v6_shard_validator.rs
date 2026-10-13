@@ -9,9 +9,28 @@ use crate::state_records::{Kv1Index, RecordError};
 use serde_json::Value;
 
 pub(crate) const SHARD_INDEX_SCHEMA: &str = "heptabao-kv2-v6-private-sharded-index-qa-v1";
+// Separate, explicitly unadmitted QA-only schema. A V1 signed index never
+// gains authority over version >32 merely because a new reader exists.
+pub(crate) const SHARD_INDEX_SCHEMA_V2: &str = "heptabao-kv2-v6-private-sharded-index-qa-v2";
+const MAX_V2_RETAINED_SHARDS: usize = 10_000;
 const SHARD_RESERVED_MOUNT: &str = "\u{001f}shards/";
+const SHARD_RESERVED_MOUNT_V2: &str = "\u{001f}shards-v2/";
 
 pub(crate) fn sharded_version_scope(logical: &Scope, version: u64) -> Result<Scope, RecordError> {
+    derive_version_scope(logical, version, false)
+}
+
+// V2 remains a private reader/pre-admission QA grammar, not a production
+// retirement or migration capability. Its scope has a distinct physical
+// domain from V1, so no authenticated V1 page can silently become V2.
+pub(crate) fn sharded_version_scope_v2(
+    logical: &Scope,
+    version: u64,
+) -> Result<Scope, RecordError> {
+    derive_version_scope(logical, version, true)
+}
+
+fn derive_version_scope(logical: &Scope, version: u64, v2: bool) -> Result<Scope, RecordError> {
     use sha2::{Digest as _, Sha256};
     // The physical domain prefix is always well formed, so validating only
     // the derived shard key would falsely admit an invalid *logical* owner.
@@ -22,7 +41,8 @@ pub(crate) fn sharded_version_scope(logical: &Scope, version: u64) -> Result<Sco
     // other control bytes. Reject the original logical V6 scope before a
     // normalized/hash-derived physical shard could be staged or published.
     if version == 0
-        || version > 32
+        || (v2 && version > i64::MAX as u64)
+        || (!v2 && version > 32)
         || logical.namespace.chars().any(char::is_control)
         || logical.mount.chars().any(char::is_control)
         || logical.path.chars().any(char::is_control)
@@ -37,7 +57,15 @@ pub(crate) fn sharded_version_scope(logical: &Scope, version: u64) -> Result<Sco
     }
     let version_scope = Scope {
         namespace: logical.namespace.clone(),
-        mount: format!("{}{}", logical.mount, SHARD_RESERVED_MOUNT),
+        mount: format!(
+            "{}{}",
+            logical.mount,
+            if v2 {
+                SHARD_RESERVED_MOUNT_V2
+            } else {
+                SHARD_RESERVED_MOUNT
+            }
+        ),
         incarnation: logical.incarnation,
         path: format!("{digest_hex}/{version:020}"),
     };
@@ -66,9 +94,14 @@ pub(crate) fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), Recor
         let Some(schema) = cell.entry.get("shard_schema") else {
             return Ok(());
         };
-        if schema.as_str() != Some(SHARD_INDEX_SCHEMA)
-            || cell.scope.mount.contains('\u{001f}')
-            || cell.version > 32
+        let v2 = match schema.as_str() {
+            Some(SHARD_INDEX_SCHEMA) => false,
+            Some(SHARD_INDEX_SCHEMA_V2) => true,
+            _ => return Err(RecordError::Corrupt),
+        };
+        if cell.scope.mount.contains('\u{001f}')
+            || (v2 && cell.version > i64::MAX as u64)
+            || (!v2 && cell.version > 32)
         {
             return Err(RecordError::Corrupt);
         }
@@ -87,11 +120,27 @@ pub(crate) fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), Recor
             .get("versions")
             .and_then(Value::as_object)
             .ok_or(RecordError::Corrupt)?;
-        if versions.len() != cell.version as usize {
+        // The initial read-only migration may retain only a contiguous
+        // historical suffix [oldest_version, current_version]. Physical
+        // versions retired in the source V5 owner are not implicitly
+        // resurrected. Holes within the retained suffix remain forbidden.
+        // This grammar does not authorize deleting any previously signed
+        // shard: the predecessor transition guard still compares old keys.
+        if v2 && versions.len() > MAX_V2_RETAINED_SHARDS {
             return Err(RecordError::Corrupt);
         }
-        for version in 1..=cell.version {
-            let expected_scope = sharded_version_scope(&cell.scope, version)?;
+        let retained_count = u64::try_from(versions.len()).map_err(|_| RecordError::Corrupt)?;
+        let first = retained_count
+            .checked_sub(1)
+            .and_then(|distance| cell.version.checked_sub(distance))
+            .filter(|first| *first > 0)
+            .ok_or(RecordError::Corrupt)?;
+        for version in first..=cell.version {
+            let expected_scope = if v2 {
+                sharded_version_scope_v2(&cell.scope, version)?
+            } else {
+                sharded_version_scope(&cell.scope, version)?
+            };
             let pointer = versions
                 .get(&version.to_string())
                 .and_then(Value::as_object)
@@ -125,22 +174,43 @@ pub(crate) fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), Recor
                 .get(&version.to_string())
                 .and_then(Value::as_object)
                 .ok_or(RecordError::Corrupt)?;
-            let shard_data = shard_version
-                .get("data")
-                .and_then(Value::as_object)
+            let shard_data = shard_version.get("data").ok_or(RecordError::Corrupt)?;
+            // A physical shard stores the historical KV2 state, which can be
+            // an already-destroyed tombstone (null data) or a soft-deleted
+            // version with its original value and precise timestamps. The
+            // logical pointer's destroyed=false describes a *live reference*,
+            // not permission to revive a destroyed physical KV2 version.
+            //
+            // Keep this QA grammar closed: arbitrary metadata extensions
+            // could otherwise impersonate a new authorization or retention
+            // capability under a valid signed root.
+            let historical_fields = shard_version.keys().all(|field| {
+                matches!(
+                    field.as_str(),
+                    "data"
+                        | "destroyed"
+                        | "created_time"
+                        | "deletion_time"
+                        | "source_deletion_time"
+                )
+            });
+            // KV2 data may contain arbitrary user-defined JSON object fields.
+            // The old single-string payload shape was only a QA fixture.
+            // Version authority fields remain guarded by historical_fields.
+            let historical_payload = shard_data.is_null() || shard_data.is_object();
+            let destroyed = shard_version
+                .get("destroyed")
+                .and_then(Value::as_bool)
                 .ok_or(RecordError::Corrupt)?;
-            // For this test-only v1 format, one physical shard is precisely
-            // one immutable payload, not a carrier for optional authority.
             if version_cell.scope != expected_scope
                 || version_cell.version != version
                 || shard.len() != 2
                 || !shard.contains_key("current_version")
                 || !shard.contains_key("versions")
                 || shards_versions.len() != 1
-                || shard_version.len() != 2
-                || shard_version.get("destroyed") != Some(&Value::Bool(false))
-                || shard_data.len() != 1
-                || shard_data.get("payload").and_then(Value::as_str).is_none()
+                || !historical_fields
+                || !historical_payload
+                || (destroyed && !shard_data.is_null())
             {
                 return Err(RecordError::Corrupt);
             }
@@ -160,11 +230,65 @@ pub(crate) fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), Recor
     })
 }
 
+// Read-only predecessor fence, compiled in ordinary builds but NOT admitted
+// as a Service or Raft publication authorizer. Both inputs must originate from
+// separately authenticated roots supplied by their caller. A new sharded graph
+// being internally consistent cannot authorize rewriting a version that was
+// already acknowledged under an earlier authenticated graph.
+//
+// No retirement/destruction capability is represented here: every old key
+// and its complete version history remain immutable. Product KV2 requires a
+// separate authorized retirement and migration protocol before it can write V6.
+pub(crate) fn validate_immutable_transition(
+    old: &Kv1Index,
+    next: &Kv1Index,
+) -> Result<(), RecordError> {
+    validate_sharded_trial_index(old)?;
+    validate_sharded_trial_index(next)?;
+    old.visit_keys(|record_key| {
+        let previous = old.get(record_key).ok_or(RecordError::Corrupt)?;
+        let proposed = next.get(record_key).ok_or(RecordError::Invalid)?;
+        if previous == proposed {
+            return Ok(());
+        }
+        // Physical version shards are immutable once acknowledged, even if
+        // a forged replacement is individually valid and correctly indexed.
+        if record_key.mount().chars().any(char::is_control) {
+            return Err(RecordError::Invalid);
+        }
+        let before = decode(record_key, previous)?;
+        let after = decode(record_key, proposed)?;
+        if before.scope != after.scope
+            || after.version <= before.version
+            || before.entry.get("shard_schema") != after.entry.get("shard_schema")
+        {
+            return Err(RecordError::Invalid);
+        }
+        let original_versions = before
+            .entry
+            .get("versions")
+            .and_then(Value::as_object)
+            .ok_or(RecordError::Corrupt)?;
+        let candidate_versions = after
+            .entry
+            .get("versions")
+            .and_then(Value::as_object)
+            .ok_or(RecordError::Invalid)?;
+        if original_versions
+            .iter()
+            .any(|(version, history)| candidate_versions.get(version) != Some(history))
+        {
+            return Err(RecordError::Invalid);
+        }
+        Ok(())
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn sharded_version_scope_rejects_unauthorized_logical_scope() -> Result<(), RecordError> {
+    fn sharded_version_scope_rejects_unauthorized_logical_scope() {
         let logical = Scope {
             namespace: "tenant".into(),
             mount: "secret/".into(),
@@ -201,10 +325,9 @@ mod tests {
         }
         assert!(sharded_version_scope(&logical, 0).is_err());
         assert!(sharded_version_scope(&logical, 33).is_err());
-        let first = key(&sharded_version_scope(&logical, 1)?)?;
-        let second = key(&sharded_version_scope(&logical, 2)?)?;
+        let first = key(&sharded_version_scope(&logical, 1).unwrap()).unwrap();
+        let second = key(&sharded_version_scope(&logical, 2).unwrap()).unwrap();
         assert!(first != second, "version physical identifiers must differ");
-        Ok(())
     }
 
     // Ordinary Kv1Key admits non-NUL control characters, but a V6 logical
