@@ -355,9 +355,11 @@ mod service_tests {
             let rule = format!("sys/quotas/rate-limit/{mount}");
             let settings =
                 json!({"path":format!("auth/{mount}/"),"role":"limited","rate":1,"interval":"1h"});
+            let created = call(&mut service, "POST", &rule, &admin, settings.clone());
             assert_eq!(
-                call(&mut service, "POST", &rule, &admin, settings.clone()).status,
-                204
+                created.status, 204,
+                "quota create errors: {:?}",
+                created.body["errors"]
             );
             let login = format!("auth/{mount}/login");
             assert_eq!(
@@ -546,16 +548,17 @@ mod service_tests {
             204
         );
         let previous = service.state.clone().ok_or("previous state")?;
+        let created = call(
+            &mut service,
+            "POST",
+            "sys/quotas/rate-limit/retained",
+            &admin,
+            json!({"path":"auth/forms/login","rate":1,"interval":"1h"}),
+        );
         assert_eq!(
-            call(
-                &mut service,
-                "POST",
-                "sys/quotas/rate-limit/retained",
-                &admin,
-                json!({"path":"auth/forms/login","rate":1,"interval":"1h"})
-            )
-            .status,
-            204
+            created.status, 204,
+            "quota create errors: {:?}",
+            created.body["errors"]
         );
         let current = service.state.clone().ok_or("current state")?;
         assert_eq!(current.schema, RATE_LIMIT_QUOTA_STATE_SCHEMA);
