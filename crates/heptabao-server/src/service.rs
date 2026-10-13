@@ -3454,6 +3454,21 @@ impl Service {
             ..request
         };
 
+        // The listener may decode form fields for a syntactic login carrier,
+        // but only the synchronized live native AppRole mount can consume them.
+        // This runs under the ordinary Service writer, after HA forwarding and
+        // canonical namespace/path resolution, before auth/quota or any effect.
+        if logical_data
+            .as_ref()
+            .is_some_and(|data| data.is_approle_form())
+            && self
+                .state
+                .as_ref()
+                .is_some_and(|state| !state.auth.is_approle_login_route(namespace, method, path))
+        {
+            return Response::error(400, "AppRole form requires an actual AppRole login mount");
+        }
+
         if let Some(response) = self.immutable_approle_lookup_response(&request) {
             return response;
         }
@@ -10062,6 +10077,10 @@ mod auth_mount_ttl_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_approle_defaults_tests.rs"]
 mod approle_defaults_tests;
+
+#[cfg(test)]
+#[path = "service_approle_form_tests.rs"]
+mod approle_form_tests;
 
 #[cfg(test)]
 #[path = "service_userpass_native_tests.rs"]

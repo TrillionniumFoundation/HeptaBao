@@ -37,6 +37,9 @@ use zeroize::{Zeroize, Zeroizing};
 
 #[path = "http_approle_form.rs"]
 mod approle_form;
+#[cfg(test)]
+#[path = "http_approle_mount_tests.rs"]
+mod approle_mount_tests;
 #[path = "http_help.rs"]
 pub(crate) mod help;
 #[path = "http_ocsp.rs"]
@@ -1431,7 +1434,7 @@ fn drain_bounded_413_body(
 
 // Only discard an unambiguous, already bounded ordinary body. This operation
 // has no JSON decoding, credentials, storage owner or authority to execute.
-fn discard_rejected_consistency_body(
+fn discard_rejected_ordinary_body(
     reader: &mut impl Read,
     headers: &BTreeMap<String, Zeroizing<String>>,
     already_received: usize,
@@ -1686,7 +1689,7 @@ fn read_request_with_ui(
                     Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
                 );
             if !native_upload {
-                discard_rejected_consistency_body(
+                discard_rejected_ordinary_body(
                     reader,
                     &map,
                     bytes.len().saturating_sub(header_end),
@@ -1815,14 +1818,22 @@ fn read_request_with_ui(
     );
     let ocsp_form_media = ocsp::post_route(&method, route)
         && ocsp::form_media(map.get("content-type").map(|media| media.as_str()));
-    // This form codec is intentionally restricted to the literal default
-    // AppRole mount. Other authentication backends cannot opt into it.
+    // Decode only a bounded login carrier. Body-bound media metadata makes
+    // the actual synchronized AppRole mount kind a Service admission condition,
+    // including on the active node after ordinary standby forwarding.
     let approle_form = approle_form::selected(
         &method,
         route,
         map.get("content-type").map(|media| media.as_str()),
     );
     if approle_form && !raw_query.is_empty() {
+        discard_rejected_ordinary_body(
+            reader,
+            &map,
+            bytes.len().saturating_sub(header_end),
+            start,
+            timeout,
+        );
         return Err(bad("AppRole form must not combine query credentials"));
     }
     let maximum_body = if native_snapshot {
@@ -1899,6 +1910,13 @@ fn read_request_with_ui(
                 && v.split(';').next() != Some("application/merge-patch+json")
         })
     {
+        discard_rejected_ordinary_body(
+            reader,
+            &map,
+            bytes.len().saturating_sub(header_end),
+            start,
+            timeout,
+        );
         return Err(bad("JSON content type required"));
     }
     while !native_snapshot && bytes.len() < header_end + length {
@@ -2074,19 +2092,21 @@ fn read_request_with_ui(
     let mut logical_data = crate::request_metadata::DataFrame::default();
     if !snapshot_route {
         for (name, value) in &map {
-            if matches!(
-                name.as_str(),
-                "authorization"
-                    | "x-vault-token"
-                    | "x-vault-namespace"
-                    | "x-vault-wrap-ttl"
-                    | "content-length"
-                    | "content-type"
-                    | "host"
-                    | "connection"
-                    | "transfer-encoding"
-                    | "expect"
-            ) {
+            if name == crate::request_metadata::AUTH_FORM_CODEC_HEADER
+                || matches!(
+                    name.as_str(),
+                    "authorization"
+                        | "x-vault-token"
+                        | "x-vault-namespace"
+                        | "x-vault-wrap-ttl"
+                        | "content-length"
+                        | "content-type"
+                        | "host"
+                        | "connection"
+                        | "transfer-encoding"
+                        | "expect"
+                )
+            {
                 continue;
             }
             logical_data
@@ -2106,6 +2126,15 @@ fn read_request_with_ui(
                 .or_default()
                 .push(decode_query(value)?);
         }
+    }
+    if approle_form {
+        // A fixed reserved data-only codec marker is bound to this method/path/namespace
+        // and decoded body. Existing authenticated forwarding preserves it.
+        // It grants no auth authority; the live mount is checked before effects.
+        logical_data.headers.insert(
+            crate::request_metadata::AUTH_FORM_CODEC_HEADER.to_owned(),
+            vec!["approle-form-v1".to_owned()],
+        );
     }
     logical_data.validate().map_err(bad)?;
     let logical_data = (!logical_data.headers.is_empty() || !logical_data.query.is_empty())

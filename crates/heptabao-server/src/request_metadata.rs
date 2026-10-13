@@ -4,6 +4,8 @@ use serde_json::Value;
 use std::{cell::RefCell, collections::BTreeMap};
 use zeroize::Zeroize;
 pub(crate) type Headers = BTreeMap<String, Vec<String>>;
+// Reserved transport data; ordinary HTTP and workflow headers cannot set it.
+pub(crate) const AUTH_FORM_CODEC_HEADER: &str = "x-heptabao-internal-auth-form-codec";
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct QueryProfile {
@@ -30,6 +32,12 @@ impl std::fmt::Debug for DataFrame {
     }
 }
 impl DataFrame {
+    pub(crate) fn is_approle_form(&self) -> bool {
+        self.headers.get(AUTH_FORM_CODEC_HEADER).is_some_and(
+            |values| matches!(values.as_slice(), [value] if value == "approle-form-v1"),
+        )
+    }
+
     pub(crate) fn validate(&self) -> Result<(), &'static str> {
         validate_headers(&self.headers)?;
         if self.query.len() > 64 {

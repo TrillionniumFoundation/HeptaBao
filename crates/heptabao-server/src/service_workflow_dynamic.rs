@@ -1356,6 +1356,11 @@ impl Step {
                 return Err(bad_profile("logical header count exceeds bound"));
             }
             for (name, value) in object {
+                if name.eq_ignore_ascii_case(crate::request_metadata::AUTH_FORM_CODEC_HEADER) {
+                    return Err(bad_profile(
+                        "workflow cannot set a reserved transport codec header",
+                    ));
+                }
                 let values = value
                     .as_array()
                     .filter(|values| {
@@ -1579,5 +1584,47 @@ impl Drop for Resolved {
     fn drop(&mut self) {
         erase_json(&mut self.step.body);
         erase_json(&mut self.history);
+    }
+}
+
+#[cfg(test)]
+mod approle_form_tests {
+    use super::*;
+    #[test]
+    fn workflow_cannot_forge_transport_codec_but_content_type_is_data() {
+        let context = Context {
+            input: BTreeMap::new(),
+            requests: BTreeMap::new(),
+            responses: BTreeMap::new(),
+            meter: cel_consumer::Meter::new(std::time::Instant::now()),
+        };
+        for name in [
+            crate::request_metadata::AUTH_FORM_CODEC_HEADER.to_owned(),
+            crate::request_metadata::AUTH_FORM_CODEC_HEADER.to_ascii_uppercase(),
+            "content-type".to_owned(),
+        ] {
+            let step = Step {
+                name: "store/kv".into(),
+                flow_when: Expr::Literal(json!(true)),
+                when: Expr::Literal(json!(true)),
+                operation: Expr::Literal(json!("update")),
+                path: Expr::Literal(json!("secret/data/key")),
+                body: Expr::Literal(json!({"data":{"value":"synthetic"}})),
+                allow_failure: Expr::Literal(json!(false)),
+                token: None,
+                headers: Some(Expr::Literal(json!({name.clone(): ["approle-form-v1"]}))),
+            };
+            match step.resolved_headers(&context) {
+                Err(error) => {
+                    assert_ne!(name, "content-type");
+                    assert_eq!(error.status, 400);
+                }
+                Ok(Some(data)) => {
+                    assert_eq!(name, "content-type");
+                    assert!(!data.is_approle_form());
+                }
+                Ok(None) => panic!("declared headers disappeared"),
+            }
+        }
     }
 }

@@ -17,6 +17,11 @@ const INDEX_RESPONSE_MAGIC: &[u8; 5] = b"HBFS2";
 const LEGACY_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ5";
 const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ8";
 const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS6";
+// AppRole form metadata requires a mount-aware receiver. Dedicated request
+// framing makes older peers refuse before auth/plugin dispatch, including
+// during the explicitly enabled legacy rolling transition.
+const FORM_INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFA1";
+const FORM_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFA2";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
@@ -234,6 +239,8 @@ pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
         || encoded.starts_with(PEER_REQUEST_MAGIC)
         || encoded.starts_with(INDEX_REQUEST_MAGIC)
         || encoded.starts_with(UNWRAP_REQUEST_MAGIC)
+        || encoded.starts_with(FORM_INDEX_REQUEST_MAGIC)
+        || encoded.starts_with(FORM_UNWRAP_REQUEST_MAGIC)
         || encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC)
 }
 
@@ -520,11 +527,15 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     if wrap_ttl_seconds.is_some_and(|ttl| ttl > 32 * 24 * 3600) {
         return Err("HA wrapping TTL is invalid".into());
     }
+    let approle_form = logical_data
+        .as_ref()
+        .is_some_and(crate::request_metadata::DataFrame::is_approle_form);
     encode(
-        if full_reply {
-            UNWRAP_REQUEST_MAGIC
-        } else {
-            INDEX_REQUEST_MAGIC
+        match (approle_form, full_reply) {
+            (true, true) => FORM_UNWRAP_REQUEST_MAGIC,
+            (true, false) => FORM_INDEX_REQUEST_MAGIC,
+            (false, true) => UNWRAP_REQUEST_MAGIC,
+            (false, false) => INDEX_REQUEST_MAGIC,
         },
         &ForwardRequestRef {
             cluster_id,
@@ -561,11 +572,18 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     if encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC) {
         return Err("HA original stored reply requires Q7 before consumption".into());
     }
-    let unwrap_response = encoded.starts_with(UNWRAP_REQUEST_MAGIC);
-    let index_response = encoded.starts_with(INDEX_REQUEST_MAGIC) || unwrap_response;
+    let form_index = encoded.starts_with(FORM_INDEX_REQUEST_MAGIC);
+    let form_unwrap = encoded.starts_with(FORM_UNWRAP_REQUEST_MAGIC);
+    let approle_form_framing = form_index || form_unwrap;
+    let unwrap_response = encoded.starts_with(UNWRAP_REQUEST_MAGIC) || form_unwrap;
+    let index_response = encoded.starts_with(INDEX_REQUEST_MAGIC) || form_index || unwrap_response;
     let with_peer = encoded.starts_with(PEER_REQUEST_MAGIC);
     let wrapped = encoded.starts_with(WRAPPED_REQUEST_MAGIC);
-    let magic = if unwrap_response {
+    let magic = if form_unwrap {
+        FORM_UNWRAP_REQUEST_MAGIC
+    } else if form_index {
+        FORM_INDEX_REQUEST_MAGIC
+    } else if unwrap_response {
         UNWRAP_REQUEST_MAGIC
     } else if index_response {
         INDEX_REQUEST_MAGIC
@@ -626,6 +644,14 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     validate_client_certificates(request.client_certificates.as_deref())?;
     if let Some(data) = &request.logical_data {
         data.validate().map_err(str::to_owned)?;
+    }
+    if request
+        .logical_data
+        .as_ref()
+        .is_some_and(crate::request_metadata::DataFrame::is_approle_form)
+        != approle_form_framing
+    {
+        return Err("HA AppRole form requires mount-aware request framing".into());
     }
     Ok(request)
 }
@@ -1798,3 +1824,7 @@ mod sdk_response_header_tests {
 #[cfg(test)]
 #[path = "ha_lossless_json_tests.rs"]
 mod lossless_json_tests;
+
+#[cfg(test)]
+#[path = "ha_forward_approle_form_tests.rs"]
+mod approle_form_tests;

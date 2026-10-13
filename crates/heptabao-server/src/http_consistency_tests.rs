@@ -359,9 +359,9 @@ fn rejected_consistency_body_discard_stops_on_expiry_and_io_error() {
     }
     let headers = BTreeMap::from([("content-length".to_owned(), Zeroizing::new("4".to_owned()))]);
     let mut reader = FailingReader(0);
-    discard_rejected_consistency_body(&mut reader, &headers, 0, Instant::now(), Duration::ZERO);
+    discard_rejected_ordinary_body(&mut reader, &headers, 0, Instant::now(), Duration::ZERO);
     assert_eq!(reader.0, 0);
-    discard_rejected_consistency_body(
+    discard_rejected_ordinary_body(
         &mut reader,
         &headers,
         0,
@@ -369,7 +369,7 @@ fn rejected_consistency_body_discard_stops_on_expiry_and_io_error() {
         Duration::from_secs(1),
     );
     assert_eq!(reader.0, 1);
-    discard_rejected_consistency_body(
+    discard_rejected_ordinary_body(
         &mut reader,
         &headers,
         4,

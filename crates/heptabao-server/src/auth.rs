@@ -3497,6 +3497,22 @@ impl AuthState {
         )
     }
 
+    /// Body codec selection never determines the authentication engine.
+    /// Resolve the current exact mount in the synchronized namespace.
+    pub(crate) fn is_approle_login_route(&self, namespace: &str, method: &str, path: &str) -> bool {
+        let Some(mount) = path
+            .strip_prefix("auth/")
+            .and_then(|path| path.strip_suffix("/login"))
+        else {
+            return false;
+        };
+        matches!(method, "POST" | "PUT")
+            && self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .is_some_and(|entry| entry.kind == "approle")
+    }
+
     /// A native catalog owner, independent of mutable users, tokens and ACLs.
     pub(crate) fn native_remount_owner(
         &self,

@@ -1,13 +1,16 @@
-//! Strict URL-encoded AppRole ingress for the default, explicitly known
-//! AppRole mount only. Never select a general login/plugin route by suffix.
-//! Custom AppRole mounts remain unsupported for this media type until the
-//! mounted engine's kind can be established at the authenticated Service layer.
+//! Strict URL-encoded AppRole request carrier. Syntactic login selection is
+//! only a body codec: body-bound content-type metadata reaches the ordinary
+//! Service boundary, which checks the actual live AppRole mount before effects.
+//! Unknown mounts and other authentication engines never acquire form authority.
 use serde_json::{Map, Value};
 use zeroize::Zeroizing;
 
 pub(super) fn selected(method: &str, route: &str, content_type: Option<&str>) -> bool {
     matches!(method, "POST" | "PUT")
-        && route == "auth/approle/login"
+        && route
+            .strip_prefix("auth/")
+            .and_then(|path| path.strip_suffix("/login"))
+            .is_some_and(|mount| !mount.is_empty() && mount.split('/').all(|part| !part.is_empty()))
         && content_type.is_some_and(|value| {
             value.split(';').next().is_some_and(|media| {
                 media
@@ -133,7 +136,7 @@ mod tests {
     }
 
     #[test]
-    fn only_default_approle_login_may_select_form_codec() {
+    fn form_codec_selects_only_syntactic_login_carriers() {
         assert!(selected(
             "POST",
             "auth/approle/login",
@@ -144,12 +147,14 @@ mod tests {
             "auth/approle/login",
             Some("application/x-www-form-urlencoded; charset=UTF-8")
         ));
-        for route in [
-            "auth/userpass/login",
-            "auth/kubernetes/login",
-            "auth/other/login",
-            "auth/approle/role",
-        ] {
+        for route in ["auth/custom/login", "auth/team/custom/login"] {
+            assert!(selected(
+                "POST",
+                route,
+                Some("application/x-www-form-urlencoded")
+            ));
+        }
+        for route in ["auth/approle/role", "secret/login", "auth//login"] {
             assert!(!selected(
                 "POST",
                 route,
@@ -184,12 +189,12 @@ mod tests {
     }
 
     #[test]
-    fn actual_parser_rejects_ambiguous_form_and_unrelated_auth_mounts() {
+    fn actual_parser_rejects_ambiguous_form_carriers() {
         for (path, payload) in [
             ("auth/approle/login", b"role_id=one&role_id=two".as_slice()),
             ("auth/approle/login", b"role_id=one&secret_id=%ZZ"),
-            ("auth/other/login", b"role_id=one&secret_id=two"),
-            ("auth/userpass/login", b"role_id=one&secret_id=two"),
+            ("auth/custom/login", b"role_id=one&role_id=two"),
+            ("auth/team/custom/login", b"role_id=one&secret_id=%ZZ"),
         ] {
             let bytes = request(path, "application/x-www-form-urlencoded", payload);
             assert!(
@@ -199,7 +204,7 @@ mod tests {
                     false
                 )
                 .is_err(),
-                "ambiguous or unrelated AppRole form was admitted"
+                "ambiguous AppRole form was admitted"
             );
         }
     }
