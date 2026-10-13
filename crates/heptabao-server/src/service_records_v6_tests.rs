@@ -658,8 +658,9 @@ fn actual_engine_projection_rechecks_custody_after_object_visit() -> TestResult 
     let before = crate::secret_serde::to_vec(&fixture.logical, MAX_STATE_BYTES)
         .map_err(|_| "serialize source")?;
     let visited = std::cell::Cell::new(false);
+    let parent = fixture.root.kv2_parent_key().map_err(|_| "parent key")?;
     let result = fixture.logical.project_v6_native(
-        &fixture.root.kv2_parent_key().map_err(|_| "parent key")?,
+        parent.as_ref(),
         &|| {
             if visited.get() {
                 Err(RecordError::Corrupt)
