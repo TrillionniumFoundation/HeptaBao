@@ -153,7 +153,7 @@ fn valid_name(name: &str) -> Result<(), AuthError> {
     Ok(())
 }
 impl AuthState {
-    pub(super) fn ensure_rate_limit_quotas_allow_remount(
+    pub(crate) fn ensure_rate_limit_quotas_allow_remount(
         &self,
         namespace: &str,
         mount: &str,
