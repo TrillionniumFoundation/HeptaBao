@@ -17,6 +17,7 @@ import time
 
 from .transport import BaoError, Client, SafeArgumentParser, canonical, endpoint, key_path, private_read, private_json
 from .private_state import StateDirectory, token_snapshot, read_trusted_ca
+from .deadline_transport import DeadlineClient
 
 
 @dataclass(frozen=True, repr=False)
@@ -34,6 +35,7 @@ class AgentConfig:
     max_token_ttl_seconds: int = 3600
     max_authentications: int = 32
     max_runtime_seconds: int = 3600
+    listener: dict | None = None
 
     @classmethod
     def load(cls, path: str):
@@ -49,6 +51,11 @@ class AgentConfig:
             raise BaoError('invalid_agent_configuration') from None
 
     def validate(self):
+        if self.listener is not None:
+            from .local_api import validate_listener
+            from .proxy import validate_routes
+            listener=validate_listener(self.listener)
+            validate_routes(listener)
         if endpoint(self.address) != self.address.rstrip('/'):
             # Normalize only an absent standard port, not paths or credentials.
             endpoint(self.address)
@@ -82,7 +89,9 @@ class AgentConfig:
     def binding(self):
         # Public configuration and trust-root bytes, not credential hashes.
         ca = read_trusted_ca(self.ca_file)
-        fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
+        # Listener changes do not alter the existing auto-auth/sink custody
+        # binding. Preserve byte-for-byte legacy fields for listener=None.
+        fields = {name: getattr(self, name) for name in self.__dataclass_fields__ if name != 'listener'}
         fields['ca_sha256'] = hashlib.sha256(ca).hexdigest()
         return hashlib.sha256(canonical(fields)).hexdigest()
 
@@ -106,6 +115,7 @@ class Agent:
     def __init__(self, config: AgentConfig, directory: StateDirectory, *, client_factory=Client,
                  wall=time.time, monotonic=time.monotonic):
         config.validate()
+        if client_factory is Client:client_factory=DeadlineClient
         self.config, self.directory = config, directory
         self._trusted_ca = read_trusted_ca(config.ca_file)
         self.binding = config.binding()
@@ -266,22 +276,34 @@ def main(argv=None):
     args = parser.parse_args(argv)
     stop = threading.Event()
     handlers = {}
+    local_api = None
     try:
         config = AgentConfig.load(args.config)
+        if args.once and config.listener is not None:
+            raise BaoError('agent_once_listener_not_supported')
         for sig in (signal.SIGINT, signal.SIGTERM):
             handlers[sig] = signal.signal(sig, lambda *_: stop.set())
         with StateDirectory(config.state_dir, writer=True) as directory:
             agent = Agent(config, directory)
             end = time.monotonic() + config.max_runtime_seconds
             try:
+                if config.listener is not None:
+                    from .local_api import LocalAPI
+                    local_api=LocalAPI(config.listener,config,stop,'agent')
+                    local_api.start()
                 while not stop.is_set() and time.monotonic() < end:
                     agent.step()
                     if args.once:
                         return 0
                     stop.wait(config.interval_seconds)
             finally:
-                if not args.once:
-                    agent.stop()
+                try:
+                    if local_api is not None:
+                        local_api.close()
+                        local_api=None
+                finally:
+                    if not args.once:
+                        agent.stop()
         return 0
     except (BaoError, OSError, ValueError, TypeError):
         # No exception/HTTP text, token, path, or credentials on diagnostics.
