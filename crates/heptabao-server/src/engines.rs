@@ -34,6 +34,7 @@ mod help;
 pub(crate) mod kubernetes;
 pub(crate) mod kubernetes_artifact;
 mod kv;
+pub use kv::native_records as kv2_native_records;
 #[path = "engine_kv2_import.rs"]
 mod kv2_import;
 #[cfg(test)]

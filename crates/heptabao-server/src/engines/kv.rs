@@ -5,6 +5,9 @@ use crate::auth::Timestamp;
 pub(super) mod lossless;
 use lossless::{EntryPrecision, VersionPrecision};
 
+#[path = "kv2_native_records.rs"]
+pub mod native_records;
+
 fn nanos_is_zero(value: &u32) -> bool {
     *value == 0
 }
