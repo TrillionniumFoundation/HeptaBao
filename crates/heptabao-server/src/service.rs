@@ -4961,6 +4961,10 @@ impl Service {
                 Some(root) => root,
                 None => return Some(Response::error(503, "native point root unavailable")),
             };
+            let nonce = self.unseal_nonce.clone();
+            if let Err(error) = authority.check(state, &state.auth, &nonce) {
+                return Some(error);
+            }
             let observations = Arc::clone(&self.native_payload_observations);
             let durable = match self.durable.as_mut() {
                 Some(durable) => durable,
@@ -4974,7 +4978,6 @@ impl Service {
             {
                 return Some(Response::error(503, "native point source root changed"));
             }
-            let nonce = self.unseal_nonce.clone();
             let source =
                 match native_blob_source::NativeSource::new_checked(durable, deadline, || {
                     authority
@@ -4986,7 +4989,6 @@ impl Service {
                         return Some(Response::error(503, "native point source custody rejected"));
                     }
                 };
-            use crate::v6_read_validation::ObjectSource;
             let result = state.engines.read_native_paged(
                 request.namespace,
                 request.method,
@@ -4994,7 +4996,7 @@ impl Service {
                 request.body,
                 at,
                 |scope, reference| {
-                    source.read(
+                    source.read_paged_payload(
                         &crate::state_record_root_v6::ObjectDomain::Kv2(scope.clone()),
                         reference,
                     )

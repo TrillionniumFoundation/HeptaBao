@@ -466,7 +466,7 @@ fn validate_native_root_migration_plan(
 }
 
 impl Service {
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(test)]
     pub(super) fn prepare_native_root_migration(
         &mut self,
         check: &impl Fn() -> Result<(), RecordError>,
@@ -758,12 +758,12 @@ pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> S
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
 const NATIVE_SIDE_ROOT: &str = "state-native-v6/root";
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(test)]
 struct NativeDurableSource<'a> {
     durable: &'a DurableService<AeadBarrier>,
     deadline: crate::v6_native_custody::OriginalDeadline,
 }
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(test)]
 impl ObjectSource for NativeDurableSource<'_> {
     fn read(
         &self,

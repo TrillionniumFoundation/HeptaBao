@@ -1,7 +1,6 @@
 //! Point payload reads retain the already consumed affine request owner.
 use super::*;
 use crate::state_record_root_v6::ObjectDomain;
-use crate::v6_read_validation::ObjectSource;
 
 impl Service {
     pub(super) fn dispatch_native_paged_request(
@@ -61,7 +60,7 @@ impl Service {
             request.path,
             request.body,
             at,
-            |scope, reference| source.read(&ObjectDomain::Kv2(scope.clone()), reference),
+            |scope, reference| source.read_paged_payload(&ObjectDomain::Kv2(scope.clone()), reference),
         );
         drop(source);
         if let Err(error) = authority.check(candidate, &actual_auth, &nonce) {

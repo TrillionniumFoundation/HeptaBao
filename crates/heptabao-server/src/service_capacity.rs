@@ -230,6 +230,8 @@ impl Service {
             "native_kv2_payload_blocks_opened": point_observations[1],
             "native_kv2_payload_ciphertext_bytes_read": point_observations[2],
             "native_kv2_payload_plaintext_bytes_opened": point_observations[3],
+            "native_payload_observation_scope": "typed-payload-source-success-only",
+            "native_payload_zero_opened_proves_no_physical_read": false,
             "state_size_basis": size_basis,
             "durable_payload_bytes": capacity.logical_payload_bytes,
             "durable_artifact_limit_bytes": capacity.max_file_bytes,

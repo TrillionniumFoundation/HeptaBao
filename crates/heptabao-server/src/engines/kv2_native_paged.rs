@@ -556,6 +556,7 @@ impl NativeGraph {
 }
 
 impl NativeCellGraph {
+    #[cfg(test)]
     pub(crate) fn graph_format(&self) -> &str {
         &self.0.format
     }
@@ -663,6 +664,7 @@ impl NativeReadView {
         self.pending.erase_payloads();
         Ok(())
     }
+    #[cfg(test)]
     pub(super) fn erase_hydrated_payloads(&mut self) {
         for entry in self.owner.entries.values_mut() {
             for version in entry.versions.values_mut() {

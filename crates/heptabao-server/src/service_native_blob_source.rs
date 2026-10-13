@@ -26,9 +26,12 @@ impl PayloadObservations {
     }
     fn pinned(&self, bytes: usize) {
         self.blocks_pinned.fetch_add(1, Ordering::Relaxed);
-        self.ciphertext_bytes_read.fetch_add(bytes as u64, Ordering::Relaxed);
+        let _ = bytes;
     }
-    fn opened(&self, bytes: usize) {
+    fn opened(&self, bytes: usize, ciphertext_bytes: usize) {
+        // Bytes count only actual successfully read/AEAD-opened payloads.
+        // Pinning metadata/locators and failed delivery do not mint read proof.
+        self.ciphertext_bytes_read.fetch_add(ciphertext_bytes as u64, Ordering::Relaxed);
         self.blocks_opened.fetch_add(1, Ordering::Relaxed);
         self.plaintext_bytes_opened.fetch_add(bytes as u64, Ordering::Relaxed);
     }
@@ -206,12 +209,6 @@ impl<'a> NativeSource<'a> {
         before().map_err(|_| RecordError::Invalid)
     }
 
-    pub(super) fn new(
-        durable: &'a mut DurableService<AeadBarrier>,
-        deadline: OriginalDeadline,
-    ) -> Result<Self, RecordError> {
-        Self::new_checked(durable, deadline, || Ok(()))
-    }
     pub(super) fn new_checked(
         durable: &'a mut DurableService<AeadBarrier>,
         deadline: OriginalDeadline,
@@ -249,11 +246,26 @@ impl<'a> NativeSource<'a> {
         })
     }
 }
-impl ObjectSource for NativeSource<'_> {
-    fn read(
+impl NativeSource<'_> {
+    // Only a descriptor's actual typed payload reader may request payload
+    // observations. KV1 metadata indexes also have Block objects and never
+    // count as historical payload reads merely because their kind is Block.
+    pub(super) fn read_paged_payload(
         &self,
         domain: &ObjectDomain,
         reference: &ObjectRef,
+    ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        if reference.kind != crate::state_records::ObjectKind::Block {
+            return Err(RecordError::Invalid);
+        }
+        self.read_checked(domain, reference, true)
+    }
+
+    fn read_checked(
+        &self,
+        domain: &ObjectDomain,
+        reference: &ObjectRef,
+        observe_payload: bool,
     ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
         let mut original_gate = self
             .original_gate
@@ -298,7 +310,7 @@ impl ObjectSource for NativeSource<'_> {
                 &mut before,
             )
             .map_err(|_| RecordError::Corrupt)?;
-        if reference.kind == crate::state_records::ObjectKind::Block {
+        if observe_payload {
             if let Some(observations) = &self.observations {
                 observations.pinned(pin.ciphertext_len());
             }
@@ -311,9 +323,9 @@ impl ObjectSource for NativeSource<'_> {
                 &mut before,
             )
             .map_err(|_| RecordError::Corrupt)?;
-        if reference.kind == crate::state_records::ObjectKind::Block {
+        if observe_payload {
             if let Some(observations) = &self.observations {
-                observations.opened(plaintext.len());
+                observations.opened(plaintext.len(), pin.ciphertext_len());
             }
         }
         if plaintext.len() != slot.plaintext_bytes {
@@ -321,5 +333,15 @@ impl ObjectSource for NativeSource<'_> {
         }
         self.deadline.check().map_err(|_| RecordError::Invalid)?;
         Ok(plaintext)
+    }
+}
+
+impl ObjectSource for NativeSource<'_> {
+    fn read(
+        &self,
+        domain: &ObjectDomain,
+        reference: &ObjectRef,
+    ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        self.read_checked(domain, reference, false)
     }
 }
