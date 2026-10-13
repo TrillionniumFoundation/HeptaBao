@@ -129,7 +129,9 @@ def main():
         manifest=json.loads(args.source_manifest.read_text())
         if not isinstance(manifest,dict) or not isinstance(manifest.get('files'),dict):parser.error('public source manifest files required')
         manifest_matches=(manifest.get('head')==source_before['head'] and manifest.get('tree')==source_before['tree']
-            and all(source_before['files'].get(name)==value for name,value in manifest['files'].items()))
+            and manifest['files']==source_before['files']
+            and manifest.get('git_status_sha256')==source_before['git_status_sha256']
+            and manifest.get('renderer_binary_sha256')==source_before['renderer_binary_sha256'])
         if not manifest_matches:parser.error('source manifest differs from actual source')
     root=Path(tempfile.mkdtemp(prefix='heptabao-owned-local-api-'));root.chmod(0o700)
     cases=[];processes=[];logs=[];oracle=None;instance=None;pg=None;relay=None
