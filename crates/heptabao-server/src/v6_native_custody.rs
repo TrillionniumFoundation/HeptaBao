@@ -231,6 +231,7 @@ impl NativeCipherPin {
             objects: Arc::new(objects),
         })
     }
+    #[cfg(test)]
     fn open_namespace(
         &self,
         key: &Key,
