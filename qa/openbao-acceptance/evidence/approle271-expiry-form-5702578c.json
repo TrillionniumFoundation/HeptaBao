@@ -1,0 +1,282 @@
+{
+  "binary_sha256": "3a69d69a2c2376df9c8db0f0360220fe78d614880640aca1abc17baf6214fdee",
+  "compatibility_claim": false,
+  "failures": {},
+  "harness_sha256": "be711281d9c0ebc3bbdf3a18b49880687b2e6bfc77ac4884db9d7a8368829e02",
+  "independent_qualification": false,
+  "mismatches": [
+    {
+      "candidate_status": null,
+      "case": "custom-approle_login_form",
+      "official_status": 200
+    }
+  ],
+  "observations": {
+    "candidate": [
+      {
+        "case": "approle_mount",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "approle_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "approle_roleid",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_secret",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_login_json",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_login_form",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_invalid_secret_json",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "custom-approle_mount",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "custom-approle_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "custom-approle_roleid",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_secret",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_login_json",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_login_form",
+        "passed": false,
+        "status": null,
+        "transport_error": "BadStatusLine"
+      },
+      {
+        "case": "custom-approle_invalid_secret_json",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expiry_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "expiry_roleid",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "expiry_issue",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "expiry_live_login",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "expiry_live_auth",
+        "passed": true
+      },
+      {
+        "case": "expiry_before_periodic_tidy",
+        "passed": true
+      },
+      {
+        "case": "expired_json_before_tidy",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expired_form_before_tidy",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expired_json_after_restart",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expired_form_after_restart",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "complete",
+        "passed": true
+      }
+    ],
+    "official": [
+      {
+        "case": "approle_mount",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "approle_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "approle_roleid",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_secret",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_login_json",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_login_form",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "approle_invalid_secret_json",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "custom-approle_mount",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "custom-approle_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "custom-approle_roleid",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_secret",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_login_json",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_login_form",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "custom-approle_invalid_secret_json",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expiry_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "expiry_roleid",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "expiry_issue",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "expiry_live_login",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "expiry_live_auth",
+        "passed": true
+      },
+      {
+        "case": "expiry_before_periodic_tidy",
+        "passed": true
+      },
+      {
+        "case": "expired_json_before_tidy",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expired_form_before_tidy",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expired_json_after_restart",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "expired_form_after_restart",
+        "passed": true,
+        "status": 400
+      },
+      {
+        "case": "complete",
+        "passed": true
+      }
+    ]
+  },
+  "observed_runtime_candidate_commit": "5702578c7fa0ca7b91ba4eff4e83fb6131423839",
+  "official": {
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
+  },
+  "official_version": "2.7.1",
+  "production_authority": false,
+  "replacement_authority": false,
+  "schema": "heptabao.openbao271-approle-security-observation.v1",
+  "source_and_binary_unchanged": true,
+  "source_commit": "5702578c7fa0ca7b91ba4eff4e83fb6131423839",
+  "source_content_sha256": "4fa82c396a9f627ab146e47c9a12847ef3055d49f245fb9f9b2b2d7164a44bce",
+  "source_dirty": false,
+  "source_tree": "9c235879bc406018563236fc6da05c77eab8d6b8",
+  "status": "failed",
+  "synthetic_only": true,
+  "tls_verified": true
+}
