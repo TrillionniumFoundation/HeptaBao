@@ -23,12 +23,13 @@ const MAX_OWNER_CHUNKS: usize = crate::MAX_APPLICATION_STATE_BYTES.div_ceil(OWNE
 pub(crate) enum StateIdentity {
     Legacy([u8; 32]),
     RecordsV5([u8; 32]),
+    RecordsV6([u8; 32]),
 }
 
 impl StateIdentity {
     pub(crate) fn digest(&self) -> [u8; 32] {
         match self {
-            Self::Legacy(digest) | Self::RecordsV5(digest) => *digest,
+            Self::Legacy(digest) | Self::RecordsV5(digest) | Self::RecordsV6(digest) => *digest,
         }
     }
 }

@@ -185,6 +185,7 @@ impl LocalUnsealOwner {
                     return Err(unavailable());
                 }
             }
+            StateIdentity::RecordsV6(_) => return Err(unavailable()),
         }
         service
             .durable

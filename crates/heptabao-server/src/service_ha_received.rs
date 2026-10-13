@@ -304,6 +304,7 @@ impl UnpublishedLocalAdmission {
                     return Err(rejected());
                 }
             }
+            StateIdentity::RecordsV6(_) => return Err(rejected()),
         }
         service
             .durable
@@ -509,6 +510,7 @@ impl UnchangedShamirLocalOwner {
                     return Err(rejected());
                 }
             }
+            StateIdentity::RecordsV6(_) => return Err(rejected()),
         }
         service
             .durable
@@ -800,6 +802,7 @@ impl ExistingLocalPublication {
                     return Err(rejected());
                 }
             }
+            StateIdentity::RecordsV6(_) => return Err(rejected()),
         }
         service
             .durable

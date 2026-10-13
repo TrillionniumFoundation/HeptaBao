@@ -174,6 +174,23 @@ pub(super) fn decode_root(bytes: &[u8]) -> Result<Option<RecordStateRoot>, Respo
     }
     let probe: Probe =
         serde_json::from_slice(bytes).map_err(|_| unavailable_at("record_r25_line_132"))?;
+    if probe.storage_format.as_deref() == Some(crate::state_record_root_v6::STORAGE_FORMAT) {
+        // V6 is a distinct canonical root, never legacy owner fallback. This
+        // Service has no committed-membership/custody reader grant yet.
+        crate::state_record_root_v6::RecordStateRootV6::decode(bytes).map_err(root_error)?;
+        return Err(Response::error(
+            503,
+            "V6 Service reader requires committed membership and custody admission",
+        ));
+    }
+    if probe.storage_format.as_deref().is_some_and(|format| {
+        format.starts_with("heptabao-state-records-") && format != state_record_root::STORAGE_FORMAT
+    }) {
+        return Err(Response::error(
+            503,
+            "unsupported record state root version",
+        ));
+    }
     if probe.storage_format.as_deref() != Some(state_record_root::STORAGE_FORMAT) {
         return Ok(None);
     }

@@ -13,6 +13,7 @@ use crate::state_records::{
 use zeroize::Zeroizing;
 
 const FORMAT: &str = "heptabao-kv2-native-records-v6-stage-a";
+pub(crate) const NATIVE_FORMAT: &str = FORMAT;
 const KEY_DOMAIN: &[u8] = b"kv2-native-v6-stage-a/scoped-address-key";
 const PATH_DOMAIN: &[u8] = b"kv2-native-v6-stage-a/path-token";
 const MAX_METADATA_BYTES: usize = 4 * 1024 * 1024;
@@ -354,6 +355,194 @@ struct NativeGraph {
     scope: Scope,
     key: Arc<AddressKey>,
     index: Kv1Index,
+}
+
+/// A private decoded graph view. It never becomes a writable Service owner.
+pub(crate) struct NativeReadView(DetachedOwner);
+impl NativeReadView {
+    pub(crate) fn open(
+        base: &AddressKey,
+        scope: NativeScope<'_>,
+        root: Kv1Root,
+        reader: &impl RecordReader,
+    ) -> CodecResult<Self> {
+        Ok(Self(
+            NativeGraph::open(base, scope, root, reader)?.decode()?,
+        ))
+    }
+    pub(crate) fn read(
+        &self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: Timestamp,
+    ) -> Result<EngineResponse> {
+        self.0.handle_read_precise(method, path, body, now)
+    }
+    pub(crate) fn counts(&self) -> (usize, usize, usize) {
+        (
+            self.0.entries.len(),
+            self.0
+                .entries
+                .values()
+                .map(|entry| entry.versions.len())
+                .sum(),
+            self.0
+                .entries
+                .values()
+                .flat_map(|entry| entry.versions.values())
+                .filter(|version| version.data.is_some())
+                .count(),
+        )
+    }
+    pub(crate) fn has_lossless_state(&self) -> bool {
+        self.0.has_lossless_import_state()
+    }
+}
+
+impl EngineState {
+    pub(crate) fn v6_namespace_paths(&self) -> impl Iterator<Item = &str> {
+        self.namespaces.keys().map(String::as_str)
+    }
+    /// The metadata-only V6 engines owner has exactly one pristine placeholder
+    /// for every declared native graph. Legacy values are never fallback data.
+    pub(crate) fn validate_v6_kv2_placeholders(
+        &self,
+        scopes: &[crate::state_record_root_v6::MountScope],
+    ) -> Result<()> {
+        if !self.namespaces.contains_key("") {
+            return Err(error(
+                503,
+                "V6 engines metadata requires an explicit root namespace",
+            ));
+        }
+        let mut actual = BTreeSet::new();
+        for (namespace, owner) in &self.namespaces {
+            for (mount, descriptor) in &owner.mounts {
+                if let Backend::Kv2(engine) = &descriptor.backend {
+                    if !engine.is_pristine_for_import() {
+                        return Err(error(
+                            503,
+                            "V6 KV2 metadata contains opaque payload or configuration",
+                        ));
+                    }
+                    actual.insert(crate::state_record_root_v6::MountScope {
+                        namespace: namespace.clone(),
+                        mount: mount.clone(),
+                        incarnation: descriptor.incarnation,
+                    });
+                }
+            }
+        }
+        if actual != scopes.iter().cloned().collect() {
+            return Err(error(503, "V6 KV2 graph and mount ownership differ"));
+        }
+        Ok(())
+    }
+}
+
+/// Borrowed preflight rejects opaque KV2 payloads before the real engines
+/// deserializer can allocate them. Other owners keep their existing decoder.
+pub(crate) fn preflight_v6_kv2_metadata(bytes: &[u8]) -> CodecResult<()> {
+    fn values<'de, D: serde::Deserializer<'de>>(
+        decoder: D,
+    ) -> std::result::Result<Vec<&'de serde_json::value::RawValue>, D::Error> {
+        bounded_raw_values(decoder, MAX_RECORDS)
+    }
+    #[derive(Deserialize)]
+    struct Engine<'a> {
+        #[serde(borrow, deserialize_with = "values")]
+        namespaces: Vec<&'a serde_json::value::RawValue>,
+    }
+    #[derive(Deserialize)]
+    struct Namespace<'a> {
+        #[serde(borrow, deserialize_with = "values")]
+        mounts: Vec<&'a serde_json::value::RawValue>,
+    }
+    #[derive(Deserialize)]
+    struct Mount<'a> {
+        #[serde(borrow)]
+        backend: &'a serde_json::value::RawValue,
+    }
+    #[derive(Deserialize)]
+    struct BackendCell<'a> {
+        #[serde(default, borrow, rename = "Kv2")]
+        kv2: Option<&'a serde_json::value::RawValue>,
+    }
+    let engine: Engine<'_> = serde_json::from_slice(bytes).map_err(|_| RecordError::Corrupt)?;
+    let pristine = serialize(&Kv2::default(), MAX_CONFIG_BYTES)?;
+    let mut count = 0_usize;
+    let mut native = 0_usize;
+    for owner in engine.namespaces {
+        let namespace: Namespace<'_> =
+            serde_json::from_str(owner.get()).map_err(|_| RecordError::Corrupt)?;
+        count = count
+            .checked_add(namespace.mounts.len())
+            .filter(|sum| *sum <= MAX_RECORDS)
+            .ok_or(RecordError::TooLarge)?;
+        for mount in namespace.mounts {
+            let mount: Mount<'_> =
+                serde_json::from_str(mount.get()).map_err(|_| RecordError::Corrupt)?;
+            if mount.backend.get().starts_with('{') {
+                let backend: BackendCell<'_> =
+                    serde_json::from_str(mount.backend.get()).map_err(|_| RecordError::Corrupt)?;
+                if let Some(kv2) = backend.kv2 {
+                    native += 1;
+                    if native > crate::state_record_root_v6::MAX_KV2_MOUNTS {
+                        return Err(RecordError::TooLarge);
+                    }
+                    if kv2.get().as_bytes() != pristine.as_slice() {
+                        return Err(RecordError::Corrupt);
+                    }
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+pub(crate) struct ReaderFixture {
+    pub opaque: EngineState,
+    pub roots: Vec<crate::state_record_root_v6::Kv2GraphRef>,
+    pub objects: Vec<(crate::state_record_root_v6::MountScope, Arc<StagedObject>)>,
+}
+#[cfg(test)]
+pub(crate) fn reader_fixture(
+    engines: &EngineState,
+    parent: &AddressKey,
+) -> CodecResult<ReaderFixture> {
+    let mut opaque = engines.clone();
+    let mut roots = Vec::new();
+    let mut objects = Vec::new();
+    for (namespace, owner) in &mut opaque.namespaces {
+        for (mount, descriptor) in &mut owner.mounts {
+            if let Backend::Kv2(engine) = &descriptor.backend {
+                let scope = crate::state_record_root_v6::MountScope {
+                    namespace: namespace.clone(),
+                    mount: mount.clone(),
+                    incarnation: descriptor.incarnation,
+                };
+                let graph = NativeGraph::encode(engine, parent, scope.borrowed())?;
+                graph.index.visit_objects(|object| {
+                    objects.push((scope.clone(), Arc::clone(object)));
+                    Ok(())
+                })?;
+                roots.push(crate::state_record_root_v6::Kv2GraphRef {
+                    scope,
+                    graph_format: FORMAT.into(),
+                    root: graph.index.root(),
+                });
+                descriptor.backend = Backend::Kv2(Kv2::default());
+            }
+        }
+    }
+    roots.sort_by(|a, b| a.scope.cmp(&b.scope));
+    Ok(ReaderFixture {
+        opaque,
+        roots,
+        objects,
+    })
 }
 impl NativeGraph {
     fn encode(owner: &Kv2, base: &AddressKey, input: NativeScope<'_>) -> CodecResult<Self> {

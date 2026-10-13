@@ -65,7 +65,9 @@ mod cubbyhole_service_tests;
 
 mod secret_serde;
 pub(crate) mod state_record_root;
+pub(crate) mod state_record_root_v6;
 mod state_records;
+pub mod v6_read_validation;
 // Format validation only, no production V6 authority or route.
 mod kv2_v6_record_codec;
 // Format/graph read validation only: no Service writer, HA or migration authority.

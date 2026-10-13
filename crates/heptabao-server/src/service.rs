@@ -366,6 +366,8 @@ mod raft_admin;
 mod records;
 #[path = "service_state_store.rs"]
 mod state_store;
+#[path = "service_records_v6.rs"]
+pub(crate) mod v6_records;
 pub(crate) use ha_activation::start_ha_activation_worker_with_budget;
 pub(crate) use lifecycle::start_lifecycle_worker;
 pub(crate) use pki_acme::QueuedChallenge;

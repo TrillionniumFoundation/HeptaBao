@@ -147,6 +147,7 @@ fn verify_local_graph(service: &mut Service, deadline: Instant) -> Result<(), Re
                 return Err(unavailable());
             }
         }
+        crate::state_record_root::StateIdentity::RecordsV6(_) => return Err(unavailable()),
     }
     service
         .durable
