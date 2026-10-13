@@ -743,3 +743,140 @@ fn v6_projection_rejects_aggregate_multimount_overflow_before_any_object_visits(
         .ok_or("original read remains available")?;
     Ok(())
 }
+
+#[test]
+fn genuine_service_native_migration_plan_authenticates_all_source_owners_without_publishing()
+-> TestResult {
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let token = Zeroizing::new(token);
+    assert_eq!(
+        super::super::tests::call(
+            &mut service,
+            "POST",
+            "secret/data/native-source",
+            &token,
+            json!({"data":{"value":"source-authenticated","nested":[false,null,17]}})
+        )
+        .status,
+        200
+    );
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let old = service
+        .current_state_identity()
+        .map_err(|_| "old identity")?;
+    let plan = service
+        .prepare_native_root_migration(&|| Ok(()))
+        .map_err(|_| "prepare genuine source")?;
+    assert_eq!(plan.source_generation, before);
+    assert_eq!(plan.conditions.len(), 2);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        before
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "current identity")?,
+        old
+    );
+    assert_eq!(
+        plan.root.encode().map_err(|_| "encoding")?.as_slice(),
+        plan.bytes.as_slice()
+    );
+    assert_eq!(
+        plan.candidate.engines.record_root().as_ref(),
+        Some(&plan.root.kv1)
+    );
+    let mut source = Source::default();
+    for ((domain, _), object) in &plan.objects {
+        source.stage(domain.clone(), object);
+    }
+    let StateIdentity::RecordsV6(identity) = plan.root.identity().map_err(|_| "identity")? else {
+        return Err("identity kind".into());
+    };
+    let context = ReadContext {
+        expected_identity: ReadIdentity::RecordsV6(identity),
+        cluster_id: &plan.root.cluster_id,
+        replay_epoch: plan.root.replay_epoch,
+        minimum_state_schema: plan.root.state_schema,
+        maximum_state_schema: plan.root.state_schema,
+        reader_format: 6,
+    };
+    let recovered = materialize(&plan.root, context, &source)?;
+    let scope = plan
+        .root
+        .kv2
+        .iter()
+        .find(|graph| graph.scope.mount == "secret/" && graph.scope.namespace.is_empty())
+        .ok_or("native scope")?
+        .scope
+        .clone();
+    let response = recovered.native.get(&scope).ok_or("native view")?.read(
+        "GET",
+        "data/native-source",
+        &json!({}),
+        crate::auth::Timestamp::whole(1000)?,
+    )?;
+    assert_eq!(
+        response.body["data"]["data"]["value"],
+        "source-authenticated"
+    );
+    Ok(())
+}
+
+#[test]
+fn genuine_service_native_migration_plan_rejects_uncommitted_kv1_graph() -> TestResult {
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let token = Zeroizing::new(token);
+    assert_eq!(
+        super::super::tests::call(
+            &mut service,
+            "POST",
+            "sys/mounts/native-raw",
+            &token,
+            json!({"type":"kv","options":{"version":"1"}})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        super::super::tests::call(
+            &mut service,
+            "PUT",
+            "native-raw/a",
+            &token,
+            json!({"value":"committed"})
+        )
+        .status,
+        204
+    );
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let old = service
+        .current_state_identity()
+        .map_err(|_| "old identity")?;
+    service.state.as_mut().ok_or("state")?.engines.handle(
+        "",
+        "PUT",
+        "native-raw/a",
+        &json!({"value":"not-committed"}),
+        100,
+    )?;
+    assert!(service.prepare_native_root_migration(&|| Ok(())).is_err());
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        before
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "current identity")?,
+        old
+    );
+    Ok(())
+}
