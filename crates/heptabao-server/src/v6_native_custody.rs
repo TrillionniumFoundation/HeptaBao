@@ -495,6 +495,52 @@ impl NativePublicationFence {
         Ok(next)
     }
 
+    /// Non-publishing defence-in-depth against an authenticated root change
+    /// *during* expensive candidate AEAD verification. Only the durable/HA
+    /// authority owner may implement `current`; a caller-supplied generation
+    /// with no authenticated publication cursor has no production authority.
+    ///
+    /// Two observations do NOT grant a compare-and-swap or publish right.
+    /// A production publisher must repeat the generation + custody + deadline
+    /// checks *inside* the same linearized, crash-safe storage transaction.
+    pub(crate) fn authenticated_preflight_against_live_cursor(
+        &self,
+        prepared: &NativeMutation,
+        key: &Key,
+        frontier: &NamespaceFrontier,
+        cluster: &str,
+        epoch: u64,
+        scope: NativeScope<'_>,
+        deadline: OriginalDeadline,
+        check_owner: &impl Fn() -> Result<(), CustodyError>,
+        current: &impl Fn() -> Result<Self, CustodyError>,
+    ) -> Result<Option<Self>, CustodyError> {
+        deadline.check()?;
+        let before = current()?;
+        deadline.check()?;
+        let next = self.authenticated_preflight(
+            &before,
+            prepared,
+            key,
+            frontier,
+            cluster,
+            epoch,
+            scope,
+            deadline,
+            check_owner,
+        )?;
+        // A->B->A may restore the original content-addressed encrypted root,
+        // so compare the independently committed generation as well.
+        let after = current()?;
+        if after != before {
+            return Err(CustodyError::Unavailable);
+        }
+        // The second snapshot may itself have revoked the namespace owner.
+        check_owner()?;
+        deadline.check()?;
+        Ok(next)
+    }
+
     /// Pure, non-publishing admission preflight, not a commit or reply grant.
     /// The outer writer must independently recheck the actual durable
     /// generation, authenticated ciphertext closure, namespace owner, quorum,

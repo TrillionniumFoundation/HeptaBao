@@ -993,3 +993,165 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
     assert_eq!(digest(&old)?, before);
     Ok(())
 }
+
+// A separate committed generation can advance *during* expensive AEAD
+// authentication. The same header returned after A -> B -> A must not
+// make the precommit observation current; no local/HA publication occurs.
+#[test]
+fn encrypted_native_live_cursor_second_read_detects_aba_after_aead() -> TestResult {
+    let _request = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(90));
+    let deadline = OriginalDeadline::capture()?;
+    let (key, frontier) = custody()?;
+    let old = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    let pin_digest = digest(&old)?;
+    let base = NativePublicationFence::observed(10, &old)?;
+    let later_same_header = NativePublicationFence::observed(12, &old)?;
+    assert_eq!(base.header, later_same_header.header);
+    assert_ne!(base, later_same_header);
+
+    let prepared = old.mutate_namespace(
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        "POST",
+        "data/blob",
+        &json!({"data":{"payload":"r1190".repeat(128 * 1024)}}),
+        at(1200)?,
+        &|| Ok(()),
+    )?;
+    assert!(prepared.response.mutated && prepared.candidate.is_some());
+    let inspected = Cell::new(0);
+    let got = base.authenticated_preflight_against_live_cursor(
+        &prepared,
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        &|| Ok(()),
+        &|| {
+            inspected.set(inspected.get() + 1);
+            Ok(if inspected.get() == 1 {
+                base.clone()
+            } else {
+                later_same_header.clone()
+            })
+        },
+    );
+    assert!(
+        matches!(got, Err(CustodyError::Unavailable)),
+        "stale state advanced during authenticated candidate inspection"
+    );
+    assert_eq!(
+        inspected.get(),
+        2,
+        "must observe the committed cursor twice"
+    );
+    assert_eq!(
+        digest(&old)?,
+        pin_digest,
+        "preflight mutated the committed pin"
+    );
+    Ok(())
+}
+
+// A stable owner may inspect, but even a successful read returns only the
+// *next fence candidate*: the actual signed root remains unchanged.
+#[test]
+fn encrypted_native_live_cursor_stable_success_and_owner_revoke() -> TestResult {
+    let _request = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(90));
+    let deadline = OriginalDeadline::capture()?;
+    let (key, frontier) = custody()?;
+    let old = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    let pinned = digest(&old)?;
+    let committed = NativePublicationFence::observed(21, &old)?;
+    let prepared = old.mutate_namespace(
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        "POST",
+        "data/item",
+        &json!({"data":{"value":"next"}}),
+        at(1200)?,
+        &|| Ok(()),
+    )?;
+    let reads = Cell::new(0);
+    let next = committed
+        .authenticated_preflight_against_live_cursor(
+            &prepared,
+            &key,
+            &frontier,
+            CLUSTER,
+            EPOCH,
+            scope(),
+            deadline,
+            &|| Ok(()),
+            &|| {
+                reads.set(reads.get() + 1);
+                Ok(committed.clone())
+            },
+        )?
+        .ok_or("missing mutation witness")?;
+    assert_eq!(reads.get(), 2);
+    assert_eq!(next.generation.get(), 22);
+    assert_eq!(
+        next.header,
+        prepared.candidate.as_ref().ok_or("candidate")?.header
+    );
+    assert_eq!(digest(&old)?, pinned, "candidate leaked into source");
+
+    // The trusted publication cursor may remain unchanged while the normal
+    // namespace owner is revoked during the final refresh. This still denies.
+    let revoked = Cell::new(false);
+    let observations = Cell::new(0);
+    let failure = committed.authenticated_preflight_against_live_cursor(
+        &prepared,
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        &|| {
+            if revoked.get() {
+                Err(CustodyError::Unavailable)
+            } else {
+                Ok(())
+            }
+        },
+        &|| {
+            observations.set(observations.get() + 1);
+            if observations.get() == 2 {
+                revoked.set(true);
+            }
+            Ok(committed.clone())
+        },
+    );
+    assert!(matches!(failure, Err(CustodyError::Unavailable)));
+    assert_eq!(observations.get(), 2);
+    assert_eq!(digest(&old)?, pinned);
+    Ok(())
+}
