@@ -11,6 +11,8 @@ use zeroize::Zeroizing;
 
 #[path = "namespace_custody_inherited.rs"]
 mod inherited;
+#[path = "namespace_custody_v6.rs"]
+mod v6;
 pub use inherited::{InheritedDescriptor, InheritedParent};
 
 const VERSION: u32 = 1;

@@ -400,6 +400,51 @@ impl NativeReadView {
     }
 }
 
+/// Actual native codec graph for custody projection. The caller must keep the
+/// graph inside its original key/deadline callback and encrypt every object
+/// before allowing a retained pin to leave that callback.
+pub(crate) struct NativeCellGraph(NativeGraph);
+impl NativeCellGraph {
+    pub(crate) fn encode(
+        owner: &Kv2,
+        parent: &AddressKey,
+        scope: NativeScope<'_>,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<Self> {
+        Ok(Self(NativeGraph::encode_checked(owner, parent, scope, check)?))
+    }
+    pub(crate) fn root(&self) -> Kv1Root {
+        self.0.index.root()
+    }
+    pub(crate) fn visit_objects(
+        &self,
+        mut visit: impl FnMut(&Arc<StagedObject>) -> CodecResult<()>,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<()> {
+        self.0.index.visit_objects(|object| {
+            check()?;
+            visit(object)?;
+            check()
+        })
+    }
+    pub(crate) fn open_view(
+        parent: &AddressKey,
+        scope: NativeScope<'_>,
+        root: Kv1Root,
+        reader: &impl RecordReader,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<NativeReadView> {
+        check()?;
+        let scope = Scope::new(scope)?;
+        let key = graph_key(parent, &scope)?;
+        let index = Kv1Index::open(Arc::clone(&key), root, reader)?;
+        check()?;
+        Ok(NativeReadView(
+            NativeGraph { scope, key, index }.decode_checked(check)?,
+        ))
+    }
+}
+
 impl EngineState {
     pub(crate) fn v6_namespace_paths(&self) -> impl Iterator<Item = &str> {
         self.namespaces.keys().map(String::as_str)
@@ -546,8 +591,19 @@ pub(crate) fn reader_fixture(
 }
 impl NativeGraph {
     fn encode(owner: &Kv2, base: &AddressKey, input: NativeScope<'_>) -> CodecResult<Self> {
+        Self::encode_checked(owner, base, input, &|| Ok(()))
+    }
+
+    fn encode_checked(
+        owner: &Kv2,
+        base: &AddressKey,
+        input: NativeScope<'_>,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<Self> {
+        check()?;
         let scope = Scope::new(input)?;
         validate_owner(owner)?;
+        check()?;
         let key = graph_key(base, &scope)?;
         let mut index = Kv1Index::empty(Arc::clone(&key));
         let mount = MountCell {
@@ -559,6 +615,7 @@ impl NativeGraph {
         let bytes = serialize(&mount, MAX_CONFIG_BYTES)?;
         index = index.edit(scope.key("config")?, Some(&bytes))?.next;
         for (path, entry) in &owner.entries {
+            check()?;
             let mut cell = PathCell {
                 format: FORMAT.into(),
                 scope: scope.clone(),
@@ -567,12 +624,14 @@ impl NativeGraph {
                 payload_versions: BTreeSet::new(),
             };
             for (number, version) in &mut cell.metadata.versions {
+                check()?;
                 if let Some(data) = version.data.take() {
                     let bytes = serialize(&data, MAX_VALUE_BYTES)?;
                     let record = payload_key(&scope, &key, path, *number)?;
                     index = index.edit(record, Some(&bytes))?.next;
                     cell.payload_versions.insert(*number);
                 }
+                check()?;
             }
             let bytes = serialize(&cell, MAX_METADATA_BYTES)?;
             let record = metadata_key(&scope, &key, path)?;
@@ -580,6 +639,7 @@ impl NativeGraph {
                 return Err(RecordError::Corrupt);
             }
             index = index.edit(record, Some(&bytes))?.next;
+            check()?;
         }
         Ok(Self { scope, key, index })
     }
@@ -600,8 +660,13 @@ impl NativeGraph {
     }
 
     fn decode(&self) -> CodecResult<DetachedOwner> {
+        self.decode_checked(&|| Ok(()))
+    }
+    fn decode_checked(&self, check: &impl Fn() -> CodecResult<()>) -> CodecResult<DetachedOwner> {
+        check()?;
         let mut keys = BTreeSet::new();
         self.index.visit_keys(|key| {
+            check()?;
             if !self.scope.matches_key(key) {
                 return Err(RecordError::Corrupt);
             }
@@ -632,6 +697,7 @@ impl NativeGraph {
             return Err(RecordError::TooLarge);
         }
         for record in metadata_keys {
+            check()?;
             let bytes = self.index.get(&record).ok_or(RecordError::Missing)?;
             let mut cell: PathCell = canonical(bytes, MAX_METADATA_BYTES)?;
             if cell.format != FORMAT
@@ -645,6 +711,7 @@ impl NativeGraph {
             }
             keys.remove(&record);
             for number in &cell.payload_versions {
+                check()?;
                 let version = cell
                     .metadata
                     .versions
@@ -659,6 +726,7 @@ impl NativeGraph {
                 if !keys.remove(&payload) {
                     return Err(RecordError::Corrupt);
                 }
+                check()?;
             }
             let path = std::mem::take(&mut cell.path);
             let metadata = std::mem::take(&mut cell.metadata);
@@ -670,6 +738,7 @@ impl NativeGraph {
             return Err(RecordError::Corrupt);
         }
         validate_owner(&owner)?;
+        check()?;
         Ok(owner)
     }
 }
