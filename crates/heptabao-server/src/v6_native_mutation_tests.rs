@@ -107,10 +107,9 @@ fn compare_read(
     key: &Key,
     frontier: &NamespaceFrontier,
     deadline: OriginalDeadline,
-    method: &str,
-    path: &str,
-    body: &Value,
+    request: (&str, &str, &Value),
 ) -> TestResult {
+    let (method, path, body) = request;
     let original = view.read(method, path, body, at(2000)?);
     pin.inspect_namespace(key, frontier, CLUSTER, EPOCH, scope(), deadline, |opened| {
         let restored = opened.read(
@@ -143,11 +142,10 @@ fn apply(
     key: &Key,
     frontier: &NamespaceFrontier,
     deadline: OriginalDeadline,
-    method: &str,
-    path: &str,
-    body: &Value,
+    request: (&str, &str, &Value),
     seconds: u64,
 ) -> TestResult {
+    let (method, path, body) = request;
     let before = digest(pin)?;
     let original = view.mutate(method, path, body, at(seconds)?);
     let result = pin.mutate_namespace(
@@ -275,7 +273,13 @@ fn encrypted_native_mutation_reopens_real_large_history_and_preserves_business_s
         ("DELETE", "data/missing", json!({}), 1208),
     ] {
         apply(
-            &mut view, &mut pin, &key, &frontier, deadline, method, path, &body, seconds,
+            &mut view,
+            &mut pin,
+            &key,
+            &frontier,
+            deadline,
+            (method, path, &body),
+            seconds,
         )?;
     }
     for version in 1..=42 {
@@ -285,9 +289,7 @@ fn encrypted_native_mutation_reopens_real_large_history_and_preserves_business_s
             &key,
             &frontier,
             deadline,
-            "GET",
-            "data/folder/item",
-            &json!({"version":version}),
+            ("GET", "data/folder/item", &json!({"version":version})),
         )?;
     }
     for (method, path) in [
@@ -304,9 +306,7 @@ fn encrypted_native_mutation_reopens_real_large_history_and_preserves_business_s
             &key,
             &frontier,
             deadline,
-            method,
-            path,
-            &json!({}),
+            (method, path, &json!({})),
         )?;
     }
     assert_eq!(digest(&immutable_old)?, immutable_digest);
@@ -651,9 +651,11 @@ fn encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mu
             &key,
             &frontier,
             deadline,
-            "GET",
-            path,
-            &version.map_or(json!({}), |v| json!({"version":v})),
+            (
+                "GET",
+                path,
+                &version.map_or(json!({}), |v| json!({"version":v})),
+            ),
         )?;
     }
     apply(
@@ -662,9 +664,11 @@ fn encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mu
         &key,
         &frontier,
         deadline,
-        "POST",
-        "data/item",
-        &json!({"data":{"value":"six"},"options":{"cas":5}}),
+        (
+            "POST",
+            "data/item",
+            &json!({"data":{"value":"six"},"options":{"cas":5}}),
+        ),
         111,
     )?;
     apply(
@@ -673,9 +677,7 @@ fn encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mu
         &key,
         &frontier,
         deadline,
-        "POST",
-        "destroy/item",
-        &json!({"versions":[4]}),
+        ("POST", "destroy/item", &json!({"versions":[4]})),
         112,
     )?;
     compare_read(
@@ -684,9 +686,7 @@ fn encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mu
         &key,
         &frontier,
         deadline,
-        "GET",
-        "metadata/item",
-        &json!({}),
+        ("GET", "metadata/item", &json!({})),
     )?;
     compare_read(
         &view,
@@ -694,9 +694,7 @@ fn encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mu
         &key,
         &frontier,
         deadline,
-        "GET",
-        "data/item",
-        &json!({"version":6}),
+        ("GET", "data/item", &json!({"version":6})),
     )?;
     Ok(())
 }

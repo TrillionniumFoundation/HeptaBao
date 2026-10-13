@@ -447,15 +447,14 @@ fn process_owned_shamir_records_catchup_without_request_uses_deployment_budget()
         .ok_or("worker")?;
     let end = std::time::Instant::now() + Duration::from_secs(5);
     let caught_up = loop {
-        if let Ok(writer) = service.try_lock() {
-            if writer.ha_activation.is_some()
-                && writer
-                    .current_state_identity()
-                    .map_err(|_| "current identity")?
-                    == b_identity
-            {
-                break true;
-            }
+        if let Ok(writer) = service.try_lock()
+            && writer.ha_activation.is_some()
+            && writer
+                .current_state_identity()
+                .map_err(|_| "current identity")?
+                == b_identity
+        {
+            break true;
         }
         if std::time::Instant::now() >= end {
             break false;

@@ -288,7 +288,8 @@ pub(crate) fn validate_immutable_transition(
 mod tests {
     use super::*;
     #[test]
-    fn sharded_version_scope_rejects_unauthorized_logical_scope() {
+    fn sharded_version_scope_rejects_unauthorized_logical_scope()
+    -> Result<(), Box<dyn std::error::Error>> {
         let logical = Scope {
             namespace: "tenant".into(),
             mount: "secret/".into(),
@@ -325,9 +326,10 @@ mod tests {
         }
         assert!(sharded_version_scope(&logical, 0).is_err());
         assert!(sharded_version_scope(&logical, 33).is_err());
-        let first = key(&sharded_version_scope(&logical, 1).unwrap()).unwrap();
-        let second = key(&sharded_version_scope(&logical, 2).unwrap()).unwrap();
+        let first = key(&sharded_version_scope(&logical, 1)?)?;
+        let second = key(&sharded_version_scope(&logical, 2)?)?;
         assert!(first != second, "version physical identifiers must differ");
+        Ok(())
     }
 
     // Ordinary Kv1Key admits non-NUL control characters, but a V6 logical
