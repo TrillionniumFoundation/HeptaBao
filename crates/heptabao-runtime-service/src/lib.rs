@@ -632,6 +632,7 @@ fn map_durable_error(error: ServiceError) -> RuntimeError {
         | ServiceError::InvalidAuthorizationDigest => RuntimeError::InvalidRequest,
         ServiceError::ReplayEpochMismatch
         | ServiceError::RequestBindingConflict
+        | ServiceError::PublicationConditionConflict
         | ServiceError::RequestCapacityExhausted
         | ServiceError::BackupRollbackRejected
         | ServiceError::GenerationOverflow
