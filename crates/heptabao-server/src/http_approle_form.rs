@@ -68,9 +68,9 @@ pub(super) fn parse(payload: &[u8]) -> Result<Value, &'static str> {
             .ok_or("AppRole form field requires a value")?;
         let field = Zeroizing::new(decode(&pair[..index])?);
         let mut value = Zeroizing::new(decode(&pair[index + 1..])?);
-        if field.as_str() == "role_id" {
+        if matches!(field.as_str(), "role_id" | "secret_id") {
             // Match native JSON login normalization before rejecting interior
-            // controls. Never normalize SecretID or a form field name.
+            // controls. Form field names and interior bytes remain exact.
             value = Zeroizing::new(value.trim().to_owned());
         }
         if value
@@ -128,16 +128,17 @@ mod tests {
     }
 
     #[test]
-    fn role_id_edge_whitespace_is_normalized_without_changing_secret_id() -> TestResult {
+    fn login_identifier_edge_whitespace_is_normalized_without_changing_interior_bytes() -> TestResult
+    {
         let parsed = parse(b"role_id=%09%0D%0Auuid-1%C2%A0%E3%80%80&secret_id=+p%2Bss+one+")?;
         assert_eq!(
             parsed,
-            serde_json::json!({"role_id":"uuid-1","secret_id":" p+ss one "})
+            serde_json::json!({"role_id":"uuid-1","secret_id":"p+ss one"})
         );
         for body in [
             b"role_id=uu%09id-1&secret_id=good".as_slice(),
-            b"role_id=uuid-1&secret_id=%09good",
-            b"role_id=uuid-1&secret_id=good%0D%0A",
+            b"role_id=uuid-1&secret_id=go%09od",
+            b"role_id=uuid-1&secret_id=go%0D%0Aod",
             b"%09role_id=uuid-1&secret_id=good",
             b"role_id=%09uuid-1&role_id=uuid-1",
         ] {

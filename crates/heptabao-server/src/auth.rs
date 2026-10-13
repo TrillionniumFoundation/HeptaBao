@@ -8634,10 +8634,11 @@ impl AuthState {
             return Err(err(405, "method not allowed"));
         }
         reject_unknown(body, &["role_id", "secret_id"])?;
-        // OpenBao 2.7.1 normalizes RoleID with Go strings.TrimSpace.
-        // SecretID remains exact, including its credential-consumption key.
+        // OpenBao 2.7.1 normalizes both login identifiers with Go
+        // strings.TrimSpace. Preserve their interior bytes, and derive
+        // consumption and identity only from the matched canonical records.
         let role_id = string_field(body, "role_id")?.trim();
-        let secret_id = body.get("secret_id").and_then(Value::as_str);
+        let secret_id = body.get("secret_id").and_then(Value::as_str).map(str::trim);
         if role_id.len() > 256 || secret_id.is_some_and(|value| value.len() > 256) {
             return Err(bad("invalid role or secret ID"));
         }

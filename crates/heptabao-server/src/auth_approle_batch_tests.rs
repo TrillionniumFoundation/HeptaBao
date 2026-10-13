@@ -315,13 +315,13 @@ fn approle_role_id_edge_whitespace_uses_canonical_identity_and_consumes_once()
         let exact_secret = credentials["secret_id"]
             .as_str()
             .ok_or("missing fixture SecretID")?;
-        wrong["secret_id"] = json!(format!("{edge}{exact_secret}{edge}"));
+        wrong["secret_id"] = json!(format!("{exact_secret}\u{0000}"));
         let before = serde_json::to_vec(&state)?;
         assert!(
             state
                 .handle(None, "", "POST", "auth/approle/login", &wrong, 100)
                 .is_err(),
-            "SecretID must remain exact"
+            "non-whitespace credential bytes must remain exact"
         );
         assert_eq!(
             serde_json::to_vec(&state)?,
@@ -330,6 +330,7 @@ fn approle_role_id_edge_whitespace_uses_canonical_identity_and_consumes_once()
         );
         let mut normalized = credentials.clone();
         normalized["role_id"] = json!(format!("{edge}{canonical}{edge}"));
+        normalized["secret_id"] = json!(format!("{edge}{exact_secret}{edge}"));
         let response = login(&mut state, &normalized);
         assert_eq!(response.status, 200);
         assert_eq!(
