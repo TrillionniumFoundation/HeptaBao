@@ -53,7 +53,7 @@ REQUIRED_CASES = frozenset({
     'real_review_after_restart_same_uid', 'deleted_serviceaccount_invalidates_secret_tokens',
     'deleted_uid_token_denied', 'same_name_has_new_actual_uid', 'recreated_serviceaccount_gets_new_secret_token',
     'replacement_uid_has_distinct_identity', 'old_jwt_not_revived_by_recreation',
-    'real_rbac_denial_releases_no_local_token', 'native_renewal_independent_of_reviewer_rbac',
+    'real_rbac_denial_releases_no_local_token', 'native_renewal_denied_after_reviewer_rbac_revocation',
     'explicit_rbac_restore_allows_new_login', 'unmount_revokes_local_token', 'complete',
     'actual_cidr_role_configured', 'actual_cidr_role_canonical', 'actual_cidr_allowed_login',
     'actual_cidr_foreign_login_spoof_denied', 'actual_cidr_foreign_token_spoof_denied',
@@ -62,7 +62,7 @@ REQUIRED_CASES = frozenset({
     'actual_cidr_old_token_renews', 'actual_cidr_restart_role_clear',
     'actual_cidr_restart_foreign_denied', 'actual_cidr_restart_allowed',
     'actual_cidr_restart_snapshot', 'actual_cidr_restart_old_renews',
-    'actual_cidr_renewal_independent_of_reviewer_rbac', 'actual_runtime_secrets_not_plaintext',
+    'actual_cidr_renewal_denied_after_reviewer_rbac_revocation', 'actual_runtime_secrets_not_plaintext',
 })
 
 
@@ -449,14 +449,22 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         cluster.await_review_permission(False)
         denied_status, denied=login(new_jwt)
         check('real_rbac_denial_releases_no_local_token',denied_status >= 400 and not denied.get('auth'))
+        expiry_before = service.call('GET','auth/token/lookup-self',token=old_token)[1].get('data',{}).get('expire_time')
         renew_status, renewed=service.call('POST','auth/token/renew-self',{},token=old_token)
-        check('native_renewal_independent_of_reviewer_rbac',renew_status == 200
-              and renewed.get('auth',{}).get('client_token') == old_token
-              and renewed.get('auth',{}).get('renewable') is True)
-        # Actual reviewer RBAC has been revoked, so a successful renewal proves
-        # this issued constrained token does not need another TokenReview.
+        expiry_after = service.call('GET','auth/token/lookup-self',token=old_token)[1].get('data',{}).get('expire_time')
+        check('native_renewal_denied_after_reviewer_rbac_revocation',renew_status >= 400
+              and not renewed.get('auth') and not renewed.get('wrap_info')
+              and isinstance(expiry_before,str) and expiry_after == expiry_before)
+        # OpenBao 2.7.1 renewal requires a fresh TokenReview. This older cluster
+        # lifecycle also deleted the original UID; the dedicated 2.7.1 runner
+        # isolates reviewer revocation from UID deletion and records real API audit.
+        before_peer=peer_client.request('GET','auth/token/lookup-self',token=cidr_token,source='127.0.0.1')
         renewed_peer=peer_client.request('POST','auth/token/renew-self',{},token=cidr_token,source='127.0.0.1')
-        check('actual_cidr_renewal_independent_of_reviewer_rbac',native_renewed(renewed_peer,cidr_token))
+        after_peer=peer_client.request('GET','auth/token/lookup-self',token=cidr_token,source='127.0.0.1')
+        peer_expiry=before_peer.body.get('data',{}).get('expire_time')
+        check('actual_cidr_renewal_denied_after_reviewer_rbac_revocation',renewed_peer.status >= 400
+              and not renewed_peer.body.get('auth') and not renewed_peer.body.get('wrap_info')
+              and isinstance(peer_expiry,str) and after_peer.body.get('data',{}).get('expire_time') == peer_expiry)
         cluster.post('/apis/rbac.authorization.k8s.io/v1/clusterrolebindings',binding)
         cluster.await_review_permission(True)
         status, restored=login(new_jwt)

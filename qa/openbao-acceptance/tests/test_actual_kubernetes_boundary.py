@@ -188,7 +188,7 @@ class ActualKubernetesCidrGuards(unittest.TestCase):
         for removed in ['actual_apiserver_version','actual_tokenrequests','real_tokenreview_issues_local_token',
                         'actual_cidr_foreign_login_spoof_denied','actual_cidr_foreign_token_spoof_denied',
                         'actual_cidr_cleared_role_keeps_snapshot','actual_cidr_restart_foreign_denied',
-                        'actual_cidr_restart_old_renews','actual_cidr_renewal_independent_of_reviewer_rbac',
+                        'actual_cidr_restart_old_renews','actual_cidr_renewal_denied_after_reviewer_rbac_revocation',
                         'actual_runtime_secrets_not_plaintext']:
             with self.subTest(removed=removed):
                 self.assertFalse(complete_checks([row for row in rows if row['case']!=removed],required_cases=k.REQUIRED_CASES))

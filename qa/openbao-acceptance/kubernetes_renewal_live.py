@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Compare Kubernetes token renewal against pinned OpenBao 2.6.2 over HTTPS.
 
+Historical 2.6.2 behavior only; the no-provider renewal cases do not apply to
+2.7.1. Use kubernetes_renewal_271_cluster_live.py for the current real-cluster gate.
+
 The upstream is a synthetic TLS TokenReview protocol fixture, not kube-apiserver,
 etcd, a Kubernetes distribution, or a Kubernetes RBAC acceptance test.
 """
@@ -320,8 +323,8 @@ def main():
               "oracle_binary_sha256": BINARY_SHA256, "build_source_commit": args.build_source_commit,
               "build_source_binding_basis": "caller-supplied if present; exact binary hash recorded; not inferred from active checkout or independently attested",
               "runner_sha256": file_hash(runner_path), "launcher_sha256": file_hash(launcher_path),
-              "actual_kube_apiserver": False, "kubernetes_rbac_acceptance": False,
-              "scope": "Synthetic TLS TokenReview login followed by native service-token renewal", "cases": {}, "side_failures": {},
+              "actual_kube_apiserver": False, "target_version": "2.6.2", "openbao271_qualification": False, "kubernetes_rbac_acceptance": False,
+              "scope": "Historical 2.6.2 synthetic TLS TokenReview renewal; not a 2.7.1 gate", "cases": {}, "side_failures": {},
               "started_at_unix": time.time()}
     try:
         instance = Instance(binary, root / "candidate")

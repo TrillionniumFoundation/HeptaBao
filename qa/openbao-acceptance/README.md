@@ -374,3 +374,17 @@ and production authority remain false.
 
 References: [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)
 and [NIST SP 800-38D](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf).
+
+The current 2.7.1 Kubernetes renewal gate is
+`kubernetes_renewal_271_cluster_live.py`. It creates a checksum-pinned disposable
+KIND cluster with a real API server, etcd and RBAC. Metadata-only TokenReview
+audit records prove fresh provider calls for self, admin, accessor and CIDR
+renewals. Revoked reviewer RBAC, process restart with revoked RBAC, deleted
+ServiceAccount UID and explicit RBAC restoration have distinct checks. Failed
+renewal must return no authority and leave the exact expiry unchanged. The
+fixed denominator is 79 across the pinned official 2.7.1 reference and a
+source-bound native candidate. Historical 2.6.2 `no_provider=True` receipts
+remain historical and cannot qualify this gate.
+
+See `docs/operations/HEPTABAO_KUBERNETES271_GENUINE_RENEWAL.md` for pins,
+case boundaries and the exact isolated invocation.

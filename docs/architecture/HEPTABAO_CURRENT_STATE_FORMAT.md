@@ -408,8 +408,10 @@ uses current role/mount maxima and freezes only the true explicit cap.
 Schema 20 is required for direct Kubernetes renewal provenance, empty configured
 Kubernetes role policy sets, zero/default or
 greater-than-one-hour Kubernetes role TTLs, and nonzero role maximum, period or
-explicit maximum fields. New Kubernetes tokens renew locally against the current
-issuing role without another TokenReview. Policies and the explicit maximum remain
+explicit maximum fields. The historical 2.6.2 profile renewed against the current issuing role locally.
+The 2.7.1 native path requires a fresh authenticated TokenReview on renewal;
+reviewer RBAC revocation, expired/revoked JWT or changed ServiceAccount UID
+must deny renewal without extending expiry. Policies and the explicit maximum remain
 their issue-time values. Legacy Kubernetes tokens remain nonrenewable; a fresh
 login is required to obtain native renewal provenance. Token-API children and
 orphans do not inherit it. JWT, AppRole and Kubernetes share lifetime arithmetic,

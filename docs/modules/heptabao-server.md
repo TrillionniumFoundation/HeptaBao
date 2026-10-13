@@ -686,8 +686,9 @@ No separate public Principal or authentication bypass is exposed. Online login
 wrapping is rejected before any issuer request or session consumption.
 
 The current schema is defined in `HEPTABAO_CURRENT_STATE_FORMAT.md`; schema 1–4 cannot carry online method state, schema 5 cannot carry the durable PostgreSQL provider fence, schema 6 cannot carry LDAP group synchronization, and schema 7 cannot carry Kubernetes secrets-engine state.
-New Kubernetes tokens renew locally against their current issuing role; online
-TokenReview is per login, not continuous revocation of issued service tokens.
+New Kubernetes tokens renew against their current issuing role; online
+TokenReview is required per login and per 2.7.1 renewal. There is no background
+watcher continuously revoking issued service tokens between these operations.
 Legacy tokens without role provenance remain nonrenewable. OIDC sessions are at most 128 per mount and
 live for 300 seconds; client proof is independent of browser-visible state.
 New OIDC tokens use native role/mount leases and local renewal independently of
