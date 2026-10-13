@@ -35,7 +35,7 @@ pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
 mod negative_current_publication;
-pub use capacity::{BatchPublication, CapacityStatus};
+pub use capacity::{BatchPublication, CapacityStatus, PublicationCondition};
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
 mod backend;
 pub use backend::{
@@ -335,6 +335,7 @@ pub enum ServiceError {
     InvalidSecret,
     InvalidAuthorizationDigest,
     RequestBindingConflict,
+    PublicationConditionConflict,
     ReplayEpochMismatch,
     RequestCapacityExhausted,
     BackupRollbackRejected,
@@ -370,6 +371,9 @@ impl fmt::Display for ServiceError {
             Self::InvalidAuthorizationDigest => formatter.write_str("invalid authorization digest"),
             Self::RequestBindingConflict => {
                 formatter.write_str("request identity is bound to a different operation")
+            }
+            Self::PublicationConditionConflict => {
+                formatter.write_str("authenticated publication condition changed")
             }
             Self::ReplayEpochMismatch => formatter.write_str("request replay epoch is not current"),
             Self::RequestCapacityExhausted => {
@@ -3927,3 +3931,6 @@ mod capacity_tests;
 
 #[cfg(test)]
 mod injected_backend_tests;
+
+#[cfg(test)]
+mod conditional_publication_tests;

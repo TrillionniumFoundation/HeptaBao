@@ -24,6 +24,14 @@ pub struct BatchPublication {
     pub mutations: Vec<(String, Option<Secret>)>,
 }
 
+/// Expected authenticated resource bytes in the request namespace. A logical
+/// publication must compare both its root and its persisted monotonic cursor.
+/// This condition alone grants no application or credential authority.
+pub struct PublicationCondition {
+    pub resource: String,
+    pub expected: Option<Secret>,
+}
+
 struct AtomicBatchRequest {
     replay_epoch: u64,
     principal: String,
@@ -149,6 +157,33 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         )
     }
 
+    /// Compare exact authenticated resources at the real journal boundary.
+    /// Conditions remain bound to this replay identity through compaction.
+    pub fn apply_batch_conditionally_before_publish(
+        &mut self,
+        request: BatchPublication,
+        conditions: Vec<PublicationCondition>,
+        mut before_publish: impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<MutationOutcome, ServiceError> {
+        if conditions.is_empty() || conditions.len() > MAX_ATOMIC_MUTATIONS {
+            return Err(ServiceError::InvalidResource);
+        }
+        self.apply_batch_with_policy_gate_conditions(
+            AtomicBatchRequest {
+                replay_epoch: request.replay_epoch,
+                principal: request.principal,
+                namespace: request.namespace,
+                request_id: request.request_id,
+                authorization_digest: request.authorization_digest,
+                mutations: request.mutations,
+            },
+            Failpoint::None,
+            true,
+            &mut before_publish,
+            Some(&conditions),
+        )
+    }
+
     #[cfg(test)]
     fn apply_batch_with_failpoint(
         &mut self,
@@ -186,10 +221,27 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
 
     fn apply_batch_with_policy_and_gate(
         &mut self,
+        request: AtomicBatchRequest,
+        failpoint: Failpoint,
+        compact_before_entry: bool,
+        before_publish: &mut dyn FnMut() -> Result<(), ServiceError>,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.apply_batch_with_policy_gate_conditions(
+            request,
+            failpoint,
+            compact_before_entry,
+            before_publish,
+            None,
+        )
+    }
+
+    fn apply_batch_with_policy_gate_conditions(
+        &mut self,
         mut request: AtomicBatchRequest,
         failpoint: Failpoint,
         compact_before_entry: bool,
         before_publish: &mut dyn FnMut() -> Result<(), ServiceError>,
+        conditions: Option<&Vec<PublicationCondition>>,
     ) -> Result<MutationOutcome, ServiceError> {
         validate_identifier(&request.principal)?;
         validate_namespace(&request.namespace)?;
@@ -241,6 +293,27 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                         b"heptabao.durable-service.delete.v1",
                         b"delete",
                     ));
+                }
+            }
+        }
+        if let Some(conditions) = conditions {
+            binding_bytes.extend_from_slice(b"heptabao.conditional-publication.v1");
+            let mut seen = std::collections::BTreeSet::new();
+            for condition in conditions {
+                validate_resource(&condition.resource)?;
+                if !seen.insert(&condition.resource) {
+                    return Err(ServiceError::InvalidResource);
+                }
+                encode_string(&mut binding_bytes, &condition.resource);
+                match &condition.expected {
+                    Some(secret) => {
+                        binding_bytes.push(1);
+                        binding_bytes.extend_from_slice(&digest32(
+                            b"heptabao.durable-service.condition-value.v1",
+                            secret.expose(),
+                        ));
+                    }
+                    None => binding_bytes.push(0),
                 }
             }
         }
@@ -344,17 +417,32 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         {
             if compact_before_entry {
                 self.compact()?;
-                return self.apply_batch_with_policy_and_gate(
+                return self.apply_batch_with_policy_gate_conditions(
                     request,
                     failpoint,
                     false,
                     before_publish,
+                    conditions,
                 );
             }
             return Err(ServiceError::JournalCapacityExhausted);
         }
 
         before_publish()?;
+        if let Some(conditions) = conditions {
+            self.verify_live_ownership()?;
+            for condition in conditions {
+                let actual = self.get(&request.namespace, &condition.resource)?;
+                let equal = match (actual.as_ref(), condition.expected.as_ref()) {
+                    (None, None) => true,
+                    (Some(actual), Some(expected)) => actual.expose() == expected.expose(),
+                    _ => false,
+                };
+                if !equal {
+                    return Err(ServiceError::PublicationConditionConflict);
+                }
+            }
+        }
 
         self.unresolved = true;
         let result = (|| {
