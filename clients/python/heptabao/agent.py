@@ -36,6 +36,8 @@ class AgentConfig:
     max_authentications: int = 32
     max_runtime_seconds: int = 3600
     listener: dict | None = None
+    managed_secrets: dict | None = None
+    templates: dict | None = None
 
     @classmethod
     def load(cls, path: str):
@@ -51,6 +53,13 @@ class AgentConfig:
             raise BaoError('invalid_agent_configuration') from None
 
     def validate(self):
+        if self.managed_secrets is not None:
+            from .managed_secrets import configuration
+            configuration(self.managed_secrets,self)
+        if self.templates is not None:
+            if self.managed_secrets is None:raise BaoError('templates_require_managed_secret_owner')
+            from .templates import configuration
+            configuration(self.templates,self)
         if self.listener is not None:
             from .local_api import validate_listener
             from .proxy import validate_routes
@@ -91,7 +100,7 @@ class AgentConfig:
         ca = read_trusted_ca(self.ca_file)
         # Listener changes do not alter the existing auto-auth/sink custody
         # binding. Preserve byte-for-byte legacy fields for listener=None.
-        fields = {name: getattr(self, name) for name in self.__dataclass_fields__ if name != 'listener'}
+        fields = {name: getattr(self, name) for name in self.__dataclass_fields__ if name not in ('listener','managed_secrets','templates')}
         fields['ca_sha256'] = hashlib.sha256(ca).hexdigest()
         return hashlib.sha256(canonical(fields)).hexdigest()
 
@@ -113,7 +122,7 @@ class Agent:
     A token file alone is NOT an admitted token: consumers must read token_snapshot.
     """
     def __init__(self, config: AgentConfig, directory: StateDirectory, *, client_factory=Client,
-                 wall=time.time, monotonic=time.monotonic):
+                 wall=time.time, monotonic=time.monotonic, cancellation=None, owner_deadline=None):
         config.validate()
         if client_factory is Client:client_factory=DeadlineClient
         self.config, self.directory = config, directory
@@ -122,6 +131,7 @@ class Agent:
         if read_trusted_ca(config.ca_file) != self._trusted_ca:
             raise BaoError('agent_trust_configuration_changed')
         self.factory, self.wall, self.monotonic = client_factory, wall, monotonic
+        self.cancellation,self.owner_deadline=cancellation,owner_deadline
         self._deadline = None
         self._token = None
         self.state = directory.json('state.json', optional=True)
@@ -166,8 +176,12 @@ class Agent:
     def _client(self, token: str):
         if self.config.binding() != self.binding:
             raise BaoError('agent_trust_configuration_changed')
-        return self.factory(self.config.address, self.config.ca_file, token, self.config.namespace, self.config.timeout,
-                            trusted_ca_pem=self._trusted_ca)
+        kwargs={'trusted_ca_pem':self._trusted_ca}
+        if self.factory is DeadlineClient:
+            deadline=time.monotonic()+self.config.timeout
+            if self.owner_deadline is not None:deadline=min(deadline,self.owner_deadline)
+            kwargs.update(cancellation=self.cancellation,deadline=deadline)
+        return self.factory(self.config.address, self.config.ca_file, token, self.config.namespace, self.config.timeout,**kwargs)
 
     def _invalidate(self, phase):
         self._checkpoint(phase)
@@ -277,22 +291,37 @@ def main(argv=None):
     stop = threading.Event()
     handlers = {}
     local_api = None
+    managed_secrets = None
+    templates = None
     try:
         config = AgentConfig.load(args.config)
-        if args.once and config.listener is not None:
+        if args.once and (config.listener is not None or config.managed_secrets is not None or config.templates is not None):
             raise BaoError('agent_once_listener_not_supported')
         for sig in (signal.SIGINT, signal.SIGTERM):
             handlers[sig] = signal.signal(sig, lambda *_: stop.set())
         with StateDirectory(config.state_dir, writer=True) as directory:
-            agent = Agent(config, directory)
             end = time.monotonic() + config.max_runtime_seconds
+            agent = Agent(config, directory,cancellation=stop,owner_deadline=end)
             try:
+                if config.managed_secrets is not None:
+                    from .managed_secrets import ManagedSecrets
+                    managed_secrets=ManagedSecrets(config.managed_secrets,config,stop,owner_deadline=end)
+                if config.templates is not None:
+                    from .templates import Templates
+                    templates=Templates(config.templates,config,managed_secrets,stop)
                 if config.listener is not None:
                     from .local_api import LocalAPI
                     local_api=LocalAPI(config.listener,config,stop,'agent')
                     local_api.start()
                 while not stop.is_set() and time.monotonic() < end:
                     agent.step()
+                    if managed_secrets is not None:
+                        try:managed_secrets.maintain()
+                        except (BaoError,OSError,ValueError,TypeError):pass
+                    if templates is not None:
+                        templates.step()
+                        directory.publish('template-status.json',{'schema':1,
+                            'templates':templates.metadata(),'managed':managed_secrets.metadata()})
                     if args.once:
                         return 0
                     stop.wait(config.interval_seconds)
@@ -302,8 +331,13 @@ def main(argv=None):
                         local_api.close()
                         local_api=None
                 finally:
-                    if not args.once:
-                        agent.stop()
+                    try:
+                        if templates is not None:templates.close();templates=None
+                    finally:
+                        try:
+                            if managed_secrets is not None:managed_secrets.close();managed_secrets=None
+                        finally:
+                            if not args.once:agent.stop()
         return 0
     except (BaoError, OSError, ValueError, TypeError):
         # No exception/HTTP text, token, path, or credentials on diagnostics.

@@ -23,14 +23,15 @@ _WORKERS=threading.BoundedSemaphore(2)
 
 
 class _RequestOwner:
-    def __init__(self, deadline):
+    def __init__(self, deadline, cancellation=None):
         self.deadline=deadline
         self.cancelled=threading.Event()
+        self.cancellation=cancellation
         self.lock=threading.Lock()
         self.connections=[]
 
     def check(self):
-        if self.cancelled.is_set() or time.monotonic()>=self.deadline:
+        if self.cancelled.is_set() or self.cancellation is not None and self.cancellation.is_set() or time.monotonic()>=self.deadline:
             raise TimeoutError('owned request deadline')
 
     def add(self,connection):
@@ -88,9 +89,10 @@ class _HTTPSHandler(urllib.request.HTTPSHandler):
 
 
 class DeadlineClient(Client):
-    def __init__(self,address,ca_file,token,namespace='',timeout=15,*,deadline=None,trusted_ca_pem=None):
+    def __init__(self,address,ca_file,token,namespace='',timeout=15,*,deadline=None,trusted_ca_pem=None,cancellation=None):
         super().__init__(address,ca_file,token,namespace,timeout,trusted_ca_pem=trusted_ca_pem)
         self.deadline=deadline
+        self.cancellation=cancellation
         if trusted_ca_pem is not None:
             self.context=ssl.create_default_context(cadata=trusted_ca_pem.decode('ascii'))
         else:
@@ -103,8 +105,8 @@ class DeadlineClient(Client):
         # GET can issue credentials or consume a finite token. The verb never
         # proves that an entered operation can be retried safely.
         code='transport_outcome_unknown'
-        if remaining<=0 or not _WORKERS.acquire(blocking=False):raise BaoError(code)
-        owner=_RequestOwner(deadline)
+        if remaining<=0 or self.cancellation is not None and self.cancellation.is_set() or not _WORKERS.acquire(blocking=False):raise BaoError(code)
+        owner=_RequestOwner(deadline,self.cancellation)
         worker_client=copy.copy(self)
         worker_client.timeout=min(self.timeout,remaining)
         worker_client._opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),
@@ -123,10 +125,14 @@ class DeadlineClient(Client):
         except BaseException:
             _WORKERS.release()
             raise
-        if not completed.wait(max(0,deadline-time.monotonic())):
-            owner.cancel()
-            raise BaoError(code)
+        while not completed.is_set():
+            remaining=deadline-time.monotonic()
+            if remaining<=0 or self.cancellation is not None and self.cancellation.is_set():
+                owner.cancel()
+                raise BaoError(code)
+            completed.wait(min(.05,remaining))
         owner.cancel()
+        if time.monotonic()>=deadline or self.cancellation is not None and self.cancellation.is_set():raise BaoError(code)
         if not result:raise BaoError(code)
         successful,value=result[0]
         if successful:return value

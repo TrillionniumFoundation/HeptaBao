@@ -260,3 +260,15 @@ are not pass receipts for a
 future candidate. Multi-host HA, mixed-version upgrades, ARM64/macOS execution,
 Windows file security, external providers, full Agent/Proxy/SSH compatibility and
 independent production acceptance remain open.
+
+## Managed secrets and Go templates
+
+The Python Agent can own `managed_secrets` subscriptions and `templates` jobs. Subscriptions require the Agent's independently admitted, renewable, unlimited-use token; finite tokens cannot enter the additional lookup or renewal paths. A rendered secret is rechecked against the same token, trust binding and original lease deadlines before release and around destination publication.
+
+Every upstream secret fetch records a private durable intent before entering transport, including GET routes labelled static. An ambiguous fetch or failed response remains fenced and is not automatically retried by template polling. Ambiguous renewal enters lookup-only reconciliation; a returned HTTP 200 must identify the exact lease and its current renewability. Cold startup looks up saved leases before using their saved credentials and refreshes saved static data. Failure to publish a checkpoint fences the owner for its remaining lifetime.
+
+`templates.renderer` names the compiled `heptabao-agent-renderer`; `renderer_sha256` admits its exact bytes. The process evaluates the vendored Go template language, including named templates, variables, standard formatting and a `secret` callback. The callback can request only configured subscription paths through bounded private pipes. It receives neither a bearer token nor network authority. This supplies a bounded Go evaluator and `secret`, rather than the full Consul Template function map.
+
+On Linux the executable is copied to a sealed memfd and that admitted image is executed. Darwin template admission is currently closed while a portable immutable-image lifecycle is qualified. Source files, subscriptions and destinations use owner-only POSIX files; this state is not OpenBao's encrypted persistent cache format. Destination publication is atomic and 0600. The live owner removes files when their recorded authority expires or becomes fenced, and configured cleanup removes them on normal shutdown. SIGKILL can leave private files; their existence grants no restart admission, and a fresh owner removes old configured destinations before rendering again.
+
+The managed owner renews leased secrets and polls static subscriptions, within the Agent's original runtime end. HTTPS transport and template pipe I/O share absolute deadlines and respond to stop requests. These selected capabilities do not establish complete Agent auto-auth, cache, sink, template or multi-platform parity. `agent_template_managed_live.py --backend oracle` executes this Python Agent against the official OpenBao 2.7.1 service; it does not execute or qualify the official OpenBao Agent template runtime.

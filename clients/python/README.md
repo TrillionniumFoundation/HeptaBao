@@ -155,8 +155,9 @@ Private-file preflight occurs before dispatch; publication then uses an exclusiv
 owner-bound, no-follow descriptor and atomic publication. The output is 0600.
 A race or disk failure can still occur after a remote effect: diagnostics report
 request/response progress but cannot certify whether that remote effect committed.
-No command retries automatically, follows leader redirects, caches secrets or
-starts a shell. Call the appropriate server recovery/metadata boundary before
+One-shot CLI commands do not retry automatically, follow leader redirects, cache
+secrets or start a shell. The explicit Agent process owns the bounded cache and
+template subscriptions described in its operational profile. Call the appropriate server recovery/metadata boundary before
 making an explicit new mutating attempt. Do not retry OTP verification or unwrap
 to test availability.
 

@@ -1234,6 +1234,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-agent-renderer"
+version = "0.1.0"
+dependencies = [
+ "heptabao-workflow-template",
+ "serde_json",
+]
+
+[[package]]
 name = "heptabao-authbus-contracts"
 version = "0.1.0"
 dependencies = [
