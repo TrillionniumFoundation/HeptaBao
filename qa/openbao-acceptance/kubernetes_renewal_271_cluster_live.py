@@ -8,11 +8,14 @@ cluster, production namespace, Docker container or ambient kubeconfig is used.
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import socket
+import stat
 import subprocess
 import sys
 import time
@@ -69,6 +72,109 @@ def source_freeze(path, commit, tree):
     return (git("rev-parse", "HEAD") == commit
             and git("rev-parse", "HEAD^{tree}") == tree
             and not git("status", "--porcelain", "--untracked-files=no"))
+
+
+def validate_build_receipt(receipt, commit, tree, binary_digest):
+    """Keep native-build admission identical to the mixed-native HA gate."""
+    if (not isinstance(receipt, dict)
+            or receipt.get("schema") != "heptabao.native-build.v1"
+            or receipt.get("source_commit") != commit
+            or receipt.get("source_tree") != tree
+            or receipt.get("binary_sha256") != binary_digest
+            or type(receipt.get("build_exit_code")) is not int
+            or receipt["build_exit_code"] != 0
+            or receipt.get("source_freeze_verified") is not True
+            or not isinstance(receipt.get("native_abi"), str)
+            or re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", receipt["native_abi"]) is None):
+        raise kube.FixtureFailure("native_build_receipt_binding_invalid")
+    return receipt["native_abi"]
+
+
+def read_build_receipt(path, expected_digest, commit, tree, binary_digest):
+    """Admit the same bounded regular file bytes that supply the receipt hash."""
+    if (not path.is_absolute() or re.fullmatch(r"[0-9a-f]{64}", expected_digest) is None):
+        raise kube.FixtureFailure("native_build_receipt_input_invalid")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as stream:
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            raise kube.FixtureFailure("native_build_receipt_not_regular")
+        raw = stream.read(65537)
+    if len(raw) > 65536:
+        raise kube.FixtureFailure("native_build_receipt_oversized")
+    if hashlib.sha256(raw).hexdigest() != expected_digest:
+        raise kube.FixtureFailure("native_build_receipt_digest_mismatch")
+    try:
+        receipt = json.loads(raw)
+    except (ValueError, UnicodeDecodeError) as error:
+        raise kube.FixtureFailure("native_build_receipt_invalid_json") from error
+    return validate_build_receipt(receipt, commit, tree, binary_digest)
+
+
+def owned_review_events(events, reviewer_uid, seen_audit_ids, expected_status):
+    """A count increase alone cannot attribute a review to either service."""
+    if len(events) != 1 or not isinstance(reviewer_uid, str) or not reviewer_uid:
+        return False
+    row = events[0]
+    audit_id = row.get("auditID")
+    user = row.get("user", {})
+    resource = row.get("objectRef", {})
+    valid = (isinstance(audit_id, str) and 1 <= len(audit_id) <= 128
+             and audit_id not in seen_audit_ids
+             and user.get("username") == "system:serviceaccount:hb-review:reviewer"
+             and user.get("uid") == reviewer_uid
+             and row.get("requestURI") == "/apis/authentication.k8s.io/v1/tokenreviews"
+             and row.get("stage") == "ResponseComplete" and row.get("verb") == "create"
+             and resource.get("apiGroup") == "authentication.k8s.io"
+             and resource.get("apiVersion") == "v1" and resource.get("resource") == "tokenreviews"
+             and row.get("responseStatus", {}).get("code") == expected_status)
+    if valid:
+        seen_audit_ids.add(audit_id)
+    return valid
+
+
+def renewed_token(result, token, route="self", accessor=None):
+    auth = result.get("auth")
+    if not isinstance(auth, dict) or auth.get("renewable") is not True:
+        return False
+    if route == "accessor":
+        # Accessor renewal must not disclose the token's bearer credential.
+        return (isinstance(accessor, str) and bool(accessor)
+                and auth.get("accessor") == accessor and auth.get("client_token") in (None, ""))
+    return auth.get("client_token") == token
+
+
+def expiry_extended(before, after):
+    try:
+        first = datetime.fromisoformat(before.replace("Z", "+00:00"))
+        second = datetime.fromisoformat(after.replace("Z", "+00:00"))
+        return first.tzinfo is not None and second.tzinfo is not None and second > first
+    except (TypeError, ValueError, AttributeError):
+        return False
+
+
+def capture_final_metadata(cluster, destination, secrets, report, expected_audit_ids):
+    """The final required audit artifact is part of lifecycle success."""
+    try:
+        audit = cluster.audit()
+        if not expected_audit_ids.issubset({row.get("auditID") for row in audit}):
+            raise kube.FixtureFailure("final_metadata_missing_observed_audit_ids")
+        encoded = json.dumps(audit, indent=2, sort_keys=True) + "\n"
+        if any(value in encoded for value in secrets):
+            raise kube.FixtureFailure("metadata_audit_contains_runtime_credential")
+        destination.write_text(encoded)
+        return True
+    except Exception as error:
+        report["metadata_capture_failure"] = type(error).__name__
+        return False
+
+
+def qualification_passed(report):
+    """A complete denominator cannot override an evidence-capture failure."""
+    checks = report.get("checks", [])
+    return ("metadata_capture_failure" not in report and "failure_code" not in report
+            and len(checks) == len(REQUIRED)
+            and {row.get("case") for row in checks} == REQUIRED
+            and all(row.get("passed") is True for row in checks))
 
 
 class AuditCluster(kube.Cluster):
@@ -282,6 +388,8 @@ def main():
     parser.add_argument("--candidate-source-root", required=True, type=Path)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree", required=True)
+    parser.add_argument("--native-build-receipt", required=True, type=Path)
+    parser.add_argument("--expected-native-build-receipt-sha256", required=True)
     parser.add_argument("--kind", required=True, type=Path)
     parser.add_argument("--work-root", required=True, type=Path)
     parser.add_argument("--allow-disposable-cluster", action="store_true")
@@ -301,6 +409,8 @@ def main():
               "runner_sha256": digest(__file__),
               "node_image": kube.NODE_IMAGE, "official_version": "2.7.1",
               "official_artifact_pins": pinned_artifact(version="2.7.1"),
+              "native_build_receipt_sha256": args.expected_native_build_receipt_sha256,
+              "native_build_receipt_verified": False,
               "production_authority": False, "full_openbao_compatibility": False,
               "scope": "new_disposable_genuine_kind_cluster_renewal_revocation_not_production"}
     phases = root / "phases"; phases.mkdir(mode=0o700)
@@ -308,6 +418,9 @@ def main():
     cluster = None
     sides = []
     denial_statuses = {}
+    reviewer_uid = None
+    seen_audit_ids = set()
+    positive_tokens = set()
     def save():
         encoded = json.dumps(report, indent=2, sort_keys=True) + "\n"
         if any(value and value in encoded for value in secrets):
@@ -326,29 +439,49 @@ def main():
         status, result = side.call(method, path, body)
         require(side.name + "." + case, status == expected, http_status=status)
         return result
+    def review_metadata(events):
+        return {"actual_tokenreview_count": len(events),
+                "actual_tokenreview_status": [row.get("responseStatus", {}).get("code") for row in events],
+                "actual_tokenreview_audit_ids": [row.get("auditID") for row in events],
+                # UA is descriptive metadata; reviewer identity supplies admission.
+                "actual_tokenreview_user_agents": [row.get("userAgent") for row in events]}
     def renewal(side, phase, route, deny, expected_api_status=None):
-        token = side.tokens["cidr" if route == "cidr" else "standard"]
+        key = "cidr" if route == "cidr" else "standard"
+        token = side.tokens[key]
         expiry = side.expiry(token)
         before = len(cluster.audit())
         status, result = side.renew(route)
         events = cluster.audit_after(before)
-        codes = [row.get("responseStatus", {}).get("code") for row in events]
         authority_absent = not result.get("auth") and not result.get("wrap_info")
-        fresh = len(events) == 1 and (expected_api_status is None or codes == [expected_api_status])
+        fresh = owned_review_events(events, reviewer_uid, seen_audit_ids, expected_api_status)
         name = phase + "_" + route + ("_denied" if deny else "")
-        valid = (400 <= status <= 599 and authority_absent and side.expiry(token) == expiry
-                 if deny else status == 200 and isinstance(result.get("auth"), dict)
-                 and result["auth"].get("renewable") is True)
+        after = side.expiry(token)
+        first_positive = not deny and (side.name, key) not in positive_tokens
+        extended = expiry_extended(expiry, after) if first_positive else None
+        identity_matches = renewed_token(result, token, route, side.accessors[key])
+        valid = (400 <= status <= 599 and authority_absent and after == expiry
+                 if deny else status == 200 and identity_matches
+                 and (not first_positive or extended))
+        if not deny:
+            positive_tokens.add((side.name, key))
         check(side.name + "." + name, valid and fresh, http_status=status,
-              actual_tokenreview_count=len(events), actual_tokenreview_status=codes,
+              **review_metadata(events),
+              same_renewed_token=identity_matches if not deny and route != "accessor" else None,
+              issued_accessor_matches=identity_matches if not deny and route == "accessor" else None,
+              first_positive_expiry_extended=extended,
               no_authority=authority_absent if deny else None,
-              exact_expiry_unchanged=side.expiry(token) == expiry if deny else None)
+              exact_expiry_unchanged=after == expiry if deny else None)
         if deny:
             denial_statuses[(side.name, name)] = status
     try:
         require("kind_binary_pin", digest(args.kind) == kube.KIND_SHA256)
         kube.validate_binary(args.kind, kube.KIND_SHA256)
-        require("candidate_source_freeze", source_freeze(args.candidate_source_root, args.source_commit, args.source_tree))
+        native_abi = read_build_receipt(args.native_build_receipt, args.expected_native_build_receipt_sha256,
+                                       args.source_commit, args.source_tree, args.expected_binary_sha256)
+        report.update(native_build_receipt_verified=True, native_abi=native_abi)
+        require("candidate_source_freeze", source_freeze(args.candidate_source_root, args.source_commit, args.source_tree),
+                native_build_receipt_verified=True, native_abi=native_abi,
+                native_build_receipt_sha256=args.expected_native_build_receipt_sha256)
         require("candidate_binary_pin", digest(args.binary) == args.expected_binary_sha256)
         cluster = AuditCluster(args.kind, root / "cluster"); cluster.start()
         status, version = cluster.call("GET", "/version")
@@ -360,7 +493,10 @@ def main():
             require("actual_namespace_" + namespace.replace("-", "_"), bool(value["metadata"]["uid"]))
         reviewer = cluster.service_account("hb-review", "reviewer")
         worker = cluster.service_account("hb-work", "worker")
-        require("actual_serviceaccount_uids_distinct", reviewer["metadata"]["uid"] != worker["metadata"]["uid"])
+        reviewer_uid = reviewer["metadata"]["uid"]
+        require("actual_serviceaccount_uids_distinct", isinstance(reviewer_uid, str) and bool(reviewer_uid)
+                and reviewer_uid != worker["metadata"]["uid"])
+        report["actual_reviewer_serviceaccount_uid"] = reviewer_uid
         cluster.post("/apis/rbac.authorization.k8s.io/v1/clusterroles", {
             "apiVersion": "rbac.authorization.k8s.io/v1", "kind": "ClusterRole", "metadata": {"name": "hb-review-only"},
             "rules": [{"apiGroups": ["authentication.k8s.io"], "resources": ["tokenreviews"], "verbs": ["create"]}]})
@@ -378,6 +514,7 @@ def main():
         secrets.extend([reviewer_jwt, worker_jwt]); cluster.await_token_review(worker_jwt, True)
         require("actual_tokenrequest_valid", True)
         require("actual_tokenreview_metadata_audit_enabled", bool(cluster.audit()))
+        seen_audit_ids.update(row.get("auditID") for row in cluster.audit())
         with socket.socket() as connection:
             connection.bind(("127.0.0.1", 0)); oracle_port = connection.getsockname()[1]
         oracle = start_oracle(oracle_port, audit_file=True, version="2.7.1")
@@ -416,7 +553,9 @@ def main():
                 events = cluster.audit_after(before); auth = logged.get("auth", {})
                 require(side.name + (".login" if key == "standard" else ".cidr_login"),
                         status == 200 and bool(auth.get("client_token")) and bool(auth.get("accessor"))
-                        and auth.get("renewable") is True and len(events) == 1, http_status=status, actual_tokenreview_count=len(events))
+                        and auth.get("renewable") is True
+                        and owned_review_events(events, reviewer_uid, seen_audit_ids, 201),
+                        http_status=status, **review_metadata(events))
                 side.tokens[key] = auth["client_token"]; side.accessors[key] = auth["accessor"]
                 secrets.append(auth["client_token"])
             for route in RENEW_ROUTES:
@@ -435,8 +574,11 @@ def main():
         cluster.await_review_permission(True); require("actual_reviewer_rbac_restored", True)
         for side in sides:
             before = len(cluster.audit()); status, restored = side.renew("self"); events = cluster.audit_after(before)
-            check(side.name + ".reviewer_restore_positive", status == 200 and bool(restored.get("auth")) and len(events) == 1,
-                  http_status=status, actual_tokenreview_count=len(events))
+            check(side.name + ".reviewer_restore_positive", status == 200
+                  and renewed_token(restored, side.tokens["standard"])
+                  and owned_review_events(events, reviewer_uid, seen_audit_ids, 201),
+                  http_status=status, same_renewed_token=renewed_token(restored, side.tokens["standard"]),
+                  **review_metadata(events))
         require("actual_serviceaccount_deleted", cluster.call("DELETE", "/api/v1/namespaces/hb-work/serviceaccounts/worker", {})[0] == 200)
         cluster.await_token_review(worker_jwt, False)
         for side in sides:
@@ -447,13 +589,16 @@ def main():
         new_jwt = cluster.token("hb-work", "worker", AUDIENCE); secrets.append(new_jwt)
         for side in sides:
             before = len(cluster.audit()); status, result = side.login(new_jwt); events = cluster.audit_after(before)
-            check(side.name + ".recreated_uid_login", status == 200 and bool(result.get("auth")) and len(events) == 1,
-                  http_status=status, actual_tokenreview_count=len(events))
+            check(side.name + ".recreated_uid_login", status == 200 and bool(result.get("auth"))
+                  and owned_review_events(events, reviewer_uid, seen_audit_ids, 201),
+                  http_status=status, **review_metadata(events))
             if status == 200:
                 secrets.append(result["auth"]["client_token"])
             before = len(cluster.audit()); status, result = side.login(worker_jwt); events = cluster.audit_after(before)
-            check(side.name + ".old_uid_not_revived", status >= 400 and not result.get("auth") and len(events) == 1,
-                  http_status=status, actual_tokenreview_count=len(events))
+            check(side.name + ".old_uid_not_revived", status >= 400 and not result.get("auth")
+                  and not result.get("wrap_info")
+                  and owned_review_events(events, reviewer_uid, seen_audit_ids, 201),
+                  http_status=status, **review_metadata(events))
             mutation(side, "auth_unmount", "DELETE", "sys/auth/" + MOUNT)
             check(side.name + ".unmount_revokes_token", side.call("GET", "auth/token/lookup-self", token=side.tokens["standard"])[0] == 403)
         audit = cluster.audit(); encoded_audit = json.dumps(audit)
@@ -482,14 +627,9 @@ def main():
                     "stack": [{"file": Path(frame.filename).name, "line": frame.lineno, "function": frame.name}
                               for frame in traceback.extract_tb(error.__traceback__)]}
         if cluster is not None:
-            try:
-                audit = cluster.audit()
-                encoded = json.dumps(audit, indent=2, sort_keys=True) + "\n"
-                if any(value in encoded for value in secrets):
-                    raise kube.FixtureFailure("metadata_audit_contains_runtime_credential")
-                (root / "tokenreview-metadata-final.json").write_text(encoded)
-            except Exception as error:
-                report["metadata_capture_failure"] = type(error).__name__
+            if not capture_final_metadata(cluster, root / "tokenreview-metadata-final.json", secrets, report,
+                                          seen_audit_ids):
+                clean = False
             try:
                 cluster.close()
                 report.setdefault("lifecycle_cleanup", {})["cluster"] = {"passed": True}
@@ -500,8 +640,7 @@ def main():
         names = [row["case"] for row in report["checks"]]
         check("fixed_denominator_complete", set(names) == REQUIRED - {"fixed_denominator_complete"}
               and len(names) == len(set(names)) and all(row["passed"] for row in report["checks"]))
-        if ({row["case"] for row in report["checks"]} == REQUIRED
-                and len(report["checks"]) == len(REQUIRED) and all(row["passed"] for row in report["checks"])):
+        if qualification_passed(report):
             report["status"] = "passed"
         save(); (root / "summary.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
         print(json.dumps({"status": report["status"], "checks": len(report["checks"]),
