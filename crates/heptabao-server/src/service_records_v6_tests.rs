@@ -834,6 +834,9 @@ fn genuine_service_native_migration_plan_authenticates_all_source_owners_without
 #[test]
 fn genuine_service_native_migration_plan_rejects_missing_and_tampered_staged_closure() -> TestResult
 {
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+    );
     let directory = super::super::tests::Root::new();
     let mut service = directory.service()?;
     let (key, token) = super::super::tests::bootstrap(&mut service)?;
@@ -1117,11 +1120,14 @@ fn genuine_service_native_migration_plan_requires_original_deadline() -> TestRes
 }
 
 #[test]
-fn genuine_native_publication_uses_real_aead_root_last_and_reopens_exact_cursor() -> TestResult {
+fn genuine_native_side_publication_reopens_side_root_and_keeps_v5_business_live() -> TestResult {
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(60),
+    );
     let directory = super::super::tests::Root::new();
     let mut service = directory.service()?;
     let (key, token) = super::super::tests::bootstrap(&mut service)?;
-    let _key = Zeroizing::new(key);
+    let key = Zeroizing::new(key);
     let token = Zeroizing::new(token);
     let marker = "native-service-aead-persisted-marker";
     assert_eq!(
@@ -1130,41 +1136,78 @@ fn genuine_native_publication_uses_real_aead_root_last_and_reopens_exact_cursor(
             "POST",
             "secret/data/native-source",
             &token,
-            json!({"data":{"value":marker,"nested":[false,null,17]}})
+            json!({"data":{"value":marker,"nested":[false,null,17]}}),
         )
         .status,
         200
     );
+    let old = service
+        .durable
+        .as_ref()
+        .ok_or("durable")?
+        .get("system", "state")?
+        .ok_or("root")?;
+    let old_identity = service
+        .current_state_identity()
+        .map_err(|_| "source identity")?;
     let path = service.data_dir.clone();
     let barrier_key = Zeroizing::new(**service.barrier_key.as_ref().ok_or("barrier key")?);
     let plan = service
         .prepare_native_root_migration(&|| Ok(()))
         .map_err(|_| "prepare")?;
+    let source_generation = plan.source_generation;
     let receipt = service
-        .publish_native_root_migration_fenced(plan, &|| Ok(()))
+        .publish_native_root_side_snapshot(plan, &|| Ok(()))
         .map_err(|_| "publish")?;
     assert!(
-        service.recovery_required,
-        "stale V5 runtime must be fenced after publication"
+        !service.recovery_required,
+        "side snapshot cannot fence a healthy V5 application"
+    );
+    assert_eq!(receipt.source_identity, old_identity);
+    assert_eq!(receipt.source_generation, source_generation);
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "active identity")?,
+        old_identity
+    );
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("durable")?
+            .get("system", "state")?
+            .ok_or("root")?
+            .expose(),
+        old.expose()
     );
     drop(service);
     let durable = DurableService::reopen(&path, AeadBarrier::new(*barrier_key)?, MAX_OPERATIONS)?;
-    let bytes = durable.get("system", "state")?.ok_or("root")?;
-    let root = RecordStateRootV6::decode(bytes.expose()).map_err(|_| "decode published root")?;
+    assert_eq!(
+        durable
+            .get("system", "state")?
+            .ok_or("active root")?
+            .expose(),
+        old.expose()
+    );
+    let bytes = durable
+        .get("system", NATIVE_SIDE_ROOT)?
+        .ok_or("side root")?;
+    let root = RecordStateRootV6::decode(bytes.expose()).map_err(|_| "decode side root")?;
     assert_eq!(root.identity().map_err(|_| "identity")?, receipt.identity);
     let cursor_bytes = durable
         .get("system", "state-native-v6/publication-cursor")?
         .ok_or("cursor")?;
     let cursor: NativePublicationCursor = serde_json::from_slice(cursor_bytes.expose())?;
+    assert_eq!(cursor.source_root_digest, receipt.source_identity.digest());
+    assert_eq!(cursor.source_generation, receipt.source_generation);
     assert_eq!(cursor.root_digest, receipt.identity.digest());
     assert_eq!(cursor.generation, receipt.publication_generation);
     assert_eq!(
         cursor.generation,
         durable.generation(),
-        "publication cursor must match real atomic journal generation"
+        "side cursor must match real atomic journal generation"
     );
-    assert_eq!(cursor.cluster_id, root.cluster_id);
-    assert_eq!(cursor.replay_epoch, root.replay_epoch);
     let StateIdentity::RecordsV6(identity) = receipt.identity else {
         return Err("identity kind".into());
     };
@@ -1176,7 +1219,12 @@ fn genuine_native_publication_uses_real_aead_root_last_and_reopens_exact_cursor(
         maximum_state_schema: root.state_schema,
         reader_format: 6,
     };
-    let recovered = materialize(&root, context, &NativeDurableSource(&durable))?;
+    let recovered = materialize_native_side_snapshot(
+        &durable,
+        receipt.source_identity,
+        context,
+        crate::v6_native_custody::OriginalDeadline::capture()?,
+    )?;
     let scope = root
         .kv2
         .iter()
@@ -1191,6 +1239,16 @@ fn genuine_native_publication_uses_real_aead_root_last_and_reopens_exact_cursor(
         crate::auth::Timestamp::whole(1000)?,
     )?;
     assert_eq!(response.body["data"]["data"]["value"], marker);
+    assert!(
+        materialize_native_side_snapshot(
+            &durable,
+            StateIdentity::RecordsV5([0; 32]),
+            context,
+            crate::v6_native_custody::OriginalDeadline::capture()?,
+        )
+        .is_err(),
+        "side source provenance is an independent expected frontier"
+    );
     let mut directories = vec![path];
     while let Some(directory) = directories.pop() {
         for entry in std::fs::read_dir(directory)? {
@@ -1208,12 +1266,89 @@ fn genuine_native_publication_uses_real_aead_root_last_and_reopens_exact_cursor(
             }
         }
     }
+    drop(durable);
+    // Use the normal Service constructor and Shamir unseal, then perform real
+    // V5 business reads/writes. No V6 Service decoder or writer is installed.
+    let mut restarted = directory.service()?;
+    assert_eq!(
+        super::super::tests::call(
+            &mut restarted,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":key.as_str()}),
+        )
+        .status,
+        200
+    );
+    assert!(matches!(
+        restarted
+            .current_state_identity()
+            .map_err(|_| "V5 identity")?,
+        StateIdentity::RecordsV5(_)
+    ));
+    assert_eq!(
+        super::super::tests::call(
+            &mut restarted,
+            "GET",
+            "secret/data/native-source",
+            &token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        marker
+    );
+    assert_eq!(
+        super::super::tests::call(
+            &mut restarted,
+            "POST",
+            "secret/data/native-source",
+            &token,
+            json!({"data":{"value":"active-v5-after-side"}}),
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        super::super::tests::call(
+            &mut restarted,
+            "GET",
+            "secret/data/native-source",
+            &token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        "active-v5-after-side"
+    );
+    let retained = materialize_native_side_snapshot(
+        restarted.durable.as_ref().ok_or("restarted durable")?,
+        receipt.source_identity,
+        context,
+        crate::v6_native_custody::OriginalDeadline::capture()?,
+    )?;
+    assert_eq!(
+        retained
+            .native
+            .get(&scope)
+            .ok_or("retained view")?
+            .read(
+                "GET",
+                "data/native-source",
+                &json!({}),
+                crate::auth::Timestamp::whole(1000)?,
+            )?
+            .body["data"]["data"]["value"],
+        marker
+    );
     Ok(())
 }
 
 #[test]
-fn genuine_native_publication_expired_original_gate_keeps_old_root_and_fences_staging() -> TestResult
-{
+fn genuine_native_side_publication_rejected_gate_keeps_active_root_without_side_admission()
+-> TestResult {
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+    );
     let directory = super::super::tests::Root::new();
     let mut service = directory.service()?;
     let (key, token) = super::super::tests::bootstrap(&mut service)?;
@@ -1229,16 +1364,19 @@ fn genuine_native_publication_expired_original_gate_keeps_old_root_and_fences_st
         .prepare_native_root_migration(&|| Ok(()))
         .map_err(|_| "prepare")?;
     let calls = std::cell::Cell::new(0);
-    let denied = service.publish_native_root_migration_fenced(plan, &|| {
+    let denied = service.publish_native_root_side_snapshot(plan, &|| {
         calls.set(calls.get() + 1);
-        if calls.get() > 4 {
+        if calls.get() > 6 {
             Err(RecordError::Corrupt)
         } else {
             Ok(())
         }
     });
     assert!(denied.is_err());
-    assert!(calls.get() > 4, "real post-crypto original gate must run");
+    assert!(
+        calls.get() > 6,
+        "original gate must survive staging crypto and root preflight"
+    );
     let durable = service.durable.as_ref().ok_or("durable")?;
     assert_eq!(
         durable.get("system", "state")?.ok_or("root")?.expose(),
@@ -1249,10 +1387,84 @@ fn genuine_native_publication_expired_original_gate_keeps_old_root_and_fences_st
             .get("system", "state-native-v6/publication-cursor")?
             .is_some()
     );
-    assert!(service.recovery_required);
+    assert!(durable.get("system", NATIVE_SIDE_ROOT)?.is_none());
+    assert!(
+        !service.recovery_required,
+        "a rejected side artifact cannot disable an unchanged healthy V5 state"
+    );
     assert!(
         service.prepare_native_root_migration(&|| Ok(())).is_err(),
-        "partial staging cannot retry implicitly"
+        "partial side staging cannot retry implicitly"
     );
+    Ok(())
+}
+
+#[test]
+fn genuine_native_side_publication_cannot_replace_expired_plan_budget_with_new_scope() -> TestResult
+{
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let _token = Zeroizing::new(token);
+    let end = std::time::Instant::now() + std::time::Duration::from_secs(2);
+    let scope = crate::request_deadline::RequestDeadlineScope::enter(end);
+    let plan = service
+        .prepare_native_root_migration(&|| Ok(()))
+        .map_err(|_| "prepare")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    drop(scope);
+    std::thread::sleep(
+        end.saturating_duration_since(std::time::Instant::now())
+            + std::time::Duration::from_millis(1),
+    );
+    let _new_scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+    );
+    assert!(
+        service
+            .publish_native_root_side_snapshot(plan, &|| Ok(()))
+            .is_err()
+    );
+    let durable = service.durable.as_ref().ok_or("durable")?;
+    assert_eq!(durable.generation(), generation);
+    assert!(
+        durable
+            .get("system", "state-native-v6/publication-cursor")?
+            .is_none()
+    );
+    assert!(durable.get("system", NATIVE_SIDE_ROOT)?.is_none());
+    assert!(!service.recovery_required);
+    Ok(())
+}
+
+#[test]
+fn genuine_native_side_publication_rejects_failed_audit_owner_before_any_effect() -> TestResult {
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+    );
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let _token = Zeroizing::new(token);
+    let plan = service
+        .prepare_native_root_migration(&|| Ok(()))
+        .map_err(|_| "prepare")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    service.audit_failed = true;
+    assert!(
+        service
+            .publish_native_root_side_snapshot(plan, &|| Ok(()))
+            .is_err()
+    );
+    let durable = service.durable.as_ref().ok_or("durable")?;
+    assert_eq!(durable.generation(), generation);
+    assert!(
+        durable
+            .get("system", "state-native-v6/publication-cursor")?
+            .is_none()
+    );
+    assert!(durable.get("system", NATIVE_SIDE_ROOT)?.is_none());
     Ok(())
 }

@@ -1,5 +1,5 @@
-//! Authenticated V6 kernel with live-source preparation and fenced persistence.
-//! Runtime reader, request writer, HA and migration admission remain closed.
+//! Authenticated V6 kernel with live-source preparation and isolated side snapshots.
+//! Active Service reader, request writer, HA and migration admission remain closed.
 use super::*;
 use crate::engines::kv2_native_records::NativeReadView;
 use crate::state_record_root_v6::{ENGINE_FORMAT, MountScope, ObjectDomain, RecordStateRootV6};
@@ -338,26 +338,30 @@ pub(super) struct NativeRootMigrationPlan {
 
 // Fail-closed private prepublication reader. It consumes only this plan's
 // immutable staged objects and never loads loose files or changes Service.
-struct NativeMigrationObjects<'a>(
-    &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
-);
+struct NativeMigrationObjects<'a> {
+    objects: &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
+    deadline: crate::v6_native_custody::OriginalDeadline,
+}
 impl ObjectSource for NativeMigrationObjects<'_> {
     fn read(
         &self,
         domain: &ObjectDomain,
         reference: &ObjectRef,
     ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        self.deadline.check().map_err(|_| RecordError::Invalid)?;
         let object = self
-            .0
+            .objects
             .get(&(domain.clone(), reference.id))
             .ok_or(RecordError::Missing)?;
         if object.reference() != reference {
             return Err(RecordError::Corrupt);
         }
-        Ok(Zeroizing::new(object.bytes().to_vec()))
+        let bytes = Zeroizing::new(object.bytes().to_vec());
+        self.deadline.check().map_err(|_| RecordError::Invalid)?;
+        Ok(bytes)
     }
     fn object_count(&self) -> Option<usize> {
-        Some(self.0.len())
+        Some(self.objects.len())
     }
 }
 
@@ -366,6 +370,7 @@ impl ObjectSource for NativeMigrationObjects<'_> {
 // or the native KV2 reader. Reopen everything *before* a writer can receive
 // the immutable migration candidate, including on the initial V5->V6 move.
 fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result<(), ReadError> {
+    plan.deadline.check().map_err(|_| ReadError::Invalid)?;
     if plan.root.encode()?.as_slice() != plan.bytes.as_slice() {
         return Err(ReadError::Authentication);
     }
@@ -380,7 +385,16 @@ fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result
         maximum_state_schema: plan.root.state_schema,
         reader_format: crate::state_record_root_v6::READER_FORMAT,
     };
-    materialize(&plan.root, context, &NativeMigrationObjects(&plan.objects)).map(|_| ())
+    let _ = materialize(
+        &plan.root,
+        context,
+        &NativeMigrationObjects {
+            objects: &plan.objects,
+            deadline: plan.deadline,
+        },
+    )?;
+    plan.deadline.check().map_err(|_| ReadError::Invalid)?;
+    Ok(())
 }
 
 impl Service {
@@ -456,6 +470,10 @@ impl Service {
         if old.encode().map_err(|_| rejected())?.as_slice() != source.expose()
             || durable
                 .get("system", "state-native-v6/publication-cursor")
+                .map_err(|_| rejected())?
+                .is_some()
+            || durable
+                .get("system", NATIVE_SIDE_ROOT)
                 .map_err(|_| rejected())?
                 .is_some()
         {
@@ -647,41 +665,27 @@ fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> String {
         reference.resource().trim_start_matches("state-records/v5/")
     )
 }
-struct PreparedSource<'a>(
-    &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
-);
-impl ObjectSource for PreparedSource<'_> {
-    fn read(
-        &self,
-        domain: &ObjectDomain,
-        reference: &ObjectRef,
-    ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
-        let object = self
-            .0
-            .get(&(domain.clone(), reference.id))
-            .ok_or(RecordError::Missing)?;
-        if object.reference() != reference {
-            return Err(RecordError::Corrupt);
-        }
-        Ok(Zeroizing::new(object.bytes().to_vec()))
-    }
-    fn object_count(&self) -> Option<usize> {
-        Some(self.0.len())
-    }
+const NATIVE_SIDE_ROOT: &str = "state-native-v6/root";
+
+struct NativeDurableSource<'a> {
+    durable: &'a DurableService<AeadBarrier>,
+    deadline: crate::v6_native_custody::OriginalDeadline,
 }
-pub(super) struct NativeDurableSource<'a>(pub &'a DurableService<AeadBarrier>);
 impl ObjectSource for NativeDurableSource<'_> {
     fn read(
         &self,
         domain: &ObjectDomain,
         reference: &ObjectRef,
     ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        self.deadline.check().map_err(|_| RecordError::Invalid)?;
         let value = self
-            .0
+            .durable
             .get("system", &native_resource(domain, reference))
             .map_err(|_| RecordError::Corrupt)?
             .ok_or(RecordError::Missing)?;
-        Ok(Zeroizing::new(value.expose().to_vec()))
+        let bytes = Zeroizing::new(value.expose().to_vec());
+        self.deadline.check().map_err(|_| RecordError::Invalid)?;
+        Ok(bytes)
     }
 }
 #[derive(Serialize, Deserialize)]
@@ -690,31 +694,43 @@ struct NativePublicationCursor {
     format: String,
     cluster_id: String,
     replay_epoch: u64,
+    source_generation: u64,
+    source_root_digest: [u8; 32],
     generation: u64,
     root_digest: [u8; 32],
 }
-pub(super) struct NativePublicationReceipt {
+pub(super) struct NativeSidePublicationReceipt {
+    pub source_identity: crate::state_record_root::StateIdentity,
+    pub source_generation: u64,
     pub identity: crate::state_record_root::StateIdentity,
     pub publication_generation: u64,
 }
 impl Service {
-    /// Actual encrypted durable publication, with a monotonic cursor anchored
-    /// before child staging and committed with the root in the final batch.
-    /// Until runtime reader admission is wired, a success fences this Service;
-    /// it must not release a normal request response from the stale V5 runtime.
-    pub(super) fn publish_native_root_migration_fenced(
+    /// Publish an encrypted immutable side snapshot of a verified V5 source.
+    /// Its cursor and root never replace application `state` or admit a V6
+    /// request reader/writer. This private primitive has no HTTP route and
+    /// grants no business-request audit, HA or activated migration authority.
+    pub(super) fn publish_native_root_side_snapshot(
         &mut self,
         plan: NativeRootMigrationPlan,
         check: &impl Fn() -> Result<(), RecordError>,
-    ) -> Result<NativePublicationReceipt, Response> {
+    ) -> Result<NativeSidePublicationReceipt, Response> {
+        let deadline = plan.deadline;
+        let check = || {
+            deadline.check().map_err(|_| RecordError::Invalid)?;
+            check()?;
+            deadline.check().map_err(|_| RecordError::Invalid)
+        };
         let rejected = || {
             Response::error(
                 503,
-                "native publication rejected; runtime admission remains closed",
+                "native side snapshot rejected; active migration remains closed",
             )
         };
+        check().map_err(|_| rejected())?;
         if self.ha.is_some()
             || self.recovery_required
+            || self.audit_failed
             || plan.conditions.len() != 2
             || plan.conditions[0].resource != "state"
             || plan.conditions[1].resource != "state-native-v6/publication-cursor"
@@ -736,8 +752,16 @@ impl Service {
             maximum_state_schema: plan.root.state_schema,
             reader_format: 6,
         };
-        let verified = materialize(&plan.root, context, &PreparedSource(&plan.objects))
-            .map_err(|_| rejected())?;
+        let verified = materialize(
+            &plan.root,
+            context,
+            &NativeMigrationObjects {
+                objects: &plan.objects,
+                deadline,
+            },
+        )
+        .map_err(|_| rejected())?;
+        check().map_err(|_| rejected())?;
         let current = self.state.as_ref().ok_or_else(rejected)?;
         // Bind the actual authenticated policy/token owner before any effect.
         let actual = owner_store::serialize_owner(&current.auth).map_err(|_| rejected())?;
@@ -753,9 +777,11 @@ impl Service {
             hex(&crypto::random::<16>().map_err(|_| rejected())?)
         );
         let mut cursor = NativePublicationCursor {
-            format: "heptabao-native-v6-publication-cursor-v1".into(),
+            format: "heptabao-native-v6-side-publication-cursor-v1".into(),
             cluster_id: plan.root.cluster_id.clone(),
             replay_epoch: plan.root.replay_epoch,
+            source_generation: plan.source_generation,
+            source_root_digest: base_identity.digest(),
             generation: anchor_generation,
             root_digest: base_identity.digest(),
         };
@@ -765,7 +791,12 @@ impl Service {
         if durable.generation() != plan.source_generation {
             return Err(rejected());
         }
+        check().map_err(|_| rejected())?;
         let mut conditions = plan.conditions;
+        conditions.push(heptabao_durable_service::PublicationCondition {
+            resource: NATIVE_SIDE_ROOT.into(),
+            expected: None,
+        });
         fn copied(
             conditions: &[heptabao_durable_service::PublicationCondition],
         ) -> Vec<heptabao_durable_service::PublicationCondition> {
@@ -824,8 +855,13 @@ impl Service {
                 )?;
             }
             // Read the actual encrypted staged objects before publishing a root.
-            materialize(&plan.root, context, &NativeDurableSource(durable))
-                .map_err(|_| ServiceError::CorruptState)?;
+            materialize(
+                &plan.root,
+                context,
+                &NativeDurableSource { durable, deadline },
+            )
+            .map_err(|_| ServiceError::CorruptState)?;
+            check().map_err(|_| ServiceError::BarrierFailure)?;
             // Each encrypted object batch advances the durable journal once.
             // Bind the final cursor to the *actual* next journal generation,
             // not a fixed offset from the migration's starting generation.
@@ -845,7 +881,10 @@ impl Service {
                     request_id: format!("{operation}-root"),
                     authorization_digest: id,
                     mutations: vec![
-                        ("state".into(), Some(Secret::new(plan.bytes.to_vec())?)),
+                        (
+                            NATIVE_SIDE_ROOT.into(),
+                            Some(Secret::new(plan.bytes.to_vec())?),
+                        ),
                         (
                             "state-native-v6/publication-cursor".into(),
                             Some(Secret::new(cursor_bytes.to_vec())?),
@@ -860,15 +899,73 @@ impl Service {
             }
             Ok(publication_generation)
         })();
-        // Even a partial migration must reconcile its anchored cursor before
-        // another request can mutate the old runtime. Never retry implicitly.
-        self.recovery_required = true;
-        self.ha_activation = None;
-        crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+        // A partial side artifact never selects application state. Unknown
+        // journal outcomes still fence the whole durable owner; an ordinary
+        // prepublication rejection can leave the authenticated V5 runtime live.
+        let unknown = matches!(&result, Err(ServiceError::RecoveryRequired))
+            || durable.capacity_status().recovery_required;
+        if unknown {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+        }
         let publication_generation = result.map_err(|_| rejected())?;
-        Ok(NativePublicationReceipt {
+        check().map_err(|_| rejected())?;
+        Ok(NativeSidePublicationReceipt {
+            source_identity: base_identity,
+            source_generation: plan.source_generation,
             identity,
             publication_generation,
         })
     }
+}
+
+fn materialize_native_side_snapshot(
+    durable: &DurableService<AeadBarrier>,
+    source_identity: crate::state_record_root::StateIdentity,
+    context: ReadContext<'_>,
+    deadline: crate::v6_native_custody::OriginalDeadline,
+) -> Result<ReadState, ReadError> {
+    deadline.check().map_err(|_| ReadError::Invalid)?;
+    if !matches!(
+        source_identity,
+        crate::state_record_root::StateIdentity::RecordsV5(_)
+    ) {
+        return Err(ReadError::Authentication);
+    }
+    let bytes = durable
+        .get("system", NATIVE_SIDE_ROOT)
+        .map_err(|_| ReadError::State)?
+        .ok_or(ReadError::Missing)?;
+    deadline.check().map_err(|_| ReadError::Invalid)?;
+    let root = RecordStateRootV6::decode(bytes.expose())?;
+    validate_frontier(&root, context)?;
+    let bytes = durable
+        .get("system", "state-native-v6/publication-cursor")
+        .map_err(|_| ReadError::State)?
+        .ok_or(ReadError::Missing)?;
+    deadline.check().map_err(|_| ReadError::Invalid)?;
+    if bytes.expose().len() > crate::state_record_root::MAX_ROOT_BYTES {
+        return Err(ReadError::TooLarge);
+    }
+    let cursor: NativePublicationCursor =
+        serde_json::from_slice(bytes.expose()).map_err(|_| ReadError::Invalid)?;
+    if owner_store::serialize_owner(&cursor)
+        .map_err(|_| ReadError::Invalid)?
+        .as_slice()
+        != bytes.expose()
+        || cursor.format != "heptabao-native-v6-side-publication-cursor-v1"
+        || cursor.cluster_id != root.cluster_id
+        || cursor.replay_epoch != root.replay_epoch
+        || cursor.source_generation == 0
+        || cursor.source_generation >= cursor.generation
+        || cursor.generation > durable.generation()
+        || cursor.source_root_digest != source_identity.digest()
+        || cursor.root_digest != root.identity()?.digest()
+    {
+        return Err(ReadError::Authentication);
+    }
+    let state = materialize(&root, context, &NativeDurableSource { durable, deadline })?;
+    deadline.check().map_err(|_| ReadError::Invalid)?;
+    Ok(state)
 }
