@@ -39,8 +39,9 @@ pub use capacity::{BatchPublication, CapacityStatus, PublicationCondition};
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
 mod backend;
 pub use backend::{
-    ArtifactCommitment, BackendBundle, BackendError, BundleCommitment, DurableBackend, FileBackend,
-    RestoreProfile, StagedRestoreCommitments,
+    ArtifactCommitment, BackendBundle, BackendError, BlobLocator, BundleCommitment, DurableBackend,
+    FileBackend, ImmutableBlobProfile, ImmutableBlobReadPin, ImmutableBlobStage,
+    MAX_IMMUTABLE_CIPHERTEXT_BYTES, RestoreProfile, StagedRestoreCommitments,
 };
 
 fn map_backend_error(error: BackendError) -> ServiceError {

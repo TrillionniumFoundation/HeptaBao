@@ -16,6 +16,14 @@ use std::path::{Path, PathBuf};
 /// same limit before sealing; the backend repeats it before any write.
 pub const MAX_BACKEND_ARTIFACT_BYTES: usize = 64 * 1024 * 1024;
 
+#[path = "immutable_cipher_store.rs"]
+mod immutable_cipher_store;
+use immutable_cipher_store::ImmutableLease;
+pub use immutable_cipher_store::{
+    BlobLocator, ImmutableBlobProfile, ImmutableBlobReadPin, ImmutableBlobStage,
+    MAX_IMMUTABLE_CIPHERTEXT_BYTES,
+};
+
 mod restore;
 pub use restore::{ArtifactCommitment, BundleCommitment, RestoreProfile, StagedRestoreCommitments};
 pub(crate) use restore::{MAX_RESTORE_INTENT_BYTES, RESTORE_MAGIC};
@@ -114,6 +122,24 @@ impl std::error::Error for BackendError {}
 /// A backend for the three existing durable-service files.
 pub trait DurableBackend: Send {
     fn verify(&self) -> Result<(), BackendError>;
+    /// Physical immutable object support only. A profile is not Service admission.
+    fn immutable_blob_profile(&self) -> Result<ImmutableBlobProfile, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    fn stage_immutable_ciphertext(
+        &mut self,
+        _locator: BlobLocator,
+        _ciphertext: &[u8],
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    fn pin_immutable_ciphertext(
+        &self,
+        _locator: BlobLocator,
+        _exact_len: usize,
+    ) -> Result<ImmutableBlobReadPin, BackendError> {
+        Err(BackendError::Unsupported)
+    }
     /// Confirm current ownership before an external metadata publication.
     /// Remote backends must query their existing session without reconnecting.
     fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
@@ -200,6 +226,25 @@ impl DurableBackend for Box<dyn DurableBackend> {
         self.as_ref().verify()
     }
 
+    fn immutable_blob_profile(&self) -> Result<ImmutableBlobProfile, BackendError> {
+        self.as_ref().immutable_blob_profile()
+    }
+    fn stage_immutable_ciphertext(
+        &mut self,
+        locator: BlobLocator,
+        ciphertext: &[u8],
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        self.as_mut()
+            .stage_immutable_ciphertext(locator, ciphertext)
+    }
+    fn pin_immutable_ciphertext(
+        &self,
+        locator: BlobLocator,
+        exact_len: usize,
+    ) -> Result<ImmutableBlobReadPin, BackendError> {
+        self.as_ref().pin_immutable_ciphertext(locator, exact_len)
+    }
+
     fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
         self.as_mut().verify_live_ownership()
     }
@@ -266,6 +311,7 @@ impl DurableBackend for Box<dyn DurableBackend> {
 /// Descriptor-bound filesystem implementation of [`DurableBackend`].
 pub struct FileBackend {
     directory: ExclusiveDirectory,
+    immutable_lease: std::sync::Arc<ImmutableLease>,
     #[cfg(test)]
     restore_fail_after: Option<usize>,
     #[cfg(test)]
@@ -290,6 +336,7 @@ impl FileBackend {
         cleanup_stale_temps(&directory)?;
         Ok(Self {
             directory,
+            immutable_lease: std::sync::Arc::new(ImmutableLease::new()),
             #[cfg(test)]
             restore_fail_after: None,
             #[cfg(test)]
@@ -316,6 +363,7 @@ impl FileBackend {
         }
         Ok(Self {
             directory,
+            immutable_lease: std::sync::Arc::new(ImmutableLease::new()),
             #[cfg(test)]
             restore_fail_after: None,
             #[cfg(test)]
@@ -470,6 +518,24 @@ impl FileBackend {
 impl DurableBackend for FileBackend {
     fn verify(&self) -> Result<(), BackendError> {
         self.verify()
+    }
+
+    fn immutable_blob_profile(&self) -> Result<ImmutableBlobProfile, BackendError> {
+        FileBackend::immutable_blob_profile(self)
+    }
+    fn stage_immutable_ciphertext(
+        &mut self,
+        locator: BlobLocator,
+        ciphertext: &[u8],
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        FileBackend::stage_immutable_ciphertext(self, locator, ciphertext)
+    }
+    fn pin_immutable_ciphertext(
+        &self,
+        locator: BlobLocator,
+        exact_len: usize,
+    ) -> Result<ImmutableBlobReadPin, BackendError> {
+        FileBackend::pin_immutable_ciphertext(self, locator, exact_len)
     }
 
     fn load(&mut self) -> Result<BackendBundle, BackendError> {
@@ -630,7 +696,7 @@ fn cleanup_stale_temps(directory: &ExclusiveDirectory) -> Result<(), BackendErro
             Err(_) => return Err(BackendError::Io),
         }
     }
-    Ok(())
+    immutable_cipher_store::cleanup_temporary(directory)
 }
 
 #[cfg(test)]
