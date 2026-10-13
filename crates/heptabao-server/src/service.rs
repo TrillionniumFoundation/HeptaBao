@@ -4525,7 +4525,8 @@ impl Service {
                 return Response::from_engine_error(error);
             }
         }
-        if admitted.engines.has_pki_acme_state()
+        if admitted.auth.has_rate_limit_quota_state()
+            || admitted.engines.has_pki_acme_state()
             || admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
             || admitted.has_namespace_batch_state()

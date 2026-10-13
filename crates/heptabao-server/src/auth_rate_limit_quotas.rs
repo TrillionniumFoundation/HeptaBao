@@ -371,22 +371,23 @@ impl AuthState {
                 let relative = supplied.strip_prefix("auth/").ok_or_else(|| {
                     bad("quota path must identify a native AppRole mount or login")
                 })?;
-                let mount = if role.is_empty() {
-                    relative.strip_suffix("/login").unwrap_or(relative)
-                } else {
-                    relative
-                };
+                let mounts = self.effective_auth_mounts("");
+                let (mount, login_suffix) =
+                    if mounts.get(relative).is_some_and(|m| m.kind == "approle") {
+                        (relative, false)
+                    } else if role.is_empty()
+                        && relative.strip_suffix("/login").is_some_and(|mount| {
+                            mounts.get(mount).is_some_and(|m| m.kind == "approle")
+                        })
+                    {
+                        (relative.strip_suffix("/login").unwrap(), true)
+                    } else {
+                        return Err(bad(
+                            "quota path must identify an actual native AppRole mount or login",
+                        ));
+                    };
                 validate_path(mount, false)?;
-                if !self
-                    .effective_auth_mounts("")
-                    .get(mount)
-                    .is_some_and(|m| m.kind == "approle")
-                {
-                    return Err(bad(
-                        "quota path must identify an actual native AppRole mount",
-                    ));
-                }
-                let path = if role.is_empty() && supplied.ends_with("/login") {
+                let path = if login_suffix {
                     supplied.to_owned()
                 } else {
                     format!("{supplied}/")
