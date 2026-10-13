@@ -122,6 +122,45 @@ class ManagedCustodyTests(unittest.TestCase):
         self.assertEqual(renderer.events['rendered'],0)
         self.assertEqual(renderer.events['blocked'],1)
 
+    def cleaner_tick(self,*,wall,mono,paths=None,wall_deadline=130.,observed_wall=100.):
+        renderer=templates.Templates.__new__(templates.Templates)
+        class Directory:
+            value=b'synthetic-only'
+            def remove(self,name):self.value=None
+        class OneTick:
+            calls=0
+            def wait(self,timeout):self.calls+=1;return self.calls>1
+        directory=Directory();renderer.directories={'unit':directory}
+        renderer.publication_lock=threading.RLock();renderer.stop=self.owner.stop
+        renderer.secrets=self.owner;renderer.cleaner_stop=OneTick()
+        renderer.published={('unit','unit'):(130.,set([PATH]) if paths is None else paths,TOKEN_HASH,wall_deadline,observed_wall)}
+        with patch.object(templates.time,'time',lambda:wall),patch.object(templates.time,'monotonic',lambda:mono):
+            renderer._clean_expired()
+        return directory.value,renderer.published
+
+    def test_expiry_cleaner_withdraws_on_forward_wall_jump_without_network(self):
+        self.ready(deadline=120.)
+        value,published=self.cleaner_tick(wall=120.,mono=105.)
+        self.assertIsNone(value);self.assertEqual(published,{})
+        self.assertEqual(self.requests,[])
+
+    def test_expiry_cleaner_withdraws_static_output_at_exact_token_wall_deadline(self):
+        value,published=self.cleaner_tick(wall=110.,mono=105.,paths=set(),wall_deadline=110.)
+        self.assertIsNone(value);self.assertEqual(published,{})
+        self.assertEqual(self.requests,[])
+
+    def test_expiry_cleaner_withdraws_on_wall_regression(self):
+        self.ready()
+        value,published=self.cleaner_tick(wall=99.,mono=105.)
+        self.assertIsNone(value);self.assertEqual(published,{})
+        self.assertEqual(self.requests,[])
+
+    def test_expiry_cleaner_preserves_live_exact_original_grant(self):
+        self.ready()
+        value,published=self.cleaner_tick(wall=129.9,mono=129.9)
+        self.assertEqual(value,b'synthetic-only');self.assertEqual(len(published),1)
+        self.assertEqual(self.requests,[])
+
     def test_cache_lookup_cannot_deliver_after_lease_expiry(self):
         self.ready(deadline=101.)
         def late_lookup(*args):
@@ -268,7 +307,7 @@ class TemplateCustodyTests(unittest.TestCase):
             owner.stop.set()
             return b'synthetic',set(),TOKEN_HASH,time.monotonic()+1
         owner._render=render
-        owner.secrets=SimpleNamespace(delivery=lambda *args,**kwargs:time.monotonic()+1)
+        owner.secrets=SimpleNamespace(delivery=lambda *args,**kwargs:(time.monotonic()+1,time.time()+1,time.time()) if kwargs.get('include_wall') else time.monotonic()+1)
         owner.step()
         self.assertEqual(sink.writes,0)
         self.assertTrue(sink.removed)

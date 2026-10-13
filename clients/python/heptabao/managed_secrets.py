@@ -104,25 +104,28 @@ class ManagedSecrets:
             self.agent.timeout,trusted_ca_pem=self.trust,deadline=deadline,cancellation=self.stop)
         return client,state,hashlib.sha256(token.encode('ascii')).hexdigest()
 
-    def delivery(self,paths,token_hash,*,end=None):
+    def delivery(self,paths,token_hash,*,end=None,include_wall=False):
         """Recheck the same token and every subscription at the release boundary."""
         with self.lock:
             _,state,current=self._context(end)
             if current!=token_hash:raise BaoError('managed_secret_token_generation_changed')
             wall,mono=time.time(),time.monotonic()
             deadline=mono+max(0,state['expires_at']-wall)
+            wall_deadline=state['expires_at'];observed_wall=state['observed_wall']
             for path in paths:
                 row=self.rows.get(path)
                 if row is None or row.get('phase')!='ready' or row.get('token_hash')!=token_hash:
                     raise BaoError('managed_secret_subscription_not_ready')
                 if wall<row['observed_wall']:raise BaoError('managed_secret_clock_regression')
+                observed_wall=max(observed_wall,row['observed_wall'])
                 if row.get('lease_id'):
                     remaining=min(row['wall_deadline']-wall,row['deadline']-mono)
                     if remaining<=0:raise BaoError('managed_secret_lease_expired_before_delivery')
                     deadline=min(deadline,mono+remaining)
+                    wall_deadline=min(wall_deadline,row['wall_deadline'])
             if self.stop.is_set() or deadline<=time.monotonic() or end is not None and time.monotonic()>=end:
                 raise BaoError('managed_secret_deadline')
-            return deadline
+            return (deadline,wall_deadline,observed_wall) if include_wall else deadline
 
     def token_generation(self,*,end=None):
         with self.lock:return self._context(end)[2]
