@@ -155,7 +155,7 @@ impl ShamirLocalPublicationOwner {
     }
 
     fn verify(&self, receipt: &ReceivedHaState, service: &mut Service) -> Result<(), Response> {
-        live(Some(self.deadline))?;
+        live(Some(self.deadline)).inspect_err(|_| eprintln!("R910_OWNER_GUARD=entry_deadline"))?;
         // Only the immutable target is reused. The service and durable graph
         // are still independently read and checked at every original gate.
         let logical = receipt.logical.as_slice();
@@ -181,18 +181,27 @@ impl ShamirLocalPublicationOwner {
                 .as_slice()
                 != logical
         {
+            eprintln!("R910_OWNER_GUARD=instance_logical_or_identity");
             return Err(rejected());
         }
-        self.seal.validate().map_err(|_| rejected())?;
-        receipt.verify_local_seal(service)?;
-        receipt.verify_local_publication_with_logical(service, logical)?;
+        self.seal
+            .validate()
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("R910_OWNER_GUARD=seal_metadata"))?;
+        receipt
+            .verify_local_seal(service)
+            .inspect_err(|_| eprintln!("R910_OWNER_GUARD=local_seal"))?;
+        receipt
+            .verify_local_publication_with_logical(service, logical)
+            .inspect_err(|_| eprintln!("R910_OWNER_GUARD=local_publication"))?;
         service
             .durable
             .as_mut()
             .ok_or_else(rejected)?
             .verify_live_ownership()
-            .map_err(|_| rejected())?;
-        live(Some(self.deadline))
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("R910_OWNER_GUARD=durable_owner"))?;
+        live(Some(self.deadline)).inspect_err(|_| eprintln!("R910_OWNER_GUARD=final_deadline"))
     }
 }
 
@@ -1488,21 +1497,24 @@ impl ReceivedHaState {
         service: &mut Service,
         logical: &[u8],
     ) -> Result<(), Response> {
-        live(self.deadline)?;
+        live(self.deadline).inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=entry_deadline"))?;
         service
             .durable
             .as_mut()
             .ok_or_else(rejected)?
             .verify_live_ownership()
-            .map_err(|_| rejected())?;
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=entry_durable"))?;
         let durable = service.durable.as_ref().ok_or_else(rejected)?;
         let generation = durable.generation();
         if durable.replay_epoch() != self.state.replay_epoch {
+            eprintln!("R910_RECEIPT_GUARD=replay_epoch");
             return Err(rejected());
         }
         let published = durable
             .get("system", "state")
-            .map_err(|_| rejected())?
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=state_get"))?
             .ok_or_else(rejected)?;
         match &self.publication {
             ReceivedPublication::Materialized {
@@ -1545,7 +1557,9 @@ impl ReceivedHaState {
                 }
             }
             ReceivedPublication::Records { root_bytes } => {
-                let root = RecordStateRoot::decode(published.expose()).map_err(|_| rejected())?;
+                let root = RecordStateRoot::decode(published.expose())
+                    .map_err(|_| rejected())
+                    .inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=decode_root"))?;
                 if published.expose() != root_bytes.as_slice()
                     || root.identity().map_err(|_| rejected())? != self.identity
                     || root.state_schema != self.state.schema
@@ -1558,11 +1572,17 @@ impl ReceivedHaState {
                 // and bound to ReadIndex before publication. Recheck fresh
                 // immutable objects and owner bytes rather than rebuilding a
                 // second decoded application State within the original clock.
+                let verify_started = std::time::Instant::now();
                 records::verify_received_record_graph(
                     &root,
                     &records::DurableReader(durable),
                     &self.state,
-                )?;
+                )
+                .inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=record_graph"))?;
+                eprintln!(
+                    "R910_RECEIPT_CHECK=graph_verified elapsed_ms={}",
+                    verify_started.elapsed().as_millis()
+                );
             }
         }
         if matches!(&self.publication, ReceivedPublication::Records { .. }) {
@@ -1594,17 +1614,19 @@ impl ReceivedHaState {
                 return Err(rejected());
             }
         }
-        live(self.deadline)?;
+        live(self.deadline).inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=post_graph_deadline"))?;
         service
             .durable
             .as_mut()
             .ok_or_else(rejected)?
             .verify_live_ownership()
-            .map_err(|_| rejected())?;
+            .map_err(|_| rejected())
+            .inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=final_durable"))?;
         if service.durable.as_ref().ok_or_else(rejected)?.generation() != generation {
+            eprintln!("R910_RECEIPT_GUARD=durable_generation");
             return Err(rejected());
         }
-        live(self.deadline)
+        live(self.deadline).inspect_err(|_| eprintln!("R910_RECEIPT_GUARD=final_deadline"))
     }
 
     pub(super) fn after_publication<'a>(
