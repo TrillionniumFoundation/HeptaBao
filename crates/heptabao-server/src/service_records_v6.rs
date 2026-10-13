@@ -897,6 +897,11 @@ impl Service {
             if durable.generation() != publication_generation {
                 return Err(ServiceError::CorruptState);
             }
+            // Reauthenticate the actually persisted side root, cursor and
+            // referenced closure before issuing a migration receipt. The
+            // source V5 root remains selected and this grants no V6 runtime.
+            materialize_native_side_snapshot(durable, base_identity, context, deadline)
+                .map_err(|_| ServiceError::CorruptState)?;
             Ok(publication_generation)
         })();
         // A partial side artifact never selects application state. Unknown
