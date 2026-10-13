@@ -1785,6 +1785,14 @@ impl Service {
                 return Ok(HaRecordPublicationProgress::BeforePublicationNoWrite);
             }
         }
+        if received.owner.shamir_owner.is_some() {
+            eprintln!(
+                "R980_ORIGINAL_DEADLINE stage=after_prepublication remaining_ms={}",
+                received.owner.deadline.map_or(0, |deadline| deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_millis())
+            );
+        }
         // Capacity is checked before immutable object staging; a failure is an
         // already committed HA owner that this node cannot yet materialize.
         self.validate_loaded_capacity(received.owner.state(), Some(&received.plan.root))?;
@@ -1792,8 +1800,24 @@ impl Service {
         let operation = crypto::random::<16>()
             .map(|value| format!("hasync-record-{}", hex(&value)))
             .map_err(|_| rejected())?;
+        if received.owner.shamir_owner.is_some() {
+            eprintln!(
+                "R980_ORIGINAL_DEADLINE stage=before_durable_B remaining_ms={}",
+                received.owner.deadline.map_or(0, |deadline| deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_millis())
+            );
+        }
         self.persist_record_plan_local(&received.plan, &operation, true)
             .map_err(|_| rejected())?;
+        if received.owner.shamir_owner.is_some() {
+            eprintln!(
+                "R980_ORIGINAL_DEADLINE stage=after_durable_B remaining_ms={}",
+                received.owner.deadline.map_or(0, |deadline| deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_millis())
+            );
+        }
         let completed = received
             .owner
             .after_publication(self)
@@ -1817,6 +1841,14 @@ impl Service {
             HaRecordPublicationProgress::Current => {}
             denied => return Ok(denied),
         }
+        if received.owner.shamir_owner.is_some() {
+            eprintln!(
+                "R980_ORIGINAL_DEADLINE stage=before_index remaining_ms={}",
+                received.owner.deadline.map_or(0, |deadline| deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_millis())
+            );
+        }
         if self
             .reconcile_completed_ha_recovery_index(&completed)
             .inspect_err(|error| {
@@ -1828,6 +1860,14 @@ impl Service {
             == HaLocalPublicationProgress::Superseded
         {
             return Ok(HaRecordPublicationProgress::CompletedSuperseded);
+        }
+        if received.owner.shamir_owner.is_some() {
+            eprintln!(
+                "R980_ORIGINAL_DEADLINE stage=after_index remaining_ms={}",
+                received.owner.deadline.map_or(0, |deadline| deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_millis())
+            );
         }
         self.finish_completed_ha_publication(&completed, activation)
             .inspect_err(|error| {
