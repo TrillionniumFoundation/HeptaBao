@@ -68,7 +68,6 @@ impl OriginalDeadline {
         deadline.check()?;
         Ok(deadline)
     }
-    #[cfg(feature = "fixture-native-v6-service")]
     pub(crate) fn instant(self) -> Instant {
         self.0
     }

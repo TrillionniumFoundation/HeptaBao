@@ -168,9 +168,9 @@ fn apply(
             deadline,
         },
         MutationRequest {
-            method: method,
-            path: path,
-            body: body,
+            method,
+            path,
+            body,
             now: at(seconds)?,
         },
         &|| Ok(()),
