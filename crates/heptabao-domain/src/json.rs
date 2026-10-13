@@ -6,7 +6,7 @@ use serde::{
 };
 use serde_json::Value;
 use std::fmt;
-use zeroize::Zeroize;
+use zeroize::{Zeroize, Zeroizing};
 
 const MAX_BYTES: usize = 16 * 1024 * 1024;
 const MAX_NODES: usize = MAX_BYTES;
@@ -160,11 +160,16 @@ pub fn decode_with_policy(bytes: &[u8], duplicates: DuplicatePolicy) -> Result<V
 /// newtype by serializing its already trusted Value without map coercion.
 pub fn deserialize<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Value, D::Error> {
     let raw = Box::<serde_json::value::RawValue>::deserialize(deserializer)?;
-    if raw.get().len() > MAX_BYTES {
+    // Both conversions consume the existing allocation. Guard it before any
+    // rejection or token decoding so temporary secret text is also erased.
+    let text = Zeroizing::new(String::from(Box::<str>::from(raw)));
+    if text.len() > MAX_BYTES {
         return Err(serde::de::Error::custom(JsonError));
     }
+    let raw: &serde_json::value::RawValue =
+        serde_json::from_str(&text).map_err(serde::de::Error::custom)?;
     value(
-        &raw,
+        raw,
         &mut Budget {
             nodes: 0,
             duplicates: DuplicatePolicy::Reject,
