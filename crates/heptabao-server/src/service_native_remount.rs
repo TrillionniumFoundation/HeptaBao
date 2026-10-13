@@ -507,6 +507,12 @@ impl Service {
                     })
                 })
                 .transpose()?;
+            if let Some(mount) = from.strip_prefix("auth/") {
+                current
+                    .auth
+                    .ensure_rate_limit_quotas_allow_remount(request.namespace, mount)
+                    .map_err(|e| Response::error(e.status, &e.message))?;
+            }
             let (from, to, owner) = match (from.strip_prefix("auth/"), to.strip_prefix("auth/")) {
                 (Some(from), Some(to)) => (
                     from,
