@@ -440,6 +440,109 @@ pub(crate) struct NativeMutation {
     pub(crate) candidate: Option<NativeCipherPin>,
 }
 
+/// Data-only CAS evidence obtained from a separately authenticated, durable
+/// publication cursor. A content-addressed header alone is insufficient:
+/// publishing A -> B -> A can return the same root reference (ABA).
+///
+/// No constructor, successful preflight, or result here grants storage writes,
+/// Service installation, migration, namespace membership, or response delivery.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct NativePublicationFence {
+    generation: std::num::NonZeroU64,
+    header: CipherReference,
+}
+impl NativePublicationFence {
+    /// The caller MUST authenticate this generation against its actual
+    /// persistent root/linearized HA frontier; this helper cannot do so.
+    pub(crate) fn observed(
+        generation: u64,
+        published: &NativeCipherPin,
+    ) -> Result<Self, CustodyError> {
+        let generation = std::num::NonZeroU64::new(generation).ok_or(CustodyError::Invalid)?;
+        Ok(Self {
+            generation,
+            header: published.header.clone(),
+        })
+    }
+
+    /// A stronger precommit *observation*: reauthenticate every reachable
+    /// encrypted candidate object using the original namespace key and exact
+    /// HA epoch. The bare generation/header preflight cannot detect missing
+    /// non-root pages or post-projection ciphertext corruption. Even this
+    /// authenticated check is NOT a durable Service publication: the actual
+    /// writer must repeat the owner and generation CAS atomically with storage.
+    pub(crate) fn authenticated_preflight(
+        &self,
+        actual: &Self,
+        prepared: &NativeMutation,
+        key: &Key,
+        frontier: &NamespaceFrontier,
+        cluster: &str,
+        epoch: u64,
+        scope: NativeScope<'_>,
+        deadline: OriginalDeadline,
+        check_owner: &impl Fn() -> Result<(), CustodyError>,
+    ) -> Result<Option<Self>, CustodyError> {
+        let next = self.preflight(actual, prepared, deadline, check_owner)?;
+        if let Some(pin) = prepared.candidate.as_ref() {
+            // open_namespace proves the header MAC, all object AEAD tags,
+            // scoped graph structure, and complete object consumption.
+            let _authenticated =
+                pin.open_namespace(key, frontier, cluster, epoch, scope, deadline)?;
+            check_owner()?;
+            deadline.check()?;
+        }
+        Ok(next)
+    }
+
+    /// Pure, non-publishing admission preflight, not a commit or reply grant.
+    /// The outer writer must independently recheck the actual durable
+    /// generation, authenticated ciphertext closure, namespace owner, quorum,
+    /// and original deadline inside its one atomic publication transaction.
+    pub(crate) fn preflight(
+        &self,
+        actual: &Self,
+        prepared: &NativeMutation,
+        deadline: OriginalDeadline,
+        check_owner: &impl Fn() -> Result<(), CustodyError>,
+    ) -> Result<Option<Self>, CustodyError> {
+        deadline.check()?;
+        check_owner()?;
+        deadline.check()?;
+        if self != actual || prepared.expected_source != actual.header {
+            return Err(CustodyError::Unavailable);
+        }
+        if !prepared.response.mutated {
+            if prepared.candidate.is_some() {
+                return Err(CustodyError::Invalid);
+            }
+            check_owner()?;
+            deadline.check()?;
+            return Ok(None);
+        }
+        let pin = prepared.candidate.as_ref().ok_or(CustodyError::Invalid)?;
+        if pin.header.domain != actual.header.domain
+            || pin
+                .objects
+                .get(&pin.header.resource())
+                .is_none_or(|object| object.reference != pin.header)
+        {
+            return Err(CustodyError::Authentication);
+        }
+        let generation = self
+            .generation
+            .get()
+            .checked_add(1)
+            .and_then(std::num::NonZeroU64::new)
+            .ok_or(CustodyError::Invalid)?;
+        check_owner()?;
+        deadline.check()?;
+        Ok(Some(Self {
+            generation,
+            header: pin.header.clone(),
+        }))
+    }
+}
 #[derive(Debug, Serialize)]
 pub struct NativeCustodyReceipt {
     pub paths: usize,

@@ -700,3 +700,296 @@ fn encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mu
     )?;
     Ok(())
 }
+
+// The same deterministic root can occur after A->B->A. A replayed A->C
+// mutation must not gain write authority merely because both header bytes
+// match. The trusted committed generation must independently advance.
+#[test]
+fn encrypted_native_publication_preflight_rejects_aba_stale_generation() -> TestResult {
+    let _request = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(90));
+    let deadline = OriginalDeadline::capture()?;
+    let (key, frontier) = custody()?;
+    let pin_a = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    let fence_a1 = NativePublicationFence::observed(1, &pin_a)?;
+    let mutation_ab = pin_a.mutate_namespace(
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        "POST",
+        "data/item",
+        &json!({"data":{"value":"B"}}),
+        at(2000)?,
+        &|| Ok(()),
+    )?;
+    assert!(mutation_ab.response.mutated && mutation_ab.candidate.is_some());
+    let fence_b2 = fence_a1
+        .preflight(&fence_a1, &mutation_ab, deadline, &|| Ok(()))?
+        .ok_or("missing candidate B generation")?;
+    assert_eq!(fence_b2.generation.get(), 2);
+    assert_ne!(fence_b2.header, fence_a1.header);
+
+    // Restore the *same logical A* in a distinct authenticated publication.
+    // A content-addressed header cannot distinguish the returned A from A1.
+    let pin_a3 = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    assert_eq!(pin_a.header, pin_a3.header);
+    let fence_a3 = NativePublicationFence::observed(3, &pin_a3)?;
+    assert_ne!(fence_a1, fence_a3);
+    let checks = Cell::new(0);
+    let stale = fence_a1.preflight(&fence_a3, &mutation_ab, deadline, &|| {
+        checks.set(checks.get() + 1);
+        Ok(())
+    });
+    assert!(matches!(stale, Err(CustodyError::Unavailable)));
+    assert_eq!(checks.get(), 1);
+    assert_eq!(digest(&pin_a)?, digest(&pin_a)?);
+    Ok(())
+}
+
+#[test]
+fn encrypted_native_publication_preflight_rejects_zero_rollover_and_malformed_candidate()
+-> TestResult {
+    let _request = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(90));
+    let deadline = OriginalDeadline::capture()?;
+    let (key, frontier) = custody()?;
+    let pin = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    assert!(matches!(
+        NativePublicationFence::observed(0, &pin),
+        Err(CustodyError::Invalid)
+    ));
+    let at_max = NativePublicationFence::observed(u64::MAX, &pin)?;
+    let mut prepared = pin.mutate_namespace(
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        "POST",
+        "data/item",
+        &json!({"data":{"value":"next"}}),
+        at(2000)?,
+        &|| Ok(()),
+    )?;
+    assert!(matches!(
+        at_max.preflight(&at_max, &prepared, deadline, &|| Ok(())),
+        Err(CustodyError::Invalid)
+    ));
+    let one = NativePublicationFence::observed(1, &pin)?;
+    let saved = prepared.candidate.take().ok_or("missing real candidate")?;
+    assert!(matches!(
+        one.preflight(&one, &prepared, deadline, &|| Ok(())),
+        Err(CustodyError::Invalid)
+    ));
+    prepared.candidate = Some(saved);
+    let candidate = prepared.candidate.as_mut().ok_or("candidate vanished")?;
+    candidate.header.domain = crate::v6_record_resources::CipherDomain::Kv1;
+    assert!(matches!(
+        one.preflight(&one, &prepared, deadline, &|| Ok(())),
+        Err(CustodyError::Authentication)
+    ));
+    Ok(())
+}
+
+#[test]
+fn encrypted_native_publication_preflight_preserves_noop_owner_and_original_deadline() -> TestResult
+{
+    let _request = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(90));
+    let deadline = OriginalDeadline::capture()?;
+    let (key, frontier) = custody()?;
+    let pin = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    let fence = NativePublicationFence::observed(7, &pin)?;
+    let noop = pin.mutate_namespace(
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        "DELETE",
+        "data/missing",
+        &json!({}),
+        at(2000)?,
+        &|| Ok(()),
+    )?;
+    assert!(!noop.response.mutated);
+    assert!(noop.candidate.is_none());
+    assert!(
+        fence
+            .preflight(&fence, &noop, deadline, &|| Ok(()))?
+            .is_none()
+    );
+    let calls = Cell::new(0);
+    assert!(matches!(
+        fence.preflight(&fence, &noop, deadline, &|| {
+            calls.set(calls.get() + 1);
+            Err(CustodyError::Unavailable)
+        }),
+        Err(CustodyError::Unavailable)
+    ));
+    assert_eq!(calls.get(), 1);
+    let expired = OriginalDeadline(Instant::now() - Duration::from_millis(1));
+    assert!(matches!(
+        fence.preflight(&fence, &noop, expired, &|| Ok(())),
+        Err(CustodyError::Deadline)
+    ));
+    Ok(())
+}
+
+// The header/generation-only witness must not be mistaken for a verified
+// ciphertext closure. A candidate's retained non-root objects can be missing
+// or bit-flipped while the header reference remains byte-identical.
+#[test]
+fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext() -> TestResult {
+    let _request = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(90));
+    let deadline = OriginalDeadline::capture()?;
+    let (key, frontier) = custody()?;
+    let old = NativeCipherPin::project_namespace(
+        &owner()?,
+        &key,
+        frontier.clone(),
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+    )?;
+    let before = digest(&old)?;
+    let base = NativePublicationFence::observed(1, &old)?;
+    let mut pending = old.mutate_namespace(
+        &key,
+        &frontier,
+        CLUSTER,
+        EPOCH,
+        scope(),
+        deadline,
+        "POST",
+        "data/blob",
+        &json!({"data":{"value":"R".repeat(768 * 1024)}}),
+        at(1200)?,
+        &|| Ok(()),
+    )?;
+    let candidate = pending
+        .candidate
+        .as_ref()
+        .ok_or("mutated candidate absent")?;
+    assert!(
+        candidate.objects.len() >= 3,
+        "large value must use non-root pages"
+    );
+    assert!(
+        base.authenticated_preflight(
+            &base,
+            &pending,
+            &key,
+            &frontier,
+            CLUSTER,
+            EPOCH,
+            scope(),
+            deadline,
+            &|| Ok(()),
+        )?
+        .is_some()
+    );
+    let original_objects = Arc::clone(&candidate.objects);
+    let header_resource = candidate.header.resource();
+    let victim = original_objects
+        .keys()
+        .find(|name| *name != &header_resource)
+        .ok_or("missing independent payload object")?
+        .clone();
+
+    // A raw identity/generation match alone admits this incomplete candidate.
+    let mut missing = (*original_objects).clone();
+    missing.remove(&victim);
+    pending.candidate.as_mut().ok_or("candidate")?.objects = Arc::new(missing);
+    assert!(
+        base.preflight(&base, &pending, deadline, &|| Ok(()))
+            .is_ok()
+    );
+    assert!(
+        base.authenticated_preflight(
+            &base,
+            &pending,
+            &key,
+            &frontier,
+            CLUSTER,
+            EPOCH,
+            scope(),
+            deadline,
+            &|| Ok(()),
+        )
+        .is_err()
+    );
+
+    // An otherwise well-formed ciphertext with one changed AEAD byte also
+    // passes the *structural* witness but must fail authenticated reopen.
+    let source = original_objects.get(&victim).ok_or("victim")?;
+    let mut corrupt = Zeroizing::new(source.ciphertext().to_vec());
+    let last = corrupt.last_mut().ok_or("empty ciphertext")?;
+    *last ^= 0x01;
+    let mut tampered = (*original_objects).clone();
+    tampered.insert(
+        victim,
+        Arc::new(CipherObject {
+            reference: source.reference.clone(),
+            bytes: corrupt,
+        }),
+    );
+    pending.candidate.as_mut().ok_or("candidate")?.objects = Arc::new(tampered);
+    assert!(
+        base.preflight(&base, &pending, deadline, &|| Ok(()))
+            .is_ok()
+    );
+    assert!(
+        base.authenticated_preflight(
+            &base,
+            &pending,
+            &key,
+            &frontier,
+            CLUSTER,
+            EPOCH,
+            scope(),
+            deadline,
+            &|| Ok(()),
+        )
+        .is_err()
+    );
+
+    // Neither rejected proposal mutated the immutable, committed source.
+    assert_eq!(digest(&old)?, before);
+    Ok(())
+}
