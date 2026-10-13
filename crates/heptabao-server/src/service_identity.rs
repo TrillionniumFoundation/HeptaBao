@@ -279,6 +279,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_rate_limit_quota_state() {
+            required.max(RATE_LIMIT_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -287,6 +292,18 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
+        self.auth
+            .validate_rate_limit_quota_state(previous.map(|s| &*s.auth))
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && (self.auth.has_rate_limit_quota_state()
+                || previous.is_some_and(|s| s.schema >= RATE_LIMIT_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native rate limit quota requires schema 134",
+            ));
+        }
         self.auth
             .validate_userpass_issuance_state(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
@@ -2150,6 +2167,18 @@ impl State {
             ));
         }
         self.auth
+            .validate_rate_limit_quota_state(None)
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA && self.auth.has_rate_limit_quota_state()
+            || self.schema == RATE_LIMIT_QUOTA_STATE_SCHEMA
+                && !self.auth.has_rate_limit_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "quota reader marker requires schema 134",
+            ));
+        }
+        self.auth
             .validate_userpass_lockout_state()
             .map_err(|_| Response::error(503, "invalid userpass lockout state"))?;
         if self.schema < 52 && self.auth.has_userpass_lockout_state() {
@@ -2618,6 +2647,7 @@ impl State {
             | TRANSIT_CACHE_STATE_SCHEMA
             | IDENTITY_MFA_STATE_SCHEMA
             | WORKFLOW_INPUT_STATE_SCHEMA
+            | RATE_LIMIT_QUOTA_STATE_SCHEMA
             | USERPASS_ISSUANCE_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA

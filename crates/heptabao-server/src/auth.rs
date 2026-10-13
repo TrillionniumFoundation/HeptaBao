@@ -2,6 +2,8 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
+#[path = "auth_rate_limit_quotas.rs"]
+pub(crate) mod rate_limit_quotas;
 use crate::federated_auth::{
     JwtAlgorithm, JwtVerifier, NativeJwtBoundClaims, NativeJwtBoundClaimsType, NativeJwtTimePolicy,
     TrustPolicy, VerificationKey,
@@ -242,6 +244,8 @@ fn is_default_userpass_lockout_counter_reset(value: &u64) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    rate_limit_quotas: Option<rate_limit_quotas::Registry>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     identity_mfa: Option<mfa::Registry>,
     #[serde(default, skip_serializing_if = "control_groups::Registry::is_absent")]
@@ -2549,6 +2553,7 @@ impl AuthState {
         let mut state = Self {
             control_groups: control_groups::Registry::default(),
             identity_mfa: None,
+            rate_limit_quotas: None,
             native_remount_epochs: BTreeMap::new(),
             approle_tidy_epochs: BTreeMap::new(),
             native_remount_control: std::sync::Arc::new(()),
@@ -3416,6 +3421,14 @@ impl AuthState {
     }
 
     fn disable_auth_mount(&mut self, scope: AuthScope<'_>) {
+        if scope.namespace.is_empty()
+            && let Some(quotas) = self.rate_limit_quotas.as_mut()
+        {
+            let prefix = format!("auth/{}/", scope.mount);
+            quotas
+                .definitions
+                .retain(|_, d| d.path != prefix && d.path != format!("{prefix}login"));
+        }
         if let Some(mounts) = self.oidc_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
@@ -3520,6 +3533,7 @@ impl AuthState {
         mount: &str,
         destination: &str,
     ) -> Result<Option<NativeRemountOwner>, AuthError> {
+        self.ensure_rate_limit_quotas_allow_remount(namespace, mount)?;
         let Some(entry) = self.effective_auth_mounts(namespace).remove(mount) else {
             return Ok(None);
         };
@@ -3634,6 +3648,7 @@ impl AuthState {
         to: &str,
         cas_revision: Option<u64>,
     ) -> Result<AuthResponse, AuthError> {
+        self.ensure_rate_limit_quotas_allow_remount(namespace, from)?;
         if from.is_empty()
             || to.is_empty()
             || from == to
@@ -4365,6 +4380,14 @@ impl AuthState {
         let now = time.seconds();
         validate_namespace(namespace)?;
         validate_path(path, false)?;
+        if path == "sys/quotas/config"
+            || path == "sys/quotas/rate-limit"
+            || path.starts_with("sys/quotas/rate-limit/")
+        {
+            return self
+                .rate_limit_quota_route(principal, namespace, method, path, body, now)
+                .map(Some);
+        }
         if path == "sys/internal/ui/resultant-acl" {
             return self
                 .ui_resultant_acl(principal, namespace, method, path, body, time)

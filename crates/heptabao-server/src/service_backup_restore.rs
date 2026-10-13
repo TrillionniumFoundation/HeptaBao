@@ -337,6 +337,18 @@ impl Service {
         incoming: &State,
     ) -> Result<(), Response> {
         incoming
+            .auth
+            .validate_rate_limit_quota_state(Some(&current.auth))
+            .map_err(|e| Response::error(400, &e.message))?;
+        if current.schema >= RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && incoming.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade rate limit quota ownership",
+            ));
+        }
+        incoming
             .validate_global_lossless_json_state(Some(current))
             .map_err(|_| {
                 Response::error(400, "snapshot would downgrade global lossless JSON custody")

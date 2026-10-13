@@ -71,6 +71,9 @@ use crate::state_record_root::RecordStateRoot;
 // Schema 65 adds EC/RSA Transit keys and public-key-only external PKI roots/CSR state.
 // Ordinary writers retain the exact schema-65 durable contract. Explicit
 // AAD-bound convergent material activates schema 66 irreversibly for this store.
+const RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 = crate::auth::rate_limit_quotas::STATE_SCHEMA;
+#[path = "service_rate_limit_quotas.rs"]
+mod rate_limit_quotas;
 const CURRENT_STATE_SCHEMA: u32 = 65;
 const AAD_BOUND_STATE_SCHEMA: u32 = 66;
 const TYPED_PKI_STATE_SCHEMA: u32 = 67;
@@ -171,7 +174,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = USERPASS_ISSUANCE_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = RATE_LIMIT_QUOTA_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -227,6 +230,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | TRANSIT_CACHE_STATE_SCHEMA
                 | IDENTITY_MFA_STATE_SCHEMA
                 | WORKFLOW_INPUT_STATE_SCHEMA
+                | RATE_LIMIT_QUOTA_STATE_SCHEMA
                 | USERPASS_ISSUANCE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
@@ -1336,6 +1340,7 @@ fn classify_request_effect(
 type NativeRecordRoleHook = Box<dyn FnOnce(&HaProcess) + Send>;
 
 pub struct Service {
+    rate_limit_quotas: rate_limit_quotas::Runtime,
     openbao_wrapper_owner: Option<openbao_wrapper::ServiceWrapperOwner>,
     openbao_wrapper_generation: u64,
     outbound: crate::outbound::Outbound,
@@ -1769,6 +1774,7 @@ impl Service {
         let unseal_nonce = hex(&crypto::random::<16>()?);
         let recovery_required = postgres_pending_exists(&data_dir)?;
         Ok(Self {
+            rate_limit_quotas: Default::default(),
             openbao_wrapper_owner: None,
             openbao_wrapper_generation: 0,
             outbound: crate::outbound::Outbound::default(),
@@ -3469,6 +3475,9 @@ impl Service {
             return Response::error(400, "AppRole form requires an actual AppRole login mount");
         }
 
+        if let Some(response) = self.rate_limit_quota_response(&request) {
+            return response;
+        }
         if let Some(response) = self.immutable_approle_lookup_response(&request) {
             return response;
         }
