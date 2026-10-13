@@ -334,6 +334,53 @@ pub(super) struct NativeRootMigrationPlan {
     pub conditions: Vec<heptabao_durable_service::PublicationCondition>,
 }
 
+// Fail-closed private prepublication reader. It consumes only this plan's
+// immutable staged objects and never loads loose files or changes Service.
+struct NativeMigrationObjects<'a>(
+    &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
+);
+impl ObjectSource for NativeMigrationObjects<'_> {
+    fn read(
+        &self,
+        domain: &ObjectDomain,
+        reference: &ObjectRef,
+    ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+        let object = self
+            .0
+            .get(&(domain.clone(), reference.id))
+            .ok_or(RecordError::Missing)?;
+        if object.reference() != reference {
+            return Err(RecordError::Corrupt);
+        }
+        Ok(Zeroizing::new(object.bytes().to_vec()))
+    }
+    fn object_count(&self) -> Option<usize> {
+        Some(self.0.len())
+    }
+}
+
+// The root being syntactically valid cannot prove its entire closure is
+// readable under the signed identity, per-domain keys, source owner schema,
+// or the native KV2 reader. Reopen everything *before* a writer can receive
+// the immutable migration candidate, including on the initial V5->V6 move.
+fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result<(), ReadError> {
+    if plan.root.encode()?.as_slice() != plan.bytes.as_slice() {
+        return Err(ReadError::Authentication);
+    }
+    let crate::state_record_root::StateIdentity::RecordsV6(identity) = plan.root.identity()? else {
+        return Err(ReadError::Authentication);
+    };
+    let context = ReadContext {
+        expected_identity: crate::v6_read_validation::ReadIdentity::RecordsV6(identity),
+        cluster_id: &plan.root.cluster_id,
+        replay_epoch: plan.root.replay_epoch,
+        minimum_state_schema: plan.root.state_schema,
+        maximum_state_schema: plan.root.state_schema,
+        reader_format: crate::state_record_root_v6::READER_FORMAT,
+    };
+    materialize(&plan.root, context, &NativeMigrationObjects(&plan.objects)).map(|_| ())
+}
+
 impl Service {
     pub(super) fn prepare_native_root_migration(
         &mut self,
@@ -517,7 +564,7 @@ impl Service {
         {
             return Err(rejected());
         }
-        Ok(NativeRootMigrationPlan {
+        let plan = NativeRootMigrationPlan {
             root,
             bytes,
             candidate,
@@ -533,6 +580,11 @@ impl Service {
                     expected: None,
                 },
             ],
-        })
+        };
+        // A prepared plan is not allowed to leave Service unless the *real*
+        // V6 reader authenticates the complete staged object closure.
+        validate_native_root_migration_plan(&plan).map_err(|_| rejected())?;
+        check().map_err(|_| rejected())?;
+        Ok(plan)
     }
 }

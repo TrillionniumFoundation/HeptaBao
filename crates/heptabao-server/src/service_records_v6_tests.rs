@@ -828,6 +828,57 @@ fn genuine_service_native_migration_plan_authenticates_all_source_owners_without
 }
 
 #[test]
+fn genuine_service_native_migration_plan_rejects_missing_and_tampered_staged_closure() -> TestResult
+{
+    let directory = super::super::tests::Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = super::super::tests::bootstrap(&mut service)?;
+    let _key = Zeroizing::new(key);
+    let token = Zeroizing::new(token);
+    assert_eq!(
+        super::super::tests::call(
+            &mut service,
+            "POST",
+            "secret/data/prepublication-closure",
+            &token,
+            json!({"data":{"value":"authenticated"}}),
+        )
+        .status,
+        200,
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let original_identity = service.current_state_identity().map_err(|_| "identity")?;
+    let mut plan = service
+        .prepare_native_root_migration(&|| Ok(()))
+        .map_err(|_| "valid complete plan")?;
+    assert!(validate_native_root_migration_plan(&plan).is_ok());
+    let removed = plan.objects.keys().next().ok_or("empty plan")?.clone();
+    let saved = plan.objects.remove(&removed).ok_or("original object")?;
+    assert!(
+        validate_native_root_migration_plan(&plan).is_err(),
+        "missing object was accepted despite signed root",
+    );
+    plan.objects.insert(removed, saved);
+    assert!(validate_native_root_migration_plan(&plan).is_ok());
+    plan.bytes[0] ^= 1;
+    assert!(
+        validate_native_root_migration_plan(&plan).is_err(),
+        "modified root envelope was accepted",
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation,
+        "prepublication validation must not mutate durable state",
+    );
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        original_identity,
+        "prepublication validation must not promote candidate state",
+    );
+    Ok(())
+}
+
+#[test]
 fn genuine_service_native_migration_plan_rejects_uncommitted_kv1_graph() -> TestResult {
     let directory = super::super::tests::Root::new();
     let mut service = directory.service()?;
