@@ -23,10 +23,11 @@ fn committed_keys_are_bounded_unique_and_sorted_before_entry() {
 }
 
 #[test]
-fn control_ack_cannot_reuse_logical_auth_storage_or_last_wins_frames() {
+fn control_ack_cannot_reuse_logical_auth_storage_or_last_wins_frames() -> Result<(), SdkBridgeError>
+{
     let accepted =
         br#"{"version":1,"kind":"invalidation_ack","call":2,"control":"storage_key_v1","count":2}"#;
-    let ack = decode_invalidation_ack(accepted).unwrap();
+    let ack = decode_invalidation_ack(accepted)?;
     assert!(validate_invalidation_ack(&ack, 2, 2).is_ok());
     assert_eq!(
         validate_invalidation_ack(&ack, 3, 2),
@@ -48,4 +49,5 @@ fn control_ack_cannot_reuse_logical_auth_storage_or_last_wins_frames() {
             .and_then(|ack| validate_invalidation_ack(&ack, 2, 2));
         assert_eq!(rejected, Err(SdkBridgeError::OutcomeUnknown));
     }
+    Ok(())
 }

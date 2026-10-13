@@ -20,6 +20,9 @@ impl std::fmt::Debug for StorageEntry {
     }
 }
 
+#[cfg(any(test, target_os = "linux", target_os = "macos"))]
+type SdkStorageRecords = BTreeMap<String, (String, [u8; 32])>;
+
 /// An exact committed Storage delta for one unchanged SDK mount owner.
 /// Only key names and canonical scoped record-owner hashes leave the engine;
 /// opaque values remain in the authenticated record graph.
@@ -255,7 +258,7 @@ impl EngineState {
         basis.push(0);
         basis.extend_from_slice(&owner_bytes);
         let seed = crypto::digest(&basis);
-        let collect = |graph: &Self| -> Result<([u8; 32], BTreeMap<String, (String, [u8; 32])>)> {
+        let collect = |graph: &Self| -> Result<([u8; 32], SdkStorageRecords)> {
             let root = graph
                 .records
                 .as_ref()
