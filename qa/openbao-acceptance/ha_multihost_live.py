@@ -512,13 +512,33 @@ elif action == 'stop':
     if observed is not None:
         if prior != observed or not expected(observed) or os.getpgid(pid) != pid:
             raise SystemExit(79)
-        # Linux has start ticks; macOS uses bounded BSD ps identity checks and
-        # cannot claim atomic PID-reuse exclusion. Only this fixture PID is killed.
-        os.kill(pid, signal.SIGKILL)
+        # Bind Linux signal delivery to the observed task, not a reusable PID.
+        # macOS has no equivalent here and retains its explicit bounded ps scope.
+        if observed['platform'] == 'Linux':
+            if not hasattr(os, 'pidfd_open') or not hasattr(signal, 'pidfd_send_signal'):
+                raise SystemExit(82)
+            try:
+                descriptor = os.pidfd_open(pid, 0)
+            except ProcessLookupError:
+                descriptor = None
+            if descriptor is not None:
+                try:
+                    bound = observe(pid)
+                    if bound is not None and (bound != prior or not expected(bound)):
+                        raise SystemExit(79)
+                    if bound is not None:
+                        try:
+                            signal.pidfd_send_signal(descriptor, signal.SIGKILL, None, 0)
+                        except ProcessLookupError:
+                            pass
+                finally:
+                    os.close(descriptor)
+        else:
+            os.kill(pid, signal.SIGKILL)
         deadline = time.monotonic() + 5
-        while time.monotonic() < deadline and observe(pid) is not None:
+        while time.monotonic() < deadline and observe(pid) == prior:
             time.sleep(0.05)
-        if observe(pid) is not None:
+        if observe(pid) == prior:
             raise SystemExit(80)
     pid_path.unlink(); identity_path.unlink()
     with (root / 'pids.log').open('a') as output:
@@ -971,7 +991,7 @@ def main(*, extension=None) -> int:
         "binary_sha256": args.expected_binary_sha256,
         "expected_node_binary_sha256": expected_digests,
         "source_binding": "all native artifacts bound to the exact source commit and tree",
-        "process_identity_scope": "Linux start ticks or macOS BSD ps; macOS PID check is non-atomic",
+        "process_identity_scope": "Linux start ticks and pidfd signal or macOS BSD ps; macOS PID check is non-atomic",
         "native_build_receipts_verified": False,
         "native_build_check_count": len(receipt_sources),
         "runner_sha256": initial_runner_sha256,

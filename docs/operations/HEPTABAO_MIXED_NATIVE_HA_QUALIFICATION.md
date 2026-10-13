@@ -42,7 +42,8 @@ forwarding does not stand in for LAN connectivity.
 The target launches a real detached process with Python `start_new_session`.
 The fixture PID and initial process identity are stored in owner-only files.
 Before SIGKILL, Linux checks executable, exact fixture arguments, start ticks and
-session ownership. macOS checks BSD `ps` executable, exact arguments, start time
+session ownership, then opens a pidfd, revalidates identity and signals that bound
+task through the descriptor. Missing Linux pidfd support fails closed. macOS checks BSD `ps` executable, exact arguments, start time
 and session ownership. A stale identity or a PID belonging to another fixture is
 rejected. macOS cannot provide an atomic PID-reuse exclusion through BSD `ps`;
 the report states that limitation. Only the recorded fixture PID is signaled.

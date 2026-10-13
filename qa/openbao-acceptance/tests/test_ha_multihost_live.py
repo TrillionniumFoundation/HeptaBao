@@ -371,6 +371,7 @@ class NativeProcessIdentityTests(unittest.TestCase):
                            check=True, capture_output=True)
             roots = [directory / "fixture-a", directory / "fixture-b"]
             owned = []
+            original_identities = []
             def invoke(action, root):
                 return subprocess.run([sys.executable, "-c", MODULE.REMOTE_PROCESS_SCRIPT,
                                        action, str(root), "0"], capture_output=True, text=True)
@@ -383,6 +384,7 @@ class NativeProcessIdentityTests(unittest.TestCase):
                     result = invoke("start", root)
                     self.assertEqual(result.returncode, 0, result.stderr)
                     owned.append(int(result.stdout.strip()))
+                    original_identities.append((root / "process.identity.json").read_text())
                 identity_path = roots[0] / "process.identity.json"
                 original = identity_path.read_text()
                 forged = json.loads(original)
@@ -406,11 +408,11 @@ class NativeProcessIdentityTests(unittest.TestCase):
                     self.assertFalse((root / "process.identity.json").exists())
                     self.assertEqual(invoke("stop", root).stdout.strip(), "none")
             finally:
-                for pid in owned:
-                    try:
-                        os.kill(pid, 9)
-                    except ProcessLookupError:
-                        pass
+                for root, pid, identity in zip(roots, owned, original_identities):
+                    if (root / "process.pid").exists():
+                        (root / "process.pid").write_text(str(pid))
+                        (root / "process.identity.json").write_text(identity)
+                        invoke("stop", root)
 
     def test_native_binary_rejects_a_different_source_freeze(self):
         commit, tree = "a" * 40, "b" * 40
