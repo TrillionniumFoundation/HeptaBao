@@ -330,9 +330,9 @@ fn committed_sdk_finisher_model_ack_preserves_exact_key_epoch_and_shorter_clock(
     let worker = std::thread::spawn(move || {
         let command = commands
             .recv_timeout(Duration::from_secs(2))
-            .expect("original notification");
+            .map_err(|_| "original notification")?;
         let WorkerCommand::Invalidate(job) = command else {
-            panic!("not an invalidate command");
+            return Err("not an invalidate command");
         };
         assert_eq!(job.keys, ["item"]);
         assert_eq!(job.epoch, 2);
@@ -340,13 +340,14 @@ fn committed_sdk_finisher_model_ack_preserves_exact_key_epoch_and_shorter_clock(
         peer.busy.store(false, Ordering::Release);
         job.reply
             .send(Ok(InvalidationAck::Hook))
-            .expect("original reply receiver");
+            .map_err(|_| "original reply receiver")?;
+        Ok::<_, &'static str>(())
     });
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(shorter);
     service
         .finish_committed_sdk_invalidations(batch)
         .map_err(|_| "original modeled ack")?;
-    worker.join().map_err(|_| "queue peer panicked")?;
+    worker.join().map_err(|_| "queue peer panicked")??;
     assert!(!control.fenced.load(Ordering::Acquire));
     assert!(!control.busy.load(Ordering::Acquire));
     assert_eq!(control.storage_epoch.load(Ordering::Acquire), 2);
@@ -366,13 +367,16 @@ fn committed_sdk_finisher_model_missing_ack_keeps_busy_and_late_ack_cannot_reviv
     let (release, released) = mpsc::channel();
     let peer = Arc::clone(&control);
     let worker = std::thread::spawn(move || {
-        let WorkerCommand::Invalidate(job) = commands.recv().expect("original notification") else {
-            panic!("not invalidate");
+        let WorkerCommand::Invalidate(job) =
+            commands.recv().map_err(|_| "original notification")?
+        else {
+            return Err("not invalidate");
         };
-        entered.send(()).expect("observer");
-        released.recv().expect("owned late completion");
+        entered.send(()).map_err(|_| "observer")?;
+        released.recv().map_err(|_| "owned late completion")?;
         let _ = job.reply.send(Ok(InvalidationAck::Hook));
         peer.busy.store(false, Ordering::Release);
+        Ok::<_, &'static str>(())
     });
     let shorter = Instant::now() + Duration::from_millis(60);
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(shorter);
@@ -385,7 +389,7 @@ fn committed_sdk_finisher_model_missing_ack_keeps_busy_and_late_ack_cannot_reviv
     release
         .send(())
         .map_err(|_| "late completion peer absent")?;
-    worker.join().map_err(|_| "queue peer panicked")?;
+    worker.join().map_err(|_| "queue peer panicked")??;
     assert!(control.fenced.load(Ordering::Acquire));
     assert!(!control.busy.load(Ordering::Acquire));
     Ok(())
@@ -402,19 +406,20 @@ fn committed_sdk_finisher_model_error_ack_discards_cache_without_claiming_hook_a
     )?;
     let peer = Arc::clone(&control);
     let worker = std::thread::spawn(move || {
-        let WorkerCommand::Invalidate(job) = commands.recv().expect("notification") else {
-            panic!("not invalidate");
+        let WorkerCommand::Invalidate(job) = commands.recv().map_err(|_| "notification")? else {
+            return Err("not invalidate");
         };
         peer.fenced.store(true, Ordering::Release);
         peer.busy.store(false, Ordering::Release);
         job.reply
             .send(Err(SdkBridgeError::Backend))
-            .expect("original receiver");
+            .map_err(|_| "original receiver")?;
+        Ok::<_, &'static str>(())
     });
     service
         .finish_committed_sdk_invalidations(batch)
         .map_err(|_| "safe discarded cache")?;
-    worker.join().map_err(|_| "queue peer panicked")?;
+    worker.join().map_err(|_| "queue peer panicked")??;
     assert!(control.fenced.load(Ordering::Acquire));
     assert!(!control.busy.load(Ordering::Acquire));
     Ok(())
@@ -537,23 +542,24 @@ fn committed_sdk_actual_held_plan_execute_and_terminal_response_rejected_after_e
     )?;
     let peer = Arc::clone(&control);
     let worker = std::thread::spawn(move || {
-        let WorkerCommand::Invalidate(job) = commands.recv().expect("notification") else {
-            panic!("not invalidate");
+        let WorkerCommand::Invalidate(job) = commands.recv().map_err(|_| "notification")? else {
+            return Err("not invalidate");
         };
         peer.busy.store(false, Ordering::Release);
         job.reply
             .send(Ok(InvalidationAck::Hook))
-            .expect("original receiver");
-        commands
+            .map_err(|_| "original receiver")?;
+        Ok::<_, &'static str>(commands)
     });
     service
         .finish_committed_sdk_invalidations(batch)
         .map_err(|_| "modeled ack")?;
-    let commands = worker.join().map_err(|_| "queue peer panicked")?;
+    let commands = worker.join().map_err(|_| "queue peer panicked")??;
     let shared = Arc::new(Mutex::new(service));
-    let error = plan
-        .execute(&shared, plan.deadline)
-        .expect_err("stale original Plan entered worker");
+    let error = match plan.execute(&shared, plan.deadline) {
+        Err(error) => error,
+        Ok(_) => return Err("stale original Plan entered worker".into()),
+    };
     assert_eq!(error.status, 503);
     assert!(matches!(
         commands.try_recv(),

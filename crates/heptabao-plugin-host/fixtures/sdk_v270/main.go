@@ -120,6 +120,9 @@ func factory(ctx context.Context, config *logical.BackendConfig) (logical.Backen
 			if err := request.Storage.Put(ctx, &logical.StorageEntry{Key: "owner-death", Value: []byte("entered")}); err != nil {
 				return nil, err
 			}
+			if err := recordFixtureEvent("blocked_storage_ack"); err != nil {
+				return nil, err
+			}
 			// Deliberately ignores context cancellation for the owner-death test.
 			select {}
 		},

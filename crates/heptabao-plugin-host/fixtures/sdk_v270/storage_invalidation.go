@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/openbao/openbao/sdk/v2/framework"
@@ -18,6 +22,7 @@ func configureStorageInvalidation(backend *framework.Backend, config *logical.Ba
 	storageDenied := false
 	backend.Invalidate = func(ctx context.Context, key string) {
 		if key == "deadline-blocked" {
+			_ = recordFixtureEvent("invalidation_hook_entered")
 			<-ctx.Done()
 			return
 		}
@@ -67,4 +72,35 @@ func configureStorageInvalidation(backend *framework.Backend, config *logical.Ba
 			return &logical.Response{Data: map[string]any{"value": cached, "invalidations": count, "storage_mutation_denied": storageDenied}}, nil
 		},
 	}})
+}
+
+// This fixture-only journal records no request, Storage key/value or token.
+// A real SDK callback writes it only AFTER receiving its original Storage ACK.
+func recordFixtureEvent(event string) error {
+	directory := os.Getenv("TMPDIR")
+	if directory == "" {
+		return errors.New("private fixture TMPDIR absent")
+	}
+	info, err := os.Stat(directory)
+	if err != nil || !info.IsDir() || info.Mode().Perm()&0077 != 0 {
+		return errors.New("private fixture directory unavailable")
+	}
+	path := filepath.Join(directory, "sdk-fixture-events.jsonl")
+	if old, err := os.Lstat(path); err == nil && (!old.Mode().IsRegular() || old.Mode().Perm()&0077 != 0 || old.Size() > 65536) {
+		return errors.New("fixture journal owner changed")
+	}
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	body, err := json.Marshal(map[string]any{"event": event, "pid": os.Getpid()})
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(append(body, '\n'))
+	if err != nil {
+		return err
+	}
+	return file.Sync()
 }

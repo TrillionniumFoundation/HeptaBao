@@ -1683,25 +1683,25 @@ impl Service {
                 .ok_or_else(|| {
                     Response::error(503, "SDK committed original deadline expired before hook")
                 })?;
-            let acknowledgement = received.recv_timeout(remaining);
-            let acknowledged = matches!(acknowledgement, Ok(Ok(_)));
-            if !acknowledged
-                || Instant::now() >= deadline
-                || notification.control.storage_epoch.load(Ordering::Acquire) != notification.epoch
-                || notification.control.fenced.load(Ordering::Acquire)
-            {
-                notification.control.retire();
-                notification.trace("discarded", batch.installed_identity, deadline);
-            } else {
+            let acknowledgement = received.recv_timeout(remaining).ok().and_then(Result::ok);
+            let retained = acknowledgement.filter(|_| {
+                Instant::now() < deadline
+                    && notification.control.storage_epoch.load(Ordering::Acquire)
+                        == notification.epoch
+                    && !notification.control.fenced.load(Ordering::Acquire)
+            });
+            if let Some(acknowledgement) = retained {
                 notification.trace(
                     match acknowledgement {
-                        Ok(Ok(InvalidationAck::Hook)) => "hook_acknowledged",
-                        Ok(Ok(InvalidationAck::NoCache)) => "no_cache",
-                        _ => unreachable!("only a guarded successful acknowledgement enters here"),
+                        InvalidationAck::Hook => "hook_acknowledged",
+                        InvalidationAck::NoCache => "no_cache",
                     },
                     batch.installed_identity,
                     deadline,
                 );
+            } else {
+                notification.control.retire();
+                notification.trace("discarded", batch.installed_identity, deadline);
             }
             notification.delivered = true;
             if Instant::now() >= deadline {

@@ -10,7 +10,7 @@ REQUIRED = frozenset({
     'sdk_catalog', 'sdk_mount', 'initial_write', 'initial_cache', 'warm_process_owned',
     'other_leader', 'remote_update', 'remote_hook_storage_attempt_written', 'old_node_caught_up', 'original_leader_reselected',
     'real_hook_new_value', 'same_plugin_process_after_hook', 'hook_has_no_storage_mutation',
-    'busy_request_entered', 'busy_owner_stepdown', 'busy_original_effect_visible',
+    'busy_request_entered', 'busy_owner_stepdown', 'busy_original_staged_write_absent',
     'busy_remote_update', 'busy_original_call_fenced', 'busy_original_process_gone',
     'busy_owner_reselected', 'fresh_owner_reads_current', 'blocked_hook_other_leader',
     'blocked_hook_real_key_committed', 'blocked_hook_state_caught_up', 'blocked_hook_owned_process_gone',
@@ -28,10 +28,11 @@ def frozen(path, commit, tree):
 def plugin_identity(node):
     # The fixture executable and ancestor chain must reach this exact owned
     # server PID/start identity. No argv, environment or credential is returned.
-    script = '''import json,os
+    script = '''import json,os,hashlib
 from pathlib import Path
 root=Path(ROOT)
 server=json.loads((root/'process.identity.json').read_text())
+expected_sha=hashlib.sha256((root/'sdk-plugins'/'sdk-fixture').read_bytes()).hexdigest()
 def proc(pid):
  p=Path('/proc')/str(pid)
  text=(p/'stat').read_text();tail=text[text.rfind(')')+2:].split()
@@ -41,12 +42,20 @@ for p in Path('/proc').iterdir():
  if not p.name.isdecimal():continue
  try:
   actual=proc(int(p.name))
-  if actual['exe']!=str(root/'sdk-plugins'/'sdk-fixture'):continue
   chain=[];parent=actual
   for _ in range(8):
    chain.append(parent)
    if parent['pid']==server['pid']:
     if parent['start_ticks']!=str(server['start']) or parent['exe']!=server['executable']:raise RuntimeError('server identity changed')
+    # Linux SDK processes execute immutable sealed memfd images. Bind the
+    # running /proc image itself, rather than its original source pathname.
+    image=Path('/proc')/str(actual['pid'])/'exe'
+    digest=hashlib.sha256(image.read_bytes()).hexdigest()
+    if digest!=expected_sha:break
+    meta=image.stat()
+    after=proc(actual['pid'])
+    if after!=actual:raise RuntimeError('plugin identity changed during image observation')
+    actual.update(executable_sha256=digest,device=meta.st_dev,inode=meta.st_ino,exe_size=meta.st_size)
     owned.append(actual);break
    if parent['ppid']<=1:break
    parent=proc(parent['ppid'])
@@ -80,6 +89,22 @@ for line in (Path(ROOT)/'process.log').open():
 print(json.dumps(lines))
 '''.replace('ROOT', repr(node.root))
     return json.loads(ha.ssh(node, 'python3 - <<\'PY\'\n' + script + '\nPY'))
+
+def fixture_event(node, identity, event):
+    script = '''import json,os,stat
+from pathlib import Path
+root=Path(ROOT)/'sdk-runtime'
+seen=False
+for path in root.glob('*/sdk-fixture-events.jsonl'):
+ meta=path.lstat()
+ if not stat.S_ISREG(meta.st_mode) or meta.st_uid!=os.getuid() or meta.st_mode&0o077 or meta.st_size>65536:raise RuntimeError('fixture journal custody')
+ for line in path.read_text().splitlines():
+  row=json.loads(line)
+  if set(row)!={'event','pid'}:raise RuntimeError('fixture journal schema')
+  if row['pid']==PID and row['event']==EVENT:seen=True
+print(json.dumps(seen))
+'''.replace('ROOT',repr(node.root)).replace('PID',str(identity['pid'])).replace('EVENT',repr(event))
+    return json.loads(ha.ssh(node,'python3 - <<\'PY\'\n'+script+'\nPY')) is True
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -215,7 +240,7 @@ test -d "$root/data"
         check('three_physical_hosts',len(set(hosts.values()))==3,hostnames=hosts)
         check('all_unsealed',[api(node,'POST','sys/unseal',dict(key=unseal),token='')[0] for node in nodes]==[200]*3)
         original=elect();mount='sdk-cache/'
-        check('sdk_catalog',api(original,'POST','sys/plugins/catalog/secret/sdk-cache',dict(command='sdk-fixture',sha256=args.expected_fixture_sha256,version='v0.0.1',args=[]))[0]==204)
+        check('sdk_catalog',api(original,'POST','sys/plugins/catalog/secret/sdk-cache',dict(command='sdk-fixture',sha256=args.expected_fixture_sha256,version='v0.0.1',args=['--serve']))[0]==204)
         check('sdk_mount',api(original,'POST','sys/mounts/sdk-cache',dict(type='sdk-cache',config=dict(plugin_version='v0.0.1')))[0]==204)
         check('initial_write',api(original,'POST',mount+'item',dict(value='old-value'))[0]==204)
         code, body=api(original,'GET',mount+'cached-item')
@@ -237,15 +262,19 @@ test -d "$root/data"
         # Actual backend blocks after its original StoragePut acknowledgement.
         busy_identity=remember(original)
         blocked=pool.submit(api,original,'POST',mount+'blocked',{})
-        until=time.monotonic()+3;busy=False
+        until=time.monotonic()+3;busy=False;ack_seen=False
         while time.monotonic()<until and not blocked.done():
-            if api(original,'GET',mount+'cached-item')[0]==503:busy=True;break
+            if api(original,'GET',mount+'cached-item')[0]==503:busy=True
+            ack_seen=fixture_event(original,busy_identity,'blocked_storage_ack')
+            if busy and ack_seen:break
             time.sleep(.05)
-        check('busy_request_entered',busy and not blocked.done())
+        check('busy_request_entered',busy and ack_seen and not blocked.done(),actual_original_storage_ack=ack_seen)
         check('busy_owner_stepdown',api(original,'POST','sys/step-down',{})[0]==204)
         other=elect(previous=original)
         code,body=api(other,'GET',mount+'invalidation-control/owner-death')
-        check('busy_original_effect_visible',code==200 and body.get('data',{}).get('value')=='entered')
+        # Admitted ordinary SDK StoragePut is staged until terminal publication.
+        # The actual callback ACK above must not publish a blocked old Plan.
+        check('busy_original_staged_write_absent',code==404 and not body.get('auth') and not body.get('wrap_info'),http_status=code)
         check('busy_remote_update',api(other,'POST',mount+'item',dict(value='after-busy'))[0]==204)
         code,body=blocked.result(timeout=20)
         check('busy_original_call_fenced',code==503 and not body.get('auth') and not body.get('wrap_info'),http_status=code)
