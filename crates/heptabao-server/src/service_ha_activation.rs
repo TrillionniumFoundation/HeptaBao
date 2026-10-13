@@ -268,14 +268,16 @@ pub(crate) fn start_ha_activation_worker_with_budget(
                 // queued, and no phase refreshes this deployment-owned budget.
                 let started = std::time::Instant::now();
                 if let Ok(mut writer) = service.try_lock() {
+                    #[cfg(target_os = "linux")]
                     let owned_wrapper = writer.ha_owned_wrapper_selected();
-                    let budget = if owned_wrapper {
-                        work_budget
-                    } else {
-                        crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET
-                    };
+                    // Every process-owned activation uses the deployment budget
+                    // captured before this try-lock. Shamir catch-up publishes
+                    // durable B and its index, so a 1s read-only maintenance clock
+                    // can never satisfy its existing >1s precommit reserve.
+                    // HTTP health/request deadlines stay independently bounded;
+                    // no old receipt or unseal authorization is re-clocked here.
                     let _scope =
-                        crate::request_deadline::RequestDeadlineScope::enter(started + budget);
+                        crate::request_deadline::RequestDeadlineScope::enter(started + work_budget);
                     #[cfg(target_os = "linux")]
                     if owned_wrapper {
                         writer.maintain_owned_wrapper_ha();

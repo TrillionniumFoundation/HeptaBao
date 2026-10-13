@@ -397,3 +397,160 @@ fn health_role_gate_rejects_real_return_to_same_node_in_a_new_term() -> TestResu
     assert!(service.ha_activation.is_some());
     Ok(())
 }
+
+#[test]
+fn process_owned_shamir_records_catchup_without_request_uses_deployment_budget() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    crate::service::tests::bootstrap_unmounted(&mut service)?;
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(
+        &root.path.join("raft"),
+        &service.state.as_ref().ok_or("A")?.cluster_id,
+    )?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|_| "A anchor")?;
+    let a_identity = service.current_state_identity().map_err(|_| "A identity")?;
+    let a_nonce = service.unseal_nonce.clone();
+    let a_generation = service.durable.as_ref().ok_or("durable A")?.generation();
+    let mut b = service.state.clone().ok_or("A state")?;
+    b.engines.handle(
+        "",
+        "POST",
+        "sys/mounts/activation-catchup",
+        &json!({"type":"kv"}),
+        100,
+    )?;
+    b.engines = b
+        .engines
+        .migrate_kv1_records(crate::state_records::AddressKey::from_bytes([47; 32]))?
+        .into();
+    let plan = service.prepare_record_plan(&mut b).map_err(|_| "B plan")?;
+    let b_identity = plan.root.identity().map_err(|_| "B root identity")?;
+    cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .commit_record_state(
+            "owned-activation-B",
+            &a_identity,
+            &plan.bytes,
+            &plan.objects,
+        )?;
+    // The service still owns A, and no HTTP/unseal/read request is permitted
+    // to carry B into this test. Only the configured process-owned worker runs.
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "still A")?,
+        a_identity
+    );
+    service.ha_activation = None;
+    let service = Arc::new(Mutex::new(service));
+    let worker = start_ha_activation_worker_with_budget(&service, Duration::from_secs(12))?
+        .ok_or("worker")?;
+    let end = std::time::Instant::now() + Duration::from_secs(5);
+    let caught_up = loop {
+        if let Ok(writer) = service.try_lock() {
+            if writer.ha_activation.is_some()
+                && writer
+                    .current_state_identity()
+                    .map_err(|_| "current identity")?
+                    == b_identity
+            {
+                break true;
+            }
+        }
+        if std::time::Instant::now() >= end {
+            break false;
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    };
+    drop(worker);
+    assert!(
+        caught_up,
+        "the process-owned Shamir worker must admit actual committed B without a request"
+    );
+    let generation = {
+        let writer = service.lock().map_err(|_| "writer")?;
+        assert!(!writer.recovery_required && !writer.audit_failed);
+        assert_eq!(
+            writer.unseal_nonce, a_nonce,
+            "same-epoch activation must not refresh unseal authorization"
+        );
+        let generation = writer.durable.as_ref().ok_or("durable B")?.generation();
+        assert!(generation > a_generation);
+        generation
+    };
+    std::thread::sleep(Duration::from_millis(150));
+    assert_eq!(
+        service
+            .lock()
+            .map_err(|_| "stopped writer")?
+            .durable
+            .as_ref()
+            .ok_or("durable stopped")?
+            .generation(),
+        generation
+    );
+    Ok(())
+}
+
+#[test]
+fn configured_owned_activation_quorum_loss_bounds_request_wait_and_drop() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    bootstrap(&mut service)?;
+    let cluster = crate::ha::snapshot_test_support::Cluster::new(
+        &root.path.join("raft"),
+        &service.state.as_ref().ok_or("state")?.cluster_id,
+    )?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|_| "initial anchor")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let nonce = service.unseal_nonce.clone();
+    service.ha_activation = None;
+    let service = Arc::new(Mutex::new(service));
+    cluster.isolate_all_peers(true);
+    let worker = start_ha_activation_worker_with_budget(&service, Duration::from_secs(12))?
+        .ok_or("worker")?;
+    let began = std::time::Instant::now();
+    while service.try_lock().is_ok() {
+        if began.elapsed() >= Duration::from_secs(3) {
+            return Err("activation never entered".into());
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    let request_began = std::time::Instant::now();
+    let request =
+        crate::request_deadline::lock_until(&service, request_began + Duration::from_secs(1));
+    assert!(
+        request.is_err(),
+        "an occupied worker cannot grant readiness"
+    );
+    assert!(
+        request_began.elapsed() < Duration::from_millis(1400),
+        "health writer admission preserves its 1s clock"
+    );
+    drop(request);
+    let stopping = std::time::Instant::now();
+    drop(worker);
+    assert!(
+        stopping.elapsed() < Duration::from_secs(13),
+        "shutdown joins only the bounded current pass"
+    );
+    let writer = service.lock().map_err(|_| "writer")?;
+    assert!(writer.ha_activation.is_none());
+    assert_eq!(
+        writer.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(writer.unseal_nonce, nonce);
+    drop(writer);
+    cluster.isolate_all_peers(false);
+    std::thread::sleep(Duration::from_millis(150));
+    assert!(
+        service
+            .lock()
+            .map_err(|_| "no queued pass")?
+            .ha_activation
+            .is_none()
+    );
+    Ok(())
+}
