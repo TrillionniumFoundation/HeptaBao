@@ -44,6 +44,41 @@ class DenominatorControls(unittest.TestCase):
         doc['feature_and_correctness_delta']=[x for x in doc['feature_and_correctness_delta'] if x['id']!='barrier_rotation_disabled_field_persistence']
         self.assertTrue(any('barrier_rotation_disabled_field_persistence' in x for x in validator.validate(doc)))
 
+    def test_each_openbao_270_feature_entry_is_required(self):
+        # These reviewed 2.7.0 baseline entries must not disappear while the
+        # two supplemental 2.7.1 changes still make the document look complete.
+        for missing_id in (
+            'postgresql_horizontal_scale',
+            'external_kms_hsm_pki_transit',
+            'pqc_tls_mldsa',
+            'pebble_storage',
+            'indexed_consistency',
+            'grpc_invalidation',
+            'raft_auto_join_provider_port',
+            'sdk_lifetime_watcher_backoff',
+        ):
+            with self.subTest(missing_id=missing_id):
+                doc=self.fresh()
+                doc['feature_and_correctness_delta']=[
+                    row for row in doc['feature_and_correctness_delta']
+                    if row['id']!=missing_id
+                ]
+                self.assertTrue(any(
+                    'missing required ids' in error and missing_id in error
+                    for error in validator.validate(doc)
+                ))
+
+    def test_missing_271_packaged_default_entry_rejected(self):
+        doc=self.fresh()
+        doc['feature_and_correctness_delta']=[
+            row for row in doc['feature_and_correctness_delta']
+            if row['id']!='linux_package_default_pebbledb'
+        ]
+        self.assertTrue(any(
+            'missing required ids' in error and 'linux_package_default_pebbledb' in error
+            for error in validator.validate(doc)
+        ))
+
     def test_unwitnessed_admitted_gate_rejected(self):
         doc=self.fresh()
         doc['required_gates'][0]['status']='ADMITTED'

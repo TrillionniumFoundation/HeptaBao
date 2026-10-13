@@ -27,7 +27,15 @@ SECURITY=frozenset({
  'pki_acme_unvalidated_san_rejection',
  'oidc_ui_prompt_none_disabled',
 })
-EXTRA_CHANGES=frozenset({
+FEATURE_CHANGES=frozenset({
+ 'postgresql_horizontal_scale',
+ 'external_kms_hsm_pki_transit',
+ 'pqc_tls_mldsa',
+ 'pebble_storage',
+ 'indexed_consistency',
+ 'grpc_invalidation',
+ 'raft_auto_join_provider_port',
+ 'sdk_lifetime_watcher_backoff',
  'barrier_rotation_disabled_field_persistence',
  'linux_package_default_pebbledb',
 })
@@ -73,7 +81,7 @@ def validate(doc):
     baseline=doc.get('baseline')
     if not isinstance(baseline,dict) or baseline.get('product')!='OpenBao' or baseline.get('version')!='2.7.1' or baseline.get('commit')!=BASELINE_COMMIT:
         errors.append('pinned official 2.7.1 baseline mismatch')
-    for name,ids in [('security_delta',SECURITY),('feature_and_correctness_delta',EXTRA_CHANGES)]:
+    for name,ids in [('security_delta',SECURITY),('feature_and_correctness_delta',FEATURE_CHANGES)]:
         errors.extend(audit_rows(doc.get(name),name,ids))
     gate_rows=doc.get('required_gates')
     if not isinstance(gate_rows,list):
@@ -107,7 +115,7 @@ def main():
     if errors:
         for err in errors:print('FAIL:',err)
         return 1
-    print('PASS: OpenBao 2.7.0+2.7.1 release delta structurally complete; security=15, supplemental changes=2, gates=11, release authority=false')
+    print('PASS: OpenBao 2.7.0+2.7.1 release delta structurally complete; security=15, feature/correctness=10, gates=11, release authority=false')
     return 0
 
 if __name__=='__main__':
