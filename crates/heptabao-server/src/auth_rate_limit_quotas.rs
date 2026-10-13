@@ -180,9 +180,9 @@ impl AuthState {
         match (&mut self.rate_limit_quotas, &candidate.rate_limit_quotas) {
             (None, None) => Ok(()),
             (Some(installed), Some(admitted)) => {
-                let actual = crate::owner_store::serialize_owner(installed)
+                let actual = crate::secret_serde::to_vec(installed, crate::MAX_APPLICATION_STATE_BYTES)
                     .map_err(|_| err(503, "native quota owner serialization failed"))?;
-                let expected = crate::owner_store::serialize_owner(admitted)
+                let expected = crate::secret_serde::to_vec(admitted, crate::MAX_APPLICATION_STATE_BYTES)
                     .map_err(|_| err(503, "native quota owner serialization failed"))?;
                 if actual.as_slice() != expected.as_slice() {
                     return Err(err(
