@@ -687,3 +687,59 @@ fn actual_engine_projection_rechecks_custody_after_object_visit() -> TestResult 
     );
     Ok(())
 }
+
+#[test]
+fn v6_projection_rejects_aggregate_multimount_overflow_before_any_object_visits() -> TestResult {
+    // Each actual native KV2 graph is individually under 64 MiB, but the
+    // combined retained history exceeds the V6 manifest's aggregate budget.
+    // A custody-bound visitor must not receive even the first object before
+    // every declared mount has passed the identical root limits.
+    let mut original = EngineState::default();
+    for mount in ["multi-a", "multi-b"] {
+        original
+            .handle(
+                "",
+                "POST",
+                &format!("sys/mounts/{mount}"),
+                &json!({"type":"kv","options":{"version":"2"}}),
+                100,
+            )?
+            .ok_or("mount")?;
+        original
+            .handle(
+                "",
+                "POST",
+                &format!("{mount}/config"),
+                &json!({"max_versions":100}),
+                100,
+            )?
+            .ok_or("config")?;
+        for version in 1..=13 {
+            original
+                .handle(
+                    "",
+                    "POST",
+                    &format!("{mount}/data/item"),
+                    &json!({"data":{"blob":"P".repeat(2560 * 1024),"version":version}}),
+                    100 + version,
+                )?
+                .ok_or("write")?;
+        }
+    }
+    let parent = crate::state_records::AddressKey::from_bytes([0x7a; 32]);
+    let mut emitted = 0_usize;
+    let projected = original.project_v6_native(parent.as_ref(), &|| Ok(()), |_, _| {
+        emitted += 1;
+        Ok(())
+    });
+    assert!(matches!(projected, Err(RecordError::TooLarge)));
+    assert_eq!(
+        emitted, 0,
+        "over-budget source must emit no ciphertext objects"
+    );
+    // A rejected projection cannot mutate the original live engine.
+    original
+        .handle("", "GET", "multi-a/data/item", &json!({}), 150)?
+        .ok_or("original read remains available")?;
+    Ok(())
+}

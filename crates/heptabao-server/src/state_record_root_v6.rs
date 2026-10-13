@@ -13,7 +13,7 @@ pub(crate) const ENGINE_FORMAT: &str = "heptabao-engines-record-metadata-v6";
 pub(crate) const MAX_KV2_MOUNTS: usize = 128;
 pub(crate) const READER_FORMAT: u32 = 6;
 const MAX_KV1_RECORDS: u64 = 1_048_576;
-const MAX_KV2_RECORDS: u64 = 100_000;
+pub(crate) const MAX_KV2_RECORDS: u64 = 100_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

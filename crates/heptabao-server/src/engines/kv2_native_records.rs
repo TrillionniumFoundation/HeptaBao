@@ -600,12 +600,18 @@ impl EngineState {
     ) -> CodecResult<(EngineState, Vec<crate::state_record_root_v6::Kv2GraphRef>)> {
         check()?;
         let mut opaque = self.clone();
-        let mut roots = Vec::new();
+        // The V6 root enforces aggregate size and record limits. Enforce the
+        // identical bounds BEFORE any object is handed to a caller-owned
+        // encryption/staging visitor. Per-mount limits alone are insufficient:
+        // otherwise earlier mounts can escape before a later root is denied.
+        let mut pending = Vec::new();
+        let mut total_bytes = 0_u64;
+        let mut total_records = 0_u64;
         for (namespace, owner) in &mut opaque.namespaces {
             for (mount, descriptor) in &mut owner.mounts {
                 check()?;
                 if let Backend::Kv2(engine) = &descriptor.backend {
-                    if roots.len() >= crate::state_record_root_v6::MAX_KV2_MOUNTS {
+                    if pending.len() >= crate::state_record_root_v6::MAX_KV2_MOUNTS {
                         return Err(RecordError::TooLarge);
                     }
                     let scope = crate::state_record_root_v6::MountScope {
@@ -614,17 +620,32 @@ impl EngineState {
                         incarnation: descriptor.incarnation,
                     };
                     let graph = NativeCellGraph::encode(engine, parent, scope.borrowed(), check)?;
-                    graph.visit_objects(|object| visit(&scope, object), check)?;
-                    roots.push(crate::state_record_root_v6::Kv2GraphRef {
-                        scope,
-                        graph_format: FORMAT.into(),
-                        root: graph.root(),
-                    });
+                    let root = graph.root();
+                    let reference = root.reference.as_ref().ok_or(RecordError::Corrupt)?;
+                    total_bytes = total_bytes
+                        .checked_add(reference.payload_bytes)
+                        .filter(|bytes| *bytes <= MAX_GRAPH_BYTES as u64)
+                        .ok_or(RecordError::TooLarge)?;
+                    total_records = total_records
+                        .checked_add(reference.record_count)
+                        .filter(|count| *count <= crate::state_record_root_v6::MAX_KV2_RECORDS)
+                        .ok_or(RecordError::TooLarge)?;
+                    pending.push((scope, graph, root));
                     descriptor.backend = Backend::Kv2(Kv2::default());
                     check()?;
                 }
             }
         }
+        let mut roots: Vec<_> = pending
+            .iter()
+            .map(
+                |(scope, _, root)| crate::state_record_root_v6::Kv2GraphRef {
+                    scope: scope.clone(),
+                    graph_format: FORMAT.into(),
+                    root: root.clone(),
+                },
+            )
+            .collect();
         roots.sort_by(|a, b| a.scope.cmp(&b.scope));
         opaque
             .validate_v6_kv2_placeholders(
@@ -634,6 +655,12 @@ impl EngineState {
                     .collect::<Vec<_>>(),
             )
             .map_err(|_| RecordError::Corrupt)?;
+        check()?;
+        // All scopes and aggregate V6 root budgets are now proven. Custody is
+        // independently checked before and after every encrypted-object visit.
+        for (scope, graph, _) in &pending {
+            graph.visit_objects(|object| visit(scope, object), check)?;
+        }
         check()?;
         Ok((opaque, roots))
     }
