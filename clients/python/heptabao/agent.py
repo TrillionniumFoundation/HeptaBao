@@ -200,7 +200,7 @@ class Agent:
         raw = token.encode('ascii') + b'\n'
         self.directory.write('token', raw)
         self._checkpoint('ready', token_sha256=hashlib.sha256(raw).hexdigest(), expires_at=expiry,
-                         ttl=ttl, renew_at=start_wall + ttl / 2)
+                         ttl=ttl, renew_at=start_wall + ttl / 2, token_num_uses=0)
         self._token, self._deadline, self._resumed = token, deadline, False
 
     def step(self) -> str:

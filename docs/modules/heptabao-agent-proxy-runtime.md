@@ -43,6 +43,9 @@ Uncompleted OS connect/DNS work runs in a daemon worker, with at most two such
 workers per process. A fixed 0.25 second write-only cleanup budget may send a
 static 503 response after expiry. It never admits auth, wrapping, caching,
 another upstream operation or a retry. It does not reset the request deadline.
+Deadline transport failures remain outcome-unknown, including GET, which can
+issue credentials or consume a finite token. Bounded socket cancellation is not
+an atomic proof that the clock and an already entered send cannot race.
 
 `cache_enabled` defaults to false. `/agent/v1/cache-clear` and
 `/proxy/v1/cache-clear` return an empty 200 no-op without a cache, including
@@ -60,6 +63,10 @@ token or unavailable upstream cannot authorize cached data. Expiry uses the
 request start time, both wall and monotonic clocks, and the earlier lease/token
 deadline. Hits reduce advertised TTL; token renewal cannot extend an old cache
 record. Memory has entry and byte limits, and no cache is persisted to disk.
+Before the extra lookup, caching requires the actual Agent's independently
+admitted `token_num_uses=0` checkpoint marker. Finite or legacy snapshots lacking
+that marker skip caching and perform a single upstream request. A cache never
+looks up a finite token merely to discover that the lookup consumed a use.
 
 This is an online, bounded lease-response cache. It does not implement OpenBao's
 managed lease renewal, offline cache, cache persistence/import, static-secret

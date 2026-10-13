@@ -4,15 +4,42 @@ import sys
 import time
 import unittest
 from unittest.mock import patch
+from unittest.mock import Mock
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from heptabao.consistency import Metadata
 from heptabao.local_api import LeaseCache
 from heptabao.proxy import RequestHeaderRequired, read_request
 from heptabao.transport import Response
+from heptabao.transport import BaoError
+from heptabao.deadline_transport import DeadlineClient
+from heptabao.proxy import forward
 
 
 class LocalAPIRegressionTests(unittest.TestCase):
+    def test_keyword_client_parameters_and_get_timeout_never_infer_safe_retry(self):
+        with patch('heptabao.deadline_transport.ssl.create_default_context') as context:
+            client=DeadlineClient(address='https://localhost:8200',ca_file='/synthetic/ca',
+                                  token='synthetic',deadline=time.monotonic()-1)
+            context.assert_called_with(cafile='/synthetic/ca')
+            with self.assertRaisesRegex(BaoError,'transport_outcome_unknown'):
+                client.request('GET','/v1/database/creds/reader')
+
+    def test_cache_never_extra_looks_up_finite_or_legacy_token_snapshot(self):
+        policy={'routes':[{'method':'GET','path':'database/creds/reader','effectful':True}],
+                'timeout':1,'cache_enabled':True}
+        config=Mock();config.ca_file='/synthetic/ca';config.state_dir='/synthetic/state'
+        config.address='https://localhost:8200';config.namespace=''
+        for marker in (None,1,True):
+            with self.subTest(marker=marker),patch('heptabao.proxy.read_trusted_ca',return_value=b'synthetic-ca'),\
+                    patch('heptabao.proxy.StateDirectory'),patch('heptabao.proxy.token_snapshot',
+                    return_value=('synthetic-token',{'expires_at':time.time()+10,'token_num_uses':marker})):
+                factory=Mock();factory.return_value.request.return_value=Response(200,{
+                    'renewable':True,'lease_id':'synthetic','lease_duration':2,'data':{}})
+                cache=LeaseCache(policy)
+                forward(policy,config,'GET','database/creds/reader',None,client_factory=factory,cache=cache)
+                factory.return_value.request.assert_called_once_with('GET','/v1/database/creds/reader',None)
+                self.assertEqual(cache.records,{})
     def test_header_guard_precedes_product_header_policy_and_control_json(self):
         first,second=socket.socketpair()
         try:

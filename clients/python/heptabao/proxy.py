@@ -191,7 +191,9 @@ def forward(config,agent_config,method,path,payload,*,client_factory=Client,dead
     metadata=consistency if consistency is not None else Metadata()
     key=None
     accessor=None
-    if cache is not None and cache.enabled:
+    # Check actual Agent admission before an extra lookup could consume a use.
+    # Finite and legacy snapshots skip caching and make one upstream request.
+    if cache is not None and cache.enabled and type(state.get('token_num_uses')) is int and state['token_num_uses']==0:
         # Do not serve a cached response for a remotely revoked token or during
         # an upstream outage. Cached secrets never introduce an offline bypass.
         lookup=client.request('GET','/v1/auth/token/lookup-self')

@@ -88,20 +88,21 @@ class _HTTPSHandler(urllib.request.HTTPSHandler):
 
 
 class DeadlineClient(Client):
-    def __init__(self,*args,deadline=None,trusted_ca_pem=None,**kwargs):
-        super().__init__(*args,trusted_ca_pem=trusted_ca_pem,**kwargs)
+    def __init__(self,address,ca_file,token,namespace='',timeout=15,*,deadline=None,trusted_ca_pem=None):
+        super().__init__(address,ca_file,token,namespace,timeout,trusted_ca_pem=trusted_ca_pem)
         self.deadline=deadline
         if trusted_ca_pem is not None:
             self.context=ssl.create_default_context(cadata=trusted_ca_pem.decode('ascii'))
         else:
-            self.context=ssl.create_default_context(cafile=args[1])
+            self.context=ssl.create_default_context(cafile=ca_file)
         self.context.minimum_version=ssl.TLSVersion.TLSv1_2
 
     def request(self,method,path,payload=None,**kwargs):
         deadline=self.deadline if self.deadline is not None else time.monotonic()+self.timeout
         remaining=deadline-time.monotonic()
-        effectful=method not in ('GET','LIST','HEAD')
-        code='transport_outcome_unknown' if effectful else 'transport_read_failed'
+        # GET can issue credentials or consume a finite token. The verb never
+        # proves that an entered operation can be retried safely.
+        code='transport_outcome_unknown'
         if remaining<=0 or not _WORKERS.acquire(blocking=False):raise BaoError(code)
         owner=_RequestOwner(deadline)
         worker_client=copy.copy(self)
@@ -111,7 +112,8 @@ class DeadlineClient(Client):
         completed=threading.Event();result=[]
         def execute():
             try:result.append((True,Client.request(worker_client,method,path,payload,**kwargs)))
-            except BaoError as error:result.append((False,error))
+            except BaoError as error:
+                result.append((False,BaoError(code) if error.code=='transport_read_failed' else error))
             except Exception:result.append((False,BaoError(code)))
             finally:
                 _WORKERS.release()
