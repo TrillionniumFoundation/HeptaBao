@@ -38,6 +38,18 @@ impl PendingPaths {
         });
         Ok(Some(position))
     }
+    pub(super) fn paths(&self) -> impl Iterator<Item = &str> {
+        self.0.iter().map(|baseline| baseline.path.as_str())
+    }
+    pub(super) fn erase_payloads(&mut self) {
+        for baseline in &mut self.0 {
+            if let Some(entry) = &mut baseline.entry {
+                for version in entry.versions.values_mut() {
+                    version.data = None;
+                }
+            }
+        }
+    }
     pub(super) fn discard(&mut self, captured: Option<usize>) {
         if let Some(position) = captured {
             self.0.remove(position);
@@ -82,6 +94,9 @@ impl NativeGraph {
             .zip(expected_key.expose())
             .fold(0_u8, |difference, (old, new)| difference | (old ^ new));
         if difference != 0 {
+            return Err(RecordError::Invalid);
+        }
+        if self.paged.is_some() {
             return Err(RecordError::Invalid);
         }
         validate_owner(owner)?;

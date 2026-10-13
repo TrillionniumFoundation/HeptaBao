@@ -89,6 +89,8 @@ struct Usage {
     owners: usize,
     kv1: usize,
     kv2: usize,
+    external: usize,
+    paged_scopes: BTreeSet<MountScope>,
 }
 impl Usage {
     fn account(
@@ -100,10 +102,22 @@ impl Usage {
         if self.seen.contains(&(domain.clone(), reference.id)) {
             return Ok(());
         }
-        let (total, limit) = match domain {
-            ObjectDomain::Owner(_) => (&mut self.owners, MAX_STATE_BYTES + 16 * 1024),
-            ObjectDomain::Kv1 => (&mut self.kv1, crate::state_records::MAX_GRAPH_BYTES),
-            ObjectDomain::Kv2(_) => (&mut self.kv2, crate::state_records::MAX_GRAPH_BYTES),
+        let external = matches!(domain, ObjectDomain::Kv2(scope) if self.paged_scopes.contains(scope))
+            && reference.kind == crate::state_records::ObjectKind::Block;
+        let (total, limit) = if external {
+            (
+                &mut self.external,
+                crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES as usize
+                    + 25 * (crate::state_record_root_v6::MAX_KV2_RECORDS as usize
+                        + (crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES as usize)
+                            .div_ceil(crate::state_records::BLOCK_BYTES)),
+            )
+        } else {
+            match domain {
+                ObjectDomain::Owner(_) => (&mut self.owners, MAX_STATE_BYTES + 16 * 1024),
+                ObjectDomain::Kv1 => (&mut self.kv1, crate::state_records::MAX_GRAPH_BYTES),
+                ObjectDomain::Kv2(_) => (&mut self.kv2, crate::state_records::MAX_GRAPH_BYTES),
+            }
         };
         *total = total
             .checked_add(bytes)
@@ -182,8 +196,31 @@ fn materialize(
     context: ReadContext<'_>,
     source: &impl ObjectSource,
 ) -> Result<ReadState, ReadError> {
+    materialize_mode(root, context, source, true)
+}
+
+// Metadata-only opening is private to an already admitted live instance. It
+// authenticates every typed metadata object but does not claim full payload
+// closure. The caller must verify incremental descriptors against its actual
+// previously admitted view before this state can be installed.
+fn materialize_mode(
+    root: &RecordStateRootV6,
+    context: ReadContext<'_>,
+    source: &impl ObjectSource,
+    full_payloads: bool,
+) -> Result<ReadState, ReadError> {
     validate_frontier(root, context)?;
-    let usage = RefCell::new(Usage::default());
+    let usage = RefCell::new(Usage {
+        paged_scopes: root
+            .kv2
+            .iter()
+            .filter(|graph| {
+                graph.graph_format == crate::engines::kv2_native_records::PAGED_NATIVE_FORMAT
+            })
+            .map(|graph| graph.scope.clone())
+            .collect(),
+        ..Usage::default()
+    });
     let owners = (0..5)
         .map(|index| owner_bytes(root, index, source, &usage))
         .collect::<Result<Vec<_>, _>>()?;
@@ -245,8 +282,24 @@ fn materialize(
             domain: ObjectDomain::Kv2(graph.scope.clone()),
             usage: &usage,
         };
-        let view =
-            NativeReadView::open(&parent, graph.scope.borrowed(), graph.root.clone(), &reader)?;
+        let view = if graph.graph_format == crate::engines::kv2_native_records::PAGED_NATIVE_FORMAT
+        {
+            let view = NativeReadView::open_paged(
+                &parent,
+                graph.scope.borrowed(),
+                graph.root.clone(),
+                &reader,
+            )?;
+            if full_payloads {
+                view.verify_paged_payloads(&reader, &|| Ok(()))?;
+            }
+            if view.logical_payload_bytes()? != graph.logical_payload_bytes {
+                return Err(ReadError::Authentication);
+            }
+            view
+        } else {
+            NativeReadView::open(&parent, graph.scope.borrowed(), graph.root.clone(), &reader)?
+        };
         if view.has_lossless_state()
             && (!state.engines.has_kv2_lossless_state()
                 || root.state_schema < KV2_LOSSLESS_STATE_SCHEMA)
@@ -256,7 +309,7 @@ fn materialize(
         native.insert(graph.scope.clone(), view);
     }
     let usage = usage.into_inner();
-    if source
+    if full_payloads && source
         .object_count()
         .is_some_and(|count| count != usage.seen.len())
     {
@@ -266,7 +319,7 @@ fn materialize(
         protected: state,
         native,
         objects: usage.seen.len(),
-        bytes: usage.owners + usage.kv1 + usage.kv2,
+        bytes: usage.owners + usage.kv1 + usage.kv2 + usage.external,
     })
 }
 
@@ -343,6 +396,7 @@ pub(super) struct NativeRootMigrationPlan {
 struct NativeMigrationObjects<'a> {
     objects: &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
     deadline: crate::v6_native_custody::OriginalDeadline,
+    fallback: Option<&'a dyn ObjectSource>,
 }
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl ObjectSource for NativeMigrationObjects<'_> {
@@ -352,10 +406,12 @@ impl ObjectSource for NativeMigrationObjects<'_> {
         reference: &ObjectRef,
     ) -> Result<Zeroizing<Vec<u8>>, RecordError> {
         self.deadline.check().map_err(|_| RecordError::Invalid)?;
-        let object = self
-            .objects
-            .get(&(domain.clone(), reference.id))
-            .ok_or(RecordError::Missing)?;
+        let Some(object) = self.objects.get(&(domain.clone(), reference.id)) else {
+            return self
+                .fallback
+                .ok_or(RecordError::Missing)?
+                .read(domain, reference);
+        };
         if object.reference() != reference {
             return Err(RecordError::Corrupt);
         }
@@ -364,7 +420,11 @@ impl ObjectSource for NativeMigrationObjects<'_> {
         Ok(bytes)
     }
     fn object_count(&self) -> Option<usize> {
-        Some(self.objects.len())
+        if self.fallback.is_some() {
+            None
+        } else {
+            Some(self.objects.len())
+        }
     }
 }
 
@@ -373,7 +433,10 @@ impl ObjectSource for NativeMigrationObjects<'_> {
 // or the native KV2 reader. Reopen everything *before* a writer can receive
 // the immutable migration candidate, including on the initial V5->V6 move.
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
-fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result<(), ReadError> {
+fn validate_native_root_migration_plan(
+    plan: &NativeRootMigrationPlan,
+    fallback: Option<&dyn ObjectSource>,
+) -> Result<(), ReadError> {
     plan.deadline.check().map_err(|_| ReadError::Invalid)?;
     if plan.root.encode()?.as_slice() != plan.bytes.as_slice() {
         return Err(ReadError::Authentication);
@@ -395,6 +458,7 @@ fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result
         &NativeMigrationObjects {
             objects: &plan.objects,
             deadline: plan.deadline,
+            fallback,
         },
     )?;
     plan.deadline.check().map_err(|_| ReadError::Invalid)?;
@@ -406,6 +470,22 @@ impl Service {
     pub(super) fn prepare_native_root_migration(
         &mut self,
         check: &impl Fn() -> Result<(), RecordError>,
+    ) -> Result<NativeRootMigrationPlan, Response> {
+        self.prepare_native_root_migration_mode(check, false)
+    }
+
+    #[cfg(feature = "fixture-native-v6-service")]
+    pub(super) fn prepare_native_root_migration_paged(
+        &mut self,
+        check: &impl Fn() -> Result<(), RecordError>,
+    ) -> Result<NativeRootMigrationPlan, Response> {
+        self.prepare_native_root_migration_mode(check, true)
+    }
+
+    fn prepare_native_root_migration_mode(
+        &mut self,
+        check: &impl Fn() -> Result<(), RecordError>,
+        paged: bool,
     ) -> Result<NativeRootMigrationPlan, Response> {
         let rejected = || Response::error(503, "native migration source or custody rejected");
         // Capture the real original request before any projection work. A caller's
@@ -526,7 +606,7 @@ impl Service {
             reader_floor: ReaderFloor {
                 record_format: 6,
                 minimum_state_schema: candidate.schema,
-                native_kv2_format: 1,
+                native_kv2_format: if paged { 2 } else { 1 },
             },
             global_lossless_json_format: candidate.global_lossless_json_format,
             cluster_id: candidate.cluster_id.clone(),
@@ -576,11 +656,15 @@ impl Service {
             })
             .map_err(|_| rejected())?;
         let parent = root.kv2_parent_key().map_err(|_| rejected())?;
-        let (opaque, graphs) = recorded
-            .project_v6_native(&parent, &check, |scope, object| {
-                stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
-            })
-            .map_err(|_| rejected())?;
+        let mut visit = |scope: &MountScope, object: &Arc<crate::state_records::StagedObject>| {
+            stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
+        };
+        let (opaque, graphs) = if paged {
+            recorded.project_v6_native_paged(&parent, &check, &mut visit)
+        } else {
+            recorded.project_v6_native(&parent, &check, &mut visit)
+        }
+        .map_err(|_| rejected())?;
         root.kv2 = graphs;
         let metadata = EngineMetadata {
             format: ENGINE_FORMAT.into(),
@@ -651,7 +735,7 @@ impl Service {
         };
         // A prepared plan is not allowed to leave Service unless the *real*
         // V6 reader authenticates the complete staged object closure.
-        validate_native_root_migration_plan(&plan).map_err(|_| rejected())?;
+        validate_native_root_migration_plan(&plan, None).map_err(|_| rejected())?;
         check().map_err(|_| rejected())?;
         Ok(plan)
     }
@@ -770,6 +854,7 @@ impl Service {
             &NativeMigrationObjects {
                 objects: &plan.objects,
                 deadline,
+                fallback: None,
             },
         )
         .map_err(|_| rejected())?;
@@ -999,10 +1084,105 @@ pub(super) fn materialize_for_service(
 }
 
 #[cfg(feature = "fixture-native-v6-service")]
+pub(super) fn materialize_metadata_for_service(
+    root: &RecordStateRootV6,
+    context: ReadContext<'_>,
+    source: &impl ObjectSource,
+) -> Result<(State, BTreeMap<MountScope, NativeReadView>), ReadError> {
+    let read = materialize_mode(root, context, source, false)?;
+    Ok((read.protected, read.native))
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
+fn verify_incremental_views(
+    plan: &NativeRootMigrationPlan,
+    native: &BTreeMap<MountScope, NativeReadView>,
+    prior: &State,
+) -> Result<(), ReadError> {
+    struct StagedOnly<'a> {
+        plan: &'a NativeRootMigrationPlan,
+        scope: &'a MountScope,
+    }
+    impl RecordReader for StagedOnly<'_> {
+        fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>, RecordError> {
+            self.plan.deadline.check().map_err(|_| RecordError::Invalid)?;
+            let object = self.plan.objects
+                .get(&(ObjectDomain::Kv2(self.scope.clone()), reference.id))
+                .ok_or(RecordError::Missing)?;
+            if object.reference() != reference {
+                return Err(RecordError::Corrupt);
+            }
+            Ok(Zeroizing::new(object.bytes().to_vec()))
+        }
+    }
+    for (scope, view) in native {
+        if view.is_paged() {
+            let reader = StagedOnly { plan, scope };
+            let prior = prior.engines.native_paged_view(scope);
+            view.verify_paged_transition(prior, &reader, &|| {
+                plan.deadline.check().map_err(|_| RecordError::Invalid)
+            })?;
+        }
+    }
+    plan.deadline.check().map_err(|_| ReadError::Invalid)
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
+fn validate_native_live_plan(
+    plan: &NativeRootMigrationPlan,
+    fallback: Option<&dyn ObjectSource>,
+    prior: &State,
+) -> Result<(), ReadError> {
+    plan.deadline.check().map_err(|_| ReadError::Invalid)?;
+    if plan.root.encode()?.as_slice() != plan.bytes.as_slice() {
+        return Err(ReadError::Authentication);
+    }
+    let crate::state_record_root::StateIdentity::RecordsV6(identity) = plan.root.identity()? else {
+        return Err(ReadError::Authentication);
+    };
+    let context = ReadContext {
+        expected_identity: crate::v6_read_validation::ReadIdentity::RecordsV6(identity),
+        cluster_id: &plan.root.cluster_id,
+        replay_epoch: plan.root.replay_epoch,
+        minimum_state_schema: plan.root.state_schema,
+        maximum_state_schema: plan.root.state_schema,
+        reader_format: crate::state_record_root_v6::READER_FORMAT,
+    };
+    let read = materialize_mode(&plan.root, context, &NativeMigrationObjects {
+        objects: &plan.objects, deadline: plan.deadline, fallback,
+    }, false)?;
+    verify_incremental_views(plan, &read.native, prior)
+}
+
+#[cfg(feature = "fixture-native-v6-service")]
 impl Service {
     pub(super) fn prepare_native_live_root(
         &mut self,
         candidate: &State,
+    ) -> Result<NativeRootMigrationPlan, Response> {
+        let mut authority = self.pending_ordinary_kv_authority.take();
+        let token_authority = self.pending_token_api_authority.take();
+        let nonce = self.unseal_nonce.clone();
+        let result = if let Some(authority) = authority.as_mut() {
+            self.prepare_native_live_root_checked(candidate, &mut |auth| {
+                authority.check(candidate, auth, &nonce)
+            })
+        } else if let Some(authority) = token_authority.as_ref() {
+            self.prepare_native_live_root_checked(candidate, &mut |auth| {
+                authority.check_token_api_candidate(candidate, auth, &nonce)
+            })
+        } else {
+            Err(Response::error(503, "native preparation requires original request authority"))
+        };
+        self.pending_ordinary_kv_authority = authority;
+        self.pending_token_api_authority = token_authority;
+        result
+    }
+
+    pub(super) fn prepare_native_live_root_checked(
+        &mut self,
+        candidate: &State,
+        original_gate: &mut impl FnMut(&AuthState) -> Result<(), Response>,
     ) -> Result<NativeRootMigrationPlan, Response> {
         let rejected = || Response::error(503, "native live candidate custody rejected");
         let deadline =
@@ -1012,7 +1192,11 @@ impl Service {
         self.require_native_root_candidate(candidate)?;
         candidate.validate_publication_schema(self.state.as_ref())?;
         candidate.validate_format()?;
-        let proof = self.capture_native_unseal_proof()?.ok_or_else(rejected)?;
+        let actual_auth = self.state.as_ref().ok_or_else(rejected)?.auth.clone();
+        original_gate(&actual_auth)?;
+        let proof = self
+            .capture_native_request_proof(&mut || original_gate(&actual_auth))?
+            .ok_or_else(rejected)?;
         proof.check_warm(self)?;
         let mut candidate = candidate.clone();
         let mut root = self.native_root.as_ref().ok_or_else(rejected)?.clone();
@@ -1077,11 +1261,15 @@ impl Service {
             })
             .map_err(|_| rejected())?;
         let parent = root.kv2_parent_key().map_err(|_| rejected())?;
-        let (opaque, graphs) = recorded
-            .project_v6_native(&parent, &check, |scope, object| {
-                stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
-            })
-            .map_err(|_| rejected())?;
+        let mut visit = |scope: &MountScope, object: &Arc<crate::state_records::StagedObject>| {
+            stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
+        };
+        let (opaque, graphs) = if root.reader_floor.native_kv2_format == 2 {
+            recorded.project_v6_native_paged(&parent, &check, &mut visit)
+        } else {
+            recorded.project_v6_native(&parent, &check, &mut visit)
+        }
+        .map_err(|_| rejected())?;
         root.kv2 = graphs;
         let metadata = EngineMetadata {
             format: ENGINE_FORMAT.into(),
@@ -1147,13 +1335,23 @@ impl Service {
                 },
             ],
         };
-        validate_native_root_migration_plan(&plan).map_err(|_| rejected())?;
+        let source = super::native_blob_source::NativeSource::new_checked(
+            durable,
+            deadline,
+            || original_gate(&actual_auth).map_err(|_| ServiceError::BarrierFailure),
+        )
+        .map_err(|_| rejected())?;
+        validate_native_live_plan(&plan, Some(&source), self.state.as_ref().ok_or_else(rejected)?)
+            .map_err(|_| rejected())?;
+        drop(source);
         check().map_err(|_| rejected())?;
         Ok(plan)
     }
 
     pub(super) fn install_prepared_native_candidate(
+        &mut self,
         plan: &NativeRootMigrationPlan,
+        original_gate: &mut impl FnMut(&AuthState) -> Result<(), Response>,
     ) -> Result<State, Response> {
         let rejected = || Response::error(503, "native staged candidate installation rejected");
         plan.deadline.check().map_err(|_| rejected())?;
@@ -1170,15 +1368,26 @@ impl Service {
             maximum_state_schema: plan.root.state_schema,
             reader_format: crate::state_record_root_v6::READER_FORMAT,
         };
-        let (mut metadata, native) = materialize_for_service(
+        let durable = self.durable.as_mut().ok_or_else(rejected)?;
+        let current = self.state.as_ref().ok_or_else(rejected)?;
+        let actual_auth = current.auth.clone();
+        original_gate(&actual_auth)?;
+        let source = super::native_blob_source::NativeSource::new_checked(
+            durable, plan.deadline,
+            || original_gate(&actual_auth).map_err(|_| ServiceError::BarrierFailure),
+        ).map_err(|_| rejected())?;
+        let (mut metadata, native) = materialize_metadata_for_service(
             &plan.root,
             context,
             &NativeMigrationObjects {
                 objects: &plan.objects,
                 deadline: plan.deadline,
+                fallback: Some(&source),
             },
         )
         .map_err(|_| rejected())?;
+        verify_incremental_views(plan, &native, current).map_err(|_| rejected())?;
+        drop(source);
         metadata
             .engines
             .install_native_views(native)
@@ -1203,8 +1412,9 @@ impl Service {
 #[cfg(feature = "fixture-native-v6-service")]
 pub(super) fn verify_durable_native_candidate(
     root: &RecordStateRootV6,
-    durable: &DurableService<AeadBarrier>,
+    durable: &mut DurableService<AeadBarrier>,
     deadline: crate::v6_native_custody::OriginalDeadline,
+    gate: &mut impl FnMut() -> Result<(), ServiceError>,
 ) -> Result<(), ReadError> {
     deadline.check().map_err(|_| ReadError::Invalid)?;
     let crate::state_record_root::StateIdentity::RecordsV6(identity) = root.identity()? else {
@@ -1218,7 +1428,9 @@ pub(super) fn verify_durable_native_candidate(
         maximum_state_schema: root.state_schema,
         reader_format: crate::state_record_root_v6::READER_FORMAT,
     };
-    let _ = materialize(root, context, &NativeDurableSource { durable, deadline })?;
+    let source = super::native_blob_source::NativeSource::new_checked(durable, deadline, gate)?;
+    let _ = materialize_mode(root, context, &source, false)?;
+    drop(source);
     deadline.check().map_err(|_| ReadError::Invalid)?;
     Ok(())
 }

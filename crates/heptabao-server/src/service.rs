@@ -365,6 +365,12 @@ pub(crate) use owner_store::OwnerPublicationBinding;
 #[cfg(test)]
 pub(crate) use owner_store::OwnerWritePlan;
 #[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_blob_source.rs"]
+mod native_blob_source;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_paged_dispatch.rs"]
+mod native_paged_dispatch;
+#[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_v6_reader.rs"]
 mod native_v6_reader;
 #[cfg(feature = "fixture-native-v6-service")]
@@ -1454,6 +1460,8 @@ pub struct Service {
     #[cfg(feature = "fixture-native-v6-service")]
     native_root: Option<crate::state_record_root_v6::RecordStateRootV6>,
     #[cfg(feature = "fixture-native-v6-service")]
+    native_payload_observations: Arc<native_blob_source::PayloadObservations>,
+    #[cfg(feature = "fixture-native-v6-service")]
     native_candidate_profile: Option<native_v6_reader::NativeCandidateProfile>,
     #[cfg(feature = "fixture-native-v6-service")]
     native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
@@ -1895,6 +1903,8 @@ impl Service {
             record_root: None,
             #[cfg(feature = "fixture-native-v6-service")]
             native_root: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_payload_observations: Arc::new(native_blob_source::PayloadObservations::default()),
             #[cfg(feature = "fixture-native-v6-service")]
             native_candidate_profile: None,
             #[cfg(feature = "fixture-native-v6-service")]
@@ -4324,7 +4334,7 @@ impl Service {
             .filter(|ttl| *ttl > 0)
             .map(|_| admitted.clone());
         let mut transaction = admitted;
-        let ordinary_kv_authority = if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+        let mut ordinary_kv_authority = if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
             && transaction
                 .engines
                 .ordinary_kv_mount_binding(namespace, path)
@@ -4407,7 +4417,32 @@ impl Service {
             } else {
                 Response::error(403, "missing client token")
             }
-        } else if let Some(authority) = ordinary_kv_authority.as_ref() {
+        } else if let Some(authority) = ordinary_kv_authority.as_mut() {
+            #[cfg(feature = "fixture-native-v6-service")]
+            if self.native_root.is_some()
+                && transaction
+                    .engines
+                    .has_paged_native_request(namespace, path)
+            {
+                self.dispatch_native_paged_request(&mut transaction, authority, &request)
+            } else {
+                Self::dispatch_authorized_subrequest(
+                    &mut transaction,
+                    Some(authority.principal()),
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    token_fields.as_ref(),
+                    pki_role_fields.as_ref(),
+                    now,
+                    request.token_clock,
+                    client_certificates,
+                    origin_peer,
+                    &mut approle_secret_consumption,
+                )
+            }
+            #[cfg(not(feature = "fixture-native-v6-service"))]
             Self::dispatch_authorized_subrequest(
                 &mut transaction,
                 Some(authority.principal()),
@@ -4897,6 +4932,98 @@ impl Service {
             Ok(authority) => authority,
             Err(error) => return Some(error),
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let mut authority = authority;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let result = if self.native_root.is_some()
+            && state
+                .engines
+                .has_paged_native_request(request.namespace, request.path)
+        {
+            let deadline = match crate::v6_native_custody::OriginalDeadline::capture() {
+                Ok(deadline) => deadline,
+                Err(_) => {
+                    return Some(Response::error(
+                        503,
+                        "native point original deadline unavailable",
+                    ));
+                }
+            };
+            let at = match Self::kv2_request_timestamp(time) {
+                Ok(at) => at,
+                Err(error) => return Some(error),
+            };
+            let expected = match self
+                .native_root
+                .as_ref()
+                .and_then(|root| root.encode().ok())
+            {
+                Some(root) => root,
+                None => return Some(Response::error(503, "native point root unavailable")),
+            };
+            let observations = Arc::clone(&self.native_payload_observations);
+            let durable = match self.durable.as_mut() {
+                Some(durable) => durable,
+                None => return Some(Response::error(503, "native point source unavailable")),
+            };
+            if durable
+                .get("system", "state")
+                .ok()
+                .flatten()
+                .is_none_or(|root| root.expose() != expected.as_slice())
+            {
+                return Some(Response::error(503, "native point source root changed"));
+            }
+            let nonce = self.unseal_nonce.clone();
+            let source =
+                match native_blob_source::NativeSource::new_checked(durable, deadline, || {
+                    authority
+                        .check(state, &state.auth, &nonce)
+                        .map_err(|_| ServiceError::BarrierFailure)
+                }) {
+                    Ok(source) => source.with_observations(observations),
+                    Err(_) => {
+                        return Some(Response::error(503, "native point source custody rejected"));
+                    }
+                };
+            use crate::v6_read_validation::ObjectSource;
+            let result = state.engines.read_native_paged(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                at,
+                |scope, reference| {
+                    source.read(
+                        &crate::state_record_root_v6::ObjectDomain::Kv2(scope.clone()),
+                        reference,
+                    )
+                },
+            );
+            drop(source);
+            if let Err(error) = authority.check(state, &state.auth, &nonce) {
+                return Some(error);
+            }
+            result
+        } else {
+            match time.exact() {
+                Some(at) => state.engines.handle_immutable_kv_read_precise(
+                    request.namespace,
+                    request.method,
+                    request.path,
+                    request.body,
+                    at,
+                ),
+                None => state.engines.handle_immutable_kv_read(
+                    request.namespace,
+                    request.method,
+                    request.path,
+                    request.body,
+                    time.seconds(),
+                ),
+            }
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
         let result = match time.exact() {
             Some(at) => state.engines.handle_immutable_kv_read_precise(
                 request.namespace,
@@ -7932,7 +8059,13 @@ impl Service {
         };
         #[cfg(feature = "fixture-native-v6-service")]
         let state_limit = if native.is_some() {
-            MAX_STATE_BYTES + 2 * crate::state_records::MAX_GRAPH_BYTES
+            MAX_STATE_BYTES
+                + 2 * crate::state_records::MAX_GRAPH_BYTES
+                + native
+                    .filter(|root| root.reader_floor.native_kv2_format == 2)
+                    .map_or(0, |_| {
+                        crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES as usize
+                    })
         } else if self.record_root.is_some() {
             MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
         } else {
@@ -7944,13 +8077,44 @@ impl Service {
         } else {
             MAX_STATE_BYTES
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let logical_payload_bytes = if let Some(root) = native {
+            let owner = root
+                .owners
+                .iter()
+                .try_fold(0_u64, |n, role| n.checked_add(role.owner.total_bytes));
+            let metadata = root.kv2.iter().try_fold(
+                root.kv1.reference.as_ref().map_or(0, |r| r.payload_bytes),
+                |n, graph| {
+                    n.checked_add(graph.root.reference.as_ref().map_or(0, |r| r.payload_bytes))
+                },
+            );
+            let payload = root
+                .kv2
+                .iter()
+                .try_fold(0_u64, |n, graph| n.checked_add(graph.logical_payload_bytes));
+            match owner
+                .zip(metadata)
+                .zip(payload)
+                .and_then(|((owner, metadata), payload)| {
+                    owner.checked_add(metadata)?.checked_add(payload)
+                }) {
+                Some(bytes) => bytes,
+                None => return Response::error(503, "native typed logical capacity overflow"),
+            }
+        } else {
+            capacity.logical_payload_bytes as u64
+        };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let logical_payload_bytes = capacity.logical_payload_bytes as u64;
         Response::ok(json!({"data": {
             "scope": "local_node_bounded_runtime",
             "state_storage_format": storage_format,
             "state_limit_bytes": state_limit,
             "state_limit_is_admission_budget": false,
             "durable_artifact_limit_bytes": capacity.max_file_bytes,
-            "stored_value_bytes": capacity.logical_payload_bytes,
+            "stored_value_bytes": logical_payload_bytes,
+            "durable_stored_record_bytes": capacity.logical_payload_bytes,
             "generation": capacity.generation,
             "journal_bytes": capacity.journal_bytes,
             "journal_limit_bytes": capacity.journal_limit_bytes,

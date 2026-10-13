@@ -146,6 +146,12 @@ impl StagedObject {
     pub(crate) fn bytes(&self) -> &[u8] {
         &self.bytes
     }
+    pub(crate) fn payload_block(key: &AddressKey, bytes: &[u8]) -> Result<Arc<Self>> {
+        if bytes.is_empty() || bytes.len() > BLOCK_BYTES {
+            return Err(RecordError::TooLarge);
+        }
+        codec::block(key, ObjectKind::Block, bytes)
+    }
     pub(crate) fn owner_chunk(key: &AddressKey, bytes: &[u8]) -> Result<Arc<Self>> {
         codec::block(key, ObjectKind::OwnerChunk, bytes)
     }

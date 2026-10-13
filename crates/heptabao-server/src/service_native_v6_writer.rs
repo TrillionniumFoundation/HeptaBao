@@ -220,7 +220,7 @@ impl Service {
             return rejected();
         }
         let plan = match self
-            .prepare_native_root_migration(&|| deadline.check().map_err(|_| RecordError::Invalid))
+            .prepare_native_root_migration_paged(&|| deadline.check().map_err(|_| RecordError::Invalid))
         {
             Ok(plan) => plan,
             Err(error) => return error,
@@ -282,10 +282,11 @@ impl Service {
                 "native opaque owner capacity exhausted",
             ));
         }
-        let installed = Self::install_prepared_native_candidate(&plan)?;
+        let actual_auth = self.state.as_ref().ok_or_else(rejected)?.auth.clone();
+        before_publish(&actual_auth)?;
+        let installed = self.install_prepared_native_candidate(&plan, before_publish)?;
         self.require_native_root_candidate(&installed)?;
         let identity = plan.root.identity().map_err(|_| rejected())?;
-        let actual_auth = self.state.as_ref().ok_or_else(rejected)?.auth.clone();
         before_publish(&actual_auth)?;
         let durable = self.durable.as_mut().ok_or_else(rejected)?;
         durable.verify_live_ownership().map_err(|_| rejected())?;
@@ -378,47 +379,38 @@ impl Service {
             };
             (|| -> Result<(), ServiceError> {
                 let mut missing = Vec::new();
+                let blob_session = super::native_blob_source::session(durable, current.expose())?;
                 for ((domain, _), object) in &plan.objects {
-                    check().map_err(|_| ServiceError::BarrierFailure)?;
-                    let resource = v6_records::native_resource(domain, object.reference());
-                    let existing = durable.get("system", &resource)?;
-                    check().map_err(|_| ServiceError::BarrierFailure)?;
-                    match existing {
-                        Some(value) if value.expose() == object.bytes() => {}
-                        Some(_) => return Err(ServiceError::CorruptState),
-                        None => missing.push((resource, Arc::clone(object))),
-                    }
-                }
-                for (number, chunk) in missing
-                    .chunks(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
-                    .enumerate()
-                {
                     gate()?;
-                    let mutations = chunk
-                        .iter()
-                        .map(|(resource, object)| {
-                            Ok((
-                                resource.clone(),
-                                Some(Secret::new(object.bytes().to_vec())?),
-                            ))
-                        })
-                        .collect::<Result<Vec<_>, ServiceError>>()?;
-                    durable.apply_batch_conditionally_before_publish(
-                        heptabao_durable_service::BatchPublication {
-                            replay_epoch: plan.root.replay_epoch,
-                            principal: "heptabao-server".into(),
-                            namespace: "system".into(),
-                            request_id: format!("{operation}-objects-{number}"),
-                            authorization_digest: identity.digest(),
-                            mutations,
-                        },
-                        conditions_copy(&conditions),
+                    let resource = v6_records::native_resource(domain, object.reference());
+                    let marker = super::native_blob_source::stage(
+                        durable,
+                        &blob_session,
+                        domain,
+                        object,
                         &mut gate,
                     )?;
                     gate()?;
+                    match durable.get("system", &resource)? {
+                        Some(value) if value.expose() == marker.expose() => {}
+                        Some(value) if migration && value.expose() == object.bytes() => {
+                            missing.push((resource, marker))
+                        }
+                        Some(_) => return Err(ServiceError::CorruptState),
+                        None => missing.push((resource, marker)),
+                    }
                 }
-                v6_records::verify_durable_native_candidate(&plan.root, durable, deadline)
-                    .map_err(|_| ServiceError::CorruptState)?;
+                // All ciphertext was read back under the original source session.
+                // Locator metadata and the active root/cursor share ONE atomic Apply.
+                // A known stage failure cannot advance generation under an old cursor.
+                let root_slots = if migration { 3 } else { 2 };
+                if missing
+                    .len()
+                    .checked_add(root_slots)
+                    .is_none_or(|count| count > heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
+                {
+                    return Err(ServiceError::RequestCapacityExhausted);
+                }
                 gate()?;
                 let publication_generation = durable
                     .generation()
@@ -435,13 +427,17 @@ impl Service {
                 }
                 .map_err(|_| ServiceError::CorruptState)?;
                 let cursor_bytes = cursor.encode().map_err(|_| ServiceError::CorruptState)?;
-                let mut mutations = vec![
+                let mut mutations = missing
+                    .into_iter()
+                    .map(|(resource, marker)| (resource, Some(marker)))
+                    .collect::<Vec<_>>();
+                mutations.extend(vec![
                     ("state".into(), Some(Secret::new(plan.bytes.to_vec())?)),
                     (
                         ACTIVE_CURSOR_RESOURCE.into(),
                         Some(Secret::new(cursor_bytes.to_vec())?),
                     ),
-                ];
+                ]);
                 if migration {
                     mutations.push((
                         ACTIVE_SOURCE_ROOT_RESOURCE.into(),
@@ -506,7 +502,7 @@ impl Service {
                 if observed_source.expose() != retained_source.as_slice() {
                     return Err(ServiceError::CorruptState);
                 }
-                v6_records::verify_durable_native_candidate(&committed, durable, deadline)
+                v6_records::verify_durable_native_candidate(&committed, durable, deadline, &mut gate)
                     .map_err(|_| ServiceError::CorruptState)?;
                 gate()?;
                 Ok(())
@@ -621,14 +617,16 @@ impl Service {
             .engines
             .validate_native_roots(&parent, &root.kv2, &check)
             .map_err(|_| rejected())?;
-        let (actual, _) = candidate
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
-        let (expected, _) = source
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
+        let (actual, _) = if root.reader_floor.native_kv2_format == 2 {
+            candidate.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+        } else {
+            candidate.engines.project_v6_native(&parent, &check, |_, _| check())
+        }.map_err(|_| rejected())?;
+        let (expected, _) = if root.reader_floor.native_kv2_format == 2 {
+            source.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+        } else {
+            source.engines.project_v6_native(&parent, &check, |_, _| check())
+        }.map_err(|_| rejected())?;
         live()?;
         if owner_store::serialize_owner(&actual)
             .map_err(|_| rejected())?
@@ -656,9 +654,7 @@ impl Service {
         }
         live()?;
         let candidate_auth_owner = candidate.auth.clone();
-        let plan = self.prepare_native_live_root(candidate)?;
-        let installed =
-            self.commit_native_root_plan(candidate, plan, false, "auth-use", &mut |auth| {
+        let mut original_gate = |auth: &AuthState| {
                 live()?;
                 if !principal.consumed_use()
                     || request.token_clock.is_none()
@@ -678,7 +674,12 @@ impl Service {
                 )
                 .map_err(|error| Response::error(error.status, &error.message))?;
                 live()
-            })?;
+
+        };
+        let plan = self.prepare_native_live_root_checked(candidate, &mut original_gate)?;
+        let installed = self.commit_native_root_plan(
+            candidate, plan, false, "auth-use", &mut original_gate,
+        )?;
         *candidate = installed;
         Ok(())
     }
@@ -779,14 +780,16 @@ impl Service {
             .engines
             .validate_native_roots(&parent, &root.kv2, &check)
             .map_err(|_| rejected())?;
-        let (actual_meta, _) = candidate
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
-        let (expected_meta, _) = expected
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
+        let (actual_meta, _) = if root.reader_floor.native_kv2_format == 2 {
+            candidate.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+        } else {
+            candidate.engines.project_v6_native(&parent, &check, |_, _| check())
+        }.map_err(|_| rejected())?;
+        let (expected_meta, _) = if root.reader_floor.native_kv2_format == 2 {
+            expected.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+        } else {
+            expected.engines.project_v6_native(&parent, &check, |_, _| check())
+        }.map_err(|_| rejected())?;
         live()?;
         if owner_store::serialize_owner(&actual_meta)
             .map_err(|_| rejected())?
@@ -800,13 +803,7 @@ impl Service {
         live()?;
         let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
         let expected_auth = owner_store::serialize_owner(&expected.auth).map_err(|_| rejected())?;
-        let plan = self.prepare_native_live_root(candidate)?;
-        let installed = self.commit_native_root_plan(
-            candidate,
-            plan,
-            false,
-            "clock-observation",
-            &mut |auth| {
+        let mut original_gate = |auth: &AuthState| {
                 live()?;
                 if owner_store::serialize_owner(auth)
                     .map_err(|_| rejected())?
@@ -827,7 +824,11 @@ impl Service {
                     return Err(rejected());
                 }
                 live()
-            },
+
+        };
+        let plan = self.prepare_native_live_root_checked(candidate, &mut original_gate)?;
+        let installed = self.commit_native_root_plan(
+            candidate, plan, false, "clock-observation", &mut original_gate,
         )?;
         *candidate = installed;
         Ok(())
@@ -1596,6 +1597,46 @@ mod tests {
     impl heptabao_durable_service::DurableBackend for LostApplyAck {
         fn verify(&self) -> Result<(), heptabao_durable_service::BackendError> {
             self.inner.verify()
+        }
+        fn immutable_blob_profile(
+            &self,
+        ) -> Result<
+            heptabao_durable_service::ImmutableBlobProfile,
+            heptabao_durable_service::BackendError,
+        > {
+            self.inner.immutable_blob_profile()
+        }
+        fn stage_immutable_ciphertext(
+            &mut self,
+            locator: heptabao_durable_service::BlobLocator,
+            ciphertext: &[u8],
+        ) -> Result<
+            heptabao_durable_service::ImmutableBlobStage,
+            heptabao_durable_service::BackendError,
+        > {
+            self.inner.stage_immutable_ciphertext(locator, ciphertext)
+        }
+        fn stage_immutable_ciphertext_checked(
+            &mut self,
+            locator: heptabao_durable_service::BlobLocator,
+            ciphertext: &[u8],
+            gate: &mut dyn FnMut() -> Result<(), heptabao_durable_service::BackendError>,
+        ) -> Result<
+            heptabao_durable_service::ImmutableBlobStage,
+            heptabao_durable_service::BackendError,
+        > {
+            self.inner
+                .stage_immutable_ciphertext_checked(locator, ciphertext, gate)
+        }
+        fn pin_immutable_ciphertext(
+            &self,
+            locator: heptabao_durable_service::BlobLocator,
+            exact_len: usize,
+        ) -> Result<
+            heptabao_durable_service::ImmutableBlobReadPin,
+            heptabao_durable_service::BackendError,
+        > {
+            self.inner.pin_immutable_ciphertext(locator, exact_len)
         }
         fn verify_live_ownership(&mut self) -> Result<(), heptabao_durable_service::BackendError> {
             self.inner.verify_live_ownership()

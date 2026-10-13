@@ -100,7 +100,10 @@ impl EngineState {
                             incarnation: descriptor.incarnation,
                         };
                         let reference = expected.get(&scope).ok_or(RecordError::Missing)?;
-                        if reference.graph_format != NATIVE_FORMAT
+                        if (reference.graph_format != NATIVE_FORMAT
+                            && reference.graph_format != PAGED_NATIVE_FORMAT)
+                            || (reference.graph_format == PAGED_NATIVE_FORMAT) != view.is_paged()
+                            || view.logical_payload_bytes()? != reference.logical_payload_bytes
                             || !view.matches_authenticated_root(
                                 parent,
                                 scope.borrowed(),

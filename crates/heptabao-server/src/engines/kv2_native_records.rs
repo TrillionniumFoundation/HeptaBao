@@ -269,6 +269,10 @@ fn consistent_time(seconds: u64, precise: Option<Timestamp>) -> bool {
 // Native records preserve sparse runtime histories. This deliberately does not
 // impose the aggregate lossless importer's contiguous-history input contract.
 fn validate_owner(owner: &Kv2) -> CodecResult<()> {
+    validate_owner_structure(owner, false)
+}
+
+fn validate_owner_structure(owner: &Kv2, metadata_only: bool) -> CodecResult<()> {
     if owner.entries.len() > MAX_PATHS {
         return Err(RecordError::TooLarge);
     }
@@ -314,6 +318,7 @@ fn validate_owner(owner: &Kv2) -> CodecResult<()> {
                     .is_some_and(|seconds| !consistent_time(seconds, precise.deletion_at))
                 || (version.destroyed && version.data.is_some())
                 || (!version.destroyed
+                    && !(metadata_only && version.data.is_none())
                     && !version
                         .data
                         .as_ref()
@@ -356,6 +361,8 @@ struct NativeGraph {
     scope: Scope,
     key: Arc<AddressKey>,
     index: Kv1Index,
+    format: String,
+    paged: Option<paged::PagedPayloads>,
 }
 
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
@@ -363,13 +370,15 @@ struct NativeGraph {
 mod install;
 #[path = "kv2_native_mutation.rs"]
 mod mutation;
+#[path = "kv2_native_paged.rs"]
+mod paged;
+pub(crate) use paged::{MAX_PAGED_LOGICAL_BYTES, PAGED_NATIVE_FORMAT};
 
 /// A private decoded graph view and its authenticated graph cache. This type
 /// grants no storage writes or authority to install a writable Service owner.
 #[derive(Clone)]
 pub(crate) struct NativeReadView {
     owner: DetachedOwner,
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     graph: Option<NativeGraph>,
     pending: mutation::PendingPaths,
 }
@@ -404,7 +413,12 @@ impl NativeReadView {
         self.owner.has_metadata_cas_state()
     }
     pub(crate) fn validate_lossless_state(&self) -> Result<()> {
-        self.owner.validate_lossless_state()
+        if self.is_paged() {
+            self.validate_paged_candidate()
+                .map_err(|_| error(503, "native paged metadata rejected"))
+        } else {
+            self.owner.validate_lossless_state()
+        }
     }
     #[cfg(test)]
     pub(crate) fn has_lossless_json_state(&self) -> bool {
@@ -438,6 +452,12 @@ impl NativeReadView {
         }
         check()?;
         self.graph = Some(graph.0);
+        if self.is_paged() {
+            self.erase_hydrated_payloads();
+            if let Some(paged) = self.graph.as_mut().and_then(|graph| graph.paged.as_mut()) {
+                paged.clear_new_blocks();
+            }
+        }
         self.pending = mutation::PendingPaths::default();
         check()
     }
@@ -471,6 +491,13 @@ impl NativeReadView {
         body: &Value,
         now: Timestamp,
     ) -> Result<EngineResponse> {
+        if self.is_paged() && matches!(path.split_once('/').map(|v| v.0), Some("data" | "subkeys"))
+        {
+            return Err(error(
+                503,
+                "native paged payload requires its original checked source",
+            ));
+        }
         self.owner.handle_read_precise(method, path, body, now)
     }
     pub(crate) fn counts(&self) -> (usize, usize, usize) {
@@ -481,16 +508,20 @@ impl NativeReadView {
                 .values()
                 .map(|entry| entry.versions.len())
                 .sum(),
-            self.owner
-                .entries
-                .values()
-                .flat_map(|entry| entry.versions.values())
-                .filter(|version| version.data.is_some())
-                .count(),
+            if let Some(paged) = self.graph.as_ref().and_then(|graph| graph.paged.as_ref()) {
+                paged.payload_count()
+            } else {
+                self.owner
+                    .entries
+                    .values()
+                    .flat_map(|entry| entry.versions.values())
+                    .filter(|version| version.data.is_some())
+                    .count()
+            },
         )
     }
     pub(crate) fn has_lossless_state(&self) -> bool {
-        self.owner.has_lossless_import_state()
+        self.owner.has_lossless_import_state() || (self.is_paged() && self.owner.lossless_format == Some(1))
     }
     /// Mutate only a detached owner. This grants no Service or storage authority.
     pub(crate) fn mutate(
@@ -516,14 +547,13 @@ impl NativeReadView {
         scope: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<NativeCellGraph> {
+        if self.is_paged() {
+            return self.encode_paged(parent, scope, check);
+        }
         match &self.graph {
-            Some(graph) => Ok(NativeCellGraph(graph.with_updates(
-                &self.owner,
-                parent,
-                scope,
-                &self.pending,
-                check,
-            )?)),
+            Some(graph) => Ok(NativeCellGraph(
+                graph.with_updates(&self.owner, parent, scope, &self.pending, check)?,
+            )),
             None => NativeCellGraph::encode(&self.owner, parent, scope, check),
         }
     }
@@ -579,7 +609,11 @@ impl NativeCellGraph {
             check()?;
             visit(object)?;
             check()
-        })
+        })?;
+        if let Some(paged) = &self.0.paged {
+            paged.visit_new_blocks(&mut visit, check)?;
+        }
+        check()
     }
     #[cfg(test)]
     pub(crate) fn open_view(
@@ -594,7 +628,13 @@ impl NativeCellGraph {
         let key = graph_key(parent, &scope)?;
         let index = Kv1Index::open(Arc::clone(&key), root, reader)?;
         check()?;
-        let graph = NativeGraph { scope, key, index };
+        let graph = NativeGraph {
+            scope,
+            key,
+            index,
+            format: FORMAT.into(),
+            paged: None,
+        };
         let owner = graph.decode_checked(check)?;
         Ok(NativeReadView {
             owner,
@@ -782,6 +822,7 @@ impl EngineState {
                     scope: scope.clone(),
                     graph_format: FORMAT.into(),
                     root: root.clone(),
+                    logical_payload_bytes: 0,
                 },
             )
             .collect();
@@ -873,7 +914,13 @@ impl NativeGraph {
             index = index.edit(record, Some(&bytes))?.next;
             check()?;
         }
-        Ok(Self { scope, key, index })
+        Ok(Self {
+            scope,
+            key,
+            index,
+            format: FORMAT.into(),
+            paged: None,
+        })
     }
 
     fn open(
@@ -885,7 +932,13 @@ impl NativeGraph {
         let scope = Scope::new(input)?;
         let key = graph_key(base, &scope)?;
         let index = Kv1Index::open(Arc::clone(&key), root, reader)?;
-        let graph = Self { scope, key, index };
+        let graph = Self {
+            scope,
+            key,
+            index,
+            format: FORMAT.into(),
+            paged: None,
+        };
         // Keyed object authentication alone cannot establish typed closure.
         graph.decode()?;
         Ok(graph)

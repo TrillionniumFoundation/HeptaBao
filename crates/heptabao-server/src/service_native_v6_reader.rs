@@ -205,6 +205,7 @@ struct ActivationEnvironment {
     nonce: Zeroizing<String>,
     barrier_digest: [u8; 32],
     deadline: OriginalDeadline,
+    observations: Arc<super::native_blob_source::PayloadObservations>,
 }
 impl ActivationEnvironment {
     fn capture(
@@ -235,6 +236,7 @@ impl ActivationEnvironment {
             nonce: Zeroizing::new(service.unseal_nonce.clone()),
             barrier_digest: crypto::digest(key),
             deadline,
+            observations: Arc::clone(&service.native_payload_observations),
         })
     }
 
@@ -427,7 +429,9 @@ impl NativeProof {
     }
 
     // Bounded instance/warm-cache verification only. Mandatory audit delivery
-    // still requires check_with() and a complete reauthenticated durable graph.
+    // still requires check_with() and reauthenticated typed roots/metadata plus
+    // bounded actual ciphertext locator custody for floor2. Payload AEAD/address
+    // verification remains mandatory at the selected point read.
     pub(super) fn check_warm(&self, service: &Service) -> Result<(), Response> {
         self.check_instance(service)?;
         let deadline = self.permit.activation.deadline;
@@ -537,11 +541,22 @@ fn load_from_environment(
     activation: ActivationEnvironment,
     durable: &mut DurableService<AeadBarrier>,
 ) -> Result<Option<ColdNativeRead>, Response> {
+    load_from_environment_checked(activation, durable, true, &mut || Ok(()))
+}
+
+fn load_from_environment_checked(
+    activation: ActivationEnvironment,
+    durable: &mut DurableService<AeadBarrier>,
+    full_payloads: bool,
+    original_gate: &mut impl FnMut() -> Result<(), Response>,
+) -> Result<Option<ColdNativeRead>, Response> {
+    original_gate()?;
     live(activation.deadline)?;
     durable.verify_live_ownership().map_err(|_| unavailable())?;
     live(activation.deadline)?;
     let generation = durable.generation();
     let replay_epoch = durable.replay_epoch();
+    original_gate()?;
     let root_bytes = durable
         .get("system", "state")
         .map_err(|_| unavailable())?
@@ -568,11 +583,13 @@ fn load_from_environment(
     {
         return Err(unavailable());
     }
+    original_gate()?;
     let cursor_bytes = durable
         .get("system", ACTIVE_CURSOR_RESOURCE)
         .map_err(|_| unavailable())?
         .ok_or_else(unavailable)?;
     live(activation.deadline)?;
+    original_gate()?;
     let source_bytes = durable
         .get("system", ACTIVE_SOURCE_ROOT_RESOURCE)
         .map_err(|_| unavailable())?
@@ -594,17 +611,21 @@ fn load_from_environment(
         cursor_bytes: Zeroizing::new(cursor_bytes.expose().to_vec()),
         source_bytes: Zeroizing::new(source_bytes.expose().to_vec()),
     };
+    original_gate()?;
     permit.check(durable)?;
-    let reader = CheckedSource {
-        durable,
-        deadline: permit.activation.deadline,
-    };
-    // Retaining only a source digest is insufficient. Authenticate all five
-    // real V5 owner chunk sets and every reachable KV1 page/value/block.
-    let source_state = Service::materialize_record_state(&source, &reader)?;
-    live(permit.activation.deadline)?;
-    root_namespace_only(&source_state)?;
-    live(permit.activation.deadline)?;
+    if full_payloads && root.reader_floor.native_kv2_format == 1 {
+        let reader = CheckedSource {
+            durable,
+            deadline: permit.activation.deadline,
+        };
+        // Actual cold activation authenticates the retained V5 owner/record
+        // closure once. Hot checks bind the same retained root bytes and active
+        // publication to the already installed original instance.
+        let source_state = Service::materialize_record_state(&source, &reader)?;
+        live(permit.activation.deadline)?;
+        root_namespace_only(&source_state)?;
+        live(permit.activation.deadline)?;
+    }
     let StateIdentity::RecordsV6(digest) = identity else {
         return Err(unavailable());
     };
@@ -616,13 +637,31 @@ fn load_from_environment(
         maximum_state_schema: root.state_schema,
         reader_format: crate::state_record_root_v6::READER_FORMAT,
     };
-    let (metadata, native) =
-        v6_records::materialize_for_service(&root, context, &reader).map_err(|_| unavailable())?;
+    let source = super::native_blob_source::NativeSource::new_checked(
+        durable, permit.activation.deadline,
+        || original_gate().map_err(|_| ServiceError::BarrierFailure),
+    ).map_err(|_| unavailable())?
+        .with_observations(Arc::clone(&permit.activation.observations));
+    let (metadata, native) = if full_payloads && root.reader_floor.native_kv2_format == 1 {
+        v6_records::materialize_for_service(&root, context, &source)
+    } else {
+        v6_records::materialize_metadata_for_service(&root, context, &source)
+    }.map_err(|_| unavailable())?;
+    if full_payloads && root.reader_floor.native_kv2_format == 2 {
+        for (scope, view) in &native {
+            view.visit_paged_payload_references(
+                |reference| source.pin_payload_location(&ObjectDomain::Kv2(scope.clone()), reference),
+                &|| permit.activation.deadline.check().map_err(|_| RecordError::Invalid),
+            ).map_err(|_| unavailable())?;
+        }
+    }
+    drop(source);
     live(permit.activation.deadline)?;
     root_namespace_only(&metadata)?;
     live(permit.activation.deadline)?;
     let owner_fingerprints = bounded_owner_fingerprints(&metadata, permit.activation.deadline)?;
     live(permit.activation.deadline)?;
+    original_gate()?;
     permit.check(durable)?;
     Ok(Some(ColdNativeRead {
         metadata,
@@ -636,6 +675,34 @@ fn load_from_environment(
 }
 
 impl Service {
+    pub(super) fn capture_native_request_proof(
+        &mut self,
+        original_gate: &mut impl FnMut() -> Result<(), Response>,
+    ) -> Result<Option<NativeProof>, Response> {
+        if self.native_root.is_none() {
+            return Ok(None);
+        }
+        original_gate()?;
+        let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
+        let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
+        let mut durable = self.durable.take().ok_or_else(unavailable)?;
+        let result = (|| {
+            let profile = self.native_candidate_profile.as_ref().ok_or_else(unavailable)?;
+            let environment = ActivationEnvironment::capture(self, profile, &key, deadline)?;
+            let loaded = load_from_environment_checked(environment, &mut durable, false, original_gate)?
+                .ok_or_else(unavailable)?;
+            Self::check_native_installed(
+                self.state.as_ref().ok_or_else(unavailable)?, &loaded.metadata,
+                &loaded.native, &loaded.root, deadline,
+            )?;
+            Ok(Some(loaded.proof))
+        })();
+        self.durable = Some(durable);
+        original_gate()?;
+        live(deadline)?;
+        result
+    }
+
     pub(super) fn capture_native_unseal_proof(&mut self) -> Result<Option<NativeProof>, Response> {
         if self.native_root.is_none() {
             return Ok(None);
@@ -699,10 +766,11 @@ impl Service {
             .engines
             .validate_native_roots(&parent, &root.kv2, &check)
             .map_err(|_| unavailable())?;
-        let (opaque, graphs) = installed
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| unavailable())?;
+        let (opaque, graphs) = if root.reader_floor.native_kv2_format == 2 {
+            installed.engines.project_v6_native_paged(&parent, &check, |_, _| check())
+        } else {
+            installed.engines.project_v6_native(&parent, &check, |_, _| check())
+        }.map_err(|_| unavailable())?;
         if crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
             .map_err(|_| unavailable())?
             .as_slice()

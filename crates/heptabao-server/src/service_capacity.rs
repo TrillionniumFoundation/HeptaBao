@@ -68,15 +68,23 @@ impl Service {
                     )
                 },
             );
+            let logical_bytes = root.kv2.iter().try_fold(0_u64, |total, graph| {
+                total.checked_add(graph.logical_payload_bytes)
+            });
             let total = owner_bytes
                 .and_then(|owners| kv_bytes.and_then(|values| owners.checked_add(values)))
+                .and_then(|bytes| logical_bytes.and_then(|logical| bytes.checked_add(logical)))
                 .and_then(|bytes| usize::try_from(bytes).ok());
-            let limit = root
-                .kv2
-                .len()
-                .checked_add(1)
-                .and_then(|graphs| graphs.checked_mul(crate::state_records::MAX_GRAPH_BYTES))
-                .and_then(|bytes| bytes.checked_add(opaque_owner_limit));
+            let limit = crate::state_records::MAX_GRAPH_BYTES
+                .checked_mul(2)
+                .and_then(|bytes| bytes.checked_add(opaque_owner_limit))
+                .and_then(|bytes| {
+                    bytes.checked_add(if root.reader_floor.native_kv2_format == 2 {
+                        crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES as usize
+                    } else {
+                        0
+                    })
+                });
             let (Some(total), Some(limit), Some(owner_bytes)) = (total, limit, owner_bytes) else {
                 return Response::error(503, "native capacity arithmetic failed");
             };
@@ -84,9 +92,17 @@ impl Service {
                 total,
                 limit,
                 crate::state_record_root_v6::STORAGE_FORMAT,
-                "bounded-native-record-state-v6-candidate",
+                if root.reader_floor.native_kv2_format == 2 {
+                    "bounded-native-record-state-v6-paged-candidate"
+                } else {
+                    "bounded-native-record-state-v6-candidate"
+                },
                 crate::state_record_root::OWNER_CHUNK_BYTES,
-                "opaque-owner-json-plus-native-kv-canonical-cells",
+                if root.reader_floor.native_kv2_format == 2 {
+                    "opaque-owner-json-plus-native-metadata-and-paged-logical-payloads"
+                } else {
+                    "opaque-owner-json-plus-native-kv-canonical-cells"
+                },
                 Some(owner_bytes),
             ))
         } else {
@@ -159,9 +175,42 @@ impl Service {
                 None,
             )
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let (native_kv2_logical_payload_bytes, native_kv2_metadata_bytes, native_kv2_reader_format) =
+            if let Some(root) = self.native_root.as_ref() {
+                let logical = root.kv2.iter().try_fold(0_u64, |total, graph| {
+                    total.checked_add(graph.logical_payload_bytes)
+                });
+                let metadata = root.kv2.iter().try_fold(0_u64, |total, graph| {
+                    total.checked_add(
+                        graph
+                            .root
+                            .reference
+                            .as_ref()
+                            .map_or(0, |reference| reference.payload_bytes),
+                    )
+                });
+                match logical.zip(metadata) {
+                    Some((logical, metadata)) => (
+                        Some(logical),
+                        Some(metadata),
+                        Some(root.reader_floor.native_kv2_format),
+                    ),
+                    None => return Response::error(503, "native KV2 capacity arithmetic failed"),
+                }
+            } else {
+                (None, None, None)
+            };
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let (native_kv2_logical_payload_bytes, native_kv2_metadata_bytes, native_kv2_reader_format) =
+            (None::<u64>, None::<u64>, None::<u32>);
         if state_bytes > state_limit {
             return Response::error(503, "committed server state exceeds configured capacity");
         }
+        #[cfg(feature = "fixture-native-v6-service")]
+        let point_observations = self.native_payload_observations.snapshot().map(Some);
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let point_observations = [None::<u64>; 4];
         // V5 state_bytes is the live logical payload, not the tiny root size.
         // The durable encrypted-artifact preflight can reject below this upper
         // bound because pages, ciphertext, replay records and staged objects
@@ -174,6 +223,13 @@ impl Service {
             "state_chunk_target_bytes": chunk_target,
             "kv_read_only_dispatches": self.kv_read_only_dispatches,
             "state_bytes": state_bytes,
+            "native_kv2_logical_payload_bytes": native_kv2_logical_payload_bytes,
+            "native_kv2_metadata_bytes": native_kv2_metadata_bytes,
+            "native_kv2_reader_format": native_kv2_reader_format,
+            "native_kv2_payload_blocks_pinned": point_observations[0],
+            "native_kv2_payload_blocks_opened": point_observations[1],
+            "native_kv2_payload_ciphertext_bytes_read": point_observations[2],
+            "native_kv2_payload_plaintext_bytes_opened": point_observations[3],
             "state_size_basis": size_basis,
             "durable_payload_bytes": capacity.logical_payload_bytes,
             "durable_artifact_limit_bytes": capacity.max_file_bytes,

@@ -4039,3 +4039,6 @@ impl EngineState {
 #[cfg(test)]
 #[path = "engine_lossless_json_tests.rs"]
 mod lossless_json_tests;
+
+#[path = "engine_native_paged_dispatch.rs"]
+mod native_paged_dispatch;

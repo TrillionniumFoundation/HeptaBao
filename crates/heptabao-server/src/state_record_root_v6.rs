@@ -76,6 +76,8 @@ impl MountScope {
 pub(crate) struct Kv2GraphRef {
     pub scope: MountScope,
     pub graph_format: String,
+    #[serde(default, skip_serializing_if = "logical_bytes_zero")]
+    pub logical_payload_bytes: u64,
     pub root: Kv1Root,
 }
 
@@ -136,6 +138,10 @@ pub(crate) enum ObjectDomain {
     Kv2(MountScope),
 }
 
+fn logical_bytes_zero(bytes: &u64) -> bool {
+    *bytes == 0
+}
+
 fn validate_graph(root: &Kv1Root, required: bool, max_records: u64) -> Result<(), RootError> {
     if root.reference.as_ref().is_some_and(|reference| {
         reference.payload_bytes > crate::state_records::MAX_GRAPH_BYTES as u64
@@ -169,7 +175,7 @@ impl RecordStateRootV6 {
             || self.cluster_id.len() > 256
             || self.cluster_id.bytes().any(|byte| byte.is_ascii_control())
             || self.reader_floor.record_format != READER_FORMAT
-            || self.reader_floor.native_kv2_format != 1
+            || !matches!(self.reader_floor.native_kv2_format, 1 | 2)
             || self.reader_floor.minimum_state_schema < 36
             || self.state_schema < self.reader_floor.minimum_state_schema
             || self.global_lossless_json_format.is_some_and(|format| {
@@ -222,13 +228,26 @@ impl RecordStateRootV6 {
         let mut prior = None;
         let mut payload = 0_u64;
         let mut records = 0_u64;
+        let mut logical = 0_u64;
         for graph in &self.kv2 {
             graph.scope.validate()?;
-            if graph.graph_format != crate::engines::kv2_native_records::NATIVE_FORMAT
+            let paged =
+                graph.graph_format == crate::engines::kv2_native_records::PAGED_NATIVE_FORMAT;
+            if (!paged && graph.graph_format != crate::engines::kv2_native_records::NATIVE_FORMAT)
+                || paged && self.reader_floor.native_kv2_format < 2
+                || !paged && graph.logical_payload_bytes != 0
+                || graph.logical_payload_bytes
+                    > crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES
                 || prior.is_some_and(|scope| scope >= &graph.scope)
                 || !mounts.insert((&graph.scope.namespace, &graph.scope.mount))
             {
                 return Err(RootError::Invalid);
+            }
+            logical = logical
+                .checked_add(graph.logical_payload_bytes)
+                .ok_or(RootError::TooLarge)?;
+            if logical > crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES {
+                return Err(RootError::TooLarge);
             }
             validate_graph(&graph.root, true, MAX_KV2_RECORDS)?;
             payload = payload

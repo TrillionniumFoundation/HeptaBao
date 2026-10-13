@@ -858,18 +858,18 @@ fn genuine_service_native_migration_plan_rejects_missing_and_tampered_staged_clo
     let mut plan = service
         .prepare_native_root_migration(&|| Ok(()))
         .map_err(|_| "valid complete plan")?;
-    assert!(validate_native_root_migration_plan(&plan).is_ok());
+    assert!(validate_native_root_migration_plan(&plan, None).is_ok());
     let removed = plan.objects.keys().next().ok_or("empty plan")?.clone();
     let saved = plan.objects.remove(&removed).ok_or("original object")?;
     assert!(
-        validate_native_root_migration_plan(&plan).is_err(),
+        validate_native_root_migration_plan(&plan, None).is_err(),
         "missing object was accepted despite signed root",
     );
     plan.objects.insert(removed, saved);
-    assert!(validate_native_root_migration_plan(&plan).is_ok());
+    assert!(validate_native_root_migration_plan(&plan, None).is_ok());
     plan.bytes[0] ^= 1;
     assert!(
-        validate_native_root_migration_plan(&plan).is_err(),
+        validate_native_root_migration_plan(&plan, None).is_err(),
         "modified root envelope was accepted",
     );
     assert_eq!(
