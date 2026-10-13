@@ -1170,6 +1170,17 @@ impl Service {
             .engines
             .install_native_views(native)
             .map_err(Response::from_engine_error)?;
+        let installed_auth =
+            owner_store::serialize_owner(&metadata.auth).map_err(|_| rejected())?;
+        let expected_auth =
+            owner_store::serialize_owner(&plan.candidate.auth).map_err(|_| rejected())?;
+        if installed_auth.as_slice() != expected_auth.as_slice() {
+            return Err(rejected());
+        }
+        metadata
+            .auth
+            .retain_quota_runtime_owner(&plan.candidate.auth)
+            .map_err(|_| rejected())?;
         metadata.validate_format()?;
         plan.deadline.check().map_err(|_| rejected())?;
         Ok(metadata)

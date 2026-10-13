@@ -567,6 +567,172 @@ mod tests {
     }
 
     #[test]
+    fn genuine_native_quota_floor_and_runtime_survive_publish_but_cold_owner_resets() -> TestResult
+    {
+        fn quota_request(service: &mut Service) -> Response {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(60),
+            );
+            service.handle_request(
+                ServiceRequest::new(
+                    "POST",
+                    "auth/approle/login",
+                    "",
+                    "",
+                    json!({"role_id":"unknown-role-id","secret_id":"wrong-secret"}),
+                )
+                .with_origin_peer(std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST)),
+            )
+        }
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, token) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(60),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let key = Zeroizing::new(key);
+        let token = Zeroizing::new(token);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/auth/approle",
+                &token,
+                json!({"type":"approle"})
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/quotas/rate-limit/native",
+                &token,
+                json!({"path":"auth/approle/","rate":1,"interval":"1h"})
+            )
+            .status,
+            204
+        );
+        assert_eq!(quota_request(&mut service).status, 400);
+        let original = std::sync::Arc::clone(
+            &service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .rate_limit_quota_registry()
+                .ok_or("quota")?
+                .runtime_owner,
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &token,
+                json!({})
+            )
+            .status,
+            204
+        );
+        assert!(
+            service
+                .native_root
+                .as_ref()
+                .ok_or("native root")?
+                .state_schema
+                >= RATE_LIMIT_QUOTA_STATE_SCHEMA
+        );
+        assert!(std::sync::Arc::ptr_eq(
+            &original,
+            &service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .rate_limit_quota_registry()
+                .ok_or("quota")?
+                .runtime_owner
+        ));
+        assert_eq!(quota_request(&mut service).status, 429);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/quota-lineage",
+                &token,
+                json!({"data":{"value":"retained"}})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "sys/internal/storage/capacity",
+                &token,
+                json!({})
+            )
+            .status,
+            200
+        );
+        assert!(std::sync::Arc::ptr_eq(
+            &original,
+            &service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .rate_limit_quota_registry()
+                .ok_or("quota")?
+                .runtime_owner
+        ));
+        assert_eq!(quota_request(&mut service).status, 429);
+        drop(service);
+        let mut reopened = directory.service()?;
+        reopened.configure_native_v6_candidate()?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":key.as_str()})
+            )
+            .status,
+            200
+        );
+        let recovered = reopened.state.as_ref().ok_or("reopened state")?;
+        assert!(recovered.schema >= RATE_LIMIT_QUOTA_STATE_SCHEMA);
+        assert!(
+            recovered
+                .auth
+                .rate_limit_quota_registry()
+                .ok_or("reopened quota")?
+                .definitions
+                .contains_key("native")
+        );
+        assert!(!std::sync::Arc::ptr_eq(
+            &original,
+            &recovered
+                .auth
+                .rate_limit_quota_registry()
+                .ok_or("reopened quota")?
+                .runtime_owner
+        ));
+        // The cold RAM bucket is fresh; current native auth dispatch remains
+        // intentionally closed, after consuming this one fallback allowance.
+        assert_eq!(quota_request(&mut reopened).status, 501);
+        assert_eq!(quota_request(&mut reopened).status, 429);
+        Ok(())
+    }
+
+    #[test]
     fn genuine_native_service_large_history_cold_reopen_and_point_write() -> TestResult {
         let directory = super::super::tests::Root::new();
         let mut service = directory.service()?;

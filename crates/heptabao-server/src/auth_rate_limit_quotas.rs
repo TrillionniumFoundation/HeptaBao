@@ -172,6 +172,30 @@ impl AuthState {
         }
         Ok(())
     }
+    /// Preserve process-local quota ownership only after native readback has
+    /// proved the complete Auth owner equal to the admitted candidate. Cold
+    /// readers and snapshot activation do not call this hook.
+    pub(crate) fn retain_quota_runtime_owner(&mut self, candidate: &Self) -> Result<(), AuthError> {
+        match (&mut self.rate_limit_quotas, &candidate.rate_limit_quotas) {
+            (None, None) => Ok(()),
+            (Some(installed), Some(admitted)) => {
+                let actual = crate::owner_store::serialize_owner(installed)
+                    .map_err(|_| err(503, "native quota owner serialization failed"))?;
+                let expected = crate::owner_store::serialize_owner(admitted)
+                    .map_err(|_| err(503, "native quota owner serialization failed"))?;
+                if actual.as_slice() != expected.as_slice() {
+                    return Err(err(
+                        503,
+                        "native quota owner does not match admitted definitions",
+                    ));
+                }
+                installed.runtime_owner = std::sync::Arc::clone(&admitted.runtime_owner);
+                Ok(())
+            }
+            _ => Err(err(503, "native quota owner presence changed")),
+        }
+    }
+
     pub(crate) fn has_rate_limit_quota_state(&self) -> bool {
         self.rate_limit_quotas.is_some()
     }
