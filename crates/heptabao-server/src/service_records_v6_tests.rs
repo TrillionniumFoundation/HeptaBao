@@ -973,7 +973,9 @@ fn genuine_service_native_migration_plan_rejects_damaged_durable_source() -> Tes
                     "PUT",
                     "source-kv1/item",
                     &token,
-                    json!({"value":"source closure"}),
+                    // Exceed the real inline threshold so the negative control
+                    // removes/tampers a referenced non-root value Block.
+                    json!({"value":"C".repeat(crate::state_records::INLINE_VALUE_BYTES + 1)}),
                 )
                 .status,
                 204
