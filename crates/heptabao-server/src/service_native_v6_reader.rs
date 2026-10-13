@@ -635,6 +635,93 @@ fn load_from_environment(
     }))
 }
 
+impl Service {
+    pub(super) fn capture_native_unseal_proof(&mut self) -> Result<Option<NativeProof>, Response> {
+        if self.native_root.is_none() {
+            return Ok(None);
+        }
+        let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
+        live(deadline)?;
+        let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
+        let mut durable = self.durable.take().ok_or_else(unavailable)?;
+        let result = (|| {
+            let profile = self
+                .native_candidate_profile
+                .as_ref()
+                .ok_or_else(unavailable)?;
+            let loaded = load_cold_root(self, profile, &mut durable, &key, deadline)?
+                .ok_or_else(unavailable)?;
+            Self::check_native_installed(
+                self.state.as_ref().ok_or_else(unavailable)?,
+                &loaded.metadata,
+                &loaded.native,
+                &loaded.root,
+                deadline,
+            )?;
+            Ok(Some(loaded.proof))
+        })();
+        self.durable = Some(durable);
+        live(deadline)?;
+        result
+    }
+
+    pub(super) fn check_native_installed(
+        installed: &State,
+        metadata: &State,
+        native: &BTreeMap<MountScope, NativeReadView>,
+        root: &RecordStateRootV6,
+        deadline: OriginalDeadline,
+    ) -> Result<(), Response> {
+        live(deadline)?;
+        root_namespace_only(installed)?;
+        if installed.schema != root.state_schema
+            || installed.global_lossless_json_format != root.global_lossless_json_format
+            || installed.cluster_id != root.cluster_id
+            || installed.replay_epoch != root.replay_epoch
+            || bounded_owner_fingerprints(installed, deadline)?
+                != bounded_owner_fingerprints(metadata, deadline)?
+            || native.len() != root.kv2.len()
+        {
+            return Err(unavailable());
+        }
+        let key = root.kv1_key().map_err(|_| unavailable())?;
+        if installed.engines.record_root().as_ref() != Some(&root.kv1)
+            || installed
+                .engines
+                .record_address_key()
+                .is_none_or(|observed| observed.expose() != key.expose())
+        {
+            return Err(unavailable());
+        }
+        let parent = root.kv2_parent_key().map_err(|_| unavailable())?;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        installed
+            .engines
+            .validate_native_roots(&parent, &root.kv2, &check)
+            .map_err(|_| unavailable())?;
+        let (opaque, graphs) = installed
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| unavailable())?;
+        if crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
+            .map_err(|_| unavailable())?
+            .as_slice()
+            != crate::secret_serde::to_vec(&root.kv2, crate::state_record_root::MAX_ROOT_BYTES)
+                .map_err(|_| unavailable())?
+                .as_slice()
+            || owner_store::serialize_owner(&opaque)
+                .map_err(|_| unavailable())?
+                .as_slice()
+                != owner_store::serialize_owner(&metadata.engines)
+                    .map_err(|_| unavailable())?
+                    .as_slice()
+        {
+            return Err(unavailable());
+        }
+        live(deadline)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -806,92 +893,5 @@ mod tests {
         assert_eq!(durable.generation(), before);
         service.durable = Some(durable);
         Ok(())
-    }
-}
-
-impl Service {
-    pub(super) fn capture_native_unseal_proof(&mut self) -> Result<Option<NativeProof>, Response> {
-        if self.native_root.is_none() {
-            return Ok(None);
-        }
-        let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
-        live(deadline)?;
-        let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
-        let mut durable = self.durable.take().ok_or_else(unavailable)?;
-        let result = (|| {
-            let profile = self
-                .native_candidate_profile
-                .as_ref()
-                .ok_or_else(unavailable)?;
-            let loaded = load_cold_root(self, profile, &mut durable, &key, deadline)?
-                .ok_or_else(unavailable)?;
-            Self::check_native_installed(
-                self.state.as_ref().ok_or_else(unavailable)?,
-                &loaded.metadata,
-                &loaded.native,
-                &loaded.root,
-                deadline,
-            )?;
-            Ok(Some(loaded.proof))
-        })();
-        self.durable = Some(durable);
-        live(deadline)?;
-        result
-    }
-
-    pub(super) fn check_native_installed(
-        installed: &State,
-        metadata: &State,
-        native: &BTreeMap<MountScope, NativeReadView>,
-        root: &RecordStateRootV6,
-        deadline: OriginalDeadline,
-    ) -> Result<(), Response> {
-        live(deadline)?;
-        root_namespace_only(installed)?;
-        if installed.schema != root.state_schema
-            || installed.global_lossless_json_format != root.global_lossless_json_format
-            || installed.cluster_id != root.cluster_id
-            || installed.replay_epoch != root.replay_epoch
-            || bounded_owner_fingerprints(installed, deadline)?
-                != bounded_owner_fingerprints(metadata, deadline)?
-            || native.len() != root.kv2.len()
-        {
-            return Err(unavailable());
-        }
-        let key = root.kv1_key().map_err(|_| unavailable())?;
-        if installed.engines.record_root().as_ref() != Some(&root.kv1)
-            || installed
-                .engines
-                .record_address_key()
-                .is_none_or(|observed| observed.expose() != key.expose())
-        {
-            return Err(unavailable());
-        }
-        let parent = root.kv2_parent_key().map_err(|_| unavailable())?;
-        let check = || deadline.check().map_err(|_| RecordError::Invalid);
-        installed
-            .engines
-            .validate_native_roots(&parent, &root.kv2, &check)
-            .map_err(|_| unavailable())?;
-        let (opaque, graphs) = installed
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| unavailable())?;
-        if crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
-            .map_err(|_| unavailable())?
-            .as_slice()
-            != crate::secret_serde::to_vec(&root.kv2, crate::state_record_root::MAX_ROOT_BYTES)
-                .map_err(|_| unavailable())?
-                .as_slice()
-            || owner_store::serialize_owner(&opaque)
-                .map_err(|_| unavailable())?
-                .as_slice()
-                != owner_store::serialize_owner(&metadata.engines)
-                    .map_err(|_| unavailable())?
-                    .as_slice()
-        {
-            return Err(unavailable());
-        }
-        live(deadline)
     }
 }

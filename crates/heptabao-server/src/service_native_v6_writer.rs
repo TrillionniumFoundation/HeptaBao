@@ -555,6 +555,285 @@ impl Service {
     }
 }
 
+impl Service {
+    /// Authentication consumption only. This borrowed, non-clone Principal was
+    /// produced and Clock-bound by the real authentication prelude; it grants
+    /// no resource ACL, reply delivery, opaque-owner edit or namespace action.
+    pub(super) fn commit_native_consumed_auth_use(
+        &mut self,
+        candidate: &mut State,
+        principal: &Principal,
+        request: &RequestView<'_>,
+    ) -> Result<(), Response> {
+        if !principal.consumed_use() || request.token_clock.is_none() {
+            return Err(Response::error(
+                503,
+                "native token use requires original authentication clock",
+            ));
+        }
+        let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
+        let live = || deadline.check().map_err(|_| rejected());
+        live()?;
+        let source = self.state.as_ref().ok_or_else(rejected)?;
+        let root = self.native_root.as_ref().ok_or_else(rejected)?;
+        if candidate.cluster_id != source.cluster_id
+            || candidate.replay_epoch != source.replay_epoch
+            || candidate.global_lossless_json_format != source.global_lossless_json_format
+            || candidate.namespace_protected.is_some()
+            || !candidate.namespace_leases.is_empty()
+        {
+            return Err(rejected());
+        }
+        for (actual, expected) in [
+            (
+                owner_store::serialize_owner(&candidate.namespaces),
+                owner_store::serialize_owner(&source.namespaces),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.database),
+                owner_store::serialize_owner(&source.database),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.raft_admin),
+                owner_store::serialize_owner(&source.raft_admin),
+            ),
+        ] {
+            live()?;
+            if actual.map_err(|_| rejected())?.as_slice()
+                != expected.map_err(|_| rejected())?.as_slice()
+            {
+                return Err(rejected());
+            }
+            live()?;
+        }
+        let key = root.kv1_key().map_err(|_| rejected())?;
+        if candidate.engines.record_root().as_ref() != Some(&root.kv1)
+            || candidate
+                .engines
+                .record_address_key()
+                .is_none_or(|observed| observed.expose() != key.expose())
+        {
+            return Err(rejected());
+        }
+        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        candidate
+            .engines
+            .validate_native_roots(&parent, &root.kv2, &check)
+            .map_err(|_| rejected())?;
+        let (actual, _) = candidate
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        let (expected, _) = source
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        live()?;
+        if owner_store::serialize_owner(&actual)
+            .map_err(|_| rejected())?
+            .as_slice()
+            != owner_store::serialize_owner(&expected)
+                .map_err(|_| rejected())?
+                .as_slice()
+        {
+            return Err(rejected());
+        }
+        source
+            .auth
+            .validate_native_consumed_auth_candidate(
+                principal,
+                &candidate.auth,
+                request.token_time()?,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        live()?;
+        let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
+        let candidate_auth =
+            owner_store::serialize_owner(&candidate.auth).map_err(|_| rejected())?;
+        if source_auth.as_slice() == candidate_auth.as_slice() {
+            return Err(rejected());
+        }
+        live()?;
+        let candidate_auth_owner = candidate.auth.clone();
+        let plan = self.prepare_native_live_root(candidate)?;
+        let installed =
+            self.commit_native_root_plan(candidate, plan, false, "auth-use", &mut |auth| {
+                live()?;
+                if !principal.consumed_use()
+                    || request.token_clock.is_none()
+                    || owner_store::serialize_owner(auth)
+                        .map_err(|_| rejected())?
+                        .as_slice()
+                        != source_auth.as_slice()
+                {
+                    return Err(rejected());
+                }
+                // Observe the original trusted request clock, without reauthenticating
+                // a bearer or granting its requested resource capability.
+                auth.validate_native_consumed_auth_candidate(
+                    principal,
+                    &candidate_auth_owner,
+                    request.token_time()?,
+                )
+                .map_err(|error| Response::error(error.status, &error.message))?;
+                live()
+            })?;
+        *candidate = installed;
+        Ok(())
+    }
+}
+
+impl Service {
+    /// A private terminal observation write, never resource authorization.
+    /// `at` is the first actual observation of the original trusted request
+    /// Clock in the terminal writer. Subsequent checks observe that same Clock;
+    /// the exact floor delta remains fixed rather than refreshing its budget.
+    pub(super) fn commit_native_terminal_clock_floor(
+        &mut self,
+        candidate: &mut State,
+        clock: RequestClock,
+        fixed_time: AuthorityTime,
+    ) -> Result<(), Response> {
+        let AuthorityTime::Precise(at) = fixed_time else {
+            return Err(rejected());
+        };
+        let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
+        let live = || {
+            deadline.check().map_err(|_| rejected())?;
+            let observed = clock.observed_at().map_err(|_| rejected())?;
+            if observed < at {
+                return Err(rejected());
+            }
+            deadline.check().map_err(|_| rejected())
+        };
+        live()?;
+        let source = self.state.as_ref().ok_or_else(rejected)?;
+        let root = self.native_root.as_ref().ok_or_else(rejected)?;
+        let mut expected = source.clone();
+        let time = expected
+            .engines
+            .kubernetes_artifact_time(fixed_time)
+            .map_err(|error| Response::error(503, &error.message))?;
+        let time = expected.auth.token_api_observed_time(time);
+        let mut changed = expected
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(503, &error.message))?;
+        changed |= expected
+            .engines
+            .observe_kubernetes_artifact_time(time)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if !changed {
+            return Err(rejected());
+        }
+        expected.schema = expected.writer_schema();
+        live()?;
+        if candidate.schema != expected.schema
+            || candidate.cluster_id != expected.cluster_id
+            || candidate.replay_epoch != expected.replay_epoch
+            || candidate.global_lossless_json_format != expected.global_lossless_json_format
+            || candidate.namespace_protected.is_some()
+            || !candidate.namespace_leases.is_empty()
+        {
+            return Err(rejected());
+        }
+        for (actual, expected) in [
+            (
+                owner_store::serialize_owner(&candidate.auth),
+                owner_store::serialize_owner(&expected.auth),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.namespaces),
+                owner_store::serialize_owner(&expected.namespaces),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.database),
+                owner_store::serialize_owner(&expected.database),
+            ),
+            (
+                owner_store::serialize_owner(&candidate.raft_admin),
+                owner_store::serialize_owner(&expected.raft_admin),
+            ),
+        ] {
+            live()?;
+            if actual.map_err(|_| rejected())?.as_slice()
+                != expected.map_err(|_| rejected())?.as_slice()
+            {
+                return Err(rejected());
+            }
+            live()?;
+        }
+        let key = root.kv1_key().map_err(|_| rejected())?;
+        if candidate.engines.record_root().as_ref() != Some(&root.kv1)
+            || candidate
+                .engines
+                .record_address_key()
+                .is_none_or(|observed| observed.expose() != key.expose())
+        {
+            return Err(rejected());
+        }
+        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        candidate
+            .engines
+            .validate_native_roots(&parent, &root.kv2, &check)
+            .map_err(|_| rejected())?;
+        let (actual_meta, _) = candidate
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        let (expected_meta, _) = expected
+            .engines
+            .project_v6_native(&parent, &check, |_, _| check())
+            .map_err(|_| rejected())?;
+        live()?;
+        if owner_store::serialize_owner(&actual_meta)
+            .map_err(|_| rejected())?
+            .as_slice()
+            != owner_store::serialize_owner(&expected_meta)
+                .map_err(|_| rejected())?
+                .as_slice()
+        {
+            return Err(rejected());
+        }
+        live()?;
+        let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
+        let expected_auth = owner_store::serialize_owner(&expected.auth).map_err(|_| rejected())?;
+        let plan = self.prepare_native_live_root(candidate)?;
+        let installed = self.commit_native_root_plan(
+            candidate,
+            plan,
+            false,
+            "clock-observation",
+            &mut |auth| {
+                live()?;
+                if owner_store::serialize_owner(auth)
+                    .map_err(|_| rejected())?
+                    .as_slice()
+                    != source_auth.as_slice()
+                {
+                    return Err(rejected());
+                }
+                let mut checked = auth.clone();
+                checked
+                    .observe_token_api_time(time)
+                    .map_err(|error| Response::error(503, &error.message))?;
+                if owner_store::serialize_owner(&checked)
+                    .map_err(|_| rejected())?
+                    .as_slice()
+                    != expected_auth.as_slice()
+                {
+                    return Err(rejected());
+                }
+                live()
+            },
+        )?;
+        *candidate = installed;
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1533,285 +1812,6 @@ mod tests {
             call(&mut service, "GET", "secret/data/seed", &primary, json!({})).status,
             200
         );
-        Ok(())
-    }
-}
-
-impl Service {
-    /// Authentication consumption only. This borrowed, non-clone Principal was
-    /// produced and Clock-bound by the real authentication prelude; it grants
-    /// no resource ACL, reply delivery, opaque-owner edit or namespace action.
-    pub(super) fn commit_native_consumed_auth_use(
-        &mut self,
-        candidate: &mut State,
-        principal: &Principal,
-        request: &RequestView<'_>,
-    ) -> Result<(), Response> {
-        if !principal.consumed_use() || request.token_clock.is_none() {
-            return Err(Response::error(
-                503,
-                "native token use requires original authentication clock",
-            ));
-        }
-        let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
-        let live = || deadline.check().map_err(|_| rejected());
-        live()?;
-        let source = self.state.as_ref().ok_or_else(rejected)?;
-        let root = self.native_root.as_ref().ok_or_else(rejected)?;
-        if candidate.cluster_id != source.cluster_id
-            || candidate.replay_epoch != source.replay_epoch
-            || candidate.global_lossless_json_format != source.global_lossless_json_format
-            || candidate.namespace_protected.is_some()
-            || !candidate.namespace_leases.is_empty()
-        {
-            return Err(rejected());
-        }
-        for (actual, expected) in [
-            (
-                owner_store::serialize_owner(&candidate.namespaces),
-                owner_store::serialize_owner(&source.namespaces),
-            ),
-            (
-                owner_store::serialize_owner(&candidate.database),
-                owner_store::serialize_owner(&source.database),
-            ),
-            (
-                owner_store::serialize_owner(&candidate.raft_admin),
-                owner_store::serialize_owner(&source.raft_admin),
-            ),
-        ] {
-            live()?;
-            if actual.map_err(|_| rejected())?.as_slice()
-                != expected.map_err(|_| rejected())?.as_slice()
-            {
-                return Err(rejected());
-            }
-            live()?;
-        }
-        let key = root.kv1_key().map_err(|_| rejected())?;
-        if candidate.engines.record_root().as_ref() != Some(&root.kv1)
-            || candidate
-                .engines
-                .record_address_key()
-                .is_none_or(|observed| observed.expose() != key.expose())
-        {
-            return Err(rejected());
-        }
-        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
-        let check = || deadline.check().map_err(|_| RecordError::Invalid);
-        candidate
-            .engines
-            .validate_native_roots(&parent, &root.kv2, &check)
-            .map_err(|_| rejected())?;
-        let (actual, _) = candidate
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
-        let (expected, _) = source
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
-        live()?;
-        if owner_store::serialize_owner(&actual)
-            .map_err(|_| rejected())?
-            .as_slice()
-            != owner_store::serialize_owner(&expected)
-                .map_err(|_| rejected())?
-                .as_slice()
-        {
-            return Err(rejected());
-        }
-        source
-            .auth
-            .validate_native_consumed_auth_candidate(
-                principal,
-                &candidate.auth,
-                request.token_time()?,
-            )
-            .map_err(|error| Response::error(error.status, &error.message))?;
-        live()?;
-        let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
-        let candidate_auth =
-            owner_store::serialize_owner(&candidate.auth).map_err(|_| rejected())?;
-        if source_auth.as_slice() == candidate_auth.as_slice() {
-            return Err(rejected());
-        }
-        live()?;
-        let candidate_auth_owner = candidate.auth.clone();
-        let plan = self.prepare_native_live_root(candidate)?;
-        let installed =
-            self.commit_native_root_plan(candidate, plan, false, "auth-use", &mut |auth| {
-                live()?;
-                if !principal.consumed_use()
-                    || request.token_clock.is_none()
-                    || owner_store::serialize_owner(auth)
-                        .map_err(|_| rejected())?
-                        .as_slice()
-                        != source_auth.as_slice()
-                {
-                    return Err(rejected());
-                }
-                // Observe the original trusted request clock, without reauthenticating
-                // a bearer or granting its requested resource capability.
-                auth.validate_native_consumed_auth_candidate(
-                    principal,
-                    &candidate_auth_owner,
-                    request.token_time()?,
-                )
-                .map_err(|error| Response::error(error.status, &error.message))?;
-                live()
-            })?;
-        *candidate = installed;
-        Ok(())
-    }
-}
-
-impl Service {
-    /// A private terminal observation write, never resource authorization.
-    /// `at` is the first actual observation of the original trusted request
-    /// Clock in the terminal writer. Subsequent checks observe that same Clock;
-    /// the exact floor delta remains fixed rather than refreshing its budget.
-    pub(super) fn commit_native_terminal_clock_floor(
-        &mut self,
-        candidate: &mut State,
-        clock: RequestClock,
-        fixed_time: AuthorityTime,
-    ) -> Result<(), Response> {
-        let AuthorityTime::Precise(at) = fixed_time else {
-            return Err(rejected());
-        };
-        let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
-        let live = || {
-            deadline.check().map_err(|_| rejected())?;
-            let observed = clock.observed_at().map_err(|_| rejected())?;
-            if observed < at {
-                return Err(rejected());
-            }
-            deadline.check().map_err(|_| rejected())
-        };
-        live()?;
-        let source = self.state.as_ref().ok_or_else(rejected)?;
-        let root = self.native_root.as_ref().ok_or_else(rejected)?;
-        let mut expected = source.clone();
-        let time = expected
-            .engines
-            .kubernetes_artifact_time(fixed_time)
-            .map_err(|error| Response::error(503, &error.message))?;
-        let time = expected.auth.token_api_observed_time(time);
-        let mut changed = expected
-            .auth
-            .observe_token_api_time(time)
-            .map_err(|error| Response::error(503, &error.message))?;
-        changed |= expected
-            .engines
-            .observe_kubernetes_artifact_time(time)
-            .map_err(|error| Response::error(503, &error.message))?;
-        if !changed {
-            return Err(rejected());
-        }
-        expected.schema = expected.writer_schema();
-        live()?;
-        if candidate.schema != expected.schema
-            || candidate.cluster_id != expected.cluster_id
-            || candidate.replay_epoch != expected.replay_epoch
-            || candidate.global_lossless_json_format != expected.global_lossless_json_format
-            || candidate.namespace_protected.is_some()
-            || !candidate.namespace_leases.is_empty()
-        {
-            return Err(rejected());
-        }
-        for (actual, expected) in [
-            (
-                owner_store::serialize_owner(&candidate.auth),
-                owner_store::serialize_owner(&expected.auth),
-            ),
-            (
-                owner_store::serialize_owner(&candidate.namespaces),
-                owner_store::serialize_owner(&expected.namespaces),
-            ),
-            (
-                owner_store::serialize_owner(&candidate.database),
-                owner_store::serialize_owner(&expected.database),
-            ),
-            (
-                owner_store::serialize_owner(&candidate.raft_admin),
-                owner_store::serialize_owner(&expected.raft_admin),
-            ),
-        ] {
-            live()?;
-            if actual.map_err(|_| rejected())?.as_slice()
-                != expected.map_err(|_| rejected())?.as_slice()
-            {
-                return Err(rejected());
-            }
-            live()?;
-        }
-        let key = root.kv1_key().map_err(|_| rejected())?;
-        if candidate.engines.record_root().as_ref() != Some(&root.kv1)
-            || candidate
-                .engines
-                .record_address_key()
-                .is_none_or(|observed| observed.expose() != key.expose())
-        {
-            return Err(rejected());
-        }
-        let parent = root.kv2_parent_key().map_err(|_| rejected())?;
-        let check = || deadline.check().map_err(|_| RecordError::Invalid);
-        candidate
-            .engines
-            .validate_native_roots(&parent, &root.kv2, &check)
-            .map_err(|_| rejected())?;
-        let (actual_meta, _) = candidate
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
-        let (expected_meta, _) = expected
-            .engines
-            .project_v6_native(&parent, &check, |_, _| check())
-            .map_err(|_| rejected())?;
-        live()?;
-        if owner_store::serialize_owner(&actual_meta)
-            .map_err(|_| rejected())?
-            .as_slice()
-            != owner_store::serialize_owner(&expected_meta)
-                .map_err(|_| rejected())?
-                .as_slice()
-        {
-            return Err(rejected());
-        }
-        live()?;
-        let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
-        let expected_auth = owner_store::serialize_owner(&expected.auth).map_err(|_| rejected())?;
-        let plan = self.prepare_native_live_root(candidate)?;
-        let installed = self.commit_native_root_plan(
-            candidate,
-            plan,
-            false,
-            "clock-observation",
-            &mut |auth| {
-                live()?;
-                if owner_store::serialize_owner(auth)
-                    .map_err(|_| rejected())?
-                    .as_slice()
-                    != source_auth.as_slice()
-                {
-                    return Err(rejected());
-                }
-                let mut checked = auth.clone();
-                checked
-                    .observe_token_api_time(time)
-                    .map_err(|error| Response::error(503, &error.message))?;
-                if owner_store::serialize_owner(&checked)
-                    .map_err(|_| rejected())?
-                    .as_slice()
-                    != expected_auth.as_slice()
-                {
-                    return Err(rejected());
-                }
-                live()
-            },
-        )?;
-        *candidate = installed;
         Ok(())
     }
 }
