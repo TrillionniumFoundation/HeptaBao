@@ -186,7 +186,7 @@ pub(crate) fn decode(expected: &Kv1Key, bytes: &[u8]) -> Result<Cell, RecordErro
         || !cell.entry.is_object()
         || key(&cell.scope)
             .as_ref()
-            .map_or(true, |actual| actual != expected)
+            .is_none_or(|actual| actual != expected)
         || serde_json::to_vec(&cell)
             .map_err(|_| RecordError::Corrupt)?
             .as_slice()

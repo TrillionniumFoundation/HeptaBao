@@ -202,6 +202,7 @@ impl Service {
 #[cfg(test)]
 mod tests {
     use super::*;
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
     pub(super) fn definition(rate: f64, interval: u64, block: u64) -> Definition {
         Definition {
             name: "quota".into(),
@@ -214,71 +215,93 @@ mod tests {
         }
     }
     #[test]
-    fn quota_bucket_refills_full_burst_only_at_interval_tick_and_is_peer_local() {
+    fn quota_bucket_refills_full_burst_only_at_interval_tick_and_is_peer_local() -> TestResult {
         let mut runtime = Runtime::default();
         let d = definition(2.0, 10, 0);
         let now = Instant::now();
-        let ip = "127.0.0.1".parse().unwrap();
-        assert!(runtime.take_at(&d, ip, now).unwrap().is_none());
-        assert!(runtime.take_at(&d, ip, now).unwrap().is_none());
+        let ip = IpAddr::V4(std::net::Ipv4Addr::LOCALHOST);
+        assert!(
+            runtime
+                .take_at(&d, ip, now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
+                .is_none()
+        );
+        assert!(
+            runtime
+                .take_at(&d, ip, now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
+                .is_none()
+        );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(5))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_some()
         );
         assert!(
             runtime
-                .take_at(&d, "127.0.0.2".parse().unwrap(), now)
-                .unwrap()
+                .take_at(&d, IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 2)), now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_none()
         );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(10))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_none()
         );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(10))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_none()
         );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(10))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_some()
         );
+        Ok(())
     }
     #[test]
-    fn quota_block_is_not_extended_by_retry_and_update_resets_bucket() {
+    fn quota_block_is_not_extended_by_retry_and_update_resets_bucket() -> TestResult {
         let mut runtime = Runtime::default();
         let mut d = definition(1.0, 1, 5);
         let now = Instant::now();
-        let ip = "127.0.0.1".parse().unwrap();
-        assert!(runtime.take_at(&d, ip, now).unwrap().is_none());
-        assert!(runtime.take_at(&d, ip, now).unwrap().is_some());
+        let ip = IpAddr::V4(std::net::Ipv4Addr::LOCALHOST);
+        assert!(
+            runtime
+                .take_at(&d, ip, now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
+                .is_none()
+        );
+        assert!(
+            runtime
+                .take_at(&d, ip, now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
+                .is_some()
+        );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(4))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_some()
         );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(5))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_none()
         );
         d.revision = 2;
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(5))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_none()
         );
+        Ok(())
     }
 }
 
@@ -296,7 +319,7 @@ mod service_tests {
     ) -> Response {
         service.handle_request_at(
             ServiceRequest::new(method, path, "", token, body)
-                .with_origin_peer("127.0.0.1".parse().unwrap()),
+                .with_origin_peer(IpAddr::V4(std::net::Ipv4Addr::LOCALHOST)),
             100,
         )
     }
@@ -477,8 +500,11 @@ mod service_tests {
             assert!(denied.body.get("auth").is_none());
             for ((name, _, _), bucket) in &mut service.rate_limit_quotas.buckets {
                 if name == mount {
-                    bucket.limiter.as_mut().unwrap().start =
-                        Instant::now() - Duration::from_secs(3600);
+                    bucket
+                        .limiter
+                        .as_mut()
+                        .ok_or("quota fixture missing active limiter")?
+                        .start = Instant::now() - Duration::from_secs(3600);
                 }
             }
             assert_eq!(
@@ -744,24 +770,35 @@ mod service_tests {
         Ok(())
     }
     #[test]
-    fn rate_limit_idle_limiter_purge_cannot_shorten_independent_block_interval() {
+    fn rate_limit_idle_limiter_purge_cannot_shorten_independent_block_interval() -> TestResult {
         let mut runtime = Runtime::default();
         let d = super::tests::definition(1.0, 3600, 300);
         let now = Instant::now();
-        let ip = "127.0.0.1".parse().unwrap();
-        assert!(runtime.take_at(&d, ip, now).unwrap().is_none());
-        assert!(runtime.take_at(&d, ip, now).unwrap().is_some());
+        let ip = IpAddr::V4(std::net::Ipv4Addr::LOCALHOST);
+        assert!(
+            runtime
+                .take_at(&d, ip, now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
+                .is_none()
+        );
+        assert!(
+            runtime
+                .take_at(&d, ip, now)
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
+                .is_some()
+        );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(241))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_some()
         );
         assert!(
             runtime
                 .take_at(&d, ip, now + Duration::from_secs(300))
-                .unwrap()
+                .map_err(|()| "quota fixture exceeded runtime bounds")?
                 .is_none()
         );
+        Ok(())
     }
 }

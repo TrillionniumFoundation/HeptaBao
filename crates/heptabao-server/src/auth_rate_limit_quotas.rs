@@ -42,8 +42,11 @@ impl Definition {
             .path
             .strip_prefix("auth/")
             .ok_or_else(|| bad("quota path must identify a native AppRole mount or login"))?;
-        let mount = if self.role.is_empty() && relative.ends_with("/login") {
-            relative.strip_suffix("/login").unwrap()
+        let mount = if let Some(mount) = relative
+            .strip_suffix("/login")
+            .filter(|_| self.role.is_empty())
+        {
+            mount
         } else {
             relative
                 .strip_suffix('/')
@@ -180,10 +183,12 @@ impl AuthState {
         match (&mut self.rate_limit_quotas, &candidate.rate_limit_quotas) {
             (None, None) => Ok(()),
             (Some(installed), Some(admitted)) => {
-                let actual = crate::secret_serde::to_vec(installed, crate::MAX_APPLICATION_STATE_BYTES)
-                    .map_err(|_| err(503, "native quota owner serialization failed"))?;
-                let expected = crate::secret_serde::to_vec(admitted, crate::MAX_APPLICATION_STATE_BYTES)
-                    .map_err(|_| err(503, "native quota owner serialization failed"))?;
+                let actual =
+                    crate::secret_serde::to_vec(installed, crate::MAX_APPLICATION_STATE_BYTES)
+                        .map_err(|_| err(503, "native quota owner serialization failed"))?;
+                let expected =
+                    crate::secret_serde::to_vec(admitted, crate::MAX_APPLICATION_STATE_BYTES)
+                        .map_err(|_| err(503, "native quota owner serialization failed"))?;
                 if actual.as_slice() != expected.as_slice() {
                     return Err(err(
                         503,
@@ -407,12 +412,10 @@ impl AuthState {
                 let (mount, login_suffix) =
                     if mounts.get(relative).is_some_and(|m| m.kind == "approle") {
                         (relative, false)
-                    } else if role.is_empty()
-                        && relative.strip_suffix("/login").is_some_and(|mount| {
-                            mounts.get(mount).is_some_and(|m| m.kind == "approle")
-                        })
-                    {
-                        (relative.strip_suffix("/login").unwrap(), true)
+                    } else if let Some(mount) = relative.strip_suffix("/login").filter(|mount| {
+                        role.is_empty() && mounts.get(*mount).is_some_and(|m| m.kind == "approle")
+                    }) {
+                        (mount, true)
                     } else {
                         return Err(bad(
                             "quota path must identify an actual native AppRole mount or login",

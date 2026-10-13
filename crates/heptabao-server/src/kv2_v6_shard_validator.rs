@@ -239,6 +239,7 @@ pub(crate) fn validate_sharded_trial_index(graph: &Kv1Index) -> Result<(), Recor
 // No retirement/destruction capability is represented here: every old key
 // and its complete version history remain immutable. Product KV2 requires a
 // separate authorized retirement and migration protocol before it can write V6.
+#[cfg(test)]
 pub(crate) fn validate_immutable_transition(
     old: &Kv1Index,
     next: &Kv1Index,

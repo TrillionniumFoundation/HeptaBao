@@ -111,29 +111,39 @@ fn compare_read(
 ) -> TestResult {
     let (method, path, body) = request;
     let original = view.read(method, path, body, at(2000)?);
-    pin.inspect_namespace(key, frontier, CLUSTER, EPOCH, scope(), deadline, |opened| {
-        let restored = opened.read(
-            method,
-            path,
-            body,
-            at(2000).map_err(|_| CustodyError::Invalid)?,
-        );
-        match (&original, &restored) {
-            (Ok(a), Ok(b)) => {
-                assert_eq!((a.status, a.mutated), (b.status, b.mutated));
-                assert_eq!(a.body, b.body);
-                assert_eq!(
-                    crate::secret_serde::to_vec(&a.body, 16 * 1024 * 1024)
-                        .map_err(|_| CustodyError::Invalid)?,
-                    crate::secret_serde::to_vec(&b.body, 16 * 1024 * 1024)
-                        .map_err(|_| CustodyError::Invalid)?
-                );
+    pin.inspect_namespace(
+        NamespaceContext {
+            key: key,
+            frontier: frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        |opened| {
+            let restored = opened.read(
+                method,
+                path,
+                body,
+                at(2000).map_err(|_| CustodyError::Invalid)?,
+            );
+            match (&original, &restored) {
+                (Ok(a), Ok(b)) => {
+                    assert_eq!((a.status, a.mutated), (b.status, b.mutated));
+                    assert_eq!(a.body, b.body);
+                    assert_eq!(
+                        crate::secret_serde::to_vec(&a.body, 16 * 1024 * 1024)
+                            .map_err(|_| CustodyError::Invalid)?,
+                        crate::secret_serde::to_vec(&b.body, 16 * 1024 * 1024)
+                            .map_err(|_| CustodyError::Invalid)?
+                    );
+                }
+                (Err(a), Err(b)) => assert_eq!((a.status, &a.message), (b.status, &b.message)),
+                _ => return Err(CustodyError::Invalid),
             }
-            (Err(a), Err(b)) => assert_eq!((a.status, &a.message), (b.status, &b.message)),
-            _ => return Err(CustodyError::Invalid),
-        }
-        Ok(())
-    })?;
+            Ok(())
+        },
+    )?;
     Ok(())
 }
 fn apply(
@@ -149,16 +159,20 @@ fn apply(
     let before = digest(pin)?;
     let original = view.mutate(method, path, body, at(seconds)?);
     let result = pin.mutate_namespace(
-        key,
-        frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        method,
-        path,
-        body,
-        at(seconds)?,
+        NamespaceContext {
+            key: key,
+            frontier: frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: method,
+            path: path,
+            body: body,
+            now: at(seconds)?,
+        },
         &|| Ok(()),
     );
     assert_eq!(digest(pin)?, before, "old encrypted source changed");
@@ -310,14 +324,31 @@ fn encrypted_native_mutation_reopens_real_large_history_and_preserves_business_s
         )?;
     }
     assert_eq!(digest(&immutable_old)?, immutable_digest);
-    immutable_old.inspect_namespace(&key, &frontier, CLUSTER, EPOCH, scope(), deadline, |old| {
-        assert_eq!(old.counts(), (2, 40, 40));
-        Ok(())
-    })?;
-    let receipt =
-        pin.inspect_namespace(&key, &frontier, CLUSTER, EPOCH, scope(), deadline, |_| {
+    immutable_old.inspect_namespace(
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        |old| {
+            assert_eq!(old.counts(), (2, 40, 40));
             Ok(())
-        })?;
+        },
+    )?;
+    let receipt = pin.inspect_namespace(
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        |_| Ok(()),
+    )?;
     assert_eq!(
         (
             receipt.paths,
@@ -360,16 +391,20 @@ fn encrypted_native_mutation_authenticates_full_source_before_engine_and_recheck
     for phase in 1..=5 {
         let calls = Cell::new(0);
         let result = pin.mutate_namespace(
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            deadline,
-            "POST",
-            "data/item",
-            &json!({"data":{"value":"detached"}}),
-            at(1000)?,
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: deadline,
+            },
+            MutationRequest {
+                method: "POST",
+                path: "data/item",
+                body: &json!({"data":{"value":"detached"}}),
+                now: at(1000)?,
+            },
             &|| {
                 calls.set(calls.get() + 1);
                 if calls.get() == phase {
@@ -394,16 +429,20 @@ fn encrypted_native_mutation_authenticates_full_source_before_engine_and_recheck
         let short = OriginalDeadline::capture()?;
         let calls = Cell::new(0);
         let result = pin.mutate_namespace(
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            short,
-            "POST",
-            "data/item",
-            &json!({"data":{"value":"late"}}),
-            at(1000)?,
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: short,
+            },
+            MutationRequest {
+                method: "POST",
+                path: "data/item",
+                body: &json!({"data":{"value":"late"}}),
+                now: at(1000)?,
+            },
             &|| {
                 calls.set(calls.get() + 1);
                 if calls.get() == phase {
@@ -525,16 +564,20 @@ fn encrypted_native_mutation_authenticates_full_source_before_engine_and_recheck
     assert!(
         missing_pin
             .mutate_namespace(
-                &key,
-                &frontier,
-                CLUSTER,
-                EPOCH,
-                scope(),
-                deadline,
-                "POST",
-                "data/item",
-                &json!({"data":{}}),
-                at(1000)?,
+                NamespaceContext {
+                    key: &key,
+                    frontier: &frontier,
+                    cluster: CLUSTER,
+                    epoch: EPOCH,
+                    scope: scope(),
+                    deadline: deadline
+                },
+                MutationRequest {
+                    method: "POST",
+                    path: "data/item",
+                    body: &json!({"data":{}}),
+                    now: at(1000)?
+                },
                 &|| Ok(())
             )
             .is_err()
@@ -574,16 +617,20 @@ fn encrypted_native_mutation_cannot_replace_or_extend_original_request_deadline(
     let expired_original = OriginalDeadline(Instant::now() - Duration::from_millis(1));
     assert!(matches!(
         pin.mutate_namespace(
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            expired_original,
-            "POST",
-            "data/item",
-            &json!({"data":{}}),
-            at(1000)?,
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: expired_original
+            },
+            MutationRequest {
+                method: "POST",
+                path: "data/item",
+                body: &json!({"data":{}}),
+                now: at(1000)?
+            },
             &|| Ok(())
         ),
         Err(MutationError::Custody(CustodyError::Deadline))
@@ -591,16 +638,20 @@ fn encrypted_native_mutation_cannot_replace_or_extend_original_request_deadline(
     let _shorter = RequestDeadlineScope::enter(Instant::now() - Duration::from_millis(1));
     assert!(matches!(
         pin.mutate_namespace(
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            captured,
-            "POST",
-            "data/item",
-            &json!({"data":{}}),
-            at(1000)?,
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: captured
+            },
+            MutationRequest {
+                method: "POST",
+                path: "data/item",
+                body: &json!({"data":{}}),
+                now: at(1000)?
+            },
             &|| Ok(())
         ),
         Err(MutationError::Custody(CustodyError::Deadline))
@@ -718,16 +769,20 @@ fn encrypted_native_publication_preflight_rejects_aba_stale_generation() -> Test
     )?;
     let fence_a1 = NativePublicationFence::observed(1, &pin_a)?;
     let mutation_ab = pin_a.mutate_namespace(
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        "POST",
-        "data/item",
-        &json!({"data":{"value":"B"}}),
-        at(2000)?,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: "POST",
+            path: "data/item",
+            body: &json!({"data":{"value":"B"}}),
+            now: at(2000)?,
+        },
         &|| Ok(()),
     )?;
     assert!(mutation_ab.response.mutated && mutation_ab.candidate.is_some());
@@ -783,16 +838,20 @@ fn encrypted_native_publication_preflight_rejects_zero_rollover_and_malformed_ca
     ));
     let at_max = NativePublicationFence::observed(u64::MAX, &pin)?;
     let mut prepared = pin.mutate_namespace(
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        "POST",
-        "data/item",
-        &json!({"data":{"value":"next"}}),
-        at(2000)?,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: "POST",
+            path: "data/item",
+            body: &json!({"data":{"value":"next"}}),
+            now: at(2000)?,
+        },
         &|| Ok(()),
     )?;
     assert!(matches!(
@@ -832,16 +891,20 @@ fn encrypted_native_publication_preflight_preserves_noop_owner_and_original_dead
     )?;
     let fence = NativePublicationFence::observed(7, &pin)?;
     let noop = pin.mutate_namespace(
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        "DELETE",
-        "data/missing",
-        &json!({}),
-        at(2000)?,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: "DELETE",
+            path: "data/missing",
+            body: &json!({}),
+            now: at(2000)?,
+        },
         &|| Ok(()),
     )?;
     assert!(!noop.response.mutated);
@@ -888,16 +951,20 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
     let before = digest(&old)?;
     let base = NativePublicationFence::observed(1, &old)?;
     let mut pending = old.mutate_namespace(
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        "POST",
-        "data/blob",
-        &json!({"data":{"value":"R".repeat(768 * 1024)}}),
-        at(1200)?,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: "POST",
+            path: "data/blob",
+            body: &json!({"data":{"value":"R".repeat(768 * 1024)}}),
+            now: at(1200)?,
+        },
         &|| Ok(()),
     )?;
     let candidate = pending
@@ -912,13 +979,15 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
         base.authenticated_preflight(
             &base,
             &pending,
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            deadline,
-            &|| Ok(()),
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: deadline
+            },
+            &|| Ok(())
         )?
         .is_some()
     );
@@ -942,13 +1011,15 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
         base.authenticated_preflight(
             &base,
             &pending,
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            deadline,
-            &|| Ok(()),
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: deadline
+            },
+            &|| Ok(())
         )
         .is_err()
     );
@@ -976,13 +1047,15 @@ fn encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext()
         base.authenticated_preflight(
             &base,
             &pending,
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            deadline,
-            &|| Ok(()),
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: deadline
+            },
+            &|| Ok(())
         )
         .is_err()
     );
@@ -1016,28 +1089,34 @@ fn encrypted_native_live_cursor_second_read_detects_aba_after_aead() -> TestResu
     assert_ne!(base, later_same_header);
 
     let prepared = old.mutate_namespace(
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        "POST",
-        "data/blob",
-        &json!({"data":{"payload":"r1190".repeat(128 * 1024)}}),
-        at(1200)?,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: "POST",
+            path: "data/blob",
+            body: &json!({"data":{"payload":"r1190".repeat(128 * 1024)}}),
+            now: at(1200)?,
+        },
         &|| Ok(()),
     )?;
     assert!(prepared.response.mutated && prepared.candidate.is_some());
     let inspected = Cell::new(0);
     let got = base.authenticated_preflight_against_live_cursor(
         &prepared,
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
         &|| Ok(()),
         &|| {
             inspected.set(inspected.get() + 1);
@@ -1084,28 +1163,34 @@ fn encrypted_native_live_cursor_stable_success_and_owner_revoke() -> TestResult 
     let pinned = digest(&old)?;
     let committed = NativePublicationFence::observed(21, &old)?;
     let prepared = old.mutate_namespace(
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
-        "POST",
-        "data/item",
-        &json!({"data":{"value":"next"}}),
-        at(1200)?,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
+        MutationRequest {
+            method: "POST",
+            path: "data/item",
+            body: &json!({"data":{"value":"next"}}),
+            now: at(1200)?,
+        },
         &|| Ok(()),
     )?;
     let reads = Cell::new(0);
     let next = committed
         .authenticated_preflight_against_live_cursor(
             &prepared,
-            &key,
-            &frontier,
-            CLUSTER,
-            EPOCH,
-            scope(),
-            deadline,
+            NamespaceContext {
+                key: &key,
+                frontier: &frontier,
+                cluster: CLUSTER,
+                epoch: EPOCH,
+                scope: scope(),
+                deadline: deadline,
+            },
             &|| Ok(()),
             &|| {
                 reads.set(reads.get() + 1);
@@ -1127,12 +1212,14 @@ fn encrypted_native_live_cursor_stable_success_and_owner_revoke() -> TestResult 
     let observations = Cell::new(0);
     let failure = committed.authenticated_preflight_against_live_cursor(
         &prepared,
-        &key,
-        &frontier,
-        CLUSTER,
-        EPOCH,
-        scope(),
-        deadline,
+        NamespaceContext {
+            key: &key,
+            frontier: &frontier,
+            cluster: CLUSTER,
+            epoch: EPOCH,
+            scope: scope(),
+            deadline: deadline,
+        },
         &|| {
             if revoked.get() {
                 Err(CustodyError::Unavailable)

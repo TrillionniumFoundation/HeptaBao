@@ -366,7 +366,12 @@ mod mutation;
 /// A private decoded graph view and its authenticated graph cache. This type
 /// grants no storage writes or authority to install a writable Service owner.
 #[derive(Clone)]
-pub(crate) struct NativeReadView(DetachedOwner, Option<NativeGraph>, mutation::PendingPaths);
+pub(crate) struct NativeReadView {
+    owner: DetachedOwner,
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    graph: Option<NativeGraph>,
+    pending: mutation::PendingPaths,
+}
 // A live native view cannot be saved or reconstructed as inline KV2 JSON.
 // The independent graph and actual custody reader are mandatory.
 impl Serialize for NativeReadView {
@@ -391,19 +396,20 @@ impl<'de> Deserialize<'de> for NativeReadView {
 
 impl NativeReadView {
     pub(crate) fn contains(&self, path: &str) -> bool {
-        self.0.contains(path)
+        self.owner.contains(path)
     }
 
     pub(crate) fn has_metadata_cas_state(&self) -> bool {
-        self.0.has_metadata_cas_state()
+        self.owner.has_metadata_cas_state()
     }
     pub(crate) fn validate_lossless_state(&self) -> Result<()> {
-        self.0.validate_lossless_state()
+        self.owner.validate_lossless_state()
     }
     #[cfg(test)]
     pub(crate) fn has_lossless_json_state(&self) -> bool {
-        self.0.has_lossless_json_state()
+        self.owner.has_lossless_json_state()
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn matches_authenticated_root(
         &self,
         parent: &AddressKey,
@@ -417,6 +423,7 @@ impl NativeReadView {
         check()?;
         Ok(matches)
     }
+    #[cfg(test)]
     fn advance_authenticated_cache(
         &mut self,
         parent: &AddressKey,
@@ -429,14 +436,15 @@ impl NativeReadView {
             return Err(RecordError::Corrupt);
         }
         check()?;
-        self.1 = Some(graph.0);
-        self.2 = mutation::PendingPaths::default();
+        self.graph = Some(graph.0);
+        self.pending = mutation::PendingPaths::default();
         check()
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn cached_scope_matches(&self, input: NativeScope<'_>) -> CodecResult<bool> {
         let scope = Scope::new(input)?;
         Ok(self
-            .1
+            .graph
             .as_ref()
             .is_some_and(|graph| graph.scope.matches(&scope)))
     }
@@ -448,7 +456,12 @@ impl NativeReadView {
     ) -> CodecResult<Self> {
         let graph = NativeGraph::open(base, scope, root, reader)?;
         let owner = graph.decode()?;
-        Ok(Self(owner, Some(graph), mutation::PendingPaths::default()))
+        Ok(Self {
+            owner,
+            #[cfg(any(test, feature = "fixture-native-v6-service"))]
+            graph: Some(graph),
+            pending: mutation::PendingPaths::default(),
+        })
     }
     pub(crate) fn read(
         &self,
@@ -457,17 +470,17 @@ impl NativeReadView {
         body: &Value,
         now: Timestamp,
     ) -> Result<EngineResponse> {
-        self.0.handle_read_precise(method, path, body, now)
+        self.owner.handle_read_precise(method, path, body, now)
     }
     pub(crate) fn counts(&self) -> (usize, usize, usize) {
         (
-            self.0.entries.len(),
-            self.0
+            self.owner.entries.len(),
+            self.owner
                 .entries
                 .values()
                 .map(|entry| entry.versions.len())
                 .sum(),
-            self.0
+            self.owner
                 .entries
                 .values()
                 .flat_map(|entry| entry.versions.values())
@@ -476,7 +489,7 @@ impl NativeReadView {
         )
     }
     pub(crate) fn has_lossless_state(&self) -> bool {
-        self.0.has_lossless_import_state()
+        self.owner.has_lossless_import_state()
     }
     /// Mutate only a detached owner. This grants no Service or storage authority.
     pub(crate) fn mutate(
@@ -488,49 +501,60 @@ impl NativeReadView {
     ) -> Result<EngineResponse> {
         // Keep only a shared baseline for the selected path. Existing payloads
         // remain shared and are never serialized merely to detect a change.
-        let captured = self.2.capture(&self.0, path)?;
-        let response = self.0.handle_precise(method, path, body, now);
+        let captured = self.pending.capture(&self.owner, path)?;
+        let response = self.owner.handle_precise(method, path, body, now);
         if !response.as_ref().is_ok_and(|response| response.mutated) {
-            self.2.discard(captured);
+            self.pending.discard(captured);
         }
         response
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn encode(
         &self,
         parent: &AddressKey,
         scope: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<NativeCellGraph> {
-        match &self.1 {
-            Some(graph) => Ok(NativeCellGraph(
-                graph.with_updates(&self.0, parent, scope, &self.2, check)?,
-            )),
-            None => NativeCellGraph::encode(&self.0, parent, scope, check),
+        match &self.graph {
+            Some(graph) => Ok(NativeCellGraph(graph.with_updates(
+                &self.owner,
+                parent,
+                scope,
+                &self.pending,
+                check,
+            )?)),
+            None => NativeCellGraph::encode(&self.owner, parent, scope, check),
         }
     }
     #[cfg(test)]
     pub(crate) fn fixture_lossless_import(bytes: &[u8]) -> CodecResult<Self> {
         let owner = Kv2::from_lossless_import_json(bytes).map_err(|_| RecordError::Corrupt)?;
         validate_owner(&owner)?;
-        Ok(Self(
-            DetachedOwner(owner),
-            None,
-            mutation::PendingPaths::default(),
-        ))
+        Ok(Self {
+            owner: DetachedOwner(owner),
+            graph: None,
+            pending: mutation::PendingPaths::default(),
+        })
     }
     #[cfg(test)]
     pub(crate) fn fixture_owner(bytes: &[u8]) -> CodecResult<Self> {
         preflight_owner(bytes)?;
         let owner: DetachedOwner = canonical(bytes, MAX_GRAPH_BYTES)?;
         validate_owner(&owner)?;
-        Ok(Self(owner, None, mutation::PendingPaths::default()))
+        Ok(Self {
+            owner,
+            graph: None,
+            pending: mutation::PendingPaths::default(),
+        })
     }
 }
 
 /// Actual native codec graph for custody projection. The caller must keep the
 /// graph inside its original key/deadline callback and encrypt every object
 /// before allowing a retained pin to leave that callback.
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 pub(crate) struct NativeCellGraph(NativeGraph);
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl NativeCellGraph {
     fn encode(
         owner: &Kv2,
@@ -556,6 +580,7 @@ impl NativeCellGraph {
             check()
         })
     }
+    #[cfg(test)]
     pub(crate) fn open_view(
         parent: &AddressKey,
         scope: NativeScope<'_>,
@@ -570,11 +595,11 @@ impl NativeCellGraph {
         check()?;
         let graph = NativeGraph { scope, key, index };
         let owner = graph.decode_checked(check)?;
-        Ok(NativeReadView(
+        Ok(NativeReadView {
             owner,
-            Some(graph),
-            mutation::PendingPaths::default(),
-        ))
+            graph: Some(graph),
+            pending: mutation::PendingPaths::default(),
+        })
     }
 }
 
@@ -695,6 +720,7 @@ pub(crate) struct ReaderFixture {
 /// leave only through the caller's checked visitor; no publication is granted.
 /// The caller must encrypt each object before retaining it outside custody.
 impl EngineState {
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn project_v6_native(
         &self,
         parent: &AddressKey,

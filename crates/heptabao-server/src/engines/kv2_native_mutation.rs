@@ -10,11 +10,12 @@ pub(super) struct PendingPaths(Vec<PathBaseline>);
 #[derive(Clone)]
 struct PathBaseline {
     path: Zeroizing<String>,
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     entry: Option<Entry>,
 }
 
 impl PendingPaths {
-    pub(super) fn capture(&mut self, owner: &Kv2, request: &str) -> Result<Option<usize>> {
+    pub(super) fn capture(&mut self, _owner: &Kv2, request: &str) -> Result<Option<usize>> {
         let Some((operation, path)) = request.split_once('/') else {
             return Ok(None);
         };
@@ -32,7 +33,8 @@ impl PendingPaths {
         let position = self.0.len();
         self.0.push(PathBaseline {
             path: Zeroizing::new(path.to_owned()),
-            entry: owner.entries.get(path).cloned(),
+            #[cfg(any(test, feature = "fixture-native-v6-service"))]
+            entry: _owner.entries.get(path).cloned(),
         });
         Ok(Some(position))
     }
@@ -43,6 +45,7 @@ impl PendingPaths {
     }
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 fn edit(
     index: &mut Kv1Index,
     record: Kv1Key,
@@ -54,6 +57,7 @@ fn edit(
     check()
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl NativeGraph {
     pub(super) fn with_updates(
         &self,

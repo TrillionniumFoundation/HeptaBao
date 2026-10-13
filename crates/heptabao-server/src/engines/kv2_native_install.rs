@@ -3,6 +3,7 @@
 use super::*;
 use crate::state_record_root_v6::{Kv2GraphRef, MountScope};
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl EngineState {
     pub(crate) fn install_native_views(
         &mut self,
@@ -40,6 +41,7 @@ impl EngineState {
     /// The Service writer must separately authenticate and atomically publish
     /// those roots. This prevents later point writes from reencoding payloads
     /// introduced by earlier successful candidates.
+    #[cfg(test)]
     pub(crate) fn advance_native_caches(
         &mut self,
         parent: &AddressKey,

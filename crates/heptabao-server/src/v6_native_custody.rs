@@ -1,14 +1,25 @@
 //! Actual-key, operation-scoped native KV2 custody. Retained pins contain
 //! encrypted objects only and cannot activate Service or manufacture a deadline.
+#[cfg(test)]
 use crate::engines::kv2_native_records::{NativeCellGraph, NativeReadView, NativeScope};
+#[cfg(test)]
 use crate::namespace_custody::{Binding, InheritedParent, Key};
+#[cfg(test)]
 use crate::state_record_root_v6::MountScope;
-use crate::state_records::{Kv1Root, ObjectId, ObjectRef, RecordError, RecordReader, StagedObject};
+use crate::state_records::RecordError;
+#[cfg(test)]
+use crate::state_records::{Kv1Root, ObjectId, ObjectRef, RecordReader, StagedObject};
+#[cfg(test)]
 use crate::v6_record_resources::{CipherDomain, CipherObject, CipherReference};
+#[cfg(test)]
 use serde::{Deserialize, Serialize};
+#[cfg(test)]
 use std::collections::{BTreeMap, BTreeSet};
+#[cfg(test)]
 use std::sync::Arc;
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 use std::time::Instant;
+#[cfg(test)]
 use zeroize::Zeroizing;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -46,14 +57,17 @@ impl From<RecordError> for CustodyError {
     }
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 #[derive(Clone, Copy)]
 pub(crate) struct OriginalDeadline(Instant);
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl OriginalDeadline {
     pub(crate) fn capture() -> Result<Self, CustodyError> {
         let deadline = Self(crate::request_deadline::current().ok_or(CustodyError::Deadline)?);
         deadline.check()?;
         Ok(deadline)
     }
+    #[cfg(feature = "fixture-native-v6-service")]
     pub(crate) fn instant(self) -> Instant {
         self.0
     }
@@ -65,12 +79,14 @@ impl OriginalDeadline {
             Ok(())
         }
     }
+    #[cfg(test)]
     fn record_check(self) -> Result<(), RecordError> {
         self.check().map_err(|_| RecordError::Invalid)
     }
 }
 
 /// Authenticated normal namespace owner facts, never a key/capability grant.
+#[cfg(test)]
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct NamespaceFrontier {
@@ -80,6 +96,7 @@ pub struct NamespaceFrontier {
     pub inherited_parent: Option<InheritedParent>,
 }
 
+#[cfg(test)]
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct NativeHeader {
@@ -93,10 +110,29 @@ struct NativeHeader {
 
 /// An encrypted native graph pin. There are deliberately no NamespaceKey,
 /// AddressKey, decoded Kv2 or plaintext namespace/header fields in this type.
+#[cfg(test)]
 pub struct NativeCipherPin {
     pub(crate) header: CipherReference,
     pub(crate) objects: Arc<BTreeMap<String, Arc<CipherObject>>>,
 }
+#[cfg(test)]
+struct NamespaceContext<'a> {
+    key: &'a Key,
+    frontier: &'a NamespaceFrontier,
+    cluster: &'a str,
+    epoch: u64,
+    scope: NativeScope<'a>,
+    deadline: OriginalDeadline,
+}
+#[cfg(test)]
+struct MutationRequest<'a> {
+    method: &'a str,
+    path: &'a str,
+    body: &'a serde_json::Value,
+    now: crate::auth::Timestamp,
+}
+
+#[cfg(test)]
 impl NativeCipherPin {
     pub fn object_count(&self) -> usize {
         self.objects.len()
@@ -206,7 +242,7 @@ impl NativeCipherPin {
     ) -> Result<NativeReadView, CustodyError> {
         deadline.check()?;
         let domain = key.v6_domain(cluster, epoch, scope)?;
-        if self.header.domain != domain || !key.matches_v6_frontier(&frontier) {
+        if self.header.domain != domain || !key.matches_v6_frontier(frontier) {
             return Err(CustodyError::Unavailable);
         }
         let object = self
@@ -312,14 +348,17 @@ impl NativeCipherPin {
     }
     pub(crate) fn inspect_namespace(
         &self,
-        key: &Key,
-        frontier: &NamespaceFrontier,
-        cluster: &str,
-        epoch: u64,
-        scope: NativeScope<'_>,
-        deadline: OriginalDeadline,
+        context: NamespaceContext<'_>,
         inspect: impl FnOnce(&NativeReadView) -> Result<(), CustodyError>,
     ) -> Result<NativeCustodyReceipt, CustodyError> {
+        let NamespaceContext {
+            key,
+            frontier,
+            cluster,
+            epoch,
+            scope,
+            deadline,
+        } = context;
         let view = self.open_namespace(key, frontier, cluster, epoch, scope, deadline)?;
         inspect(&view)?;
         deadline.check()?;
@@ -345,18 +384,24 @@ impl NativeCipherPin {
     /// the original key/lease callback until after publication admission.
     pub(crate) fn mutate_namespace(
         &self,
-        key: &Key,
-        frontier: &NamespaceFrontier,
-        cluster: &str,
-        epoch: u64,
-        scope: NativeScope<'_>,
-        deadline: OriginalDeadline,
-        method: &str,
-        path: &str,
-        body: &serde_json::Value,
-        now: crate::auth::Timestamp,
+        context: NamespaceContext<'_>,
+        request: MutationRequest<'_>,
         check_owner: &impl Fn() -> Result<(), CustodyError>,
     ) -> Result<NativeMutation, MutationError> {
+        let NamespaceContext {
+            key,
+            frontier,
+            cluster,
+            epoch,
+            scope,
+            deadline,
+        } = context;
+        let MutationRequest {
+            method,
+            path,
+            body,
+            now,
+        } = request;
         let check = || -> Result<(), CustodyError> {
             deadline.check()?;
             check_owner()?;
@@ -396,15 +441,18 @@ impl NativeCipherPin {
     }
 }
 
+#[cfg(test)]
 pub(crate) enum MutationError {
     Custody(CustodyError),
     Engine(crate::engines::EngineError),
 }
+#[cfg(test)]
 impl From<CustodyError> for MutationError {
     fn from(error: CustodyError) -> Self {
         Self::Custody(error)
     }
 }
+#[cfg(test)]
 impl std::fmt::Debug for MutationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -416,6 +464,7 @@ impl std::fmt::Debug for MutationError {
         }
     }
 }
+#[cfg(test)]
 impl std::fmt::Display for MutationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -428,10 +477,12 @@ impl std::fmt::Display for MutationError {
         }
     }
 }
+#[cfg(test)]
 impl std::error::Error for MutationError {}
 
 /// The response has the normal EngineResponse zeroizing destructor. No decoded
 /// owner, namespace key, address key or plaintext pin can leave the operation.
+#[cfg(test)]
 pub(crate) struct NativeMutation {
     /// Required publication CAS base; namespace seal/key frontiers alone do not
     /// distinguish successive data mutations. This is still no publish permit.
@@ -446,11 +497,13 @@ pub(crate) struct NativeMutation {
 ///
 /// No constructor, successful preflight, or result here grants storage writes,
 /// Service installation, migration, namespace membership, or response delivery.
+#[cfg(test)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct NativePublicationFence {
     generation: std::num::NonZeroU64,
     header: CipherReference,
 }
+#[cfg(test)]
 impl NativePublicationFence {
     /// The caller MUST authenticate this generation against its actual
     /// persistent root/linearized HA frontier; this helper cannot do so.
@@ -475,14 +528,17 @@ impl NativePublicationFence {
         &self,
         actual: &Self,
         prepared: &NativeMutation,
-        key: &Key,
-        frontier: &NamespaceFrontier,
-        cluster: &str,
-        epoch: u64,
-        scope: NativeScope<'_>,
-        deadline: OriginalDeadline,
+        context: NamespaceContext<'_>,
         check_owner: &impl Fn() -> Result<(), CustodyError>,
     ) -> Result<Option<Self>, CustodyError> {
+        let NamespaceContext {
+            key,
+            frontier,
+            cluster,
+            epoch,
+            scope,
+            deadline,
+        } = context;
         let next = self.preflight(actual, prepared, deadline, check_owner)?;
         if let Some(pin) = prepared.candidate.as_ref() {
             // open_namespace proves the header MAC, all object AEAD tags,
@@ -506,27 +562,32 @@ impl NativePublicationFence {
     pub(crate) fn authenticated_preflight_against_live_cursor(
         &self,
         prepared: &NativeMutation,
-        key: &Key,
-        frontier: &NamespaceFrontier,
-        cluster: &str,
-        epoch: u64,
-        scope: NativeScope<'_>,
-        deadline: OriginalDeadline,
+        context: NamespaceContext<'_>,
         check_owner: &impl Fn() -> Result<(), CustodyError>,
         current: &impl Fn() -> Result<Self, CustodyError>,
     ) -> Result<Option<Self>, CustodyError> {
-        deadline.check()?;
-        let before = current()?;
-        deadline.check()?;
-        let next = self.authenticated_preflight(
-            &before,
-            prepared,
+        let NamespaceContext {
             key,
             frontier,
             cluster,
             epoch,
             scope,
             deadline,
+        } = context;
+        deadline.check()?;
+        let before = current()?;
+        deadline.check()?;
+        let next = self.authenticated_preflight(
+            &before,
+            prepared,
+            NamespaceContext {
+                key: key,
+                frontier: frontier,
+                cluster: cluster,
+                epoch: epoch,
+                scope: scope,
+                deadline: deadline,
+            },
             check_owner,
         )?;
         // A->B->A may restore the original content-addressed encrypted root,
@@ -589,6 +650,7 @@ impl NativePublicationFence {
         }))
     }
 }
+#[cfg(test)]
 #[derive(Debug, Serialize)]
 pub struct NativeCustodyReceipt {
     pub paths: usize,

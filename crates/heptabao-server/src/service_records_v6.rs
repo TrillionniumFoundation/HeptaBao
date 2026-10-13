@@ -326,6 +326,7 @@ mod tests;
 
 /// Actual Service source projection. Publication and reader admission remain
 /// closed until the guarded publisher and restart path consume this plan.
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 pub(super) struct NativeRootMigrationPlan {
     pub root: RecordStateRootV6,
     pub bytes: Zeroizing<Vec<u8>>,
@@ -338,10 +339,12 @@ pub(super) struct NativeRootMigrationPlan {
 
 // Fail-closed private prepublication reader. It consumes only this plan's
 // immutable staged objects and never loads loose files or changes Service.
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 struct NativeMigrationObjects<'a> {
     objects: &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
     deadline: crate::v6_native_custody::OriginalDeadline,
 }
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl ObjectSource for NativeMigrationObjects<'_> {
     fn read(
         &self,
@@ -369,6 +372,7 @@ impl ObjectSource for NativeMigrationObjects<'_> {
 // readable under the signed identity, per-domain keys, source owner schema,
 // or the native KV2 reader. Reopen everything *before* a writer can receive
 // the immutable migration candidate, including on the initial V5->V6 move.
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result<(), ReadError> {
     plan.deadline.check().map_err(|_| ReadError::Invalid)?;
     if plan.root.encode()?.as_slice() != plan.bytes.as_slice() {
@@ -398,6 +402,7 @@ fn validate_native_root_migration_plan(plan: &NativeRootMigrationPlan) -> Result
 }
 
 impl Service {
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(super) fn prepare_native_root_migration(
         &mut self,
         check: &impl Fn() -> Result<(), RecordError>,
@@ -652,6 +657,7 @@ impl Service {
     }
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> String {
     let role = match domain {
         ObjectDomain::Owner(role) => format!("owner/{}", role.name()),
@@ -665,12 +671,15 @@ pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> S
         reference.resource().trim_start_matches("state-records/v5/")
     )
 }
+#[cfg(test)]
 const NATIVE_SIDE_ROOT: &str = "state-native-v6/root";
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 struct NativeDurableSource<'a> {
     durable: &'a DurableService<AeadBarrier>,
     deadline: crate::v6_native_custody::OriginalDeadline,
 }
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl ObjectSource for NativeDurableSource<'_> {
     fn read(
         &self,
@@ -688,6 +697,7 @@ impl ObjectSource for NativeDurableSource<'_> {
         Ok(bytes)
     }
 }
+#[cfg(test)]
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct NativePublicationCursor {
@@ -699,6 +709,7 @@ struct NativePublicationCursor {
     generation: u64,
     root_digest: [u8; 32],
 }
+#[cfg(test)]
 pub(super) struct NativeSidePublicationReceipt {
     pub source_identity: crate::state_record_root::StateIdentity,
     pub source_generation: u64,
@@ -710,6 +721,7 @@ impl Service {
     /// Its cursor and root never replace application `state` or admit a V6
     /// request reader/writer. This private primitive has no HTTP route and
     /// grants no business-request audit, HA or activated migration authority.
+    #[cfg(test)]
     pub(super) fn publish_native_root_side_snapshot(
         &mut self,
         plan: NativeRootMigrationPlan,
@@ -925,6 +937,7 @@ impl Service {
     }
 }
 
+#[cfg(test)]
 fn materialize_native_side_snapshot(
     durable: &DurableService<AeadBarrier>,
     source_identity: crate::state_record_root::StateIdentity,

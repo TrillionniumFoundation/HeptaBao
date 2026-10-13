@@ -1,5 +1,6 @@
 //! Typed V6 encrypted resources. Syntax/retention is never capability admission.
 use crate::state_record_root_v6::OwnerDomain;
+#[cfg(test)]
 use crate::state_records::{ObjectId, ObjectKind, ObjectRef, RecordError};
 use serde::{Deserialize, Serialize};
 use zeroize::Zeroizing;
@@ -24,6 +25,7 @@ pub struct CipherReference {
     pub payload_bytes: u64,
 }
 impl CipherReference {
+    #[cfg(test)]
     pub(crate) fn new(domain: CipherDomain, reference: &ObjectRef) -> Self {
         Self {
             domain,
@@ -34,6 +36,7 @@ impl CipherReference {
             payload_bytes: reference.payload_bytes,
         }
     }
+    #[cfg(test)]
     pub(crate) fn plain_reference(&self) -> Result<ObjectRef, RecordError> {
         let kind = match self.kind {
             1 => ObjectKind::Block,
@@ -86,6 +89,7 @@ impl CipherReference {
         };
         format!("state-records/v6/{role}/{}", hex(&self.id))
     }
+    #[cfg(test)]
     pub(crate) fn aad(
         &self,
         cluster: &str,
@@ -118,6 +122,7 @@ impl CipherObject {
     pub fn ciphertext(&self) -> &[u8] {
         &self.bytes
     }
+    #[cfg(test)]
     pub(crate) fn validate(&self) -> Result<(), RecordError> {
         self.reference.plain_reference()?;
         if self.bytes.len() != self.reference.encoded_bytes as usize + 32

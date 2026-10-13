@@ -339,6 +339,7 @@ impl EngineState {
 
     /// Readdress the actual authenticated root-only KV1 graph for a new record
     /// format. No publication or independent namespace custody is granted.
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn rekey_root_records_checked(
         &self,
         key: Arc<AddressKey>,
