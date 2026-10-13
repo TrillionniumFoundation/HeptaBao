@@ -66,7 +66,13 @@ fn immutable_file_stage_and_real_reopen_preserve_legacy_bundle() -> TestResult {
         Err(BackendError::Unavailable)
     ));
     let mut reopened = FileBackend::open(&root.0)?;
-    assert_eq!(reopened.immutable_blob_profile()?, profile);
+    let reopened_profile = reopened.immutable_blob_profile()?;
+    assert_eq!(
+        reopened_profile.directory_identity,
+        profile.directory_identity
+    );
+    assert_ne!(reopened_profile, profile);
+    assert!(!profile.is_live());
     let cold = reopened.pin_immutable_ciphertext(address, bytes.len())?;
     assert_eq!(cold.read_ciphertext()?.as_slice(), bytes.as_slice());
     assert_eq!(reopened.load()?, initial);
@@ -257,8 +263,12 @@ fn immutable_ack_loss_after_actual_fsynced_publication_revokes_until_reopen() ->
     let old_pin = published(backend.stage_immutable_ciphertext(locator(8)?, b"old-object")?)?;
     let address = locator(9)?;
     assert!(matches!(
-        backend
-            .stage_immutable_ciphertext_checked(address, b"new-object", || Err(BackendError::Io)),
+        backend.stage_immutable_ciphertext_with_ack_hook(
+            address,
+            b"new-object",
+            &mut || Ok(()),
+            || Err(BackendError::Io)
+        ),
         Err(BackendError::OutcomeUnknown)
     ));
     assert_eq!(fs::read(root.0.join(address.leaf()))?, b"new-object");
@@ -425,5 +435,134 @@ fn immutable_backend_default_is_unsupported_without_object_effects() -> TestResu
     ));
     assert!(!root.0.join(address.leaf()).exists());
     assert!(!root.0.join(TEMPORARY_LEAF).exists());
+    Ok(())
+}
+
+#[test]
+fn immutable_owner_profile_is_private_lineage_and_does_not_extend_writer_lock() -> TestResult {
+    let root = Root::new()?;
+    let mut backend = FileBackend::create_new(&root.0)?;
+    let address = locator(15)?;
+    let pin = published(backend.stage_immutable_ciphertext(address, b"ciphertext")?)?;
+    let original = backend.immutable_blob_profile()?;
+    assert_eq!(backend.immutable_blob_profile()?, original);
+    assert!(pin.matches_profile(&original));
+    let retained = original.clone();
+    backend.close()?;
+    assert!(!retained.is_live());
+    assert!(!pin.matches_profile(&retained));
+    let reopened = FileBackend::open(&root.0)?;
+    let current = reopened.immutable_blob_profile()?;
+    assert_eq!(current.directory_identity, retained.directory_identity);
+    assert_ne!(current, retained);
+    let cold = reopened.pin_immutable_ciphertext(address, 10)?;
+    assert!(cold.matches_profile(&current));
+    assert!(!cold.matches_profile(&retained));
+    assert!(!pin.matches_profile(&current));
+    Ok(())
+}
+
+#[test]
+fn immutable_original_deadline_after_actual_pread_prevents_delivery_and_retry() -> TestResult {
+    use std::{
+        os::unix::fs::FileExt,
+        time::{Duration, Instant},
+    };
+    for interrupt in [false, true] {
+        let root = Root::new()?;
+        let mut backend = FileBackend::create_new(&root.0)?;
+        let pin = published(backend.stage_immutable_ciphertext(locator(16)?, b"ciphertext")?)?;
+        let original_deadline = Instant::now() + Duration::from_millis(500);
+        let mut gate = || {
+            if Instant::now() >= original_deadline {
+                Err(io::Error::other("original deadline expired"))
+            } else {
+                Ok(())
+            }
+        };
+        let mut actual_reads = 0;
+        let result = pin.read_ciphertext_with_reader(&mut gate, |file, bytes, offset| {
+            actual_reads += 1;
+            let actual = file.read_at(bytes, offset)?;
+            std::thread::sleep(Duration::from_millis(550));
+            if interrupt {
+                Err(io::Error::from(io::ErrorKind::Interrupted))
+            } else {
+                Ok(actual)
+            }
+        });
+        assert_eq!(actual_reads, 1);
+        assert!(matches!(result, Err(PinReadError::Gate(_))));
+        assert_eq!(pin.read_ciphertext()?.as_slice(), b"ciphertext");
+    }
+    Ok(())
+}
+
+#[test]
+fn immutable_stage_gate_before_and_after_link_never_becomes_canonical_unknown() -> TestResult {
+    let root = Root::new()?;
+    let mut backend = FileBackend::create_new(&root.0)?;
+    let address = locator(17)?;
+    let profile = backend.immutable_blob_profile()?;
+    assert!(matches!(
+        backend.stage_immutable_ciphertext_checked(address, b"ciphertext", &mut || Err(
+            BackendError::Unavailable
+        )),
+        Err(BackendError::Unavailable)
+    ));
+    assert!(backend.directory.entries()?.next().is_none());
+    let actual_leaf = root.0.join(address.leaf());
+    let mut gate = || {
+        if actual_leaf.exists() {
+            Err(BackendError::Unavailable)
+        } else {
+            Ok(())
+        }
+    };
+    assert!(matches!(
+        backend.stage_immutable_ciphertext_checked(address, b"ciphertext", &mut gate),
+        Err(BackendError::Unavailable)
+    ));
+    assert!(actual_leaf.exists());
+    assert_eq!(fs::metadata(&actual_leaf)?.nlink(), 2);
+    assert!(profile.is_live());
+    assert_eq!(backend.immutable_blob_profile()?, profile);
+    // A new caller gate can clean the unadmitted temp link and authenticate the
+    // existing object later; the rejected operation never returned a root grant.
+    let ImmutableBlobStage::AlreadyExists(pin) =
+        backend.stage_immutable_ciphertext(address, b"othernonce")?
+    else {
+        return Err("unadmitted object was overwritten".into());
+    };
+    assert!(pin.matches_profile(&profile));
+    assert_eq!(pin.read_ciphertext()?.as_slice(), b"ciphertext");
+    Ok(())
+}
+
+#[test]
+fn immutable_checked_box_dispatch_retains_caller_gate_and_default_unsupported() -> TestResult {
+    let root = Root::new()?;
+    let mut backend: Box<dyn DurableBackend> = Box::new(FileBackend::create_new(&root.0)?);
+    let address = locator(18)?;
+    let mut checks = 0;
+    let mut gate = || {
+        checks += 1;
+        Ok(())
+    };
+    let pin = published(backend.stage_immutable_ciphertext_checked(
+        address,
+        b"ciphertext",
+        &mut gate,
+    )?)?;
+    assert!(checks > 1);
+    assert!(pin.matches_profile(&backend.immutable_blob_profile()?));
+    let other_root = Root::new()?;
+    let mut unsupported: Box<dyn DurableBackend> =
+        Box::new(LegacyOnly(FileBackend::create_new(&other_root.0)?));
+    assert!(matches!(
+        unsupported.stage_immutable_ciphertext_checked(address, b"ciphertext", &mut || Ok(())),
+        Err(BackendError::Unsupported)
+    ));
+    assert!(!other_root.0.join(address.leaf()).exists());
     Ok(())
 }

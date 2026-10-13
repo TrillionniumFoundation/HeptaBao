@@ -6,7 +6,7 @@
 use super::{BackendError, FileBackend};
 use heptabao_filesystem_guard::{
     ExclusiveDirectory, FileAccess, ImmutablePublication as FilePublication,
-    ImmutablePublicationError,
+    ImmutablePublicationCheckedError, ImmutablePublicationError,
 };
 use std::{
     fmt,
@@ -66,19 +66,68 @@ impl fmt::Debug for BlobLocator {
     }
 }
 
-/// Observed physical facts only, not a native layout or root admission.
-#[derive(Clone, Copy, Eq, PartialEq)]
+/// Actual physical owner lineage, not a native layout or root admission.
+/// Its private weak token can only be minted by the held FileBackend owner.
+/// Keeping a profile alive does not retain its directory or writer lock.
+#[derive(Clone)]
 pub struct ImmutableBlobProfile {
     pub directory_identity: [u8; 16],
     pub max_ciphertext_bytes: usize,
+    owner: Weak<ImmutableLease>,
 }
+impl ImmutableBlobProfile {
+    pub fn is_live(&self) -> bool {
+        self.owner
+            .upgrade()
+            .is_some_and(|owner| owner.check().is_ok())
+    }
+}
+impl PartialEq for ImmutableBlobProfile {
+    fn eq(&self, other: &Self) -> bool {
+        self.directory_identity == other.directory_identity
+            && self.max_ciphertext_bytes == other.max_ciphertext_bytes
+            && Weak::ptr_eq(&self.owner, &other.owner)
+    }
+}
+impl Eq for ImmutableBlobProfile {}
 impl fmt::Debug for ImmutableBlobProfile {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("ImmutableBlobProfile")
             .field("directory_identity", &"[DESCRIPTOR_BOUND]")
+            .field("owner_instance", &"[PRIVATE_WEAK_OWNER]")
             .field("max_ciphertext_bytes", &self.max_ciphertext_bytes)
             .finish()
+    }
+}
+
+/// Custody rejection is preserved separately from physical read failure.
+pub enum PinReadError<E> {
+    Backend(BackendError),
+    Gate(E),
+}
+impl<E> fmt::Debug for PinReadError<E> {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(match self {
+            Self::Backend(_) => "PinReadError::Backend",
+            Self::Gate(_) => "PinReadError::Gate",
+        })
+    }
+}
+impl<E> fmt::Display for PinReadError<E> {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(match self {
+            Self::Backend(_) => "immutable physical read failed",
+            Self::Gate(_) => "immutable physical read custody rejected",
+        })
+    }
+}
+impl<E: std::error::Error + 'static> std::error::Error for PinReadError<E> {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(match self {
+            Self::Backend(error) => error,
+            Self::Gate(error) => error,
+        })
     }
 }
 
@@ -179,37 +228,88 @@ impl ImmutableBlobReadPin {
         lease.check()?;
         Ok(lease)
     }
-    /// Read exactly this pinned descriptor using independent positioned reads.
-    /// The caller must bind its actual instance/generation/epoch and original
-    /// deadline, then decrypt and verify the typed object address separately.
+    pub fn matches_profile(&self, profile: &ImmutableBlobProfile) -> bool {
+        self.0.directory_identity == profile.directory_identity
+            && self.0.identity.length <= profile.max_ciphertext_bytes
+            && Weak::ptr_eq(&self.0.lease, &profile.owner)
+            && profile.is_live()
+            && self.check().is_ok()
+    }
+    /// Read exactly this pinned descriptor without selecting a Clock/Actor.
+    /// The no-gate compatibility path still bounds consecutive EINTR retries.
     pub fn read_ciphertext(&self) -> Result<Arc<Zeroizing<Vec<u8>>>, BackendError> {
-        let lease = self.check()?;
+        let mut gate = || Ok::<(), std::convert::Infallible>(());
+        self.read_ciphertext_checked(&mut gate)
+            .map_err(|error| match error {
+                PinReadError::Backend(error) => error,
+                PinReadError::Gate(never) => match never {},
+            })
+    }
+    /// Retain the caller's same original gate before and after every positioned
+    /// read, including EINTR. No gate error exposes the partially filled buffer.
+    pub fn read_ciphertext_checked<E, G>(
+        &self,
+        gate: &mut G,
+    ) -> Result<Arc<Zeroizing<Vec<u8>>>, PinReadError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+    {
         #[cfg(unix)]
         {
             use std::os::unix::fs::FileExt;
-            let mut bytes = Zeroizing::new(vec![0; self.0.identity.length]);
-            let mut offset = 0;
-            while offset < bytes.len() {
-                lease.check()?;
-                let read = match self.0.file.read_at(&mut bytes[offset..], offset as u64) {
-                    Ok(read) => read,
-                    Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
-                    Err(_) => return Err(BackendError::Io),
-                };
-                if read == 0 {
-                    return Err(BackendError::Corrupt);
-                }
-                offset += read;
-            }
-            self.check()?;
-            lease.check()?;
-            Ok(Arc::new(bytes))
+            self.read_ciphertext_with_reader(gate, |file, bytes, offset| {
+                file.read_at(bytes, offset)
+            })
         }
         #[cfg(not(unix))]
         {
-            let _ = lease;
-            Err(BackendError::Unsupported)
+            gate().map_err(PinReadError::Gate)?;
+            Err(PinReadError::Backend(BackendError::Unsupported))
         }
+    }
+    #[cfg(unix)]
+    fn read_ciphertext_with_reader<E, G>(
+        &self,
+        gate: &mut G,
+        mut read_at: impl FnMut(&File, &mut [u8], u64) -> io::Result<usize>,
+    ) -> Result<Arc<Zeroizing<Vec<u8>>>, PinReadError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+    {
+        const MAX_INTERRUPTS: usize = 64;
+        gate().map_err(PinReadError::Gate)?;
+        let lease = self.check().map_err(PinReadError::Backend)?;
+        gate().map_err(PinReadError::Gate)?;
+        let mut bytes = Zeroizing::new(vec![0; self.0.identity.length]);
+        let mut offset = 0;
+        let mut interrupts = 0;
+        while offset < bytes.len() {
+            gate().map_err(PinReadError::Gate)?;
+            lease.check().map_err(PinReadError::Backend)?;
+            let read = read_at(&self.0.file, &mut bytes[offset..], offset as u64);
+            gate().map_err(PinReadError::Gate)?;
+            lease.check().map_err(PinReadError::Backend)?;
+            match read {
+                Ok(0) => return Err(PinReadError::Backend(BackendError::Corrupt)),
+                Ok(read) if read <= bytes.len() - offset => {
+                    offset += read;
+                    interrupts = 0;
+                }
+                Ok(_) => return Err(PinReadError::Backend(BackendError::Corrupt)),
+                Err(error) if error.kind() == io::ErrorKind::Interrupted => {
+                    interrupts += 1;
+                    if interrupts >= MAX_INTERRUPTS {
+                        return Err(PinReadError::Backend(BackendError::Io));
+                    }
+                }
+                Err(_) => return Err(PinReadError::Backend(BackendError::Io)),
+            }
+        }
+        gate().map_err(PinReadError::Gate)?;
+        self.check().map_err(PinReadError::Backend)?;
+        lease.check().map_err(PinReadError::Backend)?;
+        gate().map_err(PinReadError::Gate)?;
+        Ok(Arc::new(bytes))
     }
 }
 
@@ -253,6 +353,7 @@ impl FileBackend {
         Ok(ImmutableBlobProfile {
             directory_identity,
             max_ciphertext_bytes: MAX_IMMUTABLE_CIPHERTEXT_BYTES,
+            owner: Arc::downgrade(&self.immutable_lease),
         })
     }
 
@@ -299,60 +400,112 @@ impl FileBackend {
         self.pin_checked_file(locator, file, exact_len)
     }
 
-    /// Persist one bounded opaque ciphertext object, without replacing any
-    /// existing leaf. This neither mutates the authenticated snapshot/root nor
-    /// verifies the ciphertext's application domain or object address.
+    /// Persist one bounded opaque ciphertext object without replacing a leaf.
+    /// This never writes or acknowledges an authenticated application root.
     pub fn stage_immutable_ciphertext(
         &mut self,
         locator: BlobLocator,
         ciphertext: &[u8],
     ) -> Result<ImmutableBlobStage, BackendError> {
-        self.stage_immutable_ciphertext_checked(locator, ciphertext, || Ok(()))
+        self.stage_immutable_ciphertext_checked(locator, ciphertext, &mut || Ok(()))
     }
 
-    // The public method's callback is always a no-op. Tests lose an actual
-    // durable file publication acknowledgement here, rather than forging a
-    // root, snapshot or in-memory recovery flag.
-    fn stage_immutable_ciphertext_checked(
+    /// Retain the supplied gate throughout writes and final-link publication.
+    /// Gate rejection after linking leaves an unadmitted object and does not
+    /// become an uncertain canonical publication or revoke a healthy owner.
+    pub fn stage_immutable_ciphertext_checked(
         &mut self,
         locator: BlobLocator,
         ciphertext: &[u8],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        self.stage_immutable_ciphertext_with_ack_hook(locator, ciphertext, gate, || Ok(()))
+    }
+
+    fn stage_immutable_ciphertext_with_ack_hook(
+        &mut self,
+        locator: BlobLocator,
+        ciphertext: &[u8],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
         after_publication: impl FnOnce() -> Result<(), BackendError>,
     ) -> Result<ImmutableBlobStage, BackendError> {
-        length_check(ciphertext.len())?;
-        self.immutable_blob_profile()?;
-        let result = (|| {
-            cleanup_temporary(&self.directory)?;
-            let mut temporary = self
-                .directory
-                .open_file(TEMPORARY_LEAF, FileAccess::CreateNewReadWrite)
-                .map_err(|_| BackendError::Io)?;
-            if temporary.write_all(ciphertext).is_err() {
+        let mut rejected_by_gate = false;
+        let result = {
+            let mut checked_gate = || {
+                let result = gate();
+                if result.is_err() {
+                    rejected_by_gate = true;
+                }
+                result
+            };
+            (|| {
+                checked_gate()?;
+                length_check(ciphertext.len())?;
+                self.immutable_blob_profile()?;
+                checked_gate()?;
                 cleanup_temporary(&self.directory)?;
-                return Err(BackendError::Io);
-            }
-            let publication = self
-                .directory
-                .publish_file_noreplace(
-                    TEMPORARY_LEAF,
-                    &temporary,
-                    locator.leaf(),
-                    ciphertext.len() as u64,
-                )
-                .map_err(publication_error)?;
-            after_publication().map_err(|_| BackendError::OutcomeUnknown)?;
-            match publication {
-                FilePublication::Published(file) => self
-                    .pin_checked_file(locator, file, ciphertext.len())
-                    .map(ImmutableBlobStage::Published)
-                    .map_err(|_| BackendError::OutcomeUnknown),
-                FilePublication::AlreadyExists(file) => self
-                    .pin_checked_file(locator, file, ciphertext.len())
-                    .map(ImmutableBlobStage::AlreadyExists)
-                    .map_err(|_| BackendError::OutcomeUnknown),
-            }
-        })();
-        if matches!(&result, Err(BackendError::OutcomeUnknown)) {
+                checked_gate()?;
+                let mut temporary = self
+                    .directory
+                    .open_file(TEMPORARY_LEAF, FileAccess::CreateNewReadWrite)
+                    .map_err(|_| BackendError::Io)?;
+                checked_gate()?;
+                let mut offset = 0;
+                let mut interrupts = 0;
+                while offset < ciphertext.len() {
+                    checked_gate()?;
+                    let written = temporary.write(&ciphertext[offset..]);
+                    checked_gate()?;
+                    match written {
+                        Ok(0) => return Err(BackendError::Io),
+                        Ok(written) if written <= ciphertext.len() - offset => {
+                            offset += written;
+                            interrupts = 0;
+                        }
+                        Ok(_) => return Err(BackendError::Io),
+                        Err(error) if error.kind() == io::ErrorKind::Interrupted => {
+                            interrupts += 1;
+                            if interrupts >= 64 {
+                                return Err(BackendError::Io);
+                            }
+                        }
+                        Err(_) => return Err(BackendError::Io),
+                    }
+                }
+                checked_gate()?;
+                let publication = self
+                    .directory
+                    .publish_file_noreplace_checked(
+                        TEMPORARY_LEAF,
+                        &temporary,
+                        locator.leaf(),
+                        ciphertext.len() as u64,
+                        &mut checked_gate,
+                    )
+                    .map_err(|error| match error {
+                        ImmutablePublicationCheckedError::Publication(error) => {
+                            publication_error(error)
+                        }
+                        ImmutablePublicationCheckedError::GateBeforeLink(error)
+                        | ImmutablePublicationCheckedError::GateAfterLink(error) => error,
+                    })?;
+                after_publication().map_err(|_| BackendError::OutcomeUnknown)?;
+                checked_gate()?;
+                let staged = match publication {
+                    FilePublication::Published(file) => self
+                        .pin_checked_file(locator, file, ciphertext.len())
+                        .map(ImmutableBlobStage::Published)
+                        .map_err(|_| BackendError::OutcomeUnknown),
+                    FilePublication::AlreadyExists(file) => self
+                        .pin_checked_file(locator, file, ciphertext.len())
+                        .map(ImmutableBlobStage::AlreadyExists)
+                        .map_err(|_| BackendError::OutcomeUnknown),
+                }?;
+                checked_gate()?;
+                Ok(staged)
+            })()
+        };
+        if !rejected_by_gate && matches!(&result, Err(BackendError::OutcomeUnknown)) {
             self.immutable_lease.revoke();
         }
         result

@@ -21,7 +21,7 @@ mod immutable_cipher_store;
 use immutable_cipher_store::ImmutableLease;
 pub use immutable_cipher_store::{
     BlobLocator, ImmutableBlobProfile, ImmutableBlobReadPin, ImmutableBlobStage,
-    MAX_IMMUTABLE_CIPHERTEXT_BYTES,
+    MAX_IMMUTABLE_CIPHERTEXT_BYTES, PinReadError,
 };
 
 mod restore;
@@ -133,6 +133,14 @@ pub trait DurableBackend: Send {
     ) -> Result<ImmutableBlobStage, BackendError> {
         Err(BackendError::Unsupported)
     }
+    fn stage_immutable_ciphertext_checked(
+        &mut self,
+        _locator: BlobLocator,
+        _ciphertext: &[u8],
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        Err(BackendError::Unsupported)
+    }
     fn pin_immutable_ciphertext(
         &self,
         _locator: BlobLocator,
@@ -236,6 +244,15 @@ impl DurableBackend for Box<dyn DurableBackend> {
     ) -> Result<ImmutableBlobStage, BackendError> {
         self.as_mut()
             .stage_immutable_ciphertext(locator, ciphertext)
+    }
+    fn stage_immutable_ciphertext_checked(
+        &mut self,
+        locator: BlobLocator,
+        ciphertext: &[u8],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        self.as_mut()
+            .stage_immutable_ciphertext_checked(locator, ciphertext, gate)
     }
     fn pin_immutable_ciphertext(
         &self,
@@ -529,6 +546,14 @@ impl DurableBackend for FileBackend {
         ciphertext: &[u8],
     ) -> Result<ImmutableBlobStage, BackendError> {
         FileBackend::stage_immutable_ciphertext(self, locator, ciphertext)
+    }
+    fn stage_immutable_ciphertext_checked(
+        &mut self,
+        locator: BlobLocator,
+        ciphertext: &[u8],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<ImmutableBlobStage, BackendError> {
+        FileBackend::stage_immutable_ciphertext_checked(self, locator, ciphertext, gate)
     }
     fn pin_immutable_ciphertext(
         &self,

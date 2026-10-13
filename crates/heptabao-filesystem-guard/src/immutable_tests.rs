@@ -141,19 +141,20 @@ fn immutable_lost_ack_after_actual_link_has_typed_unknown_and_reopen_cleanup() -
     let owner = ExclusiveDirectory::open(&root.0)?;
     let temp = temporary(&owner, b"stable-object")?;
     assert!(matches!(
-        owner.publish_file_noreplace_checked(
+        owner.publish_file_noreplace_with_hooks(
             TEMP,
             &temp,
             FINAL,
             13,
-            || Ok(()),
-            || {
-                Err(io::Error::other(
-                    "injected acknowledgement loss after actual linkat",
-                ))
-            }
+            &mut || Ok::<(), std::convert::Infallible>(()),
+            (
+                || Ok(()),
+                || Err(io::Error::other("lost acknowledgement after actual linkat"))
+            )
         ),
-        Err(ImmutablePublicationError::OutcomeUnknown(_))
+        Err(ImmutablePublicationCheckedError::Publication(
+            ImmutablePublicationError::OutcomeUnknown(_)
+        ))
     ));
     assert_eq!(temp.metadata()?.nlink(), 2);
     assert_eq!(fs::metadata(root.0.join(FINAL))?.nlink(), 2);
@@ -175,18 +176,23 @@ fn immutable_source_name_swap_cannot_return_a_false_published_descriptor() -> Te
     let owner = ExclusiveDirectory::open(&root.0)?;
     let temp = temporary(&owner, b"original")?;
     assert!(matches!(
-        owner.publish_file_noreplace_checked(
+        owner.publish_file_noreplace_with_hooks(
             TEMP,
             &temp,
             FINAL,
             8,
-            || {
-                fs::rename(root.0.join(TEMP), root.0.join("original-fd"))?;
-                fs::write(root.0.join(TEMP), b"impostor")
-            },
-            || Ok(())
+            &mut || Ok::<(), std::convert::Infallible>(()),
+            (
+                || {
+                    fs::rename(root.0.join(TEMP), root.0.join("original-fd"))?;
+                    fs::write(root.0.join(TEMP), b"impostor")
+                },
+                || Ok(())
+            )
         ),
-        Err(ImmutablePublicationError::OutcomeUnknown(_))
+        Err(ImmutablePublicationCheckedError::Publication(
+            ImmutablePublicationError::OutcomeUnknown(_)
+        ))
     ));
     assert_eq!(fs::read(root.0.join("original-fd"))?, b"original");
     assert_eq!(fs::read(root.0.join(FINAL))?, b"impostor");
@@ -204,22 +210,27 @@ fn immutable_destination_swap_or_length_change_after_link_is_unknown() -> TestRe
         let owner = ExclusiveDirectory::open(&root.0)?;
         let temp = temporary(&owner, b"original")?;
         assert!(matches!(
-            owner.publish_file_noreplace_checked(
+            owner.publish_file_noreplace_with_hooks(
                 TEMP,
                 &temp,
                 FINAL,
                 8,
-                || Ok(()),
-                || {
-                    if replace {
-                        fs::remove_file(root.0.join(FINAL))?;
-                        fs::write(root.0.join(FINAL), b"impostor")
-                    } else {
-                        temp.set_len(9)
+                &mut || Ok::<(), std::convert::Infallible>(()),
+                (
+                    || Ok(()),
+                    || {
+                        if replace {
+                            fs::remove_file(root.0.join(FINAL))?;
+                            fs::write(root.0.join(FINAL), b"impostor")
+                        } else {
+                            temp.set_len(9)
+                        }
                     }
-                }
+                )
             ),
-            Err(ImmutablePublicationError::OutcomeUnknown(_))
+            Err(ImmutablePublicationCheckedError::Publication(
+                ImmutablePublicationError::OutcomeUnknown(_)
+            ))
         ));
         assert!(owner.entry_exists(TEMP)?);
     }
@@ -287,5 +298,76 @@ fn immutable_temp_cleanup_never_follows_symlink_or_replacement_root_path() -> Te
     assert!(!moved.join(TEMP).exists());
     assert_eq!(fs::read(root.0.join("sentinel"))?, b"unchanged");
     assert_eq!(fs::read(original.join(TEMP))?, b"unrelated");
+    Ok(())
+}
+
+#[test]
+fn immutable_original_deadline_expired_after_real_temp_sync_blocks_final_link() -> TestResult {
+    use std::time::{Duration, Instant};
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let temp = temporary(&owner, b"original")?;
+    let original_deadline = Instant::now() + Duration::from_millis(500);
+    let mut gate = || {
+        if Instant::now() >= original_deadline {
+            Err(io::Error::other("original deadline expired"))
+        } else {
+            Ok(())
+        }
+    };
+    let mut synced_boundary_observed = false;
+    let result = owner.publish_file_noreplace_with_hooks(
+        TEMP,
+        &temp,
+        FINAL,
+        8,
+        &mut gate,
+        (
+            || {
+                // The hook is after the actual temporary descriptor sync_all.
+                synced_boundary_observed = true;
+                std::thread::sleep(Duration::from_millis(550));
+                Ok(())
+            },
+            || Ok(()),
+        ),
+    );
+    assert!(synced_boundary_observed);
+    assert!(matches!(
+        result,
+        Err(ImmutablePublicationCheckedError::GateBeforeLink(_))
+    ));
+    assert!(!owner.entry_exists(FINAL)?);
+    assert_eq!(temp.metadata()?.nlink(), 1);
+    assert_eq!(fs::read(root.0.join(TEMP))?, b"original");
+    Ok(())
+}
+
+#[test]
+fn immutable_gate_after_actual_link_is_an_orphan_not_an_io_unknown() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let temp = temporary(&owner, b"original")?;
+    let mut gate = || {
+        if owner.entry_exists(FINAL)? {
+            Err(io::Error::other("custody ended after link"))
+        } else {
+            Ok(())
+        }
+    };
+    assert!(matches!(
+        owner.publish_file_noreplace_checked(TEMP, &temp, FINAL, 8, &mut gate),
+        Err(ImmutablePublicationCheckedError::GateAfterLink(_))
+    ));
+    assert_eq!(temp.metadata()?.nlink(), 2);
+    assert_eq!(fs::read(root.0.join(FINAL))?, b"original");
+    assert!(owner.cleanup_immutable_temporary(TEMP)?);
+    assert_eq!(
+        owner
+            .open_file(FINAL, FileAccess::Read)?
+            .metadata()?
+            .nlink(),
+        1
+    );
     Ok(())
 }

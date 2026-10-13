@@ -45,6 +45,41 @@ impl std::error::Error for ImmutablePublicationError {
     }
 }
 
+/// Gate rejection before a new final link leaves no new publication. A
+/// rejection after that link leaves an unadmitted immutable object, not an
+/// acknowledgement of an application root or an uncertain I/O result.
+pub enum ImmutablePublicationCheckedError<E> {
+    Publication(ImmutablePublicationError),
+    GateBeforeLink(E),
+    GateAfterLink(E),
+}
+impl<E> fmt::Debug for ImmutablePublicationCheckedError<E> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Publication(_) => "ImmutablePublicationCheckedError::Publication",
+            Self::GateBeforeLink(_) => "ImmutablePublicationCheckedError::GateBeforeLink",
+            Self::GateAfterLink(_) => "ImmutablePublicationCheckedError::GateAfterLink",
+        })
+    }
+}
+impl<E> fmt::Display for ImmutablePublicationCheckedError<E> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Publication(_) => "immutable publication I/O failed",
+            Self::GateBeforeLink(_) => "immutable publication gate rejected before final link",
+            Self::GateAfterLink(_) => "immutable publication gate rejected after final link",
+        })
+    }
+}
+impl<E: std::error::Error + 'static> std::error::Error for ImmutablePublicationCheckedError<E> {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(match self {
+            Self::Publication(error) => error,
+            Self::GateBeforeLink(error) | Self::GateAfterLink(error) => error,
+        })
+    }
+}
+
 fn validated_leaf(path: &Path) -> io::Result<&str> {
     let name = path
         .to_str()
@@ -100,32 +135,64 @@ impl ExclusiveDirectory {
         destination: impl AsRef<Path>,
         exact_len: u64,
     ) -> Result<ImmutablePublication, ImmutablePublicationError> {
-        let temporary = validated_leaf(temporary.as_ref())
-            .map_err(ImmutablePublicationError::BeforePublication)?;
-        let destination = validated_leaf(destination.as_ref())
-            .map_err(ImmutablePublicationError::BeforePublication)?;
+        let mut gate = || Ok::<(), std::convert::Infallible>(());
+        self.publish_file_noreplace_checked(
+            temporary,
+            opened_temporary,
+            destination,
+            exact_len,
+            &mut gate,
+        )
+        .map_err(|error| match error {
+            ImmutablePublicationCheckedError::Publication(error) => error,
+            ImmutablePublicationCheckedError::GateBeforeLink(never)
+            | ImmutablePublicationCheckedError::GateAfterLink(never) => match never {},
+        })
+    }
+
+    /// Retain the caller's same gate before and after each sync, final link and
+    /// unlink. This method does not create, select or extend any Clock/Actor.
+    pub fn publish_file_noreplace_checked<E, G>(
+        &self,
+        temporary: impl AsRef<Path>,
+        opened_temporary: &File,
+        destination: impl AsRef<Path>,
+        exact_len: u64,
+        gate: &mut G,
+    ) -> Result<ImmutablePublication, ImmutablePublicationCheckedError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+    {
+        let before = |error| {
+            ImmutablePublicationCheckedError::Publication(
+                ImmutablePublicationError::BeforePublication(error),
+            )
+        };
+        gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+        let temporary = validated_leaf(temporary.as_ref()).map_err(before)?;
+        let destination = validated_leaf(destination.as_ref()).map_err(before)?;
         if temporary == destination {
-            return Err(ImmutablePublicationError::BeforePublication(
-                io::Error::other("immutable temporary and destination must differ"),
-            ));
+            return Err(before(io::Error::other(
+                "immutable temporary and destination must differ",
+            )));
         }
         #[cfg(unix)]
         {
-            self.publish_file_noreplace_checked(
+            self.publish_file_noreplace_with_hooks(
                 temporary,
                 opened_temporary,
                 destination,
                 exact_len,
-                || Ok(()),
-                || Ok(()),
+                gate,
+                (|| Ok(()), || Ok(())),
             )
         }
         #[cfg(not(unix))]
         {
-            let _ = (temporary, opened_temporary, destination, exact_len);
-            Err(ImmutablePublicationError::BeforePublication(
-                io::Error::other(super::DirectoryGuardError::UnsupportedPlatform),
-            ))
+            let _ = (temporary, opened_temporary, destination, exact_len, gate);
+            Err(before(io::Error::other(
+                super::DirectoryGuardError::UnsupportedPlatform,
+            )))
         }
     }
 
@@ -149,36 +216,55 @@ impl ExclusiveDirectory {
         Ok(file)
     }
 
-    // The callbacks exist only to make filesystem mutation windows observable
-    // in this module's real-FS tests. The public entry point always supplies
-    // no-op callbacks and performs every identity check itself.
+    // Hooks make actual filesystem mutation windows observable in tests. The
+    // public entry points use no-op hooks; the real caller gate is separate.
     #[cfg(unix)]
-    fn publish_file_noreplace_checked(
+    fn publish_file_noreplace_with_hooks<E, G>(
         &self,
         temporary: &str,
         opened_temporary: &File,
         destination: &str,
         exact_len: u64,
-        before_link: impl FnOnce() -> io::Result<()>,
-        after_link: impl FnOnce() -> io::Result<()>,
-    ) -> Result<ImmutablePublication, ImmutablePublicationError> {
+        gate: &mut G,
+        hooks: (
+            impl FnOnce() -> io::Result<()>,
+            impl FnOnce() -> io::Result<()>,
+        ),
+    ) -> Result<ImmutablePublication, ImmutablePublicationCheckedError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+    {
         use rustix::fs::{AtFlags, linkat};
-        let before = ImmutablePublicationError::BeforePublication;
-        let unknown = ImmutablePublicationError::OutcomeUnknown;
+        let before = |error| {
+            ImmutablePublicationCheckedError::Publication(
+                ImmutablePublicationError::BeforePublication(error),
+            )
+        };
+        let unknown = |error| {
+            ImmutablePublicationCheckedError::Publication(
+                ImmutablePublicationError::OutcomeUnknown(error),
+            )
+        };
+        let (before_link, after_link) = hooks;
+        gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         self.verify().map_err(io::Error::other).map_err(before)?;
         let identity = checked_identity(opened_temporary, exact_len, 1).map_err(before)?;
         let named = self
             .open_file(temporary, FileAccess::Read)
             .map_err(before)?;
         same_identity(&named, identity, 1).map_err(before)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         opened_temporary.sync_all().map_err(before)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         same_identity(opened_temporary, identity, 1).map_err(before)?;
         let named = self
             .open_file(temporary, FileAccess::Read)
             .map_err(before)?;
         same_identity(&named, identity, 1).map_err(before)?;
         before_link().map_err(before)?;
-
+        // A temp sync can take longer than the original deadline. Recheck the
+        // same caller gate at the actual final-link boundary, not a new clock.
+        gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         match linkat(
             &self.handle,
             temporary,
@@ -188,9 +274,7 @@ impl ExclusiveDirectory {
         ) {
             Ok(()) => {}
             Err(error) if error == rustix::io::Errno::EXIST => {
-                // An existing symlink, FIFO, multiply-linked file or wrong
-                // length is rejected before any destination mutation. An
-                // arbitrary existing entry must never be followed or replaced.
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 let existing = self
                     .open_file(destination, FileAccess::Read)
                     .map_err(before)?;
@@ -200,10 +284,16 @@ impl ExclusiveDirectory {
                     .open_file(temporary, FileAccess::Read)
                     .map_err(before)?;
                 same_identity(&named, identity, 1).map_err(before)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 self.remove_file(temporary).map_err(unknown)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 same_identity(opened_temporary, identity, 0).map_err(unknown)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 existing.sync_all().map_err(unknown)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 self.sync_all().map_err(io::Error::other).map_err(unknown)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 let current = self
                     .open_file(destination, FileAccess::Read)
                     .map_err(unknown)?;
@@ -213,11 +303,8 @@ impl ExclusiveDirectory {
             }
             Err(error) => return Err(unknown(error.into())),
         }
-
-        // From this point on a final leaf exists. Never turn a lost sync,
-        // acknowledgement or identity mismatch into an ordinary pre-write
-        // failure, and never delete a destination to hide an uncertain result.
         after_link().map_err(unknown)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         same_identity(opened_temporary, identity, 2).map_err(unknown)?;
         let published = self
             .immutable_leaf_with_links(destination, exact_len, 2)
@@ -227,11 +314,17 @@ impl ExclusiveDirectory {
             .immutable_leaf_with_links(temporary, exact_len, 2)
             .map_err(unknown)?;
         same_identity(&named, identity, 2).map_err(unknown)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         self.remove_file(temporary).map_err(unknown)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         same_identity(opened_temporary, identity, 1).map_err(unknown)?;
         same_identity(&published, identity, 1).map_err(unknown)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         published.sync_all().map_err(unknown)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         self.sync_all().map_err(io::Error::other).map_err(unknown)?;
+        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         let current = self
             .open_file(destination, FileAccess::Read)
             .map_err(unknown)?;

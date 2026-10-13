@@ -34,6 +34,8 @@ mod restore_transaction;
 pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
+mod immutable_source_session;
+pub use immutable_source_session::ImmutableSourceSession;
 mod negative_current_publication;
 pub use capacity::{BatchPublication, CapacityStatus, PublicationCondition};
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
@@ -41,7 +43,7 @@ mod backend;
 pub use backend::{
     ArtifactCommitment, BackendBundle, BackendError, BlobLocator, BundleCommitment, DurableBackend,
     FileBackend, ImmutableBlobProfile, ImmutableBlobReadPin, ImmutableBlobStage,
-    MAX_IMMUTABLE_CIPHERTEXT_BYTES, RestoreProfile, StagedRestoreCommitments,
+    MAX_IMMUTABLE_CIPHERTEXT_BYTES, PinReadError, RestoreProfile, StagedRestoreCommitments,
 };
 
 fn map_backend_error(error: BackendError) -> ServiceError {
