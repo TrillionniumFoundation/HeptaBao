@@ -300,7 +300,7 @@ fn approle_missing_role_reads_are_empty_after_authorization_and_invalid_writes()
 }
 
 #[test]
-fn approle_role_id_edge_whitespace_uses_canonical_identity_and_consumes_once()
+fn approle_login_identifiers_edge_whitespace_use_canonical_identity_and_consume_once()
 -> Result<(), Box<dyn std::error::Error>> {
     for edge in [
         " ", "\t", "\r\n", "\u{0085}", "\u{00a0}", "\u{1680}", "\u{2000}", "\u{2028}", "\u{2029}",

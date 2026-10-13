@@ -157,7 +157,7 @@ mod tests {
             b"role_id=one&%72ole_id=two",
             b"role_id=one&secret_id=%ZZ",
             b"role_id=one&secret_id=%",
-            b"role_id=one&secret_id=%0D",
+            b"role_id=one&secret_id=x%0Dy",
             b"role_id=one&unexpected=x",
             b"role_id=one&",
             b"secret_id=alone",
