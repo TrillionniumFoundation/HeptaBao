@@ -194,6 +194,20 @@
       "receipt": null
     },
     {
+      "id": "control_groups_second_party_approval",
+      "status": "OPEN",
+      "scenario": "OpenBao 2.7.0 baseline: control_group ACLs defer protected requests until distinct approvers satisfy the configured factors; approved requests execute once under current authorization.",
+      "introduced_in": "2.7.0",
+      "source_url": "https://openbao.org/community/release-notes/2-7-0/#features",
+      "source_change_url": "https://github.com/openbao/openbao/pull/3436",
+      "receipt": null,
+      "evidence_requirements": [
+        "Exact-candidate native non-dev HTTPS and pinned official OpenBao 2.7.1 API differential receipts for control_group policy parsing, deferred request/accessor custody, factor thresholds, self_authorization=false/true, status, approval and one-use unwrap/resume.",
+        "Negative controls for requester self-approval when disabled, duplicate approvers, missing group membership, unauthorized accessors, expired requests, replayed approval/unwrap and policy or namespace ownership changes before execution.",
+        "Restart, reseal, HA forwarding/leader failure and mandatory audit failure must preserve deferred ownership and prevent unauthorized or duplicate effects; retain rejected and unknown outcomes."
+      ]
+    },
+    {
       "id": "grpc_invalidation",
       "status": "OPEN",
       "scenario": "Persistent invalidation manager under restart/upgrade",
@@ -281,6 +295,7 @@
   "requirements": [
     "Never flip replacement_authority merely because this file exists",
     "Never treat a synthetic smoke or old HEAD as current release qualification",
-    "Never treat more exact numeric output as 2.7.1 equality without baseline diff"
+    "Never treat more exact numeric output as 2.7.1 equality without baseline diff",
+    "Structural validation covers declared admission IDs and source bindings only; passing it is not proof of exhaustive upstream coverage, runtime/API compatibility or replacement qualification."
   ]
 }

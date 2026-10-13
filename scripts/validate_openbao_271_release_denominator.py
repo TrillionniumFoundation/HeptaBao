@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Fail-closed OpenBao 2.7.0+2.7.1 release denominator completeness.
+"""Check declared OpenBao 2.7.0+2.7.1 admission coverage structure.
 
-This is a structural validator, NOT an executable compatibility attestation.
+This checks required declared IDs and selected primary-source bindings only.
+It does not attest exhaustive upstream coverage or executable compatibility.
 """
 from __future__ import annotations
 import json
@@ -10,6 +11,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 MANIFEST=ROOT/'planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json'
 BASELINE_COMMIT='a5db72cef75c24b920ade02065b18dd8eb666bac'
+CONTROL_GROUPS_ID='control_groups_second_party_approval'
+CONTROL_GROUPS_SOURCE_URL='https://openbao.org/community/release-notes/2-7-0/#features'
+CONTROL_GROUPS_CHANGE_URL='https://github.com/openbao/openbao/pull/3436'
 SECURITY=frozenset({
  'sanitized_acme_eab_mac_key',
  'root_generation_and_rekey_audit_fail_closed',
@@ -33,6 +37,7 @@ FEATURE_CHANGES=frozenset({
  'pqc_tls_mldsa',
  'pebble_storage',
  'indexed_consistency',
+ CONTROL_GROUPS_ID,
  'grpc_invalidation',
  'raft_auto_join_provider_port',
  'sdk_lifetime_watcher_backoff',
@@ -64,6 +69,15 @@ def audit_rows(rows, category, required):
             errors.append(f'{category}.{key}: admitted without evidence receipt')
         if not isinstance(row.get('scenario') if category!='required_gates' else row.get('id'),str):
             errors.append(f'{category}.{key}: missing scenario/id')
+        if category=='feature_and_correctness_delta' and key==CONTROL_GROUPS_ID:
+            if (row.get('introduced_in')!='2.7.0'
+                or row.get('source_url')!=CONTROL_GROUPS_SOURCE_URL
+                or row.get('source_change_url')!=CONTROL_GROUPS_CHANGE_URL):
+                errors.append(f'{category}.{key}: pinned primary-source binding mismatch')
+            requirements=row.get('evidence_requirements')
+            if (not isinstance(requirements,list) or not requirements
+                or not all(isinstance(item,str) and item.strip() for item in requirements)):
+                errors.append(f'{category}.{key}: missing runtime/API evidence requirements')
     duplicates=sorted(k for k in set(ids) if ids.count(k)>1)
     if duplicates:
         errors.append(f'{category}: duplicate ids {duplicates}')
@@ -115,7 +129,9 @@ def main():
     if errors:
         for err in errors:print('FAIL:',err)
         return 1
-    print('PASS: OpenBao 2.7.0+2.7.1 release delta structurally complete; security=15, feature/correctness=10, gates=11, release authority=false')
+    print('PASS: declared OpenBao 2.7.0+2.7.1 admission coverage structure; '
+          f'security={len(SECURITY)}, feature/correctness={len(FEATURE_CHANGES)}, gates={len(GATES)}; '
+          'not exhaustive upstream coverage or executable compatibility; replacement authority=false')
     return 0
 
 if __name__=='__main__':
