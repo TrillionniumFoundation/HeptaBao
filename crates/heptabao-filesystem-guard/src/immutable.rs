@@ -118,6 +118,29 @@ fn same_identity(file: &File, expected: FileIdentity, links: u64) -> io::Result<
     Ok(())
 }
 
+/// One borrowed temporary descriptor. A batch entry is not a durability receipt.
+pub struct ImmutableBatchEntry<'a> {
+    pub temporary: &'a str,
+    pub file: &'a File,
+    pub destination: &'a str,
+    pub exact_len: u64,
+}
+
+impl fmt::Debug for ImmutableBatchEntry<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("ImmutableBatchEntry([BOUNDED_BORROWED_DESCRIPTOR])")
+    }
+}
+
+#[cfg(unix)]
+fn sync_file(file: &File, buffered: bool) -> io::Result<()> {
+    if buffered {
+        rustix::fs::fsync(file).map_err(io::Error::from)
+    } else {
+        file.sync_all()
+    }
+}
+
 impl ExclusiveDirectory {
     /// Sync the caller's exact temporary descriptor, publish its leaf without
     /// replacing any destination, unlink the temporary name and sync the held
@@ -234,6 +257,34 @@ impl ExclusiveDirectory {
     where
         G: FnMut() -> Result<(), E> + ?Sized,
     {
+        self.publish_file_noreplace_with_hooks_and_sync(
+            temporary,
+            opened_temporary,
+            destination,
+            exact_len,
+            gate,
+            hooks,
+            false,
+        )
+    }
+
+    #[cfg(unix)]
+    fn publish_file_noreplace_with_hooks_and_sync<E, G>(
+        &self,
+        temporary: &str,
+        opened_temporary: &File,
+        destination: &str,
+        exact_len: u64,
+        gate: &mut G,
+        hooks: (
+            impl FnOnce() -> io::Result<()>,
+            impl FnOnce() -> io::Result<()>,
+        ),
+        buffered: bool,
+    ) -> Result<ImmutablePublication, ImmutablePublicationCheckedError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+    {
         use rustix::fs::{AtFlags, linkat};
         let before = |error| {
             ImmutablePublicationCheckedError::Publication(
@@ -254,7 +305,7 @@ impl ExclusiveDirectory {
             .map_err(before)?;
         same_identity(&named, identity, 1).map_err(before)?;
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-        opened_temporary.sync_all().map_err(before)?;
+        sync_file(opened_temporary, buffered).map_err(before)?;
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         same_identity(opened_temporary, identity, 1).map_err(before)?;
         let named = self
@@ -289,10 +340,10 @@ impl ExclusiveDirectory {
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 same_identity(opened_temporary, identity, 0).map_err(unknown)?;
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-                existing.sync_all().map_err(unknown)?;
+                sync_file(&existing, buffered).map_err(unknown)?;
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-                self.sync_all().map_err(io::Error::other).map_err(unknown)?;
+                self.sync_batch_directory(buffered).map_err(unknown)?;
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 let current = self
                     .open_file(destination, FileAccess::Read)
@@ -320,10 +371,10 @@ impl ExclusiveDirectory {
         same_identity(opened_temporary, identity, 1).map_err(unknown)?;
         same_identity(&published, identity, 1).map_err(unknown)?;
         gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
-        published.sync_all().map_err(unknown)?;
+        sync_file(&published, buffered).map_err(unknown)?;
         gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
-        self.sync_all().map_err(io::Error::other).map_err(unknown)?;
+        self.sync_batch_directory(buffered).map_err(unknown)?;
         gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         let current = self
             .open_file(destination, FileAccess::Read)
@@ -331,6 +382,135 @@ impl ExclusiveDirectory {
         same_identity(&current, identity, 1).map_err(unknown)?;
         same_identity(&published, identity, 1).map_err(unknown)?;
         Ok(ImmutablePublication::Published(published))
+    }
+
+    #[cfg(unix)]
+    fn sync_batch_directory(&self, buffered: bool) -> io::Result<()> {
+        self.verify().map_err(io::Error::other)?;
+        sync_file(&self.handle, buffered)?;
+        self.verify().map_err(io::Error::other)
+    }
+
+    /// Publish at most four 512KiB files as one physical durability unit.
+    /// No descriptor or success receipt escapes until all file data/metadata
+    /// and directory changes have been synced and a final strong device flush
+    /// completes. On Apple, raw fsync moves data to the device; File::sync_all
+    /// then requests F_FULLFSYNC for all previously fsynced data on that device.
+    /// On other Unix platforms the earlier fsync calls already retain their
+    /// native strength. Ordinary single-file publication remains unchanged.
+    /// A failed batch can leave unreferenced leaves, never an application root.
+    pub fn publish_files_noreplace_checked<E, G>(
+        &self,
+        entries: &[ImmutableBatchEntry<'_>],
+        gate: &mut G,
+    ) -> Result<Vec<ImmutablePublication>, ImmutablePublicationCheckedError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+    {
+        self.publish_files_noreplace_with_final_sync(entries, gate, &mut |file| file.sync_all())
+    }
+
+    fn publish_files_noreplace_with_final_sync<E, G, S>(
+        &self,
+        entries: &[ImmutableBatchEntry<'_>],
+        gate: &mut G,
+        strong_sync: &mut S,
+    ) -> Result<Vec<ImmutablePublication>, ImmutablePublicationCheckedError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+        S: FnMut(&File) -> io::Result<()>,
+    {
+        let before = |e| {
+            ImmutablePublicationCheckedError::Publication(
+                ImmutablePublicationError::BeforePublication(e),
+            )
+        };
+        #[cfg(not(unix))]
+        {
+            let _ = (entries, gate, strong_sync);
+            Err(before(io::Error::other("unsupported batch platform")))
+        }
+        #[cfg(unix)]
+        {
+            gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+            if entries.is_empty() || entries.len() > 4 {
+                return Err(before(io::Error::other("invalid bounded batch length")));
+            }
+            self.verify().map_err(io::Error::other).map_err(before)?;
+            let mut names = std::collections::BTreeSet::new();
+            for e in entries {
+                for name in [e.temporary, e.destination] {
+                    validated_leaf(Path::new(name)).map_err(before)?;
+                    if !names.insert(name) {
+                        return Err(before(io::Error::other("aliased batch leaves")));
+                    }
+                }
+                if e.exact_len == 0 || e.exact_len > 512 * 1024 {
+                    return Err(before(io::Error::other("batch member exceeds bound")));
+                }
+                let expected = checked_identity(e.file, e.exact_len, 1).map_err(before)?;
+                let named = self
+                    .open_file(e.temporary, FileAccess::Read)
+                    .map_err(before)?;
+                same_identity(&named, expected, 1).map_err(before)?;
+            }
+            let unknown = |e| {
+                ImmutablePublicationCheckedError::Publication(
+                    ImmutablePublicationError::OutcomeUnknown(e),
+                )
+            };
+            let mut published = Vec::with_capacity(entries.len());
+            for e in entries {
+                let result = self.publish_file_noreplace_with_hooks_and_sync(
+                    e.temporary,
+                    e.file,
+                    e.destination,
+                    e.exact_len,
+                    gate,
+                    (|| Ok(()), || Ok(())),
+                    true,
+                );
+                let result = result.map_err(|error| {
+                    if published.is_empty() {
+                        return error;
+                    }
+                    match error {
+                        ImmutablePublicationCheckedError::GateBeforeLink(e) => {
+                            ImmutablePublicationCheckedError::GateAfterLink(e)
+                        }
+                        ImmutablePublicationCheckedError::Publication(
+                            ImmutablePublicationError::BeforePublication(e),
+                        ) => unknown(e),
+                        e => e,
+                    }
+                })?;
+                published.push(result);
+            }
+            // The first regular file belongs to the same held directory/device.
+            // Flush previously fsynced members and names before exposing any pin.
+            gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+            let first = match &published[0] {
+                ImmutablePublication::Published(f) | ImmutablePublication::AlreadyExists(f) => f,
+            };
+            strong_sync(first).map_err(unknown)?;
+            gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+            self.sync_all().map_err(io::Error::other).map_err(unknown)?;
+            gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+            for (e, result) in entries.iter().zip(&published) {
+                let file = match result {
+                    ImmutablePublication::Published(f) | ImmutablePublication::AlreadyExists(f) => {
+                        f
+                    }
+                };
+                let expected = checked_identity(file, e.exact_len, 1).map_err(unknown)?;
+                let named = self
+                    .open_file(e.destination, FileAccess::Read)
+                    .map_err(unknown)?;
+                same_identity(&named, expected, 1).map_err(unknown)?;
+                gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+            }
+            Ok(published)
+        }
     }
 
     /// Unlink only a known, validated temporary leaf and sync the held

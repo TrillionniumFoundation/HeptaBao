@@ -371,3 +371,250 @@ fn immutable_gate_after_actual_link_is_an_orphan_not_an_io_unknown() -> TestResu
     );
     Ok(())
 }
+
+#[test]
+fn bounded_batch_returns_all_exact_readonly_files_after_final_gate() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let mut first = owner.open_file("batch-a.tmp", FileAccess::CreateNewReadWrite)?;
+    first.write_all(b"first")?;
+    let mut second = owner.open_file("batch-b.tmp", FileAccess::CreateNewReadWrite)?;
+    second.write_all(b"second")?;
+    let entries = [
+        ImmutableBatchEntry {
+            temporary: "batch-a.tmp",
+            file: &first,
+            destination: "batch-a.final",
+            exact_len: 5,
+        },
+        ImmutableBatchEntry {
+            temporary: "batch-b.tmp",
+            file: &second,
+            destination: "batch-b.final",
+            exact_len: 6,
+        },
+    ];
+    let mut gates = 0;
+    let result = owner.publish_files_noreplace_checked(&entries, &mut || {
+        gates += 1;
+        Ok::<_, io::Error>(())
+    })?;
+    assert_eq!(result.len(), 2);
+    assert!(gates > 10);
+    for (result, expected) in result
+        .into_iter()
+        .zip([b"first".as_slice(), b"second".as_slice()])
+    {
+        let ImmutablePublication::Published(mut file) = result else {
+            return Err("unexpected existing member".into());
+        };
+        assert_eq!(file.metadata()?.nlink(), 1);
+        assert!(file.write_all(b"x").is_err());
+        assert_eq!(read_file(file)?, expected);
+    }
+    Ok(())
+}
+
+#[test]
+fn bounded_batch_rejects_alias_before_any_publication() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let first = temporary(&owner, b"first")?;
+    let entries = [
+        ImmutableBatchEntry {
+            temporary: TEMP,
+            file: &first,
+            destination: FINAL,
+            exact_len: 5,
+        },
+        ImmutableBatchEntry {
+            temporary: TEMP,
+            file: &first,
+            destination: "other",
+            exact_len: 5,
+        },
+    ];
+    assert!(
+        owner
+            .publish_files_noreplace_checked(&entries, &mut || Ok::<_, io::Error>(()))
+            .is_err()
+    );
+    assert!(!owner.entry_exists(FINAL)?);
+    assert!(owner.entry_exists(TEMP)?);
+    Ok(())
+}
+
+#[test]
+fn bounded_batch_every_gate_rejection_withholds_all_completion() -> TestResult {
+    // First observe the actual number of gates, then reject every boundary.
+    let mut count = 0;
+    {
+        let root = Root::new()?;
+        let owner = ExclusiveDirectory::open(&root.0)?;
+        let temp = temporary(&owner, b"fixture")?;
+        owner.publish_files_noreplace_checked(
+            &[ImmutableBatchEntry {
+                temporary: TEMP,
+                file: &temp,
+                destination: FINAL,
+                exact_len: 7,
+            }],
+            &mut || {
+                count += 1;
+                Ok::<_, io::Error>(())
+            },
+        )?;
+    }
+    for reject in 1..=count {
+        let root = Root::new()?;
+        let owner = ExclusiveDirectory::open(&root.0)?;
+        let temp = temporary(&owner, b"fixture")?;
+        let mut calls = 0;
+        let result = owner.publish_files_noreplace_checked(
+            &[ImmutableBatchEntry {
+                temporary: TEMP,
+                file: &temp,
+                destination: FINAL,
+                exact_len: 7,
+            }],
+            &mut || {
+                calls += 1;
+                if calls == reject {
+                    Err(io::Error::other("owned negative gate"))
+                } else {
+                    Ok(())
+                }
+            },
+        );
+        assert!(result.is_err(), "gate {reject} produced a completion");
+        assert_eq!(calls, reject);
+    }
+    Ok(())
+}
+
+#[test]
+fn bounded_batch_final_strong_sync_failure_returns_no_receipt() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let temp = temporary(&owner, b"fixture")?;
+    let mut flushes = 0;
+    let result = owner.publish_files_noreplace_with_final_sync(
+        &[ImmutableBatchEntry {
+            temporary: TEMP,
+            file: &temp,
+            destination: FINAL,
+            exact_len: 7,
+        }],
+        &mut || Ok::<_, io::Error>(()),
+        &mut |_file| {
+            flushes += 1;
+            assert!(root.0.join(FINAL).is_file());
+            assert!(!root.0.join(TEMP).exists());
+            Err(io::Error::other("synthetic strong flush failure"))
+        },
+    );
+    assert!(matches!(
+        result,
+        Err(ImmutablePublicationCheckedError::Publication(
+            ImmutablePublicationError::OutcomeUnknown(_)
+        ))
+    ));
+    assert_eq!(flushes, 1);
+    Ok(())
+}
+
+#[test]
+fn bounded_batch_destination_replacement_at_final_barrier_is_rejected() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let temp = temporary(&owner, b"fixture")?;
+    let result = owner.publish_files_noreplace_with_final_sync(
+        &[ImmutableBatchEntry {
+            temporary: TEMP,
+            file: &temp,
+            destination: FINAL,
+            exact_len: 7,
+        }],
+        &mut || Ok::<_, io::Error>(()),
+        &mut |file| {
+            file.sync_all()?;
+            fs::rename(root.0.join(FINAL), root.0.join("retired-original"))?;
+            fs::write(root.0.join(FINAL), b"fixture")?;
+            Ok(())
+        },
+    );
+    assert!(result.is_err());
+    Ok(())
+}
+
+#[test]
+fn bounded_batch_one_final_strong_flush_covers_all_members() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let names = [
+        ("a.tmp", "a.final"),
+        ("b.tmp", "b.final"),
+        ("c.tmp", "c.final"),
+        ("d.tmp", "d.final"),
+    ];
+    let mut files = Vec::new();
+    for (temp, _) in names {
+        let mut f = owner.open_file(temp, FileAccess::CreateNewReadWrite)?;
+        f.write_all(b"fixture")?;
+        files.push(f);
+    }
+    let entries: Vec<_> = files
+        .iter()
+        .zip(names)
+        .map(|(f, (t, d))| ImmutableBatchEntry {
+            temporary: t,
+            file: f,
+            destination: d,
+            exact_len: 7,
+        })
+        .collect();
+    let mut flushes = 0;
+    let result = owner.publish_files_noreplace_with_final_sync(
+        &entries,
+        &mut || Ok::<_, io::Error>(()),
+        &mut |f| {
+            for (temp, destination) in names {
+                assert!(!root.0.join(temp).exists());
+                assert!(root.0.join(destination).is_file());
+            }
+            flushes += 1;
+            f.sync_all()
+        },
+    )?;
+    assert_eq!(result.len(), 4);
+    assert_eq!(flushes, 1);
+    Ok(())
+}
+
+#[test]
+fn bounded_batch_limit_and_empty_are_readonly_rejections() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let temp = temporary(&owner, b"fixture")?;
+    assert!(
+        owner
+            .publish_files_noreplace_checked(&[], &mut || Ok::<_, io::Error>(()))
+            .is_err()
+    );
+    let entries: Vec<_> = (0..5)
+        .map(|_| ImmutableBatchEntry {
+            temporary: TEMP,
+            file: &temp,
+            destination: FINAL,
+            exact_len: 7,
+        })
+        .collect();
+    assert!(
+        owner
+            .publish_files_noreplace_checked(&entries, &mut || Ok::<_, io::Error>(()))
+            .is_err()
+    );
+    assert!(!owner.entry_exists(FINAL)?);
+    assert!(owner.entry_exists(TEMP)?);
+    Ok(())
+}

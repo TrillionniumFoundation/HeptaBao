@@ -141,6 +141,21 @@ pub trait DurableBackend: Send {
     ) -> Result<ImmutableBlobStage, BackendError> {
         Err(BackendError::Unsupported)
     }
+    /// Complete one bounded group before returning any physical read pins.
+    /// Unsupported/custom backends retain their existing per-object semantics.
+    fn stage_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        if objects.is_empty() || objects.len() > 4 {
+            return Err(BackendError::Capacity);
+        }
+        objects
+            .iter()
+            .map(|(locator, bytes)| self.stage_immutable_ciphertext_checked(*locator, bytes, gate))
+            .collect()
+    }
     fn pin_immutable_ciphertext(
         &self,
         _locator: BlobLocator,
@@ -253,6 +268,14 @@ impl DurableBackend for Box<dyn DurableBackend> {
     ) -> Result<ImmutableBlobStage, BackendError> {
         self.as_mut()
             .stage_immutable_ciphertext_checked(locator, ciphertext, gate)
+    }
+    fn stage_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        self.as_mut()
+            .stage_immutable_ciphertext_batch_checked(objects, gate)
     }
     fn pin_immutable_ciphertext(
         &self,
@@ -554,6 +577,13 @@ impl DurableBackend for FileBackend {
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
     ) -> Result<ImmutableBlobStage, BackendError> {
         FileBackend::stage_immutable_ciphertext_checked(self, locator, ciphertext, gate)
+    }
+    fn stage_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        FileBackend::stage_immutable_ciphertext_batch_checked(self, objects, gate)
     }
     fn pin_immutable_ciphertext(
         &self,

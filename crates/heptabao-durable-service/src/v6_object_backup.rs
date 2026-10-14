@@ -627,63 +627,78 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             return Err(ServiceError::BackupRollbackRejected);
         }
         let stage_started = std::time::Instant::now();
-        for (object_index, member) in prepared.members.iter().enumerate() {
-            if object_index % 64 == 0 {
+        // Four ciphertexts plus four plaintexts are bounded by 4MiB total.
+        // Complete authentication of the pack and graph happened before entry;
+        // each chunk is reauthenticated again before any object is staged.
+        for (group_index, group) in prepared.members.chunks(4).enumerate() {
+            if group_index % 16 == 0 {
                 let _ = writeln!(
                     std::io::stderr(),
                     "HBV6-RESTORE-STAGE objects={} elapsed_ms={}",
-                    object_index,
+                    group_index * 4,
                     stage_started.elapsed().as_millis()
                 );
             }
-            gate()?;
-            self.verify_prepared_restore(&prepared.state)?;
-            seek_checked(&mut prepared.reader, SeekFrom::Start(member.offset), gate)?;
-            let mut ciphertext = Zeroizing::new(vec![0; member.slot.ciphertext_bytes]);
-            read_exact_checked(&mut prepared.reader, &mut ciphertext, gate)?;
-            if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
-                return Err(ServiceError::CorruptState);
+            let mut values = Vec::with_capacity(group.len());
+            for member in group {
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
+                seek_checked(&mut prepared.reader, SeekFrom::Start(member.offset), gate)?;
+                let mut ciphertext = Zeroizing::new(vec![0; member.slot.ciphertext_bytes]);
+                read_exact_checked(&mut prepared.reader, &mut ciphertext, gate)?;
+                if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
+                    return Err(ServiceError::CorruptState);
+                }
+                let plaintext = Zeroizing::new(
+                    self.barrier
+                        .open(&member.slot.aad(), &ciphertext)
+                        .map_err(|_| ServiceError::BarrierFailure)?,
+                );
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
+                if plaintext.len() != member.slot.plaintext_bytes {
+                    return Err(ServiceError::CorruptState);
+                }
+                let incoming = prepared
+                    .state
+                    .get("system", &member.slot.resource)?
+                    .ok_or(ServiceError::CorruptState)?;
+                let current = self.get("system", &member.slot.resource)?;
+                let pin = if current
+                    .as_ref()
+                    .is_some_and(|value| value.expose() == incoming)
+                {
+                    // Registered corruption is refused, never repaired by import.
+                    Some(
+                        self.backend
+                            .pin_immutable_ciphertext(
+                                member.slot.locator,
+                                member.slot.ciphertext_bytes,
+                            )
+                            .map_err(map_backend_error)?,
+                    )
+                } else {
+                    None
+                };
+                values.push((member, ciphertext, plaintext, pin));
             }
-            let plaintext = Zeroizing::new(
-                self.barrier
-                    .open(&member.slot.aad(), &ciphertext)
-                    .map_err(|_| ServiceError::BarrierFailure)?,
-            );
-            gate()?;
-            self.verify_prepared_restore(&prepared.state)?;
-            if plaintext.len() != member.slot.plaintext_bytes {
-                return Err(ServiceError::CorruptState);
-            }
-            let incoming_slot = prepared
-                .state
-                .get("system", &member.slot.resource)?
-                .ok_or(ServiceError::CorruptState)?;
-            let current_slot = self.get("system", &member.slot.resource)?;
-            let already_registered = current_slot
-                .as_ref()
-                .is_some_and(|current| current.expose() == incoming_slot);
-            let pin = if already_registered {
-                // A matching committed slot avoids rewriting/fsyncing identical
-                // ciphertext. It grants no read authority: the exact live pin,
-                // profile, AEAD and plaintext equality checks below still run.
-                // Missing or corrupt registered files are refused, not repaired.
-                self.backend
-                    .pin_immutable_ciphertext(member.slot.locator, member.slot.ciphertext_bytes)
-                    .map_err(map_backend_error)?
-            } else {
+            let inputs: Vec<_> = values
+                .iter()
+                .filter(|x| x.3.is_none())
+                .map(|x| (x.0.slot.locator, x.1.as_slice()))
+                .collect();
+            if !inputs.is_empty() {
                 let mut gate_error = None;
                 let mut physical_gate = || match gate() {
                     Ok(()) => Ok(()),
-                    Err(e) => {
-                        gate_error = Some(e);
+                    Err(error) => {
+                        gate_error = Some(error);
                         Err(BackendError::Unavailable)
                     }
                 };
-                let staged = self.backend.stage_immutable_ciphertext_checked(
-                    member.slot.locator,
-                    &ciphertext,
-                    &mut physical_gate,
-                );
+                let staged = self
+                    .backend
+                    .stage_immutable_ciphertext_batch_checked(&inputs, &mut physical_gate);
                 if matches!(
                     staged,
                     Err(BackendError::OutcomeUnknown | BackendError::StaleWriter)
@@ -693,42 +708,57 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 if let Some(error) = gate_error {
                     return Err(error);
                 }
-                match staged.map_err(map_backend_error)? {
-                    ImmutableBlobStage::Published(pin) | ImmutableBlobStage::AlreadyExists(pin) => {
-                        pin
+                let staged = staged.map_err(map_backend_error)?;
+                if staged.len() != inputs.len() {
+                    return Err(ServiceError::CorruptState);
+                }
+                drop(inputs);
+                let mut staged = staged.into_iter();
+                for item in &mut values {
+                    if item.3.is_none() {
+                        item.3 = Some(match staged.next().ok_or(ServiceError::CorruptState)? {
+                            ImmutableBlobStage::Published(pin)
+                            | ImmutableBlobStage::AlreadyExists(pin) => pin,
+                        });
                     }
                 }
-            };
-            gate()?;
-            self.verify_prepared_restore(&prepared.state)?;
-            let profile = self
-                .backend
-                .immutable_blob_profile()
-                .map_err(map_backend_error)?;
-            if pin.locator() != member.slot.locator
-                || pin.ciphertext_len() != member.slot.ciphertext_bytes
-                || !pin.matches_profile(&profile)
-            {
-                return Err(ServiceError::CorruptState);
+                if staged.next().is_some() {
+                    return Err(ServiceError::CorruptState);
+                }
             }
-            let actual = pin
-                .read_ciphertext_checked(&mut || {
-                    gate()?;
-                    self.verify_prepared_restore(&prepared.state)
-                })
-                .map_err(|e| match e {
-                    PinReadError::Backend(e) => map_backend_error(e),
-                    PinReadError::Gate(e) => e,
-                })?;
-            let opened = Zeroizing::new(
-                self.barrier
-                    .open(&member.slot.aad(), actual.as_slice())
-                    .map_err(|_| ServiceError::BarrierFailure)?,
-            );
-            gate()?;
-            self.verify_prepared_restore(&prepared.state)?;
-            if opened.as_slice() != plaintext.as_slice() {
-                return Err(ServiceError::RequestBindingConflict);
+            for (member, _ciphertext, plaintext, pin) in values {
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
+                let pin = pin.ok_or(ServiceError::CorruptState)?;
+                let profile = self
+                    .backend
+                    .immutable_blob_profile()
+                    .map_err(map_backend_error)?;
+                if pin.locator() != member.slot.locator
+                    || pin.ciphertext_len() != member.slot.ciphertext_bytes
+                    || !pin.matches_profile(&profile)
+                {
+                    return Err(ServiceError::CorruptState);
+                }
+                let actual = pin
+                    .read_ciphertext_checked(&mut || {
+                        gate()?;
+                        self.verify_prepared_restore(&prepared.state)
+                    })
+                    .map_err(|error| match error {
+                        PinReadError::Backend(e) => map_backend_error(e),
+                        PinReadError::Gate(e) => e,
+                    })?;
+                let opened = Zeroizing::new(
+                    self.barrier
+                        .open(&member.slot.aad(), actual.as_slice())
+                        .map_err(|_| ServiceError::BarrierFailure)?,
+                );
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
+                if opened.as_slice() != plaintext.as_slice() {
+                    return Err(ServiceError::RequestBindingConflict);
+                }
             }
         }
         gate()?;

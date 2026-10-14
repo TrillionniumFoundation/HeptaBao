@@ -5,7 +5,7 @@
 //! does not authenticate the bytes supplied to or read from the backend.
 use super::{BackendError, FileBackend};
 use heptabao_filesystem_guard::{
-    ExclusiveDirectory, FileAccess, ImmutablePublication as FilePublication,
+    ExclusiveDirectory, FileAccess, ImmutableBatchEntry, ImmutablePublication as FilePublication,
     ImmutablePublicationCheckedError, ImmutablePublicationError,
 };
 use std::{
@@ -22,6 +22,12 @@ use zeroize::Zeroizing;
 /// A per-object physical bound. Existing snapshot/journal limits are unchanged.
 pub const MAX_IMMUTABLE_CIPHERTEXT_BYTES: usize = 512 * 1024;
 const TEMPORARY_LEAF: &str = "native-v6-object.tmp";
+const BATCH_TEMPORARIES: [&str; 4] = [
+    "native-v6-batch-0.tmp",
+    "native-v6-batch-1.tmp",
+    "native-v6-batch-2.tmp",
+    "native-v6-batch-3.tmp",
+];
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub struct BlobLocator {
@@ -351,10 +357,12 @@ fn publication_error(error: ImmutablePublicationError) -> BackendError {
     }
 }
 pub(super) fn cleanup_temporary(directory: &ExclusiveDirectory) -> Result<(), BackendError> {
-    directory
-        .cleanup_immutable_temporary(TEMPORARY_LEAF)
-        .map(|_| ())
-        .map_err(publication_error)
+    for name in std::iter::once(TEMPORARY_LEAF).chain(BATCH_TEMPORARIES) {
+        directory
+            .cleanup_immutable_temporary(name)
+            .map_err(publication_error)?;
+    }
+    Ok(())
 }
 
 impl FileBackend {
@@ -415,6 +423,109 @@ impl FileBackend {
             .open_file(locator.leaf(), FileAccess::Read)
             .map_err(read_error)?;
         self.pin_checked_file(locator, file, exact_len)
+    }
+
+    /// No staged pin escapes until the four-or-fewer objects have completed
+    /// the filesystem guard's strong durability barrier. This method does not
+    /// publish an application root or authorize an imported archive.
+    pub fn stage_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        let mut gate_rejected = false;
+        let result = {
+            let mut checked_gate = || {
+                let result = gate();
+                if result.is_err() {
+                    gate_rejected = true;
+                }
+                result
+            };
+            (|| {
+                checked_gate()?;
+                if objects.is_empty() || objects.len() > 4 {
+                    return Err(BackendError::Capacity);
+                }
+                for (_, bytes) in objects {
+                    length_check(bytes.len())?;
+                }
+                self.immutable_blob_profile()?;
+                cleanup_temporary(&self.directory)?;
+                let mut files = Vec::with_capacity(objects.len());
+                let mut destinations = Vec::with_capacity(objects.len());
+                for (index, (locator, bytes)) in objects.iter().enumerate() {
+                    checked_gate()?;
+                    let mut file = self
+                        .directory
+                        .open_file(BATCH_TEMPORARIES[index], FileAccess::CreateNewReadWrite)
+                        .map_err(|_| BackendError::Io)?;
+                    let mut offset = 0;
+                    let mut interrupts = 0;
+                    while offset < bytes.len() {
+                        checked_gate()?;
+                        let result = file.write(&bytes[offset..]);
+                        checked_gate()?;
+                        match result {
+                            Ok(n) if n > 0 && n <= bytes.len() - offset => {
+                                offset += n;
+                                interrupts = 0;
+                            }
+                            Err(e) if e.kind() == io::ErrorKind::Interrupted && interrupts < 64 => {
+                                interrupts += 1;
+                            }
+                            _ => return Err(BackendError::Io),
+                        }
+                    }
+                    files.push(file);
+                    destinations.push(locator.leaf());
+                }
+                let entries: Vec<_> = files
+                    .iter()
+                    .enumerate()
+                    .map(|(index, file)| ImmutableBatchEntry {
+                        temporary: BATCH_TEMPORARIES[index],
+                        file,
+                        destination: &destinations[index],
+                        exact_len: objects[index].1.len() as u64,
+                    })
+                    .collect();
+                let published = self
+                    .directory
+                    .publish_files_noreplace_checked(&entries, &mut checked_gate)
+                    .map_err(|error| match error {
+                        ImmutablePublicationCheckedError::Publication(error) => {
+                            publication_error(error)
+                        }
+                        ImmutablePublicationCheckedError::GateBeforeLink(error)
+                        | ImmutablePublicationCheckedError::GateAfterLink(error) => error,
+                    })?;
+                if published.len() != objects.len() {
+                    return Err(BackendError::OutcomeUnknown);
+                }
+                let mut pins = Vec::with_capacity(objects.len());
+                for (value, (locator, bytes)) in published.into_iter().zip(objects) {
+                    checked_gate()?;
+                    let pin = match value {
+                        FilePublication::Published(file) => ImmutableBlobStage::Published(
+                            self.pin_checked_file(*locator, file, bytes.len())
+                                .map_err(|_| BackendError::OutcomeUnknown)?,
+                        ),
+                        FilePublication::AlreadyExists(file) => ImmutableBlobStage::AlreadyExists(
+                            self.pin_checked_file(*locator, file, bytes.len())
+                                .map_err(|_| BackendError::OutcomeUnknown)?,
+                        ),
+                    };
+                    pins.push(pin);
+                }
+                checked_gate()?;
+                Ok(pins)
+            })()
+        };
+        if !gate_rejected && matches!(result, Err(BackendError::OutcomeUnknown)) {
+            self.immutable_lease.revoke();
+        }
+        result
     }
 
     /// Persist one bounded opaque ciphertext object without replacing a leaf.
