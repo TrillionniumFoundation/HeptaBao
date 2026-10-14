@@ -34,7 +34,7 @@ use std::os::unix::fs::MetadataExt;
 mod immutable;
 pub use immutable::{
     ImmutableBatchEntry, ImmutablePublication, ImmutablePublicationCheckedError,
-    ImmutablePublicationError,
+    ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
 };
 mod relative;
 pub use relative::FileAccess;

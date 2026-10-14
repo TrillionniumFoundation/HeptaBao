@@ -7,6 +7,7 @@
 //! Only registered slots enter the pack; unreferenced filesystem orphans do not.
 //! The existing component bounds are unchanged; external ciphertext is streamed.
 use super::*;
+use heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS;
 use std::collections::BTreeSet;
 use std::io::{self, Read, Seek, SeekFrom, Write};
 
@@ -627,15 +628,19 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             return Err(ServiceError::BackupRollbackRejected);
         }
         let stage_started = std::time::Instant::now();
-        // Four ciphertexts plus four plaintexts are bounded by 4MiB total.
+        // Eight ciphertexts plus eight plaintexts are bounded by 8MiB total.
         // Complete authentication of the pack and graph happened before entry;
         // each chunk is reauthenticated again before any object is staged.
-        for (group_index, group) in prepared.members.chunks(4).enumerate() {
-            if group_index % 16 == 0 {
+        for (group_index, group) in prepared
+            .members
+            .chunks(MAX_IMMUTABLE_BATCH_OBJECTS)
+            .enumerate()
+        {
+            if group_index % 8 == 0 {
                 let _ = writeln!(
                     std::io::stderr(),
                     "HBV6-RESTORE-STAGE objects={} elapsed_ms={}",
-                    group_index * 4,
+                    group_index * MAX_IMMUTABLE_BATCH_OBJECTS,
                     stage_started.elapsed().as_millis()
                 );
             }

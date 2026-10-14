@@ -618,3 +618,117 @@ fn bounded_batch_limit_and_empty_are_readonly_rejections() -> TestResult {
     assert!(owner.entry_exists(TEMP)?);
     Ok(())
 }
+
+#[test]
+fn eight_member_batch_keeps_one_final_strong_flush_and_ninth_is_readonly_refusal() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let names = [
+        ("eight0.tmp", "eight0.final"),
+        ("eight1.tmp", "eight1.final"),
+        ("eight2.tmp", "eight2.final"),
+        ("eight3.tmp", "eight3.final"),
+        ("eight4.tmp", "eight4.final"),
+        ("eight5.tmp", "eight5.final"),
+        ("eight6.tmp", "eight6.final"),
+        ("eight7.tmp", "eight7.final"),
+        ("eight8.tmp", "eight8.final"),
+    ];
+    assert_eq!(MAX_IMMUTABLE_BATCH_OBJECTS, 8);
+    let mut files = Vec::new();
+    for (temp, _) in names {
+        let mut file = owner.open_file(temp, FileAccess::CreateNewReadWrite)?;
+        file.write_all(b"fixture")?;
+        files.push(file);
+    }
+    let entries: Vec<_> = files
+        .iter()
+        .zip(names)
+        .map(|(file, (temporary, destination))| ImmutableBatchEntry {
+            temporary,
+            file,
+            destination,
+            exact_len: 7,
+        })
+        .collect();
+    assert!(
+        owner
+            .publish_files_noreplace_checked(&entries, &mut || Ok::<_, io::Error>(()))
+            .is_err()
+    );
+    for (temp, dest) in names {
+        assert!(root.0.join(temp).is_file());
+        assert!(!root.0.join(dest).exists());
+    }
+    let mut flushes = 0;
+    let result = owner.publish_files_noreplace_with_final_sync(
+        &entries[..MAX_IMMUTABLE_BATCH_OBJECTS],
+        &mut || Ok::<_, io::Error>(()),
+        &mut |file| {
+            for (temp, dest) in names.iter().take(MAX_IMMUTABLE_BATCH_OBJECTS) {
+                assert!(!root.0.join(temp).exists());
+                assert_eq!(fs::read(root.0.join(dest))?, b"fixture");
+            }
+            flushes += 1;
+            file.sync_all()
+        },
+    )?;
+    assert_eq!(result.len(), MAX_IMMUTABLE_BATCH_OBJECTS);
+    assert_eq!(flushes, 1);
+    assert!(root.0.join(names[8].0).is_file());
+    assert!(!root.0.join(names[8].1).exists());
+    Ok(())
+}
+
+#[test]
+fn eight_member_failed_final_strong_flush_is_unknown_not_completed() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let names = [
+        ("failure0.tmp", "failure0.final"),
+        ("failure1.tmp", "failure1.final"),
+        ("failure2.tmp", "failure2.final"),
+        ("failure3.tmp", "failure3.final"),
+        ("failure4.tmp", "failure4.final"),
+        ("failure5.tmp", "failure5.final"),
+        ("failure6.tmp", "failure6.final"),
+        ("failure7.tmp", "failure7.final"),
+    ];
+    let mut files = Vec::new();
+    for (temp, _) in names {
+        let mut file = owner.open_file(temp, FileAccess::CreateNewReadWrite)?;
+        file.write_all(b"fixture")?;
+        files.push(file);
+    }
+    let entries: Vec<_> = files
+        .iter()
+        .zip(names)
+        .map(|(file, (temporary, destination))| ImmutableBatchEntry {
+            temporary,
+            file,
+            destination,
+            exact_len: 7,
+        })
+        .collect();
+    let mut flushes = 0;
+    let result = owner.publish_files_noreplace_with_final_sync(
+        &entries,
+        &mut || Ok::<_, io::Error>(()),
+        &mut |_| {
+            flushes += 1;
+            Err(io::Error::other("injected final strong sync failure"))
+        },
+    );
+    assert_eq!(flushes, 1);
+    assert!(matches!(
+        result,
+        Err(ImmutablePublicationCheckedError::Publication(
+            ImmutablePublicationError::OutcomeUnknown(_)
+        ))
+    ));
+    for (temp, dest) in names {
+        assert!(!root.0.join(temp).exists());
+        assert_eq!(fs::read(root.0.join(dest))?, b"fixture");
+    }
+    Ok(())
+}

@@ -6,7 +6,9 @@
 //! replay, and crash recovery; this module only gives those bytes durable
 //! storage and a writer fence.
 
-use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory, FileAccess};
+use heptabao_filesystem_guard::{
+    DirectoryGuardError, ExclusiveDirectory, FileAccess, MAX_IMMUTABLE_BATCH_OBJECTS,
+};
 use std::fmt;
 use std::fs::{self, File};
 use std::io::{Read, Write};
@@ -148,7 +150,7 @@ pub trait DurableBackend: Send {
         objects: &[(BlobLocator, &[u8])],
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
     ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
-        if objects.is_empty() || objects.len() > 4 {
+        if objects.is_empty() || objects.len() > MAX_IMMUTABLE_BATCH_OBJECTS {
             return Err(BackendError::Capacity);
         }
         objects

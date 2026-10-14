@@ -7,6 +7,10 @@ use super::ExclusiveDirectory;
 use super::FileAccess;
 use std::{fmt, fs::File, io, path::Path};
 
+/// The strong-sync durability unit is bounded to eight physical objects.
+/// Each object remains independently fsynced before one final device barrier.
+pub const MAX_IMMUTABLE_BATCH_OBJECTS: usize = 8;
+
 /// The actual read-only descriptor observed at the immutable destination.
 pub enum ImmutablePublication {
     Published(File),
@@ -401,7 +405,7 @@ impl ExclusiveDirectory {
         self.verify().map_err(io::Error::other)
     }
 
-    /// Publish at most four 512KiB files as one physical durability unit.
+    /// Publish at most eight 512KiB files as one physical durability unit.
     /// No descriptor or success receipt escapes until all file data/metadata
     /// and directory changes have been synced and a final strong device flush
     /// completes. On Apple, raw fsync moves data to the device; File::sync_all
@@ -443,7 +447,7 @@ impl ExclusiveDirectory {
         #[cfg(unix)]
         {
             gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-            if entries.is_empty() || entries.len() > 4 {
+            if entries.is_empty() || entries.len() > MAX_IMMUTABLE_BATCH_OBJECTS {
                 return Err(before(io::Error::other("invalid bounded batch length")));
             }
             self.verify().map_err(io::Error::other).map_err(before)?;

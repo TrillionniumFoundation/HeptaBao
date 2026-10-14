@@ -6,7 +6,7 @@
 use super::{BackendError, FileBackend};
 use heptabao_filesystem_guard::{
     ExclusiveDirectory, FileAccess, ImmutableBatchEntry, ImmutablePublication as FilePublication,
-    ImmutablePublicationCheckedError, ImmutablePublicationError,
+    ImmutablePublicationCheckedError, ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
 };
 use std::{
     fmt,
@@ -22,11 +22,15 @@ use zeroize::Zeroizing;
 /// A per-object physical bound. Existing snapshot/journal limits are unchanged.
 pub const MAX_IMMUTABLE_CIPHERTEXT_BYTES: usize = 512 * 1024;
 const TEMPORARY_LEAF: &str = "native-v6-object.tmp";
-const BATCH_TEMPORARIES: [&str; 4] = [
+const BATCH_TEMPORARIES: [&str; MAX_IMMUTABLE_BATCH_OBJECTS] = [
     "native-v6-batch-0.tmp",
     "native-v6-batch-1.tmp",
     "native-v6-batch-2.tmp",
     "native-v6-batch-3.tmp",
+    "native-v6-batch-4.tmp",
+    "native-v6-batch-5.tmp",
+    "native-v6-batch-6.tmp",
+    "native-v6-batch-7.tmp",
 ];
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
@@ -425,7 +429,7 @@ impl FileBackend {
         self.pin_checked_file(locator, file, exact_len)
     }
 
-    /// No staged pin escapes until the four-or-fewer objects have completed
+    /// No staged pin escapes until the eight-or-fewer objects have completed
     /// the filesystem guard's strong durability barrier. This method does not
     /// publish an application root or authorize an imported archive.
     pub fn stage_immutable_ciphertext_batch_checked(
@@ -444,7 +448,7 @@ impl FileBackend {
             };
             (|| {
                 checked_gate()?;
-                if objects.is_empty() || objects.len() > 4 {
+                if objects.is_empty() || objects.len() > MAX_IMMUTABLE_BATCH_OBJECTS {
                     return Err(BackendError::Capacity);
                 }
                 for (_, bytes) in objects {
