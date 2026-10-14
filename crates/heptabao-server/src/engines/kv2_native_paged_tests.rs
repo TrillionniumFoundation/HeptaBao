@@ -108,7 +108,7 @@ fn paged_cold_metadata_retains_no_payload_and_point_read_opens_only_one_version(
         )
         .map_err(|_| RecordError::Corrupt)?;
     assert_eq!(response.status, 200);
-    assert_eq!(response.body["data"]["n"], 1);
+    assert_eq!(response.body["data"]["data"]["n"], 1);
     assert_eq!(counted.blocks.get(), 3);
     assert!(
         view.owner
@@ -176,7 +176,7 @@ fn paged_actual_cas_delete_destroy_and_new_blocks_preserve_unselected_history() 
             &source
         )
         .map_err(|_| RecordError::Corrupt)?
-        .body["data"]["n"],
+        .body["data"]["data"]["n"],
         1
     );
     assert_eq!(
@@ -194,7 +194,7 @@ fn paged_actual_cas_delete_destroy_and_new_blocks_preserve_unselected_history() 
     assert_eq!(
         cold.read_with_source("GET", "data/history", &json!({}), time()?, &source)
             .map_err(|_| RecordError::Corrupt)?
-            .body["data"]["v"],
+            .body["data"]["data"]["v"],
         "new"
     );
     Ok(())

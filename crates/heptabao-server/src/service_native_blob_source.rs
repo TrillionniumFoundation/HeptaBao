@@ -12,20 +12,86 @@ use heptabao_durable_service::{
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+// One owned unit-test thread may pause its actual payload AEAD observation.
+// This has no production CLI, HTTP route, environment knob or deadline change.
+#[cfg(test)]
+struct PayloadOpenPause {
+    delay: std::time::Duration,
+    fired: Arc<std::sync::atomic::AtomicBool>,
+}
+#[cfg(test)]
+thread_local! {
+    static AFTER_PAYLOAD_OPEN_PAUSE: RefCell<Option<PayloadOpenPause>> = const { RefCell::new(None) };
+}
+#[cfg(test)]
+pub(super) struct PayloadOpenPauseGuard {
+    fired: Arc<std::sync::atomic::AtomicBool>,
+}
+#[cfg(test)]
+impl PayloadOpenPauseGuard {
+    pub(super) fn fired(&self) -> bool {
+        self.fired.load(Ordering::SeqCst)
+    }
+}
+#[cfg(test)]
+impl Drop for PayloadOpenPauseGuard {
+    fn drop(&mut self) {
+        AFTER_PAYLOAD_OPEN_PAUSE.with(|slot| {
+            slot.borrow_mut().take();
+        });
+    }
+}
+#[cfg(test)]
+pub(super) fn pause_after_payload_open_once(
+    delay: std::time::Duration,
+) -> Result<PayloadOpenPauseGuard, &'static str> {
+    let fired = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    AFTER_PAYLOAD_OPEN_PAUSE.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        if slot.is_some() {
+            return Err("owned payload-open pause is already armed");
+        }
+        *slot = Some(PayloadOpenPause {
+            delay,
+            fired: Arc::clone(&fired),
+        });
+        Ok(PayloadOpenPauseGuard { fired })
+    })
+}
+#[cfg(test)]
+fn observe_test_payload_open(event: &ImmutableObjectReadObservation) {
+    if matches!(
+        event,
+        ImmutableObjectReadObservation::PlaintextOpened { .. }
+    ) {
+        let pause = AFTER_PAYLOAD_OPEN_PAUSE.with(|slot| slot.borrow_mut().take());
+        if let Some(pause) = pause {
+            pause.fired.store(true, Ordering::SeqCst);
+            std::thread::sleep(pause.delay);
+        }
+    }
+}
+
 #[derive(Default)]
 pub(super) struct PayloadObservations {
     pub(super) blocks_pinned: AtomicU64,
     pub(super) blocks_opened: AtomicU64,
     pub(super) ciphertext_bytes_read: AtomicU64,
     pub(super) plaintext_bytes_opened: AtomicU64,
+    pub(super) positioned_read_calls: AtomicU64,
+    pub(super) positioned_bytes_returned: AtomicU64,
+    pub(super) positioned_read_failures: AtomicU64,
 }
 impl PayloadObservations {
-    pub(super) fn snapshot(&self) -> [u64; 4] {
+    pub(super) fn snapshot(&self) -> [u64; 7] {
         [
             self.blocks_pinned.load(Ordering::Relaxed),
             self.blocks_opened.load(Ordering::Relaxed),
             self.ciphertext_bytes_read.load(Ordering::Relaxed),
             self.plaintext_bytes_opened.load(Ordering::Relaxed),
+            self.positioned_read_calls.load(Ordering::Relaxed),
+            self.positioned_bytes_returned.load(Ordering::Relaxed),
+            self.positioned_read_failures.load(Ordering::Relaxed),
         ]
     }
     fn pinned(&self, bytes: usize) {
@@ -34,6 +100,17 @@ impl PayloadObservations {
     }
     fn observed(&self, event: ImmutableObjectReadObservation) {
         match event {
+            ImmutableObjectReadObservation::PositionedReadReturned {
+                bytes,
+                failed,
+                interrupted: _,
+            } => {
+                self.positioned_read_calls.fetch_add(1, Ordering::Relaxed);
+                self.positioned_bytes_returned
+                    .fetch_add(bytes as u64, Ordering::Relaxed);
+                self.positioned_read_failures
+                    .fetch_add(u64::from(failed), Ordering::Relaxed);
+            }
             ImmutableObjectReadObservation::CiphertextRead { bytes } => {
                 self.ciphertext_bytes_read
                     .fetch_add(bytes as u64, Ordering::Relaxed);
@@ -353,6 +430,10 @@ impl NativeSource<'_> {
                 &context(domain, reference),
                 &mut before,
                 &mut |event| {
+                    #[cfg(test)]
+                    if observe_payload {
+                        observe_test_payload_open(&event);
+                    }
                     if observe_payload && let Some(observations) = &self.observations {
                         observations.observed(event);
                     }

@@ -148,6 +148,11 @@ impl EngineState {
         }
         let result = view.mutate(method, relative, &params, at);
         view.clear_hydrated_payloads()?;
+        // Match the ordinary dispatcher: a first precise mutation can add
+        // lossless metadata to a previously empty native mount.
+        if result.as_ref().is_ok_and(|response| response.mutated) && view.has_lossless_state() {
+            self.kv2_lossless_format = Some(1);
+        }
         result
     }
 }

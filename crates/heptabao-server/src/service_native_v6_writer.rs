@@ -861,12 +861,250 @@ impl Service {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::BTreeSet;
     type TestResult = Result<(), Box<dyn std::error::Error>>;
     fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Value) -> Response {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(
             std::time::Instant::now() + Duration::from_secs(60),
         );
         service.handle(method, path, "", token, body)
+    }
+
+    // These negative fixtures exercise the normal trusted request Clock with
+    // the listener's default budget. They never re-anchor an admitted actor.
+    fn call_default_budget(
+        service: &mut Service,
+        method: &str,
+        path: &str,
+        token: &str,
+        body: Value,
+    ) -> Response {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+            std::time::Instant::now() + Duration::from_secs(15),
+        );
+        service.handle(method, path, "", token, body)
+    }
+
+    struct NativeDurableFrontier {
+        generation: u64,
+        root: Zeroizing<Vec<u8>>,
+        cursor: Zeroizing<Vec<u8>>,
+        retained_source: Zeroizing<Vec<u8>>,
+        journal: Zeroizing<Vec<u8>>,
+    }
+
+    fn native_frontier(
+        service: &mut Service,
+    ) -> Result<NativeDurableFrontier, Box<dyn std::error::Error>> {
+        let durable = service.durable.as_mut().ok_or("durable")?;
+        let generation = durable.generation();
+        let root = durable
+            .get("system", "state")?
+            .ok_or("durable native root")?;
+        let cursor = durable
+            .get("system", ACTIVE_CURSOR_RESOURCE)?
+            .ok_or("durable native cursor")?;
+        let retained = durable
+            .get("system", ACTIVE_SOURCE_ROOT_RESOURCE)?
+            .ok_or("retained migration source")?;
+        Ok(NativeDurableFrontier {
+            generation,
+            root: Zeroizing::new(root.expose().to_vec()),
+            cursor: Zeroizing::new(cursor.expose().to_vec()),
+            retained_source: Zeroizing::new(retained.expose().to_vec()),
+            journal: Zeroizing::new(fs::read(service.data_dir.join("journal.hbj"))?),
+        })
+    }
+
+    fn assert_native_frontier_unchanged(
+        service: &mut Service,
+        prior: &NativeDurableFrontier,
+    ) -> TestResult {
+        let actual = native_frontier(service)?;
+        assert_eq!(
+            actual.generation, prior.generation,
+            "rejected request changed generation"
+        );
+        assert!(
+            actual.root == prior.root,
+            "rejected request changed native root"
+        );
+        assert!(
+            actual.cursor == prior.cursor,
+            "rejected request changed native cursor"
+        );
+        assert!(
+            actual.retained_source == prior.retained_source,
+            "rejected request changed migration source"
+        );
+        assert!(
+            actual.journal == prior.journal,
+            "rejected request appended journal bytes"
+        );
+        Ok(())
+    }
+
+    fn actor_expiry_after_actual_payload_open(method: &str) -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, primary) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(15),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let _key = Zeroizing::new(key);
+        let primary = Zeroizing::new(primary);
+        let payload = "actual-barrier-floor2-actor".repeat(3_000);
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "secret/data/actor-expiry",
+                &primary,
+                json!({"data":{"payload":payload,"stable":1}}),
+            )
+            .status,
+            200
+        );
+        // The real token is unlimited-use so rejection cannot be confused with
+        // the separate consumed-auth publication. Its real TTL expires only
+        // after the actual FileBackend read and AeadBarrier open below.
+        let created = call_default_budget(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &primary,
+            json!({"policies":["root"],"num_uses":0,"ttl":"5s","no_default_policy":true,"no_parent":true}),
+        );
+        assert_eq!(
+            created.status, 200,
+            "actor creation rejected: {}",
+            created.body
+        );
+        assert_eq!(created.body["auth"]["lease_duration"], 5);
+        let actor = Zeroizing::new(
+            created.body["auth"]["client_token"]
+                .as_str()
+                .ok_or("expiring actor")?
+                .to_owned(),
+        );
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &primary,
+                json!({}),
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            service
+                .native_root
+                .as_ref()
+                .ok_or("native root")?
+                .reader_floor
+                .native_kv2_format,
+            2
+        );
+        let before = native_frontier(&mut service)?;
+        let observations = Arc::clone(&service.native_payload_observations);
+        let opened = observations
+            .blocks_opened
+            .load(std::sync::atomic::Ordering::Relaxed);
+        let ciphertext_bytes = observations
+            .ciphertext_bytes_read
+            .load(std::sync::atomic::Ordering::Relaxed);
+        let plaintext_bytes = observations
+            .plaintext_bytes_opened
+            .load(std::sync::atomic::Ordering::Relaxed);
+        let pause = native_blob_source::pause_after_payload_open_once(Duration::from_secs(6))?;
+        let started = std::time::Instant::now();
+        let body = if method == "PATCH" {
+            json!({"options":{"cas":1},"data":{"stable":2}})
+        } else {
+            json!({"version":1})
+        };
+        let response = call_default_budget(
+            &mut service,
+            method,
+            "secret/data/actor-expiry",
+            &actor,
+            body,
+        );
+        assert!(
+            pause.fired(),
+            "expiry must occur after an actual typed payload AEAD open"
+        );
+        drop(pause);
+        assert!(
+            started.elapsed() < Duration::from_secs(15),
+            "request budget, rather than Actor expiry, elapsed"
+        );
+        assert_eq!(
+            observations
+                .blocks_opened
+                .load(std::sync::atomic::Ordering::Relaxed),
+            opened + 1
+        );
+        assert!(
+            observations
+                .ciphertext_bytes_read
+                .load(std::sync::atomic::Ordering::Relaxed)
+                > ciphertext_bytes
+        );
+        assert!(
+            observations
+                .plaintext_bytes_opened
+                .load(std::sync::atomic::Ordering::Relaxed)
+                > plaintext_bytes
+        );
+        assert_eq!(
+            response.status, 403,
+            "expired Actor delivery: {}",
+            response.body
+        );
+        assert!(response.body.get("data").is_none());
+        assert!(response.body.get("auth").is_none());
+        assert!(response.body.get("wrap_info").is_none());
+        assert!(response.unwrapped_json.is_none());
+        assert!(!service.recovery_required);
+        assert_native_frontier_unchanged(&mut service, &before)?;
+        let metadata = call_default_budget(
+            &mut service,
+            "GET",
+            "secret/metadata/actor-expiry",
+            &primary,
+            json!({}),
+        );
+        assert_eq!(metadata.status, 200);
+        assert_eq!(metadata.body["data"]["current_version"], 1);
+        let stored = call_default_budget(
+            &mut service,
+            "GET",
+            "secret/data/actor-expiry",
+            &primary,
+            json!({"version":1}),
+        );
+        assert_eq!(stored.status, 200);
+        assert_eq!(stored.body["data"]["data"]["stable"], 1);
+        assert_eq!(stored.body["data"]["data"]["payload"], payload);
+        Ok(())
+    }
+
+    #[test]
+    fn genuine_native_floor2_actor_expiry_after_actual_aead_get_has_no_delivery_or_publication()
+    -> TestResult {
+        actor_expiry_after_actual_payload_open("GET")
+    }
+
+    #[test]
+    fn genuine_native_floor2_actor_expiry_after_actual_aead_patch_has_no_delivery_or_publication()
+    -> TestResult {
+        actor_expiry_after_actual_payload_open("PATCH")
     }
 
     #[test]
@@ -962,16 +1200,19 @@ mod tests {
                 .runtime_owner
         ));
         assert_eq!(quota_request(&mut service).status, 429);
+        let written = call(
+            &mut service,
+            "POST",
+            "secret/data/quota-lineage",
+            &token,
+            json!({"data":{"value":"retained"}}),
+        );
+        // Diagnostic only: expose no bearer, Auth owner or successful payload.
+        let errors = written.body.get("errors").cloned().unwrap_or(Value::Null);
         assert_eq!(
-            call(
-                &mut service,
-                "POST",
-                "secret/data/quota-lineage",
-                &token,
-                json!({"data":{"value":"retained"}})
-            )
-            .status,
-            200
+            written.status, 200,
+            "native quota hot POST status={}, errors={}",
+            written.status, errors,
         );
         assert_eq!(
             call(
@@ -1556,12 +1797,13 @@ mod tests {
         inner: heptabao_durable_service::FileBackend,
         barrier: AeadBarrier,
         lost: Arc<std::sync::atomic::AtomicBool>,
+        purpose: &'static str,
     }
     impl LostApplyAck {
         // Inspect only this owned fixture's real barrier-authenticated journal.
         // Selection uses the actual Apply kind and request_id. It is independent
         // of prelude/terminal writes, batching or append-frame counts.
-        fn is_consumed_auth_root_apply(
+        fn is_selected_native_root_apply(
             &self,
             frame: &[u8],
         ) -> Result<bool, heptabao_durable_service::BackendError> {
@@ -1610,7 +1852,8 @@ mod tests {
                 let field = std::str::from_utf8(plain.get(length_end..end).ok_or_else(invalid)?)
                     .map_err(|_| invalid())?;
                 if number == 2 {
-                    selected = field.starts_with("native6-auth-use-") && field.ends_with("-root");
+                    selected = field.starts_with(&format!("native6-{}-", self.purpose))
+                        && field.ends_with("-root");
                 }
                 offset = end;
             }
@@ -1682,7 +1925,7 @@ mod tests {
             frame: &[u8],
         ) -> Result<usize, heptabao_durable_service::BackendError> {
             let written = self.inner.append_journal(expected_len, frame)?;
-            if self.is_consumed_auth_root_apply(frame)? {
+            if self.is_selected_native_root_apply(frame)? {
                 self.lost.store(true, std::sync::atomic::Ordering::SeqCst);
                 return Err(heptabao_durable_service::BackendError::OutcomeUnknown);
             }
@@ -1803,6 +2046,7 @@ mod tests {
             inner: heptabao_durable_service::FileBackend::open(&service.data_dir)?,
             barrier: AeadBarrier::new(*barrier)?,
             lost: Arc::clone(&lost),
+            purpose: "auth-use",
         };
         service.durable = Some(DurableService::reopen_with_backend(
             Box::new(backend) as Box<dyn heptabao_durable_service::DurableBackend>,
@@ -1876,6 +2120,282 @@ mod tests {
             call(&mut service, "GET", "secret/data/seed", &primary, json!({})).status,
             200
         );
+        Ok(())
+    }
+
+    fn native_ciphertext_files(
+        service: &Service,
+    ) -> Result<BTreeSet<PathBuf>, Box<dyn std::error::Error>> {
+        let mut paths = BTreeSet::new();
+        for entry in fs::read_dir(&service.data_dir)? {
+            let entry = entry?;
+            if entry
+                .path()
+                .extension()
+                .is_some_and(|extension| extension == "hbo")
+            {
+                assert!(
+                    entry.file_type()?.is_file(),
+                    "fixture ciphertext must be a regular file"
+                );
+                paths.insert(entry.path());
+            }
+        }
+        Ok(paths)
+    }
+
+    #[test]
+    fn genuine_native_floor2_resource_lost_apply_ack_cold_follows_committed_root_not_valid_orphan()
+    -> TestResult {
+        use crate::state_record_root_v6::ObjectDomain;
+        use crate::state_records::ObjectKind;
+
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, primary) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(15),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let key = Zeroizing::new(key);
+        let primary = Zeroizing::new(primary);
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "secret/data/seed",
+                &primary,
+                json!({"data":{"seed":"already-rooted"}}),
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &primary,
+                json!({}),
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            service
+                .native_root
+                .as_ref()
+                .ok_or("native root")?
+                .reader_floor
+                .native_kv2_format,
+            2
+        );
+        let before = native_frontier(&mut service)?;
+        let files_before = native_ciphertext_files(&service)?;
+
+        // Construct a detached typed floor2 candidate with this live root's
+        // actual graph keys, and validate it through the real private planner.
+        // Publish exactly its valid payload ciphertext, discarding the Slot:
+        // neither a locator nor a graph/root/cursor mutation is committed.
+        let orphan_resource = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(15),
+            );
+            let mut detached = service.state.as_ref().ok_or("state")?.clone();
+            let at = Service::kv2_request_timestamp(AuthorityTime::Coarse(1))
+                .map_err(|_| "fixture timestamp")?;
+            let response = detached.engines.dispatch_native_paged(
+                "", "POST", "secret/data/unreferenced-orphan",
+                &json!({"options":{"cas":0},"data":{"payload":"valid-but-unreferenced-ciphertext".repeat(3_000)}}),
+                at,
+                |_scope, _reference| Err(RecordError::Missing),
+            ).map_err(|_| "detached floor2 mutation")?;
+            assert_eq!(response.status, 200);
+            let plan = service
+                .prepare_native_live_root_checked(&detached, &mut |_| Ok(()))
+                .map_err(|_| "detached orphan preparation")?;
+            let mut payloads = plan.objects.iter().filter(|((domain, _), object)| {
+                matches!(domain, ObjectDomain::Kv2(_))
+                    && object.reference().kind == ObjectKind::Block
+                    && object.bytes().len() > 32 * 1024
+            });
+            let ((domain, _), object) = payloads.next().ok_or("valid orphan payload")?;
+            assert!(
+                payloads.next().is_none(),
+                "fixture must select exactly one new large payload object"
+            );
+            let resource = v6_records::native_resource(domain, object.reference());
+            let durable = service.durable.as_mut().ok_or("durable")?;
+            assert!(durable.get("system", &resource)?.is_none());
+            let session = native_blob_source::session(durable, &before.root)?;
+            let unpublished_slot =
+                native_blob_source::stage(durable, &session, domain, object, &mut || Ok(()))?;
+            assert!(!unpublished_slot.expose().is_empty());
+            drop(unpublished_slot);
+            assert!(
+                durable.get("system", &resource)?.is_none(),
+                "ciphertext stage must not publish its locator"
+            );
+            resource
+        };
+        assert_native_frontier_unchanged(&mut service, &before)?;
+        let files_after = native_ciphertext_files(&service)?;
+        let new_files = files_after.difference(&files_before).collect::<Vec<_>>();
+        assert_eq!(
+            new_files.len(),
+            1,
+            "actual orphan must be independently staged"
+        );
+        let orphan_path = (*new_files[0]).clone();
+        let orphan_ciphertext = fs::read(&orphan_path)?;
+        assert!(orphan_ciphertext.len() > 32 * 1024);
+        let orphan_digest = crypto::digest(&orphan_ciphertext);
+
+        let barrier = Zeroizing::new(**service.barrier_key.as_ref().ok_or("barrier key")?);
+        drop(service.durable.take().ok_or("durable")?);
+        let lost = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let backend = LostApplyAck {
+            inner: heptabao_durable_service::FileBackend::open(&service.data_dir)?,
+            barrier: AeadBarrier::new(*barrier)?,
+            lost: Arc::clone(&lost),
+            purpose: "resource",
+        };
+        service.durable = Some(DurableService::reopen_with_backend(
+            Box::new(backend) as Box<dyn heptabao_durable_service::DurableBackend>,
+            AeadBarrier::new(*barrier)?,
+            MAX_OPERATIONS,
+        )?);
+        // This uses the actual admitted unlimited primary Actor. Lose only
+        // this resource root/cursor Apply ACK, after the real append+fsync.
+        let response = call_default_budget(
+            &mut service,
+            "POST",
+            "secret/data/committed-after-lost-ack",
+            &primary,
+            json!({"options":{"cas":0},"data":{"value":"committed-exactly-once"}}),
+        );
+        assert_eq!(response.status, 503);
+        assert!(lost.load(std::sync::atomic::Ordering::SeqCst));
+        assert!(service.recovery_required);
+        assert!(response.body.get("data").is_none());
+        assert!(response.body.get("auth").is_none());
+        assert!(response.body.get("wrap_info").is_none());
+        assert!(response.body["recovery_reference"].as_str().is_some());
+        assert_eq!(
+            call_default_budget(&mut service, "GET", "secret/data/seed", &primary, json!({}))
+                .status,
+            503
+        );
+        drop(service);
+
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":key.as_str()})
+            )
+            .status,
+            200
+        );
+        let reopened = native_frontier(&mut service)?;
+        assert_eq!(
+            reopened.generation,
+            before.generation + 1,
+            "exactly the lost resource Apply was committed"
+        );
+        assert!(reopened.root != before.root);
+        assert!(reopened.cursor != before.cursor);
+        assert!(reopened.retained_source == before.retained_source);
+        let root = service.native_root.as_ref().ok_or("cold native root")?;
+        assert_eq!(root.reader_floor.native_kv2_format, 2);
+        assert!(root.encode().map_err(|_| "root encoding")?.as_slice() == reopened.root.as_slice());
+        let source = records::decode_root(&reopened.retained_source)
+            .map_err(|_| "retained source decoding")?
+            .ok_or("retained source root")?;
+        NativeActiveCursor::decode(&reopened.cursor)
+            .map_err(|_| "cold cursor")?
+            .validate(&source, root, reopened.generation)
+            .map_err(|_| "cold root/cursor match")?;
+        assert!(
+            service
+                .durable
+                .as_mut()
+                .ok_or("durable")?
+                .get("system", &orphan_resource)?
+                .is_none()
+        );
+        assert_eq!(crypto::digest(&fs::read(&orphan_path)?), orphan_digest);
+
+        let committed = call_default_budget(
+            &mut service,
+            "GET",
+            "secret/data/committed-after-lost-ack",
+            &primary,
+            json!({"version":1}),
+        );
+        assert_eq!(committed.status, 200);
+        assert_eq!(
+            committed.body["data"]["data"],
+            json!({"value":"committed-exactly-once"})
+        );
+        assert_eq!(committed.body["data"]["metadata"]["version"], 1);
+        let metadata = call_default_budget(
+            &mut service,
+            "GET",
+            "secret/metadata/committed-after-lost-ack",
+            &primary,
+            json!({}),
+        );
+        assert_eq!(metadata.status, 200);
+        assert_eq!(metadata.body["data"]["current_version"], 1);
+        assert_eq!(
+            metadata.body["data"]["versions"]
+                .as_object()
+                .ok_or("committed versions")?
+                .len(),
+            1
+        );
+        let before_unknown = native_frontier(&mut service)?;
+        let payload_opens = service
+            .native_payload_observations
+            .blocks_opened
+            .load(std::sync::atomic::Ordering::Relaxed);
+        for path in [
+            "secret/data/unreferenced-orphan",
+            "secret/metadata/unreferenced-orphan",
+        ] {
+            let unknown = call_default_budget(&mut service, "GET", path, &primary, json!({}));
+            assert_eq!(
+                unknown.status, 404,
+                "unrooted ciphertext acquired a logical grant"
+            );
+            assert!(unknown.body.get("auth").is_none());
+            assert!(unknown.body.get("wrap_info").is_none());
+            assert!(unknown.unwrapped_json.is_none());
+        }
+        assert_eq!(
+            service
+                .native_payload_observations
+                .blocks_opened
+                .load(std::sync::atomic::Ordering::Relaxed),
+            payload_opens
+        );
+        assert_native_frontier_unchanged(&mut service, &before_unknown)?;
+        assert!(
+            service
+                .durable
+                .as_mut()
+                .ok_or("durable")?
+                .get("system", &orphan_resource)?
+                .is_none()
+        );
+        assert_eq!(crypto::digest(&fs::read(orphan_path)?), orphan_digest);
         Ok(())
     }
 }

@@ -682,6 +682,11 @@ fn immutable_read_observation_records_actual_open_but_never_bypasses_late_gate()
     assert_eq!(
         observations,
         vec![
+            ImmutableObjectReadObservation::PositionedReadReturned {
+                bytes: pin.ciphertext_len(),
+                failed: false,
+                interrupted: false,
+            },
             ImmutableObjectReadObservation::CiphertextRead {
                 bytes: pin.ciphertext_len()
             },
@@ -722,9 +727,16 @@ fn immutable_read_observation_separates_bad_aead_and_before_read_rejection() -> 
     ));
     assert_eq!(
         observations,
-        vec![ImmutableObjectReadObservation::CiphertextRead {
-            bytes: pin.ciphertext_len()
-        },]
+        vec![
+            ImmutableObjectReadObservation::PositionedReadReturned {
+                bytes: pin.ciphertext_len(),
+                failed: false,
+                interrupted: false,
+            },
+            ImmutableObjectReadObservation::CiphertextRead {
+                bytes: pin.ciphertext_len()
+            },
+        ]
     );
     observations.clear();
     assert!(matches!(
@@ -739,5 +751,64 @@ fn immutable_read_observation_separates_bad_aead_and_before_read_rejection() -> 
     ));
     assert!(observations.is_empty());
     source_unchanged(&owner, generation)?;
+    Ok(())
+}
+
+#[test]
+fn immutable_positioned_read_observation_precedes_late_gate_without_aead_or_delivery() -> TestResult
+{
+    let _serial = serial_test();
+    let root = TestRoot::new("immutable-observation-after-pread-before-gate")?;
+    let mut owner = DurableService::create_new(&root.0, NonceBarrier::new(), 16)?;
+    owner.put(put_request("source", SOURCE)?)?;
+    let generation = owner.generation();
+    let session = source_session(&mut owner)?;
+    let pin = owner.stage_immutable_object_before_publish(
+        &session,
+        locator(13)?,
+        CONTEXT,
+        b"owned positioned-read observer",
+        &mut no_gate,
+    )?;
+    let actual_read_returned = std::cell::Cell::new(false);
+    let mut observations = Vec::new();
+    let mut gate = || {
+        if actual_read_returned.get() {
+            Err(ServiceError::ReplayEpochMismatch)
+        } else {
+            Ok(())
+        }
+    };
+    assert!(matches!(
+        owner.read_immutable_object_before_delivery_observed(
+            &session,
+            &pin,
+            CONTEXT,
+            &mut gate,
+            &mut |event| {
+                if matches!(
+                    event,
+                    ImmutableObjectReadObservation::PositionedReadReturned { .. }
+                ) {
+                    actual_read_returned.set(true);
+                }
+                observations.push(event);
+            },
+        ),
+        Err(ServiceError::ReplayEpochMismatch)
+    ));
+    assert_eq!(
+        observations,
+        vec![ImmutableObjectReadObservation::PositionedReadReturned {
+            bytes: pin.ciphertext_len(),
+            failed: false,
+            interrupted: false,
+        }]
+    );
+    source_unchanged(&owner, generation)?;
+    assert_eq!(
+        pin.read_ciphertext()?.as_slice().len(),
+        pin.ciphertext_len()
+    );
     Ok(())
 }

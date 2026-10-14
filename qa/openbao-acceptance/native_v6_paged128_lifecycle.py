@@ -31,6 +31,7 @@ SERVER_DEFAULT_TIMEOUT = 15
 CLIENT_TIMEOUT = SERVER_DEFAULT_TIMEOUT + 5
 PAGED_FORMAT = "heptabao-kv2-native-paged-v2"
 BLOCK_BYTES = 256 * 1024
+PAYLOAD_OBJECT_HEADER_BYTES = 25
 REQUESTED_FEATURES = ["fixture-native-v6-service"]
 RESOLVED_FEATURES = ["default", "fixture-native-v6-service"]
 RESOURCE_SAMPLE_INTERVAL_SECONDS = 0.2
@@ -82,9 +83,24 @@ def git_state(repo):
             "clean": run("status", "--porcelain", "--untracked-files=all") == ""}
 
 
+def server_feature_manifest(repo):
+    """The compiled server package owns features; workspace Cargo.toml does not."""
+    root = Path(subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "--show-toplevel"],
+        stderr=subprocess.DEVNULL, text=True,
+    ).strip()).resolve(strict=True)
+    for member in (root / "crates", root / "crates/heptabao-server"):
+        if not stat.S_ISDIR(member.lstat().st_mode):
+            raise TrialFailure("server feature manifest member is not a regular source-tree directory")
+    manifest = root / "crates/heptabao-server/Cargo.toml"
+    if not stat.S_ISREG(manifest.lstat().st_mode):
+        raise TrialFailure("server feature manifest is not a regular source file")
+    return manifest
+
+
 def empty_default_umbrella(repo):
     """Fail closed on anything except this source's literal empty umbrella."""
-    contents = (repo / "Cargo.toml").read_text()
+    contents = server_feature_manifest(repo).read_text()
     sections = re.findall(r"(?ms)^\[features\][ \t]*(?:#[^\n]*)?\n(.*?)(?=^\[|\Z)", contents)
     if len(sections) != 1:
         return False
@@ -150,6 +166,8 @@ def admit(args):
         raise TrialFailure("native Cargo default-feature setting does not match this trial")
     if custody.get("default_umbrella_is_empty") is not True or not empty_default_umbrella(repo):
         raise TrialFailure("actual source does not verify the empty Cargo default umbrella")
+    feature_manifest = server_feature_manifest(repo)
+    feature_manifest_sha256 = file_sha(feature_manifest)
     if custody.get("frozen_libtest_list_sha256") != args.frozen_test_manifest_sha256:
         raise TrialFailure("libtest list is not bound to this native build")
     observed = git_state(repo)
@@ -170,6 +188,9 @@ def admit(args):
             "requested_features": custody["requested_features"],
             "no_default_features": custody["no_default_features"],
             "default_umbrella_is_empty": True, "frozen_libtest_test_count": len(tests),
+            "server_feature_manifest_path": str(feature_manifest),
+            "server_feature_manifest_sha256": feature_manifest_sha256,
+            "source_repository_root": str(feature_manifest.parents[2]),
             "binary_sha256": custody["binary_sha256"], "native_abi": abi,
             "build_custody_sha256": args.build_custody_sha256,
             "frozen_libtest_list_sha256": args.frozen_test_manifest_sha256}
@@ -729,12 +750,39 @@ class Trial:
         return data
 
     def payload_blocks(self, name):
-        data = self.request(name, "GET", "sys/internal/storage/capacity")["data"]
+        data = self.request(name, "GET", "sys/internal/capacity")["data"]
         count = data.get("native_kv2_payload_blocks_opened")
-        self.check(type(count) is int and 0 <= count <= (1 << 64) - 1,
-                   name + "-actual-payload-block-counter", observed=count)
-        self.payload_block_observations[name] = {"process_cycle": self.active_process["cycle"], "count": count}
+        observations = {field: data.get("native_kv2_payload_" + field) for field in (
+            "positioned_read_calls", "positioned_bytes_returned", "positioned_read_failures",
+            "ciphertext_bytes_read", "plaintext_bytes_opened")}
+        self.check(all(type(value) is int and 0 <= value <= (1 << 64) - 1
+                       for value in [count, *observations.values()]),
+                   name + "-actual-payload-block-counter", observed=count, **observations)
+        self.payload_block_observations[name] = {"process_cycle": self.active_process["cycle"],
+                                                 "count": count, **observations}
         return count
+
+    def payload_io_unchanged(self, before, after):
+        left, right = self.payload_block_observations[before], self.payload_block_observations[after]
+        return left["process_cycle"] == right["process_cycle"] and all(
+            left[field] == right[field] for field in ("positioned_read_calls", "positioned_bytes_returned",
+                                                      "positioned_read_failures", "ciphertext_bytes_read",
+                                                      "plaintext_bytes_opened"))
+
+    def payload_io_zero(self, name):
+        return all(value == 0 for field, value in self.payload_block_observations[name].items()
+                   if field != "process_cycle")
+
+    def selected_io_delta(self, before, after, logical_bytes, selected_blocks):
+        left, right = self.payload_block_observations[before], self.payload_block_observations[after]
+        delta = {field: right[field] - left[field] for field in left if field != "process_cycle"}
+        return (left["process_cycle"] == right["process_cycle"]
+                and delta["count"] == selected_blocks
+                and delta["positioned_read_calls"] >= selected_blocks
+                and delta["positioned_read_failures"] == 0
+                and delta["positioned_bytes_returned"] == delta["ciphertext_bytes_read"]
+                and delta["ciphertext_bytes_read"] > logical_bytes + PAYLOAD_OBJECT_HEADER_BYTES * selected_blocks
+                and delta["plaintext_bytes_opened"] == logical_bytes + PAYLOAD_OBJECT_HEADER_BYTES * selected_blocks)
 
     def read_version(self, name, version):
         before = self.payload_blocks(name + "-blocks-before")
@@ -746,11 +794,14 @@ class Trial:
                    and response["data"]["metadata"]["version"] == version, name + "-metadata-version")
         after = self.payload_blocks(name + "-blocks-after")
         selected_blocks = (self.expected[version]["json_bytes"] + BLOCK_BYTES - 1) // BLOCK_BYTES
-        self.check(after - before == selected_blocks, name + "-exact-selected-payload-block-count",
+        self.check(after - before == selected_blocks
+                   and self.selected_io_delta(name + "-blocks-before", name + "-blocks-after",
+                                              self.expected[version]["json_bytes"], selected_blocks),
+                   name + "-exact-selected-payload-block-count",
                    before=before, after=after, expected_blocks=selected_blocks)
 
     def capacity(self, name, expected_logical):
-        data = self.request(name, "GET", "sys/internal/storage/capacity")["data"]
+        data = self.request(name, "GET", "sys/internal/capacity")["data"]
         self.check(data.get("state_storage_format") == "heptabao-state-records-v6", name + "-native-root")
         self.check(type(data.get("native_kv2_reader_format")) is int
                    and data["native_kv2_reader_format"] == 2, name + "-genuine-reader-floor2")
@@ -761,9 +812,9 @@ class Trial:
         self.check(type(data.get("native_kv2_metadata_bytes")) is int
                    and data["native_kv2_metadata_bytes"] <= DURABLE_ARTIFACT_LIMIT,
                    name + "-bounded-metadata")
-        alias = self.request(name + "-alias", "GET", "sys/internal/capacity")["data"]
-        # This actual alias exposes aggregate stored_value_bytes, not the new
-        # native_kv2_logical_payload_bytes field from storage/capacity.
+        alias = self.request(name + "-alias", "GET", "sys/internal/storage/capacity")["data"]
+        # The storage route exposes aggregate stored_value_bytes; the detailed
+        # service capacity route owns the typed point-read observations.
         self.check(type(alias.get("stored_value_bytes")) is int
                    and alias["stored_value_bytes"] == data["state_bytes"],
                    name + "-alias-exact-stored-value-bytes")
@@ -817,7 +868,7 @@ class Trial:
         self.request("finite-denied-first", "GET", "secret/data/source", token=self.tokens["deny"], expected=403)
         for kind in ("permit", "deny"):
             self.request("finite-" + kind + "-second-use", "GET", "secret/data/source", token=self.tokens[kind], expected=403)
-        baseline = self.request("capacity-before-history", "GET", "sys/internal/storage/capacity")["data"]
+        baseline = self.request("capacity-before-history", "GET", "sys/internal/capacity")["data"]
         baseline_logical = baseline.get("native_kv2_logical_payload_bytes")
         self.check(type(baseline_logical) is int and baseline_logical > 0, "baseline-logical-payload-observed")
         self.check(type(baseline.get("native_kv2_reader_format")) is int
@@ -836,7 +887,10 @@ class Trial:
             self.check(type(response["data"]["version"]) is int
                        and response["data"]["version"] == version, "write-version-%d" % version)
             opened_after = self.payload_blocks("write-history-%d-blocks-after" % version)
-            self.check(opened_after == opened_before, "write-history-%d-no-old-payload-opens" % version,
+            self.check(opened_after == opened_before
+                       and self.payload_io_unchanged("write-history-%d-blocks-before" % version,
+                                                     "write-history-%d-blocks-after" % version),
+                       "write-history-%d-no-old-payload-opens" % version,
                        before=opened_before, after=opened_after)
             self.written = version
             history_bytes += len(encoded)
@@ -867,7 +921,8 @@ class Trial:
         self.inventory("before-cold-open")
         self.start(2)
         self.request("first-cold-unseal", "POST", "sys/unseal", {"key": self.unseal_key}, anonymous=True)
-        self.check(self.payload_blocks("first-cold-payload-blocks") == 0, "first-cold-no-payload-open")
+        self.check(self.payload_blocks("first-cold-payload-blocks") == 0
+                   and self.payload_io_zero("first-cold-payload-blocks"), "first-cold-no-payload-open")
         self.finite_after_cold("first-cold")
         metadata = self.metadata("first-cold-metadata", 40)
         self.check(all(metadata["versions"][str(version)]["deletion_time"] for version in (3, 17)), "first-cold-delete-state-preserved")
@@ -881,14 +936,15 @@ class Trial:
         self.inventory("after-first-cold-open")
         self.start(3)
         self.request("second-cold-unseal", "POST", "sys/unseal", {"key": self.unseal_key}, anonymous=True)
-        self.check(self.payload_blocks("second-cold-payload-blocks") == 0, "second-cold-no-payload-open")
+        self.check(self.payload_blocks("second-cold-payload-blocks") == 0
+                   and self.payload_io_zero("second-cold-payload-blocks"), "second-cold-no-payload-open")
         self.finite_after_cold("second-cold")
         self.metadata("second-cold-metadata", 40)
         self.read_version("second-cold-old-version", 1)
         self.read_version("second-cold-latest-version", 40)
         for version in (3, 17):
             self.request("second-cold-deleted-%d" % version, "GET", "secret/data/history?version=%d" % version, expected=404)
-        data = {"fixture": "after-two-actual-cold-opens", "version": 41, "payload": "bounded-new-point"}
+        data = {**fixture(41), "fixture": "after-two-actual-cold-opens"}
         encoded = canonical(data)
         self.expected[41] = {"json_sha256": hashlib.sha256(encoded).hexdigest(), "json_bytes": len(encoded)}
         opened_before = self.payload_blocks("second-cold-point-blocks-before")
@@ -896,7 +952,9 @@ class Trial:
         self.check(type(response["data"]["version"]) is int
                    and response["data"]["version"] == 41, "second-cold-point-version41")
         opened_after = self.payload_blocks("second-cold-point-blocks-after")
-        self.check(opened_after == opened_before, "second-cold-point-no-old-payload-opens",
+        self.check(opened_after == opened_before
+                   and self.payload_io_unchanged("second-cold-point-blocks-before", "second-cold-point-blocks-after"),
+                   "second-cold-point-no-old-payload-opens",
                    before=opened_before, after=opened_after)
         self.read_version("second-cold-point-exact", 41)
         self.read_version("second-cold-old-after-point", 1)
@@ -912,7 +970,9 @@ class Trial:
                    and response["data"]["version"] == 42, "second-cold-patch-version42")
         opened_after = self.payload_blocks("second-cold-patch-blocks-after")
         current_blocks = (len(encoded) + BLOCK_BYTES - 1) // BLOCK_BYTES
-        self.check(opened_after - opened_before == current_blocks,
+        self.check(current_blocks > 1 and opened_after - opened_before == current_blocks
+                   and self.selected_io_delta("second-cold-patch-blocks-before", "second-cold-patch-blocks-after",
+                                              len(encoded), current_blocks),
                    "second-cold-patch-exact-current-payload-block-count",
                    before=opened_before, after=opened_after, expected_blocks=current_blocks)
         self.read_version("second-cold-patch-exact", 42)
@@ -925,7 +985,8 @@ class Trial:
         self.inventory("after-second-cold-point")
         self.start(4)
         self.request("post-patch-cold-unseal", "POST", "sys/unseal", {"key": self.unseal_key}, anonymous=True)
-        self.check(self.payload_blocks("post-patch-cold-payload-blocks") == 0, "post-patch-cold-no-payload-open")
+        self.check(self.payload_blocks("post-patch-cold-payload-blocks") == 0
+                   and self.payload_io_zero("post-patch-cold-payload-blocks"), "post-patch-cold-no-payload-open")
         self.finite_after_cold("post-patch-cold")
         self.metadata("post-patch-cold-metadata", 42)
         self.read_version("post-patch-cold-version42-exact", 42)
@@ -978,6 +1039,8 @@ class Trial:
                 "scenario_denominator_complete": denominator_complete, "all_rows_passed": all_rows_passed,
                 "source_freeze_checkpoints": self.source_states,
                 "payload_block_observations": self.payload_block_observations,
+                "payload_block_plaintext_header_bytes": PAYLOAD_OBJECT_HEADER_BYTES,
+                "patch_current_payload_json_bytes": self.expected.get(41, {}).get("json_bytes"),
                 "resource_observations": {
                     "scope": "only-four-owned-unreaped-Popen-children",
                     "target_sample_interval_seconds": RESOURCE_SAMPLE_INTERVAL_SECONDS,
@@ -996,7 +1059,7 @@ class Trial:
                 "passed_cases": sum(row["passed"] for row in self.rows), "full_lifecycle_executed": self.complete,
                 "passed": (failure is None and self.complete and not self.cleanup_errors
                            and denominator_complete and all_rows_passed and all_processes_closed
-                           and not override_present and runner_unchanged),
+                           and resources_complete and not override_present and runner_unchanged),
                 "failure": failure, "cleanup_errors": self.cleanup_errors,
                 "cleanup": {"owned_process_running": self.process is not None and (
                                 self.resource_sampler.alive() if self.resource_sampler is not None else self.process.poll() is None),

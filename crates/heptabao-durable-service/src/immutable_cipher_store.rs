@@ -254,15 +254,32 @@ impl ImmutableBlobReadPin {
     where
         G: FnMut() -> Result<(), E> + ?Sized,
     {
+        self.read_ciphertext_checked_observed(gate, &mut |_| {})
+    }
+    /// Observe the result of each actual positioned system read immediately
+    /// after it returns, before a later original-gate or lease rejection.
+    /// Byte counts and error kinds grant no custody or plaintext delivery.
+    pub fn read_ciphertext_checked_observed<E, G, O>(
+        &self,
+        gate: &mut G,
+        observe: &mut O,
+    ) -> Result<Arc<Zeroizing<Vec<u8>>>, PinReadError<E>>
+    where
+        G: FnMut() -> Result<(), E> + ?Sized,
+        O: FnMut(Result<usize, io::ErrorKind>) + ?Sized,
+    {
         #[cfg(unix)]
         {
             use std::os::unix::fs::FileExt;
             self.read_ciphertext_with_reader(gate, |file, bytes, offset| {
-                file.read_at(bytes, offset)
+                let result = file.read_at(bytes, offset);
+                observe(result.as_ref().copied().map_err(io::Error::kind));
+                result
             })
         }
         #[cfg(not(unix))]
         {
+            let _ = observe;
             gate().map_err(PinReadError::Gate)?;
             Err(PinReadError::Backend(BackendError::Unsupported))
         }

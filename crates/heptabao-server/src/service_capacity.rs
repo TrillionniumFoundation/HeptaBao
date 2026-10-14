@@ -210,12 +210,12 @@ impl Service {
         #[cfg(feature = "fixture-native-v6-service")]
         let point_observations = self.native_payload_observations.snapshot().map(Some);
         #[cfg(not(feature = "fixture-native-v6-service"))]
-        let point_observations = [None::<u64>; 4];
+        let point_observations = [None::<u64>; 7];
         // V5 state_bytes is the live logical payload, not the tiny root size.
         // The durable encrypted-artifact preflight can reject below this upper
         // bound because pages, ciphertext, replay records and staged objects
         // also consume space. No capacity reservation is implied.
-        Response::ok(json!({"data": {
+        let mut response = Response::ok(json!({"data": {
             "profile": profile,
             "scope": "serving-leader-local",
             "state_schema": state_schema,
@@ -231,6 +231,7 @@ impl Service {
             "native_kv2_payload_ciphertext_bytes_read": point_observations[2],
             "native_kv2_payload_plaintext_bytes_opened": point_observations[3],
             "native_payload_observation_scope": "actual-typed-payload-ciphertext-read-and-aead-open",
+            "native_payload_positioned_read_observation_scope": "actual-read-at-result-before-original-gate-and-lease-rechecks",
             "native_payload_zero_opened_proves_no_physical_read": false,
             "native_payload_opened_proves_response_authorized": false,
             "state_size_basis": size_basis,
@@ -259,7 +260,27 @@ impl Service {
             "admission_reserved": false,
             "full_openbao_compatibility": false,
             "production_qualified": false
-        }}))
+        }}));
+        let Some(data) = response.body.get_mut("data").and_then(Value::as_object_mut) else {
+            return Response::error(503, "capacity observation shape rejected");
+        };
+        for (name, value) in [
+            (
+                "native_kv2_payload_positioned_read_calls",
+                point_observations[4],
+            ),
+            (
+                "native_kv2_payload_positioned_bytes_returned",
+                point_observations[5],
+            ),
+            (
+                "native_kv2_payload_positioned_read_failures",
+                point_observations[6],
+            ),
+        ] {
+            data.insert(name.to_owned(), json!(value));
+        }
+        response
     }
 }
 

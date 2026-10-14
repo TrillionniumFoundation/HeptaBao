@@ -43,8 +43,17 @@ impl ImmutableSourceSession {
 /// Later gates and typed address/grammar checks still may reject plaintext.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ImmutableObjectReadObservation {
-    CiphertextRead { bytes: usize },
-    PlaintextOpened { bytes: usize },
+    PositionedReadReturned {
+        bytes: usize,
+        failed: bool,
+        interrupted: bool,
+    },
+    CiphertextRead {
+        bytes: usize,
+    },
+    PlaintextOpened {
+        bytes: usize,
+    },
 }
 
 impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
@@ -273,12 +282,23 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             before()?;
             self.check_immutable_source_session(session)
         };
-        let protected =
-            pin.read_ciphertext_checked(&mut physical_gate)
-                .map_err(|error| match error {
-                    PinReadError::Backend(error) => map_backend_error(error),
-                    PinReadError::Gate(error) => error,
-                })?;
+        let mut physical_observer = |result: Result<usize, std::io::ErrorKind>| {
+            let (bytes, failed, interrupted) = match result {
+                Ok(bytes) => (bytes, false, false),
+                Err(kind) => (0, true, kind == std::io::ErrorKind::Interrupted),
+            };
+            observe(ImmutableObjectReadObservation::PositionedReadReturned {
+                bytes,
+                failed,
+                interrupted,
+            });
+        };
+        let protected = pin
+            .read_ciphertext_checked_observed(&mut physical_gate, &mut physical_observer)
+            .map_err(|error| match error {
+                PinReadError::Backend(error) => map_backend_error(error),
+                PinReadError::Gate(error) => error,
+            })?;
         observe(ImmutableObjectReadObservation::CiphertextRead {
             bytes: protected.len(),
         });
