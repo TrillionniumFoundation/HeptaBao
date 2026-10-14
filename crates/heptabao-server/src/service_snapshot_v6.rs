@@ -10,6 +10,30 @@ use heptabao_durable_service::PreparedV6Restore;
 use std::cell::RefCell;
 use std::io::{Read, Seek};
 
+// Redacted phase duration only: never request paths, identities or object bytes.
+struct SnapshotPhaseObservation {
+    phase: &'static str,
+    started: Instant,
+}
+impl SnapshotPhaseObservation {
+    fn enter(phase: &'static str) -> Self {
+        Self {
+            phase,
+            started: Instant::now(),
+        }
+    }
+}
+impl Drop for SnapshotPhaseObservation {
+    fn drop(&mut self) {
+        let _ = writeln!(
+            std::io::stderr(),
+            "HBV6-SNAPSHOT-PHASE phase={} elapsed_ms={}",
+            self.phase,
+            self.started.elapsed().as_millis()
+        );
+    }
+}
+
 fn invalid() -> Response {
     Response::error(400, "V6 snapshot graph or source binding is invalid")
 }
@@ -245,9 +269,12 @@ impl Service {
         };
         // This phase authenticates the complete pack, but grants no root/graph
         // admission. The next phase validates all typed application references.
-        let mut archive = durable
-            .prepare_v6_restore_from_reader(file, length, &mut gate, &mut |_, _, _| Ok(()))
-            .map_err(|error| self.v6_storage_failure(plan, error))?;
+        let mut archive = {
+            let _phase = SnapshotPhaseObservation::enter("authenticate-pack");
+            durable
+                .prepare_v6_restore_from_reader(file, length, &mut gate, &mut |_, _, _| Ok(()))
+                .map_err(|error| self.v6_storage_failure(plan, error))?
+        };
         let root_bytes = Zeroizing::new(
             archive
                 .state()
@@ -294,6 +321,7 @@ impl Service {
             reader_format: crate::state_record_root_v6::READER_FORMAT,
         };
         let (mut state, native) = {
+            let _phase = SnapshotPhaseObservation::enter("validate-typed-graph");
             let objects = IncomingObjects {
                 durable,
                 archive: RefCell::new(&mut archive),
@@ -387,10 +415,12 @@ impl Service {
             Some(value) => value,
             None => return unavailable(),
         };
+        let phase = SnapshotPhaseObservation::enter("stage-objects-and-commit");
         let result = durable.restore_v6_prepared(prepared.archive, true, &mut || {
             self.check_v6_snapshot_owner(plan)
                 .map_err(|_| ServiceError::BarrierFailure)
         });
+        drop(phase);
         let fenced = durable.recovery_required();
         self.durable = Some(durable);
         let outcome = match result {

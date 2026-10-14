@@ -626,7 +626,16 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if !allow_rollback && prepared.state.metadata().generation < self.generation() {
             return Err(ServiceError::BackupRollbackRejected);
         }
-        for member in &prepared.members {
+        let stage_started = std::time::Instant::now();
+        for (object_index, member) in prepared.members.iter().enumerate() {
+            if object_index % 64 == 0 {
+                let _ = writeln!(
+                    std::io::stderr(),
+                    "HBV6-RESTORE-STAGE objects={} elapsed_ms={}",
+                    object_index,
+                    stage_started.elapsed().as_millis()
+                );
+            }
             gate()?;
             self.verify_prepared_restore(&prepared.state)?;
             seek_checked(&mut prepared.reader, SeekFrom::Start(member.offset), gate)?;
