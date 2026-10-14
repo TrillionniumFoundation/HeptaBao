@@ -2,6 +2,8 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
+#[path = "auth_cert_resolver.rs"]
+mod cert_resolver;
 #[path = "auth_rate_limit_quotas.rs"]
 pub(crate) mod rate_limit_quotas;
 use crate::federated_auth::{
@@ -5620,30 +5622,18 @@ impl AuthState {
                 ),
             };
             reject_unknown(body, &["name"])?;
-            let presented =
-                parse_presented_certificate(peer_certificates.ok_or_else(denied)?, time)?;
-            let roles = self
-                .cert_roles
-                .get(namespace)
-                .and_then(|mounts| mounts.get(mount))
-                .ok_or_else(denied)?;
-            // The leaf has already passed strict DER and request-time validity
-            // checks. Derive metadata only from this presented certificate.
-            let attributes = peer_certificates
-                .and_then(|chain| chain.first())
-                .and_then(|leaf| parse_certificate_attributes(leaf));
-            let (role_name, role) = match requested_role {
-                Some(name) => roles
-                    .get(name)
-                    .filter(|role| matches_cert_role(&presented, attributes.as_ref(), role))
-                    .map(|role| (name, role))
-                    .ok_or_else(denied)?,
-                None => roles
-                    .iter()
-                    .find(|(_, role)| matches_cert_role(&presented, attributes.as_ref(), role))
-                    .map(|(name, role)| (name.as_str(), role))
-                    .ok_or_else(denied)?,
-            };
+            let cert_resolver::Resolution {
+                name: role_name,
+                role,
+                presented,
+                attributes,
+            } = cert_resolver::resolve(
+                self,
+                scope,
+                requested_role,
+                time,
+                peer_certificates.ok_or_else(denied)?,
+            )?;
             let explicit_max_expires_at = if role.token_explicit_max_ttl == 0 {
                 None
             } else {
@@ -9893,3 +9883,7 @@ impl AuthState {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "auth_cert_quota_tests.rs"]
+mod cert_quota_tests;

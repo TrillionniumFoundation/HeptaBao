@@ -72,6 +72,8 @@ use crate::state_record_root::RecordStateRoot;
 // Ordinary writers retain the exact schema-65 durable contract. Explicit
 // AAD-bound convergent material activates schema 66 irreversibly for this store.
 const RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 = crate::auth::rate_limit_quotas::STATE_SCHEMA;
+const CERTIFICATE_QUOTA_STATE_SCHEMA: u32 =
+    crate::auth::rate_limit_quotas::CERTIFICATE_STATE_SCHEMA;
 #[path = "service_rate_limit_quotas.rs"]
 mod rate_limit_quotas;
 const CURRENT_STATE_SCHEMA: u32 = 65;
@@ -174,7 +176,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = RATE_LIMIT_QUOTA_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = CERTIFICATE_QUOTA_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -231,6 +233,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | IDENTITY_MFA_STATE_SCHEMA
                 | WORKFLOW_INPUT_STATE_SCHEMA
                 | RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | CERTIFICATE_QUOTA_STATE_SCHEMA
                 | USERPASS_ISSUANCE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
@@ -10606,3 +10609,7 @@ mod transit_cache_tests;
 #[cfg(test)]
 #[path = "service_transit_derivation_tests.rs"]
 mod transit_derivation_tests;
+
+#[cfg(test)]
+#[path = "service_cert_quota_tests.rs"]
+mod cert_quota_tests;
