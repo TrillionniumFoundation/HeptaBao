@@ -4337,6 +4337,21 @@ impl Service {
         if let Some(response) = self.online_login(&admitted, &request) {
             return response;
         }
+        // An anonymous ordinary-KV rejection has no publication authority.
+        // Keep the original namespace, recovery, clock and audit guards above,
+        // but never enter the native resource publisher merely to return 403.
+        // A real bearer has already followed authentication/finite-use handling;
+        // neither this negative response nor missing credentials grant a writer.
+        #[cfg(feature = "fixture-native-v6-service")]
+        if self.native_root.is_some()
+            && principal.is_none()
+            && admitted
+                .engines
+                .ordinary_kv_mount_binding(namespace, path)
+                .is_some()
+        {
+            return Response::error(403, "permission denied");
+        }
         let before_digest = match self.current_state_digest() {
             Ok(value) => value,
             Err(error) => return error,
