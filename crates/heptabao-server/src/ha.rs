@@ -15,8 +15,9 @@ use std::time::{Duration, Instant};
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
 use heptabao_ha_service::{
-    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
-    TlsPeerEndpoint, serve_one_mtls_peer_frame,
+    MutualTlsPeerTransport, NodeId, PeerIoObservation, PeerIoStage, PeerOperation,
+    PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL, TlsPeerEndpoint,
+    serve_one_mtls_peer_frame_observed,
 };
 use heptabao_raft_runtime::{
     CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
@@ -193,7 +194,8 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
     ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
         // Capture the caller's budget before this future can wait to be polled.
         // Admission, blocking-pool queueing and every socket operation share it.
-        let deadline = Instant::now().checked_add(timeout);
+        let started = Instant::now();
+        let deadline = started.checked_add(timeout);
         let local_id = self.local_id;
         let cluster_id = self.cluster_id.clone();
         let target_node = self.peers.get(&target).cloned();
@@ -202,13 +204,31 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
         // ReadIndex did not exist in legacy peer frames. Its authority witness
         // always carries the authenticated current cluster binding.
         let emit_legacy_peer_v1 = self.emit_legacy_peer_v1 && kind != RaftRpcKind::ReadIndex;
+        let operation = match kind {
+            RaftRpcKind::AppendEntries => PeerOperation::Append,
+            RaftRpcKind::Vote => PeerOperation::Vote,
+            RaftRpcKind::PreVote => PeerOperation::PreVote,
+            RaftRpcKind::SnapshotChunk => PeerOperation::Snapshot,
+            RaftRpcKind::TransferLeader => PeerOperation::Transfer,
+            RaftRpcKind::ReadIndex => PeerOperation::ReadIndex,
+        };
         Box::pin(async move {
+            let mut observation = PeerIoObservation::default();
             if source != local_id || source == target || timeout.is_zero() {
                 return Err(RemoteRaftError::InvalidRpc);
             }
             let target_node = target_node.ok_or(RemoteRaftError::InvalidTopology)?;
             let deadline = deadline.ok_or(RemoteRaftError::InvalidRpc)?;
             if Instant::now() >= deadline {
+                observation.enter(PeerIoStage::Deadline);
+                observation.emit(
+                    operation,
+                    source,
+                    target,
+                    heptabao_ha_service::HaError::Transport,
+                    timeout,
+                    started,
+                );
                 return Err(RemoteRaftError::Transport("peer RPC timed out".into()));
             }
             let request_frame = RaftWireFrame {
@@ -226,12 +246,42 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                 encode_raft_frame(request_frame)?
             };
             let async_deadline = tokio::time::Instant::from_std(deadline);
+            observation.enter(PeerIoStage::RaftAdmission);
             let permit = tokio::time::timeout_at(async_deadline, inflight.acquire_owned())
                 .await
-                .map_err(|_| RemoteRaftError::Transport("peer RPC admission timed out".into()))?
-                .map_err(|_| RemoteRaftError::Transport("peer RPC admission closed".into()))?;
+                .map_err(|_| {
+                    observation.emit(
+                        operation,
+                        source,
+                        target,
+                        heptabao_ha_service::HaError::Transport,
+                        timeout,
+                        started,
+                    );
+                    RemoteRaftError::Transport("peer RPC admission timed out".into())
+                })?
+                .map_err(|_| {
+                    observation.emit(
+                        operation,
+                        source,
+                        target,
+                        heptabao_ha_service::HaError::Transport,
+                        timeout,
+                        started,
+                    );
+                    RemoteRaftError::Transport("peer RPC admission closed".into())
+                })?;
             // A ready permit can win a timeout poll after the deadline elapsed.
             if Instant::now() >= deadline {
+                observation.enter(PeerIoStage::Deadline);
+                observation.emit(
+                    operation,
+                    source,
+                    target,
+                    heptabao_ha_service::HaError::Transport,
+                    timeout,
+                    started,
+                );
                 return Err(RemoteRaftError::Transport(
                     "peer RPC admission timed out".into(),
                 ));
@@ -239,31 +289,95 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
             let mut work = QueuedRaftRpc(tokio::task::spawn_blocking(move || {
                 // Keep capacity charged until a running exchange actually ends.
                 let _permit = permit;
+                let mut io_observation = PeerIoObservation::default();
                 transport
-                    .exchange_before(&target_node, &request, deadline)
-                    .map_err(|error| RemoteRaftError::Transport(error.to_string()))
+                    .exchange_before_observed(&target_node, &request, deadline, &mut io_observation)
+                    .map_err(|error| {
+                        io_observation.emit(operation, source, target, error, timeout, started);
+                        RemoteRaftError::Transport(error.to_string())
+                    })
             }));
+            observation.enter(PeerIoStage::BlockingTaskWait);
             let response = tokio::time::timeout_at(async_deadline, &mut work.0)
                 .await
-                .map_err(|_| RemoteRaftError::Transport("peer RPC timed out".into()))?
-                .map_err(|error| RemoteRaftError::Transport(error.to_string()))??;
+                .map_err(|_| {
+                    observation.emit(
+                        operation,
+                        source,
+                        target,
+                        heptabao_ha_service::HaError::Transport,
+                        timeout,
+                        started,
+                    );
+                    RemoteRaftError::Transport("peer RPC timed out".into())
+                })?
+                .map_err(|error| {
+                    observation.emit(
+                        operation,
+                        source,
+                        target,
+                        heptabao_ha_service::HaError::Transport,
+                        timeout,
+                        started,
+                    );
+                    RemoteRaftError::Transport(error.to_string())
+                })??;
             if Instant::now() >= deadline {
+                observation.enter(PeerIoStage::Deadline);
+                observation.emit(
+                    operation,
+                    source,
+                    target,
+                    heptabao_ha_service::HaError::Transport,
+                    timeout,
+                    started,
+                );
                 return Err(RemoteRaftError::Transport("peer RPC timed out".into()));
             }
+            observation.enter(PeerIoStage::ResponseDecode);
             let response = decode_raft_frame_for_cluster_compatible(
                 &response,
                 &cluster_id,
                 emit_legacy_peer_v1,
-            )?;
+            )
+            .map_err(|error| {
+                observation.emit(
+                    operation,
+                    source,
+                    target,
+                    heptabao_ha_service::HaError::InvalidFrame,
+                    timeout,
+                    started,
+                );
+                error
+            })?;
+            observation.enter(PeerIoStage::ResponseBinding);
             if response.role != RAFT_FRAME_RESPONSE
                 || response.source != target
                 || response.target != source
                 || response.kind != kind
                 || response.legacy_v1 != emit_legacy_peer_v1
             {
+                observation.emit(
+                    operation,
+                    source,
+                    target,
+                    heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                    timeout,
+                    started,
+                );
                 return Err(RemoteRaftError::InvalidRpc);
             }
             if Instant::now() >= deadline {
+                observation.enter(PeerIoStage::Deadline);
+                observation.emit(
+                    operation,
+                    source,
+                    target,
+                    heptabao_ha_service::HaError::Transport,
+                    timeout,
+                    started,
+                );
                 return Err(RemoteRaftError::Transport("peer RPC timed out".into()));
             }
             Ok(response.payload)
@@ -802,28 +916,38 @@ impl HaProcess {
                         let inbound_started = Instant::now();
                         let inbound_deadlines =
                             InboundPeerDeadlines::new(inbound_started, timeout, forward_timeout);
-                        let result = serve_one_mtls_peer_frame(
+                        let mut observation = PeerIoObservation::default();
+                        let mut inbound_operation = PeerOperation::Inbound;
+                        let mut inbound_budget = timeout;
+                        let result = serve_one_mtls_peer_frame_observed(
                             &listener,
                             server_tls.clone(),
                             &identities,
                             timeout,
                             listener_allow_legacy_peer_v1,
-                            |peer, frame| {
+                            &mut observation,
+                            |peer, frame, observation| {
+                                observation.enter(PeerIoStage::PeerRegistry);
                                 let source = *ids
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
+                                observation.authenticated_source = Some(source);
                                 if is_forward_request(&frame) {
+                                    observation.enter(PeerIoStage::RequestDecode);
                                     let mut request = decode_forward_request(
                                         &frame,
                                         &listener_cluster_id,
                                         listener_allow_legacy_peer_v1,
                                     )
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                    observation.enter(PeerIoStage::RequestBinding);
                                     if request.source != source || request.target != local_id {
                                         return Err(
                                             heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                         );
                                     }
+                                    inbound_operation = PeerOperation::Forward;
+                                    inbound_budget = forward_timeout;
                                     // Only the authenticated enrolled peer reaches this
                                     // data-only scope. The Service reauthenticates the
                                     // original token and binds namespace/incarnation.
@@ -837,10 +961,12 @@ impl HaProcess {
                                     let _raw_reply_ingress = crate::auth::IngressReplyScope::authenticated_forward(request.wrapped_reply_ingress, request.wrapped_reply_lexical.take());
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
+                                    observation.enter(PeerIoStage::ForwardAdmission);
                                     let _forward_slot =
                                         forward_slots.clone().try_acquire_owned().map_err(
                                             |_| heptabao_ha_service::HaError::WriterBusy,
                                         )?;
+                                    observation.enter(PeerIoStage::ForwardHandlerRegistry);
                                     let handler = listener_forward_handler
                                         .lock()
                                         .map_err(|_| heptabao_ha_service::HaError::Transport)?
@@ -853,12 +979,15 @@ impl HaProcess {
                                     );
                                     let step_down = request.path == "sys/step-down";
                                     crate::ha_forward_completion::diagnostic_step_down(step_down);
+                                    observation.enter(PeerIoStage::Service);
                                     let response = handler(request);
+                                    observation.response_status = Some(response.status);
                                     crate::ha_forward_completion::diagnostic_response("source_final", &response);
                                     let completion = completion_scope.finish();
                                     if step_down {
                                         eprintln!("heptabao-forward-diagnostic: phase=source_step_down original_status={} completion={}", response.status, completion.is_some());
                                     }
+                                    observation.enter(PeerIoStage::ResponseEncode);
                                     return if legacy_v1 {
                                         encode_legacy_response_for_transition(
                                             local_id,
@@ -893,12 +1022,14 @@ impl HaProcess {
                                     }
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
                                 }
+                                observation.enter(PeerIoStage::RequestDecode);
                                 let request = decode_raft_frame_for_cluster_compatible(
                                     &frame,
                                     &listener_cluster_id,
                                     listener_allow_legacy_peer_v1,
                                 )
                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                observation.enter(PeerIoStage::RequestBinding);
                                 if request.role != RAFT_FRAME_REQUEST
                                     || request.source != source
                                     || request.target != local_id
@@ -907,10 +1038,19 @@ impl HaProcess {
                                         heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                     );
                                 }
+                                inbound_operation = match request.kind {
+                                    RaftRpcKind::AppendEntries => PeerOperation::Append,
+                                    RaftRpcKind::Vote => PeerOperation::Vote,
+                                    RaftRpcKind::PreVote => PeerOperation::PreVote,
+                                    RaftRpcKind::SnapshotChunk => PeerOperation::Snapshot,
+                                    RaftRpcKind::TransferLeader => PeerOperation::Transfer,
+                                    RaftRpcKind::ReadIndex => PeerOperation::ReadIndex,
+                                };
                                 let legacy_v1 = request.legacy_v1;
                                 // ReadIndex waits on quorum. Charge it against
                                 // the same bounded application slots as forwarding,
                                 // leaving independent workers for consensus RPCs.
+                                observation.enter(PeerIoStage::ForwardAdmission);
                                 let _read_slot =
                                     if request.kind == RaftRpcKind::ReadIndex {
                                         Some(forward_slots.clone().try_acquire_owned().map_err(
@@ -919,6 +1059,7 @@ impl HaProcess {
                                     } else {
                                         None
                                     };
+                                observation.enter(PeerIoStage::Service);
                                 let payload = if request.kind == RaftRpcKind::ReadIndex {
                                     handle.block_on(
                                         heptabao_raft_runtime::with_read_index_deadline(
@@ -943,6 +1084,7 @@ impl HaProcess {
                                     payload,
                                     legacy_v1,
                                 };
+                                observation.enter(PeerIoStage::ResponseEncode);
                                 if legacy_v1 {
                                     encode_legacy_raft_frame_for_transition(response)
                                 } else {
@@ -951,7 +1093,13 @@ impl HaProcess {
                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)
                             },
                         );
-                        if result.is_err() {
+                        if let Err(error) = result {
+                            if !(observation.stage == PeerIoStage::Accept
+                                && observation.io_kind == Some(std::io::ErrorKind::WouldBlock)) {
+                                observation.emit(inbound_operation,
+                                    observation.authenticated_source.unwrap_or(0), local_id,
+                                    error, inbound_budget, inbound_started);
+                            }
                             thread::sleep(Duration::from_millis(2));
                         }
                     }
@@ -1185,7 +1333,8 @@ impl HaProcess {
             client_certificates,
             caller_deadline,
         } = context;
-        let deadline = Instant::now() + self.forward_timeout;
+        let started = Instant::now();
+        let deadline = started + self.forward_timeout;
         let deadline = caller_deadline.map_or(deadline, |caller| caller.min(deadline));
         let local = self.local_id()?;
         let leader = self
@@ -1198,6 +1347,8 @@ impl HaProcess {
             .peers
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
+        let mut observation = PeerIoObservation::default();
+        let budget = deadline.saturating_duration_since(started);
         let legacy_v1 = self.emit_legacy_peer_v1;
         let unwrap_response = path == "sys/wrapping/unwrap"
             || path.starts_with("sys/workflows/execute/")
@@ -1248,28 +1399,90 @@ impl HaProcess {
         });
         let response = zeroize::Zeroizing::new(
             self.forward_transport
-                .exchange_before(target, &request, deadline)
-                .map_err(|error| error.to_string())?,
+                .exchange_before_observed(target, &request, deadline, &mut observation)
+                .map_err(|error| {
+                    observation.emit(
+                        PeerOperation::Forward,
+                        local,
+                        leader,
+                        error,
+                        budget,
+                        started,
+                    );
+                    error.to_string()
+                })?,
         );
-        let mut response = if legacy_v1 {
-            decode_legacy_response_for_transition(&response, &self.cluster_id)?
+        observation.enter(PeerIoStage::ResponseDecode);
+        let mut response = (if legacy_v1 {
+            decode_legacy_response_for_transition(&response, &self.cluster_id)
         } else if unwrap_response {
-            crate::ha_forward::decode_unwrap_response_for_cluster(&response, &self.cluster_id)?
+            crate::ha_forward::decode_unwrap_response_for_cluster(&response, &self.cluster_id)
         } else {
-            crate::ha_forward::decode_index_response_for_cluster(&response, &self.cluster_id)?
-        };
+            crate::ha_forward::decode_index_response_for_cluster(&response, &self.cluster_id)
+        })
+        .map_err(|error| {
+            observation.emit(
+                PeerOperation::Forward,
+                local,
+                leader,
+                heptabao_ha_service::HaError::InvalidFrame,
+                budget,
+                started,
+            );
+            error
+        })?;
+        observation.response_status = Some(response.status);
+        observation.enter(PeerIoStage::ResponseBinding);
         if response.source != leader || response.target != local {
+            observation.emit(
+                PeerOperation::Forward,
+                local,
+                leader,
+                heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                budget,
+                started,
+            );
             return Err("HA forward response direction is invalid".into());
         }
+        observation.enter(PeerIoStage::Deadline);
         if Instant::now() >= deadline {
+            observation.emit(
+                PeerOperation::Forward,
+                local,
+                leader,
+                heptabao_ha_service::HaError::Transport,
+                budget,
+                started,
+            );
             return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
         let receipt = if let Some(nonce) = nonce {
-            let response_digest = crate::ha_forward_completion::wire_response_digest(&response)?;
-            let wire = response
-                .completion
-                .take()
-                .ok_or("HA completed-forward proof is missing")?;
+            observation.enter(PeerIoStage::CompletionDigest);
+            let response_digest = crate::ha_forward_completion::wire_response_digest(&response)
+                .map_err(|error| {
+                    observation.emit(
+                        PeerOperation::Forward,
+                        local,
+                        leader,
+                        heptabao_ha_service::HaError::InvalidFrame,
+                        budget,
+                        started,
+                    );
+                    error
+                })?;
+            observation.enter(PeerIoStage::CompletionMissing);
+            let wire = response.completion.take().ok_or_else(|| {
+                observation.emit(
+                    PeerOperation::Forward,
+                    local,
+                    leader,
+                    heptabao_ha_service::HaError::InvalidFrame,
+                    budget,
+                    started,
+                );
+                "HA completed-forward proof is missing"
+            })?;
+            observation.enter(PeerIoStage::CompletionVerify);
             Some(
                 crate::ha_forward_completion::CompletedForwardReceipt::verified(
                     wire,
@@ -1282,21 +1495,65 @@ impl HaProcess {
                         request: &request,
                         response_digest,
                     },
-                )?,
+                )
+                .map_err(|error| {
+                    observation.emit(
+                        PeerOperation::Forward,
+                        local,
+                        leader,
+                        heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                        budget,
+                        started,
+                    );
+                    error
+                })?,
             )
         } else {
             None
         };
         if let Some(receipt) = &receipt {
-            self.wait_forward_applied(receipt)?;
+            observation.enter(PeerIoStage::LocalAppliedWait);
+            self.wait_forward_applied(receipt).map_err(|error| {
+                observation.emit(
+                    PeerOperation::Forward,
+                    local,
+                    leader,
+                    heptabao_ha_service::HaError::Transport,
+                    budget,
+                    started,
+                );
+                error
+            })?;
         }
+        observation.enter(PeerIoStage::ResponseUnwrap);
         let unwrapped_json = if response.unwrapped_json.is_some() {
-            Some(crate::auth::UnwrappedJson::from_completed_raw_forward(
-                receipt
-                    .as_ref()
-                    .ok_or("HA unwrap completed authority is missing")?,
-                &response,
-            )?)
+            Some(
+                crate::auth::UnwrappedJson::from_completed_raw_forward(
+                    receipt.as_ref().ok_or_else(|| {
+                        observation.emit(
+                            PeerOperation::Forward,
+                            local,
+                            leader,
+                            heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                            budget,
+                            started,
+                        );
+                        "HA unwrap completed authority is missing"
+                    })?,
+                    &response,
+                )
+                .map_err(|error| {
+                    observation.emit(
+                        PeerOperation::Forward,
+                        local,
+                        leader,
+                        heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                        budget,
+                        started,
+                    );
+                    error
+                })?,
+            )
         } else {
             None
         };
