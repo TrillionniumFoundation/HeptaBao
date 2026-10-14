@@ -845,6 +845,8 @@ impl Service {
             }
             live()
         };
+        #[cfg(test)]
+        let clock_witness = tests::start_native_clock_witness(self)?;
         let plan = self.prepare_native_live_root_checked(candidate, &mut original_gate)?;
         let installed = self.commit_native_root_plan(
             candidate,
@@ -854,6 +856,8 @@ impl Service {
             &mut original_gate,
         )?;
         *candidate = installed;
+        #[cfg(test)]
+        tests::finish_native_clock_witness(self, candidate, clock_witness)?;
         Ok(())
     }
 }
@@ -885,7 +889,8 @@ mod tests {
         service.handle(method, path, "", token, body)
     }
 
-    struct NativeDurableFrontier {
+    #[derive(Clone)]
+    pub(super) struct NativeDurableFrontier {
         generation: u64,
         root: Zeroizing<Vec<u8>>,
         cursor: Zeroizing<Vec<u8>>,
@@ -944,6 +949,184 @@ mod tests {
         Ok(())
     }
 
+    fn same_native_frontier(left: &NativeDurableFrontier, right: &NativeDurableFrontier) -> bool {
+        left.generation == right.generation
+            && left.root == right.root
+            && left.cursor == right.cursor
+            && left.retained_source == right.retained_source
+            && left.journal == right.journal
+    }
+
+    fn same_native_resources_except_auth_clock(
+        before: &NativeDurableFrontier,
+        after: &NativeDurableFrontier,
+    ) -> Result<bool, crate::state_record_root::RootError> {
+        use crate::state_record_root_v6::{OwnerDomain, RecordStateRootV6};
+        let before_root = RecordStateRootV6::decode(&before.root)?;
+        let mut after_root = RecordStateRootV6::decode(&after.root)?;
+        for (prior, current) in before_root.owners.iter().zip(after_root.owners.iter_mut()) {
+            if current.domain == OwnerDomain::Auth && prior.domain == OwnerDomain::Auth {
+                *current = prior.clone();
+            }
+        }
+        Ok(
+            before_root.encode()?.as_slice() == after_root.encode()?.as_slice()
+                && before.retained_source == after.retained_source,
+        )
+    }
+
+    pub(super) struct NativeClockStart {
+        frontier: NativeDurableFrontier,
+        auth: AuthState,
+    }
+    struct NativeClockSpan {
+        before: NativeDurableFrontier,
+        after: NativeDurableFrontier,
+    }
+    std::thread_local! {
+        static NATIVE_CLOCK_SPANS: std::cell::RefCell<Option<Vec<NativeClockSpan>>> =
+            const { std::cell::RefCell::new(None) };
+    }
+    struct NativeClockWitness;
+    impl NativeClockWitness {
+        fn begin() -> Self {
+            NATIVE_CLOCK_SPANS.with(|slot| {
+                assert!(slot.borrow().is_none(), "nested native clock observer");
+                *slot.borrow_mut() = Some(Vec::new());
+            });
+            Self
+        }
+        fn assert_only_observed_clock_spans(
+            self,
+            service: &mut Service,
+            original: &NativeDurableFrontier,
+        ) -> TestResult {
+            let spans = NATIVE_CLOCK_SPANS
+                .with(|slot| slot.borrow_mut().take())
+                .ok_or("missing native clock witness")?;
+            assert!(
+                !spans.is_empty(),
+                "real precise-token observation write was not witnessed"
+            );
+            let mut prior = original;
+            for span in &spans {
+                assert!(
+                    same_native_frontier(prior, &span.before),
+                    "durable write occurred outside the exact observation-only span"
+                );
+                assert!(
+                    same_native_resources_except_auth_clock(&span.before, &span.after)?,
+                    "clock span changed a resource, layout, non-Auth owner or retained source"
+                );
+                assert!(span.after.generation > span.before.generation);
+                assert!(span.after.journal.starts_with(&span.before.journal));
+                prior = &span.after;
+            }
+            assert!(
+                same_native_frontier(prior, &native_frontier(service)?),
+                "rejected resource appended outside the witnessed clock spans"
+            );
+            eprintln!(
+                "native-expiry-proof clock_only_spans={} no_resource_publication=true",
+                spans.len()
+            );
+            Ok(())
+        }
+    }
+    impl Drop for NativeClockWitness {
+        fn drop(&mut self) {
+            NATIVE_CLOCK_SPANS.with(|slot| *slot.borrow_mut() = None);
+        }
+    }
+    pub(super) fn start_native_clock_witness(
+        service: &mut Service,
+    ) -> Result<Option<NativeClockStart>, Response> {
+        if !NATIVE_CLOCK_SPANS.with(|slot| slot.borrow().is_some()) {
+            return Ok(None);
+        }
+        let frontier = native_frontier(service)
+            .map_err(|_| Response::error(503, "test native frontier observation failed"))?;
+        let auth = service
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "test native source missing"))?
+            .auth
+            .clone();
+        Ok(Some(NativeClockStart {
+            frontier,
+            auth: (*auth).clone(),
+        }))
+    }
+    pub(super) fn finish_native_clock_witness(
+        service: &mut Service,
+        installed: &State,
+        start: Option<NativeClockStart>,
+    ) -> Result<(), Response> {
+        let Some(start) = start else {
+            return Ok(());
+        };
+        let bad = || Response::error(503, "test native clock-only proof rejected");
+        let after = native_frontier(service).map_err(|_| bad())?;
+        let before_time = start.auth.terminal_token_clock_floor().ok_or_else(bad)?;
+        let after_time = installed
+            .auth
+            .terminal_token_clock_floor()
+            .ok_or_else(bad)?;
+        if after_time <= before_time
+            || !same_native_resources_except_auth_clock(&start.frontier, &after)
+                .map_err(|_| bad())?
+        {
+            return Err(bad());
+        }
+        // Reconstruct ONLY the exact monotonic clock delta. Token issuance,
+        // renew/revoke, policy changes and resource mutations cannot match.
+        let mut expected = start.auth;
+        expected
+            .observe_token_api_time(AuthorityTime::Precise(after_time))
+            .map_err(|_| bad())?;
+        if owner_store::serialize_owner(&expected)
+            .map_err(|_| bad())?
+            .as_slice()
+            != owner_store::serialize_owner(&installed.auth)
+                .map_err(|_| bad())?
+                .as_slice()
+        {
+            return Err(bad());
+        }
+        NATIVE_CLOCK_SPANS.with(|slot| {
+            let mut slot = slot.borrow_mut();
+            let spans = slot.as_mut().ok_or_else(bad)?;
+            spans.push(NativeClockSpan {
+                before: start.frontier,
+                after,
+            });
+            Ok(())
+        })
+    }
+
+    #[test]
+    fn native_clock_witness_rejects_every_unwitnessed_durable_dimension() {
+        let original = NativeDurableFrontier {
+            generation: 7,
+            root: Zeroizing::new(vec![1]),
+            cursor: Zeroizing::new(vec![2]),
+            retained_source: Zeroizing::new(vec![3]),
+            journal: Zeroizing::new(vec![4]),
+        };
+        assert!(same_native_frontier(&original, &original));
+        for dimension in 0..5 {
+            let mut changed = original.clone();
+            match dimension {
+                0 => changed.generation += 1,
+                1 => changed.root.push(5),
+                2 => changed.cursor.push(5),
+                3 => changed.retained_source.push(5),
+                _ => changed.journal.push(5),
+            }
+            assert!(!same_native_frontier(&original, &changed));
+        }
+    }
+
     fn actor_expiry_after_actual_payload_open(method: &str) -> TestResult {
         let directory = super::super::tests::Root::new();
         let mut service = directory.service()?;
@@ -969,7 +1152,9 @@ mod tests {
             200
         );
         // The real token is unlimited-use so rejection cannot be confused with
-        // the separate consumed-auth publication. Its real TTL expires only
+        // the separate consumed-auth publication. Required clock-only writes
+        // remain explicit witnessed transitions, never resource authority.
+        // Its real TTL expires only
         // after the actual FileBackend read and AeadBarrier open below.
         let created = call_default_budget(
             &mut service,
@@ -1011,6 +1196,7 @@ mod tests {
             2
         );
         let before = native_frontier(&mut service)?;
+        let clock_witness = NativeClockWitness::begin();
         let observations = Arc::clone(&service.native_payload_observations);
         let opened = observations
             .blocks_opened
@@ -1072,7 +1258,7 @@ mod tests {
         assert!(response.body.get("wrap_info").is_none());
         assert!(response.unwrapped_json.is_none());
         assert!(!service.recovery_required);
-        assert_native_frontier_unchanged(&mut service, &before)?;
+        clock_witness.assert_only_observed_clock_spans(&mut service, &before)?;
         let metadata = call_default_budget(
             &mut service,
             "GET",
@@ -1096,13 +1282,13 @@ mod tests {
     }
 
     #[test]
-    fn genuine_native_floor2_actor_expiry_after_actual_aead_get_has_no_delivery_or_publication()
+    fn genuine_native_floor2_actor_expiry_after_actual_aead_get_has_no_delivery_or_resource_publication()
     -> TestResult {
         actor_expiry_after_actual_payload_open("GET")
     }
 
     #[test]
-    fn genuine_native_floor2_actor_expiry_after_actual_aead_patch_has_no_delivery_or_publication()
+    fn genuine_native_floor2_actor_expiry_after_actual_aead_patch_has_no_delivery_or_resource_publication()
     -> TestResult {
         actor_expiry_after_actual_payload_open("PATCH")
     }
