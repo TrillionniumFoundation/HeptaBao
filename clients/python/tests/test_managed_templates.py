@@ -76,6 +76,136 @@ class ManagedCustodyTests(unittest.TestCase):
         self.owner._save()
         return row
 
+
+
+    def test_official_lookup_rounding_with_response_past_conservative_grant_stays_pending(self):
+        self.agent.timeout=2.  # Same bounded transport budget permits this controlled delay.
+        self.clock=100.1
+        row=self.ready(phase='lookup_pending')
+        # Fixed 271: lookup at 100.49 rounds now to 100. ExpireTime=101.05
+        # produces ttl=1, even though the real remaining grant is 0.56.
+        # The response arrives at 100.65. The original request lower bound
+        # ended at 100.60; using full ttl would instead release until 101.10.
+        def delayed(*args):
+            self.clock=100.65
+            return response({'data':{'id':'unit-lease','ttl':1,'renewable':True,
+                                     'expire_time':'1970-01-01T00:01:41.05Z'}})
+        self.answer=delayed
+        self.owner.maintain()
+        self.assertEqual(row['phase'],'lookup_pending')
+        self.assertEqual(self.owner.events['reconciled'],0)
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
+    def test_positive_lookup_one_uses_original_request_lower_bound_without_zero_ttl_grace(self):
+        self.agent.timeout=2.  # Same bounded transport budget permits this controlled delay.
+        row=self.ready(phase='lookup_pending')
+        def delayed(*args):
+            self.clock=100.49
+            return response({'data':{'id':'unit-lease','ttl':1,'renewable':True}})
+        self.answer=delayed
+        self.owner.maintain()
+        self.assertEqual(row['phase'],'ready')
+        self.assertEqual((row['wall_deadline'],row['deadline']),(100.5,100.5))
+        self.assertEqual(self.owner.events['reconciled'],1)
+        self.clock=100.5
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
+    def cold_owner(self):
+        directory=self.root/'cold';directory.mkdir(mode=0o700)
+        config=managed.configuration({'state_dir':str(directory),
+            'routes':[{'path':PATH,'effectful':True}]},self.agent)
+        binding=hashlib.sha256(canonical({'agent':self.agent.binding(),'managed':config})).hexdigest()
+        body=lease_body();body['lease_duration']=2
+        row={'phase':'ready','token_hash':TOKEN_HASH,'body':body,'observed_wall':100.,
+             'lease_id':'unit-lease','renewable':True,'refresh_wall':105.,
+             'wall_deadline':102.,'deadline':9000.,'renew_at':9000.}
+        with StateDirectory(directory,writer=True) as state:
+            state.publish('subscriptions.json',{'schema':1,'binding':binding,'rows':{PATH:row}})
+        owner=managed.ManagedSecrets(config,self.agent,threading.Event(),
+            client_factory=self.owner.client_factory,token_authority=lambda:self.authority)
+        self.addCleanup(owner.close)
+        return owner,directory
+
+    def test_cold_lookup_cannot_move_known_original_absolute_grant(self):
+        self.agent.timeout=2.  # Same bounded transport budget permits this controlled delay.
+        owner,directory=self.cold_owner()
+        self.clock=101.6
+        def delayed(*args):
+            self.clock=101.8
+            return response({'data':{'id':'unit-lease','ttl':1,'renewable':True}})
+        self.answer=delayed
+        owner.maintain()
+        row=owner.rows[PATH]
+        self.assertEqual(row['phase'],'ready')
+        self.assertEqual((row['wall_deadline'],row['deadline']),(102.,102.))
+        self.assertEqual(row['lookup_original_wall_deadline'],102.)
+        self.clock=102.
+        with self.assertRaises(BaoError):owner.delivery([PATH],TOKEN_HASH)
+        self.assertEqual(json.loads((directory/'subscriptions.json').read_text())['rows'][PATH]['wall_deadline'],102.)
+
+    def test_cold_original_bound_is_durable_when_lookup_outcome_remains_unknown(self):
+        owner,directory=self.cold_owner()
+        self.clock=101.6
+        self.answer=lambda *args:response({'errors':['synthetic-unknown']},503)
+        owner.maintain()
+        row=owner.rows[PATH]
+        self.assertEqual(row['phase'],'lookup_pending')
+        self.assertEqual(row['wall_deadline'],102.)
+        saved=json.loads((directory/'subscriptions.json').read_text())['rows'][PATH]
+        self.assertEqual(saved['lookup_original_wall_deadline'],102.)
+        self.assertEqual(owner.events['reconciled'],0)
+
+    def test_issue_original_grant_also_caps_to_global_owner_deadline(self):
+        self.owner.owner_deadline=101.
+        self.owner.secret(PATH)
+        row=self.owner.rows[PATH]
+        self.assertEqual((row['wall_deadline'],row['deadline']),(101.,101.))
+        self.clock=101.
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
+    def test_positive_issue_nominal_ttl_uses_original_request_start_after_transport_delay(self):
+        self.agent.timeout=5.  # Controlled response delay is inside the configured request budget.
+        def delayed(*args):
+            self.clock=102.
+            return response(lease_body())
+        self.answer=delayed
+        result=self.owner.secret(PATH)
+        self.assertEqual(result['LeaseDuration'],30)
+        row=self.owner.rows[PATH]
+        self.assertEqual((row['observed_wall'],row['wall_deadline'],row['deadline'],row['renew_at']),
+                         (100.,130.,130.,115.))
+        self.clock=130.
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
+    def test_positive_renew_nominal_ttl_uses_request_start_and_original_token_cap(self):
+        self.agent.timeout=5.  # Controlled response delay is inside the configured request budget.
+        self.token_grant(wall=120.,mono=120.)
+        row=self.ready(deadline=110.)
+        def delayed(*args):
+            self.clock=103.
+            return response(lease_body())
+        self.answer=delayed
+        self.owner.maintain()
+        self.assertEqual(self.owner.events['renewed'],1)
+        self.assertEqual(row['phase'],'ready')
+        self.assertEqual((row['observed_wall'],row['wall_deadline'],row['deadline'],row['renew_at']),
+                         (100.,120.,120.,110.))
+        self.clock=120.
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
+    def test_denied_renew_cannot_refresh_original_authority_after_transport_delay(self):
+        row=self.ready(deadline=101.)
+        def delayed(*args):
+            self.clock=100.9
+            return response(lease_body(),503)
+        self.answer=delayed
+        self.owner.maintain()
+        self.assertEqual(self.owner.events['renewed'],0)
+        self.assertEqual(row['phase'],'renew_pending')
+        self.assertEqual((row['wall_deadline'],row['deadline']),(101.,101.))
+        self.clock=101.
+        with self.assertRaises(BaoError):self.owner.delivery([PATH],TOKEN_HASH)
+
     def test_subsecond_original_grant_is_live_with_zero_integer_metadata(self):
         self.ready(deadline=100.9)
         self.answer=lambda *args:response({'data':{}})

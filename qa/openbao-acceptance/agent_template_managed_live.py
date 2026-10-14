@@ -520,7 +520,7 @@ def main():
     except (BaoError,OSError,ValueError,RuntimeError,subprocess.SubprocessError,KeyError,TypeError) as error:
         report['failure']='owned_runtime_check_failed'
         report['failure_type']=type(error).__name__
-        report['failure_stage']=stage
+        report['failure_stage']=cases[-1]['case'] if cases else stage
         trace=[];node=error.__traceback__
         while node is not None:
             trace.append({'file':Path(node.tb_frame.f_code.co_filename).name,'line':node.tb_lineno,'function':node.tb_frame.f_code.co_name})

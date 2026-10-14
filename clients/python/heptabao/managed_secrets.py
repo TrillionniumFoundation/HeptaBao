@@ -56,6 +56,7 @@ class ManagedSecrets:
             self.trust=read_trusted_ca(agent.ca_file)
             self.agent_binding=agent.binding()
             self.binding=hashlib.sha256(canonical({'agent':self.agent_binding,'managed':self.config})).hexdigest()
+            self.maintenance_trace=[]
             self.rows={};self.events={'issued':0,'renewed':0,'reconciled':0,'fenced':0,'invalidated':0}
             saved=self.directory.json('subscriptions.json',optional=True)
             if saved is not None:
@@ -77,8 +78,19 @@ class ManagedSecrets:
                             raise BaoError('managed_secret_restart_shape')
                         if row['lease_id'] and type(row.get('renewable')) is not bool:
                             raise BaoError('managed_secret_restart_shape')
-                    if row.get('phase')=='ready' and row.get('lease_id'):row['phase']='lookup_pending'
+                    if row.get('phase')=='ready' and row.get('lease_id'):
+                        original=row.get('wall_deadline')
+                        if type(original) not in (int,float) or not math.isfinite(original):
+                            raise BaoError('managed_secret_restart_shape')
+                        # A cold check of a known grant cannot move its captured
+                        # absolute wall boundary. The process-local mono clock
+                        # is rebuilt only inside that original wall boundary.
+                        row['lookup_original_wall_deadline']=original
+                        row['phase']='lookup_pending'
                     elif row.get('phase')=='ready':row['phase']='static_stale'
+                    bound=row.get('lookup_original_wall_deadline')
+                    if bound is not None and (type(bound) not in (int,float) or not math.isfinite(bound)):
+                        raise BaoError('managed_secret_restart_shape')
             self._save()
         except BaseException:
             self.directory.close()
@@ -228,6 +240,7 @@ class ManagedSecrets:
                 if not isinstance(lease,str) or type(ttl) is not int or ttl<=0:
                     raise BaoError('managed_secret_lease_shape')
                 duration=min(ttl,state['_authority'].wall_deadline-start_wall,state['_authority'].mono_deadline-start_mono)
+                if self.owner_deadline is not None:duration=min(duration,self.owner_deadline-start_mono)
                 if duration<=0:raise BaoError('managed_secret_lease_expired_during_admission')
                 row.update(wall_deadline=start_wall+duration,deadline=start_mono+duration,
                            renew_at=start_mono+max(.1,duration/2))
@@ -251,14 +264,32 @@ class ManagedSecrets:
                 if current_hash!=token_hash:raise BaoError('managed_secret_token_generation_changed')
                 # Durable intent is published before entry. A transport error
                 # leaves a lookup-only fence; maintenance never blindly renews.
+                if not pending:row.pop('lookup_original_wall_deadline',None)
                 row['phase']='lookup_pending' if pending else 'renew_pending';self._save()
                 start_wall,start_mono=time.time(),time.monotonic()
                 endpoint='sys/leases/lookup' if pending else 'sys/leases/renew'
                 payload={'lease_id':lease}
                 if not pending:payload['increment']=self.config['renew_increment_seconds']
+                trace={'endpoint':endpoint,'pending_before_entry':pending,
+                    'original_wall_remaining':row.get('wall_deadline',start_wall)-start_wall,
+                    'original_mono_remaining':row.get('deadline',start_mono)-start_mono,
+                    'response_status':None,'projection_admitted':False}
+                self.maintenance_trace.append(trace);del self.maintenance_trace[:-32]
                 try:response=client.request('POST','/v1/'+endpoint,payload)
                 except BaoError:
+                    trace['elapsed_seconds']=time.monotonic()-start_mono
+                    trace['closed_failure']='transport_outcome_unknown'
                     self.events['fenced']+=1;continue
+                trace['elapsed_seconds']=time.monotonic()-start_mono
+                trace['response_status']=response.status
+                trace['response_body_sha256']=hashlib.sha256(canonical(response.body)).hexdigest()
+                projection=response.body.get('data') if pending else response.body
+                projection=projection if isinstance(projection,dict) else {}
+                trace['projection_field_types']={name:type(projection.get(name)).__name__ for name in (('id','ttl','renewable') if pending else ('lease_id','lease_duration','renewable'))}
+                trace['lease_identity_matches']=projection.get('id' if pending else 'lease_id')==lease
+                projected_ttl=projection.get('ttl' if pending else 'lease_duration')
+                trace['projected_ttl']=projected_ttl if type(projected_ttl) is int and -86400<=projected_ttl<=86400 else None
+
                 if response.status!=200:
                     # A denial of lookup/renewal is not proof that an earlier
                     # issuance or renewal had no effect or that its lease died.
@@ -270,8 +301,18 @@ class ManagedSecrets:
                 else:
                     if response.body.get('lease_id')!=lease or type(response.body.get('renewable')) is not bool:continue
                     ttl=response.body.get('lease_duration');renewable=response.body['renewable']
+                trace['positive_integer_ttl']=type(ttl) is int and ttl>0
                 if type(ttl) is not int or ttl<=0:continue
-                duration=min(ttl,state['_authority'].wall_deadline-start_wall,state['_authority'].mono_deadline-start_mono)
+                # Fixed official 2.7.1 computes lookup TTL as
+                # int64((ExpireTime - Round(now, 1 second)).Seconds()).
+                # Positive integer k proves at least k-0.5 seconds remaining.
+                # Native precise floor is also bounded by this conservative
+                # profile. Start before HTTP entry, so all I/O time is consumed.
+                grant=ttl-.5 if pending else ttl
+                duration=min(grant,state['_authority'].wall_deadline-start_wall,state['_authority'].mono_deadline-start_mono)
+                if self.owner_deadline is not None:duration=min(duration,self.owner_deadline-start_mono)
+                if pending and row.get('lookup_original_wall_deadline') is not None:
+                    duration=min(duration,row['lookup_original_wall_deadline']-start_wall)
                 if duration<=0:continue
                 row['body']['lease_duration']=ttl
                 row['body']['renewable']=renewable
@@ -280,10 +321,11 @@ class ManagedSecrets:
                 try:self.delivery([path],token_hash)
                 except BaoError:
                     row['phase']='lookup_pending';self.events['fenced']+=1;self._save();continue
+                trace['projection_admitted']=True
                 self.events['reconciled' if pending else 'renewed']+=1;self._save()
 
     def metadata(self):
-        with self.lock:return {'subscriptions':len(self.rows),'phases':{path:row['phase'] for path,row in self.rows.items()},'events':dict(self.events)}
+        with self.lock:return {'subscriptions':len(self.rows),'phases':{path:row['phase'] for path,row in self.rows.items()},'events':dict(self.events),'maintenance_trace':[dict(row) for row in self.maintenance_trace]}
 
     def close(self):
         with self.lock:
