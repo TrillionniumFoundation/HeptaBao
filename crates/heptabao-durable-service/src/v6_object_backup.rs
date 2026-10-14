@@ -573,6 +573,41 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         })
     }
 
+    /// Reopen one registered object from the already authenticated archive for
+    /// application graph validation. Never consult the target filesystem or a
+    /// caller-supplied fallback; retain the same prepared target and input hash.
+    pub fn read_v6_restore_object<R: Read + Seek>(
+        &self,
+        prepared: &mut PreparedV6Restore<R>,
+        resource: &str,
+        gate: &mut impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
+        gate()?;
+        self.verify_prepared_restore(&prepared.state)?;
+        let index = prepared
+            .members
+            .binary_search_by(|member| member.slot.resource.as_str().cmp(resource))
+            .map_err(|_| ServiceError::InvalidResource)?;
+        let member = &prepared.members[index];
+        seek_checked(&mut prepared.reader, SeekFrom::Start(member.offset), gate)?;
+        let mut ciphertext = Zeroizing::new(vec![0; member.slot.ciphertext_bytes]);
+        read_exact_checked(&mut prepared.reader, &mut ciphertext, gate)?;
+        if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
+            return Err(ServiceError::CorruptState);
+        }
+        let plaintext = Zeroizing::new(
+            self.barrier
+                .open(&member.slot.aad(), &ciphertext)
+                .map_err(|_| ServiceError::BarrierFailure)?,
+        );
+        gate()?;
+        self.verify_prepared_restore(&prepared.state)?;
+        if plaintext.len() != member.slot.plaintext_bytes {
+            return Err(ServiceError::CorruptState);
+        }
+        Ok(plaintext)
+    }
+
     /// After application validation, stage already authenticated objects, then
     /// consume the existing exact-frontier restore transaction. A late failure
     /// may leave only unreferenced immutable files; it never claims root commit.

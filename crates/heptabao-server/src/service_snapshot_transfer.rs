@@ -10,6 +10,10 @@ use crate::{
 use sha2::{Digest, Sha256};
 use std::time::Instant;
 
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_snapshot_v6.rs"]
+mod v6;
+
 // A routing hint is deliberately not an application read/write capability.
 // Only this module can construct one, from a configured HA peer API origin.
 pub(crate) struct TrustedSnapshotOrigin(String);
@@ -332,8 +336,27 @@ impl Service {
             Ok(value) => value,
             Err(response) => return response,
         };
+        let mut plan = SnapshotTransferPlan {
+            actor,
+            path: request.path.to_owned(),
+            namespace: request.namespace.to_owned(),
+            activation: self.unseal_nonce.clone(),
+            seal_identity,
+            ha: self.ha.clone(),
+            base,
+            deadline,
+            started,
+            now,
+            lease: Arc::clone(&lease),
+            download: None,
+            is_download: download,
+        };
         let source = if download {
             let result = (|| -> Result<DownloadSource, Response> {
+                #[cfg(feature = "fixture-native-v6-service")]
+                if self.native_root.is_some() {
+                    return self.prepare_v6_snapshot_download(&plan);
+                }
                 let durable = self
                     .durable
                     .as_ref()
@@ -382,21 +405,8 @@ impl Service {
         } else {
             None
         };
-        self.pending_snapshot_transfer = Some(SnapshotTransferPlan {
-            actor,
-            path: request.path.to_owned(),
-            namespace: request.namespace.to_owned(),
-            activation: self.unseal_nonce.clone(),
-            seal_identity,
-            ha: self.ha.clone(),
-            base,
-            deadline,
-            started,
-            now,
-            lease,
-            download: source,
-            is_download: download,
-        });
+        plan.download = source;
+        self.pending_snapshot_transfer = Some(plan);
         Response::ok(Value::Null)
     }
 
@@ -493,6 +503,10 @@ impl Service {
         match observation {
             Observation::Download if plan.is_download => Response::ok(Value::Null),
             Observation::Upload(mut imported) if !plan.is_download => {
+                #[cfg(feature = "fixture-native-v6-service")]
+                if imported.metadata.is_v6() {
+                    return self.finish_v6_snapshot_upload(imported, &plan, live_seal);
+                }
                 let result = (|| -> Result<backup_restore::PreparedSnapshotRestore, Response> {
                     let binding = imported.metadata.seal_identity().ok_or_else(|| {
                         Response::error(

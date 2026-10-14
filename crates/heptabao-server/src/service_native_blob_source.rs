@@ -203,6 +203,20 @@ fn store_id(root: &[u8]) -> Result<[u8; 16], ServiceError> {
     Ok(id)
 }
 
+// Shared exact slot/cluster validation for native snapshot graph readers.
+// No caller can turn a valid locator into graph authority with this check.
+pub(super) fn validate_archive_slot(
+    root: &[u8],
+    bytes: &[u8],
+    reference: &ObjectRef,
+) -> Result<(), RecordError> {
+    let slot = Slot::decode(bytes, reference)?;
+    if slot.locator.store_id() != store_id(root).map_err(|_| RecordError::Corrupt)? {
+        return Err(RecordError::Corrupt);
+    }
+    Ok(())
+}
+
 fn context(domain: &ObjectDomain, reference: &ObjectRef) -> Vec<u8> {
     let mut aad = b"HeptaBao/native-v6/typed-object-file/v1\0".to_vec();
     aad.extend_from_slice(v6_records::native_resource(domain, reference).as_bytes());

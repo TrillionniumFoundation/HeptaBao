@@ -1,6 +1,8 @@
 //! Native HBB2 state in a CLI-transport-compatible gzip/tar envelope.
 //! This is not an OpenBao state.bin or seal-wrapper format.
-use crate::snapshot_file::{MAX_NATIVE_ARCHIVE, MAX_NATIVE_STATE, SnapshotFile, SnapshotLease};
+use crate::snapshot_file::{
+    MAX_NATIVE_ARCHIVE, MAX_NATIVE_STATE, MAX_SNAPSHOT_ENTRY, SnapshotFile, SnapshotLease,
+};
 use flate2::{Compression, bufread::GzDecoder, write::GzEncoder};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -59,6 +61,14 @@ pub(crate) enum Metadata {
         state_bytes: u64,
         seal_identity: SealIdentity,
     },
+    #[cfg(feature = "fixture-native-v6-service")]
+    #[serde(rename = "heptabao-native-object-snapshot-v1")]
+    V6 {
+        state_format: String,
+        generation: u64,
+        state_bytes: u64,
+        seal_identity: SealIdentity,
+    },
 }
 impl Metadata {
     pub(crate) fn new(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
@@ -72,22 +82,59 @@ impl Metadata {
     pub(crate) fn generation(&self) -> u64 {
         match self {
             Self::V1 { generation, .. } | Self::V2 { generation, .. } => *generation,
+            #[cfg(feature = "fixture-native-v6-service")]
+            Self::V6 { generation, .. } => *generation,
         }
     }
     pub(crate) fn state_bytes(&self) -> u64 {
         match self {
             Self::V1 { state_bytes, .. } | Self::V2 { state_bytes, .. } => *state_bytes,
+            #[cfg(feature = "fixture-native-v6-service")]
+            Self::V6 { state_bytes, .. } => *state_bytes,
         }
     }
     pub(crate) fn seal_identity(&self) -> Option<&SealIdentity> {
         match self {
             Self::V1 { .. } => None,
             Self::V2 { seal_identity, .. } => Some(seal_identity),
+            #[cfg(feature = "fixture-native-v6-service")]
+            Self::V6 { seal_identity, .. } => Some(seal_identity),
+        }
+    }
+    #[cfg(feature = "fixture-native-v6-service")]
+    pub(crate) fn new_v6(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
+        Self::V6 {
+            state_format: "heptabao-encrypted-object-backup/HBV6PK01".into(),
+            generation,
+            state_bytes,
+            seal_identity: SealIdentity::new(seal_digest),
+        }
+    }
+    pub(crate) fn is_v6(&self) -> bool {
+        #[cfg(feature = "fixture-native-v6-service")]
+        if matches!(self, Self::V6 { .. }) {
+            return true;
+        }
+        false
+    }
+    pub(crate) fn state_limit(&self) -> u64 {
+        if self.is_v6() {
+            MAX_SNAPSHOT_ENTRY
+        } else {
+            MAX_NATIVE_STATE
         }
     }
     pub(crate) fn valid(&self) -> bool {
+        #[cfg(feature = "fixture-native-v6-service")]
+        if let Self::V6 { state_format, .. } = self {
+            return state_format == "heptabao-encrypted-object-backup/HBV6PK01"
+                && (92..=self.state_limit()).contains(&self.state_bytes())
+                && self.seal_identity().is_some_and(SealIdentity::valid);
+        }
         let state_format = match self {
             Self::V1 { state_format, .. } | Self::V2 { state_format, .. } => state_format,
+            #[cfg(feature = "fixture-native-v6-service")]
+            Self::V6 { .. } => return false,
         };
         state_format == "heptabao-encrypted-backup-v1/HBB2"
             && (60..=MAX_NATIVE_STATE).contains(&self.state_bytes())
@@ -141,7 +188,7 @@ impl<W: Write> Write for HashWriter<W> {
 }
 
 fn header(name: &str, length: u64) -> io::Result<[u8; 512]> {
-    if name.len() > 99 || length > MAX_NATIVE_STATE {
+    if name.len() > 99 || length > MAX_SNAPSHOT_ENTRY {
         return Err(bad());
     }
     let mut block = [0; 512];
@@ -257,11 +304,11 @@ pub(crate) fn import(
     if !metadata.valid() {
         return Err(bad());
     }
-    let length = read_header(&mut gzip, NAMES[1], MAX_NATIVE_STATE)?;
+    let length = read_header(&mut gzip, NAMES[1], metadata.state_limit())?;
     if length != metadata.state_bytes() {
         return Err(bad());
     }
-    let state = lease.file(MAX_NATIVE_STATE, deadline)?;
+    let state = lease.file(metadata.state_limit(), deadline)?;
     let mut output = HashWriter {
         writer: state,
         hash: Sha256::new(),
@@ -289,9 +336,10 @@ pub(crate) fn import(
     }
     let mut state = output.writer;
     state.rewind_checked()?;
-    let mut magic = [0; 4];
+    let mut magic = [0; 8];
     state.read_exact(&mut magic)?;
-    if &magic != b"HBB2" {
+    if (metadata.is_v6() && &magic != b"HBV6PK01") || (!metadata.is_v6() && &magic[..4] != b"HBB2")
+    {
         return Err(bad());
     }
     state.rewind_checked()?;

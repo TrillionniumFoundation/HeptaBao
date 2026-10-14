@@ -3936,7 +3936,11 @@ impl Service {
             if self.native_root.is_some() && request.token_clock.is_none() {
                 return Response::error(503, "trusted token clock is required");
             }
+            let native_snapshot_route = self.native_snapshot_transport && self.ha.is_none()
+                && namespace.is_empty()
+                && matches!(path, "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force");
             if self.native_root.is_some()
+                && !native_snapshot_route
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -3965,7 +3969,7 @@ impl Service {
                     || path.starts_with("sys/restore")
                     || path.starts_with("sys/replication")
                     || path.starts_with("sys/raft")
-                    || path.starts_with("sys/storage/raft")
+                    || (path.starts_with("sys/storage/raft") && !native_snapshot_route)
                     || path.starts_with("sys/rekey")
                     || path.starts_with("sys/raw")
                     || path.starts_with("sys/migrate"))

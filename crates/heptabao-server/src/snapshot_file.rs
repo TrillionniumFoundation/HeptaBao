@@ -16,7 +16,16 @@ use std::{
 };
 
 pub(crate) const MAX_NATIVE_STATE: u64 = 130 * 1024 * 1024;
-pub(crate) const MAX_NATIVE_ARCHIVE: u64 = MAX_NATIVE_STATE + 1024 * 1024;
+// Legacy HBB2 state remains bounded to 130 MiB. Only the explicit native-V6
+// build accepts the separately bounded external-object pack transport.
+#[cfg(feature = "fixture-native-v6-service")]
+pub(crate) const MAX_V6_SNAPSHOT_STATE: u64 =
+    MAX_NATIVE_STATE + 1024 * 1024 * 1024 + 65_536 * 4 + 4132;
+#[cfg(feature = "fixture-native-v6-service")]
+pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_SNAPSHOT_STATE;
+#[cfg(not(feature = "fixture-native-v6-service"))]
+pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_NATIVE_STATE;
+pub(crate) const MAX_NATIVE_ARCHIVE: u64 = MAX_SNAPSHOT_ENTRY + 1024 * 1024;
 #[cfg(unix)]
 const DIRECTORY: &str = ".snapshot-transfer";
 
