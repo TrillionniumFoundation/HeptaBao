@@ -1211,7 +1211,14 @@ mod tests {
             204
         );
         // Root-backed issuance establishes precise token clock semantics.
-        let _token = precise_token(&mut service, &root, Duration::from_secs(30))?;
+        let created = call_default_budget(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root,
+            json!({"policies":["root"],"num_uses":0,"ttl":"30s","no_default_policy":true,"no_parent":true}),
+        );
+        assert_eq!(created.status, 200, "precise token setup failed");
         let source_before = native_frontier(&mut service)?;
         let counts_before = super::super::native_blob_source::staging_outcomes();
         let observation = call_default_budget(
