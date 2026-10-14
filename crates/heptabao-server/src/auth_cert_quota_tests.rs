@@ -167,7 +167,8 @@ fn certificate_quota_native_catalog_rejects_overlap_and_binds_distinct_nested_mo
             &json!({"type":"cert"}),
             NOW,
         )
-        .expect_err("overlapping mount must fail");
+        .err()
+        .ok_or("overlapping mount must fail")?;
     assert_eq!(overlap.status, 400);
     assert!(before.as_slice() == Zeroizing::new(serde_json::to_vec(&state)?).as_slice());
     let other = include_bytes!("../testdata/cert-selector-other.der");
