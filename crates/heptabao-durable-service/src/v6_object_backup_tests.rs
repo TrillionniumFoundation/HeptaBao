@@ -983,3 +983,66 @@ fn registered_missing_ciphertext_is_refused_without_creating_a_replacement() -> 
     assert_eq!(blob_count(&root.0), 0);
     Ok(())
 }
+
+#[test]
+fn large_io_checks_live_owner_before_and_after_each_bounded_call() -> ResultTest {
+    assert_eq!(IO_CHUNK, 256 * 1024);
+    struct ReadSteps {
+        calls: usize,
+    }
+    impl Read for ReadSteps {
+        fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+            self.calls += 1;
+            buffer.fill(0x5e);
+            Ok(buffer.len())
+        }
+    }
+    let mut reader = ReadSteps { calls: 0 };
+    let mut buffer = vec![0u8; 2 * IO_CHUNK];
+    let mut observed = 0;
+    let result = read_exact_checked(&mut reader, &mut buffer, &mut || {
+        observed += 1;
+        if observed == 4 {
+            Err(ServiceError::BarrierFailure)
+        } else {
+            Ok(())
+        }
+    });
+    assert!(matches!(result, Err(ServiceError::BarrierFailure)));
+    assert_eq!(reader.calls, 2);
+    assert_eq!(observed, 4);
+    assert!(buffer.iter().all(|byte| *byte == 0x5e));
+    // A late actor/clock rejection occurs after actual I/O, before delivery.
+    struct WriteSteps {
+        calls: usize,
+        written: usize,
+    }
+    impl Write for WriteSteps {
+        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+            self.calls += 1;
+            self.written += bytes.len();
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut writer = WriteSteps {
+        calls: 0,
+        written: 0,
+    };
+    let mut checks = 0;
+    let result = write_checked(&mut writer, &buffer, &mut || {
+        checks += 1;
+        if checks == 4 {
+            Err(ServiceError::BarrierFailure)
+        } else {
+            Ok(())
+        }
+    });
+    assert!(matches!(result, Err(ServiceError::BarrierFailure)));
+    assert_eq!(writer.calls, 2);
+    assert_eq!(writer.written, 2 * IO_CHUNK);
+    assert_eq!(checks, 4);
+    Ok(())
+}

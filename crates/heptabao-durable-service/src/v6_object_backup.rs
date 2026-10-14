@@ -20,7 +20,12 @@ const MAX_OBJECTS: usize = 65_536;
 const MAX_OBJECT_BYTES: u64 = 1024 * 1024 * 1024;
 const MAX_FOOTER: usize = 4096;
 const HEADER_BYTES: usize = 32;
-const IO_CHUNK: usize = 64 * 1024;
+// One native V6 ciphertext object stays <=512 KiB. A 256 KiB transfer
+// keeps original authority checks on BOTH sides of each bounded syscall,
+// while avoiding repeated full owner/seal revalidation for 64 KiB slices.
+// Do not raise request deadlines, cache an Actor, or elide the post-I/O gate.
+const IO_CHUNK: usize = 256 * 1024;
+const _: () = assert!(IO_CHUNK <= MAX_IMMUTABLE_CIPHERTEXT_BYTES);
 
 #[derive(Clone)]
 struct Slot {
