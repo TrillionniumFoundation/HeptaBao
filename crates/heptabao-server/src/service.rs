@@ -2479,12 +2479,15 @@ impl Service {
                 Response::error(503, "external request observation type mismatch")
             }
         };
-        self.audit_completed_response(
+        let response = self.audit_completed_response(
             &pending.fingerprint,
             pending.now,
             pending.token_clock,
             response,
-        )
+        );
+        #[cfg(feature = "fixture-native-v6-service")]
+        self.retire_native_external_binding(&pending.fingerprint, pending.token_clock);
+        response
     }
 
     fn audit_completed_response(

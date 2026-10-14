@@ -161,7 +161,7 @@ fn native_archive_rejects_bad_checksum_and_changed_activation_without_root_resto
     Ok(())
 }
 #[test]
-fn v6_metadata_never_relabels_hbb2_or_raises_legacy_state_limit() {
+fn v6_metadata_never_relabels_hbb2_or_raises_legacy_state_limit() -> TestResult {
     let seal = [7; 32];
     let v6 = Metadata::new_v6(1, MAX_NATIVE_STATE + 1, &seal);
     assert!(v6.valid());
@@ -169,6 +169,170 @@ fn v6_metadata_never_relabels_hbb2_or_raises_legacy_state_limit() {
     let old = Metadata::new(1, MAX_NATIVE_STATE + 1, &seal);
     assert!(!old.valid());
     assert!(!old.is_v6());
-    let json = serde_json::to_value(v6).expect("test metadata");
+    let json = serde_json::to_value(v6)?;
     assert_eq!(json["format"], "heptabao-native-object-snapshot-v1");
+    Ok(())
+}
+
+#[test]
+fn v6_snapshot_moves_into_same_seal_store_without_preexisting_external_objects() -> TestResult {
+    let (source_root, service, key, token) = initialized()?;
+    let source_data = service.data_dir.clone();
+    drop(service);
+    let target_root = Root::new();
+    private_directory(&target_root.path)?;
+    let target_data = target_root.path.join("data");
+    private_directory(&target_data)?;
+    for entry in fs::read_dir(&source_data)? {
+        let entry = entry?;
+        assert!(
+            entry.file_type()?.is_file(),
+            "initial seed must contain only owned regular artifacts"
+        );
+        assert!(!entry.file_name().to_string_lossy().ends_with(".hbo"));
+        fs::copy(entry.path(), target_data.join(entry.file_name()))?;
+    }
+    let mut source = source_root.service()?;
+    source.configure_native_v6_candidate()?;
+    assert_eq!(
+        call(&mut source, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    put(&mut source, &token, "before-v6");
+    activate(&mut source, &token);
+    let expected = "external-only-from-archive".repeat(24000);
+    put(&mut source, &token, &expected);
+    let bytes = download(&mut source, &token)?;
+    let mut target = target_root.service()?;
+    target.configure_native_v6_candidate()?;
+    assert_eq!(
+        call(&mut target, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert!(target.native_root.is_none());
+    let before = fs::read_dir(&target_data)?
+        .filter_map(Result::ok)
+        .filter(|x| x.file_name().to_string_lossy().ends_with(".hbo"))
+        .count();
+    assert_eq!(before, 0);
+    let response = upload(&mut target, &token, &bytes)?;
+    assert_eq!(
+        response.status, 200,
+        "fresh target restore: {}",
+        response.body
+    );
+    assert_eq!(get(&mut target, &token), json!({"value":expected}));
+    assert!(target.native_root.is_some());
+    let count = fs::read_dir(&target_data)?
+        .filter_map(Result::ok)
+        .filter(|x| x.file_name().to_string_lossy().ends_with(".hbo"))
+        .count();
+    assert!(count > 0);
+    drop(target);
+    let mut target = target_root.service()?;
+    target.configure_native_v6_candidate()?;
+    assert_eq!(
+        call(&mut target, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(get(&mut target, &token), json!({"value":expected}));
+    Ok(())
+}
+
+#[test]
+fn non_snapshot_raft_and_direct_json_paths_remain_closed_for_native_v6() -> TestResult {
+    let (_root, mut service, _key, token) = initialized()?;
+    put(&mut service, &token, "kept");
+    activate(&mut service, &token);
+    for path in [
+        "sys/storage/raft/configuration",
+        "sys/storage/raft/snapshot",
+        "sys/raw/state",
+    ] {
+        let response = call(&mut service, "GET", path, &token, json!({}));
+        assert_eq!(
+            response.status, 501,
+            "unrelated path must stay closed: {path}"
+        );
+    }
+    assert_eq!(get(&mut service, &token), json!({"value":"kept"}));
+    Ok(())
+}
+
+#[test]
+fn v6_snapshot_expired_outer_context_does_not_stage_or_disclose() -> TestResult {
+    let (_root, mut service, _key, token) = initialized()?;
+    put(&mut service, &token, "kept");
+    activate(&mut service, &token);
+    let result = service.begin_native_snapshot_before(
+        ServiceRequest::new("GET", "sys/storage/raft/snapshot", "", &token, json!({})),
+        Instant::now() - Duration::from_millis(1),
+    );
+    assert!(
+        matches!(result,NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref r)) if r.status==503 && r.body.get("data").is_none())
+    );
+    assert!(service.snapshot_spool.is_none());
+    Ok(())
+}
+
+#[test]
+fn v6_snapshot_final_audit_failure_is_not_successful_restore() -> TestResult {
+    let (_root, mut service, _key, token) = initialized()?;
+    put(&mut service, &token, "old");
+    activate(&mut service, &token);
+    let archive = download(&mut service, &token)?;
+    put(&mut service, &token, "current");
+    let mut plan = pending(&mut service, "POST", &token)?;
+    let (result, _) = plan.execute_snapshot_transfer(&mut archive.as_slice());
+    let before = service.state_digest;
+    service.audit_failed = true;
+    let response = service.finish_external_request(*plan, result);
+    assert!(response.status >= 400);
+    assert!(response.body.get("data").is_none());
+    assert_eq!(service.state_digest, before);
+    Ok(())
+}
+
+#[test]
+fn cancelling_native_snapshot_drops_its_binding_without_poisoning_next_request() -> TestResult {
+    let (_root, mut service, _key, token) = initialized()?;
+    put(&mut service, &token, "kept");
+    activate(&mut service, &token);
+    for method in ["GET", "POST"] {
+        let plan = pending(&mut service, method, &token)?;
+        assert!(
+            service.native_request_binding.is_none(),
+            "pending request must own its own failure binding"
+        );
+        drop(plan);
+        assert!(!service.recovery_required);
+        assert_eq!(get(&mut service, &token), json!({"value":"kept"}));
+    }
+    let _archive = download(&mut service, &token)?;
+    assert!(service.native_request_binding.is_none());
+    Ok(())
+}
+
+#[test]
+fn native_snapshot_changed_target_is_rejected_and_unrelated_request_remains_usable() -> TestResult {
+    let (_root, mut service, _key, token) = initialized()?;
+    put(&mut service, &token, "old");
+    activate(&mut service, &token);
+    let archive = download(&mut service, &token)?;
+    let mut plan = pending(&mut service, "POST", &token)?;
+    assert!(service.native_request_binding.is_none());
+    let (result, _) = plan.execute_snapshot_transfer(&mut archive.as_slice());
+    put(&mut service, &token, "interleaved-new-value");
+    let response = service.finish_external_request(*plan, result);
+    assert_eq!(
+        response.status, 409,
+        "changed source must not be rebound: {}",
+        response.body
+    );
+    assert_eq!(
+        get(&mut service, &token),
+        json!({"value":"interleaved-new-value"})
+    );
+    assert!(!service.recovery_required);
+    Ok(())
 }

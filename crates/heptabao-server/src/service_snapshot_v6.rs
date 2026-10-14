@@ -6,7 +6,7 @@ use crate::state_record_root_v6::{ObjectDomain, RecordStateRootV6};
 use crate::state_records::{ObjectRef, RecordError};
 use crate::v6_native_custody::OriginalDeadline;
 use crate::v6_read_validation::{ObjectSource, ReadContext, ReadIdentity};
-use heptabao_durable_service::{PreparedRestore, PreparedV6Restore};
+use heptabao_durable_service::PreparedV6Restore;
 use std::cell::RefCell;
 use std::io::{Read, Seek};
 
@@ -121,6 +121,14 @@ impl Service {
         Ok(())
     }
 
+    // Preserve the original live denial/expiry rather than relabeling a late
+    // request-gate failure as malformed archive bytes.
+    fn v6_storage_failure(&self, plan: &SnapshotTransferPlan, error: ServiceError) -> Response {
+        self.check_v6_snapshot_owner(plan)
+            .err()
+            .unwrap_or_else(|| storage_error(error))
+    }
+
     pub(super) fn prepare_v6_snapshot_download(
         &mut self,
         plan: &SnapshotTransferPlan,
@@ -184,7 +192,7 @@ impl Service {
             };
             let source = durable
                 .prepare_v6_backup(&mut gate)
-                .map_err(storage_error)?;
+                .map_err(|error| self.v6_storage_failure(plan, error))?;
             let mut state = plan
                 .lease
                 .file(crate::snapshot_file::MAX_V6_SNAPSHOT_STATE, plan.deadline)
@@ -197,7 +205,7 @@ impl Service {
             // the source-bound pack checks every current ciphertext again.
             let size = durable
                 .export_v6_backup_to(source, &mut output, &mut gate, &mut |_, _| Ok(()))
-                .map_err(storage_error)?;
+                .map_err(|error| self.v6_storage_failure(plan, error))?;
             let digest: [u8; 32] = output.hash.finalize().into();
             let metadata = serde_json::to_vec(&Metadata::new_v6(
                 size.generation,
@@ -239,12 +247,12 @@ impl Service {
         // admission. The next phase validates all typed application references.
         let mut archive = durable
             .prepare_v6_restore_from_reader(file, length, &mut gate, &mut |_, _, _| Ok(()))
-            .map_err(storage_error)?;
+            .map_err(|error| self.v6_storage_failure(plan, error))?;
         let root_bytes = Zeroizing::new(
             archive
                 .state()
                 .get("system", "state")
-                .map_err(storage_error)?
+                .map_err(|error| self.v6_storage_failure(plan, error))?
                 .ok_or_else(invalid)?
                 .to_vec(),
         );
@@ -263,13 +271,13 @@ impl Service {
         let old = archive
             .state()
             .get("system", native_v6_reader::ACTIVE_SOURCE_ROOT_RESOURCE)
-            .map_err(storage_error)?
+            .map_err(|error| self.v6_storage_failure(plan, error))?
             .ok_or_else(invalid)?;
         let retained = RecordStateRoot::decode(old).map_err(|_| invalid())?;
         let cursor = archive
             .state()
             .get("system", native_v6_reader::ACTIVE_CURSOR_RESOURCE)
-            .map_err(storage_error)?
+            .map_err(|error| self.v6_storage_failure(plan, error))?
             .ok_or_else(invalid)?;
         native_v6_reader::NativeActiveCursor::decode(cursor)?.validate(
             &retained,
@@ -392,7 +400,7 @@ impl Service {
                     self.recovery_required = true;
                     self.ha_activation = None;
                 }
-                return storage_error(error);
+                return self.v6_storage_failure(plan, error);
             }
         };
         // Only infallible moves follow canonical publication. The validated

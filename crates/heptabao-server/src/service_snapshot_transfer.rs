@@ -42,6 +42,11 @@ pub(super) struct SnapshotTransferPlan {
     lease: Arc<SnapshotLease>,
     download: Option<DownloadSource>,
     is_download: bool,
+    // Native negative-outcome custody belongs to this pending request, not
+    // the idle Service. Dropping a cancelled transfer must not poison the
+    // next unrelated request; finalization restores exactly the original one.
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
 }
 // Only this module can construct the capability, after native archive and
 // live-seal authentication. It contains the exact validated restore candidate.
@@ -350,6 +355,8 @@ impl Service {
             lease: Arc::clone(&lease),
             download: None,
             is_download: download,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_request_binding: None,
         };
         let source = if download {
             let result = (|| -> Result<DownloadSource, Response> {
@@ -406,6 +413,10 @@ impl Service {
             None
         };
         plan.download = source;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            plan.native_request_binding = self.native_request_binding.take();
+        }
         self.pending_snapshot_transfer = Some(plan);
         Response::ok(Value::Null)
     }
@@ -441,6 +452,19 @@ impl Service {
         plan: SnapshotTransferPlan,
         result: Result<Observation, Response>,
     ) -> Response {
+        #[cfg(feature = "fixture-native-v6-service")]
+        let mut plan = plan;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
+                self.recovery_required = true;
+                return Response::error(
+                    503,
+                    "snapshot completion found unrelated native request custody",
+                );
+            }
+            self.native_request_binding = plan.native_request_binding.take();
+        }
         let _deadline = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
         if Instant::now() >= plan.deadline {
             return Response::error(503, "snapshot transfer deadline elapsed");

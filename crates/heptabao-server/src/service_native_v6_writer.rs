@@ -53,6 +53,25 @@ impl Service {
             data_dir: self.data_dir.clone(),
         });
     }
+    pub(super) fn retire_native_external_binding(
+        &mut self,
+        fingerprint: &str,
+        clock: Option<RequestClock>,
+    ) {
+        let Some(clock) = clock else {
+            return;
+        };
+        let matching = self.native_request_binding.as_ref().is_some_and(|binding| {
+            binding.fingerprint == fingerprint
+                && binding.clock.started() == clock.started()
+                && binding.clock.admitted_at() == clock.admitted_at()
+                && binding.admission_started == clock.started()
+        });
+        if matching {
+            self.native_request_binding = None;
+        }
+    }
+
     fn capture_native_failure_notice(&mut self, error: &ServiceError) {
         let ServiceError::OutcomeUnknown { recovery_reference } = error else {
             return;
