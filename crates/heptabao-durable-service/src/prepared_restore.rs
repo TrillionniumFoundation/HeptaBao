@@ -107,6 +107,46 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// live state. Hard container/artifact bounds and all cross-artifact
     /// checks are shared with the existing backup decoder.
     pub fn prepare_restore(&self, backup: &[u8]) -> Result<PreparedRestore, ServiceError> {
+        let prepared = self.prepare_core_restore(backup)?;
+        self.reject_incomplete_legacy_restore(&prepared)?;
+        Ok(prepared)
+    }
+
+    fn reject_incomplete_legacy_restore(
+        &self,
+        prepared: &PreparedRestore,
+    ) -> Result<(), ServiceError> {
+        let mut external = false;
+        prepared.inspect(|namespace, resource, value| {
+            external |= v6_object_backup::registered_slot(namespace, resource, value);
+        });
+        if external {
+            Err(ServiceError::UnsupportedProfile)
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(super) fn verify_prepared_restore(
+        &self,
+        prepared: &PreparedRestore,
+    ) -> Result<(), ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        self.backend.verify().map_err(map_backend_error)?;
+        if !Arc::ptr_eq(&self.restore_instance, &prepared.instance)
+            || self.restore_frontier() != prepared.frontier
+        {
+            return Err(ServiceError::RequestBindingConflict);
+        }
+        Ok(())
+    }
+
+    pub(super) fn prepare_core_restore(
+        &self,
+        backup: &[u8],
+    ) -> Result<PreparedRestore, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
@@ -133,11 +173,13 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         self.backend.verify().map_err(map_backend_error)?;
         let components =
             backup_stream::decode_from(&self.barrier, reader, length, self.max_retained_requests)?;
-        Ok(PreparedRestore {
+        let prepared = PreparedRestore {
             instance: Arc::clone(&self.restore_instance),
             frontier: self.restore_frontier(),
             components,
-        })
+        };
+        self.reject_incomplete_legacy_restore(&prepared)?;
+        Ok(prepared)
     }
 
     /// Consume a prepared backup after owner validation. No barrier open is

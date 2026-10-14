@@ -105,7 +105,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         Ok(session)
     }
 
-    fn check_immutable_source_session(
+    pub(super) fn check_immutable_source_session(
         &mut self,
         session: &ImmutableSourceSession,
     ) -> Result<(), ServiceError> {

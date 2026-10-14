@@ -29,6 +29,8 @@ use std::path::Path;
 use std::path::PathBuf;
 
 mod backup_stream;
+mod v6_object_backup;
+pub use v6_object_backup::{PreparedV6Restore, V6BackupSize, V6BackupSource};
 mod prepared_restore;
 mod restore_transaction;
 pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
@@ -1083,6 +1085,25 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Emit the existing HBB2 container without allocating another whole
     /// encoded backup. Component sealing remains bounded whole-component AEAD.
     pub fn export_backup_to(&self, output: &mut impl std::io::Write) -> Result<u64, ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        if self
+            .snapshot
+            .entries
+            .iter()
+            .any(|((namespace, resource), value)| {
+                v6_object_backup::registered_slot(namespace, resource, value.expose())
+            })
+        {
+            // HBB2 alone cannot carry external objects. Never return an apparently
+            // complete legacy backup that silently loses registered V6 payloads.
+            return Err(ServiceError::UnsupportedProfile);
+        }
+        self.export_core_backup_to(output)
+    }
+
+    fn export_core_backup_to(&self, output: &mut impl std::io::Write) -> Result<u64, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
