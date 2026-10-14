@@ -46,13 +46,15 @@ fn get(service: &mut Service, token: &str) -> Value {
     assert_eq!(response.status, 200, "native read: {}", response.body);
     response.body["data"]["data"].clone()
 }
-fn begin(service: &mut Service, method: &str, token: &str) -> RequestExecution {
+fn begin(service: &mut Service, method: &str, token: &str) -> TestResult<RequestExecution> {
     match service.begin_native_snapshot_before(
         ServiceRequest::new(method, "sys/storage/raft/snapshot", "", token, json!({})),
         Instant::now() + Duration::from_secs(15),
     ) {
-        NativeSnapshotAdmission::Execute(value) => value,
-        NativeSnapshotAdmission::Redirect(_) => panic!("single-node fixture cannot redirect"),
+        NativeSnapshotAdmission::Execute(value) => Ok(value),
+        NativeSnapshotAdmission::Redirect(_) => {
+            Err("single-node fixture unexpectedly redirected".into())
+        }
     }
 }
 fn pending(
@@ -60,7 +62,7 @@ fn pending(
     method: &str,
     token: &str,
 ) -> TestResult<Box<PendingExternalRequest>> {
-    match begin(service, method, token) {
+    match begin(service, method, token)? {
         RequestExecution::External(value) => Ok(value),
         RequestExecution::Complete(value) => {
             Err(format!("snapshot admission {} {}", value.status, value.body).into())
@@ -122,7 +124,7 @@ fn anonymous_native_snapshot_is_denied_before_spool_or_ciphertext() -> TestResul
     put(&mut service, &token, "kept");
     activate(&mut service, &token);
     for method in ["GET", "POST"] {
-        let response = begin(&mut service, method, "");
+        let response = begin(&mut service, method, "")?;
         assert!(matches!(response,RequestExecution::Complete(ref r) if r.status==403));
     }
     assert!(service.snapshot_spool.is_none());
@@ -363,7 +365,7 @@ fn finite_use_snapshot_retains_original_completion_clock_and_consumes_once() -> 
     let bytes = download(&mut service, &token)?;
     assert!(bytes.starts_with(&[0x1f, 0x8b]));
     assert!(service.native_request_binding.is_none());
-    let denied = begin(&mut service, "GET", &token);
+    let denied = begin(&mut service, "GET", &token)?;
     assert!(matches!(denied,RequestExecution::Complete(ref response) if response.status==403));
     assert_eq!(
         get(&mut service, &root_token),
@@ -395,7 +397,7 @@ fn cancelled_finite_snapshot_does_not_rearm_consumption_or_poison_root_actor() -
     drop(pending(&mut service, "POST", &token)?);
     assert!(service.native_request_binding.is_none());
     assert!(
-        matches!(begin(&mut service,"POST",&token),RequestExecution::Complete(ref response) if response.status==403)
+        matches!(begin(&mut service,"POST",&token)?,RequestExecution::Complete(ref response) if response.status==403)
     );
     assert_eq!(get(&mut service, &root_token), json!({"value":"kept"}));
     assert!(!service.recovery_required);
