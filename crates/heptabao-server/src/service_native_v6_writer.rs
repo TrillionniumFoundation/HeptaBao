@@ -2758,4 +2758,142 @@ mod tests {
         assert_eq!(crypto::digest(&fs::read(orphan_path)?), orphan_digest);
         Ok(())
     }
+    #[test]
+    fn genuine_native_anonymous_kv_preserves_denial_without_publication() -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (key, root) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(15),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        let key = Zeroizing::new(key);
+        let root = Zeroizing::new(root);
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "secret/data/anonymous-probe",
+                &root,
+                json!({"data":{"kept":"original"}})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "auth/token/create",
+                &root,
+                json!({"policies":["root"],"ttl":"1h","no_parent":true})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &root,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let operations = [
+            ("GET", "secret/data/anonymous-probe", json!({})),
+            (
+                "POST",
+                "secret/data/anonymous-probe",
+                json!({"data":{"rejected":true}}),
+            ),
+            ("DELETE", "secret/data/anonymous-probe", json!({})),
+            (
+                "PATCH",
+                "secret/data/anonymous-probe",
+                json!({"data":{"rejected":true}}),
+            ),
+            ("GET", "secret/metadata/anonymous-probe", json!({})),
+            ("GET", "secret/data/absent", json!({})),
+        ];
+        for cycle in 0..2 {
+            let before = native_frontier(&mut service)?;
+            let opens = service
+                .native_payload_observations
+                .blocks_opened
+                .load(std::sync::atomic::Ordering::Relaxed);
+            let mut statuses = Vec::new();
+            for (method, path, body) in &operations {
+                let response = call_default_budget(&mut service, method, path, "", body.clone());
+                statuses.push(response.status);
+                assert!(response.body.get("data").is_none());
+                assert!(response.body.get("auth").is_none());
+                assert!(response.body.get("wrap_info").is_none());
+                if response.status == 403 {
+                    assert_eq!(response.body, json!({"errors":["permission denied"]}));
+                }
+                assert!(service.pending_ordinary_kv_authority.is_none());
+            }
+            assert_eq!(
+                service
+                    .native_payload_observations
+                    .blocks_opened
+                    .load(std::sync::atomic::Ordering::Relaxed),
+                opens
+            );
+            let after = native_frontier(&mut service)?;
+            assert!(
+                same_native_resources_except_auth_clock(&before, &after)
+                    .map_err(|_| "invalid anonymous request frontier")?
+            );
+            assert_eq!(
+                statuses,
+                vec![403; operations.len()],
+                "anonymous KV status matrix, cycle {cycle}"
+            );
+            let response = call_default_budget(
+                &mut service,
+                "GET",
+                "secret/data/anonymous-probe",
+                &root,
+                json!({}),
+            );
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["data"]["data"], json!({"kept":"original"}));
+            assert_eq!(response.body["data"]["metadata"]["version"], 1);
+            if cycle == 0 {
+                drop(service);
+                service = directory.service()?;
+                service.configure_native_v6_candidate()?;
+                assert_eq!(
+                    call_default_budget(
+                        &mut service,
+                        "POST",
+                        "sys/unseal",
+                        "",
+                        json!({"key":key.as_str()})
+                    )
+                    .status,
+                    200
+                );
+            }
+        }
+        service.audit_failed = true;
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "GET",
+                "secret/data/anonymous-probe",
+                "",
+                json!({})
+            )
+            .status,
+            503
+        );
+        Ok(())
+    }
 }
