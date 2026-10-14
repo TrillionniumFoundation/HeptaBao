@@ -133,6 +133,13 @@ impl fmt::Debug for ImmutableBatchEntry<'_> {
 }
 
 #[cfg(unix)]
+struct PublicationHooks<B, A> {
+    before: B,
+    after: A,
+    buffered: bool,
+}
+
+#[cfg(unix)]
 fn sync_file(file: &File, buffered: bool) -> io::Result<()> {
     if buffered {
         rustix::fs::fsync(file).map_err(io::Error::from)
@@ -263,8 +270,11 @@ impl ExclusiveDirectory {
             destination,
             exact_len,
             gate,
-            hooks,
-            false,
+            PublicationHooks {
+                before: hooks.0,
+                after: hooks.1,
+                buffered: false,
+            },
         )
     }
 
@@ -276,11 +286,7 @@ impl ExclusiveDirectory {
         destination: &str,
         exact_len: u64,
         gate: &mut G,
-        hooks: (
-            impl FnOnce() -> io::Result<()>,
-            impl FnOnce() -> io::Result<()>,
-        ),
-        buffered: bool,
+        hooks: PublicationHooks<impl FnOnce() -> io::Result<()>, impl FnOnce() -> io::Result<()>>,
     ) -> Result<ImmutablePublication, ImmutablePublicationCheckedError<E>>
     where
         G: FnMut() -> Result<(), E> + ?Sized,
@@ -296,7 +302,11 @@ impl ExclusiveDirectory {
                 ImmutablePublicationError::OutcomeUnknown(error),
             )
         };
-        let (before_link, after_link) = hooks;
+        let PublicationHooks {
+            before: before_link,
+            after: after_link,
+            buffered,
+        } = hooks;
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         self.verify().map_err(io::Error::other).map_err(before)?;
         let identity = checked_identity(opened_temporary, exact_len, 1).map_err(before)?;
@@ -467,8 +477,11 @@ impl ExclusiveDirectory {
                     e.destination,
                     e.exact_len,
                     gate,
-                    (|| Ok(()), || Ok(())),
-                    true,
+                    PublicationHooks {
+                        before: || Ok(()),
+                        after: || Ok(()),
+                        buffered: true,
+                    },
                 );
                 let result = result.map_err(|error| {
                     if published.is_empty() {
