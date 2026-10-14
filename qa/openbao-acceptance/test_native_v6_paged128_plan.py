@@ -93,4 +93,29 @@ class HistoryPlanTests(unittest.TestCase):
         admit=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='admit')
         self.assertIn(40,{n.value for n in ast.walk(admit) if isinstance(n,ast.Constant) and type(n.value)is int})
 
+class CapacitySnapshotTests(unittest.TestCase):
+    def pair(self):
+        d={"generation":10,"state_bytes":105,"opaque_owner_aggregate_bytes":3,"native_kv2_metadata_bytes":2,"native_kv2_logical_payload_bytes":100}
+        a={"generation":10,"stored_value_bytes":105,"opaque_owner_aggregate_bytes":3,"native_kv1_metadata_bytes":0,"native_kv2_metadata_bytes":2,"native_kv2_logical_payload_bytes":100,"native_capacity_component_scope":"same-local-root-generation"}
+        return d,a
+    def test_same_snapshot_exact_equality(self):
+        d,a=self.pair();self.assertTrue(m.capacity_pair_consistent(d,a,100))
+    def test_later_clock_owner_size_requires_exact_components(self):
+        d,a=self.pair();a.update(generation=12,opaque_owner_aggregate_bytes=4,stored_value_bytes=106)
+        self.assertTrue(m.capacity_pair_consistent(d,a,100))
+        a['stored_value_bytes']=107;self.assertFalse(m.capacity_pair_consistent(d,a,100))
+    def test_same_generation_cannot_change_owner_size(self):
+        d,a=self.pair();a.update(opaque_owner_aggregate_bytes=4,stored_value_bytes=106)
+        self.assertFalse(m.capacity_pair_consistent(d,a,100))
+    def test_regressing_generation_is_rejected(self):
+        d,a=self.pair();a['generation']=9;self.assertFalse(m.capacity_pair_consistent(d,a,100))
+    def test_changed_or_missing_resource_components_are_rejected(self):
+        d,a=self.pair()
+        for key in ['native_kv2_metadata_bytes','native_kv2_logical_payload_bytes','native_kv1_metadata_bytes']:
+            altered={**a,key:a[key]+1,'generation':12};self.assertFalse(m.capacity_pair_consistent(d,altered,100))
+        del a['opaque_owner_aggregate_bytes'];self.assertFalse(m.capacity_pair_consistent(d,a,100))
+    def test_boolean_and_unbound_scope_are_rejected(self):
+        d,a=self.pair();a['generation']=True;self.assertFalse(m.capacity_pair_consistent(d,a,100))
+        d,a=self.pair();del a['native_capacity_component_scope'];self.assertFalse(m.capacity_pair_consistent(d,a,100))
+
 if __name__=='__main__':unittest.main(verbosity=2)

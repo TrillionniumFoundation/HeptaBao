@@ -8111,7 +8111,7 @@ impl Service {
         };
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let logical_payload_bytes = capacity.logical_payload_bytes as u64;
-        Response::ok(json!({"data": {
+        let response = Response::ok(json!({"data": {
             "scope": "local_node_bounded_runtime",
             "state_storage_format": storage_format,
             "state_limit_bytes": state_limit,
@@ -8131,7 +8131,58 @@ impl Service {
             "replay_epoch": durable.replay_epoch(),
             "retired_through_generation": durable.retired_through_generation(),
             "replay_retirement": if self.ha.is_some() { "raft-coordinated" } else { "local-epoch" }
-        }}))
+        }}));
+        #[cfg(feature = "fixture-native-v6-service")]
+        let response = if let Some(root) = native {
+            // All components belong to this exact local root/generation.
+            // Audited HTTP requests can advance the private Auth clock between
+            // two observations; cross-generation aggregate equality is invalid.
+            let owner_bytes = root
+                .owners
+                .iter()
+                .try_fold(0_u64, |n, role| n.checked_add(role.owner.total_bytes));
+            let kv1_bytes = root.kv1.reference.as_ref().map_or(0, |r| r.payload_bytes);
+            let metadata_bytes = root.kv2.iter().try_fold(0_u64, |n, graph| {
+                n.checked_add(graph.root.reference.as_ref().map_or(0, |r| r.payload_bytes))
+            });
+            let logical_bytes = root
+                .kv2
+                .iter()
+                .try_fold(0_u64, |n, graph| n.checked_add(graph.logical_payload_bytes));
+            let (Some(owner_bytes), Some(metadata_bytes), Some(logical_bytes)) =
+                (owner_bytes, metadata_bytes, logical_bytes)
+            else {
+                return Response::error(503, "native capacity component overflow");
+            };
+            if owner_bytes
+                .checked_add(kv1_bytes)
+                .and_then(|n| n.checked_add(metadata_bytes))
+                .and_then(|n| n.checked_add(logical_bytes))
+                != Some(logical_payload_bytes)
+            {
+                return Response::error(503, "native capacity component identity mismatch");
+            }
+            let mut response = response;
+            let Some(data) = response.body.get_mut("data").and_then(Value::as_object_mut) else {
+                return Response::error(503, "native capacity component shape rejected");
+            };
+            for (name, value) in [
+                ("opaque_owner_aggregate_bytes", owner_bytes),
+                ("native_kv1_metadata_bytes", kv1_bytes),
+                ("native_kv2_metadata_bytes", metadata_bytes),
+                ("native_kv2_logical_payload_bytes", logical_bytes),
+            ] {
+                data.insert(name.to_owned(), json!(value));
+            }
+            data.insert(
+                "native_capacity_component_scope".to_owned(),
+                json!("same-local-root-generation"),
+            );
+            response
+        } else {
+            response
+        };
+        response
     }
 
     fn maintenance_route(&mut self, principal: &Principal, request: &RequestView<'_>) -> Response {

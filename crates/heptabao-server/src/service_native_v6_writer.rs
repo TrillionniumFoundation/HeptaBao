@@ -1015,7 +1015,8 @@ mod tests {
                     "durable write occurred outside the exact observation-only span"
                 );
                 assert!(
-                    same_native_resources_except_auth_clock(&span.before, &span.after)?,
+                    same_native_resources_except_auth_clock(&span.before, &span.after)
+                        .map_err(|_| "malformed native clock frontier")?,
                     "clock span changed a resource, layout, non-Auth owner or retained source"
                 );
                 assert!(span.after.generation > span.before.generation);
@@ -1102,6 +1103,78 @@ mod tests {
             });
             Ok(())
         })
+    }
+
+    #[test]
+    fn genuine_native_capacity_alias_binds_components_to_one_durable_generation() -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (_, token) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(15),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "secret/data/capacity-components",
+                &token,
+                json!({"data":{"value":"same-native-root"}})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &token,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let before = native_frontier(&mut service)?;
+        // Direct observation methods deliberately sample the same frozen state,
+        // unlike two audited HTTP requests with terminal clock publications.
+        let detailed = service.capacity_response("GET", &json!({}));
+        let alias = service.capacity_route("GET", &json!({}));
+        assert_eq!(detailed.status, 200);
+        assert_eq!(alias.status, 200);
+        let d = &detailed.body["data"];
+        let a = &alias.body["data"];
+        assert_eq!(d["generation"], a["generation"]);
+        assert_eq!(d["state_bytes"], a["stored_value_bytes"]);
+        assert_eq!(
+            d["opaque_owner_aggregate_bytes"],
+            a["opaque_owner_aggregate_bytes"]
+        );
+        assert_eq!(
+            d["native_kv2_metadata_bytes"],
+            a["native_kv2_metadata_bytes"]
+        );
+        assert_eq!(
+            d["native_kv2_logical_payload_bytes"],
+            a["native_kv2_logical_payload_bytes"]
+        );
+        let sum = [
+            "opaque_owner_aggregate_bytes",
+            "native_kv1_metadata_bytes",
+            "native_kv2_metadata_bytes",
+            "native_kv2_logical_payload_bytes",
+        ]
+        .iter()
+        .try_fold(0_u64, |sum, name| {
+            a[*name].as_u64().and_then(|v| sum.checked_add(v))
+        })
+        .ok_or("missing checked native capacity components")?;
+        assert_eq!(a["stored_value_bytes"].as_u64(), Some(sum));
+        assert_native_frontier_unchanged(&mut service, &before)?;
+        Ok(())
     }
 
     #[test]

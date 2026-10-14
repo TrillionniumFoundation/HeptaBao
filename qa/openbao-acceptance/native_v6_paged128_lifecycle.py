@@ -270,6 +270,35 @@ def physical_inventory(data_dir):
             "device_id": data_dir.stat().st_dev, "data_dir": str(data_dir)}
 
 
+def capacity_pair_consistent(detailed, alias, expected_logical):
+    """Exact arithmetic per snapshot; never use tolerance between generations.
+
+    This fixture has no KV1 values. All 66 KV2 versions are independently hashed
+    and read; only the private Auth clock may advance between capacity requests.
+    """
+    dk = ("generation", "state_bytes", "opaque_owner_aggregate_bytes",
+          "native_kv2_metadata_bytes", "native_kv2_logical_payload_bytes")
+    ak = ("generation", "stored_value_bytes", "opaque_owner_aggregate_bytes",
+          "native_kv1_metadata_bytes", "native_kv2_metadata_bytes", "native_kv2_logical_payload_bytes")
+    if any(type(detailed.get(k)) is not int or detailed[k] < 0 for k in dk):
+        return False
+    if any(type(alias.get(k)) is not int or alias[k] < 0 for k in ak):
+        return False
+    if (alias.get("native_capacity_component_scope") != "same-local-root-generation"
+            or alias["generation"] < detailed["generation"]
+            or alias["native_kv1_metadata_bytes"] != 0
+            or alias["native_kv2_logical_payload_bytes"] != expected_logical
+            or detailed["native_kv2_logical_payload_bytes"] != expected_logical
+            or alias["native_kv2_metadata_bytes"] != detailed["native_kv2_metadata_bytes"]):
+        return False
+    dsum = detailed["opaque_owner_aggregate_bytes"] + detailed["native_kv2_metadata_bytes"] + expected_logical
+    asum = alias["opaque_owner_aggregate_bytes"] + alias["native_kv2_metadata_bytes"] + expected_logical
+    if detailed["state_bytes"] != dsum or alias["stored_value_bytes"] != asum:
+        return False
+    return (alias["generation"] != detailed["generation"]
+            or alias["stored_value_bytes"] == detailed["state_bytes"])
+
+
 def required_case_names():
     """Fixed complete scenario; failures retain their actual partial denominator."""
     names = []
@@ -304,7 +333,7 @@ def required_case_names():
             "-native-root", "-genuine-reader-floor2", "-exact-logical-payload",
             "-unchanged-64mib-artifact-limit", "-bounded-metadata"))
         request(name + "-alias")
-        names.extend((name + "-alias-exact-stored-value-bytes", name + "-alias-unchanged-artifact-limit"))
+        names.extend((name + "-alias-exact-generation-bound-capacity", name + "-alias-unchanged-artifact-limit"))
     def inventory(name):
         names.extend(name + suffix for suffix in (
             "-ciphertext-above-128mib", "-new-ciphertext-above-128mib",
@@ -869,9 +898,12 @@ class Trial:
         alias = self.request(name + "-alias", "GET", "sys/internal/storage/capacity")["data"]
         # The storage route exposes aggregate stored_value_bytes; the detailed
         # service capacity route owns the typed point-read observations.
-        self.check(type(alias.get("stored_value_bytes")) is int
-                   and alias["stored_value_bytes"] == data["state_bytes"],
-                   name + "-alias-exact-stored-value-bytes")
+        self.check(capacity_pair_consistent(data, alias, expected_logical),
+                   name + "-alias-exact-generation-bound-capacity",
+                   detailed_generation=data.get("generation"), alias_generation=alias.get("generation"),
+                   detailed_state_bytes=data.get("state_bytes"), alias_stored_value_bytes=alias.get("stored_value_bytes"),
+                   detailed_owner_bytes=data.get("opaque_owner_aggregate_bytes"),
+                   alias_owner_bytes=alias.get("opaque_owner_aggregate_bytes"))
         self.check(alias.get("durable_artifact_limit_bytes") == DURABLE_ARTIFACT_LIMIT,
                    name + "-alias-unchanged-artifact-limit")
         allowed = ("profile", "state_schema", "state_storage_format", "state_bytes", "state_limit_bytes", "state_size_basis",
