@@ -403,3 +403,26 @@ fn cancelled_finite_snapshot_does_not_rearm_consumption_or_poison_root_actor() -
     assert!(!service.recovery_required);
     Ok(())
 }
+
+#[test]
+fn legacy_archive_cannot_silently_retire_an_active_v6_reader() -> TestResult {
+    let (_root, mut service, _key, token) = initialized()?;
+    put(&mut service, &token, "legacy-backup-state");
+    let legacy = download(&mut service, &token)?;
+    activate(&mut service, &token);
+    put(&mut service, &token, "native-state-must-remain");
+    let response = upload(&mut service, &token, &legacy)?;
+    assert_eq!(
+        response.status, 409,
+        "legacy downgrade must be refused: {}",
+        response.body
+    );
+    assert!(service.native_root.is_some());
+    assert!(service.record_root.is_none());
+    assert_eq!(
+        get(&mut service, &token),
+        json!({"value":"native-state-must-remain"})
+    );
+    assert!(!service.recovery_required);
+    Ok(())
+}

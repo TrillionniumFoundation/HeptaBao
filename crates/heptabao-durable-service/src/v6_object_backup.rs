@@ -645,30 +645,50 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             if plaintext.len() != member.slot.plaintext_bytes {
                 return Err(ServiceError::CorruptState);
             }
-            let mut gate_error = None;
-            let mut physical_gate = || match gate() {
-                Ok(()) => Ok(()),
-                Err(e) => {
-                    gate_error = Some(e);
-                    Err(BackendError::Unavailable)
+            let incoming_slot = prepared
+                .state
+                .get("system", &member.slot.resource)?
+                .ok_or(ServiceError::CorruptState)?;
+            let current_slot = self.get("system", &member.slot.resource)?;
+            let already_registered = current_slot
+                .as_ref()
+                .is_some_and(|current| current.expose() == incoming_slot);
+            let pin = if already_registered {
+                // A matching committed slot avoids rewriting/fsyncing identical
+                // ciphertext. It grants no read authority: the exact live pin,
+                // profile, AEAD and plaintext equality checks below still run.
+                // Missing or corrupt registered files are refused, not repaired.
+                self.backend
+                    .pin_immutable_ciphertext(member.slot.locator, member.slot.ciphertext_bytes)
+                    .map_err(map_backend_error)?
+            } else {
+                let mut gate_error = None;
+                let mut physical_gate = || match gate() {
+                    Ok(()) => Ok(()),
+                    Err(e) => {
+                        gate_error = Some(e);
+                        Err(BackendError::Unavailable)
+                    }
+                };
+                let staged = self.backend.stage_immutable_ciphertext_checked(
+                    member.slot.locator,
+                    &ciphertext,
+                    &mut physical_gate,
+                );
+                if matches!(
+                    staged,
+                    Err(BackendError::OutcomeUnknown | BackendError::StaleWriter)
+                ) {
+                    self.unresolved = true;
                 }
-            };
-            let staged = self.backend.stage_immutable_ciphertext_checked(
-                member.slot.locator,
-                &ciphertext,
-                &mut physical_gate,
-            );
-            if matches!(
-                staged,
-                Err(BackendError::OutcomeUnknown | BackendError::StaleWriter)
-            ) {
-                self.unresolved = true;
-            }
-            if let Some(error) = gate_error {
-                return Err(error);
-            }
-            let pin = match staged.map_err(map_backend_error)? {
-                ImmutableBlobStage::Published(pin) | ImmutableBlobStage::AlreadyExists(pin) => pin,
+                if let Some(error) = gate_error {
+                    return Err(error);
+                }
+                match staged.map_err(map_backend_error)? {
+                    ImmutableBlobStage::Published(pin) | ImmutableBlobStage::AlreadyExists(pin) => {
+                        pin
+                    }
+                }
             };
             gate()?;
             self.verify_prepared_restore(&prepared.state)?;

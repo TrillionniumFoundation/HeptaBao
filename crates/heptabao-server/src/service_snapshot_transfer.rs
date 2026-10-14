@@ -534,6 +534,14 @@ impl Service {
             Observation::Download if plan.is_download => Response::ok(Value::Null),
             Observation::Upload(mut imported) if !plan.is_download => {
                 #[cfg(feature = "fixture-native-v6-service")]
+                if self.native_root.is_some() && !imported.metadata.is_v6() {
+                    // The V5 installer cannot retire V6 external-object custody.
+                    return Response::error(
+                        409,
+                        "active V6 requires an object-complete V6 snapshot",
+                    );
+                }
+                #[cfg(feature = "fixture-native-v6-service")]
                 if imported.metadata.is_v6() {
                     return self.finish_v6_snapshot_upload(imported, &plan, live_seal);
                 }

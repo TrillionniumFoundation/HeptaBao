@@ -890,3 +890,96 @@ fn unresolved_owner_refuses_before_legacy_format_inspection() -> ResultTest {
     assert!(bytes.is_empty());
     Ok(())
 }
+
+#[test]
+fn registered_identical_restore_uses_fresh_pin_and_aead_without_restaging() -> ResultTest {
+    let _serial = serial_test();
+    let (_sr, mut source) = fixture("pack-registered-source", 2, 256)?;
+    let bytes = pack(&mut source)?;
+    let (root, target) = fixture("pack-registered-target", 2, 256)?;
+    target.close()?;
+    // Any staging call would really write and then inject OutcomeUnknown. A
+    // successful restore therefore proves that committed objects were reused
+    // only through current descriptor pinning and fresh authentication.
+    let backend = FaultBackend {
+        inner: FileBackend::open(&root.0)?,
+        lose_stage_ack: true,
+        transactional: true,
+    };
+    let mut target = DurableService::reopen_with_backend(backend, TestBarrier::new(), 2048)?;
+    let prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(bytes.clone()),
+        bytes.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    target.restore_v6_prepared(prepared, true, &mut gate)?;
+    assert!(!target.recovery_required());
+    assert!(target.backend.lose_stage_ack);
+    assert_eq!(blob_count(&root.0), 2);
+    target.close()?;
+    let mut reopened = Owner::reopen(&root.0, TestBarrier::new(), 2048)?;
+    for index in 1..=2 {
+        assert_eq!(read_object(&mut reopened, index)?, payload(index, 256));
+    }
+    Ok(())
+}
+
+#[test]
+fn registered_corrupt_ciphertext_is_refused_not_repaired_or_trusted_from_slot() -> ResultTest {
+    let _serial = serial_test();
+    let (_sr, mut source) = fixture("pack-registered-bad-source", 1, 256)?;
+    let bytes = pack(&mut source)?;
+    let (root, mut target) = fixture("pack-registered-bad-target", 1, 256)?;
+    let file = fs::read_dir(&root.0)?
+        .filter_map(Result::ok)
+        .find(|x| x.file_name().to_string_lossy().ends_with(".hbo"))
+        .ok_or("object")?
+        .path();
+    let mut damaged = fs::read(&file)?;
+    damaged[40] ^= 1;
+    fs::write(&file, &damaged)?;
+    let old = target.backend.load()?;
+    let prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(bytes.clone()),
+        bytes.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    assert!(matches!(
+        target.restore_v6_prepared(prepared, true, &mut gate),
+        Err(ServiceError::BarrierFailure)
+    ));
+    assert_eq!(target.backend.load()?, old);
+    assert_eq!(fs::read(file)?, damaged);
+    Ok(())
+}
+
+#[test]
+fn registered_missing_ciphertext_is_refused_without_creating_a_replacement() -> ResultTest {
+    let _serial = serial_test();
+    let (_sr, mut source) = fixture("pack-registered-missing-source", 1, 256)?;
+    let bytes = pack(&mut source)?;
+    let (root, mut target) = fixture("pack-registered-missing-target", 1, 256)?;
+    let file = fs::read_dir(&root.0)?
+        .filter_map(Result::ok)
+        .find(|x| x.file_name().to_string_lossy().ends_with(".hbo"))
+        .ok_or("object")?
+        .path();
+    fs::remove_file(&file)?;
+    let old = target.backend.load()?;
+    let prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(bytes.clone()),
+        bytes.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    assert!(
+        target
+            .restore_v6_prepared(prepared, true, &mut gate)
+            .is_err()
+    );
+    assert_eq!(target.backend.load()?, old);
+    assert_eq!(blob_count(&root.0), 0);
+    Ok(())
+}
