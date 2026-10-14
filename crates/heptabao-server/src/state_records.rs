@@ -146,6 +146,7 @@ impl StagedObject {
     pub(crate) fn bytes(&self) -> &[u8] {
         &self.bytes
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn payload_block(key: &AddressKey, bytes: &[u8]) -> Result<Arc<Self>> {
         if bytes.is_empty() || bytes.len() > BLOCK_BYTES {
             return Err(RecordError::TooLarge);

@@ -119,6 +119,7 @@ impl PayloadDescriptor {
         }
         Ok(())
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn encode(
         key: &AddressKey,
         path: &str,
@@ -224,6 +225,7 @@ impl PayloadDescriptor {
 #[derive(Clone, Default)]
 pub(super) struct PagedPayloads {
     descriptors: BTreeMap<String, BTreeMap<u64, PayloadDescriptor>>,
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     new_blocks: BTreeMap<ObjectId, Arc<StagedObject>>,
 }
 impl Drop for PagedPayloads {
@@ -234,6 +236,7 @@ impl Drop for PagedPayloads {
     }
 }
 impl PagedPayloads {
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(super) fn clear_new_blocks(&mut self) {
         self.new_blocks.clear();
     }
@@ -251,6 +254,7 @@ impl PagedPayloads {
                     .ok_or(RecordError::TooLarge)
             })
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(super) fn visit_new_blocks(
         &self,
         visitor: &mut impl FnMut(&Arc<StagedObject>) -> CodecResult<()>,
@@ -295,6 +299,7 @@ impl PagedPayloads {
 }
 
 impl NativeGraph {
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn encode_paged(
         owner: &Kv2,
         base: &AddressKey,
@@ -323,6 +328,7 @@ impl NativeGraph {
             .logical_bytes()?;
         Ok(next)
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn update_paged_config(
         &mut self,
         owner: &Kv2,
@@ -343,6 +349,7 @@ impl NativeGraph {
         }
         Ok(())
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn update_paged_path(
         &mut self,
         path: &str,
@@ -419,6 +426,7 @@ impl NativeGraph {
         }
         check()
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn with_paged_updates(
         &self,
         owner: &Kv2,
@@ -555,6 +563,7 @@ impl NativeGraph {
     }
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl NativeCellGraph {
     #[cfg(test)]
     pub(crate) fn graph_format(&self) -> &str {
@@ -566,6 +575,7 @@ impl NativeCellGraph {
             .as_ref()
             .map_or(Ok(0), PagedPayloads::logical_bytes)
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn encode_paged(
         owner: &Kv2,
         parent: &AddressKey,
@@ -628,6 +638,7 @@ impl NativeReadView {
     }
     /// Erase payloads opened from already authenticated old descriptors. Fresh
     /// versions remain present until the candidate's own graph is constructed.
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn clear_hydrated_payloads(&mut self) -> Result<()> {
         if !self.is_paged() {
             return Ok(());
@@ -706,6 +717,7 @@ impl NativeReadView {
             pending: mutation::PendingPaths::default(),
         })
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn encode_paged(
         &self,
         parent: &AddressKey,
@@ -723,6 +735,7 @@ impl NativeReadView {
             _ => NativeCellGraph::encode_paged(&self.owner, parent, scope, check),
         }
     }
+    #[cfg(feature = "fixture-native-v6-service")]
     pub(crate) fn visit_paged_payload_references(
         &self,
         mut visit: impl FnMut(&ObjectRef) -> CodecResult<()>,
@@ -784,6 +797,7 @@ impl NativeReadView {
     /// `staged` MUST read only this candidate's staged objects, without fallback
     /// to the prior durable source. A changed descriptor is never inherited.
     /// This codec does not grant Actor, physical-source or publication custody.
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn verify_paged_transition(
         &self,
         prior: Option<&NativeReadView>,
@@ -847,6 +861,7 @@ impl NativeReadView {
         }
         check()
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn read_with_source(
         &self,
         method: &str,
@@ -899,6 +914,7 @@ impl NativeReadView {
         }
         owner.handle_read_precise(method, path, body, now)
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(crate) fn hydrate_current_for_patch(
         &mut self,
         path: &str,
@@ -940,6 +956,7 @@ impl NativeReadView {
     }
 }
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 impl EngineState {
     pub(crate) fn project_v6_native_paged(
         &self,

@@ -4040,5 +4040,6 @@ impl EngineState {
 #[path = "engine_lossless_json_tests.rs"]
 mod lossless_json_tests;
 
+#[cfg(feature = "fixture-native-v6-service")]
 #[path = "engine_native_paged_dispatch.rs"]
 mod native_paged_dispatch;

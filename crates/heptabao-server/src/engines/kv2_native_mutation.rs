@@ -38,9 +38,11 @@ impl PendingPaths {
         });
         Ok(Some(position))
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(super) fn paths(&self) -> impl Iterator<Item = &str> {
         self.0.iter().map(|baseline| baseline.path.as_str())
     }
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub(super) fn erase_payloads(&mut self) {
         for baseline in &mut self.0 {
             if let Some(entry) = &mut baseline.entry {

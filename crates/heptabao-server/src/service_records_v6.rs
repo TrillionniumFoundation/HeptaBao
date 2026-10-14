@@ -483,6 +483,7 @@ impl Service {
         self.prepare_native_root_migration_mode(check, true)
     }
 
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     fn prepare_native_root_migration_mode(
         &mut self,
         check: &impl Fn() -> Result<(), RecordError>,

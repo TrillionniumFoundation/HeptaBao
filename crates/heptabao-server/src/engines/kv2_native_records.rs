@@ -479,7 +479,6 @@ impl NativeReadView {
         let owner = graph.decode()?;
         Ok(Self {
             owner,
-            #[cfg(any(test, feature = "fixture-native-v6-service"))]
             graph: Some(graph),
             pending: mutation::PendingPaths::default(),
         })
