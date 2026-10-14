@@ -23,8 +23,13 @@ import time
 import urllib.error
 import urllib.request
 
-HISTORY_VERSIONS = 40
-PAYLOAD_BYTES = (33 * 1024 * 1024 // 10) // 4 * 4
+HISTORY_VERSIONS = 66
+PAYLOAD_BYTES = 2 * 1024 * 1024
+POINT_VERSION = HISTORY_VERSIONS + 1
+PATCH_VERSION = HISTORY_VERSIONS + 2
+RETAINED_VERSIONS = 96
+# Matches the existing narrow KV2 JSON ingress, not a server override.
+MAX_KV2_REQUEST_BYTES = 3 * 1024 * 1024
 MIN_HISTORY_BYTES = 128 * 1024 * 1024
 DURABLE_ARTIFACT_LIMIT = 64 * 1024 * 1024
 SERVER_DEFAULT_TIMEOUT = 15
@@ -52,6 +57,52 @@ def fixture(version, payload_bytes=PAYLOAD_BYTES):
     raw = hashlib.shake_256(seed).digest(payload_bytes // 4 * 3)
     payload = base64.b64encode(raw).decode("ascii")
     return {"fixture": "shake256-base64-v1", "version": version, "payload": payload}
+
+
+def fixture_plan():
+    """Freeze a complete >128 MiB scenario inside unchanged ingress/retention.
+
+    Run before creating a fixture or issuing any request. Each distinct version
+    is counted by actual canonical JSON length, not by a requested payload size.
+    """
+    if not (type(HISTORY_VERSIONS) is int and HISTORY_VERSIONS >= 18
+            and POINT_VERSION == HISTORY_VERSIONS + 1
+            and PATCH_VERSION == HISTORY_VERSIONS + 2
+            and RETAINED_VERSIONS >= PATCH_VERSION
+            and SERVER_DEFAULT_TIMEOUT == 15
+            and MAX_KV2_REQUEST_BYTES == 3 * 1024 * 1024
+            and MIN_HISTORY_BYTES == 128 * 1024 * 1024):
+        raise TrialFailure("invalid history, retention or unchanged-budget plan")
+    history = []
+    for version in range(1, HISTORY_VERSIONS + 1):
+        data = fixture(version)
+        encoded = canonical(data)
+        request_bytes = len(canonical({"options": {"cas": version - 1}, "data": data}))
+        if request_bytes > MAX_KV2_REQUEST_BYTES:
+            raise TrialFailure("fixture request exceeds existing KV2 JSON ingress")
+        history.append({"version": version, "json_bytes": len(encoded),
+                        "json_sha256": hashlib.sha256(encoded).hexdigest(),
+                        "request_bytes": request_bytes})
+    total = sum(row["json_bytes"] for row in history)
+    if total <= MIN_HISTORY_BYTES or len({row["json_sha256"] for row in history}) != HISTORY_VERSIONS:
+        raise TrialFailure("history does not prove distinct payloads above 128 MiB")
+    point = {**fixture(POINT_VERSION), "fixture": "after-two-actual-cold-opens"}
+    point_request = len(canonical({"options": {"cas": HISTORY_VERSIONS}, "data": point}))
+    patched = {**point, "version": PATCH_VERSION, "patched": True}
+    patch_request = len(canonical({"options": {"cas": POINT_VERSION},
+                                  "data": {"version": PATCH_VERSION, "patched": True}}))
+    if max(point_request, patch_request) > MAX_KV2_REQUEST_BYTES:
+        raise TrialFailure("point or patch request exceeds existing KV2 JSON ingress")
+    return {"history_versions": HISTORY_VERSIONS, "history_json_bytes": total,
+            "payload_bytes_each": PAYLOAD_BYTES, "retained_versions": RETAINED_VERSIONS,
+            "point_version": POINT_VERSION, "patch_version": PATCH_VERSION,
+            "maximum_request_bytes": max([row["request_bytes"] for row in history] + [point_request, patch_request]),
+            "existing_ingress_limit_bytes": MAX_KV2_REQUEST_BYTES,
+            "minimum_history_bytes_unchanged": MIN_HISTORY_BYTES,
+            "server_timeout_seconds_unchanged": SERVER_DEFAULT_TIMEOUT,
+            "history_manifest_sha256": hashlib.sha256(canonical(history)).hexdigest(),
+            "point_json_sha256": hashlib.sha256(canonical(point)).hexdigest(),
+            "patched_json_sha256": hashlib.sha256(canonical(patched)).hexdigest()}
 
 
 def file_sha(path):
@@ -268,7 +319,7 @@ def required_case_names():
     request("unseal-source")
     request("mount-root-kv2", 204)
     request("source-record-upgrade")
-    request("retain-64", 204)
+    request("retain-history", 204)
     for kind in ("activation", "permit", "deny"):
         request("mint-finite-" + kind)
     request("activate-native-root", 204)
@@ -285,13 +336,13 @@ def required_case_names():
         check("write-version-%d" % version)
         blocks("write-history-%d-blocks-after" % version)
         check("write-history-%d-no-old-payload-opens" % version)
-    names.extend(("actual-distinct-history-json-above-128mib", "all-40-history-json-hashes-distinct"))
-    capacity("capacity-after-40")
+    names.extend(("actual-distinct-history-json-above-128mib", "all-history-json-hashes-distinct"))
+    capacity("capacity-after-history")
     for name in ("history-first", "history-middle", "history-latest"):
         read(name)
     for version in range(1, HISTORY_VERSIONS + 1):
         read("all-committed-history-version-%d" % version)
-    request("stale-cas-39", 400)
+    request("stale-cas-history-minus-one", 400)
     metadata("stale-cas-metadata-unchanged")
     read("stale-cas-value-unchanged")
     request("delete-specific-versions", 204)
@@ -327,24 +378,24 @@ def required_case_names():
     for version in (3, 17):
         request("second-cold-deleted-%d" % version, 404)
     blocks("second-cold-point-blocks-before")
-    request("second-cold-cas40-to41")
-    check("second-cold-point-version41")
+    request("second-cold-cas-history-to-point")
+    check("second-cold-point-version")
     blocks("second-cold-point-blocks-after")
     check("second-cold-point-no-old-payload-opens")
     read("second-cold-point-exact")
     read("second-cold-old-after-point")
     metadata("final-current-version")
-    capacity("capacity-after-point41")
+    capacity("capacity-after-point")
     blocks("second-cold-patch-blocks-before")
-    request("second-cold-patch41-to42")
-    check("second-cold-patch-version42")
+    request("second-cold-patch-point-to-next")
+    check("second-cold-patch-version")
     blocks("second-cold-patch-blocks-after")
     check("second-cold-patch-exact-current-payload-block-count")
     read("second-cold-patch-exact")
-    read("second-cold-prepatch-version41-retained")
+    read("second-cold-prepatch-version-retained")
     read("second-cold-old-after-patch")
     metadata("final-current-version-after-patch")
-    capacity("capacity-after-patch42")
+    capacity("capacity-after-patch")
     check("third-process-actually-closed")
     inventory("after-second-cold-point")
     start(4)
@@ -353,8 +404,8 @@ def required_case_names():
     check("post-patch-cold-no-payload-open")
     finite("post-patch-cold")
     metadata("post-patch-cold-metadata")
-    read("post-patch-cold-version42-exact")
-    read("post-patch-cold-version41-retained")
+    read("post-patch-cold-patched-version-exact")
+    read("post-patch-cold-point-version-retained")
     read("post-patch-cold-version1-retained")
     for version in (3, 17):
         request("post-patch-cold-deleted-%d" % version, 404)
@@ -368,7 +419,7 @@ def required_resource_snapshot_names():
     cases = required_case_names()
     point_reads = {name[:-len("-exact-json-sha256")] for name in cases if name.endswith("-exact-json-sha256")}
     operations = point_reads | {"unseal-source", "first-cold-unseal", "second-cold-unseal", "post-patch-cold-unseal",
-                               "second-cold-patch41-to42"}
+                               "second-cold-patch-point-to-next"}
     for prefix in ("", "first-cold-", "second-cold-", "post-patch-cold-"):
         for version in (3, 17):
             operations.add(prefix + "deleted-%d" % version)
@@ -634,6 +685,9 @@ class Trial:
 
     def _request(self, name, method, path, body=None, expected=200, token=None, anonymous=False):
         payload = None if body is None else canonical(body)
+        if (method in ("POST", "PATCH") and path == "secret/data/history"
+                and payload is not None and len(payload) > MAX_KV2_REQUEST_BYTES):
+            raise TrialFailure("owned write exceeds existing KV2 ingress before dispatch")
         headers = {"Content-Type": "application/merge-patch+json" if method == "PATCH" else "application/json"}
         selected_token = None if anonymous else (self.root_token if token is None else token)
         if selected_token:
@@ -857,7 +911,7 @@ class Trial:
         self.request("unseal-source", "POST", "sys/unseal", {"key": self.unseal_key}, anonymous=True)
         self.request("mount-root-kv2", "POST", "sys/mounts/secret", {"type": "kv", "options": {"version": "2"}}, expected=204)
         self.request("source-record-upgrade", "POST", "secret/data/source", {"data": {"value": "source"}})
-        self.request("retain-64", "POST", "secret/config", {"max_versions": 64}, expected=204)
+        self.request("retain-history", "POST", "secret/config", {"max_versions": RETAINED_VERSIONS}, expected=204)
         for kind, policies in (("activation", ["root"]), ("permit", ["root"]), ("deny", ["default"])):
             minted = self.request("mint-finite-" + kind, "POST", "auth/token/create", {"num_uses": 1, "policies": policies, "no_parent": True})
             self.tokens[kind] = minted["auth"]["client_token"]
@@ -893,21 +947,24 @@ class Trial:
                        "write-history-%d-no-old-payload-opens" % version,
                        before=opened_before, after=opened_after)
             self.written = version
+            if version == 1 or version % 10 == 0 or version == HISTORY_VERSIONS:
+                print(json.dumps({"phase": "history", "written": version,
+                                  "planned": HISTORY_VERSIONS}), flush=True)
             history_bytes += len(encoded)
             del data, encoded
         self.check(history_bytes > MIN_HISTORY_BYTES, "actual-distinct-history-json-above-128mib", observed=history_bytes)
         self.check(len({self.expected[version]["json_sha256"] for version in range(1, HISTORY_VERSIONS + 1)})
-                   == HISTORY_VERSIONS, "all-40-history-json-hashes-distinct")
+                   == HISTORY_VERSIONS, "all-history-json-hashes-distinct")
         expected_logical = baseline_logical + history_bytes
-        self.capacity("capacity-after-40", expected_logical)
+        self.capacity("capacity-after-history", expected_logical)
         self.read_version("history-first", 1)
-        self.read_version("history-middle", 20)
-        self.read_version("history-latest", 40)
+        self.read_version("history-middle", (HISTORY_VERSIONS // 2))
+        self.read_version("history-latest", HISTORY_VERSIONS)
         for version in range(1, HISTORY_VERSIONS + 1):
             self.read_version("all-committed-history-version-%d" % version, version)
-        self.request("stale-cas-39", "POST", "secret/data/history", {"options": {"cas": 39}, "data": {"value": "stale"}}, expected=400)
-        self.metadata("stale-cas-metadata-unchanged", 40)
-        self.read_version("stale-cas-value-unchanged", 40)
+        self.request("stale-cas-history-minus-one", "POST", "secret/data/history", {"options": {"cas": (HISTORY_VERSIONS - 1)}, "data": {"value": "stale"}}, expected=400)
+        self.metadata("stale-cas-metadata-unchanged", HISTORY_VERSIONS)
+        self.read_version("stale-cas-value-unchanged", HISTORY_VERSIONS)
         self.request("delete-specific-versions", "POST", "secret/delete/history", {"versions": [3, 17]}, expected=204)
         for version in (3, 17):
             response = self.request("deleted-%d" % version, "GET", "secret/data/history?version=%d" % version, expected=404)
@@ -924,10 +981,10 @@ class Trial:
         self.check(self.payload_blocks("first-cold-payload-blocks") == 0
                    and self.payload_io_zero("first-cold-payload-blocks"), "first-cold-no-payload-open")
         self.finite_after_cold("first-cold")
-        metadata = self.metadata("first-cold-metadata", 40)
+        metadata = self.metadata("first-cold-metadata", HISTORY_VERSIONS)
         self.check(all(metadata["versions"][str(version)]["deletion_time"] for version in (3, 17)), "first-cold-delete-state-preserved")
         self.read_version("first-cold-old-version", 1)
-        self.read_version("first-cold-latest-version", 40)
+        self.read_version("first-cold-latest-version", HISTORY_VERSIONS)
         for version in (3, 17):
             self.request("first-cold-deleted-%d" % version, "GET", "secret/data/history?version=%d" % version, expected=404)
         self.capacity("capacity-first-cold", expected_logical)
@@ -939,35 +996,35 @@ class Trial:
         self.check(self.payload_blocks("second-cold-payload-blocks") == 0
                    and self.payload_io_zero("second-cold-payload-blocks"), "second-cold-no-payload-open")
         self.finite_after_cold("second-cold")
-        self.metadata("second-cold-metadata", 40)
+        self.metadata("second-cold-metadata", HISTORY_VERSIONS)
         self.read_version("second-cold-old-version", 1)
-        self.read_version("second-cold-latest-version", 40)
+        self.read_version("second-cold-latest-version", HISTORY_VERSIONS)
         for version in (3, 17):
             self.request("second-cold-deleted-%d" % version, "GET", "secret/data/history?version=%d" % version, expected=404)
-        data = {**fixture(41), "fixture": "after-two-actual-cold-opens"}
+        data = {**fixture(POINT_VERSION), "fixture": "after-two-actual-cold-opens"}
         encoded = canonical(data)
-        self.expected[41] = {"json_sha256": hashlib.sha256(encoded).hexdigest(), "json_bytes": len(encoded)}
+        self.expected[POINT_VERSION] = {"json_sha256": hashlib.sha256(encoded).hexdigest(), "json_bytes": len(encoded)}
         opened_before = self.payload_blocks("second-cold-point-blocks-before")
-        response = self.request("second-cold-cas40-to41", "POST", "secret/data/history", {"options": {"cas": 40}, "data": data})
+        response = self.request("second-cold-cas-history-to-point", "POST", "secret/data/history", {"options": {"cas": HISTORY_VERSIONS}, "data": data})
         self.check(type(response["data"]["version"]) is int
-                   and response["data"]["version"] == 41, "second-cold-point-version41")
+                   and response["data"]["version"] == POINT_VERSION, "second-cold-point-version")
         opened_after = self.payload_blocks("second-cold-point-blocks-after")
         self.check(opened_after == opened_before
                    and self.payload_io_unchanged("second-cold-point-blocks-before", "second-cold-point-blocks-after"),
                    "second-cold-point-no-old-payload-opens",
                    before=opened_before, after=opened_after)
-        self.read_version("second-cold-point-exact", 41)
+        self.read_version("second-cold-point-exact", POINT_VERSION)
         self.read_version("second-cold-old-after-point", 1)
-        self.metadata("final-current-version", 41)
-        self.capacity("capacity-after-point41", expected_logical + len(encoded))
-        patched = {**data, "version": 42, "patched": True}
+        self.metadata("final-current-version", POINT_VERSION)
+        self.capacity("capacity-after-point", expected_logical + len(encoded))
+        patched = {**data, "version": PATCH_VERSION, "patched": True}
         patched_encoded = canonical(patched)
-        self.expected[42] = {"json_sha256": hashlib.sha256(patched_encoded).hexdigest(), "json_bytes": len(patched_encoded)}
+        self.expected[PATCH_VERSION] = {"json_sha256": hashlib.sha256(patched_encoded).hexdigest(), "json_bytes": len(patched_encoded)}
         opened_before = self.payload_blocks("second-cold-patch-blocks-before")
-        response = self.request("second-cold-patch41-to42", "PATCH", "secret/data/history",
-                                {"options": {"cas": 41}, "data": {"version": 42, "patched": True}})
+        response = self.request("second-cold-patch-point-to-next", "PATCH", "secret/data/history",
+                                {"options": {"cas": POINT_VERSION}, "data": {"version": PATCH_VERSION, "patched": True}})
         self.check(type(response["data"]["version"]) is int
-                   and response["data"]["version"] == 42, "second-cold-patch-version42")
+                   and response["data"]["version"] == PATCH_VERSION, "second-cold-patch-version")
         opened_after = self.payload_blocks("second-cold-patch-blocks-after")
         current_blocks = (len(encoded) + BLOCK_BYTES - 1) // BLOCK_BYTES
         self.check(current_blocks > 1 and opened_after - opened_before == current_blocks
@@ -975,11 +1032,11 @@ class Trial:
                                               len(encoded), current_blocks),
                    "second-cold-patch-exact-current-payload-block-count",
                    before=opened_before, after=opened_after, expected_blocks=current_blocks)
-        self.read_version("second-cold-patch-exact", 42)
-        self.read_version("second-cold-prepatch-version41-retained", 41)
+        self.read_version("second-cold-patch-exact", PATCH_VERSION)
+        self.read_version("second-cold-prepatch-version-retained", POINT_VERSION)
         self.read_version("second-cold-old-after-patch", 1)
-        self.metadata("final-current-version-after-patch", 42)
-        self.capacity("capacity-after-patch42", expected_logical + len(encoded) + len(patched_encoded))
+        self.metadata("final-current-version-after-patch", PATCH_VERSION)
+        self.capacity("capacity-after-patch", expected_logical + len(encoded) + len(patched_encoded))
         self.stop()
         self.check(self.processes[-1]["actual_process_closed"], "third-process-actually-closed")
         self.inventory("after-second-cold-point")
@@ -988,9 +1045,9 @@ class Trial:
         self.check(self.payload_blocks("post-patch-cold-payload-blocks") == 0
                    and self.payload_io_zero("post-patch-cold-payload-blocks"), "post-patch-cold-no-payload-open")
         self.finite_after_cold("post-patch-cold")
-        self.metadata("post-patch-cold-metadata", 42)
-        self.read_version("post-patch-cold-version42-exact", 42)
-        self.read_version("post-patch-cold-version41-retained", 41)
+        self.metadata("post-patch-cold-metadata", PATCH_VERSION)
+        self.read_version("post-patch-cold-patched-version-exact", PATCH_VERSION)
+        self.read_version("post-patch-cold-point-version-retained", POINT_VERSION)
         self.read_version("post-patch-cold-version1-retained", 1)
         for version in (3, 17):
             self.request("post-patch-cold-deleted-%d" % version, "GET", "secret/data/history?version=%d" % version, expected=404)
@@ -1040,7 +1097,7 @@ class Trial:
                 "source_freeze_checkpoints": self.source_states,
                 "payload_block_observations": self.payload_block_observations,
                 "payload_block_plaintext_header_bytes": PAYLOAD_OBJECT_HEADER_BYTES,
-                "patch_current_payload_json_bytes": self.expected.get(41, {}).get("json_bytes"),
+                "patch_current_payload_json_bytes": self.expected.get(POINT_VERSION, {}).get("json_bytes"),
                 "resource_observations": {
                     "scope": "only-four-owned-unreaped-Popen-children",
                     "target_sample_interval_seconds": RESOURCE_SAMPLE_INTERVAL_SECONDS,
@@ -1084,6 +1141,7 @@ def main():
     os.umask(0o077)
     try:
         provenance = admit(args)
+        provenance["fixture_plan"] = fixture_plan()
     except Exception as error:
         failure = str(error) if isinstance(error, TrialFailure) else type(error).__name__
         print(json.dumps({"passed": False, "phase": "native-source-admission", "failure": failure}))
