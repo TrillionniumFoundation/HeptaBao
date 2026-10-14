@@ -340,7 +340,7 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                 &cluster_id,
                 emit_legacy_peer_v1,
             )
-            .map_err(|error| {
+            .inspect_err(|_| {
                 observation.emit(
                     operation,
                     source,
@@ -349,7 +349,6 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                     timeout,
                     started,
                 );
-                error
             })?;
             observation.enter(PeerIoStage::ResponseBinding);
             if response.role != RAFT_FRAME_RESPONSE
@@ -1420,7 +1419,7 @@ impl HaProcess {
         } else {
             crate::ha_forward::decode_index_response_for_cluster(&response, &self.cluster_id)
         })
-        .map_err(|error| {
+        .inspect_err(|_| {
             observation.emit(
                 PeerOperation::Forward,
                 local,
@@ -1429,7 +1428,6 @@ impl HaProcess {
                 budget,
                 started,
             );
-            error
         })?;
         observation.response_status = Some(response.status);
         observation.enter(PeerIoStage::ResponseBinding);
@@ -1459,7 +1457,7 @@ impl HaProcess {
         let receipt = if let Some(nonce) = nonce {
             observation.enter(PeerIoStage::CompletionDigest);
             let response_digest = crate::ha_forward_completion::wire_response_digest(&response)
-                .map_err(|error| {
+                .inspect_err(|_| {
                     observation.emit(
                         PeerOperation::Forward,
                         local,
@@ -1468,7 +1466,6 @@ impl HaProcess {
                         budget,
                         started,
                     );
-                    error
                 })?;
             observation.enter(PeerIoStage::CompletionMissing);
             let wire = response.completion.take().ok_or_else(|| {
@@ -1496,7 +1493,7 @@ impl HaProcess {
                         response_digest,
                     },
                 )
-                .map_err(|error| {
+                .inspect_err(|_| {
                     observation.emit(
                         PeerOperation::Forward,
                         local,
@@ -1505,7 +1502,6 @@ impl HaProcess {
                         budget,
                         started,
                     );
-                    error
                 })?,
             )
         } else {
@@ -1513,7 +1509,7 @@ impl HaProcess {
         };
         if let Some(receipt) = &receipt {
             observation.enter(PeerIoStage::LocalAppliedWait);
-            self.wait_forward_applied(receipt).map_err(|error| {
+            self.wait_forward_applied(receipt).inspect_err(|_| {
                 observation.emit(
                     PeerOperation::Forward,
                     local,
@@ -1522,7 +1518,6 @@ impl HaProcess {
                     budget,
                     started,
                 );
-                error
             })?;
         }
         observation.enter(PeerIoStage::ResponseUnwrap);
@@ -1542,7 +1537,7 @@ impl HaProcess {
                     })?,
                     &response,
                 )
-                .map_err(|error| {
+                .inspect_err(|_| {
                     observation.emit(
                         PeerOperation::Forward,
                         local,
@@ -1551,7 +1546,6 @@ impl HaProcess {
                         budget,
                         started,
                     );
-                    error
                 })?,
             )
         } else {
