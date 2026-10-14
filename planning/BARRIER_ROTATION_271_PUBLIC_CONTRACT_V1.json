@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.barrier-rotation.readonly-contract-review.v1",
+  "created_unix": 1791938809.6496518,
+  "status": "HOLD_real_rotation_runtime_not_implemented",
+  "source_commit": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+  "source_tree": "e565658e3e8f2541a8046cb79ffc591997112392",
+  "source_clean": true,
+  "source_file_sha256": {
+    "crates/heptabao-server/src/crypto.rs": "0da749d56b52ab70a90c50d00a825a8226ca532e55ceb74a092266e96706df51",
+    "crates/heptabao-server/src/service.rs": "244686cc7b724805cb7b60fbfa44e55360caf1cd88ea2341db02480073487b65",
+    "crates/heptabao-server/src/namespace_custody.rs": "f6b0a3b5b36ac263e8c284d8cb43cce4f45de0d19ff8b5d99822409459e32fa8",
+    "crates/heptabao-server/src/namespace_custody_inherited.rs": "f7b913661c5b3749d219d379f363fca239e208b9089f56bafc05ede0ee596d6f",
+    "crates/heptabao-server/src/namespace_custody_v6.rs": "33a9ebba52e4e716d054ee45b87701c00dd00771112ba86e0d7c86be92153c73",
+    "crates/heptabao-server/src/engine_namespace_record_cells.rs": "9aabb058c31ee7885f0147dea879a5e26c6360eeeb89049b0616ecc1658b80b2",
+    "crates/heptabao-server/src/service_snapshot_transfer.rs": "1770c0b1fcac8fc2f65bef9a56a3e1edea4a12d3948a8e0b74f70f13939cf24f",
+    "crates/heptabao-server/src/service_wrapper_ha.rs": "e0304196018f1bd88b2c15bf3a2791cb6c484033c4ce84d1689fd02dd8b1c230",
+    "crates/heptabao-server/src/service_ha_received.rs": "322809cfa0c3945ba517f9c02707b33647e542d8f2d3b21616514e9c43ffa5b5",
+    "crates/heptabao-server/src/service_native_v6_reader.rs": "f93557c054d5ba9c5f8385ce21c6aa0af5bce5f9976aef79a88c2ed3bcf07aba",
+    "crates/heptabao-durable-service/src/backend.rs": "7699a113ec612d7b238b69641eb4299f7ebdaa96123cd4b8926af9d7fd2e0ce0",
+    "crates/heptabao-durable-service/src/lib.rs": "fe027ea49e6168c436dc4c2e1ab62aa92769d52f1d9c36806bfb52e9387c2f05",
+    "crates/heptabao-key-lifecycle/src/lib.rs": "684f5c927f4a9328e307f9c177d9b840926ef6e73fc2fb5c54a7b743f5726f94",
+    "crates/heptabao-server/Cargo.toml": "5c6e9c53a67e412a78139ada488998b3389cae3ca2b784934376069e526fcf0f"
+  },
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "official_tree_metadata_sha256": "d4b37b004005478bffbba6ea38a635597b12b0a25ab59436cb762539696dc61a",
+  "official_primary": [
+    {
+      "path": "internal/vault/barrier/keyring.go",
+      "bytes": 6480,
+      "sha256": "4213cb826b9a36683f9f3bca41c760ae5dd6dba58767423d70cd0c48f7bf9c95",
+      "git_blob": "a3076487a1150924c3f29e6a91897574cbb0da83"
+    },
+    {
+      "path": "internal/vault/logical_system_rotate.go",
+      "bytes": 33074,
+      "sha256": "8951dcbfb0769356c0547ae2fe2cc4c84cbad028e3fdabecea15f456fa81e0f6",
+      "git_blob": "5afcb41aad76dddd6c4c96d408cbc0dc2782213b"
+    },
+    {
+      "path": "website/content/docs/api/system/rotate/keyring-config.mdx",
+      "bytes": 2828,
+      "sha256": "e56c4bb1a837f39a959fd644c5323034d591298ac52e9e45da5959f347344065",
+      "git_blob": "e7820f7fb79dcb2c9a47eb1d0560c8f298370f12"
+    },
+    {
+      "path": "internal/vault/barrier/aes_gcm.go",
+      "bytes": 34784,
+      "sha256": "71439b924dfab1bbecf0da798851fa0936b3a97a7d6e391d445ba75c2cb77269",
+      "git_blob": "73b590068645fd59447f34cc534332908118d640"
+    }
+  ],
+  "public_primary_read_job": "1a137dbef1b-b2f-ca7",
+  "public_primary_detail_job": "1a137dea87e-b2f-cc2",
+  "each_primary_git_blob_verified": true,
+  "contract": {
+    "config_aliases": [
+      "sys/rotate/config",
+      "sys/rotate/keyring/config"
+    ],
+    "manual_rotate_aliases": [
+      "sys/rotate",
+      "sys/rotate/keyring"
+    ],
+    "read_enabled": "not Disabled",
+    "updates_only_present_fields": true,
+    "max_operations_minimum": 1000000,
+    "max_operations_maximum": 3865470566,
+    "interval_valid": "zero or at least 24 hours",
+    "rotation_config_equals_includes_disabled": true,
+    "disabled_auto_rotation_stops": true,
+    "disabled_manual_rotation_stops": false,
+    "disabled_encryption_count_stops": false,
+    "auto_operations_comparison": "greater-than",
+    "auto_interval_comparison": "greater-than",
+    "manual_active_ring_swap_after_persist": true,
+    "old_terms_remain_decryptable": true,
+    "root_key_protects_keyring": true,
+    "root_key_entry_for_standbys_protected_with_active_data_term": true
+  },
+  "actual_B9_findings": [
+    "AeadBarrier has one LessSafeKey and only HBA1 without a key term",
+    "HBK1 wraps a fixed 32-byte barrier key; Shamir rekey preserves that key",
+    "DurableService owns one Barrier and must decode snapshot ledger journal before State lookup",
+    "root State-only keyring creates a cold-open decryption cycle after new-term snapshot",
+    "namespace independent and inherited owners also instantiate fixed-key barriers and enforce HBA1/32-byte overhead",
+    "inherited and object address derivations require stable custody identities independent of rotating data keys",
+    "HA and Native proof owners bind digest of fixed barrier_key but not ring identity or data term",
+    "key-lifecycle is a non-secret ledger and is absent from server dependency graph"
+  ],
+  "Point_6fc_readonly_confirmation": {
+    "preopen_root_sealed_keyring_slot_present": false,
+    "logical_keyring_root_cursor_can_share_atomic_apply_generation": true,
+    "logical_slot_does_not_solve_cold_bootstrap": true,
+    "preopen_capsule_active_term_atomic_unknown_ack_contract_present": false,
+    "point_source_modified": false
+  },
+  "runtime_tests_run": false,
+  "cargo_run": false,
+  "production_or_secret_files_read": false,
+  "B9_or_Point_source_modified": false,
+  "new_schema_activated": false,
+  "full_openbao271_replacement": false
+}

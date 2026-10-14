@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.barrier-rotation.preopen-physical-proposal.v1",
+  "status": "PROPOSAL_ONLY_NOT_RUNTIME_ADMISSION",
+  "base_commit": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+  "base_tree": "e565658e3e8f2541a8046cb79ffc591997112392",
+  "crypto_kernel": {
+    "source": "crates/heptabao-server/src/crypto_rotation_preparation.rs",
+    "tests": "crates/heptabao-server/src/crypto_rotation_preparation_tests.rs",
+    "module_wired": false,
+    "HBA1_read_only_legacy_epoch": 1,
+    "HBA2_first_staged_term": 2,
+    "HBA2_header_bytes": 8,
+    "HBA2_nonce_bytes": 12,
+    "HBA2_tag_bytes": 16,
+    "HBA2_authenticates": [
+      "format and term header",
+      "scope/custody identity",
+      "length-prefixed original caller context"
+    ],
+    "root_capsule_magic": "HBRC",
+    "root_capsule_version": 1,
+    "root_capsule_wrap_key": "HMAC-SHA256 domain-separated from stable original root secret",
+    "old_historical_HBA1_usage": "unknown; epoch1 only decrypts and is never the new active writer",
+    "namespace_and_HA_runtime_support": false,
+    "Cargo_or_unit_execution": false,
+    "capsule_current_scope": "Ring crypto payload only. CapsulePublicationBinding extension and physical tuple reader are proposed but not implemented/admitted."
+  },
+  "new_types_for_Root_confirmation": {
+    "BootstrapTupleBinding": {
+      "physical_generation": "u64 checked nonzero",
+      "replay_epoch": "u64 same authoritative committed root epoch",
+      "root_identity": "[u8;32] exact decoded root commitment",
+      "cursor_identity": "[u8;32] exact cursor commitment",
+      "ring_generation": "u64 authenticated keyring material generation",
+      "active_data_term": "u32 > 1 checked present",
+      "snapshot_sha256": "[u8;32] exact raw sealed bytes",
+      "ledger_sha256": "[u8;32] exact raw sealed bytes",
+      "journal_sha256": "[u8;32] exact raw committed complete prefix",
+      "capsule_sha256": "[u8;32] exact fourth slot ciphertext commitment in physical manifest/source pin; not encoded inside the capsule itself"
+    },
+    "OwnedBootstrapSourcePin": "affine non-Clone; only captured by the existing owned backend session/FD and authenticated root-sealed tuple reader; a public digest or JSON cannot manufacture it",
+    "BootstrapStoreBundle": "existing three sealed artifacts plus bounded root_sealed_keyring fourth slot, exact tuple publication binding and original owned source pin",
+    "PreparedBootstrapPublication": "candidate four-slot bytes and tuple; preserves original Principal, AuthorityTime, deadline, backend writer/session, source pin and exact pre-state",
+    "CapsulePublicationBinding": {
+      "physical_generation": "u64 checked nonzero",
+      "replay_epoch": "u64 same authoritative committed root epoch",
+      "root_identity": "[u8;32] exact decoded root commitment",
+      "cursor_identity": "[u8;32] exact cursor commitment",
+      "ring_generation": "u64 authenticated keyring material generation",
+      "active_data_term": "u32 > 1 checked present",
+      "snapshot_sha256": "[u8;32] exact raw sealed bytes",
+      "ledger_sha256": "[u8;32] exact raw sealed bytes",
+      "journal_sha256": "[u8;32] exact raw committed complete prefix",
+      "self_hash_rule": "Capsule authenticates the three data artifact commitments and generation/root/cursor/term; excludes its own ciphertext hash. A public physical manifest commits all four hashes only after the capsule is sealed, preventing a self-hash or Root/capsule Merkle cycle."
+    }
+  },
+  "small_API_patch_proposal": {
+    "legacy_BackendBundle": "keep existing 3-field legacy layout and entry points closed for rotation",
+    "new_DurableBackend_methods": [
+      "capture_owned_preopen_tuple -> OwnedBootstrapSourcePin plus raw BootstrapStoreBundle",
+      "publish_owned_bootstrap_tuple(expected affine source pin, prepared replacement, original gate) -> physical receipt or OutcomeUnknown"
+    ],
+    "defaults": "Unsupported; no unsupported backend silently falls back to legacy external files",
+    "new_DurableService_entry": "reopen_from_owned_preopen_tuple(root secret, original source pin) authenticates fourth slot before constructing term barrier then validates all three artifact hashes and decoded generation/root/cursor before live state publication",
+    "ordinary_reopen": "remains legacy HBA1 only unless exact bootstrap profile/floor was admitted; no guessed epoch or State-only keyring lookup",
+    "new_schema_and_global_floor": "unallocated pending Root approval; Auth134/DB135/cert136/MAX_SUPPORTED_SCHEMA unchanged"
+  },
+  "physical_backend_contract": {
+    "FileBackend": [
+      "capture manifest and four raw slots through the already writer-locked directory FD; bounded flat names and NOFOLLOW",
+      "stage all four complete immutable generation artifacts; fsync each and enclosing directory",
+      "publish one expected-source manifest pointer with a single guarded atomic replacement, or use an equally explicit authenticated file-intent protocol reviewed with crash prefixes",
+      "read back current manifest and all four exact commitments through the same owned session/FD before receipt",
+      "never claim four ordinary sequential rename operations are physically atomic"
+    ],
+    "PostgresBackend": [
+      "same currently owned DB session and writer revision; one transaction/CAS publishes all four slots with matching generation",
+      "transaction result and same-session readback must be conclusive; no second connection/reconnect for source or commit proof"
+    ],
+    "existing_Point_6fc": "no preopen capsule slot or fourth-slot atomic publication; immutable stage plus logical atomic_apply does not satisfy this new contract"
+  },
+  "publisher_order": [
+    "capture original Principal/Clock/source/backend owner/deadline",
+    "stage root-sealed candidate capsule and new-term sealed data without activating any Service writer",
+    "recheck original owned source and current writer before atomic tuple publication",
+    "publish one full tuple; preserve exact generation/root/cursor and ciphertext commitments",
+    "authenticate current tuple readback with root key and data ring, including complete closure",
+    "mandatory audit under original budget",
+    "only then publish active term and invalidate all previous held owner/permit references"
+  ],
+  "unknown_ack": [
+    "close/fence all storage, Native, namespace and SDK delivery owners",
+    "retain only authenticated recovery reference/terminal audit metadata",
+    "cold recovery reacquires the actual committed tuple from the same enrolled backend profile; never install prepared candidate based on its JSON/source hash",
+    "do not reset counter or refund completed AEAD work when delivery is withheld"
+  ],
+  "counter_contract": [
+    "count each successful AEAD encryption, including discarded prepared encryption; API requests are not encryption counts",
+    "counter overflow rejected before nonce/AEAD work",
+    "persist count/high-water as part of the authenticated pre-open tuple; reserve conservatively where crash recovery needs a floor",
+    "Disabled only suppresses automatic rotation, not count/persistence/manual staging",
+    "auto threshold is strictly greater-than max_operations or interval"
+  ],
+  "stable_custody": [
+    "root/unseal secret is not replaced by active data DEK",
+    "namespace inherited root/parent derivation is stable and old key_epoch1 relationships remain valid",
+    "Native/address MAC material is stable across data-key rotations",
+    "independent namespace rings and HA term replication remain closed until separate real proof"
+  ],
+  "required_future_failure_units": [
+    "missing or corrupt fourth slot",
+    "wrong root key/binding/tuple generation",
+    "unknown data/capsule version or term",
+    "duplicate term or duplicate raw key under another term",
+    "partial fsync/manifest publication crash prefixes",
+    "real append/publish completed but acknowledgment lost",
+    "changed original writer/session/source pin",
+    "old held Native/HA/namespace owner after rotation",
+    "cold process reopen decrypts old and new data with exact root/cursor/term",
+    "counter persists after Disabled and process crash",
+    "mandatory audit/deadline failure after physical commit never returns successful delivery"
+  ],
+  "full_openbao271_replacement": false,
+  "runtime_activation": false,
+  "compile_run": false,
+  "tests_run": false,
+  "production_modified": false
+}
