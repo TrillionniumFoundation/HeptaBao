@@ -2289,6 +2289,13 @@ impl Service {
     ) -> Response {
         let _raw_reply_ingress =
             crate::auth::IngressReplyScope::restore(pending.raw_reply_ingress.clone());
+        // Snapshot finalization AND terminal clock/audit completion retain the
+        // originally admitted scope; a split transfer must not lose its budget.
+        let _snapshot_deadline = match &pending.effect {
+            ExternalEffectPlan::SnapshotTransfer(plan) => Some(
+                crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline())),
+            _ => None,
+        };
         let response = match (pending.effect, result) {
             #[cfg(target_os = "linux")]
             (

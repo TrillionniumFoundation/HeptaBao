@@ -48,6 +48,12 @@ pub(super) struct SnapshotTransferPlan {
     #[cfg(feature = "fixture-native-v6-service")]
     native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
 }
+impl SnapshotTransferPlan {
+    pub(super) fn original_deadline(&self) -> Instant {
+        self.deadline
+    }
+}
+
 // Only this module can construct the capability, after native archive and
 // live-seal authentication. It contains the exact validated restore candidate.
 pub(super) struct VerifiedNativeRestore {

@@ -336,3 +336,68 @@ fn native_snapshot_changed_target_is_rejected_and_unrelated_request_remains_usab
     assert!(!service.recovery_required);
     Ok(())
 }
+
+#[test]
+fn finite_use_snapshot_retains_original_completion_clock_and_consumes_once() -> TestResult {
+    let (_root, mut service, _key, root_token) = initialized()?;
+    put(&mut service, &root_token, "finite-use-kept");
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root_token,
+        json!({"policies":["root"],"num_uses":1,"ttl":"30s","no_default_policy":true,"no_parent":true}),
+    );
+    assert_eq!(
+        issued.status, 200,
+        "real pre-migration token setup: {}",
+        issued.body
+    );
+    let token = Zeroizing::new(
+        issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("issued token")?
+            .to_owned(),
+    );
+    activate(&mut service, &root_token);
+    let bytes = download(&mut service, &token)?;
+    assert!(bytes.starts_with(&[0x1f, 0x8b]));
+    assert!(service.native_request_binding.is_none());
+    let denied = begin(&mut service, "GET", &token);
+    assert!(matches!(denied,RequestExecution::Complete(ref response) if response.status==403));
+    assert_eq!(
+        get(&mut service, &root_token),
+        json!({"value":"finite-use-kept"})
+    );
+    assert!(!service.recovery_required);
+    Ok(())
+}
+
+#[test]
+fn cancelled_finite_snapshot_does_not_rearm_consumption_or_poison_root_actor() -> TestResult {
+    let (_root, mut service, _key, root_token) = initialized()?;
+    put(&mut service, &root_token, "kept");
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root_token,
+        json!({"policies":["root"],"num_uses":1,"ttl":"30s","no_default_policy":true,"no_parent":true}),
+    );
+    assert_eq!(issued.status, 200);
+    let token = Zeroizing::new(
+        issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("issued token")?
+            .to_owned(),
+    );
+    activate(&mut service, &root_token);
+    drop(pending(&mut service, "POST", &token)?);
+    assert!(service.native_request_binding.is_none());
+    assert!(
+        matches!(begin(&mut service,"POST",&token),RequestExecution::Complete(ref response) if response.status==403)
+    );
+    assert_eq!(get(&mut service, &root_token), json!({"value":"kept"}));
+    assert!(!service.recovery_required);
+    Ok(())
+}
