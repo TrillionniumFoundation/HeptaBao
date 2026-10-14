@@ -209,6 +209,26 @@ fn context(domain: &ObjectDomain, reference: &ObjectRef) -> Vec<u8> {
     aad
 }
 
+#[cfg(test)]
+std::thread_local! {
+    static STAGING_OUTCOMES: std::cell::Cell<(u64, u64)> = const { std::cell::Cell::new((0, 0)) };
+}
+#[cfg(test)]
+fn note_staging_outcome(reused: bool) {
+    STAGING_OUTCOMES.with(|counts| {
+        let (old, new) = counts.get();
+        counts.set(if reused {
+            (old + 1, new)
+        } else {
+            (old, new + 1)
+        });
+    });
+}
+#[cfg(test)]
+pub(super) fn staging_outcomes() -> (u64, u64) {
+    STAGING_OUTCOMES.with(std::cell::Cell::get)
+}
+
 pub(super) fn stage(
     durable: &mut DurableService<AeadBarrier>,
     session: &ImmutableSourceSession,
@@ -221,6 +241,40 @@ pub(super) fn stage(
     let locator = BlobLocator::new(session.store_id(), *reference.id.bytes())
         .map_err(|_| ServiceError::CorruptState)?;
     let aad = context(domain, reference);
+    // A committed typed slot is reusable only after current source/session,
+    // exact physical pin and fresh AEAD plaintext equality checks. This is not
+    // a cache hit: corrupt, foreign, stale or expired inputs still fail closed.
+    // In particular, a terminal Auth clock write must not fsync every unchanged
+    // native metadata object by staging an unrelated randomized ciphertext.
+    if let Some(stored) = durable.get("system", &v6_records::native_resource(domain, reference))? {
+        before()?;
+        if stored.expose().starts_with(MAGIC) {
+            let slot =
+                Slot::decode(stored.expose(), reference).map_err(|_| ServiceError::CorruptState)?;
+            if slot.locator != locator || slot.plaintext_bytes != object.bytes().len() {
+                return Err(ServiceError::CorruptState);
+            }
+            let pin = durable.pin_immutable_object_before_read(
+                session,
+                slot.locator,
+                slot.ciphertext_bytes,
+                before,
+            )?;
+            let authenticated =
+                durable.read_immutable_object_before_delivery(session, &pin, &aad, before)?;
+            before()?;
+            if authenticated.as_slice() != object.bytes() {
+                return Err(ServiceError::RequestBindingConflict);
+            }
+            #[cfg(test)]
+            note_staging_outcome(true);
+            before()?;
+            return slot.encode();
+        }
+        // Legacy inline V6 format-1 objects keep the existing staging path;
+        // this optimization grants them no new admission or reader authority.
+    }
+    before()?;
     let pin = durable.stage_immutable_object_before_publish(
         session,
         locator,
@@ -229,6 +283,8 @@ pub(super) fn stage(
         before,
     )?;
     before()?;
+    #[cfg(test)]
+    note_staging_outcome(false);
     Slot {
         locator,
         ciphertext_bytes: pin.ciphertext_len(),

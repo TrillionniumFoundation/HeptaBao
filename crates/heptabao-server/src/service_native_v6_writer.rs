@@ -1178,6 +1178,81 @@ mod tests {
     }
 
     #[test]
+    fn genuine_native_unchanged_metadata_reauthenticates_without_restage() -> TestResult {
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service()?;
+        service.configure_native_v6_candidate()?;
+        let (_, root) = {
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + Duration::from_secs(15),
+            );
+            super::super::tests::bootstrap(&mut service)?
+        };
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "secret/data/reused-stage",
+                &root,
+                json!({"data":{"kept":"one-resource"}})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call_default_budget(
+                &mut service,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &root,
+                json!({})
+            )
+            .status,
+            204
+        );
+        // Root-backed issuance establishes precise token clock semantics.
+        let _token = precise_token(&mut service, &root, Duration::from_secs(30))?;
+        let source_before = native_frontier(&mut service)?;
+        let counts_before = super::super::native_blob_source::staging_outcomes();
+        let observation = call_default_budget(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &root,
+            json!({}),
+        );
+        assert_eq!(observation.status, 200);
+        let counts_after = super::super::native_blob_source::staging_outcomes();
+        assert!(
+            counts_after.0 > counts_before.0,
+            "no actual committed ciphertext was reauthenticated"
+        );
+        let source_after = native_frontier(&mut service)?;
+        assert!(
+            same_native_resources_except_auth_clock(&source_before, &source_after)
+                .map_err(|_| "invalid metadata reuse frontier")?
+        );
+        assert!(source_after.generation > source_before.generation);
+        // Only changed clock-owner material is staged; the existing native
+        // resource must still pass a real selected-payload authentication.
+        let response = call_default_budget(
+            &mut service,
+            "GET",
+            "secret/data/reused-stage",
+            &root,
+            json!({}),
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"]["data"]["kept"], "one-resource");
+        eprintln!(
+            "native-reuse-proof reauthenticated={} newly_staged={} unchanged_resource=true",
+            counts_after.0 - counts_before.0,
+            counts_after.1 - counts_before.1
+        );
+        Ok(())
+    }
+
+    #[test]
     fn native_clock_witness_rejects_every_unwitnessed_durable_dimension() {
         let original = NativeDurableFrontier {
             generation: 7,
