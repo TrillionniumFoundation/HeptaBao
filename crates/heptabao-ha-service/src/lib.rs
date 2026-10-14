@@ -20,6 +20,9 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
+mod peer_observation;
+pub use peer_observation::{PeerIoObservation, PeerIoStage, PeerOperation};
+
 use ring::rand::{SecureRandom, SystemRandom};
 use ring::{digest, hmac};
 
@@ -732,25 +735,64 @@ impl MutualTlsPeerTransport {
         frame: &[u8],
         caller_deadline: Instant,
     ) -> Result<Vec<u8>, HaError> {
+        self.exchange_before_observed(
+            peer,
+            frame,
+            caller_deadline,
+            &mut PeerIoObservation::default(),
+        )
+    }
+
+    pub fn exchange_before_observed(
+        &self,
+        peer: &NodeId,
+        frame: &[u8],
+        caller_deadline: Instant,
+        observation: &mut PeerIoObservation,
+    ) -> Result<Vec<u8>, HaError> {
+        observation.enter(PeerIoStage::FrameValidate);
         if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
             return Err(HaError::InvalidFrame);
         }
         let deadline = caller_deadline.min(Instant::now() + self.timeout);
+        observation.enter(PeerIoStage::PeerLookup);
         let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
+        observation.enter(PeerIoStage::ServerName);
         let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
             .map_err(|_| HaError::InvalidCluster)?;
+        observation.enter(PeerIoStage::Deadline);
         let remaining = forward_remaining(deadline).map_err(|_| HaError::Transport)?;
-        let stream = TcpStream::connect_timeout(&endpoint.address, remaining)
-            .map_err(|_| HaError::Transport)?;
-        stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
+        observation.enter(PeerIoStage::TcpConnect);
+        let stream = TcpStream::connect_timeout(&endpoint.address, remaining).map_err(|error| {
+            observation.record_io(&error);
+            HaError::Transport
+        })?;
+        observation.enter(PeerIoStage::SocketConfig);
+        stream.set_nodelay(true).map_err(|error| {
+            observation.record_io(&error);
+            HaError::Transport
+        })?;
         let stream = ForwardDeadlineStream { stream, deadline };
+        observation.enter(PeerIoStage::TlsSetup);
         let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
-            .map_err(|_| HaError::Transport)?;
+            .map_err(|error| {
+                observation.record_tls(&error);
+                HaError::Transport
+            })?;
         let mut tls = rustls::StreamOwned::new(connection, stream);
-        write_bounded_frame(&mut tls, frame)?;
-        let mut response = zeroize::Zeroizing::new(read_bounded_frame(&mut tls)?);
+        let written = write_bounded_frame_observed(&mut tls, frame, observation);
+        if written.is_err() {
+            observation.mark_tls_phase(tls.conn.is_handshaking());
+        }
+        written?;
+        let received = read_bounded_frame_observed(&mut tls, observation);
+        if received.is_err() {
+            observation.mark_tls_phase(tls.conn.is_handshaking());
+        }
+        let mut response = zeroize::Zeroizing::new(received?);
         // Buffered TLS plaintext must not bypass the final deadline check, and
         // a rejected late response must erase its plaintext before deallocation.
+        observation.enter(PeerIoStage::Deadline);
         forward_remaining(deadline).map_err(|_| HaError::Transport)?;
         Ok(std::mem::take(&mut *response))
     }
@@ -858,29 +900,84 @@ pub fn serve_one_mtls_peer_frame<H>(
 where
     H: FnOnce(NodeId, Vec<u8>) -> Result<Vec<u8>, HaError>,
 {
+    serve_one_mtls_peer_frame_observed(
+        listener,
+        server_config,
+        identities,
+        timeout,
+        allow_missing_raft_alpn,
+        &mut PeerIoObservation::default(),
+        |peer, frame, _observation| handler(peer, frame),
+    )
+}
+
+pub fn serve_one_mtls_peer_frame_observed<H>(
+    listener: &TcpListener,
+    server_config: Arc<rustls::ServerConfig>,
+    identities: &PinnedClientCertificateMap,
+    timeout: Duration,
+    allow_missing_raft_alpn: bool,
+    observation: &mut PeerIoObservation,
+    handler: H,
+) -> Result<(), HaError>
+where
+    H: FnOnce(NodeId, Vec<u8>, &mut PeerIoObservation) -> Result<Vec<u8>, HaError>,
+{
+    observation.enter(PeerIoStage::FrameValidate);
     if timeout.is_zero() || timeout > Duration::from_secs(60) {
         return Err(HaError::InvalidCluster);
     }
-    let (stream, _) = listener.accept().map_err(|_| HaError::Transport)?;
-    configure_accepted_peer_stream(&stream, timeout)?;
-    let connection =
-        rustls::ServerConnection::new(server_config).map_err(|_| HaError::Transport)?;
+    observation.enter(PeerIoStage::Accept);
+    let (stream, _) = listener.accept().map_err(|error| {
+        observation.record_io(&error);
+        HaError::Transport
+    })?;
+    observation.enter(PeerIoStage::SocketConfig);
+    configure_accepted_peer_stream_observed(&stream, timeout, observation)?;
+    observation.enter(PeerIoStage::TlsSetup);
+    let connection = rustls::ServerConnection::new(server_config).map_err(|error| {
+        observation.record_tls(&error);
+        HaError::Transport
+    })?;
     let mut tls = rustls::StreamOwned::new(connection, stream);
-    tls.conn
-        .complete_io(&mut tls.sock)
-        .map_err(|_| HaError::PeerAuthenticationFailed)?;
+    observation.enter(PeerIoStage::TlsHandshake);
+    tls.conn.complete_io(&mut tls.sock).map_err(|error| {
+        observation.record_io(&error);
+        observation.mark_tls_phase(true);
+        HaError::PeerAuthenticationFailed
+    })?;
+    observation.enter(PeerIoStage::Alpn);
     require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)?;
+    observation.enter(PeerIoStage::LeafPin);
     let certificates = tls
         .conn
         .peer_certificates()
         .ok_or(HaError::PeerAuthenticationFailed)?;
     let peer = identify_peer_certificate_chain(identities, certificates)?;
-    let request = read_bounded_frame(&mut tls)?;
-    let response = handler(peer, request)?;
-    write_bounded_frame(&mut tls, &response)
+    let received = read_bounded_frame_observed(&mut tls, observation);
+    if received.is_err() {
+        observation.mark_tls_phase(tls.conn.is_handshaking());
+    }
+    let request = received?;
+    observation.enter(PeerIoStage::Service);
+    let response = handler(peer, request, observation)?;
+    let written = write_bounded_frame_observed(&mut tls, &response, observation);
+    if written.is_err() {
+        observation.mark_tls_phase(tls.conn.is_handshaking());
+    }
+    written
 }
 
+#[cfg(test)]
 fn configure_accepted_peer_stream(stream: &TcpStream, timeout: Duration) -> Result<(), HaError> {
+    configure_accepted_peer_stream_observed(stream, timeout, &mut PeerIoObservation::default())
+}
+
+fn configure_accepted_peer_stream_observed(
+    stream: &TcpStream,
+    timeout: Duration,
+    observation: &mut PeerIoObservation,
+) -> Result<(), HaError> {
     // BSD/macOS accept can inherit the listener's nonblocking mode. These
     // synchronous TLS/frame reads require blocking I/O with the existing finite
     // socket timeouts; otherwise a normal partial handshake is WouldBlock.
@@ -890,7 +987,10 @@ fn configure_accepted_peer_stream(stream: &TcpStream, timeout: Duration) -> Resu
         .and_then(|()| stream.set_nodelay(true))
         .and_then(|()| stream.set_read_timeout(Some(timeout)))
         .and_then(|()| stream.set_write_timeout(Some(timeout)))
-        .map_err(|_| HaError::Transport)
+        .map_err(|error| {
+            observation.record_io(&error);
+            HaError::Transport
+        })
 }
 
 fn require_raft_alpn(
@@ -1327,30 +1427,58 @@ fn create_lock(path: &Path) -> Result<File, HaError> {
 }
 
 fn write_bounded_frame(writer: &mut impl Write, frame: &[u8]) -> Result<(), HaError> {
+    write_bounded_frame_observed(writer, frame, &mut PeerIoObservation::default())
+}
+fn write_bounded_frame_observed(
+    writer: &mut impl Write,
+    frame: &[u8],
+    observation: &mut PeerIoObservation,
+) -> Result<(), HaError> {
+    observation.enter(PeerIoStage::FrameValidate);
     if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
         return Err(HaError::InvalidFrame);
     }
     let length = u32::try_from(frame.len()).map_err(|_| HaError::InvalidFrame)?;
-    writer
-        .write_all(&length.to_be_bytes())
-        .and_then(|()| writer.write_all(frame))
-        .and_then(|()| writer.flush())
-        .map_err(|_| HaError::Transport)
+    observation.enter(PeerIoStage::WriteLength);
+    writer.write_all(&length.to_be_bytes()).map_err(|error| {
+        observation.record_io(&error);
+        HaError::Transport
+    })?;
+    observation.enter(PeerIoStage::WritePayload);
+    writer.write_all(frame).map_err(|error| {
+        observation.record_io(&error);
+        HaError::Transport
+    })?;
+    observation.enter(PeerIoStage::Flush);
+    writer.flush().map_err(|error| {
+        observation.record_io(&error);
+        HaError::Transport
+    })
 }
-
 fn read_bounded_frame(reader: &mut impl Read) -> Result<Vec<u8>, HaError> {
+    read_bounded_frame_observed(reader, &mut PeerIoObservation::default())
+}
+fn read_bounded_frame_observed(
+    reader: &mut impl Read,
+    observation: &mut PeerIoObservation,
+) -> Result<Vec<u8>, HaError> {
+    observation.enter(PeerIoStage::ReadLength);
     let mut length = [0_u8; 4];
-    reader
-        .read_exact(&mut length)
-        .map_err(|_| HaError::Transport)?;
+    reader.read_exact(&mut length).map_err(|error| {
+        observation.record_io(&error);
+        HaError::Transport
+    })?;
     let length = u32::from_be_bytes(length) as usize;
+    observation.enter(PeerIoStage::FrameValidate);
     if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
         return Err(HaError::InvalidFrame);
     }
     let mut frame = zeroize::Zeroizing::new(vec![0_u8; length]);
-    reader
-        .read_exact(&mut frame)
-        .map_err(|_| HaError::Transport)?;
+    observation.enter(PeerIoStage::ReadPayload);
+    reader.read_exact(&mut frame).map_err(|error| {
+        observation.record_io(&error);
+        HaError::Transport
+    })?;
     Ok(std::mem::take(&mut *frame))
 }
 
