@@ -1,0 +1,146 @@
+{
+  "aggregate_source_binding_after": {
+    "head": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+    "source_clean": true,
+    "tree": "e565658e3e8f2541a8046cb79ffc591997112392"
+  },
+  "failed_attempts_preserved": [
+    {
+      "error": [
+        {
+          "case": "genuine_wrapper_existing_constructor_rejects_preexisting_bad_durable_graph",
+          "errno": 22,
+          "error_type": "OSError",
+          "stage": "producer_descriptor_get_seals"
+        }
+      ],
+      "independent_late_observed_identities_gone": true,
+      "observed_identity_count": 6,
+      "original_run_relabelled_pass": false,
+      "original_status": "failed",
+      "receipt_sha256": "82dd554e1810c81c7b82bed1def138f28688190f1a6a09864c26ca8c843b0f08",
+      "run": "05"
+    },
+    {
+      "error": [
+        {
+          "case": "genuine_wrapper_completed_publication_rejects_after_write_corrupt_graph",
+          "errno": 13,
+          "error_type": "PermissionError",
+          "stage": "held_child_executable_witness"
+        }
+      ],
+      "independent_late_observed_identities_gone": true,
+      "observed_identity_count": 28,
+      "original_run_relabelled_pass": false,
+      "original_status": "failed",
+      "receipt_sha256": "485d448ab07b42d989b715ae950ba3362e6f3a9fa9d7b015ff758167642b43f7",
+      "run": "06"
+    }
+  ],
+  "full_openbao271_replacement": false,
+  "head": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+  "not_proved": [
+    "complete_openbao271_surface",
+    "newer_integrated_source_qualification",
+    "scalable_active_KV2_cutover",
+    "production_authority_recovery",
+    "production_asset_migration_and_rollback",
+    "long_running_mixed_platform_HA"
+  ],
+  "observer_unit_tests_passed": 13,
+  "original_receipts_modified": false,
+  "private_machine_paths_and_pids_omitted": true,
+  "production_cutover": false,
+  "production_provider_modified": false,
+  "profiles": [
+    {
+      "failed": 0,
+      "final_owned_wrapper_scan_empty": true,
+      "genuine_passed": 8,
+      "genuine_receipt_sha256": "1ceef0555c1396325446fa7d8902dcf69f3cb6d1decffdfb42e90796807204b9",
+      "head": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+      "inventory_sha256": "6b2ff030442f94d67ca6507dc3db9ee9ce134f17ab58d7cd5ded64fd67266110",
+      "libtest_sha256": "31aa56bea6d7d4d661a84655668e8aedb173a1efcc403e34e80a1924ca3e2446",
+      "missing_test_names": [],
+      "observed_identities_gone": true,
+      "ordinary_ignored": 8,
+      "ordinary_passed": 2779,
+      "ordinary_receipt_sha256": "7207968ac3641bce9a4bf8f78c035c71f19ee6f1e8501014f2eb0df0aae7813d",
+      "original_seed_unchanged": true,
+      "positive_wrapper_identities": 29,
+      "producer_slot_states": {
+        "reused": 2,
+        "same_image": 27
+      },
+      "profile": "default",
+      "same_binary_proved": true,
+      "tree": "e565658e3e8f2541a8046cb79ffc591997112392",
+      "unique_frozen_tests_covered": 2787,
+      "unqualified_exited_samples": 12,
+      "within_original_budget": true,
+      "working_keyobjects_unchanged": true
+    },
+    {
+      "failed": 0,
+      "final_owned_wrapper_scan_empty": true,
+      "genuine_passed": 8,
+      "genuine_receipt_sha256": "0f1c7915808469406ece2afeaad01aad317ea64606459c17dc745f1558f749b5",
+      "head": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+      "inventory_sha256": "379c2d7fb584d3cb8de5592cf4f749a815bb2817291da3a6bb26fb9cf47ccd0c",
+      "libtest_sha256": "01f6f8db044245ec07033e321cf0f95bf4111975da043e2d374f1f2d21f293f1",
+      "missing_test_names": [],
+      "observed_identities_gone": true,
+      "ordinary_ignored": 8,
+      "ordinary_passed": 2784,
+      "ordinary_receipt_sha256": "8b704bd681c86381ca09ea810fa5479fe8e24641aadc230e81dc38f762d36ccd",
+      "original_seed_unchanged": true,
+      "positive_wrapper_identities": 30,
+      "producer_slot_states": {
+        "reused": 2,
+        "same_image": 28
+      },
+      "profile": "native-fixture",
+      "same_binary_proved": true,
+      "tree": "e565658e3e8f2541a8046cb79ffc591997112392",
+      "unique_frozen_tests_covered": 2792,
+      "unqualified_exited_samples": 12,
+      "within_original_budget": true,
+      "working_keyobjects_unchanged": true
+    },
+    {
+      "failed": 0,
+      "final_owned_wrapper_scan_empty": true,
+      "genuine_passed": 8,
+      "genuine_receipt_sha256": "51e74ba937590706d57d2305ba6396cd06d0a7f733a157a585eb2238ff7ea51b",
+      "head": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+      "inventory_sha256": "7393c575192c52103387b90322f215ee6f18d7a5b39f713b63c38e643fd62979",
+      "libtest_sha256": "2e139bb576064c9f4e2cd79f62200917d9964648404bbb939b15282ebab9483b",
+      "missing_test_names": [],
+      "observed_identities_gone": true,
+      "ordinary_ignored": 8,
+      "ordinary_passed": 2791,
+      "ordinary_receipt_sha256": "8b704bd681c86381ca09ea810fa5479fe8e24641aadc230e81dc38f762d36ccd",
+      "original_seed_unchanged": true,
+      "positive_wrapper_identities": 30,
+      "producer_slot_states": {
+        "reused": 2,
+        "same_image": 28
+      },
+      "profile": "native-v6-service",
+      "same_binary_proved": true,
+      "tree": "e565658e3e8f2541a8046cb79ffc591997112392",
+      "unique_frozen_tests_covered": 2799,
+      "unqualified_exited_samples": 13,
+      "within_original_budget": true,
+      "working_keyobjects_unchanged": true
+    }
+  ],
+  "public_projection_of_private_receipt_sha256": "b11ecde7c3053a6ea9e2f29e39c33ee0c240b65a1bf145401072efb007f24785",
+  "schema": "heptabao.b9.x230.three-profile-exact-name-union.v1",
+  "status": "passed_scoped_frozen_libtest_inventory_union",
+  "tree": "e565658e3e8f2541a8046cb79ffc591997112392",
+  "unit_receipt_sha256": "d2da35234b3d6ce1953e3200340e3f97ecb38cde044c1e29f406c95951c36906",
+  "verified_unix": 1791954014.9462268,
+  "verifier_sha256": "2c2edc007389498fd33d6011d2a96c0566e2d5e732ac05c7396bcee79c825cd2"
+}
