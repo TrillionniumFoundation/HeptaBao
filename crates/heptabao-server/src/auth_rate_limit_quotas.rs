@@ -2,6 +2,11 @@
 //! rules. Definitions are encrypted Auth owner data; per-IP buckets are node RAM.
 use super::*;
 pub(crate) const STATE_SCHEMA: u32 = 134;
+// Schema 135 belongs to database lease precision; this source does not implement it.
+pub(crate) const CERTIFICATE_STATE_SCHEMA: u32 = 136;
+fn false_marker(value: &bool) -> bool {
+    !*value
+}
 const MAX_QUOTAS: usize = 256;
 const MAX_DURATION: u64 = 86400 * 30;
 const MAX_RATE: f64 = 1_000_000.0;
@@ -38,10 +43,9 @@ impl Definition {
         {
             return Err(bad("invalid bounded rate limit definition"));
         }
-        let relative = self
-            .path
-            .strip_prefix("auth/")
-            .ok_or_else(|| bad("quota path must identify a native AppRole mount or login"))?;
+        let relative = self.path.strip_prefix("auth/").ok_or_else(|| {
+            bad("quota path must identify a native AppRole or certificate mount or login")
+        })?;
         let mount = if let Some(mount) = relative
             .strip_suffix("/login")
             .filter(|_| self.role.is_empty())
@@ -111,6 +115,8 @@ impl Config {
 pub(crate) struct Registry {
     pub(crate) config: Config,
     pub(crate) definitions: BTreeMap<String, Definition>,
+    #[serde(default, skip_serializing_if = "false_marker")]
+    certificate_reader_floor: bool,
     next_revision: u64,
     #[serde(skip)]
     pub(crate) runtime_owner: std::sync::Arc<()>,
@@ -120,6 +126,7 @@ impl Default for Registry {
         Self {
             config: Config::default(),
             definitions: BTreeMap::new(),
+            certificate_reader_floor: false,
             next_revision: 1,
             runtime_owner: std::sync::Arc::new(()),
         }
@@ -205,6 +212,11 @@ impl AuthState {
     pub(crate) fn has_rate_limit_quota_state(&self) -> bool {
         self.rate_limit_quotas.is_some()
     }
+    pub(crate) fn has_certificate_quota_state(&self) -> bool {
+        self.rate_limit_quotas
+            .as_ref()
+            .is_some_and(|r| r.certificate_reader_floor)
+    }
     pub(crate) fn validate_rate_limit_quota_state(
         &self,
         previous: Option<&Self>,
@@ -214,22 +226,44 @@ impl AuthState {
         {
             return Err(bad("quota reader floor cannot be removed"));
         }
+        if previous.is_some_and(Self::has_certificate_quota_state)
+            && !self.has_certificate_quota_state()
+        {
+            return Err(bad("certificate quota reader floor cannot be removed"));
+        }
         if let Some(registry) = &self.rate_limit_quotas {
             registry.validate()?;
+            let mounts = self.effective_auth_mounts("");
+            if !registry.certificate_reader_floor
+                && registry.definitions.values().any(|d| {
+                    let relative = d.path.strip_prefix("auth/").unwrap_or("");
+                    let mount = relative
+                        .strip_suffix("/login")
+                        .unwrap_or(relative)
+                        .trim_end_matches('/');
+                    mounts.get(mount).is_some_and(|m| m.kind == "cert")
+                })
+            {
+                return Err(bad(
+                    "certificate quota requires its persistent reader floor",
+                ));
+            }
         }
         Ok(())
     }
     pub(crate) fn rate_limit_quota_registry(&self) -> Option<&Registry> {
         self.rate_limit_quotas.as_ref()
     }
-    /// Resolves only the live native catalog and role_id, without consuming SID,
-    /// authenticating a token, or invoking a plugin/provider.
-    pub(crate) fn rate_limit_approle_scope(
+    /// Select from the synchronized native catalog without SID, token or plugin effects.
+    /// Certificate roles require the observed TLS chain and original request clock.
+    pub(crate) fn rate_limit_native_auth_scope(
         &self,
         namespace: &str,
         _method: &str,
         path: &str,
         body: &Value,
+        certificate_time: Option<AuthorityTime>,
+        certificates: Option<&[Vec<u8>]>,
     ) -> Result<Option<(String, String)>, AuthError> {
         if !namespace.is_empty() {
             return Ok(None);
@@ -238,17 +272,34 @@ impl AuthState {
             return Ok(None);
         };
         let mounts = self.effective_auth_mounts(namespace);
-        let Some((mount, entry, _suffix)) = mounts.iter().find_map(|(mount, entry)| {
-            relative
-                .strip_prefix(&format!("{mount}/"))
-                .map(|suffix| (mount, entry, suffix))
-        }) else {
+        let Some((mount, entry, _suffix)) = mounts
+            .iter()
+            .filter_map(|(mount, entry)| {
+                relative
+                    .strip_prefix(&format!("{mount}/"))
+                    .map(|suffix| (mount, entry, suffix))
+            })
+            .max_by_key(|(mount, _, _)| mount.len())
+        else {
             return Ok(None);
         };
-        if entry.kind != "approle" {
+        if !matches!(entry.kind.as_str(), "approle" | "cert") {
             return Ok(None);
         }
         let prefix = format!("auth/{mount}/");
+        if entry.kind == "cert"
+            && !self.has_certificate_quota_state()
+            && self.rate_limit_quotas.as_ref().is_some_and(|r| {
+                r.definitions
+                    .values()
+                    .any(|d| d.path == prefix || d.path == format!("{prefix}login"))
+            })
+        {
+            return Err(err(
+                503,
+                "certificate quota reader authority is unavailable",
+            ));
+        }
         let has_role_quota = self.rate_limit_quotas.as_ref().is_some_and(|r| {
             r.definitions
                 .values()
@@ -258,7 +309,32 @@ impl AuthState {
         // requests on a mount with role rules. Resolution failure is an empty
         // role, so the exact path and mount fallback counters still apply.
         // Authentication and its stricter body validation happen afterward.
-        let role = if has_role_quota {
+        let role = if has_role_quota && entry.kind == "cert" {
+            let time = certificate_time
+                .ok_or_else(|| err(503, "trusted certificate quota clock is unavailable"))?;
+            let requested = match body.get("name") {
+                None => Ok(None),
+                Some(v) => v
+                    .as_str()
+                    .filter(|name| super::valid_name(name))
+                    .map(Some)
+                    .ok_or_else(denied),
+            };
+            // A failed ResolveRole leaves the role empty. Exact-path and mount
+            // fallback still consume their quota before ordinary login denial.
+            requested
+                .and_then(|name| {
+                    cert_resolver::resolve(
+                        self,
+                        AuthScope { namespace, mount },
+                        name,
+                        time,
+                        certificates.ok_or_else(denied)?,
+                    )
+                })
+                .map(|matched| matched.name.to_owned())
+                .unwrap_or_default()
+        } else if has_role_quota {
             body.get("role_id")
                 .and_then(Value::as_str)
                 .and_then(|role_id| {
@@ -406,22 +482,28 @@ impl AuthState {
                     .transpose()?
                     .unwrap_or("");
                 let relative = supplied.strip_prefix("auth/").ok_or_else(|| {
-                    bad("quota path must identify a native AppRole mount or login")
+                    bad("quota path must identify a native AppRole or certificate mount or login")
                 })?;
                 let mounts = self.effective_auth_mounts("");
-                let (mount, login_suffix) =
-                    if mounts.get(relative).is_some_and(|m| m.kind == "approle") {
-                        (relative, false)
-                    } else if let Some(mount) = relative.strip_suffix("/login").filter(|mount| {
-                        role.is_empty() && mounts.get(*mount).is_some_and(|m| m.kind == "approle")
-                    }) {
-                        (mount, true)
-                    } else {
-                        return Err(bad(
-                            "quota path must identify an actual native AppRole mount or login",
-                        ));
-                    };
+                let (mount, login_suffix) = if mounts
+                    .get(relative)
+                    .is_some_and(|m| matches!(m.kind.as_str(), "approle" | "cert"))
+                {
+                    (relative, false)
+                } else if let Some(mount) = relative.strip_suffix("/login").filter(|mount| {
+                    role.is_empty()
+                        && mounts
+                            .get(*mount)
+                            .is_some_and(|m| matches!(m.kind.as_str(), "approle" | "cert"))
+                }) {
+                    (mount, true)
+                } else {
+                    return Err(bad(
+                        "quota path must identify an actual native AppRole or certificate mount or login",
+                    ));
+                };
                 validate_path(mount, false)?;
+                let certificate = mounts.get(mount).is_some_and(|m| m.kind == "cert");
                 let path = if login_suffix {
                     supplied.to_owned()
                 } else {
@@ -467,6 +549,7 @@ impl AuthState {
                     revision,
                 };
                 definition.validate()?;
+                registry.certificate_reader_floor |= certificate;
                 registry.next_revision = next_revision;
                 registry.definitions.insert(name.into(), definition);
                 Ok(empty(true))

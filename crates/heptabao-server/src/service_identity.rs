@@ -284,6 +284,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_certificate_quota_state() {
+            required.max(CERTIFICATE_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -302,6 +307,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "native rate limit quota requires schema 134",
+            ));
+        }
+        if self.schema < CERTIFICATE_QUOTA_STATE_SCHEMA
+            && (self.auth.has_certificate_quota_state()
+                || previous.is_some_and(|s| s.schema >= CERTIFICATE_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native certificate quota requires schema 136",
             ));
         }
         self.auth
@@ -2178,6 +2192,15 @@ impl State {
                 "quota reader marker requires schema 134",
             ));
         }
+        if self.schema < CERTIFICATE_QUOTA_STATE_SCHEMA && self.auth.has_certificate_quota_state()
+            || self.schema == CERTIFICATE_QUOTA_STATE_SCHEMA
+                && !self.auth.has_certificate_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "certificate quota reader marker requires schema 136",
+            ));
+        }
         self.auth
             .validate_userpass_lockout_state()
             .map_err(|_| Response::error(503, "invalid userpass lockout state"))?;
@@ -2648,6 +2671,7 @@ impl State {
             | IDENTITY_MFA_STATE_SCHEMA
             | WORKFLOW_INPUT_STATE_SCHEMA
             | RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | CERTIFICATE_QUOTA_STATE_SCHEMA
             | USERPASS_ISSUANCE_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA

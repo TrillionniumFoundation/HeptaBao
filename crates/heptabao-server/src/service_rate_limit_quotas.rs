@@ -136,11 +136,13 @@ impl Service {
         if registry.definitions.is_empty() || registry.config.exempt(request.path) {
             return None;
         }
-        let (mount, role) = match state.auth.rate_limit_approle_scope(
+        let (mount, role) = match state.auth.rate_limit_native_auth_scope(
             request.namespace,
             request.method,
             request.path,
             request.body,
+            request.token_time().ok(),
+            request.client_certificates,
         ) {
             Ok(Some(scope)) => scope,
             Ok(None) => return None,
