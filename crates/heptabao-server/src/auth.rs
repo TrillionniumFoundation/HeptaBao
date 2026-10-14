@@ -4420,12 +4420,11 @@ impl AuthState {
             let mounts = self.effective_auth_mounts(namespace);
             let (mount, entry, suffix) = mounts
                 .iter()
-                .filter_map(|(mount, entry)| {
+                .find_map(|(mount, entry)| {
                     auth_path
                         .strip_prefix(&format!("{mount}/"))
                         .map(|suffix| (mount, entry, suffix))
                 })
-                .max_by_key(|(mount, _, _)| mount.len())
                 .ok_or_else(|| err(404, "auth mount not found"))?;
             let scope = AuthScope { namespace, mount };
             let result = match entry.kind.as_str() {
@@ -4645,15 +4644,11 @@ impl AuthState {
             return Ok(None);
         };
         let mounts = self.effective_auth_mounts(namespace);
-        let Some((mount, entry, suffix)) = mounts
-            .iter()
-            .filter_map(|(mount, entry)| {
-                auth_path
-                    .strip_prefix(&format!("{mount}/"))
-                    .map(|suffix| (mount, entry, suffix))
-            })
-            .max_by_key(|(mount, _, _)| mount.len())
-        else {
+        let Some((mount, entry, suffix)) = mounts.iter().find_map(|(mount, entry)| {
+            auth_path
+                .strip_prefix(&format!("{mount}/"))
+                .map(|suffix| (mount, entry, suffix))
+        }) else {
             return Ok(None);
         };
         if entry.kind != "plugin" || suffix != "login" {

@@ -154,18 +154,32 @@ fn certificate_quota_uses_original_precise_der_validity_and_constraints() -> Tes
     Ok(())
 }
 #[test]
-fn certificate_quota_native_mount_selection_uses_longest_current_mount() -> TestResult {
+fn certificate_quota_native_catalog_rejects_overlap_and_binds_distinct_nested_mount() -> TestResult
+{
     let (mut state, root) = setup(LEAF)?;
+    let before = Zeroizing::new(serde_json::to_vec(&state)?);
+    let overlap = state
+        .handle(
+            Some(&root),
+            "",
+            "POST",
+            "sys/auth/cert/child",
+            &json!({"type":"cert"}),
+            NOW,
+        )
+        .expect_err("overlapping mount must fail");
+    assert_eq!(overlap.status, 400);
+    assert!(before.as_slice() == Zeroizing::new(serde_json::to_vec(&state)?).as_slice());
     let other = include_bytes!("../testdata/cert-selector-other.der");
     for (path, body) in [
-        ("sys/auth/cert/child", json!({"type":"cert"})),
+        ("sys/auth/cert-child/deep", json!({"type":"cert"})),
         (
-            "auth/cert/child/certs/childrole",
+            "auth/cert-child/deep/certs/childrole",
             json!({"certificate_sha256":certificate_sha256(other)}),
         ),
         (
             "sys/quotas/rate-limit/child",
-            json!({"path":"auth/cert/child","role":"childrole","rate":1,"interval":"1h"}),
+            json!({"path":"auth/cert-child/deep","role":"childrole","rate":1,"interval":"1h"}),
         ),
     ] {
         assert_eq!(
@@ -180,25 +194,62 @@ fn certificate_quota_native_mount_selection_uses_longest_current_mount() -> Test
     assert_eq!(
         scope(
             &state,
-            "auth/cert/child/login",
+            "auth/cert-child/deep/login",
             &json!({"name":"childrole"}),
             AuthorityTime::Coarse(NOW),
             Some(&chain)
         )?,
-        ("auth/cert/child/".into(), "childrole".into())
+        ("auth/cert-child/deep/".into(), "childrole".into())
     );
-    assert!(
-        state
-            .rate_limit_native_auth_scope(
-                "child",
-                "POST",
-                "auth/cert/login",
-                &json!({}),
-                Some(AuthorityTime::Coarse(NOW)),
-                Some(&chain)
+    let parent_chain = vec![LEAF.to_vec()];
+    assert_eq!(
+        scope(
+            &state,
+            "auth/cert/login",
+            &json!({"name":"operator"}),
+            AuthorityTime::Coarse(NOW),
+            Some(&parent_chain)
+        )?
+        .1,
+        "operator"
+    );
+    for (path, name, chain) in [
+        ("auth/cert/login", "operator", chain.as_slice()),
+        (
+            "auth/cert-child/deep/login",
+            "childrole",
+            parent_chain.as_slice(),
+        ),
+    ] {
+        assert!(
+            scope(
+                &state,
+                path,
+                &json!({"name":name}),
+                AuthorityTime::Coarse(NOW),
+                Some(chain)
             )?
-            .is_none()
-    );
+            .1
+            .is_empty()
+        );
+    }
+    for (namespace, path) in [
+        ("", "auth/cert-child/deeper/login"),
+        ("child", "auth/cert/login"),
+    ] {
+        assert!(
+            state
+                .rate_limit_native_auth_scope(
+                    namespace,
+                    "POST",
+                    path,
+                    &json!({}),
+                    Some(AuthorityTime::Coarse(NOW)),
+                    Some(&chain)
+                )?
+                .is_none()
+        );
+    }
     Ok(())
 }
 #[test]

@@ -31,3 +31,10 @@ Both blobs verified against fixed v2.7.1 tree a5db72cef75c24b920ade02065b18dd8eb
 Qualification is limited to local real-DER resolver and Service/durable-state
 regressions. No certificate-login network probe, production custody, or full
 OpenBao replacement claim is admitted by this source leaf.
+
+Native auth catalogs reject overlapping mount paths. The initial local r01 test
+incorrectly assumed a parent cert mount and its child could coexist; those two
+cases failed at the existing 400 catalog guard. r02 preserves that guard and
+tests distinct legal mounts (cert and cert-child/deep), exact path-segment
+boundaries, cross-leaf rejection and independent role/fallback buckets. Generic
+auth and plugin routing are unchanged from B9.

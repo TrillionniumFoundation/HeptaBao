@@ -233,12 +233,28 @@ fn certificate_quota_service_durable_cold_reopen_and_rule_retirement_keep_schema
 }
 
 #[test]
-fn certificate_quota_service_parent_child_grants_and_child_fallback_are_independent() -> TestResult
-{
+fn certificate_quota_service_distinct_nested_grants_and_fallback_are_independent() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
     setup(&mut service, &admin)?;
+    let before = Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/cert/child",
+            &admin,
+            json!({"type":"cert"})
+        )
+        .status,
+        400
+    );
+    assert!(
+        before.as_slice()
+            == Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?)
+                .as_slice()
+    );
     let other = include_bytes!("../testdata/cert-selector-other.der").to_vec();
     let digest: String = ring::digest::digest(&ring::digest::SHA256, &other)
         .as_ref()
@@ -246,9 +262,9 @@ fn certificate_quota_service_parent_child_grants_and_child_fallback_are_independ
         .map(|b| format!("{b:02x}"))
         .collect();
     for (path, body) in [
-        ("sys/auth/cert/child", json!({"type":"cert"})),
+        ("sys/auth/cert-child/deep", json!({"type":"cert"})),
         (
-            "auth/cert/child/certs/childrole",
+            "auth/cert-child/deep/certs/childrole",
             json!({"certificate_sha256":digest,"token_ttl":300}),
         ),
     ] {
@@ -259,14 +275,14 @@ fn certificate_quota_service_parent_child_grants_and_child_fallback_are_independ
         &mut service,
         &admin,
         "child",
-        "auth/cert/child",
+        "auth/cert-child/deep",
         "childrole",
     )?;
     quota(
         &mut service,
         &admin,
         "child-fallback",
-        "auth/cert/child/login",
+        "auth/cert-child/deep/login",
         "",
     )?;
     assert_eq!(
@@ -281,7 +297,7 @@ fn certificate_quota_service_parent_child_grants_and_child_fallback_are_independ
     assert_eq!(
         login_path(
             &mut service,
-            "auth/cert/child/login",
+            "auth/cert-child/deep/login",
             json!({"name":"childrole"}),
             Some(vec![other.clone()])
         )
@@ -291,18 +307,18 @@ fn certificate_quota_service_parent_child_grants_and_child_fallback_are_independ
     assert_eq!(
         login_path(
             &mut service,
-            "auth/cert/child/login",
+            "auth/cert-child/deep/login",
             json!({"name":"childrole"}),
             Some(vec![other])
         )
         .status,
         429
     );
-    // A parent leaf cannot grant the child role; only the child's fallback is consumed.
+    // A leaf enrolled at the separate cert mount cannot grant the nested role; only the child's fallback is consumed.
     assert_eq!(
         login_path(
             &mut service,
-            "auth/cert/child/login",
+            "auth/cert-child/deep/login",
             json!({"name":"childrole"}),
             Some(vec![LEAF.to_vec()])
         )
@@ -312,7 +328,7 @@ fn certificate_quota_service_parent_child_grants_and_child_fallback_are_independ
     assert_eq!(
         login_path(
             &mut service,
-            "auth/cert/child/login",
+            "auth/cert-child/deep/login",
             json!({"name":"childrole"}),
             Some(vec![LEAF.to_vec()])
         )

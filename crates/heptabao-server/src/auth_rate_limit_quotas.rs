@@ -272,15 +272,13 @@ impl AuthState {
             return Ok(None);
         };
         let mounts = self.effective_auth_mounts(namespace);
-        let Some((mount, entry, _suffix)) = mounts
-            .iter()
-            .filter_map(|(mount, entry)| {
-                relative
-                    .strip_prefix(&format!("{mount}/"))
-                    .map(|suffix| (mount, entry, suffix))
-            })
-            .max_by_key(|(mount, _, _)| mount.len())
-        else {
+        // Native catalog creation rejects overlapping mount paths; select
+        // from the same catalog and in the same order as authentication.
+        let Some((mount, entry, _suffix)) = mounts.iter().find_map(|(mount, entry)| {
+            relative
+                .strip_prefix(&format!("{mount}/"))
+                .map(|suffix| (mount, entry, suffix))
+        }) else {
             return Ok(None);
         };
         if !matches!(entry.kind.as_str(), "approle" | "cert") {
