@@ -448,10 +448,31 @@ impl Service {
             None => return unavailable(),
         };
         let phase = SnapshotPhaseObservation::enter("stage-objects-and-commit");
-        let result = durable.restore_v6_prepared(prepared.archive, true, &mut || {
-            self.check_v6_snapshot_owner(plan)
-                .map_err(|_| ServiceError::BarrierFailure)
-        });
+        let result = durable.restore_v6_prepared_with_io_gate(
+            prepared.archive,
+            true,
+            &mut || {
+                self.check_v6_snapshot_owner(plan)
+                    .map_err(|_| ServiceError::BarrierFailure)
+            },
+            &mut || {
+                // The original request deadline and all live stop state are
+                // tested on each bounded seek/read. FULL seal/Actor/ACL checks
+                // still surround each object, publication and terminal root.
+                if Instant::now() >= plan.deadline
+                    || self.audit_failed
+                    || self.recovery_required
+                    || self.barrier_key.is_none()
+                    || self.unseal_nonce != plan.activation
+                    || self.ha.is_some()
+                    || plan.ha.is_some()
+                    || self.current_state_identity().ok() != Some(plan.base)
+                {
+                    return Err(ServiceError::BarrierFailure);
+                }
+                Ok(())
+            },
+        );
         drop(phase);
         let fenced = durable.recovery_required();
         self.durable = Some(durable);

@@ -659,9 +659,34 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// This storage method is NOT HTTP completion, an audit receipt, or HA approval.
     pub fn restore_v6_prepared<R: Read + Seek>(
         &mut self,
-        mut prepared: PreparedV6Restore<R>,
+        prepared: PreparedV6Restore<R>,
         allow_rollback: bool,
         gate: &mut impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<RestoreOutcome, ServiceError> {
+        self.restore_v6_prepared_gate_impl(prepared, allow_rollback, gate, None)
+    }
+
+    /// Retain the ORIGINAL complete owner gate before and after each selected
+    /// object, physical batch publication, pinned reauthentication and root
+    /// commit. A separate bounded-I/O callback may check live original deadline
+    /// and in-memory stop state around each syscall; it is never an Actor or
+    /// seal authorization and cannot replace the full object boundary checks.
+    pub fn restore_v6_prepared_with_io_gate<R: Read + Seek>(
+        &mut self,
+        prepared: PreparedV6Restore<R>,
+        allow_rollback: bool,
+        gate: &mut impl FnMut() -> Result<(), ServiceError>,
+        io_gate: &mut impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<RestoreOutcome, ServiceError> {
+        self.restore_v6_prepared_gate_impl(prepared, allow_rollback, gate, Some(io_gate))
+    }
+
+    fn restore_v6_prepared_gate_impl<R: Read + Seek, G: FnMut() -> Result<(), ServiceError>>(
+        &mut self,
+        mut prepared: PreparedV6Restore<R>,
+        allow_rollback: bool,
+        gate: &mut G,
+        mut bounded_io_gate: Option<&mut dyn FnMut() -> Result<(), ServiceError>>,
     ) -> Result<RestoreOutcome, ServiceError> {
         gate()?;
         self.verify_prepared_restore(&prepared.state)?;
@@ -692,9 +717,23 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             for member in group {
                 gate()?;
                 self.verify_prepared_restore(&prepared.state)?;
-                seek_checked(&mut prepared.reader, SeekFrom::Start(member.offset), gate)?;
                 let mut ciphertext = Zeroizing::new(vec![0; member.slot.ciphertext_bytes]);
-                read_exact_checked(&mut prepared.reader, &mut ciphertext, gate)?;
+                {
+                    let mut io = || match bounded_io_gate.as_mut() {
+                        Some(physical_gate) => physical_gate(),
+                        None => gate(),
+                    };
+                    seek_checked(
+                        &mut prepared.reader,
+                        SeekFrom::Start(member.offset),
+                        &mut io,
+                    )?;
+                    read_exact_checked(&mut prepared.reader, &mut ciphertext, &mut io)?;
+                }
+                // Always revalidate FULL owner immediately after actual input I/O;
+                // no object can proceed to publication on the fast gate alone.
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
                 if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
                     return Err(ServiceError::CorruptState);
                 }
@@ -789,15 +828,24 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 {
                     return Err(ServiceError::CorruptState);
                 }
-                let actual = pin
-                    .read_ciphertext_checked(&mut || {
-                        gate()?;
-                        self.verify_prepared_restore(&prepared.state)
-                    })
-                    .map_err(|error| match error {
-                        PinReadError::Backend(e) => map_backend_error(e),
-                        PinReadError::Gate(e) => e,
-                    })?;
+                let actual = {
+                    let mut io = || match bounded_io_gate.as_mut() {
+                        Some(physical_gate) => physical_gate(),
+                        None => {
+                            gate()?;
+                            self.verify_prepared_restore(&prepared.state)
+                        }
+                    };
+                    pin.read_ciphertext_checked(&mut io)
+                        .map_err(|error| match error {
+                            PinReadError::Backend(e) => map_backend_error(e),
+                            PinReadError::Gate(e) => e,
+                        })?
+                };
+                // Full physical seal/Actor/ACL validation after the pinned bytes
+                // have actually been read, even if the bounded I/O gate passed.
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
                 let opened = Zeroizing::new(
                     self.barrier
                         .open(&member.slot.aad(), actual.as_slice())

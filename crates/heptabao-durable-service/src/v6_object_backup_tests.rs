@@ -1185,3 +1185,126 @@ fn typed_graph_fast_io_rejects_post_prepare_ciphertext_mutation() -> ResultTest 
     assert_eq!(target.generation(), 0);
     Ok(())
 }
+
+#[test]
+fn restore_fast_bounded_io_keeps_exact_ciphertext_and_cold_reopen() -> ResultTest {
+    let _serial = serial_test();
+    let (_src_root, mut source) = fixture("pack-restore-fast-source", 3, IO_CHUNK + 96)?;
+    let bytes = pack(&mut source)?;
+    let (root, mut target) = empty("pack-restore-fast-target")?;
+    let prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(bytes.clone()),
+        bytes.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    let mut full_owner_checks = 0_usize;
+    let mut live_io_checks = 0_usize;
+    target.restore_v6_prepared_with_io_gate(
+        prepared,
+        false,
+        &mut || {
+            full_owner_checks += 1;
+            Ok(())
+        },
+        &mut || {
+            live_io_checks += 1;
+            Ok(())
+        },
+    )?;
+    assert!(full_owner_checks >= 6, "every object has full owner checks");
+    assert!(
+        live_io_checks >= 12,
+        "bounded physical calls keep live stop gates"
+    );
+    assert_eq!(blob_count(&root.0), 3);
+    target.close()?;
+    let mut reopened = Owner::reopen(&root.0, TestBarrier::new(), 2048)?;
+    for i in 1..=3 {
+        assert_eq!(read_object(&mut reopened, i)?, payload(i, IO_CHUNK + 96));
+    }
+    assert_eq!(reopened.generation(), source.generation());
+    Ok(())
+}
+
+#[test]
+fn restore_fast_live_io_denial_before_release_keeps_root_unchanged() -> ResultTest {
+    let _serial = serial_test();
+    let (_sr, mut source) = fixture("pack-restore-io-denial-source", 1, IO_CHUNK + 96)?;
+    let bytes = pack(&mut source)?;
+    let (root, mut target) = empty("pack-restore-io-denial-target")?;
+    let old = target.backend.load()?;
+    let prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(bytes.clone()),
+        bytes.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    let mut full = 0;
+    let mut io = 0;
+    let error = target.restore_v6_prepared_with_io_gate(
+        prepared,
+        false,
+        &mut || {
+            full += 1;
+            Ok(())
+        },
+        &mut || {
+            io += 1;
+            if io == 4 {
+                Err(ServiceError::BarrierFailure)
+            } else {
+                Ok(())
+            }
+        },
+    );
+    assert!(matches!(error, Err(ServiceError::BarrierFailure)));
+    assert!(full > 0 && io == 4);
+    assert_eq!(blob_count(&root.0), 0);
+    assert_eq!(target.generation(), 0);
+    assert_eq!(target.backend.load()?, old);
+    Ok(())
+}
+
+#[test]
+fn restore_fast_late_full_owner_denial_cannot_be_overridden_by_live_io() -> ResultTest {
+    let _serial = serial_test();
+    let (_sr, mut source) = fixture("pack-restore-owner-denial-source", 1, IO_CHUNK + 96)?;
+    let bytes = pack(&mut source)?;
+    let (root, mut target) = empty("pack-restore-owner-denial-target")?;
+    let old = target.backend.load()?;
+    let prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(bytes.clone()),
+        bytes.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    let mut full = 0;
+    let mut io = 0;
+    let error = target.restore_v6_prepared_with_io_gate(
+        prepared,
+        false,
+        &mut || {
+            full += 1;
+            if full == 3 {
+                Err(ServiceError::BarrierFailure)
+            } else {
+                Ok(())
+            }
+        },
+        &mut || {
+            io += 1;
+            Ok(())
+        },
+    );
+    assert!(matches!(error, Err(ServiceError::BarrierFailure)));
+    assert_eq!(full, 3);
+    assert!(
+        io >= 4,
+        "physical input was consumed before full owner veto"
+    );
+    assert_eq!(blob_count(&root.0), 0);
+    assert_eq!(target.generation(), 0);
+    assert_eq!(target.backend.load()?, old);
+    Ok(())
+}
