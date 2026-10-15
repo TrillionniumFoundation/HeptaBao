@@ -834,7 +834,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                     return Err(ServiceError::CorruptState);
                 }
             }
-            for (member, _ciphertext, plaintext, pin) in values {
+            for (member, ciphertext, _plaintext, pin) in values {
                 gate()?;
                 self.verify_prepared_restore(&prepared.state)?;
                 let pin = pin.ok_or(ServiceError::CorruptState)?;
@@ -866,16 +866,25 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 // have actually been read, even if the bounded I/O gate passed.
                 gate()?;
                 self.verify_prepared_restore(&prepared.state)?;
-                let opened = Zeroizing::new(
+                // This exact ciphertext was already AEAD authenticated with
+                // the slot AAD before the immutable publication. The pinned
+                // file bytes must match the authenticated input BIT-FOR-BIT;
+                // accepting a different ciphertext that happens to decrypt
+                // to equal plaintext is weaker and repeats decryption.
+                // The real pinned read and its full pre/post owner gates above
+                // are retained. No root is published until all pins match.
+                if !constant_time_eq(actual.as_slice(), ciphertext.as_slice()) {
+                    // Preserve the original AEAD rejection semantics for a
+                    // corrupted, registered on-disk object. Even a different
+                    // *valid* ciphertext is rejected: never silently repair or
+                    // bind an imported root to a substituted physical file.
                     self.barrier
                         .open(&member.slot.aad(), actual.as_slice())
-                        .map_err(|_| ServiceError::BarrierFailure)?,
-                );
-                gate()?;
-                self.verify_prepared_restore(&prepared.state)?;
-                if opened.as_slice() != plaintext.as_slice() {
+                        .map_err(|_| ServiceError::BarrierFailure)?;
                     return Err(ServiceError::RequestBindingConflict);
                 }
+                gate()?;
+                self.verify_prepared_restore(&prepared.state)?;
             }
         }
         gate()?;
