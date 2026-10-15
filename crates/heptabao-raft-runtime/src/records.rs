@@ -24,6 +24,21 @@ const MAX_DEPTH: u8 = 18;
 const MAX_APPLICATION_JSON_BYTES: usize = 47 * 1024 * 1024;
 pub(crate) const PRODUCTION_CLIENT: &str = "heptabao-production-ha";
 
+// A staged V6 ciphertext chunk is NOT an acknowledged V6 root. The feature
+// is off by default and legacy V5 PublishedRecordRoot refuses this kind.
+#[cfg(feature = "experimental-v6-raft-objects")]
+const MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES: usize = 256 * 1024;
+
+#[cfg(feature = "experimental-v6-raft-objects")]
+fn native_v6_chunk_digest(ciphertext: &[u8]) -> RecordObjectId {
+    use sha2::{Digest, Sha256};
+    let mut hash = Sha256::new();
+    hash.update(b"heptabao.raft.native-v6.ciphertext-chunk.v1\0");
+    hash.update((ciphertext.len() as u64).to_be_bytes());
+    hash.update(ciphertext);
+    hash.finalize().into()
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum RecordObjectKind {
     Block,
@@ -32,6 +47,9 @@ pub enum RecordObjectKind {
     Branch,
     OwnerChunk,
     PackedLeaf,
+    // Private staging only. No V6 Raft root publication is enabled.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    NativeV6CiphertextChunk,
 }
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -68,6 +86,28 @@ impl fmt::Debug for SealedRecordObject {
     }
 }
 impl SealedRecordObject {
+    /// Stage one opaque V6 ciphertext chunk in the existing replicated object
+    /// store. Its domain-separated digest authenticates exact staged bytes,
+    /// NOT their barrier/actor provenance or Raft root commitment.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub fn new_native_v6_ciphertext_chunk(ciphertext: Vec<u8>) -> Result<Self, RaftRuntimeError> {
+        if !(25..=MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES).contains(&ciphertext.len()) {
+            return Err(RaftRuntimeError::RecordRejected(RecordRejection::Invalid));
+        }
+        let bytes = u32::try_from(ciphertext.len())
+            .map_err(|_| RaftRuntimeError::RecordRejected(RecordRejection::Budget))?;
+        Self::new(
+            RecordObjectRef {
+                id: native_v6_chunk_digest(&ciphertext),
+                kind: RecordObjectKind::NativeV6CiphertextChunk,
+                encoded_bytes: bytes,
+                record_count: 0,
+                payload_bytes: u64::from(bytes),
+            },
+            Vec::new(),
+            ciphertext,
+        )
+    }
     pub fn new(
         reference: RecordObjectRef,
         children: Vec<RecordObjectRef>,
@@ -156,6 +196,15 @@ impl SealedRecordObject {
                                 && bytes
                                     <= u64::from(self.reference.encoded_bytes.saturating_sub(27))
                         })
+            }
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            NativeV6CiphertextChunk => {
+                self.children.is_empty()
+                    && self.reference.record_count == 0
+                    && (25..=MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES).contains(&self.sealed.len())
+                    && u64::from(self.reference.encoded_bytes) == self.reference.payload_bytes
+                    && self.reference.payload_bytes == self.sealed.len() as u64
+                    && self.reference.id == native_v6_chunk_digest(&self.sealed)
             }
             Branch => {
                 !self.children.is_empty()
