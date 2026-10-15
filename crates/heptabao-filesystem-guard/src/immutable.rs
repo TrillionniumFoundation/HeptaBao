@@ -355,10 +355,17 @@ impl ExclusiveDirectory {
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 same_identity(opened_temporary, identity, 0).map_err(unknown)?;
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-                sync_file(&existing, buffered).map_err(unknown)?;
-                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-                gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-                self.sync_batch_directory(buffered).map_err(unknown)?;
+                // A buffered batch never acknowledges any pin before its
+                // final strong file/device and directory barriers. Each
+                // member was already fsynced before linkat; defer the
+                // post-link metadata fsync to that one final directory sync.
+                // Ordinary single-file publication retains both syncs.
+                if !buffered {
+                    sync_file(&existing, false).map_err(unknown)?;
+                    gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+                    gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+                    self.sync_batch_directory(false).map_err(unknown)?;
+                }
                 gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
                 let current = self
                     .open_file(destination, FileAccess::Read)
@@ -386,10 +393,17 @@ impl ExclusiveDirectory {
         same_identity(opened_temporary, identity, 1).map_err(unknown)?;
         same_identity(&published, identity, 1).map_err(unknown)?;
         gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
-        sync_file(&published, buffered).map_err(unknown)?;
-        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
-        gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
-        self.sync_batch_directory(buffered).map_err(unknown)?;
+        // The buffered caller holds all returned descriptors privately until
+        // its final strong barrier and directory fsync complete. Retain all
+        // live gate and post-link identity checks without issuing redundant
+        // per-object post-link fsyncs. Failure remains OutcomeUnknown and
+        // no application root or public acknowledgement may be published.
+        if !buffered {
+            sync_file(&published, false).map_err(unknown)?;
+            gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+            gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
+            self.sync_batch_directory(false).map_err(unknown)?;
+        }
         gate().map_err(ImmutablePublicationCheckedError::GateAfterLink)?;
         let current = self
             .open_file(destination, FileAccess::Read)
