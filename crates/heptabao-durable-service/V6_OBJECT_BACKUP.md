@@ -108,12 +108,12 @@ failure recovery; run the complete server regression on this changed source;
 then run V6 multi-host HA and the client cutover/rollback matrix. Passing the
 unchanged parent `9acbb148` server suite does not qualify this later source.
 
-## Bounded eight-object durability experiment
+## Bounded thirty-two-object durability experiment
 
-The isolated batch-eight candidate tests a single strong device flush per eight
+The isolated batch-thirty-two candidate tests one strong device flush per thirty-two
 independently fsynced immutable files (maximum 512 KiB ciphertext each).
 The original gate is still checked before/after I/O and links, no staged pin
 escapes before the final barrier, and the application root is not published
 until all objects and the restore transaction complete. Maximum live staging
-buffers are 8 MiB (eight ciphertext + eight plaintext) plus bounded core.
+buffers are 32 MiB (thirty-two ciphertext + their plaintext) plus bounded core.
 This is a candidate optimization, NOT a reason to widen a request deadline.

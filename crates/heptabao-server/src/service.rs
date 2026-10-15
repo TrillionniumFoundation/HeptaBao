@@ -2293,7 +2293,8 @@ impl Service {
         // originally admitted scope; a split transfer must not lose its budget.
         let _snapshot_deadline = match &pending.effect {
             ExternalEffectPlan::SnapshotTransfer(plan) => Some(
-                crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline())),
+                crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
+            ),
             _ => None,
         };
         let response = match (pending.effect, result) {
@@ -3946,9 +3947,13 @@ impl Service {
             if self.native_root.is_some() && request.token_clock.is_none() {
                 return Response::error(503, "trusted token clock is required");
             }
-            let native_snapshot_route = self.native_snapshot_transport && self.ha.is_none()
+            let native_snapshot_route = self.native_snapshot_transport
+                && self.ha.is_none()
                 && namespace.is_empty()
-                && matches!(path, "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force");
+                && matches!(
+                    path,
+                    "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                );
             if self.native_root.is_some()
                 && !native_snapshot_route
                 && admitted

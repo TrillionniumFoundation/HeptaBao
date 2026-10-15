@@ -672,7 +672,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             return Err(ServiceError::BackupRollbackRejected);
         }
         let stage_started = std::time::Instant::now();
-        // Eight ciphertexts plus eight plaintexts are bounded by 8MiB total.
+        // Thirty-two ciphertexts plus their plaintexts occupy at most 32MiB.
         // Complete authentication of the pack and graph happened before entry;
         // each chunk is reauthenticated again before any object is staged.
         for (group_index, group) in prepared

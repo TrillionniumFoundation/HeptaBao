@@ -31,6 +31,30 @@ const BATCH_TEMPORARIES: [&str; MAX_IMMUTABLE_BATCH_OBJECTS] = [
     "native-v6-batch-5.tmp",
     "native-v6-batch-6.tmp",
     "native-v6-batch-7.tmp",
+    "native-v6-batch-8.tmp",
+    "native-v6-batch-9.tmp",
+    "native-v6-batch-10.tmp",
+    "native-v6-batch-11.tmp",
+    "native-v6-batch-12.tmp",
+    "native-v6-batch-13.tmp",
+    "native-v6-batch-14.tmp",
+    "native-v6-batch-15.tmp",
+    "native-v6-batch-16.tmp",
+    "native-v6-batch-17.tmp",
+    "native-v6-batch-18.tmp",
+    "native-v6-batch-19.tmp",
+    "native-v6-batch-20.tmp",
+    "native-v6-batch-21.tmp",
+    "native-v6-batch-22.tmp",
+    "native-v6-batch-23.tmp",
+    "native-v6-batch-24.tmp",
+    "native-v6-batch-25.tmp",
+    "native-v6-batch-26.tmp",
+    "native-v6-batch-27.tmp",
+    "native-v6-batch-28.tmp",
+    "native-v6-batch-29.tmp",
+    "native-v6-batch-30.tmp",
+    "native-v6-batch-31.tmp",
 ];
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
@@ -429,7 +453,7 @@ impl FileBackend {
         self.pin_checked_file(locator, file, exact_len)
     }
 
-    /// No staged pin escapes until the eight-or-fewer objects have completed
+    /// No staged pin escapes until the thirty-two-or-fewer objects have completed
     /// the filesystem guard's strong durability barrier. This method does not
     /// publish an application root or authorize an imported archive.
     pub fn stage_immutable_ciphertext_batch_checked(
