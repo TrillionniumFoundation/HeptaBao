@@ -732,20 +732,24 @@ fn eight_member_failed_final_strong_flush_is_unknown_not_completed() -> TestResu
 }
 
 #[test]
-fn preflush_four_way_joins_workers_before_any_final_link_and_refuses_sync_fault() -> TestResult {
+fn preflush_eight_way_joins_workers_before_any_final_link_and_refuses_sync_fault() -> TestResult {
     use std::{
         sync::atomic::{AtomicUsize, Ordering as AtomicOrdering},
         time::Duration,
     };
     let root = Root::new()?;
     let owner = ExclusiveDirectory::open(&root.0)?;
-    assert_eq!(MAX_PARALLEL_TEMP_FSYNC, 4);
+    assert_eq!(MAX_PARALLEL_TEMP_FSYNC, 8);
     let names = [
         ("parallel0.tmp", "parallel0.final"),
         ("parallel1.tmp", "parallel1.final"),
         ("parallel2.tmp", "parallel2.final"),
         ("parallel3.tmp", "parallel3.final"),
         ("parallel4.tmp", "parallel4.final"),
+        ("parallel5.tmp", "parallel5.final"),
+        ("parallel6.tmp", "parallel6.final"),
+        ("parallel7.tmp", "parallel7.final"),
+        ("parallel8.tmp", "parallel8.final"),
     ];
     let mut files = Vec::new();
     for (temporary, _) in names {

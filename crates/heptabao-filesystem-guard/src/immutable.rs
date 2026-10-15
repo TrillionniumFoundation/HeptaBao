@@ -158,7 +158,7 @@ fn sync_file(file: &File, buffered: bool) -> io::Result<()> {
 /// All workers MUST join before any final name is linked; a panic or I/O error
 /// is a before-publication refusal, not a partially committed application root.
 #[cfg(unix)]
-const MAX_PARALLEL_TEMP_FSYNC: usize = 4;
+const MAX_PARALLEL_TEMP_FSYNC: usize = 8;
 
 #[cfg(unix)]
 fn preflush_batch_temporaries<E, G, F>(
