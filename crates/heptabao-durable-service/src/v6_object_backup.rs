@@ -7,6 +7,17 @@
 //! Only registered slots enter the pack; unreferenced filesystem orphans do not.
 //! The existing component bounds are unchanged; external ciphertext is streamed.
 use super::*;
+use aws_lc_rs::digest as hardware_sha256;
+
+// Standard SHA-256 bytes are unchanged. On x86-64 without Intel SHA-NI,
+// AWS-LC can use its audited AVX2 implementation rather than the software
+// sha2 fallback. The exact archive transcript/AAD and all gates stay intact.
+fn accelerated_sha256(bytes: &[u8]) -> Result<[u8; 32], ServiceError> {
+    hardware_sha256::digest(&hardware_sha256::SHA256, bytes)
+        .as_ref()
+        .try_into()
+        .map_err(|_| ServiceError::CorruptState)
+}
 use heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS;
 use std::collections::BTreeSet;
 use std::io::{self, Read, Seek, SeekFrom, Write};
@@ -326,7 +337,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         header.extend_from_slice(&(source.slots.len() as u32).to_le_bytes());
         header.extend_from_slice(&0_u32.to_le_bytes());
         header.extend_from_slice(&total.to_le_bytes());
-        let mut hash = Sha256::new();
+        let mut hash = hardware_sha256::Context::new(&hardware_sha256::SHA256);
         hash.update(PACK_AAD);
         for bytes in [header.as_slice(), source.core.as_slice()] {
             write_checked(writer, bytes, &mut || {
@@ -378,10 +389,10 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         }
         gate()?;
         self.check_immutable_source_session(&source.session)?;
-        let digest = hash.finalize();
+        let digest = hash.finish();
         let footer = self
             .barrier
-            .seal(PACK_AAD, &digest)
+            .seal(PACK_AAD, digest.as_ref())
             .map_err(|_| ServiceError::BarrierFailure)?;
         if footer.is_empty() || footer.len() > MAX_FOOTER {
             return Err(ServiceError::RequestCapacityExhausted);
@@ -417,9 +428,44 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Missing, duplicate, reordered, foreign, damaged and trailing records fail.
     pub fn prepare_v6_restore_from_reader<R: Read + Seek>(
         &self,
-        mut reader: R,
+        reader: R,
         length: u64,
         gate: &mut impl FnMut() -> Result<(), ServiceError>,
+        verify: &mut impl FnMut(&PreparedRestore, &str, &[u8]) -> Result<(), ServiceError>,
+    ) -> Result<PreparedV6Restore<R>, ServiceError> {
+        self.prepare_v6_restore_from_reader_impl(reader, length, gate, None, verify)
+    }
+
+    /// Every ciphertext object is surrounded by the *complete* original owner,
+    /// deadline, live seal, and backend checks. Only the bounded read syscalls
+    /// inside that object use the separate non-authorizing stop/deadline gate.
+    /// This is the same custody pattern as graph reads and physical staging.
+    pub fn prepare_v6_restore_from_reader_with_io_gate<R: Read + Seek>(
+        &self,
+        reader: R,
+        length: u64,
+        gate: &mut impl FnMut() -> Result<(), ServiceError>,
+        bounded_io_gate: &mut dyn FnMut() -> Result<(), ServiceError>,
+        verify: &mut impl FnMut(&PreparedRestore, &str, &[u8]) -> Result<(), ServiceError>,
+    ) -> Result<PreparedV6Restore<R>, ServiceError> {
+        self.prepare_v6_restore_from_reader_impl(
+            reader,
+            length,
+            gate,
+            Some(bounded_io_gate),
+            verify,
+        )
+    }
+
+    fn prepare_v6_restore_from_reader_impl<
+        R: Read + Seek,
+        G: FnMut() -> Result<(), ServiceError>,
+    >(
+        &self,
+        mut reader: R,
+        length: u64,
+        gate: &mut G,
+        mut bounded_io_gate: Option<&mut dyn FnMut() -> Result<(), ServiceError>>,
         verify: &mut impl FnMut(&PreparedRestore, &str, &[u8]) -> Result<(), ServiceError>,
     ) -> Result<PreparedV6Restore<R>, ServiceError> {
         gate()?;
@@ -493,17 +539,17 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         {
             return Err(ServiceError::CorruptState);
         }
-        let mut hash = Sha256::new();
+        let mut hash = hardware_sha256::Context::new(&hardware_sha256::SHA256);
         hash.update(PACK_AAD);
-        hash.update(header);
-        hash.update(&*core);
+        hash.update(&header);
+        hash.update(&core);
         let mut members = Vec::with_capacity(count);
         for slot in slots {
             gate()?;
             self.verify_prepared_restore(&state)?;
             let mut encoded = [0; 4];
             read_exact_checked(&mut reader, &mut encoded, gate)?;
-            hash.update(encoded);
+            hash.update(&encoded);
             if u32::from_le_bytes(encoded) as usize != slot.ciphertext_bytes {
                 return Err(ServiceError::CorruptState);
             }
@@ -515,8 +561,24 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 return Err(ServiceError::CorruptState);
             }
             let mut ciphertext = Zeroizing::new(vec![0; slot.ciphertext_bytes]);
-            read_exact_checked(&mut reader, &mut ciphertext, gate)?;
-            hash.update(&*ciphertext);
+            if bounded_io_gate.is_some() {
+                // The full owner is checked on BOTH sides of the complete
+                // selected object, including the actual input I/O.
+                gate()?;
+                self.verify_prepared_restore(&state)?;
+            }
+            {
+                let mut physical_gate = || match bounded_io_gate.as_mut() {
+                    Some(io) => io(),
+                    None => gate(),
+                };
+                read_exact_checked(&mut reader, &mut ciphertext, &mut physical_gate)?;
+            }
+            if bounded_io_gate.is_some() {
+                gate()?;
+                self.verify_prepared_restore(&state)?;
+            }
+            hash.update(&ciphertext);
             let plaintext = Zeroizing::new(
                 self.barrier
                     .open(&slot.aad(), &ciphertext)
@@ -533,7 +595,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             members.push(Member {
                 slot,
                 offset,
-                digest: Sha256::digest(&*ciphertext).into(),
+                digest: accelerated_sha256(&ciphertext)?,
             });
         }
         let mut encoded = [0; 4];
@@ -554,7 +616,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 .map_err(|_| ServiceError::BarrierFailure)?,
         );
         gate()?;
-        if !constant_time_eq(&hash.finalize(), &digest) {
+        if !constant_time_eq(hash.finish().as_ref(), &digest) {
             return Err(ServiceError::CorruptState);
         }
         let mut extra = [0; 1];
@@ -637,7 +699,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             )?;
             read_exact_checked(&mut prepared.reader, &mut ciphertext, &mut physical_gate)?;
         }
-        if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
+        if !constant_time_eq(&accelerated_sha256(&ciphertext)?, &member.digest) {
             return Err(ServiceError::CorruptState);
         }
         let plaintext = Zeroizing::new(
@@ -734,7 +796,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 // no object can proceed to publication on the fast gate alone.
                 gate()?;
                 self.verify_prepared_restore(&prepared.state)?;
-                if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
+                if !constant_time_eq(&accelerated_sha256(&ciphertext)?, &member.digest) {
                     return Err(ServiceError::CorruptState);
                 }
                 let plaintext = Zeroizing::new(

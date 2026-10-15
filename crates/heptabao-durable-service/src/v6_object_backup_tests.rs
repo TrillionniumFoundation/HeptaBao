@@ -1308,3 +1308,79 @@ fn restore_fast_late_full_owner_denial_cannot_be_overridden_by_live_io() -> Resu
     assert_eq!(target.backend.load()?, old);
     Ok(())
 }
+
+// Cross-implementation, frozen output equivalence: V6 pack hashes retain the
+// exact SHA-256 transcript expected by older producer/consumer binaries.
+#[test]
+fn accelerated_v6_sha256_is_bit_exact_across_chunk_boundaries() -> ResultTest {
+    for length in [
+        0, 1, 31, 32, 63, 64, 65, 128, 4096, 65_536, 262_144, 524_288,
+    ] {
+        let input = payload(31, length);
+        let old = Sha256::digest(&input);
+        let accelerated = accelerated_sha256(&input)?;
+        assert_eq!(accelerated.as_slice(), old.as_slice());
+        let mut streaming = hardware_sha256::Context::new(&hardware_sha256::SHA256);
+        for chunk in input.chunks(17_003) {
+            streaming.update(chunk);
+        }
+        assert_eq!(streaming.finish().as_ref(), old.as_slice());
+    }
+    Ok(())
+}
+
+#[test]
+fn bounded_v6_pack_io_still_requires_full_owner_after_actual_ciphertext_read() -> ResultTest {
+    use std::cell::Cell;
+    let _serial = serial_test();
+    let (_source_root, mut source) = fixture("pack-bound-owner-source", 1, IO_CHUNK + 160)?;
+    let archive = pack(&mut source)?;
+    let (target_root, target) = empty("pack-bound-owner-target")?;
+    let physical_read_seen = Cell::new(false);
+    let rejected = target.prepare_v6_restore_from_reader_with_io_gate(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut || {
+            if physical_read_seen.get() {
+                Err(ServiceError::BarrierFailure)
+            } else {
+                Ok(())
+            }
+        },
+        &mut || {
+            physical_read_seen.set(true);
+            Ok(())
+        },
+        &mut validate,
+    );
+    assert!(
+        physical_read_seen.get(),
+        "bounded physical I/O never occurred"
+    );
+    assert!(matches!(rejected, Err(ServiceError::BarrierFailure)));
+    assert_eq!(target.generation(), 0);
+    assert_eq!(blob_count(&target_root.0), 0);
+    let mut full_checks = 0_usize;
+    let mut physical_checks = 0_usize;
+    let prepared = target.prepare_v6_restore_from_reader_with_io_gate(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut || {
+            full_checks += 1;
+            Ok(())
+        },
+        &mut || {
+            physical_checks += 1;
+            Ok(())
+        },
+        &mut validate,
+    )?;
+    assert!(physical_checks >= 4, "bounded I/O gate was omitted");
+    assert!(
+        full_checks >= 4,
+        "both complete object boundaries were omitted"
+    );
+    assert_eq!(prepared.size().object_count, 1);
+    assert_eq!(blob_count(&target_root.0), 0);
+    Ok(())
+}

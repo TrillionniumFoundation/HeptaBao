@@ -1292,6 +1292,7 @@ dependencies = [
 name = "heptabao-durable-service"
 version = "0.1.0"
 dependencies = [
+ "aws-lc-rs",
  "heptabao-filesystem-guard",
  "libc",
  "sha2",

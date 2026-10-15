@@ -277,12 +277,34 @@ impl Service {
             self.check_v6_snapshot_owner(plan)
                 .map_err(|_| ServiceError::BarrierFailure)
         };
-        // This phase authenticates the complete pack, but grants no root/graph
-        // admission. The next phase validates all typed application references.
+        // A full Actor/ACL/live-seal check surrounds each selected ciphertext
+        // object. Bounded physical reads retain the ORIGINAL deadline and
+        // live in-memory stop state, never an authority to publish or decrypt.
+        let mut bounded_archive_io_gate = || {
+            if Instant::now() >= plan.deadline
+                || self.audit_failed
+                || self.recovery_required
+                || self.barrier_key.is_none()
+                || self.unseal_nonce != plan.activation
+                || self.ha.is_some()
+                || plan.ha.is_some()
+                || self.current_state_identity().ok() != Some(plan.base)
+            {
+                return Err(ServiceError::BarrierFailure);
+            }
+            Ok(())
+        };
+        // The complete pack is authenticated before typed graph admission.
         let mut archive = {
             let _phase = SnapshotPhaseObservation::enter("authenticate-pack");
             durable
-                .prepare_v6_restore_from_reader(file, length, &mut gate, &mut |_, _, _| Ok(()))
+                .prepare_v6_restore_from_reader_with_io_gate(
+                    file,
+                    length,
+                    &mut gate,
+                    &mut bounded_archive_io_gate,
+                    &mut |_, _, _| Ok(()),
+                )
                 .map_err(|error| self.v6_storage_failure(plan, error))?
         };
         let root_bytes = Zeroizing::new(

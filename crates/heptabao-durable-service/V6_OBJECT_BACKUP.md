@@ -2,7 +2,8 @@
 
 This module is a storage transport building block, not an enabled HTTP endpoint,
 a native graph validator, an Actor capability, a seal migration protocol, or HA
-admission. The existing server refusal of V6 snapshot routes is unchanged.
+admission. The default/production server refusal remains; only the explicit
+single-node `fixture-native-v6-service` candidate wires guarded HTTP transfer.
 
 ## Problem and scope
 
@@ -83,7 +84,8 @@ filesystem intent, recovery ordering, generation/epoch binding and ambiguity
 handling. No replacement transaction protocol is invented here. Successful
 restore invalidates the other pending plans. The API does not own an Actor,
 Clock or audit system; the Service layer must supply those and its final
-completion checks. It is not yet wired to V6 HTTP snapshot or Raft paths.
+completion checks. Native single-node HTTP transfer is available only in the
+explicit fixture profile, not in the default/HA/production route.
 
 ## Validation and limits of evidence
 
@@ -117,3 +119,25 @@ escapes before the final barrier, and the application root is not published
 until all objects and the restore transaction complete. Maximum live staging
 buffers are 32 MiB (thirty-two ciphertext + their plaintext) plus bounded core.
 This is a candidate optimization, NOT a reason to widen a request deadline.
+
+## 2026-10-15 bounded SHA-256 and original-owner checks
+
+The `HBV6PK01` SHA-256 transcript and selected-object digests remain standard,
+bit-for-bit SHA-256. The bounded transport uses the repository's already pinned
+AWS-LC SHA-256 backend on supported hosts, rather than changing the checksum,
+framing, AEAD key, associated data, or protocol version. A direct independent
+`sha2` equivalence regression covers streaming and boundary lengths.
+
+The original `prepare_v6_restore_from_reader` API retains its per-I/O full gate.
+The separate `prepare_v6_restore_from_reader_with_io_gate` API can only be used
+with TWO callbacks: the complete Actor/ACL/live-seal/owner gate before and after
+each chosen ciphertext, and the original bound deadline/stop/identity gate on
+every physical read. The entire pack is still authenticated before the typed
+graph and before any target file is staged. Both callbacks fail closed; there
+is no new Actor or commit grant and no extension to the 15-second deadline.
+
+The newer bounded API is wired only into the explicitly enabled single-node
+Service candidate. The existing old API and compatibility tests are retained.
+Scope qualification still requires genuine native runtime, cold restart and
+large independent-target import; these storage tests alone are not release
+approval, HA admission, provider parity or a substitute for OpenBao 2.7.1.
