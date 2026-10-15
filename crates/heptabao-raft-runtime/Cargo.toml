@@ -5,6 +5,10 @@ edition.workspace = true
 rust-version.workspace = true
 publish = false
 
+[features]
+default = []
+# Experimental Raft staging only. No V6 root publication or HA admission.
+experimental-v6-raft-objects = []
 [dependencies]
 base64 = "=0.22.1"
 crc32fast = "=1.5.2"
