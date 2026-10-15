@@ -277,6 +277,57 @@ impl<R> PreparedV6Restore<R> {
         self.size
     }
 }
+/// Opt-in timing-only diagnostic. The active phase is recorded at Drop even
+/// if the ORIGINAL caller deadline cancels a partially staged batch.
+/// This has no authority, retry or durability privileges.
+struct V6RestorePhaseTimings {
+    enabled: bool,
+    started: std::time::Instant,
+    active_since: std::time::Instant,
+    phase: usize,
+    spent: [std::time::Duration; 4],
+    groups: usize,
+}
+impl V6RestorePhaseTimings {
+    fn new() -> Self {
+        let now = std::time::Instant::now();
+        Self {
+            enabled: std::env::var_os("HEPTABAO_V6_RESTORE_PROFILE").is_some(),
+            started: now,
+            active_since: now,
+            phase: 0,
+            spent: [std::time::Duration::ZERO; 4],
+            groups: 0,
+        }
+    }
+    fn next(&mut self, phase: usize) {
+        if self.enabled {
+            let now = std::time::Instant::now();
+            self.spent[self.phase] += now.duration_since(self.active_since);
+            self.active_since = now;
+            self.phase = phase;
+        }
+    }
+}
+impl Drop for V6RestorePhaseTimings {
+    fn drop(&mut self) {
+        if self.enabled {
+            self.next(self.phase);
+            let _ = writeln!(
+                std::io::stderr(),
+                "HBV6-RESTORE-DETAIL prepare_ms={} publish_ms={} pinned_ms={} commit_ms={} total_ms={} groups={} incomplete_phase={}",
+                self.spent[0].as_millis(),
+                self.spent[1].as_millis(),
+                self.spent[2].as_millis(),
+                self.spent[3].as_millis(),
+                self.started.elapsed().as_millis(),
+                self.groups,
+                self.phase,
+            );
+        }
+    }
+}
+
 impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Capture a complete committed slot index, not a caller-supplied subset.
     /// The application must still validate root/graph closure and authority.
@@ -547,34 +598,45 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         for slot in slots {
             gate()?;
             self.verify_prepared_restore(&state)?;
+            // The admission gate above authorizes this WHOLE selected member,
+            // including its exact-length prefix, current archive offset and
+            // bounded ciphertext. Each actual seek/read still checks the
+            // ORIGINAL deadline and live in-memory cancellation. There is no
+            // plaintext delivery or root publication until the complete full
+            // owner/Actor/seal check below succeeds AFTER these operations.
+            // Legacy callers without an explicit I/O gate retain their exact
+            // original full-authorization-per-syscall behavior.
             let mut encoded = [0; 4];
-            read_exact_checked(&mut reader, &mut encoded, gate)?;
-            hash.update(&encoded);
-            if u32::from_le_bytes(encoded) as usize != slot.ciphertext_bytes {
-                return Err(ServiceError::CorruptState);
-            }
-            let offset = seek_checked(&mut reader, SeekFrom::Current(0), gate)?;
-            if offset
-                .checked_add(slot.ciphertext_bytes as u64)
-                .is_none_or(|end| end > length)
-            {
-                return Err(ServiceError::CorruptState);
-            }
-            let mut ciphertext = Zeroizing::new(vec![0; slot.ciphertext_bytes]);
-            if bounded_io_gate.is_some() {
-                // The full owner is checked on BOTH sides of the complete
-                // selected object, including the actual input I/O.
-                gate()?;
-                self.verify_prepared_restore(&state)?;
-            }
-            {
-                let mut physical_gate = || match bounded_io_gate.as_mut() {
+            let offset = {
+                let mut selected_io = || match bounded_io_gate.as_mut() {
                     Some(io) => io(),
                     None => gate(),
                 };
-                read_exact_checked(&mut reader, &mut ciphertext, &mut physical_gate)?;
+                read_exact_checked(&mut reader, &mut encoded, &mut selected_io)?;
+                hash.update(&encoded);
+                if u32::from_le_bytes(encoded) as usize != slot.ciphertext_bytes {
+                    return Err(ServiceError::CorruptState);
+                }
+                let offset = seek_checked(&mut reader, SeekFrom::Current(0), &mut selected_io)?;
+                if offset
+                    .checked_add(slot.ciphertext_bytes as u64)
+                    .is_none_or(|end| end > length)
+                {
+                    return Err(ServiceError::CorruptState);
+                }
+                offset
+            };
+            let mut ciphertext = Zeroizing::new(vec![0; slot.ciphertext_bytes]);
+            {
+                let mut selected_io = || match bounded_io_gate.as_mut() {
+                    Some(io) => io(),
+                    None => gate(),
+                };
+                read_exact_checked(&mut reader, &mut ciphertext, &mut selected_io)?;
             }
             if bounded_io_gate.is_some() {
+                // Full owner and prepared-graph custody are checked AFTER the
+                // final physical read, prior to any AEAD or application use.
                 gate()?;
                 self.verify_prepared_restore(&state)?;
             }
@@ -759,6 +821,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             return Err(ServiceError::BackupRollbackRejected);
         }
         let stage_started = std::time::Instant::now();
+        let mut phase_timings = V6RestorePhaseTimings::new();
         // Thirty-two ciphertexts plus their plaintexts occupy at most 32MiB.
         // Complete authentication of the pack and graph happened before entry;
         // each chunk is reauthenticated again before any object is staged.
@@ -767,6 +830,8 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             .chunks(MAX_IMMUTABLE_BATCH_OBJECTS)
             .enumerate()
         {
+            phase_timings.groups += 1;
+            phase_timings.next(0);
             if group_index % 8 == 0 {
                 let _ = writeln!(
                     std::io::stderr(),
@@ -832,6 +897,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 };
                 values.push((member, ciphertext, plaintext, pin));
             }
+            phase_timings.next(1);
             let inputs: Vec<_> = values
                 .iter()
                 .filter(|x| x.3.is_none())
@@ -896,14 +962,19 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                     return Err(ServiceError::CorruptState);
                 }
             }
+            phase_timings.next(2);
+            // This physical lineage is descriptor-bound and owned by the same
+            // &mut backend for the whole bounded group. All per-object full
+            // gates, prepared-restore frontier checks, and pin.matches_profile
+            // checks remain live; only repeated profile construction is shared.
+            let profile = self
+                .backend
+                .immutable_blob_profile()
+                .map_err(map_backend_error)?;
             for (member, ciphertext, _plaintext, pin) in values {
                 gate()?;
                 self.verify_prepared_restore(&prepared.state)?;
                 let pin = pin.ok_or(ServiceError::CorruptState)?;
-                let profile = self
-                    .backend
-                    .immutable_blob_profile()
-                    .map_err(map_backend_error)?;
                 if pin.locator() != member.slot.locator
                     || pin.ciphertext_len() != member.slot.ciphertext_bytes
                     || !pin.matches_profile(&profile)
@@ -949,6 +1020,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 self.verify_prepared_restore(&prepared.state)?;
             }
         }
+        phase_timings.next(3);
         gate()?;
         self.verify_prepared_restore(&prepared.state)?;
         self.restore_prepared(prepared.state, allow_rollback)

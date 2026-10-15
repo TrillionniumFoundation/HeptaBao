@@ -146,7 +146,7 @@ impl Service {
                 now,
             )
             .map_err(|e| Response::error(e.status, &e.message))?;
-        if self.current_snapshot_seal_identity(&plan.lease, plan.deadline)? != plan.seal_identity {
+        if self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity {
             return Err(Response::error(409, "V6 snapshot live seal changed"));
         }
         if Instant::now() >= plan.deadline {

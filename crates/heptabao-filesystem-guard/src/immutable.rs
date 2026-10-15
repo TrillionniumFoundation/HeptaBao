@@ -363,15 +363,19 @@ impl ExclusiveDirectory {
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         self.verify().map_err(io::Error::other).map_err(before)?;
         let identity = checked_identity(opened_temporary, exact_len, 1).map_err(before)?;
-        let named = self
-            .open_file(temporary, FileAccess::Read)
-            .map_err(before)?;
-        same_identity(&named, identity, 1).map_err(before)?;
-        gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-        // The batch path has already fsynced all temporary descriptors in
-        // bounded concurrent groups and joined their workers BEFORE the first
-        // link. Ordinary single-file publication keeps its original fsync.
+        // The guarded batch caller already proved the exact temporary name
+        // and descriptor match BEFORE preflush, and joined every completed
+        // fsync before calling this method. Repeating this first reopen and
+        // its full authorization read adds no further admission boundary:
+        // the final reopen, identity check and live gate immediately before
+        // linkat BELOW are retained. Ordinary single-file publication keeps
+        // its original first reopen and pre/post sync authorization checks.
         if !buffered {
+            let named = self
+                .open_file(temporary, FileAccess::Read)
+                .map_err(before)?;
+            same_identity(&named, identity, 1).map_err(before)?;
+            gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
             sync_file(opened_temporary, false).map_err(before)?;
         }
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;

@@ -28,12 +28,21 @@ pub(crate) enum NativeSnapshotAdmission {
     Redirect(TrustedSnapshotOrigin),
 }
 
+// One authenticated admission identity and its physically observed seal bytes.
+// The wrapped key bytes are erased when the affine transfer plan is dropped.
+type AdmittedSnapshotSealIdentity = ([u8; 32], SealMetadata, Zeroizing<Vec<u8>>);
+
 pub(super) struct SnapshotTransferPlan {
     actor: Principal,
     path: String,
     namespace: String,
     activation: String,
     seal_identity: [u8; 32],
+    // Admission-authenticated raw seal bytes: a byte-identical live read need
+    // not re-parse JSON or re-hash the wrapped key 15,000 times. The real
+    // held-parent read and full caller's Actor/ACL/clock checks NEVER skip.
+    seal_metadata_at_admission: SealMetadata,
+    seal_bytes_at_admission: Zeroizing<Vec<u8>>,
     ha: Option<Arc<Mutex<HaProcess>>>,
     base: StateIdentity,
     deadline: Instant,
@@ -158,11 +167,11 @@ impl PendingExternalRequest {
 }
 
 impl Service {
-    fn current_snapshot_seal_identity(
+    fn current_snapshot_seal_identity_and_raw(
         &self,
         lease: &SnapshotLease,
         deadline: Instant,
-    ) -> Result<[u8; 32], Response> {
+    ) -> Result<AdmittedSnapshotSealIdentity, Response> {
         let bytes = lease
             .read_seal_metadata(deadline)
             .map_err(|_| Response::error(503, "snapshot seal metadata is unavailable"))?;
@@ -171,8 +180,61 @@ impl Service {
         if self.seal.as_ref() != Some(&seal) {
             return Err(Response::error(409, "snapshot seal metadata changed"));
         }
+        let identity = canonical_seal_identity(&seal)
+            .map_err(|_| Response::error(503, "snapshot seal metadata is invalid"))?;
+        Ok((identity, seal, bytes))
+    }
+
+    fn current_snapshot_seal_identity(
+        &self,
+        lease: &SnapshotLease,
+        deadline: Instant,
+    ) -> Result<[u8; 32], Response> {
+        self.current_snapshot_seal_identity_and_raw(lease, deadline)
+            .map(|(identity, _, _)| identity)
+    }
+
+    // An equal snapshot of the BYTES from the checked parent descriptor proves
+    // the same canonical metadata authenticated at admission. When ANY bytes
+    // differ, preserve the prior full JSON, in-memory seal and canonical SHA
+    // identity semantics (including accepting harmless JSON reencoding).
+    fn snapshot_seal_identity_checked_against_admission(
+        bytes: &[u8],
+        admitted_bytes: &[u8],
+        admitted_seal: &SealMetadata,
+        current_seal: Option<&SealMetadata>,
+        admitted_identity: [u8; 32],
+    ) -> Result<[u8; 32], Response> {
+        if bytes == admitted_bytes && current_seal == Some(admitted_seal) {
+            return Ok(admitted_identity);
+        }
+        let seal: SealMetadata = serde_json::from_slice(bytes)
+            .map_err(|_| Response::error(503, "snapshot seal metadata is invalid"))?;
+        if current_seal != Some(&seal) {
+            return Err(Response::error(409, "snapshot seal metadata changed"));
+        }
         canonical_seal_identity(&seal)
             .map_err(|_| Response::error(503, "snapshot seal metadata is invalid"))
+    }
+
+    fn current_snapshot_seal_identity_for_plan(
+        &self,
+        plan: &SnapshotTransferPlan,
+    ) -> Result<[u8; 32], Response> {
+        // NEVER omit the real descriptor-anchored physical read, type/owner/
+        // size/mode checks or deadline. Only the repeated JSON/crypto work is
+        // avoided for strictly byte-identical validated metadata.
+        let bytes = plan
+            .lease
+            .read_seal_metadata(plan.deadline)
+            .map_err(|_| Response::error(503, "snapshot seal metadata is unavailable"))?;
+        Self::snapshot_seal_identity_checked_against_admission(
+            bytes.as_slice(),
+            plan.seal_bytes_at_admission.as_slice(),
+            &plan.seal_metadata_at_admission,
+            self.seal.as_ref(),
+            plan.seal_identity,
+        )
     }
 
     pub(crate) fn begin_native_snapshot_before(
@@ -343,16 +405,19 @@ impl Service {
             }
             Err(_) => return Response::error(503, "snapshot staging is unavailable"),
         };
-        let seal_identity = match self.current_snapshot_seal_identity(&lease, deadline) {
-            Ok(value) => value,
-            Err(response) => return response,
-        };
+        let (seal_identity, seal_metadata_at_admission, seal_bytes_at_admission) =
+            match self.current_snapshot_seal_identity_and_raw(&lease, deadline) {
+                Ok(value) => value,
+                Err(response) => return response,
+            };
         let mut plan = SnapshotTransferPlan {
             actor,
             path: request.path.to_owned(),
             namespace: request.namespace.to_owned(),
             activation: self.unseal_nonce.clone(),
             seal_identity,
+            seal_metadata_at_admission,
+            seal_bytes_at_admission,
             ha: self.ha.clone(),
             base,
             deadline,
