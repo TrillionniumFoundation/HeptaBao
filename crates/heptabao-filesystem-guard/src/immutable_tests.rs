@@ -730,3 +730,105 @@ fn eight_member_failed_final_strong_flush_is_unknown_not_completed() -> TestResu
     }
     Ok(())
 }
+
+#[test]
+fn preflush_four_way_joins_workers_before_any_final_link_and_refuses_sync_fault() -> TestResult {
+    use std::{
+        sync::atomic::{AtomicUsize, Ordering as AtomicOrdering},
+        time::Duration,
+    };
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    assert_eq!(MAX_PARALLEL_TEMP_FSYNC, 4);
+    let names = [
+        ("parallel0.tmp", "parallel0.final"),
+        ("parallel1.tmp", "parallel1.final"),
+        ("parallel2.tmp", "parallel2.final"),
+        ("parallel3.tmp", "parallel3.final"),
+        ("parallel4.tmp", "parallel4.final"),
+    ];
+    let mut files = Vec::new();
+    for (temporary, _) in names {
+        let mut file = owner.open_file(temporary, FileAccess::CreateNewReadWrite)?;
+        file.write_all(b"fixture")?;
+        files.push(file);
+    }
+    let entries: Vec<_> = files
+        .iter()
+        .zip(names)
+        .map(|(file, (temporary, destination))| ImmutableBatchEntry {
+            temporary,
+            file,
+            destination,
+            exact_len: 7,
+        })
+        .collect();
+    let active = AtomicUsize::new(0);
+    let highest = AtomicUsize::new(0);
+    let completed = AtomicUsize::new(0);
+    let mut gate_calls = 0;
+    preflush_batch_temporaries(
+        &entries,
+        &mut || {
+            gate_calls += 1;
+            // Even during asynchronous fsync all requested entries are still
+            // temporary and no final-link or caller acknowledgment exists.
+            assert!(
+                names
+                    .iter()
+                    .all(|(_, destination)| !root.0.join(destination).exists())
+            );
+            Ok::<_, io::Error>(())
+        },
+        &|file| {
+            let in_flight = active.fetch_add(1, AtomicOrdering::SeqCst) + 1;
+            highest.fetch_max(in_flight, AtomicOrdering::SeqCst);
+            let result = file.sync_all();
+            std::thread::sleep(Duration::from_millis(25));
+            active.fetch_sub(1, AtomicOrdering::SeqCst);
+            completed.fetch_add(1, AtomicOrdering::SeqCst);
+            result
+        },
+    )?;
+    assert_eq!(completed.load(AtomicOrdering::SeqCst), entries.len());
+    assert_eq!(active.load(AtomicOrdering::SeqCst), 0);
+    assert!(highest.load(AtomicOrdering::SeqCst) > 1);
+    assert!(highest.load(AtomicOrdering::SeqCst) <= MAX_PARALLEL_TEMP_FSYNC);
+    assert!(gate_calls >= 2 * entries.len());
+    for (temporary, destination) in names {
+        assert!(root.0.join(temporary).is_file());
+        assert!(!root.0.join(destination).exists());
+    }
+
+    let started = AtomicUsize::new(0);
+    let finished = AtomicUsize::new(0);
+    let error = preflush_batch_temporaries(&entries, &mut || Ok::<_, io::Error>(()), &|file| {
+        let index = started.fetch_add(1, AtomicOrdering::SeqCst);
+        let result = if index == 1 {
+            Err(io::Error::other("injected pre-link fsync error"))
+        } else {
+            file.sync_all()
+        };
+        finished.fetch_add(1, AtomicOrdering::SeqCst);
+        result
+    });
+    assert!(matches!(
+        error,
+        Err(ImmutablePublicationCheckedError::Publication(
+            ImmutablePublicationError::BeforePublication(_)
+        ))
+    ));
+    assert_eq!(
+        started.load(AtomicOrdering::SeqCst),
+        MAX_PARALLEL_TEMP_FSYNC
+    );
+    assert_eq!(
+        finished.load(AtomicOrdering::SeqCst),
+        MAX_PARALLEL_TEMP_FSYNC
+    );
+    for (temporary, destination) in names {
+        assert!(root.0.join(temporary).is_file());
+        assert!(!root.0.join(destination).exists());
+    }
+    Ok(())
+}

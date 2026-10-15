@@ -153,6 +153,54 @@ fn sync_file(file: &File, buffered: bool) -> io::Result<()> {
     }
 }
 
+/// Only the opaque temporary file descriptors are used in worker threads.
+/// No authorization closure or mutable directory state ever crosses threads.
+/// All workers MUST join before any final name is linked; a panic or I/O error
+/// is a before-publication refusal, not a partially committed application root.
+#[cfg(unix)]
+const MAX_PARALLEL_TEMP_FSYNC: usize = 4;
+
+#[cfg(unix)]
+fn preflush_batch_temporaries<E, G, F>(
+    entries: &[ImmutableBatchEntry<'_>],
+    gate: &mut G,
+    sync_one: &F,
+) -> Result<(), ImmutablePublicationCheckedError<E>>
+where
+    G: FnMut() -> Result<(), E> + ?Sized,
+    F: Fn(&File) -> io::Result<()> + Sync,
+{
+    for chunk in entries.chunks(MAX_PARALLEL_TEMP_FSYNC) {
+        for _ in chunk {
+            gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+        }
+        let results: Vec<io::Result<()>> = std::thread::scope(|scope| {
+            let jobs: Vec<_> = chunk
+                .iter()
+                .map(|entry| scope.spawn(move || sync_one(entry.file)))
+                .collect();
+            // Join EVERY worker, even if an earlier worker failed. Never let an
+            // unfinished fsync coexist with a final-link action or cleanup.
+            jobs.into_iter()
+                .map(|job| {
+                    job.join().unwrap_or_else(|_| {
+                        Err(io::Error::other("immutable fsync worker panicked"))
+                    })
+                })
+                .collect()
+        });
+        for result in results {
+            result.map_err(|error| {
+                ImmutablePublicationCheckedError::Publication(
+                    ImmutablePublicationError::BeforePublication(error),
+                )
+            })?;
+            gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
+        }
+    }
+    Ok(())
+}
+
 impl ExclusiveDirectory {
     /// Sync the caller's exact temporary descriptor, publish its leaf without
     /// replacing any destination, unlink the temporary name and sync the held
@@ -320,7 +368,12 @@ impl ExclusiveDirectory {
             .map_err(before)?;
         same_identity(&named, identity, 1).map_err(before)?;
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
-        sync_file(opened_temporary, buffered).map_err(before)?;
+        // The batch path has already fsynced all temporary descriptors in
+        // bounded concurrent groups and joined their workers BEFORE the first
+        // link. Ordinary single-file publication keeps its original fsync.
+        if !buffered {
+            sync_file(opened_temporary, false).map_err(before)?;
+        }
         gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
         same_identity(opened_temporary, identity, 1).map_err(before)?;
         let named = self
@@ -483,6 +536,11 @@ impl ExclusiveDirectory {
                     .map_err(before)?;
                 same_identity(&named, expected, 1).map_err(before)?;
             }
+            // All temporary bytes must reach stable storage before any
+            // name gains a final link. The original non-Send owner/ACL/seal
+            // gate runs on the caller thread before and after each batch.
+            preflush_batch_temporaries(entries, gate, &|file| sync_file(file, true))?;
+            gate().map_err(ImmutablePublicationCheckedError::GateBeforeLink)?;
             let unknown = |e| {
                 ImmutablePublicationCheckedError::Publication(
                     ImmutablePublicationError::OutcomeUnknown(e),
