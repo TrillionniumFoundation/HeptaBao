@@ -374,6 +374,10 @@ impl DurableBackend for Box<dyn DurableBackend> {
 pub struct FileBackend {
     directory: ExclusiveDirectory,
     immutable_lease: std::sync::Arc<ImmutableLease>,
+    // The writer-fenced root was scrubbed on open. Only a completed batch may
+    // certify all reserved temporary names as consumed; ANY subsequent error
+    // makes the next batch repeat the full recovery cleanup.
+    immutable_batch_temps_known_clean: bool,
     #[cfg(test)]
     restore_fail_after: Option<usize>,
     #[cfg(test)]
@@ -399,6 +403,7 @@ impl FileBackend {
         Ok(Self {
             directory,
             immutable_lease: std::sync::Arc::new(ImmutableLease::new()),
+            immutable_batch_temps_known_clean: true,
             #[cfg(test)]
             restore_fail_after: None,
             #[cfg(test)]
@@ -426,6 +431,7 @@ impl FileBackend {
         Ok(Self {
             directory,
             immutable_lease: std::sync::Arc::new(ImmutableLease::new()),
+            immutable_batch_temps_known_clean: true,
             #[cfg(test)]
             restore_fail_after: None,
             #[cfg(test)]

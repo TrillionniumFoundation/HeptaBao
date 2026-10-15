@@ -482,6 +482,12 @@ impl FileBackend {
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
         mut io_gate: Option<&mut dyn FnMut() -> Result<(), BackendError>>,
     ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        // Opening this backend already recovered EVERY reserved temporary.
+        // Successful prior batches unlink them all. Avoid redoing 33 guarded
+        // negative unlinkat checks for every 32-object batch. Failed or
+        // interrupted batches ALWAYS require full recovery before reuse.
+        let cleanup_needed = !self.immutable_batch_temps_known_clean;
+        self.immutable_batch_temps_known_clean = false;
         let gate_rejected = Cell::new(false);
         let result = {
             let mut checked_gate = || {
@@ -500,7 +506,9 @@ impl FileBackend {
                     length_check(bytes.len())?;
                 }
                 self.immutable_blob_profile()?;
-                cleanup_temporary(&self.directory)?;
+                if cleanup_needed {
+                    cleanup_temporary(&self.directory)?;
+                }
                 let mut files = Vec::with_capacity(objects.len());
                 let mut destinations = Vec::with_capacity(objects.len());
                 for (index, (locator, bytes)) in objects.iter().enumerate() {
@@ -589,6 +597,11 @@ impl FileBackend {
                 Ok(pins)
             })()
         };
+        if result.is_ok() {
+            // The full publication barrier, every returned pin, and terminal
+            // gate succeeded; every reserved temporary name was consumed.
+            self.immutable_batch_temps_known_clean = true;
+        }
         if !gate_rejected.get() && matches!(result, Err(BackendError::OutcomeUnknown)) {
             self.immutable_lease.revoke();
         }
@@ -624,6 +637,9 @@ impl FileBackend {
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
         after_publication: impl FnOnce() -> Result<(), BackendError>,
     ) -> Result<ImmutableBlobStage, BackendError> {
+        // Ordinary staging shares the reserved single-file temporary; force
+        // the next multi-object batch to recover all names conservatively.
+        self.immutable_batch_temps_known_clean = false;
         let mut rejected_by_gate = false;
         let result = {
             let mut checked_gate = || {

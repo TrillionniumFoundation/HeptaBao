@@ -620,3 +620,114 @@ fn bounded_io_gate_preserves_full_owner_and_fails_before_untrusted_link() -> Tes
     assert!(failure_backend.immutable_blob_profile()?.is_live());
     Ok(())
 }
+
+#[test]
+fn successful_batches_can_reuse_known_clean_temporary_names_after_cold_open() -> TestResult {
+    let root = Root::new()?;
+    let mut owner = FileBackend::create_new(&root.0)?;
+    let initial = initial()?;
+    owner.initialize_empty(&initial)?;
+    assert!(owner.immutable_batch_temps_known_clean);
+    let bytes = vec![0x5a; 64 * 1024];
+    for cycle in 0..4 {
+        let a = locator(0xb0 + cycle * 2)?;
+        let b = locator(0xb1 + cycle * 2)?;
+        let batch = [(a, bytes.as_slice()), (b, bytes.as_slice())];
+        let mut live_checks = 0;
+        let result = owner.stage_immutable_ciphertext_batch_checked(&batch, &mut || {
+            live_checks += 1;
+            Ok(())
+        })?;
+        assert_eq!(result.len(), 2);
+        assert!(live_checks >= 4);
+        assert!(owner.immutable_batch_temps_known_clean);
+        for pinned in result {
+            assert_eq!(
+                published(pinned)?.read_ciphertext()?.as_slice(),
+                bytes.as_slice()
+            );
+        }
+        for name in BATCH_TEMPORARIES {
+            assert!(!root.0.join(name).exists());
+        }
+        assert_eq!(owner.load()?, initial);
+    }
+    drop(owner);
+    let mut reopened = FileBackend::open(&root.0)?;
+    assert!(reopened.immutable_batch_temps_known_clean);
+    assert_eq!(reopened.load()?, initial);
+    Ok(())
+}
+
+#[test]
+fn failed_known_clean_batch_recovers_stale_temp_before_next_batch() -> TestResult {
+    let root = Root::new()?;
+    let mut owner = FileBackend::create_new(&root.0)?;
+    let bytes = vec![0x5b; 8192];
+    let first = [(locator(0xd1)?, bytes.as_slice())];
+    let previous = owner.stage_immutable_ciphertext_batch_checked(&first, &mut || Ok(()))?;
+    assert_eq!(previous.len(), 1);
+    assert!(owner.immutable_batch_temps_known_clean);
+    let victim = root.0.join(BATCH_TEMPORARIES[0]);
+    let failed = [(locator(0xd2)?, bytes.as_slice())];
+    let refused = owner.stage_immutable_ciphertext_batch_checked(&failed, &mut || {
+        if victim.exists() {
+            Err(BackendError::Unavailable)
+        } else {
+            Ok(())
+        }
+    });
+    assert!(matches!(refused, Err(BackendError::Unavailable)));
+    assert!(!owner.immutable_batch_temps_known_clean);
+    assert!(victim.exists());
+    assert!(!root.0.join(failed[0].0.leaf()).exists());
+    let restored = owner.stage_immutable_ciphertext_batch_checked(&failed, &mut || Ok(()))?;
+    assert_eq!(restored.len(), 1);
+    assert!(owner.immutable_batch_temps_known_clean);
+    assert!(!victim.exists());
+    assert_eq!(
+        published(restored.into_iter().next().ok_or("missing staged object")?)?
+            .read_ciphertext()?
+            .as_slice(),
+        bytes.as_slice()
+    );
+    Ok(())
+}
+
+#[test]
+fn unexpected_external_temp_while_known_clean_refuses_without_following_symlink() -> TestResult {
+    let root = Root::new()?;
+    let mut owner = FileBackend::create_new(&root.0)?;
+    let bytes = vec![0x51; 4096];
+    let a = [(locator(0xe1)?, bytes.as_slice())];
+    assert_eq!(
+        owner
+            .stage_immutable_ciphertext_batch_checked(&a, &mut || Ok(()))?
+            .len(),
+        1
+    );
+    assert!(owner.immutable_batch_temps_known_clean);
+    let victim = root.0.join(BATCH_TEMPORARIES[0]);
+    let protected = root.0.join("never-follow-external");
+    fs::write(&protected, b"preserve")?;
+    symlink("never-follow-external", &victim)?;
+    let b = [(locator(0xe2)?, bytes.as_slice())];
+    assert!(
+        owner
+            .stage_immutable_ciphertext_batch_checked(&b, &mut || Ok(()))
+            .is_err()
+    );
+    assert!(!owner.immutable_batch_temps_known_clean);
+    assert!(victim.is_symlink());
+    assert_eq!(fs::read(&protected)?, b"preserve");
+    assert!(!root.0.join(b[0].0.leaf()).exists());
+    assert_eq!(
+        owner
+            .stage_immutable_ciphertext_batch_checked(&b, &mut || Ok(()))?
+            .len(),
+        1
+    );
+    assert!(!victim.exists());
+    assert_eq!(fs::read(&protected)?, b"preserve");
+    Ok(())
+}
