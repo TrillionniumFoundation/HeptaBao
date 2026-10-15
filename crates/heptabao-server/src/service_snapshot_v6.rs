@@ -60,6 +60,7 @@ struct IncomingObjects<'a, R> {
     archive: RefCell<&'a mut PreparedV6Restore<R>>,
     root_bytes: &'a [u8],
     gate: RefCell<&'a mut dyn FnMut() -> Result<(), ServiceError>>,
+    io_gate: RefCell<&'a mut dyn FnMut() -> Result<(), ServiceError>>,
 }
 impl<R: Read + Seek> ObjectSource for IncomingObjects<'_, R> {
     fn read(
@@ -83,9 +84,18 @@ impl<R: Read + Seek> ObjectSource for IncomingObjects<'_, R> {
             .map_err(|_| RecordError::Corrupt)?
             .ok_or(RecordError::Missing)?;
         native_blob_source::validate_archive_slot(self.root_bytes, slot, reference)?;
+        let mut io_gate = self
+            .io_gate
+            .try_borrow_mut()
+            .map_err(|_| RecordError::Invalid)?;
         let bytes = self
             .durable
-            .read_v6_restore_object(&mut archive, &resource, &mut || gate())
+            .read_v6_restore_object_with_io_gate(
+                &mut archive,
+                &resource,
+                &mut || gate(),
+                &mut || io_gate(),
+            )
             .map_err(|_| RecordError::Corrupt)?;
         gate().map_err(|_| RecordError::Invalid)?;
         if bytes.len() != reference.encoded_bytes as usize {
@@ -322,11 +332,33 @@ impl Service {
         };
         let (mut state, native) = {
             let _phase = SnapshotPhaseObservation::enter("validate-typed-graph");
+            // The request is exclusively owned by this Service until terminal
+            // completion: no other request can concurrently modify its auth,
+            // state identity or seal owner. Do a FULL owner/ACL/physical-seal
+            // check per selected object, rather than reopening seal.json for
+            // every bounded 256 KiB I/O. The cheap I/O gate still tests the
+            // ORIGINAL instant deadline and all in-memory stop conditions.
+            // SnapshotFile separately checks the original deadline on seek/read.
+            let mut bounded_io_gate = || {
+                if Instant::now() >= plan.deadline
+                    || self.audit_failed
+                    || self.recovery_required
+                    || self.barrier_key.is_none()
+                    || self.unseal_nonce != plan.activation
+                    || self.ha.is_some()
+                    || plan.ha.is_some()
+                    || self.current_state_identity().ok() != Some(plan.base)
+                {
+                    return Err(ServiceError::BarrierFailure);
+                }
+                Ok(())
+            };
             let objects = IncomingObjects {
                 durable,
                 archive: RefCell::new(&mut archive),
                 root_bytes: &root_bytes,
                 gate: RefCell::new(&mut gate),
+                io_gate: RefCell::new(&mut bounded_io_gate),
             };
             v6_records::materialize_for_service(&root, context, &objects).map_err(|_| invalid())?
         };

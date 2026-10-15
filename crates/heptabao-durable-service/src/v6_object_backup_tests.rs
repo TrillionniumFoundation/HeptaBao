@@ -1046,3 +1046,142 @@ fn large_io_checks_live_owner_before_and_after_each_bounded_call() -> ResultTest
     assert_eq!(checks, 4);
     Ok(())
 }
+
+#[test]
+fn typed_graph_fast_io_retains_full_pre_and_post_owner_with_each_bounded_gate() -> ResultTest {
+    let _serial = serial_test();
+    let (_source_root, mut source) = fixture("typed-fast-io-source", 1, IO_CHUNK + 160)?;
+    let archive = pack(&mut source)?;
+    let (target_root, target) = empty("typed-fast-io-target")?;
+    let mut prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    let mut full = 0_usize;
+    let mut bounded = 0_usize;
+    let bytes = target.read_v6_restore_object_with_io_gate(
+        &mut prepared,
+        &resource(1),
+        &mut || {
+            full += 1;
+            Ok(())
+        },
+        &mut || {
+            bounded += 1;
+            Ok(())
+        },
+    )?;
+    assert_eq!(bytes.as_slice(), payload(1, IO_CHUNK + 160));
+    assert_eq!(
+        full, 2,
+        "complete owner gate immediately surrounds the object"
+    );
+    assert!(
+        bounded >= 7,
+        "every bounded seek and I/O checks original deadline"
+    );
+    assert_eq!(blob_count(&target_root.0), 0);
+    assert_eq!(target.generation(), 0);
+
+    let mut legacy = 0_usize;
+    let bytes = target.read_v6_restore_object(&mut prepared, &resource(1), &mut || {
+        legacy += 1;
+        Ok(())
+    })?;
+    assert_eq!(bytes.as_slice(), payload(1, IO_CHUNK + 160));
+    assert!(
+        legacy > full,
+        "the existing public API keeps the full gate per syscall"
+    );
+    Ok(())
+}
+
+#[test]
+fn typed_graph_fast_io_late_full_or_live_io_denial_refuses_plaintext() -> ResultTest {
+    let _serial = serial_test();
+    let (_source_root, mut source) = fixture("typed-fast-denial-source", 1, IO_CHUNK + 160)?;
+    let archive = pack(&mut source)?;
+    let (target_root, target) = empty("typed-fast-denial-target")?;
+    let mut prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    let mut full = 0_usize;
+    let mut bounded = 0_usize;
+    let error = target.read_v6_restore_object_with_io_gate(
+        &mut prepared,
+        &resource(1),
+        &mut || {
+            full += 1;
+            if full == 2 {
+                Err(ServiceError::BarrierFailure)
+            } else {
+                Ok(())
+            }
+        },
+        &mut || {
+            bounded += 1;
+            Ok(())
+        },
+    );
+    assert!(matches!(error, Err(ServiceError::BarrierFailure)));
+    assert_eq!(full, 2);
+    assert!(bounded >= 7);
+    assert_eq!(blob_count(&target_root.0), 0);
+    assert_eq!(target.generation(), 0);
+
+    let mut full = 0_usize;
+    let mut bounded = 0_usize;
+    let error = target.read_v6_restore_object_with_io_gate(
+        &mut prepared,
+        &resource(1),
+        &mut || {
+            full += 1;
+            Ok(())
+        },
+        &mut || {
+            bounded += 1;
+            if bounded == 5 {
+                Err(ServiceError::BarrierFailure)
+            } else {
+                Ok(())
+            }
+        },
+    );
+    assert!(matches!(error, Err(ServiceError::BarrierFailure)));
+    assert_eq!(full, 1, "no full post-gate on a failed physical operation");
+    assert_eq!(bounded, 5);
+    assert_eq!(blob_count(&target_root.0), 0);
+    assert_eq!(target.generation(), 0);
+    Ok(())
+}
+
+#[test]
+fn typed_graph_fast_io_rejects_post_prepare_ciphertext_mutation() -> ResultTest {
+    let _serial = serial_test();
+    let (_source_root, mut source) = fixture("typed-fast-mutate-source", 1, 8192)?;
+    let archive = pack(&mut source)?;
+    let (target_root, target) = empty("typed-fast-mutate-target")?;
+    let mut prepared = target.prepare_v6_restore_from_reader(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut gate,
+        &mut validate,
+    )?;
+    let offset = prepared.members[0].offset as usize;
+    prepared.reader.get_mut()[offset + 16] ^= 1;
+    let error = target.read_v6_restore_object_with_io_gate(
+        &mut prepared,
+        &resource(1),
+        &mut || Ok(()),
+        &mut || Ok(()),
+    );
+    assert!(matches!(error, Err(ServiceError::CorruptState)));
+    assert_eq!(blob_count(&target_root.0), 0);
+    assert_eq!(target.generation(), 0);
+    Ok(())
+}

@@ -582,11 +582,37 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Reopen one registered object from the already authenticated archive for
     /// application graph validation. Never consult the target filesystem or a
     /// caller-supplied fallback; retain the same prepared target and input hash.
+    /// Full owner-gate variant for non-Service callers. No relaxed I/O lane.
     pub fn read_v6_restore_object<R: Read + Seek>(
         &self,
         prepared: &mut PreparedV6Restore<R>,
         resource: &str,
         gate: &mut impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
+        self.read_v6_restore_object_internal(prepared, resource, gate, None)
+    }
+
+    /// A typed native Service graph read: full authorization and live seal
+    /// metadata must be checked immediately BEFORE and AFTER each selected
+    /// object's authenticated ciphertext read. Each bounded syscall also
+    /// checks the original deadline and in-memory cancellation/owner identity.
+    /// Neither a plaintext, a pin, nor a committed root escapes on late denial.
+    pub fn read_v6_restore_object_with_io_gate<R: Read + Seek>(
+        &self,
+        prepared: &mut PreparedV6Restore<R>,
+        resource: &str,
+        gate: &mut impl FnMut() -> Result<(), ServiceError>,
+        io_gate: &mut impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
+        self.read_v6_restore_object_internal(prepared, resource, gate, Some(io_gate))
+    }
+
+    fn read_v6_restore_object_internal<R: Read + Seek>(
+        &self,
+        prepared: &mut PreparedV6Restore<R>,
+        resource: &str,
+        gate: &mut dyn FnMut() -> Result<(), ServiceError>,
+        mut bounded_io_gate: Option<&mut dyn FnMut() -> Result<(), ServiceError>>,
     ) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
         gate()?;
         self.verify_prepared_restore(&prepared.state)?;
@@ -595,9 +621,22 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             .binary_search_by(|member| member.slot.resource.as_str().cmp(resource))
             .map_err(|_| ServiceError::InvalidResource)?;
         let member = &prepared.members[index];
-        seek_checked(&mut prepared.reader, SeekFrom::Start(member.offset), gate)?;
         let mut ciphertext = Zeroizing::new(vec![0; member.slot.ciphertext_bytes]);
-        read_exact_checked(&mut prepared.reader, &mut ciphertext, gate)?;
+        {
+            // Every actual bounded seek/read retains the original deadline and
+            // live cancellation gate. Full Actor, graph owner, and seal-file
+            // checks remain on BOTH sides of this complete selected object.
+            let mut physical_gate = || match bounded_io_gate.as_mut() {
+                Some(io_gate) => io_gate(),
+                None => gate(),
+            };
+            seek_checked(
+                &mut prepared.reader,
+                SeekFrom::Start(member.offset),
+                &mut physical_gate,
+            )?;
+            read_exact_checked(&mut prepared.reader, &mut ciphertext, &mut physical_gate)?;
+        }
         if !constant_time_eq(&Sha256::digest(&*ciphertext), &member.digest) {
             return Err(ServiceError::CorruptState);
         }
