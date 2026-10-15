@@ -158,6 +158,17 @@ pub trait DurableBackend: Send {
             .map(|(locator, bytes)| self.stage_immutable_ciphertext_checked(*locator, bytes, gate))
             .collect()
     }
+    /// Keep the original full owner gate at each physical object/link boundary;
+    /// an optional independent I/O gate handles bounded write syscall deadlines.
+    /// Custom backends safely fall back to the existing full gate everywhere.
+    fn stage_immutable_ciphertext_batch_with_io_gate(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        full_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+        _io_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        self.stage_immutable_ciphertext_batch_checked(objects, full_gate)
+    }
     fn pin_immutable_ciphertext(
         &self,
         _locator: BlobLocator,
@@ -278,6 +289,15 @@ impl DurableBackend for Box<dyn DurableBackend> {
     ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
         self.as_mut()
             .stage_immutable_ciphertext_batch_checked(objects, gate)
+    }
+    fn stage_immutable_ciphertext_batch_with_io_gate(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        full_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+        io_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        self.as_mut()
+            .stage_immutable_ciphertext_batch_with_io_gate(objects, full_gate, io_gate)
     }
     fn pin_immutable_ciphertext(
         &self,
@@ -586,6 +606,16 @@ impl DurableBackend for FileBackend {
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
     ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
         FileBackend::stage_immutable_ciphertext_batch_checked(self, objects, gate)
+    }
+    fn stage_immutable_ciphertext_batch_with_io_gate(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        full_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+        io_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        FileBackend::stage_immutable_ciphertext_batch_with_io_gate(
+            self, objects, full_gate, io_gate,
+        )
     }
     fn pin_immutable_ciphertext(
         &self,

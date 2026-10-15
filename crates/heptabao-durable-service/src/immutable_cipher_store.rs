@@ -8,6 +8,7 @@ use heptabao_filesystem_guard::{
     ExclusiveDirectory, FileAccess, ImmutableBatchEntry, ImmutablePublication as FilePublication,
     ImmutablePublicationCheckedError, ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
 };
+use std::cell::Cell;
 use std::{
     fmt,
     fs::File,
@@ -461,12 +462,32 @@ impl FileBackend {
         objects: &[(BlobLocator, &[u8])],
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
     ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
-        let mut gate_rejected = false;
+        self.stage_immutable_ciphertext_batch_gate_impl(objects, gate, None)
+    }
+
+    /// Full owner checks at each object and publication boundary, with a
+    /// separate bounded-I/O cancellation check around each write syscall.
+    pub fn stage_immutable_ciphertext_batch_with_io_gate(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        full_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+        io_gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        self.stage_immutable_ciphertext_batch_gate_impl(objects, full_gate, Some(io_gate))
+    }
+
+    fn stage_immutable_ciphertext_batch_gate_impl(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+        mut io_gate: Option<&mut dyn FnMut() -> Result<(), BackendError>>,
+    ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
+        let gate_rejected = Cell::new(false);
         let result = {
             let mut checked_gate = || {
                 let result = gate();
                 if result.is_err() {
-                    gate_rejected = true;
+                    gate_rejected.set(true);
                 }
                 result
             };
@@ -490,21 +511,39 @@ impl FileBackend {
                         .map_err(|_| BackendError::Io)?;
                     let mut offset = 0;
                     let mut interrupts = 0;
-                    while offset < bytes.len() {
-                        checked_gate()?;
-                        let result = file.write(&bytes[offset..]);
-                        checked_gate()?;
-                        match result {
-                            Ok(n) if n > 0 && n <= bytes.len() - offset => {
-                                offset += n;
-                                interrupts = 0;
+                    {
+                        let mut bounded_gate = || match io_gate.as_mut() {
+                            Some(io) => {
+                                let result = io();
+                                if result.is_err() {
+                                    gate_rejected.set(true);
+                                }
+                                result
                             }
-                            Err(e) if e.kind() == io::ErrorKind::Interrupted && interrupts < 64 => {
-                                interrupts += 1;
+                            None => checked_gate(),
+                        };
+                        while offset < bytes.len() {
+                            bounded_gate()?;
+                            let result = file.write(&bytes[offset..]);
+                            bounded_gate()?;
+                            match result {
+                                Ok(n) if n > 0 && n <= bytes.len() - offset => {
+                                    offset += n;
+                                    interrupts = 0;
+                                }
+                                Err(e)
+                                    if e.kind() == io::ErrorKind::Interrupted
+                                        && interrupts < 64 =>
+                                {
+                                    interrupts += 1;
+                                }
+                                _ => return Err(BackendError::Io),
                             }
-                            _ => return Err(BackendError::Io),
                         }
                     }
+                    // A complete live full-owner check AFTER this object's
+                    // actual write; no subsequent link on a stale Actor/seal.
+                    checked_gate()?;
                     files.push(file);
                     destinations.push(locator.leaf());
                 }
@@ -550,7 +589,7 @@ impl FileBackend {
                 Ok(pins)
             })()
         };
-        if !gate_rejected && matches!(result, Err(BackendError::OutcomeUnknown)) {
+        if !gate_rejected.get() && matches!(result, Err(BackendError::OutcomeUnknown)) {
             self.immutable_lease.revoke();
         }
         result

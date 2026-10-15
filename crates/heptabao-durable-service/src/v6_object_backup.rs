@@ -784,9 +784,26 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                         Err(BackendError::Unavailable)
                     }
                 };
-                let staged = self
-                    .backend
-                    .stage_immutable_ciphertext_batch_checked(&inputs, &mut physical_gate);
+                let mut io_gate_error = None;
+                let staged = match bounded_io_gate.as_mut() {
+                    Some(io) => {
+                        let mut bounded_stage_io = || match io() {
+                            Ok(()) => Ok(()),
+                            Err(error) => {
+                                io_gate_error = Some(error);
+                                Err(BackendError::Unavailable)
+                            }
+                        };
+                        self.backend.stage_immutable_ciphertext_batch_with_io_gate(
+                            &inputs,
+                            &mut physical_gate,
+                            &mut bounded_stage_io,
+                        )
+                    }
+                    None => self
+                        .backend
+                        .stage_immutable_ciphertext_batch_checked(&inputs, &mut physical_gate),
+                };
                 if matches!(
                     staged,
                     Err(BackendError::OutcomeUnknown | BackendError::StaleWriter)
@@ -794,6 +811,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                     self.unresolved = true;
                 }
                 if let Some(error) = gate_error {
+                    return Err(error);
+                }
+                if let Some(error) = io_gate_error {
                     return Err(error);
                 }
                 let staged = staged.map_err(map_backend_error)?;

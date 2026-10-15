@@ -566,3 +566,57 @@ fn immutable_checked_box_dispatch_retains_caller_gate_and_default_unsupported() 
     assert!(!other_root.0.join(address.leaf()).exists());
     Ok(())
 }
+
+#[test]
+fn bounded_io_gate_preserves_full_owner_and_fails_before_untrusted_link() -> TestResult {
+    let root = Root::new()?;
+    let mut backend = FileBackend::create_new(&root.0)?;
+    let bytes = vec![0x51; 256 * 1024 + 3];
+    let a = locator(0x91)?;
+    let b = locator(0x92)?;
+    let objects = [(a, bytes.as_slice()), (b, bytes.as_slice())];
+    let mut owner_checks = 0;
+    let mut bounded_checks = 0;
+    let stages = backend.stage_immutable_ciphertext_batch_with_io_gate(
+        &objects,
+        &mut || {
+            owner_checks += 1;
+            Ok(())
+        },
+        &mut || {
+            bounded_checks += 1;
+            Ok(())
+        },
+    )?;
+    assert_eq!(stages.len(), objects.len());
+    assert!(owner_checks >= objects.len() * 3);
+    assert!(bounded_checks >= objects.len() * 2);
+    for stage in stages {
+        let pin = published(stage)?;
+        assert_eq!(pin.read_ciphertext()?.as_slice(), bytes.as_slice());
+    }
+    assert!(backend.immutable_blob_profile()?.is_live());
+
+    let failure_root = Root::new()?;
+    let mut failure_backend = FileBackend::create_new(&failure_root.0)?;
+    let forbidden = locator(0x93)?;
+    let input = [(forbidden, bytes.as_slice())];
+    let mut bounded_calls = 0;
+    let result = failure_backend.stage_immutable_ciphertext_batch_with_io_gate(
+        &input,
+        &mut || Ok(()),
+        &mut || {
+            bounded_calls += 1;
+            if bounded_calls == 2 {
+                Err(BackendError::Unavailable)
+            } else {
+                Ok(())
+            }
+        },
+    );
+    assert!(matches!(result, Err(BackendError::Unavailable)));
+    assert_eq!(bounded_calls, 2);
+    assert!(!failure_root.0.join(forbidden.leaf()).exists());
+    assert!(failure_backend.immutable_blob_profile()?.is_live());
+    Ok(())
+}
