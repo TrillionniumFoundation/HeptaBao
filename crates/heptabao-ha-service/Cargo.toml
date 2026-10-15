@@ -5,6 +5,12 @@ edition.workspace = true
 rust-version.workspace = true
 publish = false
 
+[features]
+default = []
+# Only private synthetic fault cells enable fixed-label transport diagnostics.
+# The default transport reports identical errors and emits no stage trace.
+private-forward-stage-diagnostic = []
+
 [dependencies]
 zeroize = "=1.8.1"
 rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }

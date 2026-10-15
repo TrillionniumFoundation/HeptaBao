@@ -326,6 +326,7 @@ impl Service {
             return response;
         };
         let PendingForwardDelivery::Completed(authority) = pending else {
+            eprintln!("HBHA-MIXED-FWD-R4 phase=pending_exchange_rejected");
             erase_json(&mut response.body);
             response.unwrapped_json = None;
             response.response_headers.clear();

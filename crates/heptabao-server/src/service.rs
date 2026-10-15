@@ -3431,10 +3431,36 @@ impl Service {
                             Err(error) => error,
                         }
                     }
-                    Err(_) => Response::error(
-                        503,
-                        "HA leader forwarding completion failed; outcome may be committed",
-                    ),
+                    Err(reason) => {
+                        // Diagnostic only. Keep the original refusal and
+                        // *never* expose a received peer error body or token.
+                        let lowered = reason.to_ascii_lowercase();
+                        let category = if lowered.contains("certificate") {
+                            "certificate"
+                        } else if lowered.contains("tls") || lowered.contains("handshake") {
+                            "tls_handshake"
+                        } else if lowered.contains("deadline") || lowered.contains("timeout") {
+                            "deadline"
+                        } else if lowered.contains("direction") || lowered.contains("decode") {
+                            "peer_decode"
+                        } else if lowered.contains("proof") || lowered.contains("receipt") {
+                            "completion_proof"
+                        } else if lowered.contains("transport") || lowered.contains("connection") {
+                            "transport"
+                        } else if lowered.contains("applied") {
+                            "applied_index"
+                        } else {
+                            "other"
+                        };
+                        eprintln!(
+                            "HBHA-MIXED-FWD-R4 phase=completed_exchange_failure category={category} reason_hash={:02x?}",
+                            crypto::digest(reason.as_bytes())
+                        );
+                        Response::error(
+                            503,
+                            "HA leader forwarding completion failed; outcome may be committed",
+                        )
+                    }
                 };
             }
             if let Err(error) = self.sync_from_ha() {

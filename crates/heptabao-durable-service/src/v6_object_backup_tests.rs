@@ -1384,3 +1384,81 @@ fn bounded_v6_pack_io_still_requires_full_owner_after_actual_ciphertext_read() -
     assert_eq!(blob_count(&target_root.0), 0);
     Ok(())
 }
+
+#[test]
+fn bounded_pack_selected_metadata_keeps_deadline_and_full_object_custody() -> ResultTest {
+    let _serial = serial_test();
+    let (_source_root, mut source) = fixture("pack-bound-meta-source", 2, IO_CHUNK + 160)?;
+    let archive = pack(&mut source)?;
+    let (target_root, target) = empty("pack-bound-meta-target")?;
+
+    // Legacy callers continue using complete owner admission around EVERY
+    // actual syscall. The Service-only bounded lane keeps the same authenticated
+    // objects without redundantly reopening the physical seal at each prefix
+    // read and seek; the original deadline still surrounds those syscalls.
+    let mut legacy_full_checks = 0_usize;
+    let old = target.prepare_v6_restore_from_reader(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut || {
+            legacy_full_checks += 1;
+            Ok(())
+        },
+        &mut validate,
+    )?;
+    let mut bounded_full_checks = 0_usize;
+    let mut original_deadline_checks = 0_usize;
+    let fast = target.prepare_v6_restore_from_reader_with_io_gate(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut || {
+            bounded_full_checks += 1;
+            Ok(())
+        },
+        &mut || {
+            original_deadline_checks += 1;
+            Ok(())
+        },
+        &mut validate,
+    )?;
+    assert_eq!(old.size().object_count, 2);
+    assert_eq!(fast.size().object_count, old.size().object_count);
+    assert_eq!(fast.size().ciphertext_bytes, old.size().ciphertext_bytes);
+    assert!(
+        bounded_full_checks + 6 < legacy_full_checks,
+        "full owner was still unnecessarily rechecked inside selected object metadata I/O"
+    );
+    assert!(
+        original_deadline_checks >= 10,
+        "original live deadline was not checked around each bounded physical operation"
+    );
+    assert!(
+        bounded_full_checks >= 4,
+        "object pre/post full custody omitted"
+    );
+    assert_eq!(target.generation(), 0);
+    assert_eq!(blob_count(&target_root.0), 0);
+
+    // Denial after reading an actual length-prefix byte, but before any
+    // ciphertext can be authenticated or staged, must remain a hard failure.
+    let mut io_calls = 0_usize;
+    let refused = target.prepare_v6_restore_from_reader_with_io_gate(
+        IoCursor::new(archive.clone()),
+        archive.len() as u64,
+        &mut gate,
+        &mut || {
+            io_calls += 1;
+            if io_calls == 2 {
+                Err(ServiceError::BarrierFailure)
+            } else {
+                Ok(())
+            }
+        },
+        &mut validate,
+    );
+    assert_eq!(io_calls, 2);
+    assert!(matches!(refused, Err(ServiceError::BarrierFailure)));
+    assert_eq!(target.generation(), 0);
+    assert_eq!(blob_count(&target_root.0), 0);
+    Ok(())
+}

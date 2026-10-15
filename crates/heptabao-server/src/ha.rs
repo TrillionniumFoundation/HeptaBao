@@ -16,7 +16,7 @@ use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
 use heptabao_ha_service::{
     MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
-    TlsPeerEndpoint, serve_one_mtls_peer_frame,
+    TlsPeerEndpoint, serve_one_mtls_peer_frame_with_origin,
 };
 use heptabao_raft_runtime::{
     CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
@@ -799,16 +799,18 @@ impl HaProcess {
                         // One actual inbound origin charges TLS/frame/queue time.
                         // Consensus RPCs keep their peer-attempt budget; forwarding
                         // has the separately configured business-request budget.
-                        let inbound_started = Instant::now();
-                        let inbound_deadlines =
-                            InboundPeerDeadlines::new(inbound_started, timeout, forward_timeout);
-                        let result = serve_one_mtls_peer_frame(
+                        let result = serve_one_mtls_peer_frame_with_origin(
                             &listener,
                             server_tls.clone(),
                             &identities,
                             timeout,
                             listener_allow_legacy_peer_v1,
-                            |peer, frame| {
+                            |peer, frame, accepted_at| {
+                                // Charge TLS/frame parsing and queue delay from TCP
+                                // admission, never the worker's idle accept() wait.
+                                let inbound_deadlines = InboundPeerDeadlines::new(
+                                    accepted_at, timeout, forward_timeout,
+                                );
                                 let source = *ids
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
@@ -1249,7 +1251,28 @@ impl HaProcess {
         let response = zeroize::Zeroizing::new(
             self.forward_transport
                 .exchange_before(target, &request, deadline)
-                .map_err(|error| error.to_string())?,
+                .map_err(|error| {
+                    // Synthetic-only diagnostic: do not log URL, Actor,
+                    // token, frame, certificate or raw library error text.
+                    let reason = error.to_string();
+                    let lowered = reason.to_ascii_lowercase();
+                    let category = if lowered.contains("certificate") {
+                        "certificate"
+                    } else if lowered.contains("handshake") || lowered.contains("tls") {
+                        "tls_handshake"
+                    } else if lowered.contains("timeout") || lowered.contains("deadline") {
+                        "timeout"
+                    } else if lowered.contains("connection") || lowered.contains("socket") {
+                        "tcp"
+                    } else if lowered.contains("peer") {
+                        "peer"
+                    } else {
+                        "other"
+                    };
+                    eprintln!("HBHA-MIXED-FWD-R4 phase=exchange_failure category={category} local={} target={} reason_hash={:02x?}",
+                        local, leader, crate::crypto::digest(reason.as_bytes()));
+                    reason
+                })?,
         );
         let mut response = if legacy_v1 {
             decode_legacy_response_for_transition(&response, &self.cluster_id)?

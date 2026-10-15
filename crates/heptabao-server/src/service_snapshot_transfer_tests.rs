@@ -1000,3 +1000,49 @@ fn snapshot_spool_rejects_public_directory_and_replaced_parent() -> TestResult {
     assert!(fs::read_dir(&service.data_dir)?.next().is_none());
     Ok(())
 }
+
+#[test]
+fn v6_identical_seal_bytes_fastpath_retains_changed_file_and_live_seal_denials() -> TestResult {
+    let seal = SealMetadata {
+        schema: 1,
+        generation: 29,
+        share_format: "shamir-v1".into(),
+        secret_shares: 3,
+        secret_threshold: 2,
+        wrapped_barrier_key: STANDARD.encode([0x57; 64]),
+    };
+    let original = serde_json::to_vec(&seal)?;
+    let admitted = canonical_seal_identity(&seal)?;
+    let checked = Service::snapshot_seal_identity_checked_against_admission;
+    // Byte-identical raw file: reuse the identity only while the in-memory
+    // live seal is unchanged. The production caller still READS THE FILE.
+    assert_eq!(
+        checked(&original, &original, &seal, Some(&seal), admitted)
+            .map_err(|_| "same raw metadata rejected")?,
+        admitted,
+    );
+    // Reencoding changes bytes, not the meaning or canonical identity.
+    let reencoded = serde_json::to_vec_pretty(&seal)?;
+    assert_ne!(reencoded, original);
+    assert_eq!(
+        checked(&reencoded, &original, &seal, Some(&seal), admitted)
+            .map_err(|_| "semantically equal reencoding rejected")?,
+        admitted,
+    );
+    // The most dangerous case is a changed live in-memory seal coupled with
+    // byte-identical physical metadata; never allow the cache to mask it.
+    let mut changed = seal.clone();
+    changed.generation += 1;
+    assert!(checked(&original, &original, &seal, Some(&changed), admitted).is_err());
+    let changed_disk = serde_json::to_vec(&changed)?;
+    assert!(checked(&changed_disk, &original, &seal, Some(&seal), admitted).is_err());
+    assert!(checked(b"not-json", &original, &seal, Some(&seal), admitted).is_err());
+    assert!(checked(&original, &original, &seal, None, admitted).is_err());
+    // A fully valid but different physical/in-memory seal has a different
+    // identity, so the caller's admitted plan identity rejects it.
+    let changed_digest = checked(&changed_disk, &original, &seal, Some(&changed), admitted)
+        .map_err(|_| "canonical alternate seal rejected too early")?;
+    assert_eq!(changed_digest, canonical_seal_identity(&changed)?);
+    assert_ne!(changed_digest, admitted);
+    Ok(())
+}

@@ -703,6 +703,27 @@ pub struct MutualTlsPeerTransport {
     timeout: Duration,
 }
 
+// These helpers cannot alter the public HaError return value or its deadline.
+// Logs contain only constant phase labels and io::ErrorKind classifications;
+// never addresses, certificates, request frames, tokens or raw error text.
+fn forward_transport_io_error(stage: &'static str, error: &io::Error) -> HaError {
+    #[cfg(feature = "private-forward-stage-diagnostic")]
+    eprintln!(
+        "HBHA-PRIVATE-STAGE phase={stage} io_kind={:?}",
+        error.kind()
+    );
+    #[cfg(not(feature = "private-forward-stage-diagnostic"))]
+    let _ = (stage, error);
+    HaError::Transport
+}
+fn forward_transport_frame_error(stage: &'static str, error: HaError) -> HaError {
+    #[cfg(feature = "private-forward-stage-diagnostic")]
+    eprintln!("HBHA-PRIVATE-STAGE phase={stage} category={error:?}");
+    #[cfg(not(feature = "private-forward-stage-diagnostic"))]
+    let _ = stage;
+    error
+}
+
 impl MutualTlsPeerTransport {
     pub fn new(
         peers: BTreeMap<NodeId, TlsPeerEndpoint>,
@@ -739,19 +760,31 @@ impl MutualTlsPeerTransport {
         let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
         let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
             .map_err(|_| HaError::InvalidCluster)?;
-        let remaining = forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        let remaining = forward_remaining(deadline)
+            .map_err(|error| forward_transport_io_error("deadline_before_connect", &error))?;
         let stream = TcpStream::connect_timeout(&endpoint.address, remaining)
-            .map_err(|_| HaError::Transport)?;
-        stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
+            .map_err(|error| forward_transport_io_error("tcp_connect", &error))?;
+        stream
+            .set_nodelay(true)
+            .map_err(|error| forward_transport_io_error("tcp_nodelay", &error))?;
         let stream = ForwardDeadlineStream { stream, deadline };
         let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
-            .map_err(|_| HaError::Transport)?;
+            .map_err(|_| {
+                #[cfg(feature = "private-forward-stage-diagnostic")]
+                eprintln!("HBHA-PRIVATE-STAGE phase=tls_client_setup category=Transport");
+                HaError::Transport
+            })?;
         let mut tls = rustls::StreamOwned::new(connection, stream);
-        write_bounded_frame(&mut tls, frame)?;
-        let mut response = zeroize::Zeroizing::new(read_bounded_frame(&mut tls)?);
+        write_bounded_frame(&mut tls, frame)
+            .map_err(|error| forward_transport_frame_error("tls_frame_write", error))?;
+        let mut response = zeroize::Zeroizing::new(
+            read_bounded_frame(&mut tls)
+                .map_err(|error| forward_transport_frame_error("tls_frame_read", error))?,
+        );
         // Buffered TLS plaintext must not bypass the final deadline check, and
         // a rejected late response must erase its plaintext before deallocation.
-        forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        forward_remaining(deadline)
+            .map_err(|error| forward_transport_io_error("deadline_after_response", &error))?;
         Ok(std::mem::take(&mut *response))
     }
 
@@ -858,10 +891,34 @@ pub fn serve_one_mtls_peer_frame<H>(
 where
     H: FnOnce(NodeId, Vec<u8>) -> Result<Vec<u8>, HaError>,
 {
+    serve_one_mtls_peer_frame_with_origin(
+        listener,
+        server_config,
+        identities,
+        timeout,
+        allow_missing_raft_alpn,
+        |peer, frame, _accepted_at| handler(peer, frame),
+    )
+}
+
+/// Expose the actual TCP acceptance instant to budget-sensitive handlers.
+/// The deadline must include TLS and frame I/O but must not charge a request
+/// for time a nonblocking listener spent waiting for its first connection.
+pub fn serve_one_mtls_peer_frame_with_origin<H>(
+    listener: &TcpListener,
+    server_config: Arc<rustls::ServerConfig>,
+    identities: &PinnedClientCertificateMap,
+    timeout: Duration,
+    allow_missing_raft_alpn: bool,
+    handler: H,
+) -> Result<(), HaError>
+where
+    H: FnOnce(NodeId, Vec<u8>, Instant) -> Result<Vec<u8>, HaError>,
+{
     if timeout.is_zero() || timeout > Duration::from_secs(60) {
         return Err(HaError::InvalidCluster);
     }
-    let (stream, _) = listener.accept().map_err(|_| HaError::Transport)?;
+    let (stream, accepted_at) = accept_peer_with_origin(listener)?;
     configure_accepted_peer_stream(&stream, timeout)?;
     let connection =
         rustls::ServerConnection::new(server_config).map_err(|_| HaError::Transport)?;
@@ -876,8 +933,37 @@ where
         .ok_or(HaError::PeerAuthenticationFailed)?;
     let peer = identify_peer_certificate_chain(identities, certificates)?;
     let request = read_bounded_frame(&mut tls)?;
-    let response = handler(peer, request)?;
+    let response = handler(peer, request, accepted_at)?;
     write_bounded_frame(&mut tls, &response)
+}
+
+fn accept_peer_with_origin(listener: &TcpListener) -> Result<(TcpStream, Instant), HaError> {
+    let (stream, _) = listener.accept().map_err(|_| HaError::Transport)?;
+    // Capture the origin *after* accept; waiting for a new socket is not
+    // part of any caller's forwarding or consensus request budget.
+    Ok((stream, Instant::now()))
+}
+
+#[cfg(test)]
+mod inbound_origin_tests {
+    use super::*;
+
+    #[test]
+    fn accept_origin_excludes_idle_listener_wait() {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("test listener");
+        let address = listener.local_addr().expect("test listener address");
+        let sender = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(70));
+            TcpStream::connect(address).expect("test connection")
+        });
+        let before_accept = Instant::now();
+        let (_stream, accepted_at) = accept_peer_with_origin(&listener).expect("accept");
+        let _client = sender.join().expect("sender thread");
+        assert!(
+            accepted_at.duration_since(before_accept) >= Duration::from_millis(50),
+            "idle listener time must not be charged to an admitted peer"
+        );
+    }
 }
 
 fn configure_accepted_peer_stream(stream: &TcpStream, timeout: Duration) -> Result<(), HaError> {
@@ -1884,6 +1970,29 @@ mod tests {
         sender.join().map_err(|_| HaError::Io)??;
         assert_eq!(received, Ok(b"synthetic-peer-frame".to_vec()));
         Ok(())
+    }
+
+    #[test]
+    fn private_forward_stage_observation_preserves_existing_transport_errors() {
+        for (stage, kind) in [
+            ("tcp_connect", io::ErrorKind::ConnectionRefused),
+            ("deadline_after_response", io::ErrorKind::TimedOut),
+            ("tls_frame_read", io::ErrorKind::UnexpectedEof),
+        ] {
+            let error = io::Error::from(kind);
+            assert_eq!(
+                forward_transport_io_error(stage, &error),
+                HaError::Transport
+            );
+        }
+        assert_eq!(
+            forward_transport_frame_error("tls_frame_read", HaError::InvalidFrame),
+            HaError::InvalidFrame,
+        );
+        assert_eq!(
+            forward_transport_frame_error("tls_frame_write", HaError::Transport),
+            HaError::Transport,
+        );
     }
 
     #[test]
