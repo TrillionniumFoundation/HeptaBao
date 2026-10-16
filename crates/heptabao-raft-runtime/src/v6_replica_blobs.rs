@@ -164,7 +164,10 @@ impl LocalV6BlobStage {
         let mut opened = self.directory.open_file(&temporary, FileAccess::CreateNewReadWrite)?;
         opened.write_all(ciphertext)?;
         let published = self.directory.publish_file_noreplace(
-            &temporary, &opened, &destination, reference.payload_bytes,
+            &temporary,
+            &opened,
+            &destination,
+            reference.payload_bytes,
         )?;
         let mut file = match published {
             ImmutablePublication::Published(file)
@@ -209,8 +212,7 @@ mod tests {
     }
 
     #[test]
-    fn immutable_local_ciphertext_reopen_replay_and_tamper_rejection()
-    -> Result<(), Box<dyn std::error::Error>> {
+    fn ciphertext_reopen_tamper_and_duplicate_reject() -> Result<(), Box<dyn std::error::Error>> {
         let root = new_root()?;
         let ciphertext = vec![0x93_u8; 131_072];
         let store = LocalV6BlobStage::open_existing(&root)?;
@@ -245,8 +247,7 @@ mod tests {
     }
 
     #[test]
-    fn refuses_unbounded_ciphertext_and_public_directory()
-    -> Result<(), Box<dyn std::error::Error>> {
+    fn refuses_unbounded_ciphertext_and_public_root() -> Result<(), Box<dyn std::error::Error>> {
         let root = new_root()?;
         let store = LocalV6BlobStage::open_existing(&root)?;
         assert!(matches!(
@@ -269,8 +270,7 @@ mod tests {
 
     #[test]
     #[ignore = "explicit 139 MiB local disk trial; no quorum or root publication"]
-    fn distinct_139_mib_ciphertext_chunks_do_not_enter_json_state()
-    -> Result<(), Box<dyn std::error::Error>> {
+    fn stages_unique_139_mib_without_raft_json() -> Result<(), Box<dyn std::error::Error>> {
         let root = new_root()?;
         let store = LocalV6BlobStage::open_existing(&root)?;
         let mut references = Vec::new();
