@@ -13,7 +13,7 @@ use heptabao_ha_service::{
     MutualTlsPeerTransport, NodeId, RAFT_ALPN_PROTOCOL, TlsPeerEndpoint, V6ReplicaCopyTarget,
     V6ReplicaCustodyFanout,
 };
-use heptabao_raft_runtime::LocalV6BlobStage;
+use heptabao_raft_runtime::{LocalV6BlobStage, SealedRecordObject};
 use ring::digest::{SHA256, digest};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
 use rustls::{ClientConfig, RootCertStore};
@@ -86,11 +86,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err("fixture requires explicit private enable".into());
     }
     let args: Vec<String> = env::args().collect();
-    if args.len() != 7 {
+    if args.len() != 7 && args.len() != 8 {
         return Err(
-            "usage: example X230_ADDR X230_CLIENT_PKI ROG_ADDR ROG_CLIENT_PKI SOURCE_DIR start:end"
+            "usage: example X230_ADDR X230_CLIENT_PKI ROG_ADDR ROG_CLIENT_PKI SOURCE_DIR start:end [probe-only]"
                 .into(),
         );
+    }
+    let probe_only = args.len() == 8;
+    if probe_only && args[7] != "probe-only" {
+        return Err("unsupported private sender mode".into());
     }
     let x230: SocketAddr = args[1].parse()?;
     let rog: SocketAddr = args[3].parse()?;
@@ -105,7 +109,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     for n in first..last {
         let mut payload = vec![0x6a_u8; PAYLOAD_BYTES];
         payload[..8].copy_from_slice(&(n as u64).to_be_bytes());
-        references.push(source.stage_local(&payload)?.reference().clone());
+        let object = SealedRecordObject::new_native_v6_ciphertext_chunk(payload)?;
+        if probe_only {
+            if source.read_local(object.reference())?.as_slice() != object.sealed() {
+                return Err("source object changed before read-only reconciliation".into());
+            }
+        } else {
+            source.stage_local(object.sealed())?;
+        }
+        references.push(object.reference().clone());
     }
     let before = source.observe_local_closure(&references)?;
     let fanout = V6ReplicaCustodyFanout::new(
@@ -118,7 +130,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         ],
     )?;
     let started = Instant::now();
-    let result = fanout.deliver_local_copies(&source, &references, started + TOTAL_DEADLINE)?;
+    let result = if probe_only {
+        fanout.reconcile_local_copies(&source, &references, started + TOTAL_DEADLINE)?
+    } else {
+        fanout.deliver_local_copies(&source, &references, started + TOTAL_DEADLINE)?
+    };
     if result.manifest_sha256() != before.manifest_sha256()
         || result.object_count() != last - first
         || result.ciphertext_bytes() != (last - first) as u64 * PAYLOAD_BYTES as u64
@@ -127,7 +143,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err("two-target local custody observation mismatch".into());
     }
     println!(
-        "RESULT=PRIVATE_TWO_PEER_LOCAL_FSYNC_ONLY_NOT_RAFT_QUORUM objects={} bytes_per_peer={} recipients=2 elapsed_ms={}",
+        "RESULT={} objects={} bytes_per_peer={} recipients=2 elapsed_ms={}",
+        if probe_only {
+            "PRIVATE_TWO_PEER_READONLY_CUSTODY_NOT_RAFT_QUORUM"
+        } else {
+            "PRIVATE_TWO_PEER_LOCAL_FSYNC_ONLY_NOT_RAFT_QUORUM"
+        },
         result.object_count(),
         result.ciphertext_bytes(),
         started.elapsed().as_millis()

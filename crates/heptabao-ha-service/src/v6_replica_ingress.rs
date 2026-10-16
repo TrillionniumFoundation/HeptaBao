@@ -20,6 +20,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 const REQUEST_MAGIC: &[u8; 5] = b"HBVR1";
+const PROBE_MAGIC: &[u8; 5] = b"HBVQ1";
 const RECEIPT_MAGIC: &[u8; 5] = b"HBVA1";
 const MAX_CIPHERTEXT: usize = 256 * 1024;
 const REQUEST_PREFIX: usize = 5 + 32 + 8 + 32 + 32 + 4;
@@ -77,6 +78,31 @@ pub fn encode_v6_replica_request(
     result.extend_from_slice(&reference.id);
     result.extend_from_slice(&(ciphertext.len() as u32).to_be_bytes());
     result.extend_from_slice(ciphertext);
+    Ok(result)
+}
+
+/// Authenticated *read-only* local ciphertext custody probe. A successful
+/// response means only that the exact immutable bytes were physically reopened
+/// at the receiver during this mTLS request. It is not a commit, vote, root or
+/// transferable quorum proof, and performs no staging or file mutation.
+pub fn encode_v6_replica_probe(
+    cluster: &str,
+    epoch: u64,
+    operation: [u8; 32],
+    reference: &RecordObjectRef,
+) -> Result<Vec<u8>, HaError> {
+    if epoch == 0 || operation == [0; 32] {
+        return Err(HaError::InvalidFrame);
+    }
+    let length = usize::try_from(reference.payload_bytes).map_err(|_| HaError::InvalidFrame)?;
+    validate_reference(reference, length)?;
+    let mut result = Vec::with_capacity(REQUEST_PREFIX);
+    result.extend_from_slice(PROBE_MAGIC);
+    result.extend_from_slice(&cluster_binding(cluster)?);
+    result.extend_from_slice(&epoch.to_be_bytes());
+    result.extend_from_slice(&operation);
+    result.extend_from_slice(&reference.id);
+    result.extend_from_slice(&(length as u32).to_be_bytes());
     Ok(result)
 }
 
@@ -153,6 +179,32 @@ impl AuthenticatedV6ReplicaReceiver {
         )
     }
 
+    /// Only an existing, immutable ciphertext leaf may be observed. The
+    /// private read-only listener explicitly refuses any mutating HBVR1 frame,
+    /// even from a correctly certificate-pinned sender. Neither a successful
+    /// probe nor its local receipt grants Raft or root authority.
+    pub fn serve_one_mtls_probe_only(
+        &self,
+        listener: &TcpListener,
+        server_config: Arc<rustls::ServerConfig>,
+        pinned: &PinnedClientCertificateMap,
+        timeout: Duration,
+    ) -> Result<(), HaError> {
+        serve_one_mtls_peer_frame_with_origin(
+            listener,
+            server_config,
+            pinned,
+            timeout,
+            false,
+            |sender, request, accepted_at| {
+                if request.get(..5) != Some(PROBE_MAGIC.as_slice()) {
+                    return Err(HaError::InvalidFrame);
+                }
+                self.receive_verified_peer(&sender, &request, accepted_at, timeout)
+            },
+        )
+    }
+
     fn receive_verified_peer(
         &self,
         sender: &NodeId,
@@ -164,10 +216,12 @@ impl AuthenticatedV6ReplicaReceiver {
             return Err(HaError::UnknownPeer);
         }
         let deadline = accepted_at.checked_add(budget).ok_or(HaError::Transport)?;
+        let is_stage = bytes.get(..5) == Some(REQUEST_MAGIC.as_slice());
+        let is_probe = bytes.get(..5) == Some(PROBE_MAGIC.as_slice());
         if Instant::now() >= deadline
-            || bytes.len() < REQUEST_PREFIX + 25
+            || (!is_stage && !is_probe)
+            || bytes.len() < REQUEST_PREFIX
             || bytes.len() > REQUEST_PREFIX + MAX_CIPHERTEXT
-            || bytes.get(..5) != Some(REQUEST_MAGIC.as_slice())
             || bytes.get(5..37) != Some(self.binding.as_slice())
         {
             return Err(HaError::InvalidFrame);
@@ -188,10 +242,15 @@ impl AuthenticatedV6ReplicaReceiver {
                 .try_into()
                 .map_err(|_| HaError::InvalidFrame)?,
         ) as usize;
+        let expected_size = if is_probe {
+            REQUEST_PREFIX
+        } else {
+            REQUEST_PREFIX + len
+        };
         if epoch != self.epoch
             || operation != self.allowed_operation
             || !(25..=MAX_CIPHERTEXT).contains(&len)
-            || bytes.len() != REQUEST_PREFIX + len
+            || bytes.len() != expected_size
         {
             return Err(HaError::InvalidFrame);
         }
@@ -202,14 +261,24 @@ impl AuthenticatedV6ReplicaReceiver {
             record_count: 0,
             payload_bytes: len as u64,
         };
-        self.storage
-            .stage_received_replica(&reference, &bytes[REQUEST_PREFIX..])
-            .map_err(|error| match error {
-                LocalV6BlobError::InvalidCiphertext
-                | LocalV6BlobError::CorruptOrChanged
-                | LocalV6BlobError::InvalidClosure => HaError::InvalidFrame,
-                _ => HaError::OutcomeUnknown,
-            })?;
+        if is_probe {
+            // A probe never creates, replaces or repairs any file. Any absent,
+            // changed or unreadable leaf has unknown current custody status.
+            drop(
+                self.storage
+                    .read_local(&reference)
+                    .map_err(|_| HaError::OutcomeUnknown)?,
+            );
+        } else {
+            self.storage
+                .stage_received_replica(&reference, &bytes[REQUEST_PREFIX..])
+                .map_err(|error| match error {
+                    LocalV6BlobError::InvalidCiphertext
+                    | LocalV6BlobError::CorruptOrChanged
+                    | LocalV6BlobError::InvalidClosure => HaError::InvalidFrame,
+                    _ => HaError::OutcomeUnknown,
+                })?;
+        }
         // A timed-out but already fsynced leaf has UNKNOWN reply status. It
         // must be reconciled by ID on the next authenticated attempt, never
         // interpreted as a no-effect or quorum acknowledgement.
@@ -370,6 +439,100 @@ mod tests {
         assert_eq!(first, second);
         drop(receiver);
         fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn read_only_probe_requires_existing_exact_ciphertext_and_preserves_custody()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (dir, receiver, sender) = fixture([5; 32]);
+        let ciphertext = vec![0x35_u8; 4096];
+        let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.clone())?;
+        let probe = encode_v6_replica_probe("cluster-x", 7, [5; 32], object.reference())?;
+        assert_eq!(probe.len(), REQUEST_PREFIX);
+        assert!(matches!(
+            receiver.receive_verified_peer(
+                &sender,
+                &probe,
+                Instant::now(),
+                Duration::from_secs(10),
+            ),
+            Err(HaError::OutcomeUnknown),
+        ));
+        assert_eq!(
+            fs::read_dir(&dir)?.count(),
+            0,
+            "probe cannot stage an object"
+        );
+        receiver.storage.stage_local(&ciphertext)?;
+        let receipt = receiver.receive_verified_peer(
+            &sender,
+            &probe,
+            Instant::now(),
+            Duration::from_secs(10),
+        )?;
+        verify_v6_local_receipt("cluster-x", 7, [5; 32], object.reference(), &receipt)?;
+        assert_eq!(fs::read_dir(&dir)?.count(), 1);
+        // Reject an otherwise valid read-only frame with the wrong operation
+        // or digest, without mutating the existing ciphertext.
+        let mut changed = probe.clone();
+        changed[76] ^= 1;
+        assert!(
+            receiver
+                .receive_verified_peer(&sender, &changed, Instant::now(), Duration::from_secs(10),)
+                .is_err()
+        );
+        let missing = SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0x36; 4096])?;
+        let missing_probe = encode_v6_replica_probe("cluster-x", 7, [5; 32], missing.reference())?;
+        assert!(matches!(
+            receiver.receive_verified_peer(
+                &sender,
+                &missing_probe,
+                Instant::now(),
+                Duration::from_secs(10),
+            ),
+            Err(HaError::OutcomeUnknown),
+        ));
+        drop(receiver);
+        let receiver = AuthenticatedV6ReplicaReceiver::open_existing(
+            NodeId::parse("target")?,
+            "cluster-x",
+            7,
+            [5; 32],
+            BTreeSet::from([sender.clone()]),
+            &dir,
+        )?;
+        assert_eq!(
+            receipt,
+            receiver.receive_verified_peer(
+                &sender,
+                &probe,
+                Instant::now(),
+                Duration::from_secs(10),
+            )?,
+            "cold reopen must reauthenticate exact existing bytes",
+        );
+        let only_path = fs::read_dir(&dir)?
+            .next()
+            .ok_or("missing persisted leaf")??
+            .path();
+        fs::write(only_path, vec![0x37_u8; 4096])?;
+        assert!(matches!(
+            receiver.receive_verified_peer(
+                &sender,
+                &probe,
+                Instant::now(),
+                Duration::from_secs(10),
+            ),
+            Err(HaError::OutcomeUnknown),
+        ));
+        assert_eq!(
+            fs::read_dir(&dir)?.count(),
+            1,
+            "probe must not repair tampering"
+        );
+        drop(receiver);
+        fs::remove_dir_all(dir)?;
+        Ok(())
     }
 
     // Real pinned-certificate mTLS over a private loopback TCP socket. This

@@ -6,7 +6,8 @@
 //! immutable root CAS, and crash replay are NOT authorized by this module.
 //! The production V6/HA exclusion remains unchanged.
 use super::{
-    HaError, MutualTlsPeerTransport, NodeId, encode_v6_replica_request, verify_v6_local_receipt,
+    HaError, MutualTlsPeerTransport, NodeId, encode_v6_replica_probe, encode_v6_replica_request,
+    verify_v6_local_receipt,
 };
 use heptabao_raft_runtime::{LocalV6BlobStage, RecordObjectRef};
 use std::collections::BTreeSet;
@@ -136,6 +137,68 @@ impl V6ReplicaCustodyFanout {
             epoch,
             operation,
             targets,
+        })
+    }
+
+    /// Reconcile a previously unknown local-custody outcome WITHOUT writing
+    /// any ciphertext over the network. Each independently pinned recipient
+    /// must physically reauthenticate the exact stored leaf and return its
+    /// original operation-bound, local-only receipt.  No quorum or Raft root
+    /// authority can be derived from this observation.
+    pub fn reconcile_local_copies(
+        &self,
+        source: &LocalV6BlobStage,
+        references: &[RecordObjectRef],
+        deadline: Instant,
+    ) -> Result<V6ReplicaCustodyObservation, HaError> {
+        if Instant::now() >= deadline {
+            return Err(HaError::OutcomeUnknown);
+        }
+        let initial = source
+            .observe_local_closure(references)
+            .map_err(|_| HaError::OutcomeUnknown)?;
+        let mut ordered = references.iter().collect::<Vec<_>>();
+        ordered.sort_by_key(|reference| reference.id);
+        let mut completed_recipients = Vec::with_capacity(self.targets.len());
+        for target in &self.targets {
+            for reference in &ordered {
+                if Instant::now() >= deadline {
+                    return Err(HaError::OutcomeUnknown);
+                }
+                let query =
+                    encode_v6_replica_probe(&self.cluster, self.epoch, self.operation, reference)
+                        .map_err(|_| HaError::OutcomeUnknown)?;
+                let response = target
+                    .transport
+                    .exchange_before_pinned_server(
+                        &target.node,
+                        &query,
+                        deadline,
+                        target.expected_server_leaf_sha256,
+                    )
+                    .map_err(|_| HaError::OutcomeUnknown)?;
+                verify_v6_local_receipt(
+                    &self.cluster,
+                    self.epoch,
+                    self.operation,
+                    reference,
+                    &response,
+                )
+                .map_err(|_| HaError::OutcomeUnknown)?;
+            }
+            completed_recipients.push(target.node.clone());
+        }
+        let after = source
+            .observe_local_closure(references)
+            .map_err(|_| HaError::OutcomeUnknown)?;
+        if after != initial || Instant::now() >= deadline {
+            return Err(HaError::OutcomeUnknown);
+        }
+        Ok(V6ReplicaCustodyObservation {
+            manifest_sha256: initial.manifest_sha256(),
+            object_count: initial.object_count(),
+            ciphertext_bytes: initial.ciphertext_bytes(),
+            completed_recipients,
         })
     }
 
@@ -429,7 +492,7 @@ mod tests {
             );
             let pins = pinmap.clone();
             threads.push(thread::spawn(move || -> Result<(), HaError> {
-                for _ in 0..2 {
+                for _ in 0..4 {
                     receiver.serve_one_mtls(
                         &listener,
                         tls.clone(),
@@ -466,6 +529,15 @@ mod tests {
         assert_eq!(observation.object_count(), 2);
         assert_eq!(observation.ciphertext_bytes(), 12288);
         assert_eq!(observation.completed_recipients().len(), 2);
+        let after_restart_reconciliation = fanout.reconcile_local_copies(
+            &source,
+            &refs,
+            Instant::now() + Duration::from_secs(18),
+        )?;
+        assert_eq!(
+            observation, after_restart_reconciliation,
+            "read-only mTLS probes must observe the identical local custody",
+        );
         for handle in threads {
             handle.join().map_err(|_| "receiver thread panic")??;
         }
