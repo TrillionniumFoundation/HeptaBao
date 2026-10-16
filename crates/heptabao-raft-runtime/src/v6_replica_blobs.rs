@@ -13,6 +13,7 @@ use heptabao_filesystem_guard::{
     DirectoryGuardError, ExclusiveDirectory, FileAccess, ImmutablePublication,
     ImmutablePublicationError,
 };
+use sha2::{Digest, Sha256};
 use std::fmt;
 use std::fs::{self, File};
 use std::io::{self, Read, Seek, SeekFrom, Write};
@@ -24,6 +25,7 @@ static NEXT_TEMPORARY: AtomicU64 = AtomicU64::new(1);
 #[derive(Debug)]
 pub enum LocalV6BlobError {
     InvalidCiphertext,
+    InvalidClosure,
     InvalidRoot,
     CorruptOrChanged,
     Guard(DirectoryGuardError),
@@ -34,6 +36,7 @@ impl fmt::Display for LocalV6BlobError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let message = match self {
             Self::InvalidCiphertext => "invalid or unbounded V6 ciphertext",
+            Self::InvalidClosure => "empty, duplicate or oversized local V6 closure",
             Self::InvalidRoot => "V6 staging requires an existing private real directory",
             Self::CorruptOrChanged => "V6 ciphertext bytes or identity do not match",
             Self::Guard(_) => "V6 staging directory identity/owner fence unavailable",
@@ -78,6 +81,27 @@ pub struct LocalV6BlobReceipt {
 impl LocalV6BlobReceipt {
     pub fn reference(&self) -> &RecordObjectRef {
         &self.reference
+    }
+}
+
+/// A point-in-time authenticated observation of **local** staged ciphertext.
+/// The digest binds a canonical set of exact ciphertext object references.
+/// It is NOT a Raft quorum certificate, a root publication or read permission.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct LocalV6ClosureReceipt {
+    object_count: usize,
+    ciphertext_bytes: u64,
+    manifest_sha256: [u8; 32],
+}
+impl LocalV6ClosureReceipt {
+    pub fn object_count(&self) -> usize {
+        self.object_count
+    }
+    pub fn ciphertext_bytes(&self) -> u64 {
+        self.ciphertext_bytes
+    }
+    pub fn manifest_sha256(&self) -> [u8; 32] {
+        self.manifest_sha256
     }
 }
 
@@ -188,6 +212,51 @@ impl LocalV6BlobStage {
         let mut file = self.directory.open_file(&destination, FileAccess::Read)?;
         Self::read_checked(&mut file, reference)
     }
+
+    /// Observe an entire exact set of local ciphertext objects without
+    /// materializing their combined plaintext/ciphertext or using the Raft
+    /// JSON state. Every leaf is physically reopened and SHA256 checked.
+    /// Sorting IDs makes the manifest deterministic across process/host
+    /// enumeration order. Duplicate IDs (even with altered length metadata)
+    /// and missing/tampered leaves fail closed.
+    ///
+    /// This receipt has no cluster/epoch/Actor, index or majority authority.
+    /// An authenticated future Raft publisher MUST recheck closure durability
+    /// under its own commit fence; this snapshot is not a durable lease.
+    pub fn observe_local_closure(
+        &self,
+        references: &[RecordObjectRef],
+    ) -> Result<LocalV6ClosureReceipt, LocalV6BlobError> {
+        if references.is_empty() {
+            return Err(LocalV6BlobError::InvalidClosure);
+        }
+        let count =
+            u64::try_from(references.len()).map_err(|_| LocalV6BlobError::InvalidClosure)?;
+        let mut ordered: Vec<&RecordObjectRef> = references.iter().collect();
+        ordered.sort_unstable_by_key(|reference| reference.id);
+        if ordered.windows(2).any(|pair| pair[0].id == pair[1].id) {
+            return Err(LocalV6BlobError::InvalidClosure);
+        }
+        let mut digest = Sha256::new();
+        digest.update(b"heptabao.v6.local-ciphertext-closure.v1\0");
+        digest.update(count.to_be_bytes());
+        let mut ciphertext_bytes = 0_u64;
+        for reference in ordered {
+            ciphertext_bytes = ciphertext_bytes
+                .checked_add(reference.payload_bytes)
+                .ok_or(LocalV6BlobError::InvalidClosure)?;
+            // read_local validates the kind, expected exact length and
+            // ciphertext digest before the manifest can contain this entry.
+            drop(self.read_local(reference)?);
+            digest.update(reference.id);
+            digest.update(reference.payload_bytes.to_be_bytes());
+        }
+        Ok(LocalV6ClosureReceipt {
+            object_count: references.len(),
+            ciphertext_bytes,
+            manifest_sha256: digest.finalize().into(),
+        })
+    }
 }
 
 #[cfg(all(test, unix))]
@@ -267,6 +336,51 @@ mod tests {
     }
 
     #[test]
+    fn closure_observation_requires_all_local_bytes_and_unique_references()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = new_root()?;
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        let first = store.stage_local(&[0x41_u8; 4096])?.reference().clone();
+        let second = store.stage_local(&[0x42_u8; 1024])?.reference().clone();
+        let ordered = vec![first.clone(), second.clone()];
+        let before = store.observe_local_closure(&ordered)?;
+        assert_eq!(before.object_count(), 2);
+        assert_eq!(before.ciphertext_bytes(), 5120);
+        assert_ne!(before.manifest_sha256(), [0; 32]);
+        assert_eq!(
+            before,
+            store.observe_local_closure(&[second.clone(), first.clone()])?
+        );
+        assert!(matches!(
+            store.observe_local_closure(&[]),
+            Err(LocalV6BlobError::InvalidClosure),
+        ));
+        assert!(matches!(
+            store.observe_local_closure(&[first.clone(), first.clone()]),
+            Err(LocalV6BlobError::InvalidClosure),
+        ));
+        let absent = SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0x43; 4096])?;
+        assert!(
+            store
+                .observe_local_closure(&[first.clone(), absent.reference().clone()])
+                .is_err()
+        );
+        drop(store);
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        assert_eq!(before, store.observe_local_closure(&ordered)?);
+        drop(store);
+        fs::write(root.join(LocalV6BlobStage::leaf(&second)?), [0x44_u8; 1024])?;
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        assert!(matches!(
+            store.observe_local_closure(&ordered),
+            Err(LocalV6BlobError::CorruptOrChanged),
+        ));
+        drop(store);
+        fs::remove_dir_all(root)?;
+        Ok(())
+    }
+
+    #[test]
     #[ignore = "explicit 139 MiB local disk trial; no quorum or root publication"]
     fn stages_unique_139_mib_without_raft_json() -> Result<(), Box<dyn std::error::Error>> {
         let root = new_root()?;
@@ -279,9 +393,13 @@ mod tests {
             ciphertext[..8].copy_from_slice(&i.to_be_bytes());
             references.push(store.stage_local(&ciphertext)?.reference().clone());
         }
+        let before = store.observe_local_closure(&references)?;
+        assert_eq!(before.object_count(), 556);
+        assert_eq!(before.ciphertext_bytes(), 139_u64 * 1024 * 1024);
         drop(store);
         let store = LocalV6BlobStage::open_existing(&root)?;
         assert_eq!(references.len(), 556);
+        assert_eq!(store.observe_local_closure(&references)?, before);
         for (index, reference) in references.iter().enumerate() {
             let result = store.read_local(reference)?;
             assert_eq!(&result[..8], &(index as u64).to_be_bytes());

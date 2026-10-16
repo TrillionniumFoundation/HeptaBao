@@ -26,7 +26,9 @@ pub use records::{
 };
 pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
 #[cfg(feature = "experimental-v6-raft-objects")]
-pub use v6_replica_blobs::{LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage};
+pub use v6_replica_blobs::{
+    LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage, LocalV6ClosureReceipt,
+};
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]
