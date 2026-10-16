@@ -10,6 +10,8 @@ default = []
 # Only private synthetic fault cells enable fixed-label transport diagnostics.
 # The default transport reports identical errors and emits no stage trace.
 private-forward-stage-diagnostic = []
+# Default-off typed replica peer messages; no production V6 HA route.
+experimental-v6-replica-peer = []
 
 [dependencies]
 zeroize = "=1.8.1"
