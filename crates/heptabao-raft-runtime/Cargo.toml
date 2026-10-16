@@ -8,10 +8,11 @@ publish = false
 [features]
 default = []
 # Experimental Raft staging only. No V6 root publication or HA admission.
-experimental-v6-raft-objects = []
+experimental-v6-raft-objects = ["dep:heptabao-filesystem-guard"]
 [dependencies]
 base64 = "=0.22.1"
 crc32fast = "=1.5.2"
+heptabao-filesystem-guard = { path = "../heptabao-filesystem-guard", optional = true }
 sha2 = "=0.10.9"
 futures = "=0.3.34"
 openraft = { version = "=0.10.0-alpha.34", default-features = false, features = ["serde", "tokio-rt", "type-alias"] }
