@@ -22,3 +22,7 @@ heptabao-raft-runtime = { path = "../heptabao-raft-runtime", optional = true }
 
 [dev-dependencies]
 rustls-pemfile = "=2.2.0"
+
+[[example]]
+name = "v6_replica_multihost_private"
+required-features = ["experimental-v6-peer-ingress"]
