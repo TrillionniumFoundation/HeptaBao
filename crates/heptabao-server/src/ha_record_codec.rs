@@ -36,8 +36,10 @@ pub(crate) fn runtime_reference(reference: &ObjectRef) -> RecordObjectRef {
     }
 }
 
-pub(crate) fn core_reference(reference: &RecordObjectRef) -> ObjectRef {
-    ObjectRef {
+pub(crate) fn core_reference(
+    reference: &RecordObjectRef,
+) -> Result<ObjectRef, ReplicatedStateError> {
+    Ok(ObjectRef {
         id: ObjectId::from_bytes(reference.id),
         kind: match reference.kind {
             RecordObjectKind::Block => ObjectKind::Block,
@@ -46,11 +48,15 @@ pub(crate) fn core_reference(reference: &RecordObjectRef) -> ObjectRef {
             RecordObjectKind::Branch => ObjectKind::Branch,
             RecordObjectKind::OwnerChunk => ObjectKind::OwnerChunk,
             RecordObjectKind::PackedLeaf => ObjectKind::PackedLeaf,
+            #[cfg(feature = "experimental-v6-replica-peer")]
+            RecordObjectKind::NativeV6CiphertextChunk => {
+                return Err(ReplicatedStateError::InvalidEnvelope);
+            }
         },
         encoded_bytes: reference.encoded_bytes,
         record_count: reference.record_count,
         payload_bytes: reference.payload_bytes,
-    }
+    })
 }
 
 fn base_bytes(base: &RecordRootBase) -> [u8; BASE_BYTES] {
@@ -84,7 +90,10 @@ fn parse_base(bytes: &[u8]) -> Result<RecordRootBase, ReplicatedStateError> {
     }
 }
 
-fn append_reference(aad: &mut Vec<u8>, reference: &RecordObjectRef) {
+fn append_reference(
+    aad: &mut Vec<u8>,
+    reference: &RecordObjectRef,
+) -> Result<(), ReplicatedStateError> {
     aad.extend_from_slice(&reference.id);
     aad.push(match reference.kind {
         RecordObjectKind::Block => 1,
@@ -93,10 +102,15 @@ fn append_reference(aad: &mut Vec<u8>, reference: &RecordObjectRef) {
         RecordObjectKind::Branch => 4,
         RecordObjectKind::OwnerChunk => 5,
         RecordObjectKind::PackedLeaf => 6,
+        #[cfg(feature = "experimental-v6-replica-peer")]
+        RecordObjectKind::NativeV6CiphertextChunk => {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
     });
     aad.extend_from_slice(&reference.encoded_bytes.to_be_bytes());
     aad.extend_from_slice(&reference.record_count.to_be_bytes());
     aad.extend_from_slice(&reference.payload_bytes.to_be_bytes());
+    Ok(())
 }
 
 impl ClusterStateCodec {
@@ -220,10 +234,10 @@ impl ClusterStateCodec {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         let mut aad = self.record_aad_prefix(OBJECT_MAGIC)?;
-        append_reference(&mut aad, reference);
+        append_reference(&mut aad, reference)?;
         aad.extend_from_slice(&(children.len() as u16).to_be_bytes());
         for child in children {
-            append_reference(&mut aad, child);
+            append_reference(&mut aad, child)?;
         }
         Ok(aad)
     }
@@ -270,7 +284,7 @@ impl ClusterStateCodec {
         expected: &ObjectRef,
         object: &SealedRecordObject,
     ) -> Result<Zeroizing<Vec<u8>>, ReplicatedStateError> {
-        if core_reference(object.reference()) != *expected {
+        if core_reference(object.reference())? != *expected {
             return Err(ReplicatedStateError::DigestMismatch);
         }
         let sealed = object.sealed();
@@ -445,7 +459,7 @@ mod tests {
         )?;
         assert!(
             codec
-                .open_record_object(&key, &core_reference(&reference), &altered)
+                .open_record_object(&key, &core_reference(&reference)?, &altered)
                 .is_err()
         );
         // Keep the descriptor structurally valid, then alter a child address.
@@ -494,6 +508,22 @@ mod tests {
         Ok(())
     }
 
+    #[cfg(feature = "experimental-v6-replica-peer")]
+    #[test]
+    fn experimental_v6_ciphertext_cannot_cross_the_v5_codec() -> Result {
+        let v6 = SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0x7f; 1024])?;
+        assert!(matches!(
+            core_reference(v6.reference()),
+            Err(ReplicatedStateError::InvalidEnvelope),
+        ));
+        let mut aad = Vec::new();
+        assert!(matches!(
+            append_reference(&mut aad, v6.reference()),
+            Err(ReplicatedStateError::InvalidEnvelope),
+        ));
+        Ok(())
+    }
+
     #[test]
     fn record_kind_aad_keeps_existing_tags_and_adds_packed_leaf_six() -> Result {
         for (kind, tag) in [
@@ -511,9 +541,9 @@ mod tests {
                 record_count: 2,
                 payload_bytes: 17,
             };
-            assert_eq!(runtime_reference(&core_reference(&reference)), reference);
+            assert_eq!(runtime_reference(&core_reference(&reference)?), reference);
             let mut aad = Vec::new();
-            append_reference(&mut aad, &reference);
+            append_reference(&mut aad, &reference)?;
             let mut expected = vec![11; 32];
             expected.push(tag);
             expected.extend_from_slice(&123_u32.to_be_bytes());
@@ -550,7 +580,7 @@ mod tests {
         let forged = SealedRecordObject::new(changed.clone(), vec![], sealed.sealed().to_vec())?;
         assert!(
             codec
-                .open_record_object(&key, &core_reference(&changed), &forged)
+                .open_record_object(&key, &core_reference(&changed)?, &forged)
                 .is_err()
         );
         let value = format!("\"{}\"", "x".repeat(1024));

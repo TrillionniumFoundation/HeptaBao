@@ -11,6 +11,7 @@ fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
 fixture-native-v6-service = []
 private-ha-forward-diagnostic = ["heptabao-ha-service/private-forward-stage-diagnostic"]
+experimental-v6-replica-peer = ["heptabao-ha-service/experimental-v6-replica-peer", "heptabao-raft-runtime/experimental-v6-raft-objects"]
 
 [dependencies]
 chrono = { version = "=0.4.45", default-features = false, features = ["clock", "std"] }

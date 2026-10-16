@@ -273,6 +273,10 @@ pub enum PeerMessageKind {
     ForwardResponse,
     ReadIndex,
     SnapshotChunk,
+    #[cfg(feature = "experimental-v6-replica-peer")]
+    V6CiphertextStage,
+    #[cfg(feature = "experimental-v6-replica-peer")]
+    V6CiphertextReceipt,
     Membership,
 }
 
@@ -283,6 +287,10 @@ impl PeerMessageKind {
             Self::ForwardResponse => 2,
             Self::ReadIndex => 3,
             Self::SnapshotChunk => 4,
+            #[cfg(feature = "experimental-v6-replica-peer")]
+            Self::V6CiphertextStage => 6,
+            #[cfg(feature = "experimental-v6-replica-peer")]
+            Self::V6CiphertextReceipt => 7,
             Self::Membership => 5,
         }
     }
@@ -293,6 +301,10 @@ impl PeerMessageKind {
             2 => Ok(Self::ForwardResponse),
             3 => Ok(Self::ReadIndex),
             4 => Ok(Self::SnapshotChunk),
+            #[cfg(feature = "experimental-v6-replica-peer")]
+            6 => Ok(Self::V6CiphertextStage),
+            #[cfg(feature = "experimental-v6-replica-peer")]
+            7 => Ok(Self::V6CiphertextReceipt),
             5 => Ok(Self::Membership),
             _ => Err(HaError::InvalidFrame),
         }
