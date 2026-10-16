@@ -474,3 +474,123 @@ async fn replacement_admission_is_read_only_cas_and_capacity_checked_before_stag
     drop(reopened);
     std::fs::remove_dir_all(path).expect("cleanup");
 }
+
+#[cfg(feature = "experimental-v6-raft-objects")]
+#[tokio::test]
+async fn native_v6_ciphertext_chunk_raft_stage_reopens_and_installs_follower_snapshot_without_root()
+{
+    // This tests the real durable Raft application-object journal and snapshot,
+    // not merely a local JSON serializer. No V6 root publication is enabled.
+    let path = root();
+    let follower_path = path.with_extension("v6-stage-follower");
+    let mut store = DurableStateMachine::create(&path).expect("create isolated store");
+    let chunk = crate::SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0x75; 8192])
+        .expect("bounded opaque ciphertext chunk");
+    apply(
+        &mut store,
+        request(RecordCommand::Stage {
+            object: chunk.clone(),
+        }),
+    )
+    .await;
+    let staged_generation = store.generation().await;
+    assert_eq!(
+        store
+            .record_object(chunk.reference())
+            .await
+            .expect("staged object available"),
+        Some(chunk.clone())
+    );
+    assert_eq!(
+        store.record_root_at_generation().await,
+        (staged_generation, None)
+    );
+    let snapshot = RaftSnapshotBuilder::build_snapshot(&mut store)
+        .await
+        .expect("durable checkpoint");
+    let snapshot_bytes = snapshot.snapshot.into_inner();
+    let mut follower =
+        DurableStateMachine::create(&follower_path).expect("create isolated follower");
+    RaftStateMachine::install_snapshot(&mut follower, &snapshot.meta, Cursor::new(snapshot_bytes))
+        .await
+        .expect("install native-stage record snapshot");
+    assert_eq!(
+        follower
+            .record_object(chunk.reference())
+            .await
+            .expect("follower object"),
+        Some(chunk.clone())
+    );
+    assert!(follower.record_root_at_generation().await.1.is_none());
+    drop(follower);
+    drop(store);
+    let reopened =
+        DurableStateMachine::open_existing(&follower_path).expect("cold reopen follower snapshot");
+    assert_eq!(
+        reopened
+            .record_object(chunk.reference())
+            .await
+            .expect("cold follower object"),
+        Some(chunk.clone())
+    );
+    assert!(reopened.record_root_at_generation().await.1.is_none());
+    drop(reopened);
+    let origin = DurableStateMachine::open_existing(&path).expect("replay origin journal");
+    assert_eq!(
+        origin
+            .record_object(chunk.reference())
+            .await
+            .expect("replay stage"),
+        Some(chunk)
+    );
+    assert!(origin.record_root_at_generation().await.1.is_none());
+    drop(origin);
+    fs::remove_dir_all(path).expect("cleanup isolated origin");
+    fs::remove_dir_all(follower_path).expect("cleanup isolated follower");
+}
+
+#[cfg(feature = "experimental-v6-raft-objects")]
+#[test]
+fn native_v6_ciphertext_chunks_reject_tamper_metadata_children_and_v5_root_publication() {
+    let chunk = crate::SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0x85; 1024])
+        .expect("valid opaque test ciphertext");
+    let mut changed = chunk.sealed().to_vec();
+    changed[0] ^= 1;
+    assert!(
+        crate::SealedRecordObject::new(chunk.reference().clone(), vec![], changed).is_err(),
+        "same staged id cannot authenticate changed bytes"
+    );
+    let mut wrong_size = chunk.reference().clone();
+    wrong_size.payload_bytes += 1;
+    assert!(crate::SealedRecordObject::new(wrong_size, vec![], chunk.sealed().to_vec()).is_err());
+    assert!(
+        crate::SealedRecordObject::new(
+            chunk.reference().clone(),
+            vec![chunk.reference().clone()],
+            chunk.sealed().to_vec()
+        )
+        .is_err(),
+        "V6 ciphertext chunks cannot smuggle object graph children"
+    );
+    assert!(crate::SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0; 24]).is_err());
+    assert!(
+        crate::SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0; 256 * 1024 + 1]).is_err()
+    );
+    let v5 = crate::PublishedRecordRoot::new(
+        RecordRootBase::Empty,
+        crate::ReplicatedEnvelope::new("v6-stage-not-publishable", [3; 32], vec![9; 32])
+            .expect("valid opaque envelope"),
+        vec![chunk.reference().clone()],
+    );
+    assert!(v5.is_err(), "V5 root must never publish V6 ciphertext");
+    let json = serde_json::to_vec(&chunk).expect("canonical bounded stage encoding");
+    let roundtrip: crate::SealedRecordObject =
+        serde_json::from_slice(&json).expect("roundtrip test encoding");
+    assert_eq!(roundtrip, chunk);
+    assert!(
+        serde_json::to_string(&chunk)
+            .expect("bounded text")
+            .contains("NativeV6CiphertextChunk"),
+        "new kind is explicit, never a legacy alias"
+    );
+}
