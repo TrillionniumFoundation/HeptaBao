@@ -205,6 +205,34 @@ impl LocalV6BlobStage {
         Ok(LocalV6BlobReceipt { reference })
     }
 
+    /// Receive a V6 ciphertext leaf whose identity was specified by a peer.
+    ///
+    /// This method is only an untrusted-byte, local durability primitive.
+    /// The caller MUST separately authenticate peer identity, cluster, epoch,
+    /// operation, Raft membership, the complete closure, and original deadline.
+    /// Never interpret its local receipt as a majority acknowledgement or
+    /// permission to publish/serve a V6 root.
+    ///
+    /// Reject a mismatched reference BEFORE creating any temporary file.
+    /// Repeated, identical deliveries still use the guarded no-replace/fsync
+    /// path; a preexisting leaf is physically reopened and reauthenticated.
+    pub fn stage_received_replica(
+        &self,
+        expected: &RecordObjectRef,
+        ciphertext: &[u8],
+    ) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
+        Self::leaf(expected)?;
+        if u64::try_from(ciphertext.len()).ok() != Some(expected.payload_bytes) {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        let checked = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.to_vec())
+            .map_err(|_| LocalV6BlobError::InvalidCiphertext)?;
+        if checked.reference() != expected {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        self.stage_local(ciphertext)
+    }
+
     /// Physically reopen and authenticate a local ciphertext copy; no read
     /// authority or verified Raft root is implied by this staging operation.
     pub fn read_local(&self, reference: &RecordObjectRef) -> Result<Vec<u8>, LocalV6BlobError> {
@@ -377,6 +405,83 @@ mod tests {
         ));
         drop(store);
         fs::remove_dir_all(root)?;
+        Ok(())
+    }
+
+    #[test]
+    fn remote_replica_import_requires_exact_reference_before_disk_and_recovers_lost_ack()
+    -> Result<(), Box<dyn std::error::Error>> {
+        // Two physically independent private directories, not an in-memory
+        // mock object table.  No peer identity, quorum or root is asserted.
+        let sender_root = new_root()?;
+        let receiver_root = new_root()?;
+        let sender = LocalV6BlobStage::open_existing(&sender_root)?;
+        let receiver = LocalV6BlobStage::open_existing(&receiver_root)?;
+        let ciphertext = vec![0x67_u8; 256 * 1024];
+        let wrong_ciphertext = vec![0x68_u8; 256 * 1024];
+        let claimed = sender.stage_local(&ciphertext)?.reference().clone();
+        let wrong = sender.stage_local(&wrong_ciphertext)?.reference().clone();
+
+        // Wrong digest, wrong length, and wrong record kind cannot create
+        // a file.  A transport-controlled ID must not become an alias.
+        assert!(matches!(
+            receiver.stage_received_replica(&wrong, &ciphertext),
+            Err(LocalV6BlobError::CorruptOrChanged),
+        ));
+        let mut bad_length = claimed.clone();
+        bad_length.payload_bytes += 1;
+        assert!(matches!(
+            receiver.stage_received_replica(&bad_length, &ciphertext),
+            Err(LocalV6BlobError::InvalidCiphertext),
+        ));
+        let mut bad_kind = claimed.clone();
+        bad_kind.kind = RecordObjectKind::Block;
+        assert!(matches!(
+            receiver.stage_received_replica(&bad_kind, &ciphertext),
+            Err(LocalV6BlobError::InvalidCiphertext),
+        ));
+        assert!(matches!(
+            receiver.stage_received_replica(&claimed, &ciphertext[..ciphertext.len() - 1]),
+            Err(LocalV6BlobError::CorruptOrChanged),
+        ));
+        assert_eq!(fs::read_dir(&receiver_root)?.count(), 0);
+
+        let delivered = receiver.stage_received_replica(&claimed, &ciphertext)?;
+        assert_eq!(delivered.reference(), &claimed);
+        // Simulate losing the delivery acknowledgement.  A fresh process
+        // must be able to reconcile the exact already-durable bytes.
+        drop(receiver);
+        let receiver = LocalV6BlobStage::open_existing(&receiver_root)?;
+        assert_eq!(receiver.read_local(&claimed)?, ciphertext);
+        assert_eq!(
+            receiver
+                .stage_received_replica(&claimed, &ciphertext)?
+                .reference(),
+            &claimed,
+            "idempotent byte-identical resend must not publish a new object",
+        );
+        assert_eq!(
+            sender.observe_local_closure(std::slice::from_ref(&claimed))?,
+            receiver.observe_local_closure(std::slice::from_ref(&claimed))?,
+        );
+        drop(receiver);
+
+        // A changed existing object must never be repaired by blind replay
+        // or admitted into a closure after local tampering.
+        fs::write(
+            receiver_root.join(LocalV6BlobStage::leaf(&claimed)?),
+            &wrong_ciphertext,
+        )?;
+        let receiver = LocalV6BlobStage::open_existing(&receiver_root)?;
+        assert!(matches!(
+            receiver.stage_received_replica(&claimed, &ciphertext),
+            Err(LocalV6BlobError::CorruptOrChanged),
+        ));
+        assert!(receiver.observe_local_closure(&[claimed]).is_err());
+        drop(receiver);
+        drop(sender);
+        fs::remove_dir_all(sender_root)?;
+        fs::remove_dir_all(receiver_root)?;
         Ok(())
     }
 
