@@ -154,12 +154,21 @@ fn client(endpoint: SocketAddr, dir: PathBuf, mode: &str) -> Result<(), Box<dyn 
     };
     let body = expected_object()?;
     let frame = encode_v6_replica_request(CLUSTER, epoch, operation, &reference, body.sealed())?;
+    let server_leaf = cert(&dir.join("server.crt.der"))?;
+    let server_pin: [u8; 32] = digest(&SHA256, server_leaf[0].as_ref())
+        .as_ref()
+        .try_into()?;
     let transport = MutualTlsPeerTransport::new(
         BTreeMap::from([(peer.clone(), TlsPeerEndpoint::new(endpoint, "localhost")?)]),
         make_client_tls(&dir, mode)?,
         TIMEOUT,
     )?;
-    let reply = transport.exchange_before(&peer, &frame, Instant::now() + TIMEOUT);
+    let reply = transport.exchange_before_pinned_server(
+        &peer,
+        &frame,
+        Instant::now() + TIMEOUT,
+        server_pin,
+    );
     if mode == "valid" {
         let reply = reply?;
         verify_v6_local_receipt(CLUSTER, EPOCH, OPERATION, body.reference(), &reply)?;
@@ -248,6 +257,10 @@ fn batch_client(
     last: usize,
 ) -> Result<(), Box<dyn Error>> {
     let peer = NodeId::parse("x230")?;
+    let server_leaf = cert(&pki.join("server.crt.der"))?;
+    let server_pin: [u8; 32] = digest(&SHA256, server_leaf[0].as_ref())
+        .as_ref()
+        .try_into()?;
     let transport = MutualTlsPeerTransport::new(
         BTreeMap::from([(peer.clone(), TlsPeerEndpoint::new(address, "localhost")?)]),
         make_client_tls(&pki, "valid")?,
@@ -263,7 +276,12 @@ fn batch_client(
             object.reference(),
             object.sealed(),
         )?;
-        let reply = transport.exchange_before(&peer, &frame, Instant::now() + TIMEOUT)?;
+        let reply = transport.exchange_before_pinned_server(
+            &peer,
+            &frame,
+            Instant::now() + TIMEOUT,
+            server_pin,
+        )?;
         verify_v6_local_receipt(CLUSTER, EPOCH, OPERATION, object.reference(), &reply)?;
     }
     println!(
