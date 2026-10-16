@@ -1529,6 +1529,7 @@ dependencies = [
  "base64 0.22.1",
  "crc32fast",
  "futures",
+ "heptabao-filesystem-guard",
  "openraft",
  "openraft-macros",
  "openraft-memstore",
