@@ -32,7 +32,8 @@ pub use v6_replica_fanout::{
 };
 #[cfg(feature = "experimental-v6-peer-ingress")]
 pub use v6_replica_ingress::{
-    AuthenticatedV6ReplicaReceiver, encode_v6_replica_request, verify_v6_local_receipt,
+    AuthenticatedV6ReplicaReceiver, encode_v6_replica_probe, encode_v6_replica_request,
+    verify_v6_local_receipt,
 };
 
 use ring::rand::{SecureRandom, SystemRandom};

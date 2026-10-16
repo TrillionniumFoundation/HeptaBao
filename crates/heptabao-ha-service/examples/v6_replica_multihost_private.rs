@@ -219,6 +219,7 @@ fn batch_server(
     storage: PathBuf,
     first: usize,
     last: usize,
+    probe_only: bool,
 ) -> Result<(), Box<dyn Error>> {
     let receiver = AuthenticatedV6ReplicaReceiver::open_existing(
         selected_test_receiver()?,
@@ -237,7 +238,11 @@ fn batch_server(
     println!("READY=BATCH COUNT={}", last - first);
     let started = Instant::now();
     for _ in first..last {
-        receiver.serve_one_mtls(&listener, tls.clone(), &pins, TIMEOUT)?;
+        if probe_only {
+            receiver.serve_one_mtls_probe_only(&listener, tls.clone(), &pins, TIMEOUT)?;
+        } else {
+            receiver.serve_one_mtls(&listener, tls.clone(), &pins, TIMEOUT)?;
+        }
     }
     drop(receiver);
     let store = LocalV6BlobStage::open_existing(&storage)?;
@@ -255,7 +260,12 @@ fn batch_server(
         return Err("incorrect bounded physical collection after transfer".into());
     }
     println!(
-        "RESULT=BATCH_LOCAL_FSYNC_NOT_QUORUM count={} bytes={} elapsed_ms={}",
+        "RESULT={} count={} bytes={} elapsed_ms={}",
+        if probe_only {
+            "BATCH_LOCAL_READONLY_CUSTODY_NOT_QUORUM"
+        } else {
+            "BATCH_LOCAL_FSYNC_NOT_QUORUM"
+        },
         last,
         observed.ciphertext_bytes(),
         started.elapsed().as_millis()
@@ -322,10 +332,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         server(socket, pki, PathBuf::from(store), expectation)
     } else if args[1] == "client" {
         client(socket, pki, &args[4])
-    } else if args[1] == "server-batch" {
+    } else if args[1] == "server-batch" || args[1] == "server-probe-batch" {
         let (dir, range) = args[4].split_once('@').ok_or("expected DIR@start:end")?;
         let (first, last) = parse_batch_range(range)?;
-        batch_server(socket, pki, PathBuf::from(dir), first, last)
+        batch_server(
+            socket,
+            pki,
+            PathBuf::from(dir),
+            first,
+            last,
+            args[1] == "server-probe-batch",
+        )
     } else if args[1] == "client-batch" {
         let (first, last) = parse_batch_range(&args[4])?;
         batch_client(socket, pki, first, last)
