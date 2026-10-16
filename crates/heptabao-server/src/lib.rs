@@ -24,10 +24,16 @@ pub mod federated_auth;
 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
 pub mod fixture_native_restore;
 pub mod ha;
+// Read-only V6 preflight and domain-bound closure observation. Neither grants
+// raft membership, publication authority nor V6 writes while HA is active.
 mod ha_forward;
 mod ha_forward_completion;
 mod ha_observation;
 pub mod ha_state;
+#[cfg(test)]
+mod ha_v6_closure_observation;
+#[cfg(test)]
+mod ha_v6_root_preflight;
 pub mod http;
 mod mount_listing_visibility;
 pub mod namespace_custody;

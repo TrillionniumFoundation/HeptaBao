@@ -1470,3 +1470,89 @@ fn genuine_native_side_publication_rejects_failed_audit_owner_before_any_effect(
     assert!(durable.get("system", NATIVE_SIDE_ROOT)?.is_none());
     Ok(())
 }
+
+#[test]
+fn v6_ha_preflight_uses_real_authenticated_closure_not_a_claimed_hash() -> TestResult {
+    use crate::ha_v6_closure_observation::inspect_prepared_v6_closure;
+    use crate::ha_v6_root_preflight::{V6RootFence, V6RootProposal};
+    let candidate = fixture(false)?;
+    let root_bytes = candidate.root.encode().map_err(|_| "V6 root encode")?;
+    let input = candidate.source.encoded();
+    let observed = inspect_prepared_v6_closure(root_bytes.as_slice(), candidate.context()?, &input)
+        .map_err(|_| "actual candidate graph rejected")?;
+    assert!(observed.objects_checked() >= 5);
+    let prior = V6RootFence {
+        cluster: observed.cluster(),
+        epoch: observed.epoch(),
+        generation: 12,
+        root_digest: [77; 32],
+        committed_log_index: 101,
+    };
+    let proposed = V6RootProposal {
+        cluster: observed.cluster(),
+        epoch: observed.epoch(),
+        expected_generation: 12,
+        expected_committed_log_index: 101,
+        target_committed_log_index: 102,
+        expected_root_digest: [77; 32],
+        next_generation: 13,
+        next_root_digest: observed.root_digest(),
+        operation_digest: [19; 32],
+        object_closure_digest: observed.closure_digest(),
+    };
+    assert_eq!(proposed.validate_against(prior), Ok(()));
+    assert_eq!(proposed.validate_observed_closure(&observed), Ok(()));
+    let mut wrong = proposed;
+    wrong.object_closure_digest[0] ^= 1;
+    assert!(wrong.validate_observed_closure(&observed).is_err());
+    let mut wrong = proposed;
+    wrong.next_root_digest[0] ^= 1;
+    assert!(wrong.validate_observed_closure(&observed).is_err());
+    let mut stale = proposed;
+    stale.expected_committed_log_index -= 1;
+    assert!(stale.validate_against(prior).is_err());
+    Ok(())
+}
+
+#[test]
+fn v6_ha_preflight_closure_is_order_independent_and_rejects_missing_object() -> TestResult {
+    use crate::ha_v6_closure_observation::inspect_prepared_v6_closure;
+    let candidate = fixture(false)?;
+    let root_bytes = candidate.root.encode().map_err(|_| "V6 root encode")?;
+    let mut input = candidate.source.encoded();
+    let initial = inspect_prepared_v6_closure(root_bytes.as_slice(), candidate.context()?, &input)
+        .map_err(|_| "valid typed V6 closure rejected")?;
+    input.reverse();
+    let reordered =
+        inspect_prepared_v6_closure(root_bytes.as_slice(), candidate.context()?, &input)
+            .map_err(|_| "reordered object closure rejected")?;
+    assert_eq!(initial.closure_digest(), reordered.closure_digest());
+    assert!(input.len() > 1);
+    input.pop();
+    assert!(
+        inspect_prepared_v6_closure(root_bytes.as_slice(), candidate.context()?, &input).is_err(),
+        "incomplete V6 closure must not generate an observation"
+    );
+    Ok(())
+}
+
+#[test]
+fn v6_ha_preflight_closure_rejects_mutated_encoded_object_bytes() -> TestResult {
+    use crate::ha_v6_closure_observation::inspect_prepared_v6_closure;
+    let mut candidate = fixture(false)?;
+    let root_bytes = candidate.root.encode().map_err(|_| "V6 root encode")?;
+    let first = candidate
+        .source
+        .0
+        .values_mut()
+        .next()
+        .ok_or("no actual source object")?;
+    let index = first.len().checked_sub(1).ok_or("empty encoded object")?;
+    first[index] ^= 1;
+    let input = candidate.source.encoded();
+    assert!(
+        inspect_prepared_v6_closure(root_bytes.as_slice(), candidate.context()?, &input).is_err(),
+        "changed bytes under the same V6 root must be rejected"
+    );
+    Ok(())
+}
