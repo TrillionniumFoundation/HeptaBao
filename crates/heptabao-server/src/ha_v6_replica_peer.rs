@@ -426,4 +426,228 @@ mod tests {
         );
         Ok(())
     }
+    /// Synthetic verified loopback TLS transport, using the exact same
+    /// mTLS peer adapter as HA. Does not register any production HA route.
+    #[test]
+    fn private_mtls_tls_peer_certificate_stage_roundtrip() -> Result<(), Box<dyn std::error::Error>>
+    {
+        use heptabao_ha_service::{
+            MutualTlsPeerTransport, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
+            TlsPeerEndpoint, decode_peer_envelope, encode_peer_envelope, serve_one_mtls_peer_frame,
+        };
+        use rustls::RootCertStore;
+        use rustls::pki_types::{CertificateDer, PrivateKeyDer};
+        use std::io::{self, BufReader};
+        use std::net::TcpListener;
+        use std::process::{Command, Stdio};
+        use std::sync::Arc;
+        use std::thread;
+        use std::time::{Duration, Instant};
+
+        fn openssl(dir: &std::path::Path, args: &[&str]) -> io::Result<()> {
+            let status = Command::new("openssl")
+                .args(args)
+                .current_dir(dir)
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status()?;
+            if status.success() {
+                Ok(())
+            } else {
+                Err(io::Error::other("synthetic TLS fixture failed"))
+            }
+        }
+        fn certificates(
+            path: &std::path::Path,
+        ) -> Result<Vec<CertificateDer<'static>>, Box<dyn std::error::Error>> {
+            Ok(
+                rustls_pemfile::certs(&mut BufReader::new(fs::File::open(path)?))
+                    .collect::<Result<Vec<_>, _>>()?,
+            )
+        }
+        fn private_key(
+            path: &std::path::Path,
+        ) -> Result<PrivateKeyDer<'static>, Box<dyn std::error::Error>> {
+            Ok(
+                rustls_pemfile::private_key(&mut BufReader::new(fs::File::open(path)?))?
+                    .ok_or_else(|| io::Error::other("missing synthetic private key"))?,
+            )
+        }
+        let (ticket, auth, ciphertext) = fixture()?;
+        let cell = Cell::new()?;
+        let base = cell.0.clone();
+        openssl(
+            &base,
+            &[
+                "req",
+                "-x509",
+                "-newkey",
+                "rsa:2048",
+                "-nodes",
+                "-keyout",
+                "ca.key",
+                "-out",
+                "ca.pem",
+                "-days",
+                "1",
+                "-sha256",
+                "-subj",
+                "/CN=HeptaBao synthetic replica CA",
+                "-addext",
+                "basicConstraints=critical,CA:TRUE",
+                "-addext",
+                "keyUsage=critical,keyCertSign,cRLSign",
+            ],
+        )?;
+        fs::write(
+            base.join("server.ext"),
+            "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n",
+        )?;
+        fs::write(
+            base.join("client.ext"),
+            "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=clientAuth\n",
+        )?;
+        for role in ["server", "client"] {
+            openssl(
+                &base,
+                &[
+                    "req",
+                    "-new",
+                    "-newkey",
+                    "rsa:2048",
+                    "-nodes",
+                    "-keyout",
+                    &format!("{role}.key"),
+                    "-out",
+                    &format!("{role}.csr"),
+                    "-subj",
+                    &format!("/CN={role}"),
+                ],
+            )?;
+            openssl(
+                &base,
+                &[
+                    "x509",
+                    "-req",
+                    "-in",
+                    &format!("{role}.csr"),
+                    "-CA",
+                    "ca.pem",
+                    "-CAkey",
+                    "ca.key",
+                    "-CAcreateserial",
+                    "-out",
+                    &format!("{role}.pem"),
+                    "-days",
+                    "1",
+                    "-sha256",
+                    "-extfile",
+                    &format!("{role}.ext"),
+                ],
+            )?;
+        }
+        let ca = certificates(&base.join("ca.pem"))?;
+        let client_chain = certificates(&base.join("client.pem"))?;
+        let server_chain = certificates(&base.join("server.pem"))?;
+        let mut roots = RootCertStore::empty();
+        roots.add(ca[0].clone())?;
+        let provider = Arc::new(rustls::crypto::ring::default_provider());
+        let verifier = rustls::server::WebPkiClientVerifier::builder_with_provider(
+            Arc::new(roots.clone()),
+            provider.clone(),
+        )
+        .build()?;
+        let mut server_config = rustls::ServerConfig::builder_with_provider(provider.clone())
+            .with_safe_default_protocol_versions()?
+            .with_client_cert_verifier(verifier)
+            .with_single_cert(server_chain, private_key(&base.join("server.key"))?)?;
+        let mut client_config = rustls::ClientConfig::builder_with_provider(provider)
+            .with_safe_default_protocol_versions()?
+            .with_root_certificates(roots)
+            .with_client_auth_cert(client_chain.clone(), private_key(&base.join("client.key"))?)?;
+        server_config.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
+        client_config.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
+        let leaf = ring::digest::digest(&ring::digest::SHA256, client_chain[0].as_ref());
+        let mut pinned_leaf = [0u8; 32];
+        pinned_leaf.copy_from_slice(leaf.as_ref());
+        let identities = PinnedClientCertificateMap::new(BTreeMap::from([(
+            pinned_leaf,
+            ticket.sender.clone(),
+        )]))?;
+        for subdir in ["blobs", "sequences"] {
+            let dir = base.join(subdir);
+            fs::create_dir(&dir)?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&dir, fs::Permissions::from_mode(0o700))?;
+            }
+        }
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let address = listener.local_addr()?;
+        let transport = MutualTlsPeerTransport::new(
+            BTreeMap::from([(
+                ticket.receiver.clone(),
+                TlsPeerEndpoint::new(address, "localhost")?,
+            )]),
+            Arc::new(client_config),
+            Duration::from_secs(10),
+        )?;
+        let server_ticket = ticket.clone();
+        let receiver_base = base.clone();
+        let server = thread::spawn(move || -> Result<(), HaError> {
+            let store = LocalV6BlobStage::open_existing(&receiver_base.join("blobs"))
+                .map_err(disk_error)?;
+            let mut sequences =
+                PersistentPeerSequences::open(receiver_base.join("sequences"), [6; 32])?;
+            serve_one_mtls_peer_frame(
+                &listener,
+                Arc::new(server_config),
+                &identities,
+                Duration::from_secs(10),
+                false,
+                |verified_tls_peer, wire| {
+                    let request = decode_peer_envelope(&wire)?;
+                    let receipt = receive_authenticated_replica(
+                        &verified_tls_peer,
+                        &server_ticket.receiver,
+                        &server_ticket,
+                        &auth,
+                        &mut sequences,
+                        &store,
+                        &request,
+                    )?;
+                    encode_peer_envelope(&receipt)
+                },
+            )
+        });
+        let sender_auth = PeerAuthenticator::new(
+            "cell",
+            BTreeMap::from([
+                (ticket.sender.clone(), [1; 32]),
+                (ticket.receiver.clone(), [2; 32]),
+            ]),
+        )?;
+        let request = sender_auth.seal(
+            ticket.sender.clone(),
+            ticket.receiver.clone(),
+            ticket.term,
+            1,
+            PeerMessageKind::V6CiphertextStage,
+            ticket.encode_stage(&ciphertext)?,
+        )?;
+        let response = transport.exchange_before(
+            &ticket.receiver,
+            &encode_peer_envelope(&request)?,
+            Instant::now() + Duration::from_secs(10),
+        )?;
+        let signed = decode_peer_envelope(&response)?;
+        ticket.verify_local_receipt(&ticket.receiver, &ticket.sender, &sender_auth, &signed)?;
+        server
+            .join()
+            .map_err(|_| io::Error::other("synthetic TLS receiver panicked"))??;
+        let reopened = LocalV6BlobStage::open_existing(&base.join("blobs"))?;
+        assert_eq!(reopened.read_local(&ticket.object)?, ciphertext);
+        Ok(())
+    }
 }
