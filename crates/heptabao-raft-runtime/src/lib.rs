@@ -14,6 +14,8 @@ mod cluster;
 mod network;
 mod process;
 mod records;
+#[cfg(feature = "experimental-v6-raft-objects")]
+mod v6_replica_blobs;
 mod replication_bounds;
 mod state_machine;
 
@@ -23,6 +25,8 @@ pub use records::{
     RecordUsage, SealedRecordObject,
 };
 pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_replica_blobs::{LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage};
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]
