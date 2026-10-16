@@ -20,6 +20,15 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
+// Opt-in private V6 ciphertext transport admission. Existing production HA
+// request dispatch and all V6/HA mutually exclusive writer fences are unchanged.
+#[cfg(feature = "experimental-v6-peer-ingress")]
+mod v6_replica_ingress;
+#[cfg(feature = "experimental-v6-peer-ingress")]
+pub use v6_replica_ingress::{
+    AuthenticatedV6ReplicaReceiver, encode_v6_replica_request, verify_v6_local_receipt,
+};
+
 use ring::rand::{SecureRandom, SystemRandom};
 use ring::{digest, hmac};
 
