@@ -14,10 +14,10 @@ mod cluster;
 mod network;
 mod process;
 mod records;
-#[cfg(feature = "experimental-v6-raft-objects")]
-mod v6_replica_blobs;
 mod replication_bounds;
 mod state_machine;
+#[cfg(feature = "experimental-v6-raft-objects")]
+mod v6_replica_blobs;
 
 pub use records::{
     LegacyChunkRef, LegacyEnvelopeObservation, LegacyStatusIdentity, PublishedRecordRoot,
