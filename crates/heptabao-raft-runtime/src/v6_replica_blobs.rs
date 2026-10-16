@@ -148,10 +148,7 @@ impl LocalV6BlobStage {
     /// Stage a local copy. A late I/O or fsync failure is NEVER interpreted as
     /// an uncommitted/no-effect result and must not automatically be retried.
     /// This function never touches Raft or native V6 root publication.
-    pub fn stage_local(
-        &self,
-        ciphertext: &[u8],
-    ) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
+    pub fn stage_local(&self, ciphertext: &[u8]) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
         let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.to_vec())
             .map_err(|_| LocalV6BlobError::InvalidCiphertext)?;
         let reference = object.reference().clone();
@@ -161,7 +158,9 @@ impl LocalV6BlobStage {
             std::process::id(),
             NEXT_TEMPORARY.fetch_add(1, Ordering::Relaxed),
         );
-        let mut opened = self.directory.open_file(&temporary, FileAccess::CreateNewReadWrite)?;
+        let mut opened = self
+            .directory
+            .open_file(&temporary, FileAccess::CreateNewReadWrite)?;
         opened.write_all(ciphertext)?;
         let published = self.directory.publish_file_noreplace(
             &temporary,
@@ -170,8 +169,9 @@ impl LocalV6BlobStage {
             reference.payload_bytes,
         )?;
         let mut file = match published {
-            ImmutablePublication::Published(file)
-            | ImmutablePublication::AlreadyExists(file) => file,
+            ImmutablePublication::Published(file) | ImmutablePublication::AlreadyExists(file) => {
+                file
+            }
         };
         // "AlreadyExists" is NOT a successful duplicate by filename alone.
         // Authenticate the existing file and require exact original ciphertext.
@@ -183,10 +183,7 @@ impl LocalV6BlobStage {
 
     /// Physically reopen and authenticate a local ciphertext copy; no read
     /// authority or verified Raft root is implied by this staging operation.
-    pub fn read_local(
-        &self,
-        reference: &RecordObjectRef,
-    ) -> Result<Vec<u8>, LocalV6BlobError> {
+    pub fn read_local(&self, reference: &RecordObjectRef) -> Result<Vec<u8>, LocalV6BlobError> {
         let destination = Self::leaf(reference)?;
         let mut file = self.directory.open_file(&destination, FileAccess::Read)?;
         Self::read_checked(&mut file, reference)
@@ -196,15 +193,16 @@ impl LocalV6BlobStage {
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;
-    use std::path::PathBuf;
     use std::os::unix::fs::PermissionsExt;
+    use std::path::PathBuf;
 
     static TEMP_ROOT: AtomicU64 = AtomicU64::new(1);
 
     fn new_root() -> io::Result<PathBuf> {
         let path = std::env::temp_dir().join(format!(
             "heptabao-v6-local-blob-{}-{}",
-            std::process::id(), TEMP_ROOT.fetch_add(1, Ordering::Relaxed),
+            std::process::id(),
+            TEMP_ROOT.fetch_add(1, Ordering::Relaxed),
         ));
         fs::create_dir(&path)?;
         fs::set_permissions(&path, fs::Permissions::from_mode(0o700))?;
