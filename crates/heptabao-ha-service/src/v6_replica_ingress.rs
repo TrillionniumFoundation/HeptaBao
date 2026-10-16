@@ -515,6 +515,10 @@ mod tests {
         let receiver_node = NodeId::parse("target")?;
         let pins =
             PinnedClientCertificateMap::new(BTreeMap::from([(client_digest, sender.clone())]))?;
+        let server_leaf = certificates(&root.join("server.crt"))?;
+        let server_pin: [u8; 32] = digest(&SHA256, server_leaf[0].as_ref())
+            .as_ref()
+            .try_into()?;
         // A valid TLS client certificate mapped to a foreign (unenrolled)
         // NodeId must be refused after authentication, without local receipt.
         let foreign_pins = PinnedClientCertificateMap::new(BTreeMap::from([(
@@ -556,19 +560,33 @@ mod tests {
             assert!(matches!(
                 receiver.serve_one_mtls(
                     &listener,
-                    Arc::new(server_tls),
+                    Arc::new(server_tls.clone()),
                     &foreign_pins,
                     Duration::from_secs(8),
                 ),
                 Err(HaError::UnknownPeer),
             ));
+            // A second, correctly CA-signed leaf with the same DNS name is
+            // not enough. Client must bind to the expected server leaf
+            // before any ciphertext frame is sent, so the server observes EOF.
+            assert!(
+                receiver
+                    .serve_one_mtls(
+                        &listener,
+                        Arc::new(server_tls),
+                        &pins,
+                        Duration::from_secs(8),
+                    )
+                    .is_err()
+            );
             Ok(())
         });
         for _ in 0..2 {
-            let response = transport.exchange_before(
+            let response = transport.exchange_before_pinned_server(
                 &receiver_node,
                 &request,
                 Instant::now() + Duration::from_secs(8),
+                server_pin,
             )?;
             verify_v6_local_receipt("cluster-x", 7, [5; 32], object.reference(), &response)?;
         }
@@ -576,13 +594,25 @@ mod tests {
         // pinned client leaf to an unauthorized member. It must not ACK.
         assert!(
             transport
-                .exchange_before(
+                .exchange_before_pinned_server(
                     &receiver_node,
                     &request,
                     Instant::now() + Duration::from_secs(8),
+                    server_pin,
                 )
                 .is_err()
         );
+        let mut wrong_pin = server_pin;
+        wrong_pin[0] ^= 1;
+        assert!(matches!(
+            transport.exchange_before_pinned_server(
+                &receiver_node,
+                &request,
+                Instant::now() + Duration::from_secs(8),
+                wrong_pin,
+            ),
+            Err(HaError::PeerAuthenticationFailed),
+        ));
         server
             .join()
             .map_err(|_| "mTLS server test thread panicked")??;
