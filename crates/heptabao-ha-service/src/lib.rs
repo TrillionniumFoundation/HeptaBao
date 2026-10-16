@@ -753,6 +753,75 @@ impl MutualTlsPeerTransport {
         })
     }
 
+    /// Private V6 ciphertext ingress: authenticate the *receiving* node's
+    /// exact enrolled server leaf and Raft ALPN before transmitting any
+    /// ciphertext bytes. The ordinary production forwarding method is
+    /// unchanged, and this does NOT validate Raft leadership/epoch/quorum.
+    ///
+    /// The pinned hash must come from independently authenticated membership,
+    /// not from a peer response or a caller-supplied unauthenticated frame.
+    #[cfg(feature = "experimental-v6-peer-ingress")]
+    pub fn exchange_before_pinned_server(
+        &self,
+        peer: &NodeId,
+        frame: &[u8],
+        caller_deadline: Instant,
+        expected_server_leaf_sha256: [u8; 32],
+    ) -> Result<Vec<u8>, HaError> {
+        if expected_server_leaf_sha256 == [0; 32] {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
+            return Err(HaError::InvalidFrame);
+        }
+        let deadline = caller_deadline.min(Instant::now() + self.timeout);
+        let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
+        let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
+            .map_err(|_| HaError::InvalidCluster)?;
+        let remaining = forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        let stream = TcpStream::connect_timeout(&endpoint.address, remaining)
+            .map_err(|_| HaError::Transport)?;
+        stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
+        let stream = ForwardDeadlineStream { stream, deadline };
+        let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
+            .map_err(|_| HaError::Transport)?;
+        let mut tls = rustls::StreamOwned::new(connection, stream);
+
+        // Finish the authenticated TLS handshake BEFORE sending any V6 frame.
+        tls.conn
+            .complete_io(&mut tls.sock)
+            .map_err(|_| HaError::PeerAuthenticationFailed)?;
+        if tls.conn.alpn_protocol() != Some(RAFT_ALPN_PROTOCOL) {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        let chain = tls
+            .conn
+            .peer_certificates()
+            .ok_or(HaError::PeerAuthenticationFailed)?;
+        if chain.is_empty() || chain.len() > MAX_PEER_CERT_CHAIN {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        let total = chain.iter().try_fold(0_usize, |sum, cert| {
+            if cert.is_empty() {
+                return Err(HaError::PeerAuthenticationFailed);
+            }
+            sum.checked_add(cert.len())
+                .filter(|count| *count <= MAX_PEER_CERT_CHAIN_BYTES)
+                .ok_or(HaError::PeerAuthenticationFailed)
+        })?;
+        if total == 0
+            || digest::digest(&digest::SHA256, chain[0].as_ref()).as_ref()
+                != expected_server_leaf_sha256.as_slice()
+        {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        write_bounded_frame(&mut tls, frame)?;
+        let mut response = zeroize::Zeroizing::new(read_bounded_frame(&mut tls)?);
+        forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        Ok(std::mem::take(&mut *response))
+    }
+
     /// One absolute budget includes connect and every TLS/frame I/O. The caller
     /// supplies its own forwarding or consensus RPC deadline; this transport's
     /// configured timeout can shorten, but cannot extend, the remaining budget.
