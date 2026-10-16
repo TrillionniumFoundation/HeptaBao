@@ -11,10 +11,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 sys.path.insert(0, str(ROOT / "clients/python/src"))
-from smoke import Instance
+from smoke import Instance, free_loopback_port
 from bao_http import private_write, private_read
 from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, verify_inputs, pinned_artifact
-from oidc_renewal_live import free_port
 from online_evidence import source_identity
 
 def call(address, ca, method, path, token="", body=None, form=False):
@@ -92,7 +91,7 @@ def main():
         instance=None;oracle=None
         try:
             if label=="official":
-                oracle=start_oracle(free_port(),version="2.7.1")
+                oracle=start_oracle(free_loopback_port(),version="2.7.1")
                 address=oracle["address"];ca=Path(oracle["ca_file"]);token=private_read(Path(oracle["token_file"])).strip()
                 def restart():
                     stop_oracle(oracle);restart_oracle(oracle)
