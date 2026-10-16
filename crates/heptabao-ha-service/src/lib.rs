@@ -20,7 +20,6 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
-
 // Opt-in private V6 ciphertext transport admission. Existing production HA
 // request dispatch and all V6/HA mutually exclusive writer fences are unchanged.
 #[cfg(feature = "experimental-v6-peer-ingress")]
