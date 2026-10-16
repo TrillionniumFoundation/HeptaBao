@@ -239,7 +239,16 @@ async fn snapshot_observation_busy_build_cannot_renew_original_deadline_or_bypas
         node.snapshot_observed().await?;
         router.reject_append.store(true, Ordering::SeqCst);
         let before_snapshot = node.raft.metrics().borrow_watched().snapshot;
-        let generation = node.state_machine.generation().await;
+        // The local durable generation also advances for checkpoint completion.
+        // A snapshot already in flight from the successful pre-partition call
+        // can finish after this sample without committing any business write.
+        // Compare the actual applied log and application state under one state-
+        // machine lock instead of mistaking a checkpoint for a failed ReadIndex
+        // publishing a new business generation.
+        let before_application = node
+            .state_machine
+            .application_read_snapshot(crate::records::PRODUCTION_CLIENT)
+            .await;
         let denied = crate::with_read_index_deadline(
             Instant::now() + Duration::from_millis(120),
             node.snapshot_observed(),
@@ -247,7 +256,14 @@ async fn snapshot_observation_busy_build_cannot_renew_original_deadline_or_bypas
         .await;
         assert!(matches!(denied, Err(RemoteRaftError::Consensus(ref reason)) if reason == super::node::READ_INDEX_TIMEOUT));
         assert_eq!(node.raft.metrics().borrow_watched().snapshot, before_snapshot);
-        assert_eq!(node.state_machine.generation().await, generation);
+        let after_application = node
+            .state_machine
+            .application_read_snapshot(crate::records::PRODUCTION_CLIENT)
+            .await;
+        assert!(after_application.0 >= before_application.0, "durable generation regressed");
+        assert_eq!(after_application.1, before_application.1, "denied observation applied a log entry");
+        assert!(after_application.2 == before_application.2, "denied observation changed client state");
+        assert!(after_application.3 == before_application.3, "denied observation changed published root");
         Ok::<_, Box<dyn std::error::Error>>(())
     }
     .await;
