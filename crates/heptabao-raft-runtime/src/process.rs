@@ -27,3 +27,5 @@ mod snapshot_receive_tests;
 
 #[cfg(test)]
 mod snapshot_observation_tests;
+#[cfg(all(test, feature = "experimental-v6-raft-objects"))]
+mod v6_intent_tests;

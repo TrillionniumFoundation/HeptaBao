@@ -17,6 +17,8 @@ mod records;
 mod replication_bounds;
 mod state_machine;
 #[cfg(feature = "experimental-v6-raft-objects")]
+mod v6_commit_intent;
+#[cfg(feature = "experimental-v6-raft-objects")]
 mod v6_replica_blobs;
 
 pub use records::{
@@ -25,6 +27,8 @@ pub use records::{
     RecordUsage, SealedRecordObject,
 };
 pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_commit_intent::NativeV6CommitIntent;
 #[cfg(feature = "experimental-v6-raft-objects")]
 pub use v6_replica_blobs::{
     LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage, LocalV6ClosureReceipt,
