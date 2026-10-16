@@ -26,3 +26,7 @@ rustls-pemfile = "=2.2.0"
 [[example]]
 name = "v6_replica_multihost_private"
 required-features = ["experimental-v6-peer-ingress"]
+
+[[example]]
+name = "v6_replica_two_peers_private"
+required-features = ["experimental-v6-peer-ingress"]
