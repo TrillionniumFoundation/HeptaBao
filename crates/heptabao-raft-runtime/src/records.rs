@@ -30,6 +30,16 @@ pub(crate) const PRODUCTION_CLIENT: &str = "heptabao-production-ha";
 const MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES: usize = 256 * 1024;
 
 #[cfg(feature = "experimental-v6-raft-objects")]
+fn native_v6_intent_digest(payload: &[u8]) -> RecordObjectId {
+    use sha2::{Digest, Sha256};
+    let mut hash = Sha256::new();
+    hash.update(b"heptabao.raft.native-v6.intent.v1\0");
+    hash.update((payload.len() as u64).to_be_bytes());
+    hash.update(payload);
+    hash.finalize().into()
+}
+
+#[cfg(feature = "experimental-v6-raft-objects")]
 fn native_v6_chunk_digest(ciphertext: &[u8]) -> RecordObjectId {
     use sha2::{Digest, Sha256};
     let mut hash = Sha256::new();
@@ -50,6 +60,9 @@ pub enum RecordObjectKind {
     // Private staging only. No V6 Raft root publication is enabled.
     #[cfg(feature = "experimental-v6-raft-objects")]
     NativeV6CiphertextChunk,
+    // Feature-only Raft-staged metadata: NOT a V6 root CAS or client ACK.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    NativeV6CommitIntent,
 }
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -108,6 +121,29 @@ impl SealedRecordObject {
             ciphertext,
         )
     }
+    /// Raft-stage a bounded, typed immutable V6 commit-intent marker. This
+    /// only records metadata in the Raft application object log; it never
+    /// publishes a V6 root or attests that remote ciphertext exists.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub fn new_native_v6_commit_intent(
+        intent: crate::NativeV6CommitIntent,
+    ) -> Result<Self, RaftRuntimeError> {
+        let sealed = intent.encode().map_err(RaftRuntimeError::RecordRejected)?;
+        let encoded_bytes = u32::try_from(sealed.len())
+            .map_err(|_| RaftRuntimeError::RecordRejected(RecordRejection::Budget))?;
+        Self::new(
+            RecordObjectRef {
+                id: native_v6_intent_digest(&sealed),
+                kind: RecordObjectKind::NativeV6CommitIntent,
+                encoded_bytes,
+                record_count: 0,
+                payload_bytes: u64::from(encoded_bytes),
+            },
+            Vec::new(),
+            sealed,
+        )
+    }
+
     pub fn new(
         reference: RecordObjectRef,
         children: Vec<RecordObjectRef>,
@@ -196,6 +232,16 @@ impl SealedRecordObject {
                                 && bytes
                                     <= u64::from(self.reference.encoded_bytes.saturating_sub(27))
                         })
+            }
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            NativeV6CommitIntent => {
+                self.children.is_empty()
+                    && self.reference.record_count == 0
+                    && self.sealed.len() == crate::v6_commit_intent::ENCODED_LEN
+                    && u64::from(self.reference.encoded_bytes) == self.reference.payload_bytes
+                    && self.reference.payload_bytes == self.sealed.len() as u64
+                    && self.reference.id == native_v6_intent_digest(&self.sealed)
+                    && crate::NativeV6CommitIntent::decode(&self.sealed).is_ok()
             }
             #[cfg(feature = "experimental-v6-raft-objects")]
             NativeV6CiphertextChunk => {
