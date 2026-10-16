@@ -1,4 +1,4 @@
-//! Explicitly opt-in, ephemeral Mac↔X230 ciphertext test ONLY.
+//! Explicitly opt-in, ephemeral Mac↔X230/ROG ciphertext test ONLY.
 //! Never installs a production HA handler, never publishes a native V6 root.
 //! TLS keys are local private fixture files. No product credentials accepted.
 use std::collections::{BTreeMap, BTreeSet};
@@ -64,6 +64,18 @@ fn make_client_tls(dir: &Path, mode: &str) -> Result<Arc<ClientConfig>, Box<dyn 
     config.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
     Ok(Arc::new(config))
 }
+/// Private fixture identity, never inferred from an untrusted network frame.
+/// The explicitly selected name must agree between independent sender and
+/// receiver invocations; no production peer enrollment is changed.
+fn selected_test_receiver() -> Result<NodeId, Box<dyn Error>> {
+    let name =
+        env::var("HEPTABAO_PRIVATE_REPLICA_RECEIVER_NODE").unwrap_or_else(|_| "x230".to_owned());
+    if !matches!(name.as_str(), "x230" | "rog") {
+        return Err("unsupported private physical receiver identity".into());
+    }
+    Ok(NodeId::parse(name)?)
+}
+
 fn expected_object() -> Result<SealedRecordObject, Box<dyn Error>> {
     let mut payload = vec![0x61_u8; PAYLOAD_BYTES];
     payload[..8].copy_from_slice(b"HBV6TEST");
@@ -86,7 +98,7 @@ fn server(
     pin.insert(id, NodeId::parse("mac")?);
     let pins = PinnedClientCertificateMap::new(pin)?;
     let receiver = AuthenticatedV6ReplicaReceiver::open_existing(
-        NodeId::parse("x230")?,
+        selected_test_receiver()?,
         CLUSTER,
         EPOCH,
         OPERATION,
@@ -137,7 +149,7 @@ fn client(endpoint: SocketAddr, dir: PathBuf, mode: &str) -> Result<(), Box<dyn 
     ) {
         return Err("unknown client test mode".into());
     }
-    let peer = NodeId::parse("x230")?;
+    let peer = selected_test_receiver()?;
     let mut reference = expected_object()?.reference().clone();
     if mode == "wrong-id" {
         reference.id[0] ^= 1;
@@ -209,7 +221,7 @@ fn batch_server(
     last: usize,
 ) -> Result<(), Box<dyn Error>> {
     let receiver = AuthenticatedV6ReplicaReceiver::open_existing(
-        NodeId::parse("x230")?,
+        selected_test_receiver()?,
         CLUSTER,
         EPOCH,
         OPERATION,
@@ -256,7 +268,7 @@ fn batch_client(
     first: usize,
     last: usize,
 ) -> Result<(), Box<dyn Error>> {
-    let peer = NodeId::parse("x230")?;
+    let peer = selected_test_receiver()?;
     let server_leaf = cert(&pki.join("server.crt.der"))?;
     let server_pin: [u8; 32] = digest(&SHA256, server_leaf[0].as_ref())
         .as_ref()
