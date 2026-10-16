@@ -233,6 +233,12 @@ mod tests {
             store.read_local(&reference),
             Err(LocalV6BlobError::CorruptOrChanged),
         ));
+        // A duplicate digest name cannot launder a tampered existing file
+        // into a verified local staging receipt.
+        assert!(matches!(
+            store.stage_local(&ciphertext),
+            Err(LocalV6BlobError::CorruptOrChanged),
+        ));
         drop(store);
         fs::remove_dir_all(root)?;
         Ok(())
