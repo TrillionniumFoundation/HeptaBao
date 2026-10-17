@@ -18,6 +18,7 @@ static SEQ: AtomicU64 = AtomicU64::new(0);
 struct Router {
     peers: RwLock<BTreeMap<u64, RaftRpcService>>,
     deny_append: AtomicBool,
+    isolate_original_leader: AtomicBool,
 }
 impl std::fmt::Debug for Router {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -40,6 +41,12 @@ impl RaftPeerRpc for Arc<Router> {
             {
                 return Err(RemoteRaftError::Transport(
                     "test-only quorum separation".into(),
+                ));
+            }
+            if router.isolate_original_leader.load(Ordering::SeqCst) && (source == 1 || target == 1)
+            {
+                return Err(RemoteRaftError::Transport(
+                    "test-only original leader disconnected".into(),
                 ));
             }
             let peer = router
@@ -228,10 +235,73 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
                 .is_err(),
             "an unrelated leader cannot assume the original applied identity"
         );
+        // The next voter must preserve the same *original* intent LogId
+        // through its own physical snapshot and log purge, independent of
+        // the first leader's local checkpoint. No V6 application root exists.
+        nodes[1].trigger_snapshot().await?;
+        tokio::time::timeout(Duration::from_secs(8), async {
+            loop {
+                if nodes[1].membership_observation().await?.purged_index >= Some(receipt.log_index)
+                {
+                    break Ok::<(), RemoteRaftError>(());
+                }
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+        })
+        .await
+        .map_err(|_| "new leader candidate did not compact original intent")??;
+        // Deliberately disconnect original leader 1, while voters 2 and 3
+        // retain a quorum. A new leader must reestablish fresh ReadIndex
+        // instead of reusing the first leader's old client response.
+        router.isolate_original_leader.store(true, Ordering::SeqCst);
+        // Original setup disables autonomous elections for deterministic
+        // bootstrap. Only the survivor is enabled to retry after old leases.
+        nodes[1].raft.runtime_config().elect(true);
+        nodes[1].raft.trigger().elect(false).await?;
+        nodes[1]
+            .raft
+            .wait(Some(Duration::from_secs(12)))
+            .metrics(
+                |m| m.current_leader == Some(2),
+                "second voter actually wins election after leader isolation",
+            )
+            .await?;
+        nodes[1].ensure_linearizable().await?;
+        nodes[1]
+            .reconcile_exact_staged_v6_intent(&intent, &receipt)
+            .await?;
+        // Leader 1 may retain its already committed application and a
+        // persisted original-intent snapshot, but cannot supply a new
+        // linearizable proof while isolated from all other voters.
+        let isolated_old_leader = crate::with_read_index_deadline(
+            Instant::now() + Duration::from_millis(120),
+            nodes[0].reconcile_exact_staged_v6_intent(&intent, &receipt),
+        )
+        .await;
+        assert!(
+            isolated_old_leader.is_err(),
+            "original leader's old snapshot cannot grant quorum after failover"
+        );
+        // The new leader's witness remains valid after that separate refusal.
+        nodes[1]
+            .reconcile_exact_staged_v6_intent(&intent, &receipt)
+            .await?;
+        let mut swapped_original = receipt.clone();
+        swapped_original.leader_id = 2;
+        assert!(
+            nodes[1]
+                .reconcile_exact_staged_v6_intent(&intent, &swapped_original)
+                .await
+                .is_err(),
+            "new leader must not claim origin of previously committed intent"
+        );
+        for node in &nodes {
+            assert!(node.record_root_at_generation().await?.1.is_none());
+        }
         router.deny_append.store(true, Ordering::SeqCst);
         let denied = crate::with_read_index_deadline(
             Instant::now() + Duration::from_millis(120),
-            nodes[0].ensure_linearizable(),
+            nodes[1].ensure_linearizable(),
         )
         .await;
         assert!(
@@ -240,7 +310,7 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
         );
         let denied_intent = crate::with_read_index_deadline(
             Instant::now() + Duration::from_millis(120),
-            nodes[0].reconcile_exact_staged_v6_intent(&intent, &receipt),
+            nodes[1].reconcile_exact_staged_v6_intent(&intent, &receipt),
         )
         .await;
         assert!(
@@ -255,6 +325,9 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
     }
     .await;
     router.deny_append.store(false, Ordering::SeqCst);
+    router
+        .isolate_original_leader
+        .store(false, Ordering::SeqCst);
     router.peers.write().await.clear();
     for node in nodes {
         node.shutdown().await?;
@@ -273,7 +346,7 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
                     .map_err(|_| "invalid stored object")?,
                 Some(object.clone())
             );
-            if id == 1 {
+            if id == 1 || id == 2 {
                 let persisted = state
                     .durable_snapshot_v6_intent_log_id(&object.reference().id, receipt.log_index)
                     .await?
