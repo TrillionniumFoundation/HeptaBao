@@ -16,6 +16,7 @@ from pathlib import Path
 import socket
 import ssl
 import stat
+import time
 
 ALPN = "heptabao-raft/1"
 SCHEMA = "heptabao.synthetic-three-host-peer-preflight.v1"
@@ -114,10 +115,15 @@ def load_fixture(fixture_root: Path, manifest_path: Path) -> tuple[dict, dict, P
         raise Refusal("INVALID_MEMBERSHIP")
     pins = set()
     names = set()
+    addresses = set()
     for peer_id, peer in peers.items():
-        if not peer_id.isdecimal() or type(peer) is not dict:
+        if (not peer_id.isdecimal() or str(int(peer_id)) != peer_id
+                or type(peer) is not dict):
             raise Refusal("INVALID_MEMBERSHIP")
-        peer_address(peer.get("address"))
+        endpoint = peer_address(peer.get("address"))
+        if endpoint in addresses:
+            raise Refusal("DUPLICATE_PEER_ENDPOINT")
+        addresses.add(endpoint)
         label = peer.get("node_name")
         server_name = peer.get("server_name")
         digest = peer.get("certificate_sha256")
@@ -170,11 +176,48 @@ def probe_peer(config: dict, root: Path, peer_id: int, timeout: float) -> str:
         raise Refusal("TCP_UNREACHABLE") from None
 
 
+def identity_fingerprint(config: dict) -> str:
+    """Bind the enrolled ID-to-name-to-leaf set across relay-specific addresses."""
+    entries = {
+        peer_id: {key: peer[key] for key in (
+            "node_name", "server_name", "certificate_sha256")}
+        for peer_id, peer in config["peers"].items()
+    }
+    normalized = json.dumps(
+        {"cluster_id": config["cluster_id"], "nodes": entries},
+        sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(normalized).hexdigest()
+
+
+def probe_all_peers(config: dict, root: Path, timeout: float) -> dict[str, str]:
+    """Require every other enrolled node, under ONE total finite I/O budget.
+
+    This is directed mTLS connectivity only, never a Raft ReadIndex or ACK.
+    A partial positive cannot be returned as a passing mesh.
+    """
+    if not 0.15 <= timeout <= 8:
+        raise Refusal("INVALID_DEADLINE")
+    ids = sorted(int(i) for i in config["peers"] if int(i) != config["node_id"])
+    if len(ids) != len(config["peers"]) - 1:
+        raise Refusal("INVALID_MEMBERSHIP")
+    deadline = time.monotonic() + timeout
+    observed: dict[str, str] = {}
+    for peer_id in ids:
+        remaining = deadline - time.monotonic()
+        if remaining < 0.15:
+            raise Refusal("PEER_PROBE_BUDGET_EXPIRED")
+        observed[str(peer_id)] = probe_peer(config, root, peer_id, min(8.0, remaining))
+    return observed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fixture-root", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--probe-peer", type=int, default=None)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--probe-peer", type=int, default=None)
+    group.add_argument("--probe-all-peers", action="store_true")
     parser.add_argument("--timeout-seconds", type=float, default=2.0)
     args = parser.parse_args()
     report = {"schema": SCHEMA, "test_only": True, "production_authority": False,
@@ -183,7 +226,13 @@ def main() -> int:
         config, _, root = load_fixture(args.fixture_root, args.manifest)
         report["node_id"] = config["node_id"]
         report["members"] = len(config["peers"])
-        if args.probe_peer is None:
+        report["identity_sha256"] = identity_fingerprint(config)
+        if args.probe_all_peers:
+            result = probe_all_peers(config, root, args.timeout_seconds)
+            report["tls_by_peer"] = result
+            report["network_attempts"] = len(result)
+            report["status"] = "all_peers_mtls_passed"
+        elif args.probe_peer is None:
             report["status"] = "offline_passed"
             report["network_attempts"] = 0
         else:
@@ -194,7 +243,9 @@ def main() -> int:
     except Refusal as error:
         report["reason"] = error.label
     print(json.dumps(report, sort_keys=True, separators=(",", ":")))
-    return 0 if report["status"] in ("offline_passed", "peer_mtls_passed") else 77
+    return 0 if report["status"] in (
+        "offline_passed", "peer_mtls_passed", "all_peers_mtls_passed",
+    ) else 77
 
 
 if __name__ == "__main__":
