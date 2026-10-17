@@ -29,6 +29,28 @@ impl TerminalClockReceipt {
             *checkpoint = Some(self.after);
         }
     }
+
+    /// Consume this actual observation-only publication exactly once. Native
+    /// Auth must not replace an unrelated post-operation checkpoint with the
+    /// receipt's newer frontier, even if both roots happen to share an Auth
+    /// projection. This conveys no Actor or consensus-read authority.
+    #[cfg(feature = "fixture-native-v6-service")]
+    pub(super) fn advance_native_auth(
+        self,
+        checkpoint: &mut Option<(
+            crate::state_record_root::StateIdentity,
+            plugin::PublicationGeneration,
+        )>,
+    ) -> Result<(), Response> {
+        if checkpoint.as_ref() != Some(&self.before) {
+            return Err(Response::error(
+                503,
+                "native authentication terminal observation changed its original checkpoint",
+            ));
+        }
+        *checkpoint = Some(self.after);
+        Ok(())
+    }
 }
 
 impl Service {

@@ -1020,15 +1020,19 @@ impl HaProcess {
                                     } else {
                                         None
                                     };
-                                let payload = handle.block_on(
+                                // Peer workers are ordinary OS threads. Create
+                                // the Tokio timer only after entering this
+                                // process's runtime, retaining the accepted
+                                // frame's original absolute deadline.
+                                let payload = handle.block_on(async {
                                     tokio::time::timeout_at(
                                         tokio::time::Instant::from_std(inbound_deadlines.read_rpc),
                                         heptabao_raft_runtime::with_read_index_deadline(
                                             inbound_deadlines.read_rpc,
                                             service.handle(source, request.kind, request.payload),
                                         ),
-                                    ),
-                                ).map_err(|_| heptabao_ha_service::HaError::Transport)?
+                                    ).await
+                                }).map_err(|_| heptabao_ha_service::HaError::Transport)?
                                 .map_err(map_remote_service_error)?;
                                 if Instant::now() >= inbound_deadlines.read_rpc {
                                     return Err(heptabao_ha_service::HaError::Transport);

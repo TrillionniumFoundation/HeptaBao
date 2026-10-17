@@ -209,5 +209,42 @@ fn native_forward_projection_real_precise_clock_auth_and_kv2_owner_boundaries() 
     let new_semantics = projections(&compatible, kv_changed.auth)?;
     assert_ne!(old_semantics.0, new_semantics.0);
     assert_ne!(old_semantics.1, new_semantics.1);
+
+    // Precise renewal and its final empty revocation use the same original
+    // Actor and pre-audit proof ordering as issuance/lookup. The observation
+    // floor is an actual published monotonic successor, never a fresh clock.
+    let before_renew = observed(&pipeline, leader)?;
+    let renewed = call(
+        &pipeline,
+        leader,
+        "POST",
+        "auth/token/renew-self",
+        &token,
+        json!({"increment":"10m"}),
+        200,
+    )?;
+    assert!(renewed.body["auth"]["client_token"].as_str() == Some(token.as_str()));
+    let after_renew = observed(&pipeline, leader)?;
+    assert!(after_renew.floor > before_renew.floor);
+    call(
+        &pipeline,
+        leader,
+        "POST",
+        "auth/token/revoke-self",
+        &token,
+        json!({}),
+        204,
+    )?;
+    assert!(observed(&pipeline, leader)?.floor > after_renew.floor);
+    let denied = call(
+        &pipeline,
+        leader,
+        "GET",
+        "auth/token/lookup-self",
+        &token,
+        json!({}),
+        403,
+    )?;
+    assert!(denied.body.get("auth").is_none() && denied.body.get("data").is_none());
     Ok(())
 }

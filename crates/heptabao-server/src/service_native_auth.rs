@@ -29,10 +29,17 @@ pub(super) struct NativeAuthDelivery {
     origin_peer: Option<std::net::IpAddr>,
     issued_token: Option<Zeroizing<String>>,
     publication_generation: u64,
+    // The actual post-Auth local/Raft frontier. Only the affine receipt from
+    // this request's terminal observation may advance it before proof capture.
+    delivery_checkpoint: Option<(
+        crate::state_record_root::StateIdentity,
+        plugin::PublicationGeneration,
+    )>,
     // This is the actual request's process owner, never a reconstructed node ID.
     ha: Option<Arc<Mutex<HaProcess>>>,
     // Only HA delivery needs this additional consensus proof. It is minted once
-    // after local publication, before audit, and never renewed after audit.
+    // after the terminal observation publication, before audit, and never
+    // renewed after audit. The checkpoint above is not itself this proof.
     proof: Option<native_v6_reader::NativeProof>,
 }
 
@@ -126,7 +133,12 @@ impl NativeAuthDelivery {
         }
         let durable = service.durable.as_mut().ok_or_else(rejected)?;
         durable.verify_live_ownership().map_err(|_| rejected())?;
-        if durable.generation() < self.publication_generation {
+        let generation = durable.generation();
+        if self.ha.is_some() && generation != self.publication_generation
+            // Keep the existing standalone delivery contract; it has no HA
+            // proof and independently validates current Auth at final delivery.
+            || self.ha.is_none() && generation < self.publication_generation
+        {
             return Err(rejected());
         }
         self.deadline.check().map_err(|_| rejected())
@@ -144,7 +156,74 @@ impl NativeAuthDelivery {
         }
     }
 
+    fn current_checkpoint(
+        service: &Service,
+    ) -> Result<
+        (
+            crate::state_record_root::StateIdentity,
+            plugin::PublicationGeneration,
+        ),
+        Response,
+    > {
+        let identity = service.current_state_identity()?;
+        if !matches!(
+            identity,
+            crate::state_record_root::StateIdentity::RecordsV6(_)
+        ) {
+            return Err(rejected());
+        }
+        Ok((identity, service.external_effect_generation()?))
+    }
+
+    fn stage_publication(&mut self, service: &mut Service) -> Result<(), Response> {
+        if self.ha.is_none() || self.delivery_checkpoint.is_some() || self.proof.is_some() {
+            return Err(rejected());
+        }
+        self.check_environment(service)?;
+        self.check_source(&self.source_auth)?;
+        self.delivery_checkpoint = Some(Self::current_checkpoint(service)?);
+        self.check_checkpoint(service)
+    }
+
+    fn check_checkpoint(&self, service: &mut Service) -> Result<(), Response> {
+        self.check_environment(service)?;
+        self.check_source(&self.source_auth)?;
+        if self.ha.is_none()
+            || self.delivery_checkpoint.as_ref() != Some(&Self::current_checkpoint(service)?)
+        {
+            return Err(rejected());
+        }
+        self.deadline.check().map_err(|_| rejected())
+    }
+
+    fn bind_after_terminal_observation(
+        &mut self,
+        service: &mut Service,
+        receipt: Option<token_precision::TerminalClockReceipt>,
+    ) -> Result<(), Response> {
+        if self.ha.is_none() || self.proof.is_some() || self.delivery_checkpoint.is_none() {
+            return Err(rejected());
+        }
+        self.check_source(&self.source_auth)?;
+        if let Some(receipt) = receipt {
+            receipt.advance_native_auth(&mut self.delivery_checkpoint)?;
+            // Current local state must be exactly the receipt's resulting
+            // identity/frontier before its generation may replace the prior
+            // one. Reading a newer integer alone would admit unrelated work.
+            if self.delivery_checkpoint.as_ref() != Some(&Self::current_checkpoint(service)?) {
+                return Err(rejected());
+            }
+            self.publication_generation =
+                service.durable.as_ref().ok_or_else(rejected)?.generation();
+        }
+        self.check_checkpoint(service)?;
+        self.bind_publication(service)?;
+        self.check_checkpoint(service)
+    }
+
     fn bind_publication(&mut self, service: &mut Service) -> Result<(), Response> {
+        let _original_deadline =
+            crate::request_deadline::RequestDeadlineScope::enter(self.deadline.instant());
         self.check_environment(service)?;
         if self.proof.is_some() {
             return Err(rejected());
@@ -296,6 +375,7 @@ impl Service {
                 .durable
                 .as_ref()
                 .map_or(0, |durable| durable.generation()),
+            delivery_checkpoint: None,
             ha: self.ha.clone(),
             proof: None,
         };
@@ -467,13 +547,60 @@ impl Service {
                     .map(|token| Zeroizing::new(token.to_owned()));
             }
         }
-        if let Err(error) = delivery.bind_publication(self) {
+        let staged = if delivery.ha.is_some() {
+            // Retain exact post-operation provenance before the terminal
+            // observation. The sole HA proof is captured after that write and
+            // before mandatory audit, never in the final response handler.
+            delivery.stage_publication(self)
+        } else {
+            delivery.bind_publication(self)
+        };
+        if let Err(error) = staged {
             erase_json(&mut response.body);
             response.consistency_index = None;
             return error;
         }
         self.pending_native_auth_delivery = Some(delivery);
         response
+    }
+
+    pub(super) fn native_auth_terminal_deadline(&self) -> Option<Instant> {
+        self.pending_native_auth_delivery
+            .as_ref()
+            .filter(|delivery| delivery.ha.is_some())
+            .map(|delivery| delivery.deadline.instant())
+    }
+
+    pub(super) fn check_pending_native_auth_before_terminal(&mut self) -> Result<(), Response> {
+        let Some(delivery) = self.pending_native_auth_delivery.take() else {
+            return Ok(());
+        };
+        let result = if delivery.ha.is_some() {
+            if delivery.proof.is_some() || self.pending_forward_delivery.is_some() {
+                Err(rejected())
+            } else {
+                delivery.check_checkpoint(self)
+            }
+        } else {
+            Ok(())
+        };
+        self.pending_native_auth_delivery = Some(delivery);
+        result
+    }
+
+    pub(super) fn bind_pending_native_auth_before_audit(
+        &mut self,
+        receipt: Option<token_precision::TerminalClockReceipt>,
+    ) -> Result<(), Response> {
+        let Some(mut delivery) = self.pending_native_auth_delivery.take() else {
+            return Err(rejected());
+        };
+        let result = delivery.bind_after_terminal_observation(self, receipt);
+        // A rejected bind still owns the original capsule. The terminal
+        // response path consumes it normally rather than inventing a missing
+        // delivery, repeating the operation, or recapturing after audit.
+        self.pending_native_auth_delivery = Some(delivery);
+        result
     }
 
     pub(super) fn complete_native_auth_delivery(

@@ -2551,12 +2551,31 @@ impl Service {
         retain_clock_receipt: bool,
     ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
         let (now, token_clock) = request_clock;
-        let terminal_floor = if self.pending_forward_delivery.is_some() {
-            self.check_pending_forward_delivery(&response)
-                .map(|()| None)
-        } else {
-            self.persist_terminal_token_clock_with_receipt(token_clock, now, retain_clock_receipt)
-        };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_deadline = self.native_auth_terminal_deadline();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let _native_auth_deadline =
+            native_auth_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_terminal = native_auth_deadline.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_auth_terminal = false;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let terminal_owner = self.check_pending_native_auth_before_terminal();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let terminal_owner: Result<(), Response> = Ok(());
+        let terminal_floor = terminal_owner.and_then(|()| {
+            if self.pending_forward_delivery.is_some() {
+                self.check_pending_forward_delivery(&response)
+                    .map(|()| None)
+            } else {
+                self.persist_terminal_token_clock_with_receipt(
+                    token_clock,
+                    now,
+                    retain_clock_receipt || native_auth_terminal,
+                )
+            }
+        });
         if let Err(error) = &terminal_floor {
             crate::ha_forward_completion::diagnostic_response("terminal_floor_veto", error);
         }
@@ -2578,6 +2597,24 @@ impl Service {
                 None
             }
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let (receipt, terminal_floor_succeeded) =
+            if native_auth_terminal && terminal_floor_succeeded {
+                // The original NativeAuth capsule consumes the one exact terminal
+                // self-write receipt. Only then, before the mandatory response
+                // audit below, can it bind its sole real HA read proof.
+                match self.bind_pending_native_auth_before_audit(receipt) {
+                    Ok(()) => (None, true),
+                    Err(cause) => {
+                        erase_json(&mut response.body);
+                        response.consistency_index = None;
+                        response = cause;
+                        (None, false)
+                    }
+                }
+            } else {
+                (receipt, terminal_floor_succeeded)
+            };
         if let Err(cause) = self.check_pending_approle_lookup_before_audit() {
             erase_json(&mut response.body);
             response = cause;

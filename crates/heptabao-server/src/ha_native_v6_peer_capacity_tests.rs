@@ -260,12 +260,22 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
     let runtime = &processes[0].runtime;
     let node = processes[0].node.as_ref().ok_or("initial node absent")?;
     runtime.block_on(async {
-        node.initialize_single().await?;
-        node.add_learner(2).await?;
-        node.add_learner(3).await?;
-        node.change_membership(BTreeSet::from([1, 2, 3])).await?;
-        Ok::<_, RemoteRaftError>(())
-    })?;
+        tokio::time::timeout(Duration::from_secs(8), async {
+            node.initialize_single().await?;
+            // Initialization commits membership; election is asynchronous.
+            // Observe actual leadership before the single learner mutations,
+            // as in the existing real-Raft fixtures. No failed write is retried.
+            while node.current_leader().await != Some(1) {
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            node.ensure_linearizable().await?;
+            node.add_learner(2).await?;
+            node.add_learner(3).await?;
+            node.change_membership(BTreeSet::from([1, 2, 3])).await?;
+            Ok::<_, RemoteRaftError>(())
+        })
+        .await
+    })??;
     processes[0].native_install_test_ready()?;
     let storage = processes[0].native_install_test_store()?;
     let mut references = Vec::new();
