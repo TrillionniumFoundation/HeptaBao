@@ -8,6 +8,8 @@ use crate::state_machine::StateMachine as MemStoreStateMachine;
 #[cfg(test)]
 use openraft::ReadPolicy;
 use openraft::{Config, Instant, SnapshotPolicy, storage::RaftStateMachine};
+#[cfg(feature = "experimental-v6-raft-objects")]
+use openraft::{EntryPayload, storage::RaftLogReader};
 use openraft_memstore::ClientRequest;
 use tokio::task::spawn_blocking;
 
@@ -121,6 +123,10 @@ pub struct ProcessRaftNode {
     pub(super) id: u64,
     pub(super) raft: DurableRaft,
     pub(super) state_machine: DurableStateMachine,
+    // Feature-only read-only access to the SAME persisted Raft log store.
+    // The clone retains the original Arc; it does not reopen a different store.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    v6_intent_log_reader: DurableLogStore,
     rpc_service: RaftRpcService,
     pub(super) peer_network: RemoteNetworkFactory,
 }
@@ -189,6 +195,8 @@ impl ProcessRaftNode {
                 RemoteRaftError::Io("recovered Raft membership is unavailable".into())
             })?)
         };
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        let v6_intent_log_reader = log_store.clone();
         let rpc_factory = network.clone();
         let raft = DurableRaft::new(
             id,
@@ -228,6 +236,8 @@ impl ProcessRaftNode {
             id,
             raft,
             state_machine,
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            v6_intent_log_reader,
             rpc_service,
             peer_network: rpc_factory,
         })
@@ -413,6 +423,106 @@ impl ProcessRaftNode {
     ) -> Result<CommitReceipt, RaftRuntimeError> {
         self.replicate_for_client(PRODUCTION_CLIENT_ID, client_serial, envelope)
             .await
+    }
+
+    /// Read-only, exact-log-index reconciliation of a previously Raft-staged
+    /// V6 intent. An arbitrary applied-index metric or client-supplied digest
+    /// CANNOT prove that this specific Raft log slot held this exact intent.
+    ///
+    /// A fresh local quorum ReadIndex, exact persisted log-entry identity,
+    /// current committed three-voter membership, and the same durable applied
+    /// object are all checked before returning. If compaction has removed
+    /// the historical slot, fail closed: a future persisted snapshot witness
+    /// is required for compaction-proof recovery.
+    ///
+    /// This does NOT establish the originating Actor/ACL, real local ciphertext
+    /// custody on each voter, V6 root publication, or client write authority.
+    /// Feature default OFF; no service or production caller invokes it.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub async fn reconcile_exact_staged_v6_intent(
+        &self,
+        expected: &crate::NativeV6CommitIntent,
+        receipt: &crate::CommitReceipt,
+    ) -> Result<(), crate::RaftRuntimeError> {
+        fn deny() -> crate::RaftRuntimeError {
+            crate::RaftRuntimeError::Consensus(
+                "exact V6 intent Raft-log provenance unavailable".into(),
+            )
+        }
+        // A new leader may reconcile an intent committed under an older
+        // leader. Only the exact persisted log slot determines origin identity.
+        if receipt.log_index == 0 || receipt.leader_id == 0 {
+            return Err(deny());
+        }
+        let object = crate::SealedRecordObject::new_native_v6_commit_intent(*expected)
+            .map_err(|_| deny())?;
+        if object.reference().id != receipt.envelope_digest {
+            return Err(deny());
+        }
+        // Real quorum evidence, not a follower's passive last-applied metric.
+        let (quorum, _, _) = self.application_read_witness().await.map_err(|_| deny())?;
+        if quorum.leader != self.id
+            || quorum.read_log.index < receipt.log_index
+            || quorum.applied_log.index < receipt.log_index
+        {
+            return Err(deny());
+        }
+        let membership = self.membership_observation().await.map_err(|_| deny())?;
+        if !membership.committed
+            || membership.joint
+            || membership.voters.len() < 3
+            || !membership.voters.contains(&self.id)
+            || membership.leader != Some(self.id)
+            || membership.term != quorum.term
+            || membership.membership_index.is_none()
+            || membership
+                .applied_index
+                .is_none_or(|i| i < receipt.log_index)
+        {
+            return Err(deny());
+        }
+        let end = receipt.log_index.checked_add(1).ok_or_else(deny)?;
+        let mut reader = self.v6_intent_log_reader.clone();
+        let entries = tokio::time::timeout_at(
+            quorum.deadline,
+            reader.try_get_log_entries(receipt.log_index..end),
+        )
+        .await
+        .map_err(|_| deny())?
+        .map_err(|_| deny())?;
+        if entries.len() != 1 {
+            return Err(deny());
+        }
+        let entry = &entries[0];
+        if entry.log_id.index != receipt.log_index
+            || entry.log_id.committed_leader_id().node_id != receipt.leader_id
+        {
+            return Err(deny());
+        }
+        match &entry.payload {
+            EntryPayload::Normal(crate::state_machine::ApplicationRequest::RecordsV5(data)) => {
+                match &data.records_v5 {
+                    crate::records::RecordCommand::Stage { object: staged }
+                        if staged == &object => {}
+                    _ => return Err(deny()),
+                }
+            }
+            _ => return Err(deny()),
+        }
+        if self
+            .state_machine
+            .record_object(object.reference())
+            .await
+            .map_err(|_| deny())?
+            != Some(object)
+        {
+            return Err(deny());
+        }
+        // A checkpoint, leadership change, deadline expiry, or other applied
+        // mutation during the observation invalidates the SAME original proof.
+        self.verify_application_read_witness(&quorum)
+            .await
+            .map_err(|_| deny())
     }
 
     /// Stage one bounded application-state chunk under a fixed index/slot key.
