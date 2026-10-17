@@ -116,5 +116,50 @@ class PrivatePeerPreflightTests(unittest.TestCase):
         self.assertEqual(c.exception.label,"INVALID_DEADLINE")
 
 
+    def test_noncanonical_numeric_id_cannot_duplicate_a_voter(self):
+        self.peers["01"] = self.peers["1"].copy()
+        self.peers.pop("3")
+        self.sync()
+        self.denied("INVALID_MEMBERSHIP")
+
+    def test_duplicate_peer_endpoint_fails_before_network(self):
+        self.peers["3"]["address"] = self.peers["2"]["address"]
+        self.sync()
+        self.denied("DUPLICATE_PEER_ENDPOINT")
+
+    def test_all_peer_probe_checks_both_and_uses_original_budget(self):
+        conf, _, root = self.load()
+        with patch.object(pre, "probe_peer", side_effect=["TLSv1.2", "TLSv1.3"]) as probe:
+            result = pre.probe_all_peers(conf, root, 2.5)
+        self.assertEqual(result, {"2": "TLSv1.2", "3": "TLSv1.3"})
+        self.assertEqual([c.args[2] for c in probe.call_args_list], [2, 3])
+        self.assertTrue(all(0 < c.args[3] <= 2.5 for c in probe.call_args_list))
+
+    def test_second_peer_failure_cannot_be_promoted_to_partial_success(self):
+        conf, _, root = self.load()
+        with patch.object(pre, "probe_peer", side_effect=[
+            "TLSv1.3", pre.Refusal("TCP_REFUSED"),
+        ]) as probe:
+            with self.assertRaises(pre.Refusal) as caught:
+                pre.probe_all_peers(conf, root, 2)
+        self.assertEqual(caught.exception.label, "TCP_REFUSED")
+        self.assertEqual(probe.call_count, 2)
+
+    def test_all_peer_budget_refuses_without_network(self):
+        conf, _, root = self.load()
+        with patch.object(pre, "probe_peer", side_effect=AssertionError("network")):
+            with self.assertRaises(pre.Refusal) as caught:
+                pre.probe_all_peers(conf, root, 0.01)
+        self.assertEqual(caught.exception.label, "INVALID_DEADLINE")
+
+    def test_fingerprint_ignores_per_host_tunnel_address_not_identity(self):
+        conf, _, _ = self.load()
+        original = pre.identity_fingerprint(conf)
+        conf["peers"]["3"]["address"] = "127.0.0.1:47454"
+        self.assertEqual(pre.identity_fingerprint(conf), original)
+        conf["peers"]["3"]["certificate_sha256"] = "e" * 64
+        self.assertNotEqual(pre.identity_fingerprint(conf), original)
+
+
 if __name__ == "__main__":
     unittest.main()
