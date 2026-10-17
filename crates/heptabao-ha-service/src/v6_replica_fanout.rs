@@ -5,11 +5,12 @@
 //! barrier/Actor authority, current cluster epoch, exact committed log index,
 //! immutable root CAS, and crash replay are NOT authorized by this module.
 //! The production V6/HA exclusion remains unchanged.
+use super::v6_replica_ingress::cluster_binding;
 use super::{
     HaError, MutualTlsPeerTransport, NodeId, encode_v6_replica_probe, encode_v6_replica_request,
     verify_v6_local_receipt,
 };
-use heptabao_raft_runtime::{LocalV6BlobStage, RecordObjectRef};
+use heptabao_raft_runtime::{LocalV6BlobStage, NativeV6CommitIntent, RecordObjectRef};
 use std::collections::BTreeSet;
 use std::fmt;
 use std::time::Instant;
@@ -200,6 +201,50 @@ impl V6ReplicaCustodyFanout {
             ciphertext_bytes: initial.ciphertext_bytes(),
             completed_recipients,
         })
+    }
+
+    /// Read-only physical multi-peer custody observation constrained by one
+    /// strictly encoded V6 Raft-stage intent. All cluster/epoch/original-op
+    /// fields must match this independently configured mTLS fixture; the exact
+    /// ciphertext count/size/hash must match local disk BEFORE the network
+    /// calls and all separately pinned recipients AFTER the calls.
+    ///
+    /// The typed intent is still a CLAIM, not current Raft membership or a
+    /// committed log-index/Actor authorization. No majority, root publication,
+    /// read permission or client ACK is produced by this method.
+    pub fn reconcile_intent_local_copies(
+        &self,
+        source: &LocalV6BlobStage,
+        references: &[RecordObjectRef],
+        intent: &NativeV6CommitIntent,
+        deadline: Instant,
+    ) -> Result<V6ReplicaCustodyObservation, HaError> {
+        if Instant::now() >= deadline
+            || intent.cluster_digest != cluster_binding(&self.cluster)?
+            || intent.epoch != self.epoch
+            || intent.operation_digest != self.operation
+        {
+            return Err(HaError::OutcomeUnknown);
+        }
+        let physical = source
+            .observe_intent_local_closure(intent, references)
+            .map_err(|_| HaError::OutcomeUnknown)?;
+        if Instant::now() >= deadline {
+            return Err(HaError::OutcomeUnknown);
+        }
+        // This rechecks the source after every physical mTLS receiver and
+        // refuses partial/out-of-date/forged replies. It cannot promote a
+        // local receipt to a cryptographic Raft quorum.
+        let observed = self.reconcile_local_copies(source, references, deadline)?;
+        if u64::try_from(observed.object_count()).ok() != Some(intent.object_count)
+            || observed.ciphertext_bytes() != intent.ciphertext_bytes
+            || observed.manifest_sha256() != intent.closure_manifest_sha256
+            || observed.manifest_sha256() != physical.manifest_sha256()
+            || Instant::now() >= deadline
+        {
+            return Err(HaError::OutcomeUnknown);
+        }
+        Ok(observed)
     }
 
     /// Deliver an exact locally verified closure to every configured receiver.
@@ -492,7 +537,7 @@ mod tests {
             );
             let pins = pinmap.clone();
             threads.push(thread::spawn(move || -> Result<(), HaError> {
-                for _ in 0..4 {
+                for _ in 0..6 {
                     receiver.serve_one_mtls(
                         &listener,
                         tls.clone(),
@@ -537,6 +582,67 @@ mod tests {
         assert_eq!(
             observation, after_restart_reconciliation,
             "read-only mTLS probes must observe the identical local custody",
+        );
+        // A well-formed Raft-staged intent still must be tied to the
+        // exact physical source AND the original authenticated peer fixture.
+        let intent = NativeV6CommitIntent {
+            cluster_digest: cluster_binding("synthetic-cluster")?,
+            epoch: 7,
+            operation_digest: [4; 32],
+            closure_manifest_sha256: local.manifest_sha256(),
+            object_count: 2,
+            ciphertext_bytes: local.ciphertext_bytes(),
+            prior_root_digest: [11; 32],
+            proposed_root_digest: [12; 32],
+            prior_generation: 10,
+            proposed_generation: 11,
+            expected_previous_commit_index: 20,
+        };
+        for invalid in [
+            NativeV6CommitIntent {
+                cluster_digest: [9; 32],
+                ..intent
+            },
+            NativeV6CommitIntent { epoch: 8, ..intent },
+            NativeV6CommitIntent {
+                operation_digest: [9; 32],
+                ..intent
+            },
+            NativeV6CommitIntent {
+                closure_manifest_sha256: [9; 32],
+                ..intent
+            },
+            NativeV6CommitIntent {
+                object_count: 3,
+                ..intent
+            },
+            NativeV6CommitIntent {
+                ciphertext_bytes: local.ciphertext_bytes() + 1,
+                ..intent
+            },
+        ] {
+            assert!(
+                matches!(
+                    fanout.reconcile_intent_local_copies(
+                        &source,
+                        &refs,
+                        &invalid,
+                        Instant::now() + Duration::from_secs(18)
+                    ),
+                    Err(HaError::OutcomeUnknown),
+                ),
+                "forged intent must never consume peer sessions or acquire authority"
+            );
+        }
+        let observed_intent = fanout.reconcile_intent_local_copies(
+            &source,
+            &refs,
+            &intent,
+            Instant::now() + Duration::from_secs(18),
+        )?;
+        assert_eq!(
+            after_restart_reconciliation, observed_intent,
+            "typed intent can only describe the exact same physically observed peers"
         );
         for handle in threads {
             handle.join().map_err(|_| "receiver thread panic")??;
