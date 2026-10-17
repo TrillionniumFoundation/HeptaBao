@@ -79,7 +79,7 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
             r"fn dispatch_authorized_subrequest\(\s*state:\s*&mut State,\s*principal:\s*Option<&Principal>",
         )
         self.assertEqual(
-            4,
+            5,
             len(
                 re.findall(
                     r"Self::dispatch_authorized_subrequest\(",
@@ -88,19 +88,26 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
             ),
         )
         # KV and token APIs borrow the one Principal held by their original
-        # final-delivery capsule; ordinary dispatch and workflow own the other
-        # two call sites. Neither capsule reauthenticates or clones authority.
-        for capsule in ("ordinary_kv_authority", "token_api_authority"):
-            branch = re.search(
-                rf"else if let Some\(authority\) = {capsule}\.as_ref\(\) \{{(.*?)\n\s*\}}",
-                text,
-                re.S,
-            )
-            self.assertIsNotNone(branch)
-            self.assertEqual(1, branch.group(1).count("Self::dispatch_authorized_subrequest("))
-            self.assertIn("Some(authority.principal())", branch.group(1))
-            self.assertIn("request.token_clock", branch.group(1))
-            self.assertNotIn("principal.clone()", branch.group(1))
+        # final-delivery capsule. KV has mutually exclusive feature-on/off
+        # call sites; ordinary dispatch and workflow own the other two sites.
+        # Keep both compiled configurations tied to the same live authority.
+        kv_start = text.index("} else if let Some(authority) = ordinary_kv_authority.as_mut() {")
+        token_start = text.index("} else if let Some(authority) = token_api_authority.as_ref() {", kv_start)
+        ordinary_start = text.index("} else {\n            Self::dispatch(", token_start)
+        kv_branch = text[kv_start:token_start]
+        token_branch = text[token_start:ordinary_start]
+        self.assertIn('#[cfg(feature = "fixture-native-v6-service")]', kv_branch)
+        self.assertIn('#[cfg(not(feature = "fixture-native-v6-service"))]', kv_branch)
+        self.assertIn(
+            "self.dispatch_native_paged_request(&muttransaction,authority,&request)",
+            re.sub(r"\s+", "", kv_branch),
+        )
+        for branch, call_sites in ((kv_branch, 2), (token_branch, 1)):
+            self.assertEqual(call_sites, branch.count("Self::dispatch_authorized_subrequest("))
+            self.assertEqual(call_sites, branch.count("Some(authority.principal())"))
+            self.assertEqual(call_sites, branch.count("request.token_clock"))
+            self.assertNotIn("principal.clone()", branch)
+            self.assertNotIn(".authenticate(", branch)
         self.assertEqual(
             1,
             len(re.findall(r"Self::dispatch_authorized_subrequest\(", workflows)),
@@ -152,3 +159,4 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

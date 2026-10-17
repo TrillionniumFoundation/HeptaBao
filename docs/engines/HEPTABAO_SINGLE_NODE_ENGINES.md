@@ -73,7 +73,7 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Database | RabbitMq | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Transit | Pki | Ssh | Totp}
+  .backend.{Database | RabbitMq | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Kv2Native | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]  (opaque-owner backends)
   Kv1Records -> authenticated KV1 graph scoped by namespace/mount/incarnation
 ```
@@ -82,6 +82,10 @@ The expression above is a schema path, not a concatenated storage key. Namespace
 mount and resource are distinct serialized fields. For example namespace `a`
 with resource `b/c` and namespace `a/b` with resource `c` occupy different maps.
 Transit authenticates their identities again as separate fields in AEAD AAD.
+
+`Kv2Native` holds the live V6 `NativeReadView`; it cannot be serialized as
+inline KV2 fallback data. Its presence in the runtime map does not change
+native V6 persistence or HA support.
 
 Default mounts in a namespace are `secret/` (KV v2) and `transit/`. Defaults are
 materialized on the first successful mutation; a read of an otherwise untouched

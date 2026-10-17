@@ -198,6 +198,10 @@ The helper reads OTP only from stdin and checks the returned host/user/role bind
 It does not configure PAM or sshd. Pending checkpoints and stale sockets require
 operator reconciliation rather than an unconditional cleanup/restart loop.
 
+The [Agent and Proxy runtime guide](../../docs/operations/heptabao-agent-proxy-runtime.md)
+describes the optional TLS listener, request-header checks, quit handling and
+bounded lease-response cache of these Python processes.
+
 ```sh
 heptabao-agent --help
 heptabao-proxy --help
