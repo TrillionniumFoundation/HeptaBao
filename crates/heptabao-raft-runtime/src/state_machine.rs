@@ -7,6 +7,8 @@ use crate::records::{
 };
 use openraft::alias::{LogIdOf, StoredMembershipOf};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "experimental-v6-raft-objects")]
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::fmt;
 
@@ -103,6 +105,12 @@ pub struct StateMachine {
     pub client_status: HashMap<String, String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) records_v5: Option<RecordState>,
+    /// Only the original *applied* Raft log may create this identity.
+    /// Retained in the authenticated-by-Raft local snapshot state; this is not
+    /// a quorum certificate, root CAS, read grant or client acknowledgment.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    v6_intent_log_provenance: BTreeMap<String, LogIdOf<TypeConfig>>,
     #[serde(skip)]
     legacy_json_bytes: Option<usize>,
 }
@@ -191,6 +199,31 @@ impl StateMachine {
         }
     }
     pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        {
+            if self.v6_intent_log_provenance.len() > 4096 {
+                return Err(RecordRejection::Budget);
+            }
+            for (id, log) in &self.v6_intent_log_provenance {
+                if id.len() != 64
+                    || !id
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+                    || log.index == 0
+                    || log.committed_leader_id().node_id == 0
+                    || self
+                        .last_applied_log
+                        .is_none_or(|last| log.index > last.index)
+                    || !self
+                        .records_v5
+                        .as_ref()
+                        .ok_or(RecordRejection::Invalid)?
+                        .has_valid_v6_intent(id)?
+                {
+                    return Err(RecordRejection::Invalid);
+                }
+            }
+        }
         if let Some(records) = &self.records_v5 {
             let metadata = serde_json::to_vec(&(&self.last_applied_log, &self.last_membership))
                 .map_err(|_| RecordRejection::Invalid)?;
@@ -210,6 +243,14 @@ impl StateMachine {
         }
         Ok(())
     }
+    /// Read-only original applied log identity, not a grant of quorum.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) fn v6_intent_log_id(&self, digest: &[u8; 32]) -> Option<LogIdOf<TypeConfig>> {
+        let mut key = String::with_capacity(64);
+        crate::append_hex(&mut key, digest);
+        self.v6_intent_log_provenance.get(&key).copied()
+    }
+
     fn retain_legacy_chunks(
         &mut self,
         expected: LegacyStatusIdentity,
@@ -293,6 +334,46 @@ impl StateMachine {
     }
 
     pub(crate) fn apply(&mut self, request: &ApplicationRequest) -> ApplicationResponse {
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        let v6_applied_provenance = match request {
+            ApplicationRequest::RecordsV5(data) => match &data.records_v5 {
+                RecordCommand::Stage { object }
+                    if object.reference().kind == crate::RecordObjectKind::NativeV6CommitIntent =>
+                {
+                    let Some(log) = self.last_applied_log else {
+                        return ApplicationResponse::rejected(RecordRejection::Invalid);
+                    };
+                    let Ok(intent) = crate::NativeV6CommitIntent::decode(object.sealed()) else {
+                        return ApplicationResponse::rejected(RecordRejection::Invalid);
+                    };
+                    if intent.expected_previous_commit_index >= log.index {
+                        return ApplicationResponse::rejected(RecordRejection::Invalid);
+                    }
+                    let mut key = String::with_capacity(64);
+                    crate::append_hex(&mut key, &object.reference().id);
+                    if !self.v6_intent_log_provenance.contains_key(&key)
+                        && self.v6_intent_log_provenance.len() >= 4096
+                    {
+                        return ApplicationResponse::rejected(RecordRejection::Budget);
+                    }
+                    Some((key, log))
+                }
+                RecordCommand::Prune { ids, .. } => {
+                    for id in ids {
+                        let mut key = String::with_capacity(64);
+                        crate::append_hex(&mut key, id);
+                        if self.v6_intent_log_provenance.contains_key(&key) {
+                            return ApplicationResponse::rejected(
+                                RecordRejection::ReferencedByStaged,
+                            );
+                        }
+                    }
+                    None
+                }
+                _ => None,
+            },
+            _ => None,
+        };
         let result = match request {
             ApplicationRequest::Legacy(data) => {
                 if retired_legacy_client(&data.client)
@@ -407,10 +488,17 @@ impl StateMachine {
             }
         };
         match result {
-            Ok(()) => ApplicationResponse::Records(RecordResponse {
-                accepted: true,
-                rejection: None,
-            }),
+            Ok(()) => {
+                #[cfg(feature = "experimental-v6-raft-objects")]
+                if let Some((key, log)) = v6_applied_provenance {
+                    // Immutable first-apply identity survives duplicate Stage.
+                    self.v6_intent_log_provenance.entry(key).or_insert(log);
+                }
+                ApplicationResponse::Records(RecordResponse {
+                    accepted: true,
+                    rejection: None,
+                })
+            }
             Err(reason) => ApplicationResponse::rejected(reason),
         }
     }

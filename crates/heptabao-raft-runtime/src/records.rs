@@ -710,6 +710,23 @@ impl RecordState {
         }
         Ok(object.cloned())
     }
+    /// Check one complete immutable V6 intent by canonical object ID.
+    /// Used for validating applied-log provenance stored in Raft snapshots.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) fn has_valid_v6_intent(&self, id: &str) -> Result<bool, RecordRejection> {
+        let Some(object) = self.objects.get(id) else {
+            return Ok(false);
+        };
+        if object.reference.kind != RecordObjectKind::NativeV6CommitIntent
+            || hex(&object.reference.id) != id
+        {
+            return Ok(false);
+        }
+        object.validate()?;
+        crate::NativeV6CommitIntent::decode(object.sealed())?;
+        Ok(true)
+    }
+
     pub(crate) fn inventory(
         &self,
         after: Option<RecordObjectId>,
