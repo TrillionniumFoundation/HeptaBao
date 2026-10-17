@@ -241,6 +241,32 @@ impl LocalV6BlobStage {
         Self::read_checked(&mut file, reference)
     }
 
+    /// Compare a *declared* Raft-stage V6 intent with a fresh physical read
+    /// of every local ciphertext object in its proposed closure.
+    ///
+    /// This deliberately grants NO write acknowledgement, Raft quorum, current
+    /// cluster membership, epoch/Actor authority, log-index acceptance or
+    /// root publication. The intent is untrusted until independently sourced
+    /// from the current authenticated consensus state. This observation is
+    /// point-in-time only: a publisher must repeat/fence it at commit time.
+    pub fn observe_intent_local_closure(
+        &self,
+        intent: &crate::NativeV6CommitIntent,
+        references: &[RecordObjectRef],
+    ) -> Result<LocalV6ClosureReceipt, LocalV6BlobError> {
+        intent
+            .encode()
+            .map_err(|_| LocalV6BlobError::InvalidClosure)?;
+        let observed = self.observe_local_closure(references)?;
+        if u64::try_from(observed.object_count()).ok() != Some(intent.object_count)
+            || observed.ciphertext_bytes() != intent.ciphertext_bytes
+            || observed.manifest_sha256() != intent.closure_manifest_sha256
+        {
+            return Err(LocalV6BlobError::InvalidClosure);
+        }
+        Ok(observed)
+    }
+
     /// Observe an entire exact set of local ciphertext objects without
     /// materializing their combined plaintext/ciphertext or using the Raft
     /// JSON state. Every leaf is physically reopened and SHA256 checked.
@@ -486,6 +512,99 @@ mod tests {
     }
 
     #[test]
+    fn native_v6_intent_closure_checks_actual_ciphertext_before_commit()
+    -> Result<(), Box<dyn std::error::Error>> {
+        use crate::NativeV6CommitIntent;
+        let root = new_root()?;
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        let first = store.stage_local(&[0xa1_u8; 65536])?.reference().clone();
+        let second = store.stage_local(&[0xb2_u8; 4096])?.reference().clone();
+        let refs = vec![first.clone(), second.clone()];
+        let physical = store.observe_local_closure(&refs)?;
+        let intent = NativeV6CommitIntent {
+            cluster_digest: [0xc1; 32],
+            epoch: 8,
+            operation_digest: [0xc2; 32],
+            closure_manifest_sha256: physical.manifest_sha256(),
+            object_count: 2,
+            ciphertext_bytes: physical.ciphertext_bytes(),
+            prior_root_digest: [0xc3; 32],
+            proposed_root_digest: [0xc4; 32],
+            prior_generation: 11,
+            proposed_generation: 12,
+            expected_previous_commit_index: 105,
+        };
+        // A syntactically valid fixed-width intent alone is not enough:
+        // the actual original private directory must contain all matching
+        // objects, and arbitrary enumeration order cannot change the digest.
+        assert_eq!(
+            store.observe_intent_local_closure(&intent, &refs)?,
+            physical
+        );
+        assert_eq!(
+            store.observe_intent_local_closure(&intent, &[second.clone(), first.clone()])?,
+            physical
+        );
+        let mut forged = intent;
+        forged.closure_manifest_sha256[0] ^= 1;
+        assert!(matches!(
+            store.observe_intent_local_closure(&forged, &refs),
+            Err(LocalV6BlobError::InvalidClosure)
+        ));
+        let mut wrong_count = intent;
+        wrong_count.object_count = 3;
+        assert!(matches!(
+            store.observe_intent_local_closure(&wrong_count, &refs),
+            Err(LocalV6BlobError::InvalidClosure)
+        ));
+        let mut wrong_bytes = intent;
+        wrong_bytes.ciphertext_bytes += 1;
+        assert!(matches!(
+            store.observe_intent_local_closure(&wrong_bytes, &refs),
+            Err(LocalV6BlobError::InvalidClosure)
+        ));
+        let mut invalid = intent;
+        invalid.epoch = 0;
+        assert!(matches!(
+            store.observe_intent_local_closure(&invalid, &refs),
+            Err(LocalV6BlobError::InvalidClosure)
+        ));
+        let unpersisted = SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0xdd; 4096])?;
+        assert!(
+            store
+                .observe_intent_local_closure(
+                    &intent,
+                    &[first.clone(), unpersisted.reference().clone()]
+                )
+                .is_err()
+        );
+        assert!(
+            store
+                .observe_intent_local_closure(&intent, &[first.clone(), first.clone()])
+                .is_err()
+        );
+        drop(store);
+        // No cached receipt can skip actual reads after process reopen.
+        let reopened = LocalV6BlobStage::open_existing(&root)?;
+        assert_eq!(
+            reopened.observe_intent_local_closure(&intent, &refs)?,
+            physical
+        );
+        drop(reopened);
+        // Tampered existing leaf, even at identical byte length, defeats
+        // any prior matching intent or local observation.
+        fs::write(root.join(LocalV6BlobStage::leaf(&second)?), [0xee_u8; 4096])?;
+        let tampered = LocalV6BlobStage::open_existing(&root)?;
+        assert!(matches!(
+            tampered.observe_intent_local_closure(&intent, &refs),
+            Err(LocalV6BlobError::CorruptOrChanged)
+        ));
+        drop(tampered);
+        fs::remove_dir_all(root)?;
+        Ok(())
+    }
+
+    #[test]
     #[ignore = "explicit 139 MiB local disk trial; no quorum or root publication"]
     fn stages_unique_139_mib_without_raft_json() -> Result<(), Box<dyn std::error::Error>> {
         let root = new_root()?;
@@ -501,10 +620,34 @@ mod tests {
         let before = store.observe_local_closure(&references)?;
         assert_eq!(before.object_count(), 556);
         assert_eq!(before.ciphertext_bytes(), 139_u64 * 1024 * 1024);
+        // The actual 139 MiB disk trial must also match an exact candidate
+        // Raft-stage intent, not merely produce a standalone local receipt.
+        let intent = crate::NativeV6CommitIntent {
+            cluster_digest: [0x81; 32],
+            epoch: 8,
+            operation_digest: [0x82; 32],
+            closure_manifest_sha256: before.manifest_sha256(),
+            object_count: 556,
+            ciphertext_bytes: 139 * 1024 * 1024,
+            prior_root_digest: [0x83; 32],
+            proposed_root_digest: [0x84; 32],
+            prior_generation: 21,
+            proposed_generation: 22,
+            expected_previous_commit_index: 123,
+        };
+        assert_eq!(
+            store.observe_intent_local_closure(&intent, &references)?,
+            before
+        );
         drop(store);
         let store = LocalV6BlobStage::open_existing(&root)?;
         assert_eq!(references.len(), 556);
         assert_eq!(store.observe_local_closure(&references)?, before);
+        assert_eq!(
+            store.observe_intent_local_closure(&intent, &references)?,
+            before,
+            "139 MiB intent must still match exact physical leaves after reopen"
+        );
         for (index, reference) in references.iter().enumerate() {
             let result = store.read_local(reference)?;
             assert_eq!(&result[..8], &(index as u64).to_be_bytes());
