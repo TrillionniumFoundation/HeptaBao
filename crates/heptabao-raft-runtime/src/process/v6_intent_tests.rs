@@ -125,6 +125,42 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
         )
         .await??;
         assert!(receipt.log_index > prior_applied);
+        nodes[0]
+            .reconcile_exact_staged_v6_intent(&intent, &receipt)
+            .await?;
+        let mut wrong_slot = receipt.clone();
+        wrong_slot.log_index -= 1;
+        assert!(
+            nodes[0]
+                .reconcile_exact_staged_v6_intent(&intent, &wrong_slot)
+                .await
+                .is_err(),
+            "a previous membership or blank log slot cannot launder an intent"
+        );
+        let mut wrong_digest = receipt.clone();
+        wrong_digest.envelope_digest[0] ^= 1;
+        assert!(
+            nodes[0]
+                .reconcile_exact_staged_v6_intent(&intent, &wrong_digest)
+                .await
+                .is_err()
+        );
+        let mut wrong_leader = receipt.clone();
+        wrong_leader.leader_id = 3;
+        assert!(
+            nodes[0]
+                .reconcile_exact_staged_v6_intent(&intent, &wrong_leader)
+                .await
+                .is_err()
+        );
+        let mut wrong_intent = intent;
+        wrong_intent.operation_digest[0] ^= 1;
+        assert!(
+            nodes[0]
+                .reconcile_exact_staged_v6_intent(&wrong_intent, &receipt)
+                .await
+                .is_err()
+        );
         // Wait for the actual follower apply path, not merely for one leader
         // acknowledgment. The object is tiny even for 139 MiB of external
         // ciphertext, and still grants no local-custody or root authority.
@@ -150,6 +186,34 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
         // Losing both follower append paths denies a new linearizable
         // observation.  Prior committed intent stays intact and no root
         // authorization is inferred.
+        // A snapshot may retain the application object after purging the exact
+        // original Raft log slot.  Neither the durable application object nor
+        // an older client receipt can then recreate the missing provenance.
+        nodes[0].trigger_snapshot().await?;
+        tokio::time::timeout(Duration::from_secs(6), async {
+            loop {
+                if nodes[0].membership_observation().await?.purged_index >= Some(receipt.log_index)
+                {
+                    break Ok::<(), RemoteRaftError>(());
+                }
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+        })
+        .await
+        .map_err(|_| "explicit V6 intent source log was not actually purged")??;
+        assert_eq!(
+            nodes[0].application_object(object.reference()).await?,
+            Some(object.clone()),
+            "snapshot must retain the committed immutable intent object"
+        );
+        nodes[0].ensure_linearizable().await?;
+        assert!(
+            nodes[0]
+                .reconcile_exact_staged_v6_intent(&intent, &receipt)
+                .await
+                .is_err(),
+            "an already-purged log entry cannot be reconstructed from only an application object"
+        );
         router.deny_append.store(true, Ordering::SeqCst);
         let denied = crate::with_read_index_deadline(
             Instant::now() + Duration::from_millis(120),
@@ -159,6 +223,15 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
         assert!(
             denied.is_err(),
             "lost quorum cannot grant new read authority"
+        );
+        let denied_intent = crate::with_read_index_deadline(
+            Instant::now() + Duration::from_millis(120),
+            nodes[0].reconcile_exact_staged_v6_intent(&intent, &receipt),
+        )
+        .await;
+        assert!(
+            denied_intent.is_err(),
+            "existing staged object and old receipt cannot bypass lost quorum"
         );
         for node in &nodes {
             assert!(node.record_root_at_generation().await?.1.is_none());
