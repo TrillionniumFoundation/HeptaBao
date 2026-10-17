@@ -186,9 +186,9 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
         // Losing both follower append paths denies a new linearizable
         // observation.  Prior committed intent stays intact and no root
         // authorization is inferred.
-        // A snapshot may retain the application object after purging the exact
-        // original Raft log slot.  Neither the durable application object nor
-        // an older client receipt can then recreate the missing provenance.
+        // The original applied LogId must survive a *persisted snapshot*
+        // after the physical log slot is actually compacted. An object alone
+        // or caller-supplied receipt must never fabricate this provenance.
         nodes[0].trigger_snapshot().await?;
         tokio::time::timeout(Duration::from_secs(6), async {
             loop {
@@ -207,12 +207,26 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
             "snapshot must retain the committed immutable intent object"
         );
         nodes[0].ensure_linearizable().await?;
+        nodes[0]
+            .reconcile_exact_staged_v6_intent(&intent, &receipt)
+            .await?;
+        let mut missing_slot = receipt.clone();
+        missing_slot.log_index -= 1;
         assert!(
             nodes[0]
-                .reconcile_exact_staged_v6_intent(&intent, &receipt)
+                .reconcile_exact_staged_v6_intent(&intent, &missing_slot)
                 .await
                 .is_err(),
-            "an already-purged log entry cannot be reconstructed from only an application object"
+            "a different purged slot cannot inherit the original snapshot proof"
+        );
+        let mut false_origin = receipt.clone();
+        false_origin.leader_id = 3;
+        assert!(
+            nodes[0]
+                .reconcile_exact_staged_v6_intent(&intent, &false_origin)
+                .await
+                .is_err(),
+            "an unrelated leader cannot assume the original applied identity"
         );
         router.deny_append.store(true, Ordering::SeqCst);
         let denied = crate::with_read_index_deadline(
@@ -237,7 +251,7 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
             assert!(node.record_root_at_generation().await?.1.is_none());
         }
         router.deny_append.store(false, Ordering::SeqCst);
-        Ok::<_, Box<dyn std::error::Error>>(object)
+        Ok::<_, Box<dyn std::error::Error>>((object, receipt))
     }
     .await;
     router.deny_append.store(false, Ordering::SeqCst);
@@ -247,7 +261,7 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
     }
     // Cold-open every real local state machine independently, including both
     // former followers. Nothing was published to the V5/V6 application root.
-    if let Ok(object) = &result {
+    if let Ok((object, receipt)) = &result {
         for id in 1..=3 {
             let state = crate::store::DurableStateMachine::open_existing(
                 root.join(id.to_string()).join("state-machine"),
@@ -259,6 +273,14 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
                     .map_err(|_| "invalid stored object")?,
                 Some(object.clone())
             );
+            if id == 1 {
+                let persisted = state
+                    .durable_snapshot_v6_intent_log_id(&object.reference().id, receipt.log_index)
+                    .await?
+                    .ok_or("persisted intent LogId lost after cold restart")?;
+                assert_eq!(persisted.index, receipt.log_index);
+                assert_eq!(persisted.committed_leader_id().node_id, receipt.leader_id);
+            }
             assert!(state.record_root_at_generation().await.1.is_none());
         }
     }

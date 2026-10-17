@@ -431,9 +431,10 @@ impl ProcessRaftNode {
     ///
     /// A fresh local quorum ReadIndex, exact persisted log-entry identity,
     /// current committed three-voter membership, and the same durable applied
-    /// object are all checked before returning. If compaction has removed
-    /// the historical slot, fail closed: a future persisted snapshot witness
-    /// is required for compaction-proof recovery.
+    /// object are all checked before returning. If the historical slot was
+    /// purged, a *persisted, validated Raft state-machine snapshot* must carry
+    /// the original applied log's immutable intent ID and full LogId. Missing,
+    /// stale or unbound snapshot provenance remains unavailable.
     ///
     /// This does NOT establish the originating Actor/ACL, real local ciphertext
     /// custody on each voter, V6 root publication, or client write authority.
@@ -490,21 +491,45 @@ impl ProcessRaftNode {
         .await
         .map_err(|_| deny())?
         .map_err(|_| deny())?;
-        if entries.len() != 1 {
-            return Err(deny());
-        }
-        let entry = &entries[0];
-        if entry.log_id.index != receipt.log_index
-            || entry.log_id.committed_leader_id().node_id != receipt.leader_id
-        {
-            return Err(deny());
-        }
-        match &entry.payload {
-            EntryPayload::Normal(crate::state_machine::ApplicationRequest::RecordsV5(data)) => {
-                match &data.records_v5 {
-                    crate::records::RecordCommand::Stage { object: staged }
-                        if staged == &object => {}
+        match entries.as_slice() {
+            [entry] => {
+                if entry.log_id.index != receipt.log_index
+                    || entry.log_id.committed_leader_id().node_id != receipt.leader_id
+                {
+                    return Err(deny());
+                }
+                match &entry.payload {
+                    EntryPayload::Normal(crate::state_machine::ApplicationRequest::RecordsV5(
+                        data,
+                    )) => match &data.records_v5 {
+                        crate::records::RecordCommand::Stage { object: staged }
+                            if staged == &object => {}
+                        _ => return Err(deny()),
+                    },
                     _ => return Err(deny()),
+                }
+            }
+            [] => {
+                // Empty entry results do not imply compaction. Require an
+                // independent actual Raft purged frontier, plus the original
+                // applied LogId inside the *persisted snapshot*, not a cached
+                // application object or caller-supplied receipt.
+                if membership
+                    .purged_index
+                    .is_none_or(|purged| purged < receipt.log_index)
+                {
+                    return Err(deny());
+                }
+                let observed = self
+                    .state_machine
+                    .durable_snapshot_v6_intent_log_id(&object.reference().id, receipt.log_index)
+                    .await
+                    .map_err(|_| deny())?;
+                if observed.is_none_or(|log| {
+                    log.index != receipt.log_index
+                        || log.committed_leader_id().node_id != receipt.leader_id
+                }) {
+                    return Err(deny());
                 }
             }
             _ => return Err(deny()),

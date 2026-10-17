@@ -1670,6 +1670,37 @@ impl DurableStateMachine {
             .cloned()
     }
 
+    /// Source-of-truth snapshot fallback after Raft purges an original V6
+    /// intent log entry. Only a physically persisted, validated snapshot that
+    /// contains the original applied-log provenance can supply this identity.
+    /// This is local evidence, not a quorum / Actor / root publication grant.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn durable_snapshot_v6_intent_log_id(
+        &self,
+        intent_id: &[u8; 32],
+        required_index: u64,
+    ) -> io::Result<Option<LogIdOf<TypeConfig>>> {
+        let bundle = self.bundle.lock().await;
+        let Some(snapshot) = &bundle.current_snapshot else {
+            return Ok(None);
+        };
+        if snapshot
+            .meta
+            .last_log_id
+            .is_none_or(|log| log.index < required_index)
+        {
+            return Ok(None);
+        }
+        // Never substitute the mutable current application state for the
+        // immutable checkpoint payload. Decode through the same validated
+        // snapshot parser used by normal Raft installation/reopen.
+        let state = MemStoreStateMachine::from_snapshot(&snapshot.data)?;
+        if state.last_applied_log != snapshot.meta.last_log_id {
+            return Err(invalid("V6 intent snapshot log identity changed"));
+        }
+        Ok(state.v6_intent_log_id(intent_id))
+    }
+
     pub(crate) async fn last_applied_log_index(&self) -> Option<u64> {
         self.bundle
             .lock()
