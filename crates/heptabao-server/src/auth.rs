@@ -1740,6 +1740,12 @@ struct Role {
     #[serde(default = "default_bind_secret_id")]
     bind_secret_id: bool,
     policies: BTreeSet<String>,
+    /// Preserve the distinction between an explicitly requested policy and
+    /// the default policy historically synthesized during role configuration.
+    #[serde(default, skip_serializing_if = "is_false")]
+    token_no_default_policy: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    configured_policies: Option<BTreeSet<String>>,
     token_ttl: u64,
     token_max_ttl: u64,
     #[serde(default, skip_serializing_if = "is_zero")]
@@ -8399,6 +8405,7 @@ impl AuthState {
                     json!({"secret_id_bound_cidrs":role.secret_id_bound_cidrs, "token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
                     "token_explicit_max_ttl": role.token_explicit_max_ttl,
+                    "token_no_default_policy":role.token_no_default_policy,
                     "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
                     false,
                 ));
@@ -8420,6 +8427,7 @@ impl AuthState {
                     "bind_secret_id",
                     "policies",
                     "token_policies",
+                    "token_no_default_policy",
                     "token_ttl",
                     "token_max_ttl",
                     "token_period",
@@ -8437,6 +8445,8 @@ impl AuthState {
                 role_id: random_id("role.")?,
                 bind_secret_id: true,
                 policies: BTreeSet::from(["default".into()]),
+                token_no_default_policy: false,
+                configured_policies: None,
                 token_ttl: 0,
                 token_max_ttl: 0,
                 token_period: 0,
@@ -8447,16 +8457,46 @@ impl AuthState {
                 secret_ids: BTreeMap::new(),
             });
             role.bind_secret_id = boolean(body, "bind_secret_id", role.bind_secret_id)?;
-            role.policies = policies(
-                body,
-                if body.get("token_policies").is_some() {
+            role.token_no_default_policy = match body.get("token_no_default_policy") {
+                Some(Value::Null) => false,
+                Some(_) => boolean(
+                    body,
+                    "token_no_default_policy",
+                    role.token_no_default_policy,
+                )?,
+                None => role.token_no_default_policy,
+            };
+            // Unlike normalized legacy roles, newly written AppRoles preserve
+            // the exact caller policy list. "default" is never silently granted
+            // when no_default_policy is enabled, but an explicitly selected
+            // "default" remains selected after updates and cold reopen.
+            let configured = if body.get("token_policies").is_some()
+                || body.get("policies").is_some()
+            {
+                let field = if body.get("token_policies").is_some() {
                     "token_policies"
                 } else {
                     "policies"
-                },
-                &role.policies,
-                true,
-            )?;
+                };
+                let explicit = policies(body, field, &BTreeSet::new(), false)?;
+                role.configured_policies = Some(explicit.clone());
+                explicit
+            } else if let Some(explicit) = role.configured_policies.as_ref() {
+                explicit.clone()
+            } else {
+                // The historic state did not record whether default was
+                // explicit. With a newly enabled no-default flag, omit that
+                // ambiguous grant rather than escalating an old identity.
+                let mut inherited = role.policies.clone();
+                if role.token_no_default_policy {
+                    inherited.remove("default");
+                }
+                inherited
+            };
+            role.policies = configured;
+            if !role.token_no_default_policy && !role.policies.contains("root") {
+                role.policies.insert("default".into());
+            }
             self.validate_assignment(actor, &role.policies)?;
             role.token_ttl = approle_renewal::role_duration(body, "token_ttl", role.token_ttl)?;
             role.token_max_ttl =
