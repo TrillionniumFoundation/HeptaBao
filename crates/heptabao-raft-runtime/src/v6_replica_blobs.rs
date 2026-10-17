@@ -313,6 +313,9 @@ impl LocalV6BlobStage {
     }
 }
 
+#[path = "v6_closure_manifest.rs"]
+mod closure_manifest;
+
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;

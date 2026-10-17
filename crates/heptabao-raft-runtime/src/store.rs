@@ -1309,8 +1309,8 @@ fn apply_state_journal_event(
             }
             let response = apply_state_entry(&mut bundle.state, &entry);
             bundle.generation = generation;
-            if bundle.state.records_v5.is_some() {
-                bundle.format_version = 3;
+            if let Some(version) = bundle.state.records_format_version() {
+                bundle.format_version = version;
             }
             Ok(Some(response))
         }
@@ -1386,13 +1386,15 @@ impl PersistentStateBundle {
     }
 
     fn validate_header(&self) -> io::Result<()> {
-        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3)
+        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3 | 4)
             || self.journal_format > 1
             || self.generation == 0
         {
             return Err(invalid("unsupported or zero state bundle generation"));
         }
-        if (self.format_version == 3) != self.state.records_v5.is_some() {
+        if self.state.records_format_version().is_some_and(|version| version != self.format_version)
+            || (self.format_version >= 3 && self.state.records_format_version().is_none())
+        {
             return Err(invalid("state bundle records/version mismatch"));
         }
         Ok(())
@@ -1409,14 +1411,14 @@ impl PersistentStateBundle {
             } else {
                 SnapshotEncoding::CompactBase64
             };
-            if self.format_version != 3 && snapshot.encoding != expected {
+            if self.format_version < 3 && snapshot.encoding != expected {
                 return Err(invalid(
                     "state bundle snapshot encoding does not match format",
                 ));
             }
             let snapshot_state = MemStoreStateMachine::from_snapshot(&snapshot.data)?;
             if snapshot_state.records_v5.is_some()
-                && (self.format_version != 3
+                && (self.format_version < snapshot_state.records_format_version().unwrap_or(3)
                     || snapshot.encoding != SnapshotEncoding::CompactBase64)
             {
                 return Err(invalid(
@@ -1470,11 +1472,7 @@ impl<'a> GeneratedSnapshotCheckpoint<'a> {
             last_membership: state.last_membership.clone(),
         };
         Ok(Self {
-            format_version: if state.records_v5.is_some() {
-                3
-            } else {
-                COMPACT_STATE_BUNDLE_FORMAT
-            },
+            format_version: state.records_format_version().unwrap_or(COMPACT_STATE_BUNDLE_FORMAT),
             journal_format: 1,
             generation,
             state,
@@ -1744,11 +1742,13 @@ impl DurableStateMachine {
         (
             bundle.generation,
             bundle.state.last_applied_log,
-            bundle.state.client_status.get(client).cloned(),
+            bundle.state.client_status.get(client)
+                .filter(|_| !bundle.state.native_v6_is_published()).cloned(),
             bundle
                 .state
                 .records_v5
                 .as_ref()
+                .filter(|_| !bundle.state.native_v6_is_published())
                 .and_then(crate::records::RecordState::published),
         )
     }
@@ -1785,8 +1785,42 @@ impl DurableStateMachine {
                 .state
                 .records_v5
                 .as_ref()
+                .filter(|_| !bundle.state.native_v6_is_published())
                 .and_then(crate::records::RecordState::published),
         )
+    }
+
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn native_v6_enrollment(
+        &self,
+    ) -> (StoredMembershipOf<TypeConfig>, Option<crate::NativeV6PeerEnrollment>) {
+        let bundle = self.bundle.lock().await;
+        (bundle.state.last_membership.clone(), bundle.state.v6_enrollment.clone()
+            .map(crate::NativeV6PeerEnrollment))
+    }
+
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn native_v6_root(
+        &self,
+    ) -> (u64, Option<crate::NativeV6PublishedRoot>) {
+        let bundle = self.bundle.lock().await;
+        (bundle.generation, bundle.state.v6_root.clone().map(crate::NativeV6PublishedRoot))
+    }
+
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn native_v6_intent_origin(
+        &self, digest: &[u8; 32],
+    ) -> Option<LogIdOf<TypeConfig>> {
+        self.bundle.lock().await.state.v6_intent_log_id(digest)
+    }
+
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn native_v6_migration_source(
+        &self,
+    ) -> Option<([u8; 32], LogIdOf<TypeConfig>)> {
+        let bundle = self.bundle.lock().await;
+        if bundle.state.v6_root.is_some() { return None; }
+        Some((bundle.state.records_v5.as_ref()?.published_digest()?, bundle.state.v5_root_log?))
     }
     pub(crate) async fn record_inventory(
         &self,
@@ -2062,11 +2096,7 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
                 encoding: SnapshotEncoding::CompactBase64,
             };
             let candidate = PersistentStateBundle {
-                format_version: if state.records_v5.is_some() {
-                    3
-                } else {
-                    COMPACT_STATE_BUNDLE_FORMAT
-                },
+                format_version: state.records_format_version().unwrap_or(COMPACT_STATE_BUNDLE_FORMAT),
                 journal_format: 1,
                 generation: bundle.next_generation()?,
                 state,

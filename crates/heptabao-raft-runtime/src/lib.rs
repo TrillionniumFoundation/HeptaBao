@@ -20,6 +20,8 @@ mod state_machine;
 mod v6_commit_intent;
 #[cfg(feature = "experimental-v6-raft-objects")]
 mod v6_replica_blobs;
+#[cfg(feature = "experimental-v6-raft-objects")]
+mod v6_root_publication;
 
 pub use records::{
     LegacyChunkRef, LegacyEnvelopeObservation, LegacyStatusIdentity, PublishedRecordRoot,
@@ -33,6 +35,8 @@ pub use v6_commit_intent::NativeV6CommitIntent;
 pub use v6_replica_blobs::{
     LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage, LocalV6ClosureReceipt,
 };
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_root_publication::{NativeV6PeerEnrollment, NativeV6PublishedRoot};
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]

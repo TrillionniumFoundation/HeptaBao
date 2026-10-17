@@ -10,7 +10,8 @@ const MAX_OBJECTS: u64 = 131_072;
 const MAX_LEAF_BYTES: u64 = 256 * 1024;
 const MIN_LEAF_BYTES: u64 = 25;
 
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeV6CommitIntent {
     pub cluster_digest: [u8; 32],
     pub epoch: u64,

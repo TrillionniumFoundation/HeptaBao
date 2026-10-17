@@ -9820,6 +9820,10 @@ mod sdk_request_path_tests {
 #[path = "auth_token_provenance_json.rs"]
 mod token_provenance_json;
 
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "auth_native_v6_routes.rs"]
+mod native_v6_routes;
+
 #[cfg(test)]
 #[path = "auth_lossless_json_tests.rs"]
 mod lossless_json_tests;

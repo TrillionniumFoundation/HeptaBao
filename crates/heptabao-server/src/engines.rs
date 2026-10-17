@@ -128,6 +128,64 @@ impl std::fmt::Debug for EngineState {
     }
 }
 
+#[cfg(feature = "fixture-native-v6-service")]
+impl EngineState {
+    /// Local authentication may bind or refresh an identity alias. It cannot
+    /// use that allowance to mutate mounts, KV, leases or engine clocks.
+    pub(crate) fn native_auth_identity_only_change(
+        &self,
+        next: &Self,
+        live: &impl Fn() -> bool,
+    ) -> bool {
+        if !self.namespaces.keys().eq(next.namespaces.keys()) {
+            return false;
+        }
+        let mut normalized = next.clone();
+        for (name, prior) in &self.namespaces {
+            let Some(candidate) = normalized.namespaces.get_mut(name) else {
+                return false;
+            };
+            candidate.identity = prior.identity.clone();
+        }
+        // Native views deliberately refuse inline serialization. Compare
+        // only their mount metadata here; the caller must separately compare
+        // the authenticated KV roots produced by the native graph planner.
+        // Stream all other metadata without allocating a plaintext aggregate.
+        fn digest(state: &EngineState, live: &impl Fn() -> bool) -> Option<[u8; 32]> {
+            use sha2::{Digest, Sha256};
+            let mut metadata = state.clone();
+            for owner in metadata.namespaces.values_mut() {
+                for mount in owner.mounts.values_mut() {
+                    if !live() {
+                        return None;
+                    }
+                    if matches!(mount.backend, Backend::Kv2Native(_)) {
+                        mount.backend = Backend::Kv2(kv::Kv2::default());
+                    }
+                }
+            }
+            struct Sink<'a, F>(&'a F, Sha256);
+            impl<F: Fn() -> bool> std::io::Write for Sink<'_, F> {
+                fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+                    if !(self.0)() {
+                        return Err(std::io::Error::other("native authentication deadline expired"));
+                    }
+                    self.1.update(bytes);
+                    Ok(bytes.len())
+                }
+                fn flush(&mut self) -> std::io::Result<()> { Ok(()) }
+            }
+            let mut sink = Sink(live, Sha256::new());
+            serde_json::to_writer(&mut sink, &metadata).ok()?;
+            Some(sink.1.finalize().into())
+        }
+        match (digest(self, live), digest(&normalized, live)) {
+            (Some(prior), Some(candidate)) => prior == candidate,
+            _ => false,
+        }
+    }
+}
+
 fn lease_clock_is_zero(value: &u64) -> bool {
     *value == 0
 }

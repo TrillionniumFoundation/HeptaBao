@@ -376,6 +376,9 @@ mod native_v6_reader;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_v6_writer.rs"]
 mod native_v6_writer;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_auth.rs"]
+mod native_auth;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
 #[path = "service_records.rs"]
@@ -1401,6 +1404,8 @@ pub struct Service {
     pending_workflow_external_hold: Option<Box<PendingExternalRequest>>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    pending_native_auth_delivery: Option<native_auth::NativeAuthDelivery>,
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
@@ -1845,6 +1850,8 @@ impl Service {
             pending_workflow_external_hold: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            pending_native_auth_delivery: None,
             pending_ha_step_down: None,
             pending_forward_delivery: None,
             pending_help_authority: None,
@@ -2677,7 +2684,12 @@ impl Service {
             || self.pending_sdk_credential_list.is_some();
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_pending = false;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_pending = self.pending_native_auth_delivery.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_auth_pending = false;
         if sdk_pending
+            || native_auth_pending
             || self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_database_rotation_effect.is_some()
@@ -2995,6 +3007,12 @@ impl Service {
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_delivery = self.pending_native_auth_delivery.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_expected = native_auth_delivery.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_auth_expected = false;
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
         let namespace_deletion = self.pending_namespace_deletion.take();
@@ -3020,6 +3038,7 @@ impl Service {
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
+            + usize::from(native_auth_expected)
             + usize::from(external_pki_no_effect.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
@@ -3103,6 +3122,10 @@ impl Service {
             self.pending_sdk_control_authority = sdk_control;
         }
         self.pending_token_api_authority = token_api_authority;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.pending_native_auth_delivery = native_auth_delivery;
+        }
         self.pending_help_authority = help_authority;
         self.pending_namespace_deletion = namespace_deletion;
         self.pending_approle_tidy = approle_tidy;
@@ -3135,6 +3158,9 @@ impl Service {
         };
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
+        #[cfg(feature = "fixture-native-v6-service")]
+        let response =
+            self.complete_native_auth_delivery(native_auth_expected, response, &fingerprint);
         let response = self.complete_pending_external_pki_no_effect_delivery(
             external_pki_no_effect_expected,
             response,
@@ -3966,6 +3992,11 @@ impl Service {
             return Response::error(error.status, &error.message);
         }
         #[cfg(feature = "fixture-native-v6-service")]
+        let native_local_auth = self.native_root.is_some()
+            && admitted.auth.native_v6_local_auth_route(
+                namespace, method, path, request.body,
+            );
+        #[cfg(feature = "fixture-native-v6-service")]
         {
             if path == "sys/internal/native-v6/activate" {
                 return self.activate_native_v6_route(admitted, principal.take(), &request);
@@ -3982,6 +4013,7 @@ impl Service {
                 );
             if self.native_root.is_some()
                 && !native_snapshot_route
+                && !native_local_auth
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -4049,6 +4081,12 @@ impl Service {
             resumed_control_group,
         ) {
             return response;
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if native_local_auth {
+            return self.dispatch_native_auth_request(
+                admitted, principal.take(), &request, token_fields.as_ref(),
+            );
         }
         if path == "sys/plugins/reload/backend" {
             return self.transit_cache_reload_route(admitted, principal, &request);
