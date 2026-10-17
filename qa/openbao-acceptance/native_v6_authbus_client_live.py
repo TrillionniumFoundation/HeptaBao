@@ -324,8 +324,17 @@ def run(args, report):
         cert_data = call("cert.actual_policy_kv", "GET", SECRET, token=cert_token, opener=good)
         check("cert.exact_kv_read", value_sha(cert_data["data"]["data"]) == value_sha(marker2))
         call("cert.renew_same_leaf", "POST", "auth/token/renew-self", {"increment": 60}, token=cert_token, opener=good)
-        call("cert.renew_without_leaf_denied", "POST", "auth/token/renew-self", {"increment": 60}, expected=403, token=cert_token)
-        call("cert.renew_wrong_leaf_denied", "POST", "auth/token/renew-self", {"increment": 60}, expected=403, token=cert_token, opener=wrong)
+        before_denied = call("cert.lease_before_denied_renewals", "GET", "auth/token/lookup-self", token=cert_token)["data"]
+        # Auth::cert_renewal_limits uses bad(...) for an absent TLS peer
+        # certificate (HTTP 400); a present but differently pinned leaf uses
+        # denied() (HTTP 403). Check the exact errors and absence of Auth data
+        # so an unrelated 400 cannot make this negative control pass.
+        absent = call("cert.renew_without_leaf_denied", "POST", "auth/token/renew-self", {"increment": 60}, expected=400, token=cert_token)
+        check("cert.renew_without_leaf_exact_contract", absent.get("errors") == ["TLS client certificate required for renewal"] and "auth" not in absent)
+        different = call("cert.renew_wrong_leaf_denied", "POST", "auth/token/renew-self", {"increment": 60}, expected=403, token=cert_token, opener=wrong)
+        check("cert.renew_wrong_leaf_exact_contract", different.get("errors") == ["permission denied"] and "auth" not in different)
+        after_denied = call("cert.lease_after_denied_renewals", "GET", "auth/token/lookup-self", token=cert_token)["data"]
+        check("cert.denied_renewals_preserve_lease", bool(before_denied.get("expire_time")) and all(before_denied.get(field) == after_denied.get(field) for field in ("expire_time", "expire_time_unix", "last_renewal", "last_renewal_time")))
 
         call("token.first_revoke", "POST", "auth/token/revoke", {"token": first_token}, expected=204)
         consume("client.revoked_token_denied", expected=403)

@@ -168,12 +168,16 @@ impl EngineState {
             impl<F: Fn() -> bool> std::io::Write for Sink<'_, F> {
                 fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
                     if !(self.0)() {
-                        return Err(std::io::Error::other("native authentication deadline expired"));
+                        return Err(std::io::Error::other(
+                            "native authentication deadline expired",
+                        ));
                     }
                     self.1.update(bytes);
                     Ok(bytes.len())
                 }
-                fn flush(&mut self) -> std::io::Result<()> { Ok(()) }
+                fn flush(&mut self) -> std::io::Result<()> {
+                    Ok(())
+                }
             }
             let mut sink = Sink(live, Sha256::new());
             serde_json::to_writer(&mut sink, &metadata).ok()?;

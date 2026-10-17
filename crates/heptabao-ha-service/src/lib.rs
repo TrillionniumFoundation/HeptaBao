@@ -20,12 +20,26 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
+mod authenticated_peer_frame;
+pub use authenticated_peer_frame::{
+    AuthenticatedPeerFrame, serve_one_mtls_authenticated_peer_frame,
+};
+
 // Opt-in private V6 ciphertext transport admission. Existing production HA
 // request dispatch and all V6/HA mutually exclusive writer fences are unchanged.
+#[cfg(feature = "experimental-v6-peer-ingress")]
+mod v6_closure_quorum;
 #[cfg(feature = "experimental-v6-peer-ingress")]
 mod v6_replica_fanout;
 #[cfg(feature = "experimental-v6-peer-ingress")]
 mod v6_replica_ingress;
+#[cfg(feature = "experimental-v6-peer-ingress")]
+pub use v6_closure_quorum::{
+    NativeV6ClosureQuorum, NativeV6ClosureReceiver, NativeV6CommittedRootSource,
+    RecoveredNativeV6LocalClosure, is_native_v6_closure_frame, is_native_v6_root_pull_frame,
+    reconcile_native_v6_closure_quorum, recover_native_v6_committed_closure,
+    replicate_native_v6_closure_to_quorum,
+};
 #[cfg(feature = "experimental-v6-peer-ingress")]
 pub use v6_replica_fanout::{
     V6ReplicaCopyTarget, V6ReplicaCustodyFanout, V6ReplicaCustodyObservation,
@@ -1005,6 +1019,10 @@ where
     }
     let (stream, accepted_at) = accept_peer_with_origin(listener)?;
     configure_accepted_peer_stream(&stream, timeout)?;
+    // A sequence of partial TLS/frame reads must not restart the inbound
+    // budget. The accepted origin covers handshake, request, handler and reply.
+    let deadline = accepted_at.checked_add(timeout).ok_or(HaError::Transport)?;
+    let stream = ForwardDeadlineStream { stream, deadline };
     let connection =
         rustls::ServerConnection::new(server_config).map_err(|_| HaError::Transport)?;
     let mut tls = rustls::StreamOwned::new(connection, stream);

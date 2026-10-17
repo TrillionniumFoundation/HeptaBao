@@ -2,6 +2,10 @@
 //! All credentials are disposable test values and are never included in assertions.
 use super::*;
 
+#[path = "service_native_auth_cert_renewal_tests.rs"]
+pub(super) mod cert_renewal_tests;
+#[path = "service_native_auth_login_tests.rs"]
+pub(super) mod login_tests;
 #[path = "service_native_auth_renewal_tests.rs"]
 mod renewal_tests;
 use super::super::tests::Root;
@@ -41,7 +45,10 @@ fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Valu
             .flatten()
             .filter_map(Value::as_str)
             .collect();
-        eprintln!("native AuthBus {path}: HTTP {} errors={errors:?}", response.status);
+        eprintln!(
+            "native AuthBus {path}: HTTP {} errors={errors:?}",
+            response.status
+        );
     }
     assert!(service.pending_native_auth_delivery.is_none());
     response
@@ -100,7 +107,13 @@ fn reopened(files: &Root, key: &str) -> TestResult<Service> {
 }
 
 fn issue_secret_id(service: &mut Service, admin: &str) -> TestResult<Zeroizing<String>> {
-    let mut response = call(service, "POST", &format!("{ROLE}/secret-id"), admin, json!({}));
+    let mut response = call(
+        service,
+        "POST",
+        &format!("{ROLE}/secret-id"),
+        admin,
+        json!({}),
+    );
     assert_eq!(response.status, 200);
     secret_field(&mut response, "/data/secret_id")
 }
@@ -344,8 +357,13 @@ fn native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen() -> TestRe
 }
 
 #[test]
-fn native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply() -> TestResult {
-    for path in ["auth/token/lookup", "auth/token/lookup-accessor", "auth/token/renew-accessor"] {
+fn native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply() -> TestResult
+{
+    for path in [
+        "auth/token/lookup",
+        "auth/token/lookup-accessor",
+        "auth/token/renew-accessor",
+    ] {
         let (files, mut service, key, admin) = activated()?;
         let mut issued = call(
             &mut service,
@@ -371,9 +389,8 @@ fn native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_re
         };
         let started = Instant::now();
         let clock = RequestClock::anchored(SystemTime::now().duration_since(UNIX_EPOCH)?, started)?;
-        let _scope = crate::request_deadline::RequestDeadlineScope::enter(
-            started + Duration::from_secs(15),
-        );
+        let _scope =
+            crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
         let response = service.handle_inner(RequestView {
             method: "POST",
             path,
@@ -401,7 +418,8 @@ fn native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_re
             || std::thread::sleep(Duration::from_millis(2100)),
         );
         assert_eq!(response.status, 200);
-        let response = service.complete_native_auth_delivery(true, response, "native-target-expiry");
+        let response =
+            service.complete_native_auth_delivery(true, response, "native-target-expiry");
         assert!(response.status >= 300);
         assert!(response.body.get("data").is_none());
         assert!(response.body.get("auth").is_none());
@@ -483,18 +501,30 @@ fn native_token_lookup_keeps_real_control_group_admission_before_dispatch() -> T
             "POST",
             ROLE,
             &admin,
-            json!({"token_policies":["native-controlled"],"token_no_default_policy":true,
+            json!({"token_policies":["native-controlled"],
                 "token_ttl":"10m","token_max_ttl":"20m","secret_id_num_uses":1})
         )
         .status,
         204
     );
-    let mut response = call(&mut service, "GET", &format!("{ROLE}/role-id"), &admin, json!({}));
+    let mut response = call(
+        &mut service,
+        "GET",
+        &format!("{ROLE}/role-id"),
+        &admin,
+        json!({}),
+    );
     assert_eq!(response.status, 200);
     let role_id = secret_field(&mut response, "/data/role_id")?;
     let secret_id = issue_secret_id(&mut service, &admin)?;
     let (token, _) = login(&mut service, &role_id, &secret_id)?;
-    let mut response = call(&mut service, "GET", "auth/token/lookup-self", &token, json!({}));
+    let mut response = call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &token,
+        json!({}),
+    );
     assert_eq!(response.status, 200);
     erase_json(&mut response.body);
     let policy = r#"path "auth/token/lookup-self" {
@@ -519,14 +549,27 @@ fn native_token_lookup_keeps_real_control_group_admission_before_dispatch() -> T
             drop(service);
             service = reopened(&files, &key)?;
         }
-        let response = call(&mut service, "GET", "auth/token/lookup-self", &token, json!({}));
-        assert!(response.status >= 300,
-            "native local-auth dispatch bypassed an actual control-group policy");
+        let response = call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &token,
+            json!({}),
+        );
+        assert!(
+            response.status >= 300,
+            "native local-auth dispatch bypassed an actual control-group policy"
+        );
         assert!(response.body.get("data").is_none());
         assert!(response.body.get("auth").is_none());
         assert!(response.body.get("wrap_info").is_none());
         assert_eq!(
-            service.state.as_ref().ok_or("state")?.auth.control_group_request_count_for_test(),
+            service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .control_group_request_count_for_test(),
             0,
             "unsupported native deferral must not publish a partial control-group owner"
         );
@@ -543,8 +586,10 @@ mod verified_tls {
         hash::MessageDigest,
         nid::Nid,
         pkey::{PKey, Private},
-        x509::{X509, X509NameBuilder,
-            extension::{BasicConstraints, ExtendedKeyUsage, KeyUsage, SubjectAlternativeName}},
+        x509::{
+            X509, X509NameBuilder,
+            extension::{BasicConstraints, ExtendedKeyUsage, KeyUsage, SubjectAlternativeName},
+        },
     };
     use rustls::{
         ClientConfig, ClientConnection, RootCertStore, ServerConfig, ServerConnection,
@@ -586,11 +631,22 @@ mod verified_tls {
         ca.set_not_before(&not_before)?;
         ca.set_not_after(&not_after)?;
         ca.append_extension(BasicConstraints::new().critical().ca().build()?)?;
-        ca.append_extension(KeyUsage::new().critical().key_cert_sign().crl_sign().build()?)?;
+        ca.append_extension(
+            KeyUsage::new()
+                .critical()
+                .key_cert_sign()
+                .crl_sign()
+                .build()?,
+        )?;
         ca.sign(&ca_key, MessageDigest::sha256())?;
         let ca = ca.build();
-        fn leaf(ca: &X509, ca_key: &PKey<Private>, serial: u32, name: &str, server: bool)
-        -> TestResult<Identity> {
+        fn leaf(
+            ca: &X509,
+            ca_key: &PKey<Private>,
+            serial: u32,
+            name: &str,
+            server: bool,
+        ) -> TestResult<Identity> {
             let key = private_key()?;
             let mut subject = X509NameBuilder::new()?;
             subject.append_entry_by_text("CN", name)?;
@@ -610,15 +666,25 @@ mod verified_tls {
             leaf.append_extension(BasicConstraints::new().critical().build()?)?;
             leaf.append_extension(KeyUsage::new().critical().digital_signature().build()?)?;
             let mut eku = ExtendedKeyUsage::new();
-            if server { eku.server_auth(); } else { eku.client_auth(); }
+            if server {
+                eku.server_auth();
+            } else {
+                eku.client_auth();
+            }
             leaf.append_extension(eku.build()?)?;
             if server {
-                leaf.append_extension(SubjectAlternativeName::new().dns(name)
-                    .build(&leaf.x509v3_context(Some(ca), None))?)?;
+                leaf.append_extension(
+                    SubjectAlternativeName::new()
+                        .dns(name)
+                        .build(&leaf.x509v3_context(Some(ca), None))?,
+                )?;
             }
             leaf.sign(ca_key, MessageDigest::sha256())?;
             Ok(Identity {
-                certificates: vec![CertificateDer::from(leaf.build().to_der()?), CertificateDer::from(ca.to_der()?)],
+                certificates: vec![
+                    CertificateDer::from(leaf.build().to_der()?),
+                    CertificateDer::from(ca.to_der()?),
+                ],
                 key: PrivatePkcs8KeyDer::from(key.private_key_to_pkcs8()?).into(),
             })
         }
@@ -651,9 +717,13 @@ mod verified_tls {
                 assert!(client.read_tls(&mut incoming)? > 0);
                 client.process_new_packets()?;
             }
-            if !client.is_handshaking() && !server.is_handshaking()
-                && !client.wants_write() && !server.wants_write()
-            { return Ok(()); }
+            if !client.is_handshaking()
+                && !server.is_handshaking()
+                && !client.wants_write()
+                && !server.wants_write()
+            {
+                return Ok(());
+            }
         }
         Err("bounded real TLS record exchange stalled".into())
     }
@@ -666,22 +736,32 @@ mod verified_tls {
         let provider = Arc::new(rustls::crypto::ring::default_provider());
         let mut roots = RootCertStore::empty();
         roots.add(certificates.ca.clone())?;
-        let verifier = WebPkiClientVerifier::builder_with_provider(Arc::new(roots.clone()), provider.clone()).build()?;
+        let verifier =
+            WebPkiClientVerifier::builder_with_provider(Arc::new(roots.clone()), provider.clone())
+                .build()?;
         let server = ServerConfig::builder_with_provider(provider.clone())
             .with_safe_default_protocol_versions()?
             .with_client_cert_verifier(verifier)
-            .with_single_cert(certificates.server.certificates.clone(), certificates.server.key.clone_key())?;
+            .with_single_cert(
+                certificates.server.certificates.clone(),
+                certificates.server.key.clone_key(),
+            )?;
         let client = ClientConfig::builder_with_provider(provider)
             .with_safe_default_protocol_versions()?
             .with_root_certificates(roots);
         let client = match client_identity {
-            Some(identity) => client.with_client_auth_cert(identity.certificates.clone(), identity.key.clone_key())?,
+            Some(identity) => client
+                .with_client_auth_cert(identity.certificates.clone(), identity.key.clone_key())?,
             None => client.with_no_client_auth(),
         };
         let mut client = ClientConnection::new(Arc::new(client), ServerName::try_from(hostname)?)?;
         let mut server = ServerConnection::new(Arc::new(server))?;
         pump(&mut client, &mut server)?;
-        assert!(server.peer_certificates().is_some_and(|chain| !chain.is_empty()));
+        assert!(
+            server
+                .peer_certificates()
+                .is_some_and(|chain| !chain.is_empty())
+        );
         Ok((client, server))
     }
 
@@ -706,8 +786,12 @@ mod verified_tls {
         let mut plaintext = Zeroizing::new(vec![0; request_bytes.len()]);
         server.reader().read_exact(&mut plaintext)?;
         let mut request: Value = serde_json::from_slice(&plaintext)?;
-        let verified_chain = server.peer_certificates().ok_or("no actual verified TLS peer")?
-            .iter().map(|certificate| certificate.as_ref().to_vec()).collect();
+        let verified_chain = server
+            .peer_certificates()
+            .ok_or("no actual verified TLS peer")?
+            .iter()
+            .map(|certificate| certificate.as_ref().to_vec())
+            .collect();
         // The only chain admitted below comes from a completed real TLS
         // connection, and every API field comes from its decrypted record.
         let mut response = service.handle_request(ServiceRequest {
@@ -722,7 +806,9 @@ mod verified_tls {
         });
         erase_json(&mut request);
         assert!(service.pending_native_auth_delivery.is_none());
-        let reply = Zeroizing::new(serde_json::to_vec(&json!({"status":response.status,"body":response.body}))?);
+        let reply = Zeroizing::new(serde_json::to_vec(
+            &json!({"status":response.status,"body":response.body}),
+        )?);
         erase_json(&mut response.body);
         server.writer().write_all(&reply)?;
         pump(client, server)?;
@@ -732,8 +818,13 @@ mod verified_tls {
         let status = u16::try_from(received["status"].as_u64().ok_or("TLS response status")?)?;
         let body = received["body"].take();
         erase_json(&mut received);
-        Ok(Response { unwrapped_json: None, response_headers: Default::default(),
-            consistency_index: None, status, body })
+        Ok(Response {
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+            status,
+            body,
+        })
     }
 
     #[test]
@@ -742,31 +833,104 @@ mod verified_tls {
         assert!(connected(&certificates, None, "localhost").is_err());
         assert!(connected(&certificates, Some(&certificates.allowed), "wrong.example").is_err());
         let (files, mut service, key, admin) = activated()?;
-        assert_eq!(call(&mut service, "PUT", "sys/policies/acl/native-authbus", &admin, json!({"policy":POLICY})).status, 204);
-        assert_eq!(call(&mut service, "POST", "sys/auth/native-cert", &admin, json!({"type":"cert"})).status, 204);
-        let digest = hex(&crypto::digest(certificates.allowed.certificates[0].as_ref()));
         assert_eq!(
-            call(&mut service, "POST", "auth/native-cert/certs/client", &admin,
-                json!({"certificate_sha256":digest,"token_policies":["native-authbus"],
-                    "token_ttl":600,"token_max_ttl":1200,"token_type":"service"})).status,
+            call(
+                &mut service,
+                "PUT",
+                "sys/policies/acl/native-authbus",
+                &admin,
+                json!({"policy":POLICY})
+            )
+            .status,
             204
         );
-        let (mut client, mut server) = connected(&certificates, Some(&certificates.allowed), "localhost")?;
-        let mut login = call_tls(&mut service, &mut client, &mut server, "POST", "auth/native-cert/login", "", json!({"name":"client"}))?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/auth/native-cert",
+                &admin,
+                json!({"type":"cert"})
+            )
+            .status,
+            204
+        );
+        let digest = hex(&crypto::digest(
+            certificates.allowed.certificates[0].as_ref(),
+        ));
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/native-cert/certs/client",
+                &admin,
+                json!({"certificate_sha256":digest,"token_policies":["native-authbus"],
+                    "token_ttl":600,"token_max_ttl":1200,"token_type":"service"})
+            )
+            .status,
+            204
+        );
+        let (mut client, mut server) =
+            connected(&certificates, Some(&certificates.allowed), "localhost")?;
+        let mut login = call_tls(
+            &mut service,
+            &mut client,
+            &mut server,
+            "POST",
+            "auth/native-cert/login",
+            "",
+            json!({"name":"client"}),
+        )?;
         assert_eq!(login.status, 200);
-        assert!(login.body["auth"]["entity_id"].as_str().is_some_and(|id| !id.is_empty()));
+        assert!(
+            login.body["auth"]["entity_id"]
+                .as_str()
+                .is_some_and(|id| !id.is_empty())
+        );
         let token = secret_field(&mut login, "/auth/client_token")?;
-        let (mut other_client, mut other_server) = connected(&certificates, Some(&certificates.other), "localhost")?;
-        let denied = call_tls(&mut service, &mut other_client, &mut other_server, "POST", "auth/native-cert/login", "", json!({"name":"client"}))?;
+        let (mut other_client, mut other_server) =
+            connected(&certificates, Some(&certificates.other), "localhost")?;
+        let denied = call_tls(
+            &mut service,
+            &mut other_client,
+            &mut other_server,
+            "POST",
+            "auth/native-cert/login",
+            "",
+            json!({"name":"client"}),
+        )?;
         assert_eq!(denied.status, 403);
         assert!(denied.body.get("auth").is_none());
-        let denied = call_tls(&mut service, &mut other_client, &mut other_server, "POST", "auth/token/renew-self", &token, json!({"increment":"10m"}))?;
+        let denied = call_tls(
+            &mut service,
+            &mut other_client,
+            &mut other_server,
+            "POST",
+            "auth/token/renew-self",
+            &token,
+            json!({"increment":"10m"}),
+        )?;
         assert_eq!(denied.status, 403);
         assert!(denied.body.get("auth").is_none());
-        let written = call_tls(&mut service, &mut client, &mut server, "POST", SECRET, &token,
-            json!({"options":{"cas":0},"data":{"synthetic":"verified-tls"}}))?;
+        let written = call_tls(
+            &mut service,
+            &mut client,
+            &mut server,
+            "POST",
+            SECRET,
+            &token,
+            json!({"options":{"cas":0},"data":{"synthetic":"verified-tls"}}),
+        )?;
         assert_eq!(written.status, 200);
-        let mut renewed = call_tls(&mut service, &mut client, &mut server, "POST", "auth/token/renew-self", &token, json!({"increment":"10m"}))?;
+        let mut renewed = call_tls(
+            &mut service,
+            &mut client,
+            &mut server,
+            "POST",
+            "auth/token/renew-self",
+            &token,
+            json!({"increment":"10m"}),
+        )?;
         assert_eq!(renewed.status, 200);
         let echoed = secret_field(&mut renewed, "/auth/client_token")?;
         assert!(echoed.as_str() == token.as_str());
@@ -774,13 +938,38 @@ mod verified_tls {
         drop((client, server, other_client, other_server));
 
         let mut service = reopened(&files, &key)?;
-        let (mut client, mut server) = connected(&certificates, Some(&certificates.allowed), "localhost")?;
-        let read = call_tls(&mut service, &mut client, &mut server, "GET", SECRET, &token, json!({}))?;
+        let (mut client, mut server) =
+            connected(&certificates, Some(&certificates.allowed), "localhost")?;
+        let read = call_tls(
+            &mut service,
+            &mut client,
+            &mut server,
+            "GET",
+            SECRET,
+            &token,
+            json!({}),
+        )?;
         assert_eq!(read.status, 200);
         assert_eq!(read.body["data"]["data"]["synthetic"], "verified-tls");
-        let revoked = call_tls(&mut service, &mut client, &mut server, "POST", "auth/token/revoke-self", &token, json!({}))?;
+        let revoked = call_tls(
+            &mut service,
+            &mut client,
+            &mut server,
+            "POST",
+            "auth/token/revoke-self",
+            &token,
+            json!({}),
+        )?;
         assert_eq!(revoked.status, 204);
-        let denied = call_tls(&mut service, &mut client, &mut server, "GET", SECRET, &token, json!({}))?;
+        let denied = call_tls(
+            &mut service,
+            &mut client,
+            &mut server,
+            "GET",
+            SECRET,
+            &token,
+            json!({}),
+        )?;
         assert_eq!(denied.status, 403);
         assert!(denied.body.get("data").is_none());
         Ok(())

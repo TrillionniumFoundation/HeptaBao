@@ -18,6 +18,8 @@ pub use network::{
     RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory, RemoteRaftError,
 };
 pub use node::{ApplicationReadWitness, CommittedApplicationPrefix, ProcessRaftNode};
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use node::{NativeV6ClosureAdmission, NativeV6CommittedRootRead};
 
 #[cfg(test)]
 mod replication_tests;

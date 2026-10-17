@@ -18,6 +18,17 @@ use crate::network::DurableRaft;
 use crate::store::{DurableLogStore, DurableStateMachine};
 use crate::{CommitReceipt, RaftRuntimeError, ReplicatedEnvelope};
 
+#[cfg(feature = "experimental-v6-raft-objects")]
+#[path = "v6_closure_admission.rs"]
+mod v6_closure_admission;
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_closure_admission::NativeV6ClosureAdmission;
+#[cfg(feature = "experimental-v6-raft-objects")]
+#[path = "v6_committed_root_read.rs"]
+mod v6_committed_root_read;
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_committed_root_read::NativeV6CommittedRootRead;
+
 const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
 const PRODUCTION_CHUNK_CLIENT_PREFIX: &str = "heptabao-production-ha-chunk";
 const MAX_APPLICATION_CHUNK_INDEX: u16 = 127;
@@ -461,7 +472,14 @@ impl ProcessRaftNode {
             return Err(deny());
         }
         // Real quorum evidence, not a follower's passive last-applied metric.
-        let (quorum, _, _) = self.application_read_witness().await.map_err(|_| deny())?;
+        // Native intent provenance remains available after native activation;
+        // the ordinary application witness deliberately fences retained V5.
+        let deadline = super::read_deadline::current()
+            .unwrap_or_else(|| std::time::Instant::now() + MAX_READ_INDEX_WAIT);
+        let (quorum, _, _) = self
+            .native_v6_application_read_witness(deadline)
+            .await
+            .map_err(|_| deny())?;
         if quorum.leader != self.id
             || quorum.read_log.index < receipt.log_index
             || quorum.applied_log.index < receipt.log_index
@@ -726,35 +744,61 @@ impl ProcessRaftNode {
     /// This slice deliberately forbids changing enrollment after V6 activation.
     #[cfg(feature = "experimental-v6-raft-objects")]
     pub async fn enroll_native_v6_peers(
-        &self, serial: u64, cluster_digest: [u8; 32], epoch: u64,
-        pins: BTreeMap<u64, [u8; 32]>, deadline: std::time::Instant,
+        &self,
+        serial: u64,
+        cluster_digest: [u8; 32],
+        epoch: u64,
+        pins: BTreeMap<u64, [u8; 32]>,
+        deadline: std::time::Instant,
     ) -> Result<crate::NativeV6PeerEnrollment, RaftRuntimeError> {
         super::with_read_index_deadline(deadline, async {
             let deadline = super::read_deadline::current().unwrap_or(deadline);
-            let (witness, _, _) = self.application_read_witness().await
-                .map_err(|_| RaftRuntimeError::Consensus("V6 enrollment quorum unavailable".into()))?;
+            let (witness, _, _) = self.application_read_witness().await.map_err(|_| {
+                RaftRuntimeError::Consensus("V6 enrollment quorum unavailable".into())
+            })?;
             let (membership, _) = self.state_machine.native_v6_enrollment().await;
             let (membership_log, _) = crate::v6_root_publication::membership_binding(&membership)
                 .map_err(RaftRuntimeError::RecordRejected)?;
             let enrollment = crate::v6_root_publication::NativeV6EnrollmentCommand {
-                cluster_digest, epoch, membership_log, pins,
+                cluster_digest,
+                epoch,
+                membership_log,
+                pins,
             };
-            enrollment.matches_membership(&membership).map_err(RaftRuntimeError::RecordRejected)?;
-            self.verify_application_read_witness(&witness).await
+            enrollment
+                .matches_membership(&membership)
+                .map_err(RaftRuntimeError::RecordRejected)?;
+            self.verify_application_read_witness(&witness)
+                .await
                 .map_err(|_| RaftRuntimeError::Consensus("V6 enrollment source changed".into()))?;
-            tokio::time::timeout_at(tokio::time::Instant::from_std(deadline),
-                self.replicate_record_command(serial, crate::records::RecordCommand::EnrollNativeV6 {
-                    enrollment: enrollment.clone(),
-                }, cluster_digest)).await
-                .map_err(|_| RaftRuntimeError::Consensus("V6 enrollment outcome unknown".into()))??;
+            tokio::time::timeout_at(
+                tokio::time::Instant::from_std(deadline),
+                self.replicate_record_command(
+                    serial,
+                    crate::records::RecordCommand::EnrollNativeV6 {
+                        enrollment: enrollment.clone(),
+                    },
+                    cluster_digest,
+                ),
+            )
+            .await
+            .map_err(|_| RaftRuntimeError::Consensus("V6 enrollment outcome unknown".into()))??;
             let (actual_membership, actual) = self.state_machine.native_v6_enrollment().await;
-            let actual = actual.ok_or_else(|| RaftRuntimeError::Consensus("V6 enrollment absent".into()))?;
+            let actual =
+                actual.ok_or_else(|| RaftRuntimeError::Consensus("V6 enrollment absent".into()))?;
             if actual.0.command != enrollment || std::time::Instant::now() >= deadline {
-                return Err(RaftRuntimeError::Consensus("V6 enrollment outcome unknown".into()));
+                return Err(RaftRuntimeError::Consensus(
+                    "V6 enrollment outcome unknown".into(),
+                ));
             }
-            actual.0.command.matches_membership(&actual_membership).map_err(RaftRuntimeError::RecordRejected)?;
+            actual
+                .0
+                .command
+                .matches_membership(&actual_membership)
+                .map_err(RaftRuntimeError::RecordRejected)?;
             Ok(actual)
-        }).await
+        })
+        .await
     }
 
     /// Exact V5 root source for the first native generation (0 -> 1). Old V5
@@ -777,37 +821,150 @@ impl ProcessRaftNode {
     /// manufacture a new intent or conclude that the root was unchanged.
     #[cfg(feature = "experimental-v6-raft-objects")]
     pub async fn publish_native_v6_root(
-        &self, serial: u64, intent: &crate::NativeV6CommitIntent,
-        intent_receipt: &CommitReceipt, enrollment: &crate::NativeV6PeerEnrollment,
-        sealed_root: Vec<u8>, deadline: std::time::Instant,
+        &self,
+        serial: u64,
+        intent: &crate::NativeV6CommitIntent,
+        intent_receipt: &CommitReceipt,
+        enrollment: &crate::NativeV6PeerEnrollment,
+        sealed_root: Vec<u8>,
+        deadline: std::time::Instant,
     ) -> Result<crate::NativeV6PublishedRoot, RaftRuntimeError> {
         super::with_read_index_deadline(deadline, async {
             let deadline = super::read_deadline::current().unwrap_or(deadline);
-            self.reconcile_exact_staged_v6_intent(intent, intent_receipt).await?;
-            let origin = self.state_machine.native_v6_intent_origin(&intent_receipt.envelope_digest)
-                .await.ok_or(RaftRuntimeError::RecordRejected(crate::RecordRejection::MissingDependency))?;
+            self.reconcile_exact_staged_v6_intent(intent, intent_receipt)
+                .await?;
+            let origin = self
+                .state_machine
+                .native_v6_intent_origin(&intent_receipt.envelope_digest)
+                .await
+                .ok_or(RaftRuntimeError::RecordRejected(
+                    crate::RecordRejection::MissingDependency,
+                ))?;
             let root = crate::v6_root_publication::NativeV6RootCommand {
-                intent: *intent, intent_log: origin, enrollment_digest: enrollment.digest(),
+                intent: *intent,
+                intent_log: origin,
+                enrollment_digest: enrollment.digest(),
                 envelope: ReplicatedEnvelope::new(
                     crate::v6_root_publication::NativeV6RootCommand::operation_id(intent),
-                    intent.proposed_root_digest, sealed_root)?,
+                    intent.proposed_root_digest,
+                    sealed_root,
+                )?,
             };
             root.validate().map_err(RaftRuntimeError::RecordRejected)?;
-            let receipt = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline),
-                self.replicate_record_command(serial, crate::records::RecordCommand::PublishNativeV6 {
-                    root,
-                }, intent.proposed_root_digest)).await
-                .map_err(|_| RaftRuntimeError::Consensus("V6 root publication outcome unknown".into()))??;
-            self.reconcile_native_v6_root(intent, &receipt, deadline).await
-        }).await
+            let receipt = tokio::time::timeout_at(
+                tokio::time::Instant::from_std(deadline),
+                self.replicate_record_command(
+                    serial,
+                    crate::records::RecordCommand::PublishNativeV6 { root },
+                    intent.proposed_root_digest,
+                ),
+            )
+            .await
+            .map_err(|_| {
+                RaftRuntimeError::Consensus("V6 root publication outcome unknown".into())
+            })??;
+            self.reconcile_native_v6_root(intent, &receipt, deadline)
+                .await
+        })
+        .await
     }
 
     /// Read-only current committed root. Pair with a fresh ReadIndex before a
     /// business read, and reopen/validate the complete external closure before
     /// activating a server. A Raft snapshot by itself contains no ciphertext.
     #[cfg(feature = "experimental-v6-raft-objects")]
-    pub async fn native_v6_root_at_generation(&self) -> (u64, Option<crate::NativeV6PublishedRoot>) {
+    pub async fn native_v6_root_at_generation(
+        &self,
+    ) -> (u64, Option<crate::NativeV6PublishedRoot>) {
         self.state_machine.native_v6_root().await
+    }
+
+    /// Recover the actually committed enrollment and native root together with
+    /// a fresh quorum witness for that exact local state-machine generation.
+    /// The handles, membership and applied log come from one bundle lock; a
+    /// cold process never recreates enrollment from caller-supplied pins.
+    ///
+    /// This performs the existing real ReadIndex before the local observation.
+    /// Local snapshots alone grant no quorum, and this result still proves no
+    /// external-closure fsync, barrier/Actor/ACL or HTTP delivery authority.
+    /// The caller must validate the typed graph and recheck the same witness
+    /// before using it. No original deadline is extended.
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub async fn native_v6_application_read_witness(
+        &self,
+        deadline: std::time::Instant,
+    ) -> Result<
+        (
+            ApplicationReadWitness,
+            Option<crate::NativeV6PeerEnrollment>,
+            Option<crate::NativeV6PublishedRoot>,
+        ),
+        RemoteRaftError,
+    > {
+        super::with_read_index_deadline(deadline, async {
+            let outer = super::read_deadline::current().unwrap_or(deadline);
+            let deadline = tokio::time::Instant::from_std(outer)
+                .min(tokio::time::Instant::now() + MAX_READ_INDEX_WAIT);
+            let read = super::follower_read::ensure_node_read_witness(self, deadline).await?;
+            let (generation, applied, membership, enrollment, root) = tokio::time::timeout_at(
+                deadline,
+                self.state_machine.native_v6_application_snapshot(),
+            )
+            .await
+            .map_err(|_| RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()))?;
+            let applied = applied.ok_or_else(|| {
+                RemoteRaftError::Consensus("native ReadIndex applied witness unavailable".into())
+            })?;
+            if tokio::time::Instant::now() >= deadline || applied < read.read_log_id {
+                return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+            }
+            if let Some(enrollment) = enrollment.as_ref() {
+                enrollment.0.validate().map_err(|_| {
+                    RemoteRaftError::Io("invalid committed native enrollment".into())
+                })?;
+                enrollment
+                    .0
+                    .command
+                    .matches_membership(&membership)
+                    .map_err(|_| {
+                        RemoteRaftError::Consensus("native enrollment membership changed".into())
+                    })?;
+                if enrollment.enrollment_log_id() > applied {
+                    return Err(RemoteRaftError::Io(
+                        "native enrollment is not applied".into(),
+                    ));
+                }
+            }
+            if let Some(root) = root.as_ref() {
+                root.0
+                    .validate()
+                    .map_err(|_| RemoteRaftError::Io("invalid committed native root".into()))?;
+                let enrollment = enrollment.as_ref().ok_or_else(|| {
+                    RemoteRaftError::Io("committed native root has no enrollment".into())
+                })?;
+                if root.enrollment_digest() != enrollment.digest()
+                    || root.intent().cluster_digest != enrollment.cluster_digest()
+                    || root.intent().epoch != enrollment.epoch()
+                    || root.publication_log_id() > applied
+                {
+                    return Err(RemoteRaftError::Io(
+                        "native root enrollment binding changed".into(),
+                    ));
+                }
+            }
+            let witness = ApplicationReadWitness {
+                store: self.state_machine.clone(),
+                generation,
+                deadline,
+                leader: read.leader,
+                term: read.term,
+                read_log: read.read_log_id,
+                applied_log: applied,
+            };
+            self.verify_application_read_witness(&witness).await?;
+            Ok((witness, enrollment, root))
+        })
+        .await
     }
 
     /// Reconcile the exact published root and original full publication LogId
@@ -815,7 +972,9 @@ impl ProcessRaftNode {
     /// this bounded current-root API returns unavailable, never a false denial.
     #[cfg(feature = "experimental-v6-raft-objects")]
     pub async fn reconcile_native_v6_root(
-        &self, intent: &crate::NativeV6CommitIntent, receipt: &CommitReceipt,
+        &self,
+        intent: &crate::NativeV6CommitIntent,
+        receipt: &CommitReceipt,
         deadline: std::time::Instant,
     ) -> Result<crate::NativeV6PublishedRoot, RaftRuntimeError> {
         fn unknown() -> RaftRuntimeError {
@@ -823,21 +982,27 @@ impl ProcessRaftNode {
         }
         super::with_read_index_deadline(deadline, async {
             let deadline = super::read_deadline::current().unwrap_or(deadline);
-            let (witness, _, _) = self.application_read_witness().await.map_err(|_| unknown())?;
-            let (_, root) = self.state_machine.native_v6_root().await;
+            let (witness, enrollment, root) = self
+                .native_v6_application_read_witness(deadline)
+                .await
+                .map_err(|_| unknown())?;
             let root = root.ok_or_else(unknown)?;
-            let (membership, enrollment) = self.state_machine.native_v6_enrollment().await;
             let enrollment = enrollment.ok_or_else(unknown)?;
-            enrollment.0.command.matches_membership(&membership).map_err(|_| unknown())?;
-            if root.intent() != *intent || root.root_digest() != receipt.envelope_digest
+            if root.intent() != *intent
+                || root.root_digest() != receipt.envelope_digest
                 || root.publication_log_id().index != receipt.log_index
                 || root.publication_log_id().committed_leader_id().node_id != receipt.leader_id
                 || root.enrollment_digest() != enrollment.digest()
                 || std::time::Instant::now() >= deadline
-            { return Err(unknown()); }
-            self.verify_application_read_witness(&witness).await.map_err(|_| unknown())?;
+            {
+                return Err(unknown());
+            }
+            self.verify_application_read_witness(&witness)
+                .await
+                .map_err(|_| unknown())?;
             Ok(root)
-        }).await
+        })
+        .await
     }
     pub async fn prune_application_objects(
         &self,
@@ -950,13 +1115,21 @@ impl ProcessRaftNode {
             deadline.min(tokio::time::Instant::from_std(outer))
         });
         let read = super::follower_read::ensure_node_read_witness(self, deadline).await?;
-        let (generation, applied, status, root) = tokio::time::timeout_at(
+        let (generation, applied, status, root, native_active) = tokio::time::timeout_at(
             deadline,
             self.state_machine
                 .application_read_snapshot(PRODUCTION_CLIENT_ID),
         )
         .await
         .map_err(|_| RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()))?;
+        // The format and old values belong to ONE locked observation. Checking
+        // native state first under another lock would race V6 activation and
+        // could turn a preserved migration source into a current V5 read.
+        if native_active {
+            return Err(RemoteRaftError::Consensus(
+                "legacy application read fenced by committed native root".into(),
+            ));
+        }
         let applied = applied.ok_or_else(|| {
             RemoteRaftError::Consensus("ReadIndex own applied witness unavailable".into())
         })?;
@@ -994,19 +1167,19 @@ impl ProcessRaftNode {
                 "ReadIndex application witness is not current".into(),
             ));
         }
-        Ok((
-            ApplicationReadWitness {
-                store: self.state_machine.clone(),
-                generation,
-                deadline,
-                leader: read.leader,
-                term: read.term,
-                read_log: read.read_log_id,
-                applied_log: applied,
-            },
-            envelope,
-            root,
-        ))
+        let witness = ApplicationReadWitness {
+            store: self.state_machine.clone(),
+            generation,
+            deadline,
+            leader: read.leader,
+            term: read.term,
+            read_log: read.read_log_id,
+            applied_log: applied,
+        };
+        // An activation/apply after the atomic selection invalidates this same
+        // generation. Callers retain their existing final witness recheck too.
+        self.verify_application_read_witness(&witness).await?;
+        Ok((witness, envelope, root))
     }
 
     /// Final application authentication cannot renew a witness's original

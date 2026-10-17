@@ -44,7 +44,6 @@ impl fmt::Debug for NativeV6CommitIntent {
 impl NativeV6CommitIntent {
     fn validate(&self) -> Result<(), RecordRejection> {
         if self.cluster_digest == [0; 32]
-            || self.epoch == 0
             || self.operation_digest == [0; 32]
             || self.closure_manifest_sha256 == [0; 32]
             || self.prior_root_digest == [0; 32]
@@ -217,9 +216,6 @@ mod tests {
     fn malformed_claims_never_form_an_intent() {
         let base = valid();
         let mut x = base;
-        x.epoch = 0;
-        assert!(x.encode().is_err());
-        let mut x = base;
         x.cluster_digest = [0; 32];
         assert!(x.encode().is_err());
         let mut x = base;
@@ -252,5 +248,17 @@ mod tests {
         let mut x = base;
         x.expected_previous_commit_index = 0;
         assert!(x.encode().is_err());
+    }
+
+    #[test]
+    fn native_intent_preserves_the_actual_initial_replay_epoch() -> Result<(), RecordRejection> {
+        let mut initial = valid();
+        // A newly initialized real Service root begins at replay epoch zero.
+        // The codec preserves that epoch; only a committed epoch transition
+        // may change it. It is independent of nonzero Raft term/log identity.
+        initial.epoch = 0;
+        let encoded = initial.encode()?;
+        assert_eq!(NativeV6CommitIntent::decode(&encoded)?, initial);
+        Ok(())
     }
 }

@@ -22,6 +22,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 static NEXT_TEMPORARY: AtomicU64 = AtomicU64::new(1);
 
+#[path = "v6_replica_blobs_checked.rs"]
+mod checked;
+
 #[derive(Debug)]
 pub enum LocalV6BlobError {
     InvalidCiphertext,
@@ -566,8 +569,16 @@ mod tests {
             store.observe_intent_local_closure(&wrong_bytes, &refs),
             Err(LocalV6BlobError::InvalidClosure)
         ));
+        // The application's actual initial replay epoch is zero. It remains
+        // valid without inventing an epoch offset in the replicated intent.
+        let mut initial_epoch = intent;
+        initial_epoch.epoch = 0;
+        assert_eq!(
+            store.observe_intent_local_closure(&initial_epoch, &refs)?,
+            physical
+        );
         let mut invalid = intent;
-        invalid.epoch = 0;
+        invalid.proposed_generation = invalid.prior_generation;
         assert!(matches!(
             store.observe_intent_local_closure(&invalid, &refs),
             Err(LocalV6BlobError::InvalidClosure)

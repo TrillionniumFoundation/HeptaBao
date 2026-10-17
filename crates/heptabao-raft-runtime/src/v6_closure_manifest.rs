@@ -30,46 +30,71 @@ fn canonical(
     let mut total = 0u64;
     for reference in ordered {
         LocalV6BlobStage::leaf(reference)?;
-        if reference.id == [0; 32] { return Err(LocalV6BlobError::InvalidClosure); }
-        total = total.checked_add(reference.payload_bytes).ok_or(LocalV6BlobError::InvalidClosure)?;
+        if reference.id == [0; 32] {
+            return Err(LocalV6BlobError::InvalidClosure);
+        }
+        total = total
+            .checked_add(reference.payload_bytes)
+            .ok_or(LocalV6BlobError::InvalidClosure)?;
         bytes.extend_from_slice(&reference.id);
         bytes.extend_from_slice(&reference.payload_bytes.to_be_bytes());
         hash.update(reference.id);
         hash.update(reference.payload_bytes.to_be_bytes());
     }
-    Ok((bytes, LocalV6ClosureReceipt {
-        object_count: references.len(), ciphertext_bytes: total,
-        manifest_sha256: hash.finalize().into(),
-    }))
+    Ok((
+        bytes,
+        LocalV6ClosureReceipt {
+            object_count: references.len(),
+            ciphertext_bytes: total,
+            manifest_sha256: hash.finalize().into(),
+        },
+    ))
 }
 
 fn decode(bytes: &[u8]) -> Result<Vec<RecordObjectRef>, LocalV6BlobError> {
     if bytes.len() < HEADER_BYTES || bytes.len() > MAX_MANIFEST_BYTES || &bytes[..8] != MAGIC {
         return Err(LocalV6BlobError::CorruptOrChanged);
     }
-    let count = u64::from_be_bytes(bytes[8..16].try_into().map_err(|_| LocalV6BlobError::InvalidClosure)?);
+    let count = u64::from_be_bytes(
+        bytes[8..16]
+            .try_into()
+            .map_err(|_| LocalV6BlobError::InvalidClosure)?,
+    );
     let count = usize::try_from(count).map_err(|_| LocalV6BlobError::InvalidClosure)?;
     if count == 0 || count > MAX_OBJECTS || bytes.len() != HEADER_BYTES + count * ENTRY_BYTES {
         return Err(LocalV6BlobError::InvalidClosure);
     }
     let mut refs = Vec::with_capacity(count);
     for entry in bytes[HEADER_BYTES..].chunks_exact(ENTRY_BYTES) {
-        let id = entry[..32].try_into().map_err(|_| LocalV6BlobError::InvalidClosure)?;
-        let payload_bytes = u64::from_be_bytes(entry[32..].try_into().map_err(|_| LocalV6BlobError::InvalidClosure)?);
+        let id = entry[..32]
+            .try_into()
+            .map_err(|_| LocalV6BlobError::InvalidClosure)?;
+        let payload_bytes = u64::from_be_bytes(
+            entry[32..]
+                .try_into()
+                .map_err(|_| LocalV6BlobError::InvalidClosure)?,
+        );
         refs.push(RecordObjectRef {
-            id, kind: RecordObjectKind::NativeV6CiphertextChunk,
-            encoded_bytes: u32::try_from(payload_bytes).map_err(|_| LocalV6BlobError::InvalidClosure)?,
-            record_count: 0, payload_bytes,
+            id,
+            kind: RecordObjectKind::NativeV6CiphertextChunk,
+            encoded_bytes: u32::try_from(payload_bytes)
+                .map_err(|_| LocalV6BlobError::InvalidClosure)?,
+            record_count: 0,
+            payload_bytes,
         });
     }
     // Reject duplicate, unsorted or noncanonical input, not merely a matching
     // set after silently repairing the file's order.
-    if canonical(&refs)?.0 != bytes { return Err(LocalV6BlobError::CorruptOrChanged); }
+    if canonical(&refs)?.0 != bytes {
+        return Err(LocalV6BlobError::CorruptOrChanged);
+    }
     Ok(refs)
 }
 
 fn name(digest: &[u8; 32]) -> Result<String, LocalV6BlobError> {
-    if *digest == [0; 32] { return Err(LocalV6BlobError::InvalidClosure); }
+    if *digest == [0; 32] {
+        return Err(LocalV6BlobError::InvalidClosure);
+    }
     let mut name = String::from("v6-closure-");
     crate::append_hex(&mut name, digest);
     name.push_str(".manifest");
@@ -77,7 +102,8 @@ fn name(digest: &[u8; 32]) -> Result<String, LocalV6BlobError> {
 }
 
 fn read_manifest(
-    file: &mut File, gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+    file: &mut File,
+    gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
 ) -> Result<Vec<u8>, LocalV6BlobError> {
     gate()?;
     let len = file.metadata()?.len();
@@ -91,13 +117,21 @@ fn read_manifest(
         gate()?;
         let count = file.read(&mut scratch)?;
         gate()?;
-        if count == 0 { break; }
-        if result.len().checked_add(count).is_none_or(|size| size > len as usize) {
+        if count == 0 {
+            break;
+        }
+        if result
+            .len()
+            .checked_add(count)
+            .is_none_or(|size| size > len as usize)
+        {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
         result.extend_from_slice(&scratch[..count]);
     }
-    if result.len() != len as usize { return Err(LocalV6BlobError::CorruptOrChanged); }
+    if result.len() != len as usize {
+        return Err(LocalV6BlobError::CorruptOrChanged);
+    }
     Ok(result)
 }
 
@@ -107,7 +141,8 @@ impl LocalV6BlobStage {
     /// caller gate surrounds every object, manifest I/O and publication barrier.
     /// A failed/late result must not be treated as a successful root publication.
     pub fn persist_local_closure(
-        &self, references: &[RecordObjectRef],
+        &self,
+        references: &[RecordObjectRef],
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<LocalV6ClosureReceipt, LocalV6BlobError> {
         gate()?;
@@ -118,23 +153,33 @@ impl LocalV6BlobStage {
             gate()?;
         }
         let target = name(&receipt.manifest_sha256)?;
-        let temporary = format!(".v6-manifest-tmp-{}-{}", std::process::id(),
-            NEXT_TEMPORARY.fetch_add(1, Ordering::Relaxed));
-        let mut file = self.directory.open_file(&temporary, FileAccess::CreateNewReadWrite)?;
+        let temporary = format!(
+            ".v6-manifest-tmp-{}-{}",
+            std::process::id(),
+            NEXT_TEMPORARY.fetch_add(1, Ordering::Relaxed)
+        );
+        let mut file = self
+            .directory
+            .open_file(&temporary, FileAccess::CreateNewReadWrite)?;
         for part in bytes.chunks(64 * 1024) {
             gate()?;
             file.write_all(part)?;
             gate()?;
         }
-        let publication = self.directory.publish_file_noreplace_checked(
-            &temporary, &file, &target, bytes.len() as u64, gate,
-        ).map_err(|error| match error {
-            ImmutablePublicationCheckedError::Publication(error) => LocalV6BlobError::Publication(error),
-            ImmutablePublicationCheckedError::GateBeforeLink(error)
-            | ImmutablePublicationCheckedError::GateAfterLink(error) => error,
-        })?;
+        let publication = self
+            .directory
+            .publish_file_noreplace_checked(&temporary, &file, &target, bytes.len() as u64, gate)
+            .map_err(|error| match error {
+                ImmutablePublicationCheckedError::Publication(error) => {
+                    LocalV6BlobError::Publication(error)
+                }
+                ImmutablePublicationCheckedError::GateBeforeLink(error)
+                | ImmutablePublicationCheckedError::GateAfterLink(error) => error,
+            })?;
         let mut published = match publication {
-            ImmutablePublication::Published(file) | ImmutablePublication::AlreadyExists(file) => file,
+            ImmutablePublication::Published(file) | ImmutablePublication::AlreadyExists(file) => {
+                file
+            }
         };
         if read_manifest(&mut published, gate)? != bytes {
             return Err(LocalV6BlobError::CorruptOrChanged);
@@ -149,19 +194,26 @@ impl LocalV6BlobStage {
     /// The returned references prove local availability only: the server still
     /// needs fresh quorum, barrier/graph validation and its original Actor gate.
     pub fn reopen_root_closure(
-        &self, root: &crate::NativeV6PublishedRoot,
+        &self,
+        root: &crate::NativeV6PublishedRoot,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<Vec<RecordObjectRef>, LocalV6BlobError> {
         gate()?;
-        root.0.validate().map_err(|_| LocalV6BlobError::InvalidClosure)?;
+        root.0
+            .validate()
+            .map_err(|_| LocalV6BlobError::InvalidClosure)?;
         let intent = root.intent();
-        let mut manifest = self.directory.open_file(name(&intent.closure_manifest_sha256)?, FileAccess::Read)?;
+        let mut manifest = self
+            .directory
+            .open_file(name(&intent.closure_manifest_sha256)?, FileAccess::Read)?;
         let refs = decode(&read_manifest(&mut manifest, gate)?)?;
         let (_, observed) = canonical(&refs)?;
         if observed.manifest_sha256 != intent.closure_manifest_sha256
             || observed.object_count as u64 != intent.object_count
             || observed.ciphertext_bytes != intent.ciphertext_bytes
-        { return Err(LocalV6BlobError::CorruptOrChanged); }
+        {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
         for reference in &refs {
             gate()?;
             drop(self.read_local(reference)?);

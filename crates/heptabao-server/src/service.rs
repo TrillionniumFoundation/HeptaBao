@@ -365,20 +365,29 @@ pub(crate) use owner_store::OwnerPublicationBinding;
 #[cfg(test)]
 pub(crate) use owner_store::OwnerWritePlan;
 #[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_auth.rs"]
+mod native_auth;
+#[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_blob_source.rs"]
 mod native_blob_source;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_paged_dispatch.rs"]
 mod native_paged_dispatch;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_install.rs"]
+pub(crate) mod native_v6_ha_install;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_objects.rs"]
+pub(crate) mod native_v6_ha_objects;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_writer.rs"]
+mod native_v6_ha_writer;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_v6_reader.rs"]
 mod native_v6_reader;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_v6_writer.rs"]
 mod native_v6_writer;
-#[cfg(feature = "fixture-native-v6-service")]
-#[path = "service_native_auth.rs"]
-mod native_auth;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
 #[path = "service_records.rs"]
@@ -3993,9 +4002,9 @@ impl Service {
         }
         #[cfg(feature = "fixture-native-v6-service")]
         let native_local_auth = self.native_root.is_some()
-            && admitted.auth.native_v6_local_auth_route(
-                namespace, method, path, request.body,
-            );
+            && admitted
+                .auth
+                .native_v6_local_auth_route(namespace, method, path, request.body);
         #[cfg(feature = "fixture-native-v6-service")]
         {
             if path == "sys/internal/native-v6/activate" {
@@ -4085,7 +4094,10 @@ impl Service {
         #[cfg(feature = "fixture-native-v6-service")]
         if native_local_auth {
             return self.dispatch_native_auth_request(
-                admitted, principal.take(), &request, token_fields.as_ref(),
+                admitted,
+                principal.take(),
+                &request,
+                token_fields.as_ref(),
             );
         }
         if path == "sys/plugins/reload/backend" {
@@ -7423,43 +7435,51 @@ impl Service {
             let original = crate::v6_native_custody::OriginalDeadline::capture()
                 .map_err(|_| Response::error(503, "native unseal requires original deadline"))?;
             native_v6_reader::load_cold_root(self, profile, &mut durable, key, original)?
+                .map(|cold| (cold.metadata, cold.native, cold.root))
         } else {
             None
         };
-        #[cfg(feature = "fixture-native-v6-service")]
-        let (state, bytes, state_rewrite_required, record_root, native_root) = if let Some(cold) =
-            cold_native
-        {
-            let mut metadata = cold.metadata;
-            metadata
-                .engines
-                .install_native_views(cold.native)
-                .map_err(Response::from_engine_error)?;
-            self.require_native_root_candidate(&metadata)?;
-            metadata.validate_format()?;
-            let owner_bytes = cold
-                .root
-                .owners
-                .iter()
-                .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
-                .ok_or_else(|| Response::error(507, "native opaque owner capacity exhausted"))?;
-            if owner_bytes > self.opaque_owner_limit() as u64 {
-                return Err(Response::error(
-                    507,
-                    "native opaque owner capacity exhausted",
-                ));
-            }
-            let bytes = cold
-                .root
-                .encode()
-                .map_err(|_| Response::error(503, "native cold identity rejected"))?;
-            (metadata, bytes, false, None, Some(cold.root))
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let cold_native = if self.ha.is_some() {
+            let original = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|_| Response::error(503, "native HA unseal requires original deadline"))?;
+            native_v6_ha_install::load_cold_native_ha(self, &mut durable, key, original)?
+                .map(|cold| (cold.metadata, cold.native, cold.root))
         } else {
-            let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
-            let root = records::decode_root(&bytes)?;
-            self.validate_loaded_capacity(&state, root.as_ref())?;
-            (state, bytes, rewrite, root, None)
+            cold_native
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let (state, bytes, state_rewrite_required, record_root, native_root) =
+            if let Some((mut metadata, native, root)) = cold_native {
+                metadata
+                    .engines
+                    .install_native_views(native)
+                    .map_err(Response::from_engine_error)?;
+                self.require_native_root_candidate(&metadata)?;
+                metadata.validate_format()?;
+                let owner_bytes = root
+                    .owners
+                    .iter()
+                    .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+                    .ok_or_else(|| {
+                        Response::error(507, "native opaque owner capacity exhausted")
+                    })?;
+                if owner_bytes > self.opaque_owner_limit() as u64 {
+                    return Err(Response::error(
+                        507,
+                        "native opaque owner capacity exhausted",
+                    ));
+                }
+                let bytes = root
+                    .encode()
+                    .map_err(|_| Response::error(503, "native cold identity rejected"))?;
+                (metadata, bytes, false, None, Some(root))
+            } else {
+                let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
+                let root = records::decode_root(&bytes)?;
+                self.validate_loaded_capacity(&state, root.as_ref())?;
+                (state, bytes, rewrite, root, None)
+            };
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let (state, bytes, state_rewrite_required, record_root) = {
             let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
@@ -8877,6 +8897,36 @@ impl Service {
         let Some(ha) = self.ha.as_ref().cloned() else {
             return Ok(ha_received::HaSyncProgress::Current);
         };
+        #[cfg(feature = "experimental-native-v6-ha")]
+        {
+            let selected = {
+                let process = ha
+                    .lock_for_request()
+                    .map_err(|_| Response::error(503, "HA control state is unavailable"))?;
+                if process.native_v6_enabled() {
+                    let deadline =
+                        crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| {
+                            Response::error(503, "native HA read requires original deadline")
+                        })?;
+                    process.native_v6_committed_read(deadline).map_err(|_| {
+                        Response::error(503, "native HA committed root is unavailable")
+                    })?
+                } else {
+                    None
+                }
+            };
+            if let Some(selected) = selected {
+                return self.sync_native_v6_from_ha(&ha, selected);
+            }
+            if self.native_root.is_some() {
+                return Err(Response::error(
+                    503,
+                    "native HA root has no current quorum selection",
+                ));
+            }
+            // A concurrent native activation cannot make the old read safe:
+            // ProcessRaftNode fences V5 and legacy under the same applied lock.
+        }
         let known = self.reusable_ha_cursor().cloned();
         let previous_cache = self.ha_read_cache.take();
         let observation_started = std::time::Instant::now();

@@ -9824,6 +9824,9 @@ mod token_provenance_json;
 #[path = "auth_native_v6_routes.rs"]
 mod native_v6_routes;
 
+#[cfg(feature = "fixture-native-v6-service")]
+pub(crate) use native_v6_routes::NativeV6CertLifetime;
+
 #[cfg(test)]
 #[path = "auth_lossless_json_tests.rs"]
 mod lossless_json_tests;

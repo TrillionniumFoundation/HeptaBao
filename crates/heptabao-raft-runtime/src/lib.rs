@@ -56,6 +56,8 @@ pub use process::{
     MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService,
     RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,
 };
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use process::{NativeV6ClosureAdmission, NativeV6CommittedRootRead};
 
 const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_SEALED_ENVELOPE_BYTES: usize = 1024 * 1024;

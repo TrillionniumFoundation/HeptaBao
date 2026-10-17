@@ -37,9 +37,8 @@ fn original_expiry_withholds_committed_renewal(path: &str) -> TestResult {
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     let started = Instant::now();
     let clock = RequestClock::anchored(SystemTime::now().duration_since(UNIX_EPOCH)?, started)?;
-    let scope = crate::request_deadline::RequestDeadlineScope::enter(
-        started + Duration::from_secs(15),
-    );
+    let scope =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
     let response = service.handle_inner(RequestView {
         method: "POST",
         path,
@@ -56,9 +55,11 @@ fn original_expiry_withholds_committed_renewal(path: &str) -> TestResult {
         client_certificates: None,
     });
     assert_eq!(response.status, 200);
-    assert!(response.body["auth"]["lease_duration"]
-        .as_u64()
-        .is_some_and(|ttl| ttl > 2));
+    assert!(
+        response.body["auth"]["lease_duration"]
+            .as_u64()
+            .is_some_and(|ttl| ttl > 2)
+    );
     assert!(service.durable.as_ref().ok_or("durable")?.generation() > generation);
     assert!(service.pending_native_auth_delivery.is_some());
 
@@ -72,11 +73,8 @@ fn original_expiry_withholds_committed_renewal(path: &str) -> TestResult {
         || std::thread::sleep(Duration::from_millis(2100)),
     );
     assert_eq!(response.status, 200);
-    let response = service.complete_native_auth_delivery(
-        true,
-        response,
-        "native-renewal-original-expiry",
-    );
+    let response =
+        service.complete_native_auth_delivery(true, response, "native-renewal-original-expiry");
     assert!(response.status >= 300);
     assert!(response.body.get("data").is_none());
     assert!(response.body.get("auth").is_none());
@@ -97,9 +95,11 @@ fn original_expiry_withholds_committed_renewal(path: &str) -> TestResult {
         json!({}),
     );
     assert_eq!(lookup.status, 200);
-    assert!(lookup.body["data"]["ttl"]
-        .as_u64()
-        .is_some_and(|ttl| ttl > 2));
+    assert!(
+        lookup.body["data"]["ttl"]
+            .as_u64()
+            .is_some_and(|ttl| ttl > 2)
+    );
     let echoed = secret_field(&mut lookup, "/data/id")?;
     assert!(echoed.as_str() == token.as_str());
     drop(service);
@@ -113,9 +113,11 @@ fn original_expiry_withholds_committed_renewal(path: &str) -> TestResult {
         json!({}),
     );
     assert_eq!(lookup.status, 200);
-    assert!(lookup.body["data"]["ttl"]
-        .as_u64()
-        .is_some_and(|ttl| ttl > 2));
+    assert!(
+        lookup.body["data"]["ttl"]
+            .as_u64()
+            .is_some_and(|ttl| ttl > 2)
+    );
     let echoed = secret_field(&mut lookup, "/data/id")?;
     assert!(echoed.as_str() == token.as_str());
     assert!(!service.recovery_required);

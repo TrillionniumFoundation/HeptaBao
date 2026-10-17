@@ -435,6 +435,8 @@ impl Service {
                 if self.native_root.is_some() {
                     return self.prepare_v6_snapshot_download(&plan);
                 }
+                #[cfg(feature = "fixture-native-v6-service")]
+                self.repair_unreachable_native_migration_slots_before_v5_snapshot(&plan)?;
                 let durable = self
                     .durable
                     .as_ref()

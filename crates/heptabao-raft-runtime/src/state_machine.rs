@@ -26,9 +26,15 @@ mod native_format_refusal_tests {
     #[test]
     fn default_build_rejects_native_fields_and_v4_without_discarding_the_root()
     -> Result<(), Box<dyn std::error::Error>> {
-        let state = StateMachine { records_v5: Some(RecordState::default()), ..Default::default() };
+        let state = StateMachine {
+            records_v5: Some(RecordState::default()),
+            ..Default::default()
+        };
         let old = state.snapshot_bytes()?;
-        assert!(StateMachine::from_snapshot(&old).is_ok(), "ordinary V5 snapshots remain readable");
+        assert!(
+            StateMachine::from_snapshot(&old).is_ok(),
+            "ordinary V5 snapshots remain readable"
+        );
         let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
         bytes["format_version"] = serde_json::json!(4);
         assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
@@ -37,7 +43,10 @@ mod native_format_refusal_tests {
             bytes["state"][field] = serde_json::json!({"must_not_be_ignored":true});
             assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
             let raw: StateMachine = serde_json::from_value(bytes["state"].clone())?;
-            assert!(raw.validate().is_err(), "direct bundle decoding cannot ignore native state either");
+            assert!(
+                raw.validate().is_err(),
+                "direct bundle decoding cannot ignore native state either"
+            );
         }
         Ok(())
     }
@@ -383,7 +392,10 @@ impl StateMachine {
         #[cfg(feature = "experimental-v6-raft-objects")]
         if let Some(result) = self.apply_native_v6_command(request) {
             return match result {
-                Ok(()) => ApplicationResponse::Records(RecordResponse { accepted: true, rejection: None }),
+                Ok(()) => ApplicationResponse::Records(RecordResponse {
+                    accepted: true,
+                    rejection: None,
+                }),
                 Err(error) => ApplicationResponse::rejected(error),
             };
         }
@@ -572,9 +584,13 @@ impl StateMachine {
     }
     pub(crate) fn native_v6_is_published(&self) -> bool {
         #[cfg(feature = "experimental-v6-raft-objects")]
-        { self.v6_root.is_some() }
+        {
+            self.v6_root.is_some()
+        }
         #[cfg(not(feature = "experimental-v6-raft-objects"))]
-        { false }
+        {
+            false
+        }
     }
     pub(crate) fn snapshot_bytes(&self) -> Result<Vec<u8>, serde_json::Error> {
         if let Some(format_version) = self.records_format_version() {

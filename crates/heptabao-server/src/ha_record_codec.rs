@@ -2,7 +2,9 @@
 //! objects authenticate their typed references and dependencies independently.
 use super::*;
 use crate::state_record_root::{MAX_ROOT_BYTES, RecordStateRoot, StateIdentity};
-use crate::state_records::{AddressKey, ObjectId, ObjectKind, ObjectRef, StagedObject};
+#[cfg(test)]
+use crate::state_records::ObjectId;
+use crate::state_records::{AddressKey, ObjectKind, ObjectRef, StagedObject};
 use heptabao_raft_runtime::{
     RecordObjectKind, RecordObjectRef, RecordRootBase, SealedRecordObject,
 };
@@ -36,21 +38,27 @@ pub(crate) fn runtime_reference(reference: &ObjectRef) -> RecordObjectRef {
     }
 }
 
-pub(crate) fn core_reference(reference: &RecordObjectRef) -> ObjectRef {
-    ObjectRef {
+#[cfg(test)]
+fn core_reference(reference: &RecordObjectRef) -> Result<ObjectRef, ReplicatedStateError> {
+    #[allow(unreachable_patterns)]
+    let kind = match reference.kind {
+        RecordObjectKind::Block => ObjectKind::Block,
+        RecordObjectKind::Value => ObjectKind::Value,
+        RecordObjectKind::Leaf => ObjectKind::Leaf,
+        RecordObjectKind::Branch => ObjectKind::Branch,
+        RecordObjectKind::OwnerChunk => ObjectKind::OwnerChunk,
+        RecordObjectKind::PackedLeaf => ObjectKind::PackedLeaf,
+        // Dependency features can be unified independently of server features.
+        // Native ciphertext and intent descriptors are never V5 typed objects.
+        _ => return Err(ReplicatedStateError::InvalidEnvelope),
+    };
+    Ok(ObjectRef {
         id: ObjectId::from_bytes(reference.id),
-        kind: match reference.kind {
-            RecordObjectKind::Block => ObjectKind::Block,
-            RecordObjectKind::Value => ObjectKind::Value,
-            RecordObjectKind::Leaf => ObjectKind::Leaf,
-            RecordObjectKind::Branch => ObjectKind::Branch,
-            RecordObjectKind::OwnerChunk => ObjectKind::OwnerChunk,
-            RecordObjectKind::PackedLeaf => ObjectKind::PackedLeaf,
-        },
+        kind,
         encoded_bytes: reference.encoded_bytes,
         record_count: reference.record_count,
         payload_bytes: reference.payload_bytes,
-    }
+    })
 }
 
 fn base_bytes(base: &RecordRootBase) -> [u8; BASE_BYTES] {
@@ -84,19 +92,26 @@ fn parse_base(bytes: &[u8]) -> Result<RecordRootBase, ReplicatedStateError> {
     }
 }
 
-fn append_reference(aad: &mut Vec<u8>, reference: &RecordObjectRef) {
-    aad.extend_from_slice(&reference.id);
-    aad.push(match reference.kind {
+fn append_reference(
+    aad: &mut Vec<u8>,
+    reference: &RecordObjectRef,
+) -> Result<(), ReplicatedStateError> {
+    #[allow(unreachable_patterns)]
+    let tag = match reference.kind {
         RecordObjectKind::Block => 1,
         RecordObjectKind::Value => 2,
         RecordObjectKind::Leaf => 3,
         RecordObjectKind::Branch => 4,
         RecordObjectKind::OwnerChunk => 5,
         RecordObjectKind::PackedLeaf => 6,
-    });
+        _ => return Err(ReplicatedStateError::InvalidEnvelope),
+    };
+    aad.extend_from_slice(&reference.id);
+    aad.push(tag);
     aad.extend_from_slice(&reference.encoded_bytes.to_be_bytes());
     aad.extend_from_slice(&reference.record_count.to_be_bytes());
     aad.extend_from_slice(&reference.payload_bytes.to_be_bytes());
+    Ok(())
 }
 
 impl ClusterStateCodec {
@@ -220,10 +235,10 @@ impl ClusterStateCodec {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         let mut aad = self.record_aad_prefix(OBJECT_MAGIC)?;
-        append_reference(&mut aad, reference);
+        append_reference(&mut aad, reference)?;
         aad.extend_from_slice(&(children.len() as u16).to_be_bytes());
         for child in children {
-            append_reference(&mut aad, child);
+            append_reference(&mut aad, child)?;
         }
         Ok(aad)
     }
@@ -270,7 +285,7 @@ impl ClusterStateCodec {
         expected: &ObjectRef,
         object: &SealedRecordObject,
     ) -> Result<Zeroizing<Vec<u8>>, ReplicatedStateError> {
-        if core_reference(object.reference()) != *expected {
+        if runtime_reference(expected) != *object.reference() {
             return Err(ReplicatedStateError::DigestMismatch);
         }
         let sealed = object.sealed();
@@ -445,7 +460,7 @@ mod tests {
         )?;
         assert!(
             codec
-                .open_record_object(&key, &core_reference(&reference), &altered)
+                .open_record_object(&key, &core_reference(&reference)?, &altered)
                 .is_err()
         );
         // Keep the descriptor structurally valid, then alter a child address.
@@ -511,9 +526,9 @@ mod tests {
                 record_count: 2,
                 payload_bytes: 17,
             };
-            assert_eq!(runtime_reference(&core_reference(&reference)), reference);
+            assert_eq!(runtime_reference(&core_reference(&reference)?), reference);
             let mut aad = Vec::new();
-            append_reference(&mut aad, &reference);
+            append_reference(&mut aad, &reference)?;
             let mut expected = vec![11; 32];
             expected.push(tag);
             expected.extend_from_slice(&123_u32.to_be_bytes());
@@ -550,7 +565,7 @@ mod tests {
         let forged = SealedRecordObject::new(changed.clone(), vec![], sealed.sealed().to_vec())?;
         assert!(
             codec
-                .open_record_object(&key, &core_reference(&changed), &forged)
+                .open_record_object(&key, &core_reference(&changed)?, &forged)
                 .is_err()
         );
         let value = format!("\"{}\"", "x".repeat(1024));
