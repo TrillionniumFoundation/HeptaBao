@@ -198,6 +198,20 @@ impl LocalV6BlobStage {
         root: &crate::NativeV6PublishedRoot,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<Vec<RecordObjectRef>, LocalV6BlobError> {
+        self.reopen_root_closure_archive(root, gate)
+            .map(|(_, references)| references)
+    }
+
+    /// Preserve the original canonical manifest bytes and verify every selected
+    /// local leaf through the existing held directory descriptor. This is a
+    /// data-only archive primitive: it creates no fsync receipt, live witness,
+    /// intent permit, publication or restore authority. The caller still owns
+    /// the actual root selection, original deadline and application gate.
+    pub fn reopen_root_closure_archive(
+        &self,
+        root: &crate::NativeV6PublishedRoot,
+        gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+    ) -> Result<(Vec<u8>, Vec<RecordObjectRef>), LocalV6BlobError> {
         gate()?;
         root.0
             .validate()
@@ -206,7 +220,29 @@ impl LocalV6BlobStage {
         let mut manifest = self
             .directory
             .open_file(name(&intent.closure_manifest_sha256)?, FileAccess::Read)?;
-        let refs = decode(&read_manifest(&mut manifest, gate)?)?;
+        let bytes = read_manifest(&mut manifest, gate)?;
+        let refs = Self::validate_archived_closure_manifest(&bytes, &intent)?;
+        for reference in &refs {
+            gate()?;
+            drop(self.read_local(reference)?);
+            gate()?;
+        }
+        gate()?;
+        Ok((bytes, refs))
+    }
+
+    /// Validate archived bytes using the one existing canonical manifest
+    /// grammar and exact intent digest/count/length. Input intent metadata is
+    /// data only; success does not claim local availability, fsync, an applied
+    /// intent, membership, an Actor, a quorum or a selected published root.
+    pub fn validate_archived_closure_manifest(
+        bytes: &[u8],
+        intent: &crate::NativeV6CommitIntent,
+    ) -> Result<Vec<RecordObjectRef>, LocalV6BlobError> {
+        intent
+            .encode()
+            .map_err(|_| LocalV6BlobError::InvalidClosure)?;
+        let refs = decode(bytes)?;
         let (_, observed) = canonical(&refs)?;
         if observed.manifest_sha256 != intent.closure_manifest_sha256
             || observed.object_count as u64 != intent.object_count
@@ -214,12 +250,6 @@ impl LocalV6BlobStage {
         {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
-        for reference in &refs {
-            gate()?;
-            drop(self.read_local(reference)?);
-            gate()?;
-        }
-        gate()?;
         Ok(refs)
     }
 }

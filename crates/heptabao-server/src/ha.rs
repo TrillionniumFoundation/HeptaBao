@@ -56,6 +56,10 @@ mod native_v6_runtime;
 #[cfg(feature = "experimental-native-v6-ha")]
 pub(crate) use native_v6_runtime::{CommittedNativeV6Read, NativeHaPublicationError};
 
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "ha_native_v6_backup.rs"]
+pub(crate) mod native_v6_backup;
+
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
 const RAFT_FRAME_RESPONSE: u8 = 2;

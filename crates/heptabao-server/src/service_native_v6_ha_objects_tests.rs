@@ -577,6 +577,9 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
     Ok(())
 }
 
+#[path = "ha_native_v6_backup_tests.rs"]
+mod backup_tests;
+
 #[test]
 fn native_ha_preparation_real_v5_missing_typed_object_actor_revocation_and_expired_original_budget()
 -> TestResult {
