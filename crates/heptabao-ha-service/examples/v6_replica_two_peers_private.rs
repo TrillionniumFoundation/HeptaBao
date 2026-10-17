@@ -13,7 +13,7 @@ use heptabao_ha_service::{
     MutualTlsPeerTransport, NodeId, RAFT_ALPN_PROTOCOL, TlsPeerEndpoint, V6ReplicaCopyTarget,
     V6ReplicaCustodyFanout,
 };
-use heptabao_raft_runtime::{LocalV6BlobStage, SealedRecordObject};
+use heptabao_raft_runtime::{LocalV6BlobStage, NativeV6CommitIntent, SealedRecordObject};
 use ring::digest::{SHA256, digest};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
 use rustls::{ClientConfig, RootCertStore};
@@ -130,8 +130,32 @@ fn main() -> Result<(), Box<dyn Error>> {
         ],
     )?;
     let started = Instant::now();
+    // Private fixture-only claimed prepublication intent. The original
+    // cluster and operation bindings must match the actual mTLS peer frame;
+    // previous/proposed roots and index are synthetic, NOT Raft authority.
+    let mut cluster_frame = b"heptabao.v6.replica-mtls.cluster.v1\0".to_vec();
+    cluster_frame.extend_from_slice(CLUSTER.as_bytes());
+    let cluster_digest: [u8; 32] = digest(&SHA256, &cluster_frame).as_ref().try_into()?;
+    let intent = NativeV6CommitIntent {
+        cluster_digest,
+        epoch: EPOCH,
+        operation_digest: OPERATION,
+        closure_manifest_sha256: before.manifest_sha256(),
+        object_count: (last - first) as u64,
+        ciphertext_bytes: before.ciphertext_bytes(),
+        prior_root_digest: [0x21; 32],
+        proposed_root_digest: [0x22; 32],
+        prior_generation: 11,
+        proposed_generation: 12,
+        expected_previous_commit_index: 101,
+    };
     let result = if probe_only {
-        fanout.reconcile_local_copies(&source, &references, started + TOTAL_DEADLINE)?
+        fanout.reconcile_intent_local_copies(
+            &source,
+            &references,
+            &intent,
+            started + TOTAL_DEADLINE,
+        )?
     } else {
         fanout.deliver_local_copies(&source, &references, started + TOTAL_DEADLINE)?
     };
@@ -145,7 +169,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!(
         "RESULT={} objects={} bytes_per_peer={} recipients=2 elapsed_ms={}",
         if probe_only {
-            "PRIVATE_TWO_PEER_READONLY_CUSTODY_NOT_RAFT_QUORUM"
+            "PRIVATE_TWO_PEER_TYPED_INTENT_READONLY_NOT_RAFT_QUORUM"
         } else {
             "PRIVATE_TWO_PEER_LOCAL_FSYNC_ONLY_NOT_RAFT_QUORUM"
         },
