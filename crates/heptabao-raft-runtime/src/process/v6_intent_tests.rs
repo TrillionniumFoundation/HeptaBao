@@ -321,6 +321,75 @@ async fn three_real_raft_voters_commit_typed_v6_intent_but_never_publish_v6_root
             assert!(node.record_root_at_generation().await?.1.is_none());
         }
         router.deny_append.store(false, Ordering::SeqCst);
+        // Full process restart of the SECOND elected leader, not merely
+        // opening a read-only state machine after cluster shutdown.
+        // Node 1 remains physically isolated; only nodes 2 and 3 may form
+        // a fresh quorum after node 2 comes back with its persisted stores.
+        //
+        // The original V6 intent log entry was physically purged on node 2,
+        // so the post-restart proof must come from the original applied
+        // LogId preserved in the durable validated state-machine snapshot.
+        router.peers.write().await.remove(&2);
+        let original_new_leader = nodes.remove(1);
+        original_new_leader.shutdown().await?;
+        let survivor_without_quorum = crate::with_read_index_deadline(
+            Instant::now() + Duration::from_millis(120),
+            nodes[1].ensure_linearizable(),
+        )
+        .await;
+        assert!(
+            survivor_without_quorum.is_err(),
+            "single surviving voter cannot authorize writes or ReadIndex",
+        );
+        let recovered_network =
+            RemoteNetworkFactory::new(2, BTreeSet::from([1, 2, 3]), Arc::new(Arc::clone(&router)))?;
+        let recovered = ProcessRaftNode::reopen(root.join("2"), 2, recovered_network).await?;
+        recovered.raft.runtime_config().elect(true);
+        router
+            .peers
+            .write()
+            .await
+            .insert(2, recovered.rpc_service());
+        nodes.insert(1, recovered);
+        nodes[1].raft.trigger().elect(false).await?;
+        nodes[1]
+            .raft
+            .wait(Some(Duration::from_secs(15)))
+            .metrics(
+                |m| m.current_leader == Some(2),
+                "reopened second leader must regain a real surviving quorum",
+            )
+            .await?;
+        nodes[1].ensure_linearizable().await?;
+        assert!(
+            nodes[1].membership_observation().await?.purged_index >= Some(receipt.log_index),
+            "restart cannot silently reconstruct a purged original log entry",
+        );
+        nodes[1]
+            .reconcile_exact_staged_v6_intent(&intent, &receipt)
+            .await?;
+        assert!(
+            nodes[1]
+                .reconcile_exact_staged_v6_intent(&intent, &swapped_original)
+                .await
+                .is_err(),
+            "restarted leader 2 cannot claim the old leader 1's LogId",
+        );
+        let stale_original = crate::with_read_index_deadline(
+            Instant::now() + Duration::from_millis(120),
+            nodes[0].reconcile_exact_staged_v6_intent(&intent, &receipt),
+        )
+        .await;
+        assert!(
+            stale_original.is_err(),
+            "original isolated leader remains fenced after new-leader restart",
+        );
+        for node in &nodes {
+            assert!(
+                node.record_root_at_generation().await?.1.is_none(),
+                "recovered V6 intent is still NOT native V6 root publication",
+            );
+        }
         Ok::<_, Box<dyn std::error::Error>>((object, receipt))
     }
     .await;
