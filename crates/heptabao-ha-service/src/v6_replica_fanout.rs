@@ -10,8 +10,11 @@ use super::{
     HaError, MutualTlsPeerTransport, NodeId, encode_v6_replica_probe, encode_v6_replica_request,
     verify_v6_local_receipt,
 };
-use heptabao_raft_runtime::{LocalV6BlobStage, NativeV6CommitIntent, RecordObjectRef};
-use std::collections::BTreeSet;
+use heptabao_raft_runtime::{
+    CommitReceipt, LocalV6BlobStage, MembershipObservation, NativeV6CommitIntent, ProcessRaftNode,
+    RecordObjectRef,
+};
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::time::Instant;
 
@@ -245,6 +248,114 @@ impl V6ReplicaCustodyFanout {
             return Err(HaError::OutcomeUnknown);
         }
         Ok(observed)
+    }
+
+    /// Require two **fresh, actual** Raft quorum proofs around the complete
+    /// pinned-mTLS, physically reopened ciphertext closure observation.
+    ///
+    /// The leader's Raft state proves the original staged operation at its
+    /// exact applied LogId, including after snapshot compaction. The peer set
+    /// must correspond one-to-one to the current non-joint committed voters;
+    /// each configured peer must have a distinct pinned TLS server leaf.
+    /// An original absolute deadline covers both quorum checks and all wire
+    /// I/O. Loss of quorum or membership/term change after the physical probes
+    /// makes the entire observation unavailable.
+    ///
+    /// LIMIT: voter_identities are independently configured, not authenticated
+    /// Raft node-name bindings. This returns ONLY LOCAL-CUSTODY OBSERVATION;
+    /// it is NOT an atomic majority fsync certificate, V6 root CAS, Actor/ACL
+    /// authorization, root publication, or client acknowledgement. Production
+    /// server routing remains excluded by the opt-in feature.
+    pub async fn reconcile_committed_intent_local_copies(
+        &self,
+        raft: &ProcessRaftNode,
+        voter_identities: &BTreeMap<u64, NodeId>,
+        source: &LocalV6BlobStage,
+        references: &[RecordObjectRef],
+        intent_receipt: (&NativeV6CommitIntent, &CommitReceipt),
+        deadline: Instant,
+    ) -> Result<V6ReplicaCustodyObservation, HaError> {
+        let (intent, receipt) = intent_receipt;
+        fn denied() -> HaError {
+            HaError::OutcomeUnknown
+        }
+        if Instant::now() >= deadline
+            || receipt.log_index <= intent.expected_previous_commit_index
+            || intent.cluster_digest != cluster_binding(&self.cluster).map_err(|_| denied())?
+            || intent.epoch != self.epoch
+            || intent.operation_digest != self.operation
+        {
+            return Err(denied());
+        }
+        let deadline_async = tokio::time::Instant::from_std(deadline);
+        tokio::time::timeout_at(
+            deadline_async,
+            raft.reconcile_exact_staged_v6_intent(intent, receipt),
+        )
+        .await
+        .map_err(|_| denied())?
+        .map_err(|_| denied())?;
+        let before = tokio::time::timeout_at(deadline_async, raft.membership_observation())
+            .await
+            .map_err(|_| denied())?
+            .map_err(|_| denied())?;
+        if !self.matches_current_voters(&before, raft.id(), voter_identities) {
+            return Err(denied());
+        }
+        // Each response is an authenticated, pinned-mTLS local fsync/readback
+        // claim, NOT an independent Raft vote. No mutation is issued here.
+        let observed = self
+            .reconcile_intent_local_copies(source, references, intent, deadline)
+            .map_err(|_| denied())?;
+        if Instant::now() >= deadline {
+            return Err(denied());
+        }
+        // Never reuse the first witness after a peer I/O delay, timeout or
+        // leadership/epoch change: obtain a new real quorum ReadIndex.
+        tokio::time::timeout_at(
+            deadline_async,
+            raft.reconcile_exact_staged_v6_intent(intent, receipt),
+        )
+        .await
+        .map_err(|_| denied())?
+        .map_err(|_| denied())?;
+        let after = tokio::time::timeout_at(deadline_async, raft.membership_observation())
+            .await
+            .map_err(|_| denied())?
+            .map_err(|_| denied())?;
+        if !self.matches_current_voters(&after, raft.id(), voter_identities)
+            || before.term != after.term
+            || before.membership_index != after.membership_index
+            || before.voters != after.voters
+            || Instant::now() >= deadline
+        {
+            return Err(denied());
+        }
+        Ok(observed)
+    }
+
+    fn matches_current_voters(
+        &self,
+        actual: &MembershipObservation,
+        local_id: u64,
+        enrolled: &BTreeMap<u64, NodeId>,
+    ) -> bool {
+        actual.committed
+            && !actual.joint
+            && actual.leader == Some(local_id)
+            && actual.local_id == local_id
+            && actual.voters.len() >= 3
+            && actual.voters.len() == enrolled.len()
+            && self.targets.len().checked_add(1) == Some(enrolled.len())
+            && enrolled.keys().copied().collect::<BTreeSet<_>>() == actual.voters
+            && enrolled
+                .get(&local_id)
+                .is_some_and(|local| !self.targets.iter().any(|target| &target.node == local))
+            && self.targets.iter().all(|target| {
+                enrolled
+                    .iter()
+                    .any(|(id, node)| *id != local_id && node == &target.node)
+            })
     }
 
     /// Deliver an exact locally verified closure to every configured receiver.
@@ -497,6 +608,52 @@ mod tests {
         ))
     }
 
+    // Actual three-voter durable OpenRaft engine with its existing bounded
+    // RPC codec; the router is deliberately IN-PROCESS, not a physical-host
+    // consensus transport. Peer ciphertext probes below use real pinned TLS.
+    #[derive(Default, Clone)]
+    struct IntentQuorumRouter {
+        peers: Arc<tokio::sync::RwLock<BTreeMap<u64, heptabao_raft_runtime::RaftRpcService>>>,
+        deny_append: Arc<std::sync::atomic::AtomicBool>,
+    }
+    impl std::fmt::Debug for IntentQuorumRouter {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("V6PrivateDurableQuorumRouter")
+        }
+    }
+    impl heptabao_raft_runtime::RaftPeerRpc for IntentQuorumRouter {
+        fn exchange(
+            &self,
+            source: u64,
+            target: u64,
+            kind: heptabao_raft_runtime::RaftRpcKind,
+            bytes: Vec<u8>,
+            _timeout: Duration,
+        ) -> futures::future::BoxFuture<
+            'static,
+            Result<Vec<u8>, heptabao_raft_runtime::RemoteRaftError>,
+        > {
+            let router = self.clone();
+            Box::pin(async move {
+                if router.deny_append.load(std::sync::atomic::Ordering::SeqCst)
+                    && matches!(kind, heptabao_raft_runtime::RaftRpcKind::AppendEntries)
+                {
+                    return Err(heptabao_raft_runtime::RemoteRaftError::Transport(
+                        "isolated private Raft quorum".into(),
+                    ));
+                }
+                let handler = router
+                    .peers
+                    .read()
+                    .await
+                    .get(&target)
+                    .cloned()
+                    .ok_or(heptabao_raft_runtime::RemoteRaftError::InvalidTopology)?;
+                handler.handle(source, kind, bytes).await
+            })
+        }
+    }
+
     #[test]
     fn two_distinct_pinned_mtls_receivers_return_exact_complete_local_closure()
     -> Result<(), Box<dyn std::error::Error>> {
@@ -515,6 +672,7 @@ mod tests {
         let (client, x230_tls, rog_tls, mac_pin, x230_pin, rog_pin) = configurations(&pki)?;
         let pinmap =
             PinnedClientCertificateMap::new(BTreeMap::from([(mac_pin, NodeId::parse("mac")?)]))?;
+        let raft_router = IntentQuorumRouter::default();
         let mut threads = Vec::new();
         let mut endpoints = BTreeMap::new();
         for (name, store, tls) in [
@@ -536,14 +694,24 @@ mod tests {
                 TlsPeerEndpoint::new(listener.local_addr()?, "localhost")?,
             );
             let pins = pinmap.clone();
+            let fault_router = raft_router.clone();
             threads.push(thread::spawn(move || -> Result<(), HaError> {
-                for _ in 0..6 {
+                for completed in 0..10 {
                     receiver.serve_one_mtls(
                         &listener,
                         tls.clone(),
                         &pins,
                         Duration::from_secs(8),
                     )?;
+                    // On the second composite observation, after receiving
+                    // the penultimate real pinned-mTLS probe on the last peer,
+                    // destroy quorum BEFORE the final peer response. This is
+                    // a deterministic post-I/O stale-quorum negative control.
+                    if name == "rog" && completed == 8 {
+                        fault_router
+                            .deny_append
+                            .store(true, std::sync::atomic::Ordering::SeqCst);
+                    }
                 }
                 Ok(())
             }));
@@ -583,6 +751,51 @@ mod tests {
             observation, after_restart_reconciliation,
             "read-only mTLS probes must observe the identical local custody",
         );
+        // Bootstrap a separate REAL durable three-voter Raft instance using
+        // only public ProcessRaftNode interfaces. Keep the root absent.
+        let raft_runtime = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(4)
+            .enable_all()
+            .build()?;
+        let raft_root = private_dir(&root, "raft")?;
+        let (nodes, last_applied) = raft_runtime.block_on(async {
+            let mut nodes = Vec::new();
+            for id in 1..=3_u64 {
+                let network = heptabao_raft_runtime::RemoteNetworkFactory::new(
+                    id,
+                    BTreeSet::from([1, 2, 3]),
+                    Arc::new(raft_router.clone()),
+                )?;
+                let node =
+                    ProcessRaftNode::create(raft_root.join(id.to_string()), id, network).await?;
+                raft_router
+                    .peers
+                    .write()
+                    .await
+                    .insert(id, node.rpc_service());
+                nodes.push(node);
+            }
+            nodes[0].initialize_single().await?;
+            tokio::time::timeout(Duration::from_secs(8), async {
+                while nodes[0].current_leader().await != Some(1) {
+                    tokio::time::sleep(Duration::from_millis(20)).await;
+                }
+            })
+            .await?;
+            nodes[0].ensure_linearizable().await?;
+            nodes[0].add_learner(2).await?;
+            nodes[0].add_learner(3).await?;
+            nodes[0]
+                .change_membership(BTreeSet::from([1, 2, 3]))
+                .await?;
+            nodes[0].ensure_linearizable().await?;
+            let applied = nodes[0]
+                .membership_observation()
+                .await?
+                .applied_index
+                .ok_or("missing actual committed predecessor")?;
+            Ok::<_, Box<dyn std::error::Error>>((nodes, applied))
+        })?;
         // A well-formed Raft-staged intent still must be tied to the
         // exact physical source AND the original authenticated peer fixture.
         let intent = NativeV6CommitIntent {
@@ -596,7 +809,7 @@ mod tests {
             proposed_root_digest: [12; 32],
             prior_generation: 10,
             proposed_generation: 11,
-            expected_previous_commit_index: 20,
+            expected_previous_commit_index: last_applied,
         };
         for invalid in [
             NativeV6CommitIntent {
@@ -644,8 +857,114 @@ mod tests {
             after_restart_reconciliation, observed_intent,
             "typed intent can only describe the exact same physically observed peers"
         );
+        let raft_object = SealedRecordObject::new_native_v6_commit_intent(intent)?;
+        let original_receipt = raft_runtime.block_on(async {
+            let serial = nodes[0].next_production_client_serial().await?;
+            nodes[0]
+                .stage_application_object(serial, &raft_object)
+                .await
+        })?;
+        let matched_voters = BTreeMap::from([
+            (1, NodeId::parse("mac")?),
+            (2, NodeId::parse("x230")?),
+            (3, NodeId::parse("rog")?),
+        ]);
+        let both = raft_runtime.block_on(fanout.reconcile_committed_intent_local_copies(
+            &nodes[0],
+            &matched_voters,
+            &source,
+            &refs,
+            (&intent, &original_receipt),
+            Instant::now() + Duration::from_secs(20),
+        ))?;
+        assert_eq!(both, observed_intent);
+        // Existing committed intent does not allow a changed voter map or
+        // unrelated original Raft slot to create a usable observation.
+        let wrong_voters = BTreeMap::from([
+            (1, NodeId::parse("mac")?),
+            (2, NodeId::parse("x230")?),
+            (4, NodeId::parse("rog")?),
+        ]);
+        assert!(
+            raft_runtime
+                .block_on(fanout.reconcile_committed_intent_local_copies(
+                    &nodes[0],
+                    &wrong_voters,
+                    &source,
+                    &refs,
+                    (&intent, &original_receipt),
+                    Instant::now() + Duration::from_secs(2),
+                ))
+                .is_err()
+        );
+        let mut wrong_receipt = original_receipt.clone();
+        wrong_receipt.envelope_digest[0] ^= 1;
+        assert!(
+            raft_runtime
+                .block_on(fanout.reconcile_committed_intent_local_copies(
+                    &nodes[0],
+                    &matched_voters,
+                    &source,
+                    &refs,
+                    (&intent, &wrong_receipt),
+                    Instant::now() + Duration::from_secs(2),
+                ))
+                .is_err()
+        );
+        for node in &nodes {
+            assert!(
+                raft_runtime
+                    .block_on(node.record_root_at_generation())?
+                    .1
+                    .is_none(),
+                "neither the original quorum nor physical pinned copies publish a V6 root",
+            );
+        }
+        // The first real Raft witness is valid and all pinned-mTLS probes
+        // return, but the final (ROG) receiver partitions Raft after its
+        // penultimate reply. The method MUST acquire a new quorum witness and
+        // reject, rather than reusing the earlier certified intent.
+        let denied_after_probes =
+            raft_runtime.block_on(fanout.reconcile_committed_intent_local_copies(
+                &nodes[0],
+                &matched_voters,
+                &source,
+                &refs,
+                (&intent, &original_receipt),
+                Instant::now() + Duration::from_secs(5),
+            ));
+        assert!(
+            raft_router
+                .deny_append
+                .load(std::sync::atomic::Ordering::SeqCst),
+            "last peer must actually partition Raft during TLS proof",
+        );
+        assert!(
+            denied_after_probes.is_err(),
+            "successful physical mTLS reads cannot reuse old quorum after partition",
+        );
+        // Tear down all mTLS listeners before a second quorum-loss control.
+        // The failed FIRST fresh ReadIndex must NOT attempt additional peer I/O.
         for handle in threads {
             handle.join().map_err(|_| "receiver thread panic")??;
+        }
+        let refused = raft_runtime.block_on(fanout.reconcile_committed_intent_local_copies(
+            &nodes[0],
+            &matched_voters,
+            &source,
+            &refs,
+            (&intent, &original_receipt),
+            Instant::now() + Duration::from_millis(350),
+        ));
+        assert!(
+            refused.is_err(),
+            "old quorum proof cannot bypass live partition"
+        );
+        raft_router
+            .deny_append
+            .store(false, std::sync::atomic::Ordering::SeqCst);
+        for node in nodes {
+            raft_runtime.block_on(node.shutdown())?;
         }
         for dir in [&x230_dir, &rog_dir] {
             let store = LocalV6BlobStage::open_existing(dir)?;
