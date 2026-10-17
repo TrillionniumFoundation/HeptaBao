@@ -27,7 +27,7 @@ const REQUEST_PREFIX: usize = 5 + 32 + 8 + 32 + 32 + 4;
 const RECEIPT_BYTES: usize = REQUEST_PREFIX + 32;
 const DOMAIN: &[u8] = b"heptabao.v6.replica-mtls.cluster.v1\0";
 
-fn cluster_binding(cluster: &str) -> Result<[u8; 32], HaError> {
+pub(crate) fn cluster_binding(cluster: &str) -> Result<[u8; 32], HaError> {
     if cluster.is_empty()
         || cluster.len() > 128
         || !cluster
