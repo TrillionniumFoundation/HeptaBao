@@ -12,16 +12,18 @@ default = []
 private-forward-stage-diagnostic = []
 # Independent experimental mTLS peer-ingress fixture; NOT installed into
 # production peer dispatch, root publication or a majority-ack path.
-experimental-v6-peer-ingress = ["dep:heptabao-raft-runtime", "heptabao-raft-runtime/experimental-v6-raft-objects"]
+experimental-v6-peer-ingress = ["dep:heptabao-raft-runtime", "dep:tokio", "heptabao-raft-runtime/experimental-v6-raft-objects"]
 
 [dependencies]
 zeroize = "=1.8.1"
 rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }
 ring = "0.17.14"
 heptabao-raft-runtime = { path = "../heptabao-raft-runtime", optional = true }
+tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "macros", "sync", "time"], optional = true }
 
 [dev-dependencies]
 rustls-pemfile = "=2.2.0"
+futures = "=0.3.34"
 
 [[example]]
 name = "v6_replica_multihost_private"

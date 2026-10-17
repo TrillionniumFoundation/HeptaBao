@@ -1322,10 +1322,12 @@ dependencies = [
 name = "heptabao-ha-service"
 version = "0.1.0"
 dependencies = [
+ "futures",
  "heptabao-raft-runtime",
  "ring",
  "rustls",
  "rustls-pemfile",
+ "tokio",
  "zeroize",
 ]
 
