@@ -26,7 +26,7 @@ impl NativeHaRecoveryReference {
     pub(crate) fn reference_id(&self) -> String {
         let mut id = String::with_capacity(10 + 64);
         id.push_str("native-v6-");
-        for byte in self.intent.operation_digest {
+        for byte in self.intent().operation_digest {
             use std::fmt::Write as _;
             let _ = write!(id, "{byte:02x}");
         }
@@ -51,7 +51,7 @@ impl fmt::Debug for NativeHaRecoveryReference {
             .field("intent_log", &self.intent_log)
             .field("root_serial", &self.root_serial)
             .field("original_deadline", &self.deadline.instant())
-            .field("published", &self.published.is_some())
+            .field("published", &self.published().is_some())
             .finish_non_exhaustive()
     }
 }
@@ -403,6 +403,13 @@ impl HaProcess {
                 original(deadline, original_gate)
             })
             .map_err(before)?;
+        if proposal.intent() != intent
+            || proposal.original_deadline().instant() != deadline.instant()
+        {
+            return Err(before(
+                "native HA proposal changed the original intent or deadline",
+            ));
+        }
         original(deadline, original_gate).map_err(before)?;
         self.check_native_publication_source(expected, epoch, deadline, &source, &enrollment, term)
             .map_err(before)?;
@@ -495,9 +502,9 @@ impl HaProcess {
         // authorize another root invocation or a changed operation identity.
         let published = match self.runtime.block_on(node.publish_native_v6_root(
             root_serial,
-            &intent,
+            recovery.intent(),
             &recovery.intent_receipt,
-            &enrollment,
+            recovery.enrollment(),
             proposal.sealed_root().to_vec(),
             deadline.instant(),
         )) {

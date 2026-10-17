@@ -50,6 +50,14 @@ impl NativeV6CommittedRootRead {
     pub fn read_index_deadline(&self) -> std::time::Instant {
         self.witness.deadline.into_std()
     }
+    /// Consume the selected native root and retain its SAME opaque applied
+    /// witness for application prefix/delivery checks. This does not perform
+    /// another ReadIndex, renew the deadline, or authenticate application data.
+    /// The caller must authenticate the selected closure and finally verify
+    /// this handle before discarding its root/enrollment binding here.
+    pub fn into_application_witness(self) -> ApplicationReadWitness {
+        self.witness
+    }
     /// Equality of two actual selections grants no authority by itself. The
     /// caller must verify the new handle. In particular this deliberately does
     /// not revive the old witness after its original ReadIndex bound expires.

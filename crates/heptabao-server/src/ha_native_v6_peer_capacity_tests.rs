@@ -210,7 +210,14 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
     let tls = tls_fixture::tls_fixture(&root.0)?;
     let configs = configurations(&root.0, &tls.pins)?;
     {
-        let mut ordinary = HaProcess::start(configs[0].clone())?;
+        // This startup-only negative case intentionally never bootstraps a
+        // membership. Keep its durable pending marker separate: reopening it
+        // as a candidate would correctly enter the production recovery guard,
+        // before any worker-saturation behavior could be exercised.
+        let mut ordinary_config = configs[0].clone();
+        ordinary_config.raft_dir = root.0.join("ordinary-raft-1");
+        let ordinary_raft_dir = ordinary_config.raft_dir.clone();
+        let mut ordinary = HaProcess::start(ordinary_config)?;
         assert_eq!(
             ordinary
                 .listener
@@ -225,7 +232,13 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
             ordinary.enable_native_v6_candidate().is_err(),
             "late enable bypassed actual worker installation"
         );
-        assert!(!configs[0].raft_dir.join("native-v6-ciphertext").exists());
+        assert!(!ordinary_raft_dir.join("native-v6-ciphertext").exists());
+    }
+    for config in &configs {
+        assert!(
+            !config.raft_dir.exists(),
+            "candidate capacity fixture must start with fresh Raft custody"
+        );
     }
     let mut processes = configs
         .iter()

@@ -1945,6 +1945,47 @@ impl HaProcess {
         String,
     > {
         use crate::state_record_root::StateIdentity;
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.native_v6_enabled() {
+            let deadline = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|error| error.to_string())?;
+            if let Some(read) = self.native_v6_committed_read(deadline)? {
+                // The real selected root includes its enrollment and full
+                // publication provenance. Missing ciphertext is repaired only
+                // through the actual pinned peers before this authentication.
+                let identity = self.with_native_v6_source(&read, |codec, store| {
+                    let closure = codec
+                        .open_native_v6_committed_closure(
+                            read.enrollment(),
+                            read.published(),
+                            store,
+                            &mut || {
+                                self.verify_native_v6_committed_read(&read).map_err(|_| {
+                                    crate::ha_state::native_v6::NativeV6CodecError::Gate
+                                })
+                            },
+                        )
+                        .map_err(|_| "native application witness closure unavailable".to_owned())?;
+                    let identity = closure
+                        .root()
+                        .identity()
+                        .map_err(|_| "native application witness root invalid".to_owned())?;
+                    if identity != StateIdentity::RecordsV6(read.published().root_digest()) {
+                        return Err("native application witness root mismatch".to_owned());
+                    }
+                    Ok(identity)
+                })??;
+                // Preserve this exact applied witness, including its original
+                // capped deadline, generation, term and store identity. The
+                // Service still owes full typed materialization and Actor /
+                // audit / delivery gates; this is not a response permission.
+                self.verify_native_v6_committed_read(&read)?;
+                return Ok((identity, read.into_application_witness()));
+            }
+            // V6 may be absent before activation. The ordinary runtime API
+            // atomically rejects native activation, including a race after the
+            // preceding None, so retained V5 state cannot become a stale reply.
+        }
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
         let (witness, envelope, record) = self
             .block_on_read(node.application_read_witness())

@@ -32,6 +32,12 @@ impl Service {
             .auth
             .forward_owner_projection_digest()
             .map_err(|_| unavailable())?;
+        if let Some(root) = self.native_root.as_ref() {
+            if self.record_root.is_some() {
+                return Err(unavailable());
+            }
+            return Self::forward_native_owner_projection(root, Some(auth));
+        }
         let root = self.record_root.as_ref().ok_or_else(unavailable)?;
         let other: Vec<_> = root
             .owners
@@ -56,6 +62,12 @@ impl Service {
     // other durable owner, namespace/catalog graph, KV record, replay/schema
     // and cluster binding remains exact and authenticated by the source MAC.
     fn forward_non_auth_owner_projection(&self) -> Result<[u8; 32], Response> {
+        if let Some(root) = self.native_root.as_ref() {
+            if self.record_root.is_some() {
+                return Err(unavailable());
+            }
+            return Self::forward_native_owner_projection(root, None);
+        }
         let root = self.record_root.as_ref().ok_or_else(unavailable)?;
         let other: Vec<_> = root
             .owners
@@ -70,6 +82,43 @@ impl Service {
                 root.replay_epoch,
                 other,
                 &root.kv1,
+            ))
+            .map_err(|_| unavailable())?,
+        );
+        Ok(crate::ha_forward_completion::digest(&bytes))
+    }
+
+    // Native roots carry independent KV2 graphs, reader compatibility floors
+    // and role-bound owners. Bind the complete non-Auth graph, including its
+    // address-key domain, rather than relying on the retired V5 manifest. The
+    // optional Auth digest preserves exactly the two existing delivery scopes;
+    // a full root identity would also bind the permitted Token API observation.
+    fn forward_native_owner_projection(
+        root: &crate::state_record_root_v6::RecordStateRootV6,
+        auth: Option<[u8; 32]>,
+    ) -> Result<[u8; 32], Response> {
+        use crate::state_record_root_v6::OwnerDomain;
+
+        root.validate().map_err(|_| unavailable())?;
+        let other: Vec<_> = root
+            .owners
+            .iter()
+            .filter(|role| role.domain != OwnerDomain::Auth)
+            .collect();
+        let bytes = Zeroizing::new(
+            serde_json::to_vec(&(
+                "heptabao-native-v6-forward-owner-projection-v1",
+                &root.storage_format,
+                root.state_schema,
+                &root.reader_floor,
+                root.global_lossless_json_format,
+                &root.cluster_id,
+                root.replay_epoch,
+                other,
+                &root.kv1,
+                &root.kv2,
+                &root.object_address_key,
+                auth,
             ))
             .map_err(|_| unavailable())?,
         );
@@ -480,3 +529,7 @@ fn seal_diagnostic(guard: &'static str) {
         diagnostic_label("source_seal", guard);
     }
 }
+
+#[cfg(all(test, feature = "experimental-native-v6-ha"))]
+#[path = "service_forward_delivery_native_tests.rs"]
+mod native_tests;

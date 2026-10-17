@@ -1,0 +1,27 @@
+{
+  "scope": "R8h candidate-only peer capacity; ordinary start unchanged; rustfmt parsed, actual saturation test not yet compiled/run",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "sha256": "676a9c08ac74af22eac471c8169a1a55d3773485994dc679f325acc3788fe44e",
+      "bytes": 151546
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "sha256": "438860ad631db26cb8b96c10086bbdc982239dde5950918ce4a7c3813e01990b",
+      "bytes": 14496
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_peer_capacity.rs",
+      "sha256": "45b1bb6b612b80ec3ea35e40c68989bc74fb34603b8334d8e9ec5f0471d479c3",
+      "bytes": 1037
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_peer_capacity_tests.rs",
+      "sha256": "340bc577e4c870f43098dcde2d7ca6d170fb57378265f86cb826c732fa3aa0f0",
+      "bytes": 15130
+    }
+  ],
+  "aggregate_sha256": "af17fc8c7aec66cd0a8f528e3e3a78faf2c875eca7724321f78c0257470e9265",
+  "publication_frozen_sha256": "ca10e956cc923078f3d1c4372dfdfa8c343a5c2b41d0ef6fed032673b8a0b963"
+}

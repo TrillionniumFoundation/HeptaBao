@@ -246,6 +246,7 @@ impl PreparedNativeV6HaObjects {
     pub(crate) fn local_closure(&self) -> LocalV6ClosureReceipt {
         self.closure.local_closure()
     }
+    #[cfg(test)]
     pub(crate) fn references(&self) -> &[RecordObjectRef] {
         self.closure.references()
     }

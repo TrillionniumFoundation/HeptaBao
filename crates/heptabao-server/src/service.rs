@@ -10973,3 +10973,7 @@ mod transit_cache_tests;
 #[cfg(test)]
 #[path = "service_transit_derivation_tests.rs"]
 mod transit_derivation_tests;
+
+#[cfg(all(test, feature = "experimental-native-v6-ha"))]
+#[path = "service_native_v6_ha_pipeline_tests.rs"]
+mod native_v6_ha_pipeline_tests;

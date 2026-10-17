@@ -234,7 +234,7 @@ impl NativeHaReadProof {
             .map_err(|_| unavailable())?;
         self.check_instance(service)
     }
-    pub(crate) fn check_with(
+    pub(in crate::service) fn check_with(
         &self,
         service: &mut Service,
         check_installed: impl FnOnce(
@@ -295,7 +295,8 @@ impl NativeHaReadProof {
 
     /// Caller-supplied check is always additional to the retained custody and
     /// consensus proof. It cannot refresh the original deadline or replace Actor.
-    pub(crate) fn check_checked(
+    #[cfg(test)]
+    pub(in crate::service) fn check_checked(
         &self,
         service: &mut Service,
         original_actor: &mut impl FnMut() -> Result<(), Response>,

@@ -216,6 +216,11 @@ impl CommittedNativeV6Read {
     pub(crate) fn deadline(&self) -> OriginalDeadline {
         self.deadline
     }
+    /// Only the owning HaProcess may reduce its verified native selection to
+    /// the original applied witness; no replacement observation is minted.
+    pub(super) fn into_application_witness(self) -> heptabao_raft_runtime::ApplicationReadWitness {
+        self.selected.into_application_witness()
+    }
 }
 
 impl HaProcess {

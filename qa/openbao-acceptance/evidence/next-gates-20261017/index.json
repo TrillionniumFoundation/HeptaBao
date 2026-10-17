@@ -1,0 +1,163 @@
+{
+  "schema": "heptabao-next-gates-evidence-index-v1",
+  "recorded_at": "2026-10-17T14:10:22.253745+00:00",
+  "production_cutover_completed": false,
+  "legacy_cleanup_completed": false,
+  "native_physical_ha_89_executed": false,
+  "pocket4_r2_executed": false,
+  "runtime_connection_error": "Tunnel-client has not been seen for 300 seconds",
+  "unreconciled_remote_job": "1a14a0b3e5d-1b6abb-13e",
+  "files": [
+    {
+      "path": "physical-ha-r6-receipt.json",
+      "bytes": 13303,
+      "sha256": "054251799c858002eacdb3ab2dc0ec87cd919255feefcec18177fb35636934d4"
+    },
+    {
+      "path": "python-authbus-r7-receipt.json",
+      "bytes": 15681,
+      "sha256": "26ba974bab3eaa8bacae64957e4194b10908db737be66363f36d68e409ae2637"
+    },
+    {
+      "path": "mac-native-matrix-r8c.json",
+      "bytes": 2561,
+      "sha256": "0f0553a6de88abd75261cd0877b0fc6a950b794750a7825af2ded0851f1aa79b"
+    },
+    {
+      "path": "mac-34mib-tls-r8e-compile-failure.log",
+      "bytes": 5515,
+      "sha256": "84b465f4cf971197eac750e4a7e5b571f79e0361ca1ae216fd5643fd74c40c8f"
+    },
+    {
+      "path": "mac-34mib-tls-r8f.json",
+      "bytes": 3060,
+      "sha256": "b02678522dc1411fc55ed1722bb4a8ad21590745b133c92d49c9c86b9791d6e9"
+    },
+    {
+      "path": "ha-raft-native-read-pull-batch-validation.json",
+      "bytes": 3142,
+      "sha256": "fc7346f8194861203e5fc7804efd7bd881c78eaf8c34d4c2f7388c2bb00943fd"
+    },
+    {
+      "path": "ha-raft-native-read-pull-batch-source-final.json",
+      "bytes": 12757,
+      "sha256": "fe7e63e6dc932e42ee9e505bb2b500e179e470cdca8ad216e55f6bfb1beee151"
+    },
+    {
+      "path": "ha-native-v6-ingress-pull-batch-final.log",
+      "bytes": 2292,
+      "sha256": "4d63a90955e3d92bd44011e04379930918afd95c6c3082e7b47de8c57207312c"
+    },
+    {
+      "path": "raft-native-v6-opaque-read-final.log",
+      "bytes": 12819,
+      "sha256": "53b4b8baf0e9d6b6225912d9280645c722405c7ad7fb052faf72cf0e230980f7"
+    },
+    {
+      "path": "actual-openclaw-r8-receipt.json",
+      "bytes": 11151,
+      "sha256": "2bb4cd9b2dc847ed6b867f96adfa46089e72081db1ab8558e73bc6d9e2ce2db6"
+    },
+    {
+      "path": "actual-openclaw-r9-receipt.json",
+      "bytes": 40177,
+      "sha256": "1f8f5c248621ff666867b600f1a7b3f3115060d93cd6959ba350d49e3d252473"
+    },
+    {
+      "path": "authbus-main-modes-r1-receipt.json",
+      "bytes": 82687,
+      "sha256": "4c5ac9900934f0b3af63c5b9b8ec44d28b688aa47c7f40ff940ddd000ee104d2"
+    },
+    {
+      "path": "authbus-physical-fleet-r1-receipt.json",
+      "bytes": 24248,
+      "sha256": "e9f6712051411ef6e18cbca84469f6a28f183c0675b791460fa5c458830e11c2"
+    },
+    {
+      "path": "macbook-pro-canary-public.json",
+      "bytes": 30227,
+      "sha256": "ea6ce6f79e435e0406c2ea0e504539759cb8696656d04103f86082da5b08c754"
+    },
+    {
+      "path": "rog-canary-public.json",
+      "bytes": 29995,
+      "sha256": "81fb713ddbb8a7ef3c1ef810f498032c7dc96446b2c060520eb5db4eee624e75"
+    },
+    {
+      "path": "pocket4-canary-public.json",
+      "bytes": 23831,
+      "sha256": "0d3e8549a94d23977177220d2a30fdf1f23b8d74912c46f8484153fce40de268"
+    },
+    {
+      "path": "authbus-sdk-explicit-deny-r1-receipt.json",
+      "bytes": 21285,
+      "sha256": "491108fa7ea63a161de9ab24e9248a7b1c02b299fd96659024389d26c5b812c5"
+    },
+    {
+      "path": "r8g-local-check-source.json",
+      "bytes": 300,
+      "sha256": "84bdf17e723967f64801e78076863f047a0171d443f17495f1aea35c5c6746b7"
+    },
+    {
+      "path": "r8g-local-cargo-check.log",
+      "bytes": 13277,
+      "sha256": "f9b9a8a27f5cbac089135877c3f7f896b886ef4bf17f04a2e3abff231328e75d"
+    },
+    {
+      "path": "r8g-local-cargo-check-receipt.json",
+      "bytes": 873,
+      "sha256": "42709e5a832afc4a811435f8253922a9e6228e3d6eec6d930a125a3767436f2c"
+    },
+    {
+      "path": "r8h-local-check-source.json",
+      "bytes": 300,
+      "sha256": "4edf47f3903dacc154bb91052278f778170615ff3e7bdd9f70b66ec29d1525f7"
+    },
+    {
+      "path": "r8h-local-cargo-check.log",
+      "bytes": 7361,
+      "sha256": "14be741b04256724215c10ef60fce66862acbce6581b77f3bb613dc522947be5"
+    },
+    {
+      "path": "r8h-local-cargo-check-receipt.json",
+      "bytes": 882,
+      "sha256": "2b8f9807e442076022801cb8c5ec24dbd63aaf949fccb47d50d0c1075df8ea65"
+    },
+    {
+      "path": "ha-native-peer-capacity-r8h-freeze.json",
+      "bytes": 1087,
+      "sha256": "5fe5f47519f52d709cb6c18d83c99dd8b446e6388e008b7c8a65e3ff674e018f"
+    },
+    {
+      "path": "ha-native-publication-source-binding-freeze.json",
+      "bytes": 509,
+      "sha256": "728f1b3933e3e81d6c27ef7779701c9134e591b8dc95b98ec1f5b3191619c99b"
+    },
+    {
+      "path": "r6-source-binding.json",
+      "bytes": 2652,
+      "sha256": "d322fdb3d342b34793f21ad43529556a8f2ae7baac187059226a0cd14b74f011"
+    },
+    {
+      "path": "r8c-source-binding.json",
+      "bytes": 456,
+      "sha256": "492d12e6025e0c9709facc9a1d768149a8ae2988ca7615a05408af6b9e97f764"
+    },
+    {
+      "path": "r8f-source-binding.json",
+      "bytes": 456,
+      "sha256": "4476e19068ad437f05aed6d3c43881ec3d0770cb0b5e8f2cd1ab89809d2a9806"
+    },
+    {
+      "path": "r8g-source-binding.json",
+      "bytes": 457,
+      "sha256": "4bc4742f12b43ff62b7a80f1c7bb68507328d8394da2d46b9a2504e226bdc0b9"
+    },
+    {
+      "path": "r8h-source-binding.json",
+      "bytes": 456,
+      "sha256": "88201d1ac3f32c16f89537de03127604fe053a00f3ac9762f18be6612677f850"
+    }
+  ],
+  "qualification_rule": "Each receipt retains its own source, binary, denominator and scope. These counts are not a combined production qualification."
+}
