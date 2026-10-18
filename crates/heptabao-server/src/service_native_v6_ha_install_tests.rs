@@ -14,6 +14,9 @@ use heptabao_durable_service::PutRequest;
 use heptabao_raft_runtime::{NativeV6CommitIntent, NativeV6PeerEnrollment};
 use std::time::Instant;
 
+#[path = "service_native_v6_ha_archive_repair_tests.rs"]
+mod archive_repair_tests;
+
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const REQUEST_BUDGET: Duration = Duration::from_secs(15);
 
