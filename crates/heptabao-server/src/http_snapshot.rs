@@ -489,31 +489,47 @@ mod tests {
     #[test]
     fn native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes() -> io::Result<()> {
         let reference = format!("native-v6-restore-{}", "1".repeat(64));
-        let query = format!("cancel_pending_restore={reference}");
-        for method in ["POST", "PUT"] {
-            for framing in ["Content-Length: 0\r\n\r\n", "Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n"] {
-                let raw = format!("{method} /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\n{framing}");
-                let mut request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
-                    .unwrap_or_else(|_| panic!("explicit pending selector must reach native admission"));
-                assert_eq!(request.body.0["cancel_pending_restore"], reference);
-                let native = request.native_snapshot.take().expect("empty native binary request");
-                let mut source = io::empty();
-                let mut body = BodyReader::new(&mut source, native.body,
-                    Instant::now() + Duration::from_secs(1))?;
-                assert_eq!(body.read(&mut [0; 1])?, 0);
+        let cancel = format!("cancel_pending_restore={reference}");
+        for (query, field, expected) in [
+            (cancel.as_str(), "cancel_pending_restore", Value::String(reference)),
+            ("inspect_pending_restore=true", "inspect_pending_restore", Value::Bool(true)),
+        ] {
+            for method in ["POST", "PUT"] {
+                for framing in ["Content-Length: 0\r\n\r\n", "Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n"] {
+                    let raw = format!("{method} /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\n{framing}");
+                    let mut request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                        .unwrap_or_else(|_| panic!("explicit pending selector must reach native admission"));
+                    assert_eq!(request.body.0[field], expected);
+                    let native = request.native_snapshot.take().expect("empty native binary request");
+                    let mut source = io::empty();
+                    let mut body = BodyReader::new(&mut source, native.body,
+                        Instant::now() + Duration::from_secs(1))?;
+                    assert_eq!(body.read(&mut [0; 1])?, 0);
+                }
+            }
+            for (method, path, query) in [
+                ("GET", "sys/storage/raft/snapshot", query.to_owned()),
+                ("HEAD", "sys/storage/raft/snapshot", query.to_owned()),
+                ("POST", "sys/storage/raft/snapshot-force", query.to_owned()),
+                ("POST", "sys/storage/raft/snapshot-repair", query.to_owned()),
+                ("POST", "secret/data/example", query.to_owned()),
+                ("POST", "sys/storage/raft/snapshot", format!("{query}&{query}")),
+                ("POST", "sys/storage/raft/snapshot", format!("{query}&force=true")),
+            ] {
+                let raw = format!("{method} /v1/{path}?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n");
+                assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
             }
         }
-        for (method, path, query) in [
-            ("GET", "sys/storage/raft/snapshot", query.clone()),
-            ("HEAD", "sys/storage/raft/snapshot", query.clone()),
-            ("POST", "sys/storage/raft/snapshot-force", query.clone()),
-            ("POST", "sys/storage/raft/snapshot-repair", query.clone()),
-            ("POST", "secret/data/example", query.clone()),
-            ("POST", "sys/storage/raft/snapshot", format!("{query}&{query}")),
+        for query in [
+            "inspect_pending_restore", "inspect_pending_restore=", "inspect_pending_restore=false",
+            "inspect_pending_restore=1", "inspect_pending_restore=TRUE", "inspect_pending_restore=null",
         ] {
-            let raw = format!("{method} /v1/{path}?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n");
+            let raw = format!("POST /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n");
             assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
         }
+        let mut duplicate = serde_json::json!({"inspect_pending_restore":true});
+        assert!(merge_query_fields("POST", "sys/storage/raft/snapshot", "inspect_pending_restore=true",
+            &mut duplicate).is_err());
         Ok(())
     }
 }

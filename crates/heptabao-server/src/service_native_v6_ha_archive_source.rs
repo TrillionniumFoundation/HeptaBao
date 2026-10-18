@@ -143,15 +143,16 @@ impl NativeHaArchiveRepairSource {
     pub(in crate::service) fn reconcile_pending_restore(
         self,
         service: &mut Service,
-        operation: [u8; 32],
+        operation: Option<[u8; 32]>,
         actor: &mut impl FnMut(&Service) -> Result<(), Response>,
-    ) -> Result<(NativeHaReadProof, &'static str), Response> {
+    ) -> Result<(NativeHaReadProof, &'static str, Option<[u8; 32]>), Response> {
         actor(service)?;
         self.check_local(service)?;
         let process = self.environment.ha.lock_for_request().map_err(|_| unavailable())?;
-        // The operation reference is only a selector. Current local custody,
-        // original live Actor and an actual pending-read witness independently
-        // authorize the one cancellation; the archive is never consulted.
+        // None requests read-only discovery. A supplied operation reference
+        // is only a selector: current local custody, the original live Actor
+        // and an actual pending-read witness independently authorize its one
+        // cancellation. Neither request consults an archive or replays a CAS.
         let mut durable = service.durable.take().ok_or_else(unavailable)?;
         let reconciled = process.reconcile_native_v6_historical_restore(
             &self.anchor, operation, &mut || {
@@ -188,7 +189,7 @@ impl NativeHaArchiveRepairSource {
         proof.check_with(service, Service::check_native_installed)?;
         actor(service)?;
         proof.check_warm(service)?;
-        Ok((proof, outcome.as_str()))
+        Ok((proof, outcome.as_str(), outcome.pending_operation()))
     }
 
     pub(in crate::service) fn repair(

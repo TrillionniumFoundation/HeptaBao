@@ -2361,7 +2361,7 @@ fn merge_query_fields(
         #[cfg(feature = "experimental-native-v6-ha")]
         if path == "sys/storage/raft/snapshot"
             && matches!(method, "POST" | "PUT")
-            && key == "cancel_pending_restore"
+            && matches!(key.as_str(), "cancel_pending_restore" | "inspect_pending_restore")
         {
             // Preserve only this explicit native reconciliation selector.
             // Service still checks the live native owner, original root Actor,
@@ -2369,7 +2369,15 @@ fn merge_query_fields(
             if object.contains_key(&key) {
                 return Err(invalid_query("duplicate body/query parameter"));
             }
-            object.insert(key, Value::String(value.to_string()));
+            let parsed = if key == "inspect_pending_restore" {
+                if value.as_str() != "true" {
+                    return Err(invalid_query("pending restore inspection requires true"));
+                }
+                Value::Bool(true)
+            } else {
+                Value::String(value.to_string())
+            };
+            object.insert(key, parsed);
             continue;
         }
         if !matches!(

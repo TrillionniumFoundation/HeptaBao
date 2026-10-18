@@ -39,6 +39,7 @@ impl fmt::Display for NativeHaEpochRestoreError {
 impl std::error::Error for NativeHaEpochRestoreError {}
 
 pub(crate) enum NativeHaPendingRestoreOutcome {
+    Pending([u8; 32]),
     Cancelled,
     NotPending,
     Committed,
@@ -47,11 +48,15 @@ pub(crate) enum NativeHaPendingRestoreOutcome {
 impl NativeHaPendingRestoreOutcome {
     pub(crate) fn as_str(&self) -> &'static str {
         match self {
+            Self::Pending(_) => "pending",
             Self::Cancelled => "cancelled",
             Self::NotPending => "not_pending",
             Self::Committed => "committed",
             Self::DifferentPending => "different_pending",
         }
+    }
+    pub(crate) fn pending_operation(&self) -> Option<[u8; 32]> {
+        match self { Self::Pending(operation) => Some(*operation), _ => None }
     }
 }
 
@@ -104,28 +109,39 @@ impl PendingOwner<'_> {
 impl HaProcess {
     /// A NEW explicitly admitted request may reconcile one exact operation.
     /// This method never invokes Begin, Stage or a historical root CAS. Only a
-    /// matching actual pending operation can be cancelled; a committed lineage
-    /// entry, verified absence and a different pending operation are read-only
-    /// outcomes. Cancellation timeout never becomes absence or success.
+    /// matching actual pending operation can be cancelled. With no supplied
+    /// operation this is an explicit read-only discovery request, and returns
+    /// only the actual current pending selector under the same source witness.
+    /// A committed lineage entry, verified absence and a different pending
+    /// operation are read-only outcomes. Cancellation timeout never becomes
+    /// absence or success.
     pub(crate) fn reconcile_native_v6_historical_restore(
         &self,
         anchor: &NativeV6ArchiveRootAnchor,
-        operation: [u8; 32],
+        operation: Option<[u8; 32]>,
         original_gate: &mut dyn FnMut() -> CodecResult<()>,
     ) -> Result<(CommittedNativeV6Read, NativeHaPendingRestoreOutcome), NativeHaEpochRestoreError> {
         let deadline = anchor.deadline();
         let stopped = |reason: String| NativeHaEpochRestoreError {
-            operation: Some(operation), root_attempted: false, reason,
+            operation, root_attempted: false, reason,
         };
         original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
-        if operation == [0; 32] {
+        if operation == Some([0; 32]) {
             return Err(stopped("invalid pending restore reference".into()));
         }
         let node = self.node.as_ref().ok_or_else(|| stopped("HA process is shut down".into()))?;
         let selected = anchor.fresh_for_epoch_restore(self)
             .map_err(|error| stopped(error.to_string()))?;
-        let (selected, outcome) = if selected.root().epoch_transitions()
-            .any(|step| step.operation_digest() == operation)
+        let (selected, outcome) = if operation.is_none() {
+            let pending = self.runtime.block_on(node.native_v6_pending_epoch_restore_operation(&selected))
+                .map_err(|error| stopped(error.to_string()))?;
+            let outcome = match pending {
+                Some(operation) => NativeHaPendingRestoreOutcome::Pending(operation),
+                None => NativeHaPendingRestoreOutcome::NotPending,
+            };
+            (selected, outcome)
+        } else if selected.root().epoch_transitions()
+            .any(|step| Some(step.operation_digest()) == operation)
         {
             (selected, NativeHaPendingRestoreOutcome::Committed)
         } else {
@@ -133,11 +149,11 @@ impl HaProcess {
                 .map_err(|error| stopped(error.to_string()))?
             {
                 None => (selected, NativeHaPendingRestoreOutcome::NotPending),
-                Some(pending_operation) if pending_operation != operation =>
+                Some(pending_operation) if Some(pending_operation) != operation =>
                     (selected, NativeHaPendingRestoreOutcome::DifferentPending),
-                Some(_) => {
+                Some(pending_operation) => {
                     let pending = self.runtime.block_on(node.native_v6_epoch_restore_read(
-                        operation, deadline.instant(),
+                        pending_operation, deadline.instant(),
                     )).map_err(|error| stopped(error.to_string()))?;
                     if pending.source_root() != selected.root()
                         || pending.source_enrollment() != selected.enrollment()

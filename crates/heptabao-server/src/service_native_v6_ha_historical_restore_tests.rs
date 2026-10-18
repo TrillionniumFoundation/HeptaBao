@@ -91,12 +91,21 @@ fn observed_pending_reference(pipeline: &Pipeline, leader: usize) -> TestResult<
 fn cancel_pending_restore(pipeline: &Pipeline, leader: usize, reference: &str, body: &[u8])
     -> TestResult<Response>
 {
+    pending_restore_control(pipeline, leader, json!({"cancel_pending_restore":reference}), body)
+}
+
+fn inspect_pending_restore(pipeline: &Pipeline, leader: usize, body: &[u8]) -> TestResult<Response> {
+    pending_restore_control(pipeline, leader, json!({"inspect_pending_restore":true}), body)
+}
+
+fn pending_restore_control(pipeline: &Pipeline, leader: usize, query: Value, body: &[u8])
+    -> TestResult<Response>
+{
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
     let service = pipeline.services[leader].as_ref().ok_or("pending cancellation Service")?;
     let mut writer = lock_until(service, until).map_err(|_| "pending cancellation writer")?;
-    let mut pending = admit_with_query(&mut writer, "POST", pipeline.admin(),
-        json!({"cancel_pending_restore":reference}), until)?;
+    let mut pending = admit_with_query(&mut writer, "POST", pipeline.admin(), query, until)?;
     drop(writer);
     let (observed, output) = pending.execute_snapshot_transfer(&mut &body[..]);
     assert!(output.is_none(), "cancellation does not download or upload an archive");
@@ -106,6 +115,42 @@ fn cancel_pending_restore(pipeline: &Pipeline, leader: usize, reference: &str, b
     assert!(writer.native_request_binding.is_none());
     assert!(Instant::now() < until, "cancellation retains its original deadline");
     Ok(response)
+}
+
+fn lose_pending_restore_failure_response(pipeline: &Pipeline, leader: usize, archive: &[u8]) -> TestResult {
+    let until = Instant::now() + REQUEST_BUDGET;
+    let _scope = RequestDeadlineScope::enter(until);
+    let service = pipeline.services[leader].as_ref().ok_or("lost-reference Service")?;
+    let mut writer = lock_until(service, until).map_err(|_| "lost-reference admission")?;
+    assert!(!writer.state.as_ref().ok_or("lost-reference State")?.has_token_api_precision_state());
+    let mut pending = admit(&mut writer, "POST", pipeline.admin(), until)?;
+    drop(writer);
+    let (observed, output) = pending.execute_snapshot_transfer(&mut &archive[..]);
+    assert!(output.is_none());
+    let cipher_root = pipeline.configs[leader].raft_dir.join("native-v6-ciphertext");
+    let saved_root = pipeline.configs[leader].raft_dir.join("inspect-test-saved-ciphertext");
+    private_directory(&saved_root)?;
+    let files = fs::read_dir(&cipher_root)?.map(|entry| entry.map(|entry| entry.file_name()))
+        .collect::<Result<Vec<_>, _>>()?;
+    assert!(!files.is_empty());
+    for name in &files { fs::rename(cipher_root.join(name), saved_root.join(name))?; }
+    fs::remove_dir(&cipher_root)?;
+    let mut writer = lock_until(service, until).map_err(|_| "lost-reference completion")?;
+    let mut undelivered = writer.finish_external_request(*pending, observed);
+    private_directory(&cipher_root)?;
+    for name in &files { fs::rename(saved_root.join(name), cipher_root.join(name))?; }
+    fs::remove_dir(&saved_root)?;
+    assert_eq!(undelivered.status, 503);
+    assert_eq!(undelivered.body["root_attempted"], false);
+    assert_eq!(writer.durable.as_ref().ok_or("lost-reference Durable")?.replay_epoch(), 0);
+    assert!(writer.native_request_binding.is_none());
+    // Deliberately destroy the entire undelivered reply without reading or
+    // retaining its operation reference. The post-restart caller receives no
+    // ID from this helper; it must discover the current operation through a
+    // newly admitted root request and an actual fresh quorum observation.
+    erase_json(&mut undelivered.body);
+    drop(undelivered);
+    Ok(())
 }
 
 #[test]
@@ -493,5 +538,122 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     pipeline.assert_history(active, &[(1, "seed-v5"), (2, "pending-archive-A")])?;
     expect(pipeline.call(active, "GET", "secret/data/pipeline/history", pipeline.admin(),
         json!({"version":3}))?, 404, "pending-recovery-future-B-version-absent")?;
+    Ok(())
+}
+
+#[test]
+fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel() -> TestResult {
+    let mut pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    activate(&pipeline, leader)?;
+    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"options":{"cas":1},"data":{"value":"inspect-archive-A"}}))?,
+        200, "inspect-archive-A-write")?;
+    let archive = export(&pipeline, leader, pipeline.admin())?;
+    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"options":{"cas":2},"data":{"value":"inspect-later-B"}}))?,
+        200, "inspect-later-B-write")?;
+    let before = selection(&pipeline, leader)?;
+    lose_pending_restore_failure_response(&pipeline, leader, &archive)?;
+
+    pipeline.stop_process(leader)?;
+    let successor = pipeline.ready_leader()?;
+    assert_ne!(successor, leader);
+    pipeline.start_process(leader)?;
+    pipeline.unseal(leader)?;
+    pipeline.assert_history(successor,
+        &[(1, "seed-v5"), (2, "inspect-archive-A"), (3, "inspect-later-B")])?;
+    assert_eq!(selection(&pipeline, successor)?, before);
+
+    // Discovery is not an unauthenticated status endpoint. Neither a bad
+    // Actor nor extra/ambiguous fields can obtain a pending reference.
+    for (token, query, status) in [
+        ("synthetic-invalid-inspection-token", json!({"inspect_pending_restore":true}), 403),
+        (pipeline.admin(), json!({"inspect_pending_restore":false}), 400),
+        (pipeline.admin(), json!({"inspect_pending_restore":[true,true]}), 400),
+        (pipeline.admin(), json!({"inspect_pending_restore":true,"force":true}), 400),
+        (pipeline.admin(), json!({"inspect_pending_restore":true,
+            "cancel_pending_restore":format!("native-v6-restore-{}", "1".repeat(64))}), 400),
+    ] {
+        let until = Instant::now() + REQUEST_BUDGET;
+        let _scope = RequestDeadlineScope::enter(until);
+        let service = pipeline.services[successor].as_ref().ok_or("inspection refusal Service")?;
+        let mut writer = lock_until(service, until).map_err(|_| "inspection refusal writer")?;
+        match writer.begin_native_snapshot_before(
+            ServiceRequest::new("POST", SNAPSHOT, "", token, query), until,
+        ) {
+            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
+                assert_eq!(response.status, status);
+                assert!(response.body.get("data").is_none());
+                assert!(response.body.get("recovery_reference").is_none());
+            }
+            _ => return Err("rejected inspection acquired a transfer or redirect".into()),
+        }
+    }
+    let discovered = expect(inspect_pending_restore(&pipeline, successor, &[])?,
+        200, "cold-root-inspection-recovers-lost-operation-reference")?;
+    assert_eq!(discovered.body["data"]["state"], "pending");
+    assert_eq!(discovered.body["data"]["cancelled"], false);
+    assert_eq!(discovered.body["restore_performed"], false);
+    let reference = discovered.body["data"]["recovery_reference"].as_str()
+        .ok_or("new root inspection must return the actual pending reference")?.to_owned();
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
+    assert_eq!(selection(&pipeline, successor)?, before);
+    let nonempty = expect(inspect_pending_restore(&pipeline, successor, b"x")?,
+        400, "inspection-requires-empty-body")?;
+    assert!(nonempty.body.get("data").is_none());
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
+
+    // The inspection above cannot cancel even though it now knows the exact
+    // pending operation. Only this separate explicitly selected request may
+    // acquire the existing actual Cancel capability.
+    let cancelled = expect(cancel_pending_restore(&pipeline, successor, &reference, &[])?,
+        200, "discovered-pending-operation-requires-separate-exact-cancel")?;
+    assert_eq!(cancelled.body["data"]["state"], "cancelled");
+    assert_eq!(selection(&pipeline, successor)?, before);
+    let absent = expect(inspect_pending_restore(&pipeline, successor, &[])?,
+        200, "inspection-reports-verified-absence-after-cancel")?;
+    assert_eq!(absent.body["data"]["state"], "not_pending");
+    assert!(absent.body["data"]["recovery_reference"].is_null());
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, None);
+    assert_eq!(selection(&pipeline, successor)?, before);
+
+    expect(restore(&pipeline, successor, pipeline.admin(), &archive)?, 200,
+        "inspection-does-not-replay-restore-without-a-new-archive-request")?;
+    let installed = selection(&pipeline, successor)?;
+    assert_eq!(installed.0, 1);
+    let no_pending = expect(inspect_pending_restore(&pipeline, successor, &[])?,
+        200, "inspection-does-not-return-a-historical-committed-reference")?;
+    assert_eq!(no_pending.body["data"]["state"], "not_pending");
+    assert!(no_pending.body["data"]["recovery_reference"].is_null());
+    assert_eq!(no_pending.body["restore_performed"], false);
+    assert_eq!(selection(&pipeline, successor)?, installed);
+    assert_eq!(installed.1.epoch_transitions().len(), 1);
+
+    // A real authenticated non-root principal remains ineligible even with
+    // update/sudo on this exact route. Mint it after the pending-flow checks:
+    // token creation legitimately adds precision state and a new ordinary root.
+    expect(pipeline.call(successor, "PUT", "sys/policies/acl/inspect-not-root", pipeline.admin(),
+        json!({"policy":"path \"sys/storage/raft/snapshot\" { capabilities = [\"update\",\"sudo\"] }"}))?,
+        204, "inspection-non-root-policy")?;
+    let mut issued = expect(pipeline.call(successor, "POST", "auth/token/create", pipeline.admin(),
+        json!({"policies":["inspect-not-root"],"ttl":"300s","no_default_policy":true,"no_parent":true}))?,
+        200, "inspection-authenticated-non-root-token")?;
+    let limited = secret_field(&mut issued, "/auth/client_token")?;
+    let until = Instant::now() + REQUEST_BUDGET;
+    let _scope = RequestDeadlineScope::enter(until);
+    let service = pipeline.services[successor].as_ref().ok_or("non-root inspection Service")?;
+    let mut writer = lock_until(service, until).map_err(|_| "non-root inspection writer")?;
+    match writer.begin_native_snapshot_before(
+        ServiceRequest::new("POST", SNAPSHOT, "", limited.as_str(),
+            json!({"inspect_pending_restore":true})), until,
+    ) {
+        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
+            assert_eq!(response.status, 403);
+            assert!(response.body.get("data").is_none());
+            assert!(response.body.get("recovery_reference").is_none());
+        }
+        _ => return Err("non-root inspection acquired a transfer or redirect".into()),
+    }
     Ok(())
 }

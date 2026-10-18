@@ -113,7 +113,7 @@ impl Service {
         Ok(())
     }
 
-    pub(in crate::service::snapshot_transfer) fn finish_native_ha_pending_restore_cancellation(
+    pub(in crate::service::snapshot_transfer) fn finish_native_ha_pending_restore_reconciliation(
         &mut self, plan: &mut SnapshotTransferPlan, result: Result<Observation, Response>,
     ) -> Response {
         let checked = (|| -> Result<Response, Response> {
@@ -122,13 +122,13 @@ impl Service {
                 || plan.native_ha_source.is_some() || plan.native_ha_restored.is_some()
                 || plan.native_ha_repair.is_some()
             { return Err(unavailable()); }
-            let operation = plan.native_ha_cancel_pending.ok_or_else(unavailable)?;
-            if !matches!(result?, Observation::CancelPendingRestore) {
+            let request = plan.native_ha_pending_restore.ok_or_else(unavailable)?;
+            if !matches!(result?, Observation::PendingRestore) {
                 return Err(Response::error(400, "pending restore reconciliation requires an empty body"));
             }
             let source = plan.native_ha_restore_source.take().ok_or_else(unavailable)?;
-            let (proof, outcome) = source.reconcile_pending_restore(
-                self, operation, &mut |service| service.check_native_ha_snapshot_owner(plan),
+            let (proof, outcome, observed_pending) = source.reconcile_pending_restore(
+                self, request.operation(), &mut |service| service.check_native_ha_snapshot_owner(plan),
             )?;
             self.check_native_ha_snapshot_owner(plan)?;
             let epoch = self.state.as_ref().ok_or_else(unavailable)?.replay_epoch;
@@ -137,7 +137,7 @@ impl Service {
             // live Actor check. This operation never creates a restore receipt.
             plan.native_ha_source = Some(proof);
             Ok(Response::ok(json!({"data":{
-                "recovery_reference":historical_recovery_reference(operation),
+                "recovery_reference":request.operation().or(observed_pending).map(historical_recovery_reference),
                 "state":outcome, "cancelled":outcome == "cancelled",
                 "restore_performed":false, "replay_epoch":epoch,
                 "selected_root":hex(&plan.base.digest()),
@@ -155,7 +155,7 @@ impl Service {
             self.check_native_ha_snapshot_owner(plan)?;
             if plan.is_download || plan.path != "sys/storage/raft/snapshot"
                 || plan.native_ha_source.is_some() || plan.native_ha_restored.is_some()
-                || plan.native_ha_cancel_pending.is_some()
+                || plan.native_ha_pending_restore.is_some()
             { return Err(unavailable()); }
             let source = plan.native_ha_restore_source.take().ok_or_else(unavailable)?;
             source.check_local(self)?;

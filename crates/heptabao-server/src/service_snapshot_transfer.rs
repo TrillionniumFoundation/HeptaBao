@@ -13,7 +13,23 @@ use std::time::Instant;
 pub(super) const NATIVE_HA_REPAIR_PATH: &str = "sys/storage/raft/snapshot-repair";
 
 #[cfg(feature = "experimental-native-v6-ha")]
-fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<[u8; 32]>, Response> {
+#[derive(Clone, Copy)]
+enum PendingRestoreRequest {
+    Inspect,
+    Cancel([u8; 32]),
+}
+#[cfg(feature = "experimental-native-v6-ha")]
+impl PendingRestoreRequest {
+    fn operation(self) -> Option<[u8; 32]> {
+        match self {
+            Self::Inspect => None,
+            Self::Cancel(operation) => Some(operation),
+        }
+    }
+}
+
+#[cfg(feature = "experimental-native-v6-ha")]
+fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<PendingRestoreRequest>, Response> {
     let invalid = || Response::error(400, "unsupported native snapshot query fields");
     let fields = body.as_object().ok_or_else(invalid)?;
     if fields.is_empty() {
@@ -21,6 +37,9 @@ fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<[u8; 32]>
     }
     if !enabled || fields.len() != 1 {
         return Err(invalid());
+    }
+    if fields.get("inspect_pending_restore") == Some(&Value::Bool(true)) {
+        return Ok(Some(PendingRestoreRequest::Inspect));
     }
     let raw = fields.get("cancel_pending_restore").and_then(Value::as_str)
         .and_then(|value| value.strip_prefix("native-v6-restore-"))
@@ -36,7 +55,7 @@ fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<[u8; 32]>
     if operation == [0; 32] {
         return Err(invalid());
     }
-    Ok(Some(operation))
+    Ok(Some(PendingRestoreRequest::Cancel(operation)))
 }
 
 #[cfg(feature = "fixture-native-v6-service")]
@@ -92,7 +111,7 @@ pub(super) struct SnapshotTransferPlan {
     #[cfg(feature = "experimental-native-v6-ha")]
     native_ha_restore_source: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
     #[cfg(feature = "experimental-native-v6-ha")]
-    native_ha_cancel_pending: Option<[u8; 32]>,
+    native_ha_pending_restore: Option<PendingRestoreRequest>,
     #[cfg(feature = "experimental-native-v6-ha")]
     native_ha_restore_attempt: Option<([u8; 32], bool)>,
     #[cfg(feature = "experimental-native-v6-ha")]
@@ -140,7 +159,7 @@ pub(crate) enum Observation {
     Download,
     Upload(Import),
     #[cfg(feature = "experimental-native-v6-ha")]
-    CancelPendingRestore,
+    PendingRestore,
 }
 
 // Retain the wall-clock fraction captured at admission. Rounding only after
@@ -182,7 +201,7 @@ impl PendingExternalRequest {
         } else {
             (|| {
                 #[cfg(feature = "experimental-native-v6-ha")]
-                if plan.native_ha_cancel_pending.is_some() {
+                if plan.native_ha_pending_restore.is_some() {
                     if Instant::now() >= plan.deadline {
                         return Err(Response::error(503, "snapshot transfer deadline exceeded"));
                     }
@@ -192,7 +211,7 @@ impl PendingExternalRequest {
                     if Instant::now() >= plan.deadline {
                         return Err(Response::error(503, "snapshot transfer deadline exceeded"));
                     }
-                    return if count == 0 { Ok(Observation::CancelPendingRestore) }
+                    return if count == 0 { Ok(Observation::PendingRestore) }
                         else { Err(Response::error(400, "pending restore reconciliation requires an empty body")) };
                 }
                 let mut archive = plan
@@ -403,7 +422,7 @@ impl Service {
             );
         }
         #[cfg(feature = "experimental-native-v6-ha")]
-        let native_ha_cancel_pending = match pending_restore_query(
+        let native_ha_pending_restore = match pending_restore_query(
             request.body,
             self.native_ha_snapshot_transport_enabled()
                 && request.path == "sys/storage/raft/snapshot"
@@ -493,7 +512,7 @@ impl Service {
             #[cfg(feature = "experimental-native-v6-ha")]
             native_ha_restore_source: None,
             #[cfg(feature = "experimental-native-v6-ha")]
-            native_ha_cancel_pending,
+            native_ha_pending_restore,
             #[cfg(feature = "experimental-native-v6-ha")]
             native_ha_restore_attempt: None,
             #[cfg(feature = "experimental-native-v6-ha")]
@@ -630,7 +649,7 @@ impl Service {
             }
         }
         #[cfg(feature = "experimental-native-v6-ha")]
-        if let Some(operation) = plan.native_ha_cancel_pending {
+        if let Some(operation) = plan.native_ha_pending_restore.and_then(PendingRestoreRequest::operation) {
             // Cancellation delivery can also be uncertain after an actual
             // Raft write. Retain its exact query reference even when terminal
             // clock or mandatory audit replaces the original response.
@@ -704,8 +723,8 @@ impl Service {
             return self.finish_native_ha_snapshot_repair(plan, result);
         }
         #[cfg(feature = "experimental-native-v6-ha")]
-        if plan.native_ha_cancel_pending.is_some() {
-            return self.finish_native_ha_pending_restore_cancellation(plan, result);
+        if plan.native_ha_pending_restore.is_some() {
+            return self.finish_native_ha_pending_restore_reconciliation(plan, result);
         }
         #[cfg(feature = "experimental-native-v6-ha")]
         if plan.native_ha_restore_source.is_some() {

@@ -210,7 +210,7 @@ jobs:
               'peer': run('compile-peer-tests', peer + ['--no-run'])['exit_code'] == 0,
           }
           groups = [
-              ('historical-service', 'server', 'native_ha_historical_restore_', 5),
+              ('historical-service', 'server', 'native_ha_historical_restore_', 6),
               ('snapshot-service', 'server', 'native_ha_snapshot_', 7),
               ('archive-34mib', 'server', 'native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs', 1),
               ('http-repair-admission', 'server', 'current_root_repair_retains_binary_header_admission_and_bounded_json_lane', 1),
