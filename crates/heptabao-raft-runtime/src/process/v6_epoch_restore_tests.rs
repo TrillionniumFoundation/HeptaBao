@@ -320,9 +320,20 @@ async fn v6_epoch_restore_pending_snapshot_purge_cold_owner_and_committed_lineag
         // the immutable first provenance retained by pending/snapshot state.
         let duplicate = stage(&fixture.nodes[0], intent).await?;
         assert!(duplicate.log_index > staged.log_index);
-        assert!(fixture.nodes[0].reconcile_exact_staged_v6_intent(&intent, &duplicate).await.is_err());
+        // Generic reconciliation proves the requested ACTUAL Stage log slot.
+        // While unpurged, this duplicate slot really does hold the exact same
+        // object. That narrow read-only result does not select first-origin
+        // provenance and cannot substitute for the pending restore's gate.
+        fixture.nodes[0].reconcile_exact_staged_v6_intent(&intent, &duplicate).await?;
         let sealed = pending(&fixture.nodes[0], &initial).await?;
         assert_eq!(sealed.intent_log_id(), Some(stage_log));
+        let source_before = selected(&fixture.nodes[0]).await?;
+        assert!(fixture.nodes[0].publish_native_v6_epoch_restore(
+            fixture.nodes[0].next_production_client_serial().await?,
+            &sealed, &duplicate, vec![0x98; 64],
+        ).await.is_err(), "a duplicate Stage slot cannot replace the first full LogId at epoch CAS");
+        assert_eq!(selected(&fixture.nodes[0]).await?.root(), source_before.root());
+        assert_eq!(selected(&fixture.nodes[0]).await?.enrollment(), source_before.enrollment());
         let bytes = fixture.nodes[0].state_machine.get_state_machine().await.snapshot_bytes()?;
         let good: serde_json::Value = serde_json::from_slice(&bytes)?;
         assert_eq!(good["format_version"], 5);
@@ -350,6 +361,14 @@ async fn v6_epoch_restore_pending_snapshot_purge_cold_owner_and_committed_lineag
         assert_eq!(cold.source_root(), &old_root);
         assert_eq!(cold.source_enrollment(), &old_enrollment);
         assert!(!sealed.same_transition(&cold));
+        node.reconcile_exact_staged_v6_intent(&intent, &staged).await?;
+        assert!(node.reconcile_exact_staged_v6_intent(&intent, &duplicate).await.is_err(),
+            "a purged duplicate slot cannot borrow the snapshot's immutable FIRST Stage provenance");
+        let cold_for_rejected_duplicate = node.native_v6_epoch_restore_read(intent.operation_digest, deadline()).await?;
+        assert!(node.publish_native_v6_epoch_restore(
+            node.next_production_client_serial().await?, &cold_for_rejected_duplicate,
+            &duplicate, vec![0x98; 64],
+        ).await.is_err(), "cold epoch CAS must also retain the first full LogId");
         for voter in &fixture.nodes {
             assert!(voter.membership_observation().await?.purged_index >= Some(stage_log.index));
             let admission = voter.admit_native_v6_closure(&intent, deadline()).await?;
