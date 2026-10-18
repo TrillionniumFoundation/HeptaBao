@@ -1,0 +1,311 @@
+name: Native historical restore recovery candidate
+
+on:
+  push:
+    branches:
+      - 'agent/heptabao-continuation-20261018-*'
+    paths:
+      - '.github/workflows/native-historical-restore-recovery.yml'
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - 'vendor/**'
+      - 'third_party/**'
+      - 'tests/fixtures/**'
+      - 'qa/openbao-acceptance/fixtures/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Distinct candidate commits keep their own evidence; a newer push does not
+# interrupt an older restore test and turn its outcome into an unknown one.
+concurrency:
+  group: native-recovery-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  scoped-recovery:
+    name: Native recovery / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    defaults:
+      run:
+        shell: bash
+    env:
+      EXPECTED_SOURCE: ${{ github.sha }}
+      CARGO_TARGET_DIR: ${{ runner.temp }}/heptabao-native-recovery-target
+      RECOVERY_REPORT_DIR: ${{ runner.temp }}/heptabao-native-recovery-reports
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: '2'
+      CMAKE_BUILD_PARALLEL_LEVEL: '2'
+      RUST_BACKTRACE: '1'
+
+    steps:
+      - name: Checkout the exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Record source and actual host before execution
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, json, os, pathlib, platform, subprocess
+          reports = pathlib.Path(os.environ['RECOVERY_REPORT_DIR'])
+          reports.mkdir(mode=0o700, parents=True, exist_ok=True)
+          def output(args):
+              return subprocess.check_output(args, text=True, stderr=subprocess.STDOUT).strip()
+          diff_check = subprocess.run(['git', 'diff', '--check'], capture_output=True, text=True)
+          (reports / 'source-before-diff-check.log').write_text(diff_check.stdout + diff_check.stderr)
+          source = {
+              'recorded_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'commit': output(['git', 'rev-parse', 'HEAD']),
+              'tree': output(['git', 'rev-parse', 'HEAD^{tree}']),
+              'expected_commit': os.environ['EXPECTED_SOURCE'],
+              'status_porcelain': output(['git', 'status', '--porcelain=v1', '--untracked-files=all']),
+              'git_diff_check': diff_check.returncode,
+              'ref': os.environ['GITHUB_REF'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'workflow_ref': os.environ.get('GITHUB_WORKFLOW_REF'),
+              'workflow_sha': os.environ.get('GITHUB_WORKFLOW_SHA'),
+          }
+          host = {
+              'uname_a': output(['uname', '-a']),
+              'uname_m': output(['uname', '-m']),
+              'platform': platform.platform(),
+              'python_version': platform.python_version(),
+              'runner_os': os.environ['RUNNER_OS'],
+              'runner_arch': os.environ['RUNNER_ARCH'],
+              'cargo_build_jobs': os.environ['CARGO_BUILD_JOBS'],
+              'cmake_build_parallel_level': os.environ['CMAKE_BUILD_PARALLEL_LEVEL'],
+          }
+          if platform.system() == 'Darwin':
+              host['sw_vers'] = output(['sw_vers'])
+          else:
+              host['os_release'] = pathlib.Path('/etc/os-release').read_text()
+          (reports / 'source-before.json').write_text(json.dumps(source, indent=2) + '\n')
+          (reports / 'host.json').write_text(json.dumps(host, indent=2) + '\n')
+          print(json.dumps({'source': source, 'host': host}, indent=2))
+          if source['commit'] != source['expected_commit'] or source['status_porcelain'] or source['git_diff_check']:
+              raise SystemExit('source identity or clean-source check failed before execution')
+          PY
+
+      - name: Check and install only missing Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECOVERY_REPORT_DIR"
+          exec > >(tee "$RECOVERY_REPORT_DIR/dependencies-linux.log") 2>&1
+          missing=()
+          for package in build-essential cmake clang pkg-config libkrb5-dev openssl; do
+            if ! dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -qx 'install ok installed'; then
+              missing+=("$package")
+            fi
+          done
+          if (( ${#missing[@]} > 0 )); then
+            sudo apt-get update -qq
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${missing[@]}"
+          fi
+          cmake --version
+          pkg-config --version
+          clang --version
+          krb5-config --version
+          openssl version -a
+
+      - name: Check actual macOS tools and install missing Homebrew dependencies
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECOVERY_REPORT_DIR"
+          exec > >(tee "$RECOVERY_REPORT_DIR/dependencies-macos.log") 2>&1
+          command -v brew
+          if ! openssl_prefix="$(brew --prefix openssl@3 2>/dev/null)" || ! test -x "$openssl_prefix/bin/openssl"; then
+            brew install openssl@3
+            openssl_prefix="$(brew --prefix openssl@3)"
+          fi
+          if ! command -v cmake >/dev/null 2>&1; then brew install cmake; fi
+          if ! command -v pkg-config >/dev/null 2>&1; then brew install pkg-config; fi
+          export PATH="$openssl_prefix/bin:$PATH"
+          printf '%s\n' "$openssl_prefix/bin" >> "$GITHUB_PATH"
+          test -f "$openssl_prefix/include/openssl/ssl.h"
+          cmake --version
+          pkg-config --version
+          clang --version
+          openssl version -a
+
+      - name: Install and record exact Rust 1.98.0
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECOVERY_REPORT_DIR"
+          exec > >(tee "$RECOVERY_REPORT_DIR/toolchain.log") 2>&1
+          rustup toolchain install 1.98.0 --profile minimal
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+          test "$(rustc +1.98.0 --version | cut -d ' ' -f 2)" = '1.98.0'
+
+      - name: Run the scoped native recovery and private diagnostic groups once
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, re, subprocess, sys
+          reports = pathlib.Path(os.environ['RECOVERY_REPORT_DIR'])
+          reports.mkdir(mode=0o700, parents=True, exist_ok=True)
+          records = []
+          def save(completed=False):
+              result = {'runner_completed': completed, 'commands': records,
+                        'full_openbao_271_replacement_proven': False,
+                        'physical_lan_validation_performed': False,
+                        'mac_external_disk_validation_performed': False,
+                        'production_cutover_performed': False}
+              (reports / 'execution.json').write_text(json.dumps(result, indent=2) + '\n')
+          def run(label, args):
+              record = {'label': label, 'argv': args, 'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        'status': 'running', 'log': label + '.log'}
+              records.append(record)
+              save()
+              print('Executing ' + label, flush=True)
+              with (reports / record['log']).open('w') as log:
+                  log.write(json.dumps({'argv': args}) + '\n')
+                  log.flush()
+                  try:
+                      process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                                 text=True, errors='replace', bufsize=1)
+                      for line in process.stdout:
+                          log.write(line)
+                          log.flush()
+                          sys.stdout.write(line)
+                          sys.stdout.flush()
+                      code = process.wait()
+                  except OSError as error:
+                      log.write(str(error) + '\n')
+                      code = 127
+              record.update(exit_code=code, status='passed' if code == 0 else 'failed',
+                            finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+              save()
+              return record
+          def blocked(label, reason):
+              records.append({'label': label, 'status': 'blocked', 'reason': reason})
+              save()
+          cargo = ['cargo', '+1.98.0']
+          server_features = 'experimental-native-v6-ha,private-ha-forward-diagnostic'
+          peer_features = 'experimental-v6-peer-ingress,private-forward-stage-diagnostic'
+          server = cargo + ['test', '--locked', '-p', 'heptabao-server', '--lib', '--features', server_features]
+          peer = cargo + ['test', '--locked', '-p', 'heptabao-ha-service', '--lib', '--features', peer_features]
+          compiled = {
+              'server': run('compile-server-tests', server + ['--no-run'])['exit_code'] == 0,
+              'peer': run('compile-peer-tests', peer + ['--no-run'])['exit_code'] == 0,
+          }
+          groups = [
+              ('historical-service', 'server', 'native_ha_historical_restore_', 5),
+              ('snapshot-service', 'server', 'native_ha_snapshot_', 7),
+              ('archive-34mib', 'server', 'native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs', 1),
+              ('http-repair-admission', 'server', 'current_root_repair_retains_binary_header_admission_and_bounded_json_lane', 1),
+              ('http-pending-admission', 'server', 'native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes', 1),
+              ('private-transport-diagnostic', 'peer', 'private_forward_stage_observation_preserves_existing_transport_errors', 1),
+              ('private-frame-diagnostic', 'peer', 'private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes', 1),
+          ]
+          for label, owner, selector, expected_count in groups:
+              if not compiled[owner]:
+                  blocked(label, owner + ' test compilation failed; no execution attempted')
+                  continue
+              command = (server if owner == 'server' else peer) + [selector]
+              listing = run(label + '-list', command + ['--', '--list', '--color=never'])
+              text = (reports / listing['log']).read_text()
+              names = re.findall(r'^([^\r\n]+): test$', text, re.MULTILINE)
+              listing.update(expected_count=expected_count, selected_test_names=names)
+              if listing['exit_code'] != 0 or len(names) != expected_count:
+                  listing['status'] = 'failed'
+                  blocked(label, 'test discovery did not match the required case count')
+                  continue
+              executed = run(label, command + ['--', '--nocapture', '--test-threads=1', '--color=never'])
+              text = (reports / executed['log']).read_text()
+              summaries = re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;', text)
+              executed.update(expected_count=expected_count, selected_test_names=names, terminal_test_summaries=summaries)
+              if executed['exit_code'] != 0 or summaries != [(str(expected_count), '0', '0')]:
+                  executed['status'] = 'failed'
+              save()
+          build = run('build-server', cargo + ['build', '--locked', '-p', 'heptabao-server', '--bin', 'heptabao-server', '--features', server_features])
+          if build['exit_code'] == 0:
+              binary = pathlib.Path(os.environ['CARGO_TARGET_DIR']) / 'debug' / 'heptabao-server'
+              if binary.is_file():
+                  build['binary_bytes'] = binary.stat().st_size
+                  with binary.open('rb') as stream:
+                      digest = hashlib.sha256()
+                      for block in iter(lambda: stream.read(1024 * 1024), b''):
+                          digest.update(block)
+                      build['binary_sha256'] = digest.hexdigest()
+                  run('built-binary-format', ['file', str(binary)])
+              else:
+                  build['status'] = 'failed'
+                  build['reason'] = 'successful cargo command did not leave the requested server binary'
+          save(completed=True)
+          if any(record['status'] != 'passed' for record in records):
+              raise SystemExit(1)
+          PY
+
+      - name: Record source after execution and produce a scoped verdict
+        if: always()
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, json, os, pathlib, subprocess
+          reports = pathlib.Path(os.environ['RECOVERY_REPORT_DIR'])
+          reports.mkdir(mode=0o700, parents=True, exist_ok=True)
+          def observe(label, args):
+              result = subprocess.run(args, capture_output=True, text=True)
+              (reports / (label + '.log')).write_text(result.stdout + result.stderr)
+              return {'exit_code': result.returncode, 'stdout': result.stdout.strip(), 'stderr': result.stderr.strip()}
+          after = {'recorded_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'commit': observe('source-after-commit', ['git', 'rev-parse', 'HEAD']),
+                   'tree': observe('source-after-tree', ['git', 'rev-parse', 'HEAD^{tree}']),
+                   'status': observe('source-after-status', ['git', 'status', '--porcelain=v1', '--untracked-files=all']),
+                   'diff_check': observe('source-after-diff-check', ['git', 'diff', '--check']),
+                   'diff_stat': observe('source-after-diff-stat', ['git', 'diff', '--stat'])}
+          (reports / 'source-after.json').write_text(json.dumps(after, indent=2) + '\n')
+          before_path = reports / 'source-before.json'
+          execution_path = reports / 'execution.json'
+          before = json.loads(before_path.read_text()) if before_path.exists() else {}
+          execution = json.loads(execution_path.read_text()) if execution_path.exists() else {}
+          unchanged = (before.get('commit') == os.environ['EXPECTED_SOURCE']
+                       and before.get('status_porcelain') == '' and before.get('git_diff_check') == 0
+                       and after['commit']['exit_code'] == 0 and after['commit']['stdout'] == before.get('commit')
+                       and after['tree']['exit_code'] == 0 and after['tree']['stdout'] == before.get('tree')
+                       and after['status']['exit_code'] == 0 and after['status']['stdout'] == ''
+                       and after['diff_check']['exit_code'] == 0)
+          passed = bool(unchanged and execution.get('runner_completed')
+                        and execution.get('commands')
+                        and all(item.get('status') == 'passed' for item in execution['commands']))
+          verdict = {'status': 'passed_scoped_ci_recovery' if passed else 'failed_or_blocked',
+                     'source_commit': before.get('commit'), 'source_tree': before.get('tree'),
+                     'source_unchanged': unchanged,
+                     'scope': 'Synthetic fixtures on this CI host; actual local TLS/Raft where the selected Service tests exercise it.',
+                     'full_openbao_271_replacement_proven': False,
+                     'physical_lan_validation_performed': False,
+                     'mac_external_disk_validation_performed': False,
+                     'production_cutover_performed': False}
+          (reports / 'verdict.json').write_text(json.dumps(verdict, indent=2) + '\n')
+          print(json.dumps(verdict, indent=2))
+          if not passed:
+              raise SystemExit(1)
+          PY
+
+      - name: Upload complete logs and source identity receipts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: native-recovery-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/heptabao-native-recovery-reports/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+
