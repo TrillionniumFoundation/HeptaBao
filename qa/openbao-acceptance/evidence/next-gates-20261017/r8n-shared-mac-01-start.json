@@ -1,0 +1,65 @@
+{
+  "prior_api_validation_rejection": {
+    "content": [
+      {
+        "text": "executable `python3` must be an absolute path without parent traversal",
+        "type": "text"
+      }
+    ],
+    "isError": true,
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  "request": {
+    "args": [
+      "/home/qian-qi/heptabao-next-gates-20261017/run_native_shared_reuse_r8n_01.py",
+      "--overlay",
+      "/home/qian-qi/heptabao-next-gates-20261017/r8n-shared-source-overlay-01.json.gz",
+      "--output-dir",
+      "/home/qian-qi/heptabao-next-gates-20261017/r8n-shared-main-01"
+    ],
+    "cwd": "/home/qian-qi/heptabao-next-gates-20261017",
+    "executable": "/usr/bin/python3",
+    "host": "main",
+    "idempotency_key": "heptabao-r8n-shared-mac-13-20261018-01",
+    "nice": 5,
+    "timeout_seconds": 1500
+  },
+  "start": {
+    "audit_recorded": true,
+    "job": {
+      "args": [
+        "/home/qian-qi/heptabao-next-gates-20261017/run_native_shared_reuse_r8n_01.py",
+        "--overlay",
+        "/home/qian-qi/heptabao-next-gates-20261017/r8n-shared-source-overlay-01.json.gz",
+        "--output-dir",
+        "/home/qian-qi/heptabao-next-gates-20261017/r8n-shared-main-01"
+      ],
+      "created_unix_ms": 1792292589137,
+      "cwd": "/home/qian-qi/heptabao-next-gates-20261017",
+      "env_keys": [],
+      "executable": "/usr/bin/python3",
+      "execution_mode": "operator",
+      "host": "main",
+      "id": "1a14cf68e51-1b6abb-772",
+      "idempotency_key": "heptabao-r8n-shared-mac-13-20261018-01",
+      "launch_error": null,
+      "launch_state": "launched",
+      "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a14cf68e51-1b6abb-772",
+      "request_digest": "14576eb6950dd8eb7cb0edb33da92c0fe460623e6426bc00ba5c32dad2bb5d1b",
+      "request_fingerprint": 1465761934196201700,
+      "ssh_target": "localhost",
+      "system_jobctl": false,
+      "unit": "hepta-runtime-job-1a14cf68e51-1b6abb-772"
+    },
+    "launch": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "ok": true,
+      "unit": "hepta-runtime-job-1a14cf68e51-1b6abb-772"
+    },
+    "local_record_pending": false,
+    "reused": false
+  }
+}

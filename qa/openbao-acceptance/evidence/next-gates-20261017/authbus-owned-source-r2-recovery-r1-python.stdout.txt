@@ -1,0 +1,1 @@
+{"actualSdkQualified": false, "ok": true, "productionMutation": false, "providerCalled": false, "schema": "authbus-owned-live-contract-test-v1", "syntheticOnly": true, "tests": 11}

@@ -1,0 +1,221 @@
+{
+  "actualPhysicalExecutionByThisSubagent": false,
+  "argvExecute": [
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j_native_physical_control_r2.py",
+    "--source-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-r8j",
+    "--manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-source-manifest.json",
+    "--matrix",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-mac-native-matrix.json",
+    "--matrix-sha256",
+    "114e38e56a108f24f58b6d6737f8be3077e98ef75bc692fc4dfe1d8bca0367dc",
+    "--linux-build",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-linux-freeze-01/native-build-r8j.json",
+    "--linux-build-sha256",
+    "fbe3ef1de04e732e3a36188a464d0814701300c49ded087abba4e45a2ed05509",
+    "--mac-build",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-mac-native-build-receipt.json",
+    "--mac-build-sha256",
+    "76f186ac9aee20646ecb6bea47cb5c3685f4b746329351e8e707934d6cc58a88",
+    "--node",
+    "macbook-pro,100.77.61.24,/Volumes/T5/hepta-vnext-recovery-20261013/native-r8j-physical89-02-node1",
+    "--node",
+    "rog,100.118.166.22,/home/qian-qi/heptabao-native-r8j-physical89-02-node2",
+    "--node",
+    "pocket4,100.119.126.104,/home/alex/heptabao-native-r8j-physical89-02-node3",
+    "--work-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-controller",
+    "--plan-out",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-plan.json",
+    "--allow-private-tailnet",
+    "--qa-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-qa",
+    "--report-out",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-controller-report.json",
+    "--execute"
+  ],
+  "argvPlanOnly": [
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j_native_physical_control_r2.py",
+    "--source-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-r8j",
+    "--manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-source-manifest.json",
+    "--matrix",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-mac-native-matrix.json",
+    "--matrix-sha256",
+    "114e38e56a108f24f58b6d6737f8be3077e98ef75bc692fc4dfe1d8bca0367dc",
+    "--linux-build",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-linux-freeze-01/native-build-r8j.json",
+    "--linux-build-sha256",
+    "fbe3ef1de04e732e3a36188a464d0814701300c49ded087abba4e45a2ed05509",
+    "--mac-build",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-mac-native-build-receipt.json",
+    "--mac-build-sha256",
+    "76f186ac9aee20646ecb6bea47cb5c3685f4b746329351e8e707934d6cc58a88",
+    "--node",
+    "macbook-pro,100.77.61.24,/Volumes/T5/hepta-vnext-recovery-20261013/native-r8j-physical89-02-node1",
+    "--node",
+    "rog,100.118.166.22,/home/qian-qi/heptabao-native-r8j-physical89-02-node2",
+    "--node",
+    "pocket4,100.119.126.104,/home/alex/heptabao-native-r8j-physical89-02-node3",
+    "--work-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-controller",
+    "--plan-out",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-plan.json",
+    "--allow-private-tailnet",
+    "--qa-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-qa",
+    "--report-out",
+    "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-controller-report.json"
+  ],
+  "binarySourceBinding": {
+    "commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+    "files": 2582,
+    "manifestSha256": "676ca7874714d3113b45a880fea4e898f9d8d42aefb16e3d733e7e7fc0efda8f",
+    "tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a",
+    "verification": "The original frozen verifier runs before execution and again after the fixture; actual full source verification is deferred to root's main-host invocation."
+  },
+  "cwd": "/home/qian-qi/heptabao-next-gates-20261017",
+  "executable": "/usr/bin/python3",
+  "expectedPublicOutputs": {
+    "backupQualified": false,
+    "controllerReport": "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-controller-report.json",
+    "directLanQualified": false,
+    "plan": "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-plan.json",
+    "productionCutover": false,
+    "rawFixtureSummary": "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-controller/summary.json",
+    "reportPassPredicate": "Fixture exit 0; exact original 89 check identities all true; new QA runner digest; original binary source commit/tree; full source, all QA hashes, and Linux binary unchanged after run."
+  },
+  "files": {
+    "HeptaBao/qa/openbao-acceptance/tests/test_native_v6_ha_multihost_live.py": {
+      "bytes": 21167,
+      "sha256": "adfaad3c846274069ffc720be4a9979bda9306f71c310f8a264418bced9de654"
+    },
+    "local-r8-evidence/r8j-native-physical89-query-r1-contract.json": {
+      "bytes": 9055,
+      "sha256": "f9eaa03d76e21beb75c26da52cee35022777eee5fb4a81da0b4ff124f7fd3f2e"
+    },
+    "native-r8j-physical89-02-qa/qa/openbao-acceptance/fixture_mounts.py": {
+      "bytes": 1560,
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5"
+    },
+    "native-r8j-physical89-02-qa/qa/openbao-acceptance/ha_multihost_live.py": {
+      "bytes": 77360,
+      "sha256": "7857f62b1e9e46b7d718eb401e6ed75bb48dc9db385327a5cb86bda30c587858"
+    },
+    "native-r8j-physical89-02-qa/qa/openbao-acceptance/ha_three_host_loopback_live.py": {
+      "bytes": 5876,
+      "sha256": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf"
+    },
+    "native-r8j-physical89-02-qa/qa/openbao-acceptance/native_v6_ha_multihost_live.py": {
+      "bytes": 70986,
+      "sha256": "ca909ec0d8c70954a369ff2d6875094d1e4b8bf0d06d1bb589114b5c56203727"
+    },
+    "native-r8j-physical89-02-qa/tools/physical_ha_loopback_mesh.py": {
+      "bytes": 10134,
+      "sha256": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493"
+    },
+    "native-r8j-physical89-02-qa/tools/physical_ha_peer_preflight.py": {
+      "bytes": 8115,
+      "sha256": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227"
+    },
+    "r8j_native_build_freeze.py": {
+      "bytes": 14613,
+      "sha256": "1f90af9625d8efedf8e15ff42fed599f38b1b068ad968679012dd229b5453e84"
+    },
+    "r8j_native_physical_control.py": {
+      "bytes": 10028,
+      "sha256": "3cd7c522faf091d7fdbd449641b1c45de4f10b9a07661862a3c6a34eeca9f997"
+    },
+    "r8j_native_physical_control_r2.py": {
+      "bytes": 21197,
+      "sha256": "28c32d201b656e5bc68f9420bb72b1e9350c4ab408b18485ae0d1037c0501fef"
+    },
+    "test_r8j_native_physical_control_r2.py": {
+      "bytes": 13429,
+      "sha256": "a89d2f878d0f4bedbb355380ea699badf677c6b918b0323d001364cad03b3124"
+    }
+  },
+  "localValidation": {
+    "cargoOrGitCalls": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 test_r8j_native_physical_control_r2.py -v",
+    "elapsedSeconds": 0.4,
+    "exitCode": 0,
+    "failed": 0,
+    "initialTestIteration": {
+      "cause": "Test command used scratch receipt paths, which the unchanged shared host-storage parser correctly rejected.",
+      "errors": 1,
+      "passed": 10,
+      "resolution": "The dedicated command-construction test now uses the real admitted main-host receipt paths, while remaining pure and not opening those remote paths.",
+      "tests": 11
+    },
+    "logs": {
+      "stderr": {
+        "bytes": 1996,
+        "path": "/workspace/scratch/d090566e965e/local-r8-evidence/r8j-native-physical89-controller-r2-test.stderr.txt",
+        "sha256": "a97254b6dabba36889602344738f498984aabbefe84eb765dd80b54232240c09"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/workspace/scratch/d090566e965e/local-r8-evidence/r8j-native-physical89-controller-r2-test.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "networkCalls": 0,
+    "passed": 11,
+    "processSpawnsByTestedController": 0,
+    "python39AstParsingPassed": true,
+    "testsRun": 11
+  },
+  "originalPhysicalAttempt": {
+    "failureCode": "native_exact_read_failed_node_1",
+    "failureStage": "fresh_standalone_v5_seed",
+    "passed": 18,
+    "preserved": true,
+    "required": 89,
+    "status": "failed",
+    "summarySha256": "4471bf5f5a839b64f62671da362b39d1dac0627edacd475f1d9b0fcda3667556"
+  },
+  "originalSourceAndBinariesModified": false,
+  "packet": {
+    "bytes": 50451,
+    "members": [
+      "r8j_native_physical_control_r2.py",
+      "native-r8j-physical89-02-qa/qa/openbao-acceptance/fixture_mounts.py",
+      "native-r8j-physical89-02-qa/qa/openbao-acceptance/ha_multihost_live.py",
+      "native-r8j-physical89-02-qa/qa/openbao-acceptance/ha_three_host_loopback_live.py",
+      "native-r8j-physical89-02-qa/qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "native-r8j-physical89-02-qa/tools/physical_ha_loopback_mesh.py",
+      "native-r8j-physical89-02-qa/tools/physical_ha_peer_preflight.py"
+    ],
+    "path": "/workspace/scratch/d090566e965e/r8j-native-physical89-r2-execution.tar.gz",
+    "sha256": "1757c6042617ffcd7f5c8f3bbe57c96acf89904cd45ada8be3a7bdbf577f15d4"
+  },
+  "preparationScope": {
+    "allFiveOriginalHelpersPinned": true,
+    "createsPhysicalRoots": false,
+    "createsPlanFile": true,
+    "defaultPlanOnly": true,
+    "executeFlagRequired": true,
+    "newAttempt": "02",
+    "opensNetwork": false,
+    "originalFreezerRequiredBesideController": true,
+    "qaDirectoryIsOriginalR8jTree": false,
+    "rawFixtureSummaryNeverRewritten": true
+  },
+  "preservedGates": {
+    "httpSeconds": 15,
+    "matrixTestCount": 30,
+    "nativeAdmissionSeconds": 8,
+    "payloadTargetBytes": 35651584,
+    "requiredChecks": 89,
+    "requiredChecksSha256": "b8d323c25c8f9f17eb86be2527778b5ac774eb4495d5b6f98ce61c5c8017d670",
+    "unknownMutationRetries": 0
+  },
+  "schema": "heptabao.r8j-native-physical89-controller-r2-contract.v1",
+  "status": "local_frozen_and_verified",
+  "timeoutSeconds": 2550
+}

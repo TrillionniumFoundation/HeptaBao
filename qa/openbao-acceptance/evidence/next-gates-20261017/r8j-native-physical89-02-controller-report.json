@@ -1,0 +1,55 @@
+{
+  "backup_qualified": false,
+  "binary_bindings": {
+    "aarch64-apple-darwin": {
+      "binary_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/native-r8j-mac-freeze-01/heptabao-server",
+      "binary_sha256": "64b88fd098cfe80c92a2462ab8609b84b98145f3ac5955e14fc3911a8c7a18c0",
+      "receipt_sha256": "76f186ac9aee20646ecb6bea47cb5c3685f4b746329351e8e707934d6cc58a88"
+    },
+    "x86_64-unknown-linux-gnu": {
+      "binary_path": "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-linux-freeze-01/heptabao-server",
+      "binary_sha256": "c0821bae2a8435eddea8506311a09cd3e1f0533948b8489f1e606e210a073560",
+      "receipt_sha256": "fbe3ef1de04e732e3a36188a464d0814701300c49ded087abba4e45a2ed05509"
+    }
+  },
+  "binary_source_commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+  "binary_source_files": 2582,
+  "binary_source_manifest_sha256": "676ca7874714d3113b45a880fea4e898f9d8d42aefb16e3d733e7e7fc0efda8f",
+  "binary_source_tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a",
+  "binding_failure_code": null,
+  "controller_sha256": "28c32d201b656e5bc68f9420bb72b1e9350c4ab408b18485ae0d1037c0501fef",
+  "direct_lan_qualified": false,
+  "fixture_exact_89_passed": false,
+  "fixture_exit_code": 1,
+  "fixture_summary_path": "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-controller/summary.json",
+  "fixture_summary_sha256": "7a2bee4c1db309d0fee320cb8dce88bc03258d7a8022aac134889aa7a5f52f7c",
+  "freezer_sha256": "1f90af9625d8efedf8e15ff42fed599f38b1b068ad968679012dd229b5453e84",
+  "http_request_budget_seconds": 15,
+  "matrix_passed_tests": 30,
+  "matrix_sha256": "114e38e56a108f24f58b6d6737f8be3077e98ef75bc692fc4dfe1d8bca0367dc",
+  "native_admission_budget_seconds": 8,
+  "parent_controller_sha256": "3cd7c522faf091d7fdbd449641b1c45de4f10b9a07661862a3c6a34eeca9f997",
+  "payload_target_bytes": 35651584,
+  "physical_fixture_passed": false,
+  "plan_path": "/home/qian-qi/heptabao-next-gates-20261017/r8j-native-physical89-02-plan.json",
+  "plan_sha256": "a4084f132e5c4b2296e0c94b6ec1a58d3da26611ec8815c9113d102f362c427d",
+  "post_run_bindings_unchanged": true,
+  "production_cutover": false,
+  "qa_changes_do_not_change_binary_source_identity": true,
+  "qa_directory_is_binary_source_tree": false,
+  "qa_files_sha256": {
+    "qa/openbao-acceptance/fixture_mounts.py": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+    "qa/openbao-acceptance/ha_multihost_live.py": "7857f62b1e9e46b7d718eb401e6ed75bb48dc9db385327a5cb86bda30c587858",
+    "qa/openbao-acceptance/ha_three_host_loopback_live.py": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+    "qa/openbao-acceptance/native_v6_ha_multihost_live.py": "ca909ec0d8c70954a369ff2d6875094d1e4b8bf0d06d1bb589114b5c56203727",
+    "tools/physical_ha_loopback_mesh.py": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493",
+    "tools/physical_ha_peer_preflight.py": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227"
+  },
+  "qa_root": "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-physical89-02-qa",
+  "qa_version": "physical89-query-r1-controller-r2",
+  "required_check_count": 89,
+  "required_checks_sha256": "b8d323c25c8f9f17eb86be2527778b5ac774eb4495d5b6f98ce61c5c8017d670",
+  "schema": "heptabao.r8j-native-physical89-controller-report.v2",
+  "source_commit_and_tree_arguments_describe": "original_r8j_binary_source",
+  "status": "failed"
+}

@@ -1,0 +1,1041 @@
+{
+  "acceptance_policy": {
+    "does_not_allow_production_cutover": true,
+    "does_not_claim_all_five_migration_gates_complete": true,
+    "does_not_delete_or_rename_raw_events": true,
+    "does_not_override_original_wrapper_contract": true,
+    "expected_repeat_bound_only_to_this_driver_and_these_receipts": true
+  },
+  "additional_binding_checks": {
+    "driver_error_code": null,
+    "mutation_outcome_unknown": false,
+    "wrapper_binds_exact_driver_bytes_and_sha256": true,
+    "wrapper_counts_match_raw": true
+  },
+  "cleanup": {
+    "basis": "run() finally calls instance.stop(); it kills and waits its original Popen and requires -9. A cleanup exception makes driver ok false; the bound driver exited zero with ok true.",
+    "captured_fixture_approle_bearers_revoked_and_cold_denied": 15,
+    "fixture_root_token_or_unseal_key_revocation_claimed": false,
+    "fixture_secret_ids_destroyed_and_cold_denied": 3,
+    "independent_final_host_process_inventory_present": false,
+    "independent_kernel_birth_cleanup_qualified": false,
+    "original_popen_kill_and_wait_supported": true,
+    "owned_process_branch": "standalone_compatibility_without_Owner_receipt",
+    "private_fixture_or_backup_deletion_claimed": false,
+    "process_stop_basis_is_control_flow_inference": true,
+    "provider_credential_revocation_claimed": false,
+    "whole_host_zero_residue_claimed": false
+  },
+  "distinct_bearer_inference": {
+    "all_capture_events": 15,
+    "conclusion": "All 15 captured bearer strings were distinct under the bound implementation, including both race captures.",
+    "deduplication_expression": "all_tokens = list(dict.fromkeys(issued))",
+    "is_inference_from_bound_public_receipt_and_frozen_code": true,
+    "post_dedup_live_revoke_deny_cold_deny_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "raw_tokens_or_token_fingerprints_inspected": false,
+    "token_content_transferred_to_reconciliation": false
+  },
+  "events": {
+    "293_unique_cases_claimed": false,
+    "distinct_case_labels": 292,
+    "labels_unique": false,
+    "observed": 293,
+    "passed": 293
+  },
+  "execution_source_binding": {
+    "binary_sha256": "c0821bae2a8435eddea8506311a09cd3e1f0533948b8489f1e606e210a073560",
+    "binary_source_commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+    "binary_source_tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a",
+    "central_source_sha256": "81bfbacfd14df399c1e8eef963447803cee8e01aebc2474c0f39c2595e7fce47",
+    "consumer_sha256": "dc3120ba49f6088197dd4175054dd3c1d908efc79916599e9cee7ac85a46c4af",
+    "driver_sha256": "fb44eab74e56b5d098a8fe0656ff764332fcccca9fe6ab0c7bcc4f2dfe21c121",
+    "plugin_source_sha256": {
+      "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+      "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+      "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+      "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+      "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    "source_packet_sha256": "15761be9e3be93ea9b3267906e674b9d33d579e4d565b7629db43ac793179e1a",
+    "source_unchanged_after": true
+  },
+  "expected_repeated_event": {
+    "actual_competing_manifest_cas": true,
+    "actual_completed_auth_routes": [
+      "auth/approle/login",
+      "auth/approle/login"
+    ],
+    "actual_conflict_replies": [
+      {
+        "errorSha256": "3841110dcf649dc9a4441c9302297b9fdb6ae9dbd2fe240bb3c4ab92993eb3d5",
+        "method": "POST",
+        "originalExactErrorContract": true,
+        "routeSha256": "3a11a54039de227ba2c6940725bf3e7c5681f773dd3febb22aef8d871502e5d2",
+        "status": 400
+      }
+    ],
+    "capture_ordinals_among_all_captures_zero_based": [
+      4,
+      5
+    ],
+    "case": "actual_manifest_cas_race.captured_actual_token",
+    "cause": "capture() serializes [client, *secondary]; collect_process() emits the same label once per bearer.",
+    "count": 2,
+    "generic_duplicate_acceptance_allowed": false,
+    "occurrence_indices_zero_based": [
+      0,
+      1
+    ],
+    "raw_check_indices_zero_based": [
+      72,
+      73
+    ],
+    "roles_in_capture_order_inferred_from_frozen_code": [
+      "primary_client",
+      "competing_client"
+    ]
+  },
+  "final_source_and_redaction_checks": [
+    {
+      "case": "source.original_plugin_unchanged",
+      "passed": true
+    },
+    {
+      "case": "source.central_code_unchanged",
+      "passed": true
+    },
+    {
+      "case": "source.export_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "case": "evidence.no_secret_profile_or_identity_in_public_receipts",
+      "passed": true
+    }
+  ],
+  "generator_sha256": "57f5f99ed41708945521480c005ed8438161aeda2c7051515d2ad91245e22642",
+  "inputs": {
+    "HeptaBao/qa/openbao-acceptance/native_v6_authbus_owned_source_consumer.mjs": {
+      "bytes": 30284,
+      "sha256": "dc3120ba49f6088197dd4175054dd3c1d908efc79916599e9cee7ac85a46c4af"
+    },
+    "HeptaBao/qa/openbao-acceptance/native_v6_authbus_owned_source_live.py": {
+      "bytes": 64050,
+      "sha256": "fb44eab74e56b5d098a8fe0656ff764332fcccca9fe6ab0c7bcc4f2dfe21c121"
+    },
+    "HeptaBao/qa/openbao-acceptance/owned_process.py": {
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    "HeptaBao/qa/single-node/smoke.py": {
+      "bytes": 16470,
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+    },
+    "HeptaBao/tools/authbus/authbus_coordinator.py": {
+      "bytes": 39815,
+      "sha256": "81bfbacfd14df399c1e8eef963447803cee8e01aebc2474c0f39c2595e7fce47"
+    },
+    "local-r8-evidence/authbus-owned-source-actual-r2-public-receipt.json": {
+      "bytes": 78725,
+      "sha256": "20740bac22ae330a02e573bfe504feec4c5bce8699997eeb3c73377d31d35370"
+    },
+    "local-r8-evidence/authbus-owned-source-r2-controller-public-receipt.json": {
+      "bytes": 2115,
+      "sha256": "d0c98be6fcc5e41e6c83f28089fcf1030be808f9d22fba1acbaf049a162439ea"
+    },
+    "run_authbus_owned_source_actual_r2b.py": {
+      "bytes": 10329,
+      "sha256": "e499bd67cae460aa1895805043194d22141f8890d6a08806fd3d9c93770d92db"
+    }
+  },
+  "new_execution_performed": false,
+  "only_failed_wrapper_leaf_predicate": "case_names_unique",
+  "original_driver_ok": true,
+  "original_failure_preserved": true,
+  "original_receipts_modified": false,
+  "original_wrapper_accepted": false,
+  "original_wrapper_composites": {
+    "recomputed_ok": false,
+    "recorded_ok": false,
+    "valid": false
+  },
+  "original_wrapper_contract_passed": false,
+  "original_wrapper_leaf_predicates": [
+    {
+      "actual": true,
+      "expression": "bool(checks)",
+      "name": "checks_nonempty"
+    },
+    {
+      "actual": true,
+      "expression": "all(item.get('passed') is True for item in checks)",
+      "name": "all_events_passed"
+    },
+    {
+      "actual": false,
+      "expression": "len(set(names)) == len(names)",
+      "name": "case_names_unique",
+      "operands": {
+        "distinct_names": 292,
+        "events": 293
+      }
+    },
+    {
+      "actual": true,
+      "expression": "code == 0",
+      "name": "child_exit_zero",
+      "observed": 0
+    },
+    {
+      "actual": true,
+      "expression": "not timed_out",
+      "name": "not_timed_out",
+      "observed": false
+    },
+    {
+      "actual": true,
+      "expression": "source_unchanged",
+      "name": "source_unchanged_after"
+    },
+    {
+      "actual": true,
+      "expression": "receipt.get('ok') is True",
+      "name": "driver_ok"
+    },
+    {
+      "actual": true,
+      "expression": "receipt.get('schema') == 'native-v6-authbus-real-owned-source-live-v1'",
+      "name": "driver_schema_exact",
+      "observed": "native-v6-authbus-real-owned-source-live-v1"
+    },
+    {
+      "actual": true,
+      "expression": "receipt.get('production_cutover') is False",
+      "name": "no_production_cutover",
+      "observed": false
+    },
+    {
+      "actual": true,
+      "expression": "receipt.get('provider_called') is False",
+      "name": "no_provider_called",
+      "observed": false
+    }
+  ],
+  "private_candidate_or_token_read_by_reviewer": false,
+  "recorded_final_source_recheck": {
+    "case": "source_final_recheck",
+    "configSha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+    "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+    "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+    "inspectorSha256": "703cb463ce43488ff29f8a8394fab4bd591c69bc2a06c1c5ddc64d0abc1e14de",
+    "originalOperationDeadlineReused": true,
+    "ownerStillExact": true,
+    "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+    "providerLivenessVerified": false,
+    "receiptPath": "/home/qian-qi/heptabao-next-gates-20261017/authbus-owned-source-actual-r2/runs/source_final_recheck/source-read/public-receipt.json",
+    "receiptSha256": "2a5dbb05d5378c7b8c634cab90bcfe27cf579f1c1bc7d39e93cfaa09d7e763b0",
+    "snapshotNotARefreshLease": true
+  },
+  "recorded_source_rechecks": [
+    {
+      "case": "source_initial_recheck",
+      "configSha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+      "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+      "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+      "inspectorSha256": "703cb463ce43488ff29f8a8394fab4bd591c69bc2a06c1c5ddc64d0abc1e14de",
+      "originalOperationDeadlineReused": true,
+      "ownerStillExact": true,
+      "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+      "providerLivenessVerified": false,
+      "receiptPath": "/home/qian-qi/heptabao-next-gates-20261017/authbus-owned-source-actual-r2/runs/source_initial_recheck/source-read/public-receipt.json",
+      "receiptSha256": "b024efdb3087b80bd068469886e4fe4638b7b5da8f85fad97a15a5b3f4872dcc",
+      "snapshotNotARefreshLease": true
+    },
+    {
+      "case": "operator_authorize_exact_a",
+      "configSha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+      "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+      "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+      "inspectorSha256": "703cb463ce43488ff29f8a8394fab4bd591c69bc2a06c1c5ddc64d0abc1e14de",
+      "originalOperationDeadlineReused": true,
+      "ownerStillExact": true,
+      "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+      "providerLivenessVerified": false,
+      "receiptPath": "/home/qian-qi/heptabao-next-gates-20261017/authbus-owned-source-actual-r2/runs/operator_authorize_exact_a/source-read/public-receipt.json",
+      "receiptSha256": "fb9aed9b8d786fddce92ff875d40088ed747a2f7b14343a13aa0abab9edc2f59",
+      "snapshotNotARefreshLease": true
+    },
+    {
+      "case": "actual_manifest_cas_race",
+      "configSha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+      "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+      "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+      "inspectorSha256": "703cb463ce43488ff29f8a8394fab4bd591c69bc2a06c1c5ddc64d0abc1e14de",
+      "originalOperationDeadlineReused": true,
+      "ownerStillExact": true,
+      "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+      "providerLivenessVerified": false,
+      "receiptPath": "/home/qian-qi/heptabao-next-gates-20261017/authbus-owned-source-actual-r2/runs/actual_manifest_cas_race/source-read/public-receipt.json",
+      "receiptSha256": "4396843dcdd96407d29af711485dccd8847e39946fa75792c1660dbf8ed43f5e",
+      "snapshotNotARefreshLease": true
+    },
+    {
+      "case": "actual_central_process_crash",
+      "configSha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+      "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+      "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+      "inspectorSha256": "703cb463ce43488ff29f8a8394fab4bd591c69bc2a06c1c5ddc64d0abc1e14de",
+      "originalOperationDeadlineReused": true,
+      "ownerStillExact": true,
+      "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+      "providerLivenessVerified": false,
+      "receiptPath": "/home/qian-qi/heptabao-next-gates-20261017/authbus-owned-source-actual-r2/runs/actual_central_process_crash/source-read/public-receipt.json",
+      "receiptSha256": "04fc2232234a91efcf7ad9d0f9d435082508eeae5247f83ee7bddd5f0f39e21e",
+      "snapshotNotARefreshLease": true
+    },
+    {
+      "case": "source_final_recheck",
+      "configSha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+      "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+      "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+      "inspectorSha256": "703cb463ce43488ff29f8a8394fab4bd591c69bc2a06c1c5ddc64d0abc1e14de",
+      "originalOperationDeadlineReused": true,
+      "ownerStillExact": true,
+      "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+      "providerLivenessVerified": false,
+      "receiptPath": "/home/qian-qi/heptabao-next-gates-20261017/authbus-owned-source-actual-r2/runs/source_final_recheck/source-read/public-receipt.json",
+      "receiptSha256": "2a5dbb05d5378c7b8c634cab90bcfe27cf579f1c1bc7d39e93cfaa09d7e763b0",
+      "snapshotNotARefreshLease": true
+    }
+  ],
+  "review_method": "read_only_public_receipts_and_exact_frozen_source",
+  "review_recorded_utc": "2026-10-18T02:38:14.611643+00:00",
+  "revocation_vectors": [
+    {
+      "count": 15,
+      "expected_status": 200,
+      "prefix": "revoke.token_live_before.",
+      "rows": [
+        {
+          "case": "revoke.token_live_before.0",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 206,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.1",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 209,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.2",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 212,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.3",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 215,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.4",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 218,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.5",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 221,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.6",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 224,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.7",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 227,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.8",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 230,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.9",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 233,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.10",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 236,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.11",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 239,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.12",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 242,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.13",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 245,
+          "status": 200
+        },
+        {
+          "case": "revoke.token_live_before.14",
+          "expected": 200,
+          "passed": true,
+          "raw_check_index": 248,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "count": 15,
+      "expected_status": 204,
+      "prefix": "revoke.token.",
+      "rows": [
+        {
+          "case": "revoke.token.0",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 207,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.1",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 210,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.2",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 213,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.3",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 216,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.4",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 219,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.5",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 222,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.6",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 225,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.7",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 228,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.8",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 231,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.9",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 234,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.10",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 237,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.11",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 240,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.12",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 243,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.13",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 246,
+          "status": 204
+        },
+        {
+          "case": "revoke.token.14",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 249,
+          "status": 204
+        }
+      ]
+    },
+    {
+      "count": 15,
+      "expected_status": 403,
+      "prefix": "revoke.token_denied.",
+      "rows": [
+        {
+          "case": "revoke.token_denied.0",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 208,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.1",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 211,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.2",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 214,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.3",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 217,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.4",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 220,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.5",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 223,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.6",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 226,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.7",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 229,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.8",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 232,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.9",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 235,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.10",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 238,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.11",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 241,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.12",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 244,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.13",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 247,
+          "status": 403
+        },
+        {
+          "case": "revoke.token_denied.14",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 250,
+          "status": 403
+        }
+      ]
+    },
+    {
+      "count": 15,
+      "expected_status": 403,
+      "prefix": "revoke.persisted_token.",
+      "rows": [
+        {
+          "case": "revoke.persisted_token.0",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 271,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.1",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 272,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.2",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 273,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.3",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 274,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.4",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 275,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.5",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 276,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.6",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 277,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.7",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 278,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.8",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 279,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.9",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 280,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.10",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 281,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.11",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 282,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.12",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 283,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.13",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 284,
+          "status": 403
+        },
+        {
+          "case": "revoke.persisted_token.14",
+          "expected": 403,
+          "passed": true,
+          "raw_check_index": 285,
+          "status": 403
+        }
+      ]
+    },
+    {
+      "count": 3,
+      "expected_status": 204,
+      "prefix": "revoke.sid.",
+      "rows": [
+        {
+          "case": "revoke.sid.authbus-owned-producer",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 251,
+          "status": 204
+        },
+        {
+          "case": "revoke.sid.authbus-owned-follower",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 253,
+          "status": 204
+        },
+        {
+          "case": "revoke.sid.authbus-owned-writer",
+          "expected": 204,
+          "passed": true,
+          "raw_check_index": 255,
+          "status": 204
+        }
+      ]
+    },
+    {
+      "count": 3,
+      "expected_status": 400,
+      "prefix": "revoke.sid_login_denied.",
+      "rows": [
+        {
+          "case": "revoke.sid_login_denied.authbus-owned-producer",
+          "expected": 400,
+          "passed": true,
+          "raw_check_index": 252,
+          "status": 400
+        },
+        {
+          "case": "revoke.sid_login_denied.authbus-owned-follower",
+          "expected": 400,
+          "passed": true,
+          "raw_check_index": 254,
+          "status": 400
+        },
+        {
+          "case": "revoke.sid_login_denied.authbus-owned-writer",
+          "expected": 400,
+          "passed": true,
+          "raw_check_index": 256,
+          "status": 400
+        }
+      ]
+    },
+    {
+      "count": 3,
+      "expected_status": 400,
+      "prefix": "revoke.persisted_sid_login_denied.",
+      "rows": [
+        {
+          "case": "revoke.persisted_sid_login_denied.authbus-owned-producer",
+          "expected": 400,
+          "passed": true,
+          "raw_check_index": 286,
+          "status": 400
+        },
+        {
+          "case": "revoke.persisted_sid_login_denied.authbus-owned-follower",
+          "expected": 400,
+          "passed": true,
+          "raw_check_index": 287,
+          "status": 400
+        },
+        {
+          "case": "revoke.persisted_sid_login_denied.authbus-owned-writer",
+          "expected": 400,
+          "passed": true,
+          "raw_check_index": 288,
+          "status": 400
+        }
+      ]
+    }
+  ],
+  "schema": "heptabao.authbus-owned-source-r2-public-reconciliation.v1",
+  "scope": {
+    "actual_independent_service_credential_publication": true,
+    "actual_original_producer_and_consumer": true,
+    "actual_renewal_result": {
+      "actualRenewSelfSameBearer": true,
+      "forcedLocalDueClock": true,
+      "originalLeaseOnlyShortenedBeforeRenew": true,
+      "realLeaseExpiryWaited": false,
+      "sameBearerLiveReadBeforeAndAfter": true
+    },
+    "actual_sdk_qualified": true,
+    "actual_service_https_qualified": true,
+    "authorized_non_resumed_positive_client_tls_observations": 37,
+    "excluded_original_flags": {
+      "enforced_scheduler_qualified": false,
+      "ha_cluster_qualified": false,
+      "j3160_contacted": false,
+      "oauth_refresh_ownership_qualified": false,
+      "oauth_refreshed": false,
+      "production_coordinator_replacement": false,
+      "production_cutover": false,
+      "production_mutation": false,
+      "provider_called": false,
+      "provider_liveness_verified": false
+    },
+    "expected_negative_plugin_invocations": 2,
+    "original_operation_budget_seconds": 360,
+    "original_operation_elapsed_seconds": 88.408,
+    "outer_elapsed_seconds": 88.675,
+    "physical_host": "main",
+    "positive_plugin_invocations": 6,
+    "real_credential_versions": 1,
+    "recorded_server_cycles": [
+      {
+        "case": "server_cold_restart_with_pending",
+        "exit_code": -9,
+        "method": "SIGKILL",
+        "original_pid": 2858717
+      },
+      {
+        "case": "revocations_cold_restart",
+        "exit_code": -9,
+        "method": "SIGKILL",
+        "original_pid": 2859469
+      }
+    ],
+    "sdk_backup": {
+      "files": [
+        {
+          "bytes": 110592,
+          "name": "openclaw-agent.sqlite",
+          "sha256": "79e46e612c3a8678675efe811d4ad01a3d83328cf3ad11319940e47818da4f11"
+        }
+      ],
+      "processClosedBeforeCopy": true,
+      "sourceCredentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b"
+    },
+    "single_node_native_fixture": true
+  },
+  "scoped_functional_cases": [
+    {
+      "case": "central.no_implicit_source_authority",
+      "passed": true,
+      "raw_check_index": 62
+    },
+    {
+      "case": "central.no_implicit_publication",
+      "passed": true,
+      "raw_check_index": 64
+    },
+    {
+      "case": "central.actual_cas_rejection",
+      "passed": true,
+      "raw_check_index": 78
+    },
+    {
+      "case": "central.conflict_published_no_credential",
+      "passed": true,
+      "raw_check_index": 80
+    },
+    {
+      "case": "central.conflict_completed_no_unknown_pending",
+      "passed": true,
+      "raw_check_index": 81
+    },
+    {
+      "case": "central.write_ahead_journal_survived",
+      "passed": true,
+      "raw_check_index": 87
+    },
+    {
+      "case": "central.actual_commit_without_success_receipt",
+      "passed": true,
+      "raw_check_index": 90
+    },
+    {
+      "case": "central.original_credential_payload_exact",
+      "passed": true,
+      "raw_check_index": 92
+    },
+    {
+      "case": "central.full_document_content_address",
+      "passed": true,
+      "raw_check_index": 93
+    },
+    {
+      "case": "central.current_or_historical_manifest_recovery",
+      "passed": true,
+      "raw_check_index": 106
+    },
+    {
+      "case": "central.recovery_did_not_replay_manifest",
+      "passed": true,
+      "raw_check_index": 108
+    },
+    {
+      "case": "central.pending_cleared_after_immutable_receipt",
+      "passed": true,
+      "raw_check_index": 109
+    },
+    {
+      "case": "original_follower.actual_sdk_exact_a",
+      "passed": true,
+      "raw_check_index": 135
+    },
+    {
+      "case": "backup.actual_sdk_restored_same_real_source",
+      "passed": true,
+      "raw_check_index": 150
+    },
+    {
+      "case": "rollback.no_auth_and_real_local_value_retained",
+      "passed": true,
+      "raw_check_index": 158
+    },
+    {
+      "case": "rollback.same_binding_bytes_and_actual_sdk",
+      "passed": true,
+      "raw_check_index": 171
+    },
+    {
+      "case": "central.renew_same_bearer_real_api",
+      "passed": true,
+      "raw_check_index": 178
+    },
+    {
+      "case": "central.same_event_not_republished",
+      "passed": true,
+      "raw_check_index": 205
+    },
+    {
+      "case": "revoke.original_plugin_exact_sid_denial",
+      "passed": true,
+      "raw_check_index": 264
+    }
+  ],
+  "scoped_functional_evidence_supported": true,
+  "source_binding": {
+    "candidate_private_contents_reopened_by_reviewer": false,
+    "credentialDigest": "71c3e21e28368490383dc3628f561e42fef261b0f4ef78263e4dcf3873dc381b",
+    "exportReceiptSha256": "41197f8d23229f9103b51505b319cc09eef0a48192631821caf7da2172d74907",
+    "fixture_producer_host_id": "authbus-owned-producer",
+    "identityDigest": "c84e09f9ec9749c94545ddf65091f448ff795b318fde24a3780b6f000ff4ee9d",
+    "physical_host": "main",
+    "privateCandidateSha256": "f2c164581d5afb0c9f95b9a71aedaa3f2a889817dabe1201169f7b5ce6f5dbe6",
+    "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+    "snapshot_not_a_refresh_lease": true,
+    "source_candidate_transferred_off_owner_host": false,
+    "source_export_receipt_separately_reopened_by_reviewer": false,
+    "source_export_receipt_sha256_is_from_bound_driver": true,
+    "source_host_id": "desktop",
+    "source_ownership_qualified_in_original_receipt": true
+  },
+  "source_still_exact_at_final_recheck": true,
+  "status": "reconciled_scoped_evidence_original_wrapper_failed"
+}

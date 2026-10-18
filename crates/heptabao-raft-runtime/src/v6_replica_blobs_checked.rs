@@ -3,6 +3,10 @@
 use super::*;
 use heptabao_filesystem_guard::ImmutablePublicationCheckedError;
 
+#[cfg(unix)]
+#[path = "v6_replica_blobs_existing.rs"]
+mod existing;
+
 impl LocalV6BlobStage {
     pub fn stage_local_checked(
         &self,
@@ -14,6 +18,10 @@ impl LocalV6BlobStage {
             .map_err(|_| LocalV6BlobError::InvalidCiphertext)?;
         let reference = object.reference().clone();
         let destination = Self::leaf(&reference)?;
+        #[cfg(unix)]
+        if let Some(receipt) = self.sync_existing_exact_checked(&reference, ciphertext, gate)? {
+            return Ok(receipt);
+        }
         let temporary = format!(
             ".v6-tmp-{}-{}",
             std::process::id(),

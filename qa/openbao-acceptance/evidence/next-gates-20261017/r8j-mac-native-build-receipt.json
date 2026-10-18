@@ -1,0 +1,48 @@
+{
+  "binary_abi_evidence": {
+    "cpu": "arm64",
+    "filetype": "MH_EXECUTE",
+    "format": "Mach-O64"
+  },
+  "binary_has_independent_inode": true,
+  "binary_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/native-r8j-mac-freeze-01/heptabao-server",
+  "binary_sha256": "64b88fd098cfe80c92a2462ab8609b84b98145f3ac5955e14fc3911a8c7a18c0",
+  "build_exit_code": 0,
+  "build_log_sha256": "1a8db378be71d06752cde8036a89834f60116ce6705fac22c135c24f80e9ab7d",
+  "cargo_artifact_log_sha256": "7d18b1a41ff6dfaee84b19f91ca5f41393aeace6a4c9254298de7fa9e0185398",
+  "cargo_artifact_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/heptabao-server",
+  "cargo_home": "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo",
+  "cargo_version": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+  "command": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--features",
+    "experimental-native-v6-ha",
+    "--message-format=json"
+  ],
+  "copied_binary_readback_verified": true,
+  "elapsed_seconds": 173.841,
+  "features": [
+    "experimental-native-v6-ha"
+  ],
+  "freezer_sha256": "1f90af9625d8efedf8e15ff42fed599f38b1b068ad968679012dd229b5453e84",
+  "github_saved_commit_same_tree": "675d842e3f086b84512e398368d9ffd38071c636",
+  "native_abi": "aarch64-apple-darwin",
+  "production_cutover": false,
+  "rustc_verbose_version": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+  "source_files": 2582,
+  "source_freeze_verified": true,
+  "source_manifest_sha256": "676ca7874714d3113b45a880fea4e898f9d8d42aefb16e3d733e7e7fc0efda8f",
+  "source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8j",
+  "source_tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a",
+  "source_verified_before_and_after": true,
+  "target_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target"
+}

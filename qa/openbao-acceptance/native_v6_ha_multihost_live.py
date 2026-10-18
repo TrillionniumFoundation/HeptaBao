@@ -33,6 +33,7 @@ import subprocess
 import tarfile
 import time
 import urllib.error
+import urllib.parse
 
 import ha_multihost_live as base
 import ha_three_host_loopback_live as loopback
@@ -621,11 +622,19 @@ class NativeRun:
         self.acknowledged[path] = data_digest(value)
         return path
 
+    def read_data(self, node, path, *, version=None):
+        # The real HTTP GET parser selects KV2 fields from the URL only.
+        # A framed JSON body is consumed but ignored, which would silently
+        # select the latest version and invalidate historical assertions.
+        route = "secret/data/" + path
+        if version is not None:
+            if type(version) is not int or version < 1:
+                raise base.FixtureError("exact_history_version_must_be_positive_integer")
+            route += "?" + urllib.parse.urlencode({"version": version})
+        return self.request(node, "GET", route)
+
     def exact_read(self, node, path, expected, *, version=None):
-        # KV2 selects retained versions from the URL query. A JSON GET body
-        # is not a version selector and can silently read the latest version.
-        query = "" if version is None else "?version=" + str(version)
-        status, body = self.request(node, "GET", "secret/data/" + path + query)
+        status, body = self.read_data(node, path, version=version)
         data = body.get("data", {})
         if (status != 200 or not isinstance(data, dict) or not isinstance(data.get("data"), dict)
                 or data_digest(data["data"]) != expected
@@ -641,8 +650,7 @@ class NativeRun:
     def history_reads(self, leader, *, retired=True):
         for version, expected in sorted(self.history.items()):
             if retired and version in self.retired:
-                status, body = self.request(
-                    leader, "GET", "secret/data/" + self.path + "?version=" + str(version))
+                status, body = self.read_data(leader, self.path, version=version)
                 data = body.get("data")
                 metadata = data.get("metadata") if isinstance(data, dict) else None
                 if (status != 404 or not isinstance(data, dict) or data.get("data") is not None
@@ -972,8 +980,7 @@ class NativeRun:
         self.check("quorum_loss_write_denied_no_ack", status == 503
                    and body.get("data") in (None, {}) and body.get("auth") is None,
                    http_status=status)
-        status, body = self.request(survivor, "GET", "secret/data/" + self.path,
-                                    {"version": len(self.history)})
+        status, body = self.read_data(survivor, self.path, version=len(self.history))
         self.check("quorum_loss_read_denied_no_payload", status == 503
                    and body.get("data") in (None, {}) and body.get("auth") is None,
                    http_status=status)
@@ -1327,4 +1334,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

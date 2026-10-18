@@ -1,0 +1,78 @@
+{
+  "actualHttpsQualified": false,
+  "actualSdkQualified": false,
+  "allThreeSourceFilesMatchOriginalR2Bytes": true,
+  "files": {
+    "qa/openbao-acceptance/native_v6_authbus_owned_source.README.md": {
+      "bytes": 10712,
+      "matchesOriginalR2Bytes": true,
+      "sha256": "0ece5d44a5517fb7fec42e897f5132fa5bdd07651a056388e80e04c3a65fae3d"
+    },
+    "qa/openbao-acceptance/native_v6_authbus_owned_source_consumer.mjs": {
+      "bytes": 30284,
+      "matchesOriginalR2Bytes": true,
+      "sha256": "dc3120ba49f6088197dd4175054dd3c1d908efc79916599e9cee7ac85a46c4af"
+    },
+    "qa/openbao-acceptance/native_v6_authbus_owned_source_live.py": {
+      "bytes": 64050,
+      "matchesOriginalR2Bytes": true,
+      "sha256": "fb44eab74e56b5d098a8fe0656ff764332fcccca9fe6ab0c7bcc4f2dfe21c121"
+    }
+  },
+  "localClockCheckNotRemoteExecution": true,
+  "localLinuxMonotonicClockOverlap": true,
+  "nodeTests": 14,
+  "oauthRefreshed": false,
+  "ok": true,
+  "originalR2ReceiptRecreated": false,
+  "originalR2ReceiptRestored": false,
+  "originalR2ReceiptSha256": "def9e45a82b7c22563fbbe4a31e8e5f3c876bca3da5875cb64f8f6d34c4f3e53",
+  "privateCandidateRead": false,
+  "productionCutover": false,
+  "productionMutation": false,
+  "providerCalled": false,
+  "python39AstParsed": true,
+  "pythonTests": 11,
+  "recoveredFromConversationToolHistory": true,
+  "results": [
+    {
+      "case": "python",
+      "exitCode": 0,
+      "passed": true,
+      "stderrPath": "/workspace/scratch/d090566e965e/local-r8-evidence/authbus-owned-source-r2-recovery-r1-python.stderr.txt",
+      "stderrSha256": "4ea196a4ba1acf1ef632e2eb26802bab5556e995d5ed0af49a2af8ce0570af86",
+      "stdoutPath": "/workspace/scratch/d090566e965e/local-r8-evidence/authbus-owned-source-r2-recovery-r1-python.stdout.txt",
+      "stdoutSha256": "63989dad3a74387d731e4613c6d701a8cf6cb394b0dfebc7e233dd82cc591f22"
+    },
+    {
+      "case": "node-check",
+      "exitCode": 0,
+      "passed": true,
+      "stderrPath": "/workspace/scratch/d090566e965e/local-r8-evidence/authbus-owned-source-r2-recovery-r1-node-check.stderr.txt",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPath": "/workspace/scratch/d090566e965e/local-r8-evidence/authbus-owned-source-r2-recovery-r1-node-check.stdout.txt",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "node",
+      "exitCode": 0,
+      "passed": true,
+      "stderrPath": "/workspace/scratch/d090566e965e/local-r8-evidence/authbus-owned-source-r2-recovery-r1-node.stderr.txt",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutPath": "/workspace/scratch/d090566e965e/local-r8-evidence/authbus-owned-source-r2-recovery-r1-node.stdout.txt",
+      "stdoutSha256": "2f620311b667142205bce7f5ffd2a4a726b553de1974a09914ff7b84046b445e"
+    }
+  ],
+  "runtimeExecuted": false,
+  "schema": "authbus-owned-source-r2-recovery-validation-v1",
+  "unchangedOriginalDependenciesSha256": {
+    "qa/openbao-acceptance/cert_auth_live.py": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9",
+    "qa/openbao-acceptance/fixture_mounts.py": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+    "qa/openbao-acceptance/native_v6_authbus_client_live.py": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e",
+    "qa/openbao-acceptance/native_v6_openclaw_authbus_live.py": "6d785c4d69ad800b7c9ac5f8510397031362ff5bca9947be024700e91235c98a",
+    "qa/openbao-acceptance/owned_process.py": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+    "qa/single-node/smoke.py": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+    "tools/authbus/authbus_coordinator.py": "81bfbacfd14df399c1e8eef963447803cee8e01aebc2474c0f39c2595e7fce47"
+  },
+  "validationIsFreshAfterScratchReset": true
+}

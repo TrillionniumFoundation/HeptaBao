@@ -33,6 +33,107 @@ struct IndeterminateCommitNotice {
     recovery_reference: String,
 }
 
+#[derive(Clone, Copy)]
+enum OrdinaryKvVetoReason {
+    DeadlineBefore,
+    RecoveryBefore,
+    SealedBefore,
+    PrivateOwnerBefore,
+    HaSync,
+    RecoveryAfter,
+    LegacyReplica,
+    PrivateOwnerAfter,
+    AppRoleAudit,
+    SealedBeforeActor,
+    ActorFinal,
+}
+
+impl OrdinaryKvVetoReason {
+    fn code(self) -> &'static str {
+        match self {
+            Self::DeadlineBefore => "deadline_before",
+            Self::RecoveryBefore => "recovery_before",
+            Self::SealedBefore => "sealed_before",
+            Self::PrivateOwnerBefore => "private_owner_before",
+            Self::HaSync => "ha_sync",
+            Self::RecoveryAfter => "recovery_after",
+            Self::LegacyReplica => "legacy_replica",
+            Self::PrivateOwnerAfter => "private_owner_after",
+            Self::AppRoleAudit => "approle_audit",
+            Self::SealedBeforeActor => "sealed_before_actor",
+            Self::ActorFinal => "actor_final",
+        }
+    }
+}
+
+// Passive timing only: no Principal, path, fingerprint, response body, new
+// deadline, or authority is retained. A missing/skipped remaining value is -1.
+struct OrdinaryKvVetoTiming {
+    started: std::time::Instant,
+    remaining_at_delivery_us: i64,
+    remaining_before_sync_us: i64,
+    remaining_after_sync_us: i64,
+    sync_attempted: bool,
+    sync_elapsed_us: u64,
+}
+
+impl OrdinaryKvVetoTiming {
+    fn remaining(deadline: Option<std::time::Instant>, now: std::time::Instant) -> i64 {
+        deadline.map_or(-1, |deadline| {
+            i64::try_from(deadline.saturating_duration_since(now).as_micros()).unwrap_or(i64::MAX)
+        })
+    }
+
+    fn elapsed(duration: std::time::Duration) -> u64 {
+        u64::try_from(duration.as_micros()).unwrap_or(u64::MAX)
+    }
+
+    fn new(deadline: Option<std::time::Instant>) -> Self {
+        let started = std::time::Instant::now();
+        Self {
+            started,
+            remaining_at_delivery_us: Self::remaining(deadline, started),
+            remaining_before_sync_us: -1,
+            remaining_after_sync_us: -1,
+            sync_attempted: false,
+            sync_elapsed_us: 0,
+        }
+    }
+
+    fn emit_veto(
+        &self,
+        reason: OrdinaryKvVetoReason,
+        status: u16,
+        veto_audit_sequence: Option<u64>,
+        authority: &OrdinaryKvAuthority,
+    ) {
+        use std::io::Write as _;
+
+        let now = std::time::Instant::now();
+        // Only the failed delivery branch calls this, after erasing the body.
+        // Some(sequence) comes directly after the existing veto audit succeeds;
+        // failure or a skipped audit never borrows the preceding audit's index.
+        // Diagnostic I/O is best effort and cannot replace the original veto.
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBV6-KV-DELIVERY reason_code={} status={} veto_audit_seq_valid={} veto_audit_seq={} request_elapsed_us={} delivery_elapsed_us={} sync_attempted={} sync_elapsed_us={} original_remaining_at_delivery_us={} original_remaining_before_sync_us={} original_remaining_after_sync_us={} original_remaining_us={} original_expired={}",
+            reason.code(),
+            status,
+            veto_audit_sequence.is_some(),
+            veto_audit_sequence.unwrap_or(0),
+            Self::elapsed(now.saturating_duration_since(authority.started)),
+            Self::elapsed(now.saturating_duration_since(self.started)),
+            self.sync_attempted,
+            self.sync_elapsed_us,
+            self.remaining_at_delivery_us,
+            self.remaining_before_sync_us,
+            self.remaining_after_sync_us,
+            Self::remaining(authority.deadline, now),
+            authority.deadline.is_some_and(|deadline| now >= deadline),
+        );
+    }
+}
+
 // Temporarily carries only the negative observation while the original
 // capsule is moved into the existing before-Publish closure. It conveys no
 // Principal, clock, deadline, admission or right to release a private body.
@@ -530,29 +631,57 @@ impl Service {
         let _deadline_scope = authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
+        let mut timing = OrdinaryKvVetoTiming::new(authority.deadline);
+        let mut veto_reason = OrdinaryKvVetoReason::DeadlineBefore;
         let checked = (|| {
-            if authority.deadline_expired() || self.recovery_required || self.state.is_none() {
+            let deadline_expired = authority.deadline_expired();
+            if deadline_expired || self.recovery_required || self.state.is_none() {
+                if !deadline_expired {
+                    veto_reason = if self.recovery_required {
+                        OrdinaryKvVetoReason::RecoveryBefore
+                    } else {
+                        OrdinaryKvVetoReason::SealedBefore
+                    };
+                }
                 return Err(Response::error(503, "ordinary KV delivery is fenced"));
             }
+            veto_reason = OrdinaryKvVetoReason::PrivateOwnerBefore;
             authority.check_private_read_owner(self)?;
             // Install actual HA state, including revocations or namespace/mount
             // retirement committed while audit or publication was blocking.
-            if self.ha.is_some() && self.sync_from_ha_with_anchor(false).is_err() {
-                return Err(Response::error(
-                    503,
-                    "ordinary KV delivery synchronization failed",
-                ));
+            if self.ha.is_some() {
+                veto_reason = OrdinaryKvVetoReason::HaSync;
+                timing.sync_attempted = true;
+                let started = std::time::Instant::now();
+                timing.remaining_before_sync_us =
+                    OrdinaryKvVetoTiming::remaining(authority.deadline, started);
+                let synchronization_failed = self.sync_from_ha_with_anchor(false).is_err();
+                let finished = std::time::Instant::now();
+                timing.sync_elapsed_us =
+                    OrdinaryKvVetoTiming::elapsed(finished.saturating_duration_since(started));
+                timing.remaining_after_sync_us =
+                    OrdinaryKvVetoTiming::remaining(authority.deadline, finished);
+                if synchronization_failed {
+                    return Err(Response::error(
+                        503,
+                        "ordinary KV delivery synchronization failed",
+                    ));
+                }
             }
             if self.recovery_required {
+                veto_reason = OrdinaryKvVetoReason::RecoveryAfter;
                 return Err(Response::error(503, "ordinary KV delivery is fenced"));
             }
             if let Some(replica) = authority.legacy_replica.as_ref() {
+                veto_reason = OrdinaryKvVetoReason::LegacyReplica;
                 replica.check(self)?;
             }
+            veto_reason = OrdinaryKvVetoReason::PrivateOwnerAfter;
             authority.check_private_read_owner(self)?;
             if authority.is_approle_lookup()
                 && authority.audited_fingerprint.as_deref() != Some(fingerprint)
             {
+                veto_reason = OrdinaryKvVetoReason::AppRoleAudit;
                 return Err(Response::error(
                     503,
                     "AppRole immutable read was not audited",
@@ -560,10 +689,12 @@ impl Service {
             }
             // All quorum/durable work precedes this final observation of the
             // original affine Actor/Clock and current ACL/namespace/mount owner.
+            veto_reason = OrdinaryKvVetoReason::SealedBeforeActor;
             let state = self
                 .state
                 .as_ref()
                 .ok_or_else(|| Response::error(503, "ordinary KV delivery is sealed"))?;
+            veto_reason = OrdinaryKvVetoReason::ActorFinal;
             authority.check(state, &state.auth, &self.unseal_nonce)
         })();
         if let Err(error) = checked {
@@ -590,11 +721,18 @@ impl Service {
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
+                timing.emit_veto(veto_reason, 503, None, &authority);
                 return Response::error(
                     503,
                     "ordinary KV delivery veto audit failed; authoritative recovery required",
                 );
             }
+            let veto_audit_sequence = if planned_success {
+                Some(self.audit_sequence)
+            } else {
+                None
+            };
+            timing.emit_veto(veto_reason, error.status, veto_audit_sequence, &authority);
             return error;
         }
         response

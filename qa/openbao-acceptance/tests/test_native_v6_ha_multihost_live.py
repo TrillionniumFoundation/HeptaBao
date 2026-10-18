@@ -112,6 +112,7 @@ class NativeHistoryHttpTests(unittest.TestCase):
         self.assertFalse(thread.is_alive())
 
 
+
 class NativePhysicalOwnershipTests(unittest.TestCase):
     def test_real_quarantine_preserves_manifest_and_accepts_only_exact_rebuilt_subset(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -299,6 +300,152 @@ class NativePhysicalOwnershipTests(unittest.TestCase):
             ssh.assert_not_called()
 
 
+class NativePhysicalHistoryRequestTests(unittest.TestCase):
+    """Exercise the real shared urllib request builder without a remote voter.
+
+    The bounded reply adapter applies the actual HTTP parser's query-only
+    selection contract. It is a wire-format regression, not an HA/TLS pass.
+    """
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        work = Path(temporary.name).resolve()
+        self.node = native.base.Node(1, "owned", "100.64.1.1", "/home/owned/new-fixture", 46230, 46231)
+        self.run = native.NativeRun(SimpleNamespace(work_root=work, source_commit="a" * 40,
+                                                   source_tree="b" * 40),
+                                    [self.node], native.StrictCompleteMesh(), {}, {}, {"1": "c" * 64})
+        self.run.root_token = "synthetic-root-token"
+        self.requests = []
+
+    @contextlib.contextmanager
+    def wire(self, select):
+        def send(request, *, timeout):
+            self.requests.append((request, timeout))
+            # http.rs consumes framed GET bodies but selects logical fields
+            # only from the URL. In particular Request.data is not a query.
+            query = parse_qs(urlsplit(request.full_url).query)
+            status, body = select(query)
+            response = io.BytesIO(native.canonical(body))
+            response.status = status
+            return response
+
+        opener = SimpleNamespace(open=send)
+        with mock.patch.object(native.base.urllib.request, "build_opener", return_value=opener):
+            yield
+
+    def assert_get(self, index, version):
+        request, timeout = self.requests[index]
+        self.assertEqual(request.get_method(), "GET")
+        self.assertIsNone(request.data)
+        self.assertEqual(timeout, 15)
+        self.assertEqual(request.get_header("X-vault-token"), self.run.root_token)
+        query = parse_qs(urlsplit(request.full_url).query)
+        self.assertEqual(query, {} if version is None else {"version": [str(version)]})
+
+    def test_history_query_survives_real_shared_request_construction(self):
+        values = {1: {"value": "synthetic-v5-history-one"}, 2: {"value": "synthetic-v5-history-two"}}
+        self.run.history = {version: native.data_digest(value) for version, value in values.items()}
+
+        def selected(query):
+            version = int(query.get("version", ["2"])[0])
+            return 200, {"data": {"data": values[version], "metadata": {"version": version}}}
+
+        with self.wire(selected):
+            # This is the exact old wire bug: a successful response selects
+            # current v2 even though the ignored JSON body says v1.
+            status, reply = self.run.request(self.node, "GET", "secret/data/" + self.run.path, {"version": 1})
+            self.assertEqual(status, 200)
+            self.assertEqual(reply["data"]["metadata"]["version"], 2)
+            self.assertIsNotNone(self.requests[0][0].data)
+            self.run.history_reads(self.node, retired=False)
+        self.assertEqual(len(self.requests), 3)
+        self.assert_get(1, 1)
+        self.assert_get(2, 2)
+
+    def test_retired_versions_use_query_and_preserve_tombstone_checks(self):
+        value = {"value": "synthetic-live-version"}
+        self.run.history = {1: "a" * 64, 2: "b" * 64, 3: native.data_digest(value)}
+
+        def selected(query):
+            version = int(query.get("version", ["3"])[0])
+            if version == 3:
+                return 200, {"data": {"data": value, "metadata": {"version": 3}}}
+            return 404, {"data": {"data": None, "metadata": {
+                "version": version, "destroyed": version == 2,
+                "deletion_time": "2026-10-18T00:00:00Z" if version == 1 else ""}}}
+
+        with self.wire(selected):
+            self.run.history_reads(self.node)
+        self.assertEqual(len(self.requests), 3)
+        for index, version in enumerate((1, 2, 3)):
+            self.assert_get(index, version)
+        for status, payload, metadata in (
+            (404, {"value": "must-not-leak"}, {"version": 1, "destroyed": False, "deletion_time": "deleted"}),
+            (404, None, {"version": 2, "destroyed": False, "deletion_time": "deleted"}),
+            (404, None, {"version": 1, "destroyed": True, "deletion_time": "deleted"}),
+            (404, None, {"version": 1, "destroyed": False, "deletion_time": ""}),
+            (200, None, {"version": 1, "destroyed": False, "deletion_time": "deleted"}),
+        ):
+            with self.subTest(status=status, metadata=metadata):
+                self.requests.clear()
+                self.run.history = {1: "a" * 64}
+                with self.wire(lambda query: (status, {"data": {"data": payload, "metadata": metadata}})):
+                    with self.assertRaisesRegex(native.base.FixtureError, "retired_native_version_disclosed_payload"):
+                        self.run.history_reads(self.node)
+                self.assertEqual(len(self.requests), 1)
+                self.assert_get(0, 1)
+
+    def test_unversioned_read_and_quorum_denial_keep_body_empty(self):
+        value = {"value": "synthetic-single-version"}
+        with self.wire(lambda query: (200, {"data": {"data": value, "metadata": {"version": 1}}})):
+            self.run.exact_read(self.node, self.run.path, native.data_digest(value))
+        self.assert_get(0, None)
+        denied = {"errors": ["synthetic quorum unavailable"]}
+        with self.wire(lambda query: (503, denied)):
+            self.assertEqual(self.run.read_data(self.node, self.run.path, version=19), (503, denied))
+        self.assert_get(1, 19)
+
+    def test_wrong_historical_bytes_or_metadata_fail_once(self):
+        value = {"value": "synthetic-requested-version"}
+        expected = native.data_digest(value)
+        for status, payload, version in (
+            (200, {"value": "synthetic-stale-version"}, 1),
+            (200, value, 2),
+            (404, None, 1),
+            (503, value, 1),
+        ):
+            with self.subTest(status=status, version=version):
+                self.requests.clear()
+                with self.wire(lambda query: (status, {"data": {"data": payload, "metadata": {"version": version}}})):
+                    with self.assertRaisesRegex(native.base.FixtureError, "native_exact_read_failed_node_1"):
+                        self.run.exact_read(self.node, self.run.path, expected, version=1)
+                self.assertEqual(len(self.requests), 1)
+                self.assert_get(0, 1)
+
+    def test_original_deadline_denominator_and_history_capacity_remain_fixed(self):
+        self.assertEqual(len(native.REQUIRED_CHECKS), 89)
+        self.assertEqual(native.REQUEST_SECONDS, 15)
+        self.assertEqual(native.NATIVE_ADMISSION_SECONDS, 8)
+        self.assertEqual(native.TARGET_BYTES, 34 * 1024 * 1024)
+        value = {"value": "synthetic-requested-version"}
+        with self.wire(lambda query: (200, {"data": {"data": value, "metadata": {"version": 1}}})):
+            with mock.patch.object(native.time, "monotonic", side_effect=(100.0, 115.001)):
+                with self.assertRaisesRegex(native.base.FixtureError, "response_arrived_after_original_http_budget"):
+                    self.run.exact_read(self.node, self.run.path, native.data_digest(value), version=1)
+            with self.assertRaisesRegex(native.base.FixtureError, "original_http_budget_must_not_increase"):
+                self.run.request(self.node, "GET", "sys/health", timeout=16)
+        self.assertEqual(len(self.requests), 1)
+        self.assert_get(0, 1)
+
+    def test_invalid_history_versions_fail_before_http(self):
+        with self.wire(lambda query: self.fail("invalid history version reached HTTP")):
+            for version in (0, -1, True, 1.0, "1", [1]):
+                with self.subTest(version=version), self.assertRaisesRegex(
+                        native.base.FixtureError, "exact_history_version_must_be_positive_integer"):
+                    self.run.read_data(self.node, self.run.path, version=version)
+        self.assertEqual(self.requests, [])
+
+
 if __name__ == "__main__":
     unittest.main()
-
