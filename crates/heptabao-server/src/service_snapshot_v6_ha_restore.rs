@@ -14,14 +14,22 @@ use std::cell::Cell;
 /// fresh business proof can construct it. Original Actor/Auth are retained
 /// separately from the newly installed historical Auth owner.
 pub(in crate::service::snapshot_transfer) struct NativeHaHistoricalReceipt {
-    original_auth: AuthState,
+    operation_digest: [u8; 32],
+    original_auth: CowOwner<AuthState>,
     original_identity: StateIdentity,
     original_activation: String,
     restored_identity: StateIdentity,
-    restored_generation: u64,
+    restored_generation: plugin::PublicationGeneration,
     restored_epoch: u64,
     restored_activation: String,
     proof: NativeHaReadProof,
+}
+
+// An operation reference identifies the actual Raft restore transition. It is
+// retained through local installation and response audit, and grants no retry
+// or restore authority to a caller that receives an uncertain outcome.
+fn historical_recovery_reference(operation: [u8; 32]) -> String {
+    format!("native-v6-restore-{}", hex(&operation))
 }
 
 // An archive object remains data even after authentication. Every selected
@@ -41,7 +49,7 @@ impl HistoricalObjects<'_> {
         self.service.check_native_ha_snapshot_owner(self.plan)
             .map_err(|_| ServiceError::BarrierFailure)?;
         self.source.check_taken(self.service,
-            &mut self.durable.try_borrow_mut().map_err(|_| ServiceError::BarrierFailure)?)
+            &mut *self.durable.try_borrow_mut().map_err(|_| ServiceError::BarrierFailure)?)
             .map_err(|_| ServiceError::BarrierFailure)
     }
 }
@@ -109,6 +117,7 @@ impl Service {
         &mut self, plan: &mut SnapshotTransferPlan, result: Result<Observation, Response>,
     ) -> Response {
         let root_attempted = Cell::new(false);
+        let committed_operation = Cell::new(None);
         let checked = (|| -> Result<Response, Response> {
             self.check_native_ha_snapshot_owner(plan)?;
             if plan.is_download || plan.path != "sys/storage/raft/snapshot"
@@ -141,7 +150,7 @@ impl Service {
                 let mut original = || {
                     self.check_native_ha_snapshot_owner(plan)?;
                     actor_original(&original_auth, plan)?;
-                    source.check_taken(self, &mut durable.try_borrow_mut().map_err(|_| unavailable())?)
+                    source.check_taken(self, &mut *durable.try_borrow_mut().map_err(|_| unavailable())?)
                 };
                 original()?;
                 let (mut archive, facts) = validate_historical_native_v6_archive(
@@ -256,12 +265,14 @@ impl Service {
                         response_headers: Default::default(), consistency_index: None }
                 })?;
                 root_attempted.set(true);
+                let operation = committed.published().intent().operation_digest;
+                committed_operation.set(Some(operation));
                 original()?;
-                Ok((committed, digest, imported_generation))
+                Ok((committed, digest, imported_generation, operation))
             })();
             // The original affine Durable owner returns on EVERY path.
             self.durable = Some(durable.into_inner());
-            let (committed, digest, imported_generation) = prepared?;
+            let (committed, digest, imported_generation, operation) = prepared?;
             source.check_local(self)?;
             self.check_native_ha_snapshot_owner(plan)?;
             let ha = plan.ha.as_ref().ok_or_else(unavailable)?.clone();
@@ -276,7 +287,8 @@ impl Service {
             proof.check_warm(self)?;
             actor_original(&original_auth, plan)?;
             let generation = self.external_effect_generation()?;
-            let receipt = NativeHaHistoricalReceipt { original_auth,
+            let published_local_generation = self.durable.as_ref().ok_or_else(unavailable)?.generation();
+            let receipt = NativeHaHistoricalReceipt { operation_digest: operation, original_auth,
                 original_identity: plan.base, original_activation: plan.activation.clone(),
                 restored_identity: StateIdentity::RecordsV6(digest), restored_generation: generation,
                 restored_epoch: next_epoch, restored_activation: self.unseal_nonce.clone(), proof };
@@ -284,7 +296,7 @@ impl Service {
             plan.native_ha_restored = Some(receipt);
             Ok(Response::ok(json!({"data":{ "imported_generation":imported_generation,
                 "previous_local_generation":source.restore_generation(),
-                "published_local_generation":generation, "replay_epoch":next_epoch,
+                "published_local_generation":published_local_generation, "replay_epoch":next_epoch,
                 "restored_root":hex(&digest), "cluster_coordinated":true }})))
         })();
         match checked {
@@ -297,6 +309,11 @@ impl Service {
                     if let Some(body) = error.body.as_object_mut() {
                         body.insert("recovery_required".into(), json!(true));
                         body.insert("retry_allowed".into(), json!(false));
+                        body.insert("root_attempted".into(), json!(true));
+                        if let Some(operation) = committed_operation.get() {
+                            body.insert("recovery_reference".into(),
+                                json!(historical_recovery_reference(operation)));
+                        }
                     }
                 }
                 error
@@ -376,7 +393,8 @@ impl Service {
             self.ha_activation = None;
             self.ha_read_cache = None;
             return Response { status: 503, body: json!({"errors":["historical restore delivery requires reconciliation"],
-                "recovery_required":true,"retry_allowed":false}), unwrapped_json: None,
+                "recovery_required":true,"retry_allowed":false,"root_attempted":true,
+                "recovery_reference":historical_recovery_reference(restored.operation_digest)}), unwrapped_json: None,
                 response_headers: Default::default(), consistency_index: None };
         }
         response

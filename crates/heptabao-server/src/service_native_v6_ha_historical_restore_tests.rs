@@ -213,3 +213,95 @@ fn native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch()
     pipeline.assert_history(leader, &[(1, "seed-v5")])?;
     Ok(())
 }
+
+#[test]
+fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen() -> TestResult {
+    let mut pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    activate(&pipeline, leader)?;
+    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"options":{"cas":1},"data":{"value":"archive-A"}}))?,
+        200, "audit-fault-archive-A-write")?;
+    let archive = export(&pipeline, leader, pipeline.admin())?;
+    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"options":{"cas":2},"data":{"value":"later-B"}}))?,
+        200, "audit-fault-later-B-write")?;
+    let before = selection(&pipeline, leader)?;
+
+    let until = Instant::now() + REQUEST_BUDGET;
+    let _scope = RequestDeadlineScope::enter(until);
+    let service = pipeline.services[leader].as_ref().ok_or("audit-fault Service")?;
+    let mut writer = lock_until(service, until).map_err(|_| "audit-fault admission writer")?;
+    let mut pending = admit(&mut writer, "POST", pipeline.admin(), until)?;
+    drop(writer);
+    let (observed, output) = pending.execute_snapshot_transfer(&mut &archive[..]);
+    assert!(output.is_none());
+    let mut writer = lock_until(service, until).map_err(|_| "audit-fault completion writer")?;
+    // Admission and archive transport completed normally. Exhaust the existing
+    // test-only audit I/O budget before finalization: the real restore CAS and
+    // local epoch installation run, then the mandatory response audit fails.
+    // No root, receipt, Raft entry or recovery flag is manufactured by this test.
+    let audit_sequence = writer.audit_sequence;
+    let audit_bytes = writer.audit.metadata()?.len();
+    writer.audit_capacity = audit_bytes;
+    let denied = writer.finish_external_request(*pending, observed);
+    assert_eq!(denied.status, 503);
+    assert_eq!(denied.body["errors"][0], "historical restore delivery requires reconciliation");
+    assert_eq!(denied.body["recovery_required"], true);
+    assert_eq!(denied.body["retry_allowed"], false);
+    assert_eq!(denied.body["root_attempted"], true);
+    assert!(denied.body.get("data").is_none());
+    assert!(denied.consistency_index.is_none());
+    let reference = denied.body["recovery_reference"].as_str()
+        .ok_or("committed restore recovery reference absent")?.to_owned();
+    assert_eq!(writer.audit_sequence, audit_sequence);
+    assert_eq!(writer.audit.metadata()?.len(), audit_bytes);
+    assert!(writer.recovery_required);
+    assert!(writer.ha_activation.is_none());
+    assert!(writer.native_request_binding.is_none());
+    assert_eq!(writer.durable.as_ref().ok_or("audit-fault Durable")?.replay_epoch(), 1);
+    assert_eq!(writer.state.as_ref().ok_or("audit-fault State")?.replay_epoch, 1);
+    drop(writer);
+
+    // Read the real quorum-selected transition despite failed delivery. Its
+    // operation, source root and epoch prove exactly what committed; HTTP 503
+    // must not be interpreted as permission to submit the archive again.
+    let committed = selection(&pipeline, leader)?;
+    assert_eq!(committed.0, 1);
+    assert_ne!(committed.1.root_digest(), before.1.root_digest());
+    assert_eq!(committed.1.epoch_transitions().len(), 1);
+    let transition = committed.1.epoch_transitions().last().ok_or("audit-fault transition")?;
+    assert_eq!(transition.source_root_digest(), before.1.root_digest());
+    assert_eq!(transition.source_enrollment().epoch(), 0);
+    assert_eq!(transition.target_enrollment().epoch(), 1);
+    assert_eq!(transition.operation_digest(), committed.1.intent().operation_digest);
+    let expected_reference = format!("native-v6-restore-{}", transition.operation_digest()
+        .iter().map(|byte| format!("{byte:02x}")).collect::<String>());
+    assert_eq!(reference, expected_reference);
+    drop(_scope);
+
+    // Replace the actual failed Service, disk owner and Raft process. The
+    // reopened owner uses its original barrier key and existing audit chain;
+    // it does not retry the restore or reseed from the archive.
+    pipeline.stop_process(leader)?;
+    let successor = pipeline.ready_leader()?;
+    assert_ne!(successor, leader);
+    pipeline.start_process(leader)?;
+    pipeline.unseal(leader)?;
+    let reopened = selection(&pipeline, leader)?;
+    assert_eq!(reopened, committed);
+    let recovered_transition = reopened.1.epoch_transitions().last()
+        .ok_or("cold recovered restore transition")?;
+    assert_eq!(recovered_transition.operation_digest(), transition.operation_digest());
+    pipeline.with_service(leader, |service| {
+        assert!(!service.recovery_required);
+        assert!(!service.audit_failed);
+        assert_eq!(service.durable.as_ref().ok_or("cold recovered Durable")?.replay_epoch(), 1);
+        Ok(())
+    })?;
+    pipeline.assert_history(leader, &[(1, "seed-v5"), (2, "archive-A")])?;
+    expect(pipeline.call(leader, "GET", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"version":3}))?, 404, "cold-recovered-future-version-absent")?;
+    assert_eq!(selection(&pipeline, leader)?.1.epoch_transitions().len(), 1);
+    Ok(())
+}

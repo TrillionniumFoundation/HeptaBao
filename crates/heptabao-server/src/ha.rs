@@ -875,6 +875,8 @@ impl HaProcess {
                         // One actual inbound origin charges TLS/frame/queue time.
                         // Consensus RPCs keep their peer-attempt budget; forwarding
                         // has the separately configured business-request budget.
+                        #[cfg(feature = "private-ha-forward-diagnostic")]
+                        let mut receiver_kind = None;
                         let result = serve_one_mtls_authenticated_peer_frame(
                             &listener,
                             server_tls.clone(),
@@ -882,9 +884,13 @@ impl HaProcess {
                             forward_timeout,
                             listener_allow_legacy_peer_v1,
                             |authenticated| {
+                                #[cfg(feature = "private-ha-forward-diagnostic")]
+                                { receiver_kind = Some("authenticated_unclassified"); }
                                 #[cfg(feature = "experimental-native-v6-ha")]
                                 if heptabao_ha_service::is_native_v6_closure_frame(authenticated.payload())
                                     || heptabao_ha_service::is_native_v6_root_pull_frame(authenticated.payload()) {
+                                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                                    { receiver_kind = Some("native"); }
                                     // These independent native permits were installed
                                     // with real extra workers at candidate startup.
                                     // ReadIndex retains its own worker capacity too.
@@ -913,6 +919,8 @@ impl HaProcess {
                                     return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
                                 }
                                 if is_forward_request(&frame) {
+                                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                                    { receiver_kind = Some("forward"); }
                                     let mut request = decode_forward_request(
                                         &frame,
                                         &listener_cluster_id,
@@ -996,6 +1004,8 @@ impl HaProcess {
                                     }
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
                                 }
+                                #[cfg(feature = "private-ha-forward-diagnostic")]
+                                { receiver_kind = Some("raft"); }
                                 let request = decode_raft_frame_for_cluster_compatible(
                                     &frame,
                                     &listener_cluster_id,
@@ -1061,6 +1071,13 @@ impl HaProcess {
                             },
                         );
                         if result.is_err() {
+                            #[cfg(feature = "private-ha-forward-diagnostic")]
+                            if let (Some(kind), Err(error)) = (receiver_kind, &result) {
+                                // Only a real authenticated handler is traced.
+                                // Idle nonblocking accept/WouldBlock is silent.
+                                // Both kind and HaError are closed classifications.
+                                eprintln!("HBHA-PRIVATE-RECEIVER phase=receiver_result kind={kind} category={error:?}");
+                            }
                             thread::sleep(Duration::from_millis(2));
                         }
                     }
