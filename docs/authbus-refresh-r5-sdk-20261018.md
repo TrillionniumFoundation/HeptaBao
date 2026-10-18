@@ -65,7 +65,10 @@ python3 /ABSOLUTE/ISOLATED/SOURCE/qa/openbao-acceptance/authbus/inspect_authbus_
 ```
 
 The output must be new and its parent directory must already exist. This reads
-bounded `.js`/`.mjs` SDK code and package metadata only. It does not import SDK
+bounded `.js`/`.mjs` SDK code and package metadata only. Discovery starts at the
+three frozen R4 boundary files and follows relevant static imports within the
+24-file, 8 MiB total source, and 1 MiB per-file limits. It does not scan all of
+`dist`; modules outside that import graph remain uninspected. It does not import SDK
 code, read credential files, contact services, or modify installed files. The
 receipt reports all three R4 baseline hashes and any unresolved external imports.
 Review the returned OAuth manager/provider imports before adding refresh hooks;

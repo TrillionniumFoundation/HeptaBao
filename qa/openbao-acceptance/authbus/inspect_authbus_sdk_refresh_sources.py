@@ -36,18 +36,17 @@ def main():
     if args.output.exists():
         parser.error('output already exists; choose a new inspection receipt')
     os.umask(0o077)
-    package = json.loads((sdk_root / 'package.json').read_text())
+    package_path = sdk_root / 'package.json'
+    if package_path.is_symlink() or package_path.stat().st_size > MAX_FILE:
+        parser.error('SDK package metadata outside bounded regular-file contract')
+    package = json.loads(package_path.read_text())
     report = {'schema': 'authbus-r5-sdk-source-inspection', 'sdk_root': str(sdk_root),
               'package_name': package.get('name'), 'package_version': package.get('version'),
               'sdk_code_executed': False, 'credential_files_read': False,
+              'discovery': 'three-known-R4-files-and-relevant-static-imports',
+              'global_dist_scan_performed': False,
               'files': [], 'unresolved_external_imports': [], 'skipped': []}
     queue = [(sdk_root / name, 'known-R4-boundary') for name in EXPECTED]
-    for candidate in sorted((sdk_root / 'dist').glob('*.js')):
-        if candidate.is_symlink() or candidate.stat().st_size > MAX_FILE:
-            continue
-        source = candidate.read_text(encoding='utf-8')
-        if DEFINITIONS.search(source):
-            queue.append((candidate, 'defines-refresh-or-owner-store'))
     visited, total = set(), 0
     while queue:
         filename, reason = queue.pop(0)
