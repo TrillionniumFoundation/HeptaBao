@@ -622,8 +622,10 @@ class NativeRun:
         return path
 
     def exact_read(self, node, path, expected, *, version=None):
-        status, body = self.request(node, "GET", "secret/data/" + path,
-                                    None if version is None else {"version": version})
+        # KV2 selects retained versions from the URL query. A JSON GET body
+        # is not a version selector and can silently read the latest version.
+        query = "" if version is None else "?version=" + str(version)
+        status, body = self.request(node, "GET", "secret/data/" + path + query)
         data = body.get("data", {})
         if (status != 200 or not isinstance(data, dict) or not isinstance(data.get("data"), dict)
                 or data_digest(data["data"]) != expected
@@ -639,8 +641,8 @@ class NativeRun:
     def history_reads(self, leader, *, retired=True):
         for version, expected in sorted(self.history.items()):
             if retired and version in self.retired:
-                status, body = self.request(leader, "GET", "secret/data/" + self.path,
-                                            {"version": version})
+                status, body = self.request(
+                    leader, "GET", "secret/data/" + self.path + "?version=" + str(version))
                 data = body.get("data")
                 metadata = data.get("metadata") if isinstance(data, dict) else None
                 if (status != 404 or not isinstance(data, dict) or data.get("data") is not None
@@ -1325,3 +1327,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -1,0 +1,12 @@
+test_retained_and_retired_versions_use_real_http_query_selection (test_native_v6_ha_multihost_live.NativeHistoryHttpTests.test_retained_and_retired_versions_use_real_http_query_selection) ... ok
+test_actual_native_argv_and_wrong_identity_never_signal_another_child (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_actual_native_argv_and_wrong_identity_never_signal_another_child) ... ok
+test_missing_receipt_refuses_before_private_root_or_network (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_missing_receipt_refuses_before_private_root_or_network) ... ok
+test_process_cleanup_failure_still_stops_actual_owned_mesh_child (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_process_cleanup_failure_still_stops_actual_owned_mesh_child) ... ok
+test_quarantine_refuses_symlink_marker_change_and_any_owned_process_record (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_quarantine_refuses_symlink_marker_change_and_any_owned_process_record) ... ok
+test_real_quarantine_preserves_manifest_and_accepts_only_exact_rebuilt_subset (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_real_quarantine_preserves_manifest_and_accepts_only_exact_rebuilt_subset) ... ok
+test_strict_ssh_overlay_is_effective_and_restores_shared_helper (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_strict_ssh_overlay_is_effective_and_restores_shared_helper) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.521s
+
+OK

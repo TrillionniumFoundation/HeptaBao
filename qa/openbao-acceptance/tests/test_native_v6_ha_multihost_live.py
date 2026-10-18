@@ -1,6 +1,7 @@
 """Local destructive-boundary checks; these do not assert a physical HA pass."""
 import contextlib
 import hashlib
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import io
 import json
 import os
@@ -10,9 +11,11 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 from types import SimpleNamespace
 import unittest
 from unittest import mock
+from urllib.parse import parse_qs, urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import native_v6_ha_multihost_live as native
@@ -46,6 +49,67 @@ def run_inventory(root, action, run_id="local-fixture-only"):
     )
     return subprocess.run([sys.executable, "-", action, str(root), run_id],
                           input=source, text=True, capture_output=True, timeout=10)
+
+
+class NativeHistoryHttpTests(unittest.TestCase):
+    def test_retained_and_retired_versions_use_real_http_query_selection(self):
+        history = {version: {"fixture_version": version} for version in (1, 2)}
+        retired = {}
+        disclose_retired = False
+        select_latest = False
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                # Model the real HTTP boundary observed on Mac: a GET body
+                # does not select a KV2 version; only the URL query does.
+                query = parse_qs(urlsplit(self.path).query)
+                version = 2 if select_latest else int(query.get("version", ["2"])[0])
+                state = retired.get(version)
+                body = {"data": {
+                    "data": history[version] if state is None or disclose_retired else None,
+                    "metadata": {"version": version, "destroyed": state == "destroyed",
+                                 "deletion_time": "fixture-deleted" if state == "deleted" else ""},
+                }}
+                raw = json.dumps(body).encode()
+                self.send_response(404 if state is not None else 200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+
+            def log_message(self, *_args):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        run = object.__new__(native.NativeRun)
+        run.context = None
+        run.root_token = "synthetic-history-fixture"
+        run.path = "history"
+        run.history = {version: native.data_digest(value) for version, value in history.items()}
+        run.retired = retired
+        node = SimpleNamespace(node_id=1, api_origin="http://127.0.0.1:" + str(server.server_port))
+        try:
+            run.history_reads(node, retired=False)
+            # Successful but stale content must still fail exact readback.
+            select_latest = True
+            with self.assertRaises(native.base.FixtureError):
+                run.history_reads(node, retired=False)
+            select_latest = False
+            for state in ("deleted", "destroyed"):
+                with self.subTest(retired=state):
+                    retired[1] = state
+                    run.history_reads(node)
+                    disclose_retired = True
+                    with self.assertRaises(native.base.FixtureError):
+                        run.history_reads(node)
+                    disclose_retired = False
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+        self.assertFalse(thread.is_alive())
 
 
 class NativePhysicalOwnershipTests(unittest.TestCase):
@@ -237,3 +301,4 @@ class NativePhysicalOwnershipTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
