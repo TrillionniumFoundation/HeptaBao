@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_native*.py",
+    "-v"
+  ],
+  "ended_utc": "2026-10-18T12:10:04.530239+00:00",
+  "exit_code": 0,
+  "http_budget_seconds": 15,
+  "log_sha256": "9c3041a9964bf3b6d07e19fce6132e2f8b0f8ea5d056034c10c6621fe2905d5f",
+  "mount_budget_seconds": 12,
+  "native_admission_budget_seconds": 8,
+  "physical_ha_checks_executed": false,
+  "production_authority": false,
+  "required_direct_lan_checks": 98,
+  "required_native_checks": 89,
+  "schema": "heptabao.native-lan98-recovery-harness-local-validation.v1",
+  "source_files_sha256": {
+    "qa/openbao-acceptance/fixture_mounts.py": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+    "qa/openbao-acceptance/ha_multihost_live.py": "7857f62b1e9e46b7d718eb401e6ed75bb48dc9db385327a5cb86bda30c587858",
+    "qa/openbao-acceptance/ha_three_host_loopback_live.py": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+    "qa/openbao-acceptance/native_fixture_recovery.py": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+    "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py": "8c6861238b372d43db2ebc26bead1f4d8f23aa57c903e4bd0924dcf09b8cfb90",
+    "qa/openbao-acceptance/native_v6_ha_multihost_live.py": "75fa114ec966fcf9ab1fbc25d76068e822d059aa6479a8fa8b4815237ead91fe",
+    "qa/openbao-acceptance/tests/test_native_fixture_recovery.py": "83ba9525698dca4f29e37d3b2fdff564acc4f3776ca4369ff84f43956cf87db8",
+    "qa/openbao-acceptance/tests/test_native_v6_ha_multihost_live.py": "c585440cda1810ecc29886410ac3dec7f412745f2f6b2a200d63c28d708548bb",
+    "tools/physical_ha_loopback_mesh.py": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493",
+    "tools/physical_ha_peer_preflight.py": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227"
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-10-18T12:10:00.423953+00:00"
+}

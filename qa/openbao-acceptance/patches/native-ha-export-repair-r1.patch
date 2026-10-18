@@ -1,0 +1,2157 @@
+diff --git a/crates/heptabao-server/src/ha.rs b/crates/heptabao-server/src/ha.rs
+index 041be122957cddbc41a82d4e83c500759403e175..29b241879497e7684afd66b0d272eefb5dedc68a 100644
+--- a/crates/heptabao-server/src/ha.rs
++++ b/crates/heptabao-server/src/ha.rs
+@@ -54,7 +54,9 @@ pub(crate) use records::{CommittedRecordState, RecordPublicationPreflightError};
+ #[path = "ha_native_v6_runtime.rs"]
+ mod native_v6_runtime;
+ #[cfg(feature = "experimental-native-v6-ha")]
+-pub(crate) use native_v6_runtime::{CommittedNativeV6Read, NativeHaPublicationError};
++pub(crate) use native_v6_runtime::{
++    CommittedNativeV6Read, NativeHaPublicationError, NativeV6ArchiveRootAnchor,
++};
+ 
+ #[cfg(feature = "experimental-native-v6-ha")]
+ #[path = "ha_native_v6_backup.rs"]
+diff --git a/crates/heptabao-server/src/ha_native_v6_archive_repair.rs b/crates/heptabao-server/src/ha_native_v6_archive_repair.rs
+index 07c91b7256af06232633963021311b76c632afd5..1f38cb66ce985d291a5f5d9f21479834a9442acf 100644
+--- a/crates/heptabao-server/src/ha_native_v6_archive_repair.rs
++++ b/crates/heptabao-server/src/ha_native_v6_archive_repair.rs
+@@ -1,12 +1,12 @@
+ //! Exact-current archive repair under an actual running Native V6 Raft owner.
+ //!
+-//! This child of `ha_native_v6_runtime` is wired into internal compilation.
+-//! No Service coordinator or HTTP recovery route invokes it yet. Only that
+-//! actual owner can select a root before recovering missing external ciphertext.
++//! This child of `ha_native_v6_runtime` supplies the warm Service archive
++//! coordinator. Only the actual owner can select a root before recovering
++//! missing external ciphertext; admission retains its exact comparison anchor.
+ //! The archive is data. Its provenance never constructs or renews a read,
+ //! enrollment, publication, quorum receipt, Actor, local core or replay ledger.
+ //!
+-//! The eventual Service coordinator must retain and check its original Actor,
++//! The Service coordinator must retain and check its original Actor,
+ //! source Auth, clock, seal/activation, barrier and local-generation custody in
+ //! `original_owner`. The callback receives the actual selection's enrollment
+ //! and root so it can bind that local source exactly, never authorize a stale
+@@ -41,6 +41,16 @@ pub(crate) struct NativeV6ArchiveRepair {
+     archive: NativeV6ArchiveReport,
+ }
+ 
++/// A comparison anchor from this running owner's actual ReadIndex. This is
++/// deliberately not a CommittedNativeV6Read: the external closure may be lost.
++/// It cannot read objects, publish a root or authorize an Actor. Expiry never
++/// revives it; repair must obtain a new actual read of this exact selection.
++pub(crate) struct NativeV6ArchiveRootAnchor {
++    instance: Arc<()>,
++    selected: NativeV6CommittedRootRead,
++    deadline: OriginalDeadline,
++}
++
+ impl NativeV6ArchiveRepair {
+     pub(crate) fn into_parts(self) -> (CommittedNativeV6Read, NativeV6ArchiveReport) {
+         (self.read, self.archive)
+@@ -154,6 +164,53 @@ fn archive_gate<G: FnMut(&NativeV6PeerEnrollment, &NativeV6PublishedRoot) -> Arc
+ }
+ 
+ impl HaProcess {
++    /// Authenticate an already complete local graph before reading an upload.
++    /// The callback runs under real consensus gates but grants no business
++    /// read: it receives only provenance and a bounded currentness check.
++    pub(crate) fn with_native_v6_archive_root<T>(
++        &self,
++        deadline: OriginalDeadline,
++        action: impl FnOnce(
++            &NativeV6PeerEnrollment,
++            &NativeV6PublishedRoot,
++            &mut dyn FnMut() -> ArchiveResult<()>,
++        ) -> ArchiveResult<T>,
++    ) -> ArchiveResult<(T, NativeV6ArchiveRootAnchor)> {
++        original_operation(deadline)?;
++        if tokio::runtime::Handle::try_current().is_ok() {
++            return Err(NativeV6ArchiveError::Gate);
++        }
++        let native = self.native_v6.as_ref().filter(|native| native.enabled())
++            .ok_or(NativeV6ArchiveError::Gate)?;
++        let node = self.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
++        let initial = self.runtime
++            .block_on(node.native_v6_committed_root_read(deadline.instant()))
++            .map_err(|_| NativeV6ArchiveError::Gate)?
++            .ok_or(NativeV6ArchiveError::WrongSelection)?;
++        native.validate_enrollment(&self.codec, initial.enrollment())
++            .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
++        let enrollment = initial.enrollment().clone();
++        let published = initial.root().clone();
++        let mut metadata_only = |_: &NativeV6PeerEnrollment, _: &NativeV6PublishedRoot| Ok(());
++        let mut owner = ActualArchiveRoot {
++            process: self,
++            native,
++            initial,
++            active: None,
++            deadline,
++            original_owner: &mut metadata_only,
++        };
++        owner.check()?;
++        let value = action(&enrollment, &published, &mut || owner.check())?;
++        owner.check()?;
++        let anchor = NativeV6ArchiveRootAnchor {
++            instance: Arc::clone(&native.identity),
++            selected: owner.initial,
++            deadline,
++        };
++        Ok((value, anchor))
++    }
++
+     /// Repair only the exact CURRENT root's original ciphertext while its real
+     /// quorum exists. This intentionally bypasses only the normal *peer pull*
+     /// attempt, which cannot succeed when all donors lost these external files.
+@@ -175,6 +232,43 @@ impl HaProcess {
+             &NativeV6PeerEnrollment,
+             &NativeV6PublishedRoot,
+         ) -> ArchiveResult<()>,
++    ) -> ArchiveResult<NativeV6ArchiveRepair> {
++        self.repair_native_v6_archive_inner(
++            reader, expected_seal_identity, archive_barrier, deadline, original_owner, None,
++        )
++    }
++
++    /// HTTP admission retains the exact process/store/term/leader/full-log
++    /// selection across body transfer. A same root in a changed authority is
++    /// not silently rebound to the earlier Actor or local source.
++    pub(crate) fn repair_native_v6_current_closure_from_admitted_archive<R: Read + Seek>(
++        &self,
++        reader: R,
++        expected_seal_identity: [u8; 32],
++        archive_barrier: &AeadBarrier,
++        anchor: &NativeV6ArchiveRootAnchor,
++        original_owner: &mut impl FnMut(
++            &NativeV6PeerEnrollment,
++            &NativeV6PublishedRoot,
++        ) -> ArchiveResult<()>,
++    ) -> ArchiveResult<NativeV6ArchiveRepair> {
++        self.repair_native_v6_archive_inner(
++            reader, expected_seal_identity, archive_barrier, anchor.deadline,
++            original_owner, Some(anchor),
++        )
++    }
++
++    fn repair_native_v6_archive_inner<R: Read + Seek>(
++        &self,
++        reader: R,
++        expected_seal_identity: [u8; 32],
++        archive_barrier: &AeadBarrier,
++        deadline: OriginalDeadline,
++        original_owner: &mut impl FnMut(
++            &NativeV6PeerEnrollment,
++            &NativeV6PublishedRoot,
++        ) -> ArchiveResult<()>,
++        anchor: Option<&NativeV6ArchiveRootAnchor>,
+     ) -> ArchiveResult<NativeV6ArchiveRepair> {
+         original_operation(deadline)?;
+         if tokio::runtime::Handle::try_current().is_ok() {
+@@ -197,6 +291,13 @@ impl HaProcess {
+         native
+             .validate_enrollment(&self.codec, initial.enrollment())
+             .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
++        if anchor.is_some_and(|anchor| {
++            !Arc::ptr_eq(&anchor.instance, &native.identity)
++                || anchor.deadline.instant() != deadline.instant()
++                || !initial.same_selection(&anchor.selected)
++        }) {
++            return Err(NativeV6ArchiveError::WrongSelection);
++        }
+         original_owner(initial.enrollment(), initial.root())?;
+         original_operation(deadline)?;
+         let expected =
+diff --git a/crates/heptabao-server/src/ha_native_v6_runtime.rs b/crates/heptabao-server/src/ha_native_v6_runtime.rs
+index 6a0583a31315fe211695c8a568974bf823da9560..b47fcbadc92b40cae44101707ca1d6c52bb3fbf4 100644
+--- a/crates/heptabao-server/src/ha_native_v6_runtime.rs
++++ b/crates/heptabao-server/src/ha_native_v6_runtime.rs
+@@ -13,6 +13,7 @@ use std::sync::OnceLock;
+ 
+ #[path = "ha_native_v6_archive_repair.rs"]
+ mod archive_repair;
++pub(crate) use archive_repair::NativeV6ArchiveRootAnchor;
+ 
+ #[path = "ha_native_v6_publication.rs"]
+ mod publication;
+diff --git a/crates/heptabao-server/src/http.rs b/crates/heptabao-server/src/http.rs
+index cd85f4e7b4de1f4cc573564b2878af8e30bca406..5a92ffad5487a4b583365a87aa35cf5c30b5b89b 100644
+--- a/crates/heptabao-server/src/http.rs
++++ b/crates/heptabao-server/src/http.rs
+@@ -1716,7 +1716,8 @@ fn read_request_with_ui(
+             let native_upload = native_wire
+                 && matches!(
+                     api_target.split('?').next(),
+-                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
++                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++                        | "sys/storage/raft/snapshot-repair")
+                 );
+             if !native_upload {
+                 discard_rejected_ordinary_body(
+@@ -1803,6 +1804,7 @@ fn read_request_with_ui(
+     let snapshot_route = matches!(
+         route,
+         "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++            | "sys/storage/raft/snapshot-repair"
+     );
+     let download =
+         matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";
+diff --git a/crates/heptabao-server/src/http_snapshot.rs b/crates/heptabao-server/src/http_snapshot.rs
+index bafb25e02eda10cdc78100690c8817d587fa6a23..ba725940daa188ebce55250390b97e59427ae7e3 100644
+--- a/crates/heptabao-server/src/http_snapshot.rs
++++ b/crates/heptabao-server/src/http_snapshot.rs
+@@ -13,7 +13,8 @@ impl NativeTarget {
+             || target.contains('#')
+             || !matches!(
+                 target.split('?').next(),
+-                Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force")
++                Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force"
++                    | "/v1/sys/storage/raft/snapshot-repair")
+             )
+         {
+             return Err(bad("invalid native snapshot target"));
+@@ -471,4 +472,16 @@ mod tests {
+         let json = "POST /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nContent-Length: 25000000\r\n\r\n";
+         assert!(read_request_mode(&mut json.as_bytes(), Duration::from_secs(1), true).is_err());
+     }
++
++    #[test]
++    fn current_root_repair_retains_binary_header_admission_and_bounded_json_lane() {
++        let raw = "POST /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\nContent-Length: 25000000\r\n\r\n";
++        assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
++            .is_ok_and(|request| request.native_snapshot.is_some()));
++        let json = "POST /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nContent-Length: 25000000\r\n\r\n";
++        assert!(read_request_mode(&mut json.as_bytes(), Duration::from_secs(1), true).is_err());
++        let get = "GET /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\n\r\n";
++        assert!(read_request_mode(&mut get.as_bytes(), Duration::from_secs(1), true)
++            .is_ok_and(|request| request.native_snapshot.is_none()));
++    }
+ }
+diff --git a/crates/heptabao-server/src/service.rs b/crates/heptabao-server/src/service.rs
+index 82ff390ff3ae96bfc788f4c36eefaef1fbbc2dbc..f0d6ad65ab8267d1e2fb70fbd8c7556ce24d6a6a 100644
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -2495,7 +2495,14 @@ impl Service {
+             (
+                 ExternalEffectPlan::SnapshotTransfer(plan),
+                 ExternalEffectResult::SnapshotTransfer(result),
+-            ) => self.finalize_snapshot_transfer(*plan, result),
++            ) => {
++                return self.complete_snapshot_transfer(
++                    *plan,
++                    result,
++                    &pending.fingerprint,
++                    (pending.now, pending.token_clock),
++                );
++            }
+             _ => {
+                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                 self.recovery_required = true;
+@@ -3428,6 +3435,10 @@ impl Service {
+         if self.state.is_none() {
+             return Response::error(503, "server is sealed");
+         }
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if self.native_snapshot_transport && path == snapshot_transfer::NATIVE_HA_REPAIR_PATH {
++            return self.admit_native_ha_snapshot_repair(&request);
++        }
+         if let Some(ha) = self.ha.as_ref().cloned() {
+             let (leader, local) = match ha.lock_for_request() {
+                 Ok(ha) => {
+@@ -4051,7 +4062,7 @@ impl Service {
+                 return Response::error(503, "trusted token clock is required");
+             }
+             let native_snapshot_route = self.native_snapshot_transport
+-                && self.ha.is_none()
++                && (self.ha.is_none() || self.native_ha_snapshot_transport_enabled())
+                 && namespace.is_empty()
+                 && matches!(
+                     path,
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_archive_source.rs b/crates/heptabao-server/src/service_native_v6_ha_archive_source.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..694b9ea5347cd0fb5c931e586c38565dd532841a
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_v6_ha_archive_source.rs
+@@ -0,0 +1,243 @@
++//! Warm, exact-current local authority for an authenticated archive repair.
++//! No peer pull runs at admission: every donor may have lost the shared files.
++//! The retained complete local graph, four journal conditions, original Actor
++//! and actual Raft selection must all survive the upload. This is not a cold
++//! unseal owner, an archived Auth owner, or a business-read capability.
++use super::*;
++use crate::ha::NativeV6ArchiveRootAnchor;
++use crate::ha::native_v6_backup::{NativeV6ArchiveError, NativeV6ArchiveReport};
++use crate::snapshot_file::SnapshotFile;
++use heptabao_raft_runtime::NativeV6PeerEnrollment;
++
++pub(crate) struct NativeHaArchiveRepairSource {
++    environment: LocalHaEnvironment,
++    selected: LocalSelection,
++    anchor: NativeV6ArchiveRootAnchor,
++    identity: StateIdentity,
++    owner_fingerprints: [[u8; 32]; 4],
++}
++
++// Only a raw ACTUAL ReadIndex callback may call this constructor. All four
++// resources must already describe its exact current root; stale local A is
++// never sufficient to authenticate a repair of current B.
++fn current_local_selection(
++    durable: &mut DurableService<AeadBarrier>,
++    enrollment: &NativeV6PeerEnrollment,
++    published: &NativeV6PublishedRoot,
++    deadline: OriginalDeadline,
++) -> Result<LocalSelection, Response> {
++    live(deadline)?;
++    durable.verify_live_ownership().map_err(storage_rejected)?;
++    if durable.recovery_required() || durable.replay_epoch() != enrollment.epoch() {
++        return Err(unavailable());
++    }
++    let initial_generation = durable.generation();
++    let root_bytes = durable.get("system", "state").map_err(storage_rejected)?
++        .ok_or_else(unavailable)?;
++    let active_bytes = durable.get("system", ACTIVE_CURSOR_RESOURCE).map_err(storage_rejected)?;
++    let source_bytes = durable.get("system", ACTIVE_SOURCE_ROOT_RESOURCE).map_err(storage_rejected)?;
++    let ha_bytes = durable.get("system", HA_CURSOR_RESOURCE).map_err(storage_rejected)?;
++    let root = RecordStateRootV6::decode(root_bytes.expose()).map_err(|_| unavailable())?;
++    let source = RecordStateRoot::decode(source_bytes.as_ref().ok_or_else(unavailable)?.expose())
++        .map_err(|_| unavailable())?;
++    let active = NativeActiveCursor::decode(active_bytes.as_ref().ok_or_else(unavailable)?.expose())?;
++    active.validate(&source, &root, initial_generation)?;
++    let selected = LocalSelection {
++        root_bytes, active_bytes, source_bytes, ha_bytes,
++        source, active: Some(active), native: Some(root), initial_generation,
++    };
++    matches_current(&selected, enrollment, published)?;
++    selected.check(durable, initial_generation).map_err(storage_rejected)?;
++    live(deadline)?;
++    Ok(selected)
++}
++
++fn matches_current(
++    selected: &LocalSelection,
++    enrollment: &NativeV6PeerEnrollment,
++    published: &NativeV6PublishedRoot,
++) -> Result<(), Response> {
++    let root = selected.native.as_ref().ok_or_else(unavailable)?;
++    let cursor = NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?;
++    if cursor.cluster_digest != enrollment.cluster_digest()
++        || cursor.enrollment_digest != enrollment.digest()
++        || cursor.replay_epoch != enrollment.epoch()
++        || cursor.raft_generation != published.generation()
++        || cursor.publication_log != ExactLog::root(published)
++        || cursor.intent_log != ExactLog::intent(published)
++        || cursor.migration_log != ExactLog::migration(published)
++        || cursor.migration_digest != published.migration_source().0
++        || cursor.root_digest != published.root_digest()
++        || cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
++        || cursor.migration_digest != selected.source.identity().map_err(|_| unavailable())?.digest()
++        || cursor.local_publication_generation > selected.initial_generation
++        || cursor.local_publication_generation
++            != active_generation(selected.active_bytes.as_ref().ok_or_else(unavailable)?.expose())?
++        || selected.source.replay_epoch != enrollment.epoch()
++        || root.replay_epoch != enrollment.epoch()
++        || root.reader_floor.native_kv2_format != 2
++    {
++        return Err(unavailable());
++    }
++    Ok(())
++}
++
++impl NativeHaArchiveRepairSource {
++    fn check_instance(&self, service: &Service) -> Result<(), Response> {
++        self.environment.check(service)?;
++        if service.record_root.is_some() || service.current_state_identity()? != self.identity {
++            return Err(unavailable());
++        }
++        let root = service.native_root.as_ref().ok_or_else(unavailable)?;
++        let state = service.state.as_ref().ok_or_else(unavailable)?;
++        root_namespace_only(state)?;
++        if root.encode().map_err(|_| unavailable())?.as_slice() != self.selected.root_bytes.expose()
++            || state.schema != root.state_schema
++            || state.cluster_id != root.cluster_id
++            || state.replay_epoch != root.replay_epoch
++            || state.global_lossless_json_format != root.global_lossless_json_format
++            || fingerprints(state, self.environment.deadline)? != self.owner_fingerprints
++        {
++            return Err(unavailable());
++        }
++        live(self.environment.deadline)
++    }
++
++    pub(in crate::service) fn check_local(&self, service: &Service) -> Result<(), Response> {
++        self.check_instance(service)?;
++        let durable = service.durable.as_ref().ok_or_else(unavailable)?;
++        if durable.recovery_required()
++            || durable.generation() != self.selected.initial_generation
++            || durable.replay_epoch() != self.selected.source.replay_epoch
++        {
++            return Err(unavailable());
++        }
++        for condition in self.selected.conditions() {
++            let actual = durable.get("system", &condition.resource).map_err(storage_rejected)?;
++            if actual.as_ref().map(Secret::expose) != condition.expected.as_ref().map(Secret::expose) {
++                return Err(unavailable());
++            }
++        }
++        self.check_instance(service)
++    }
++
++    pub(in crate::service) fn repair(
++        self,
++        service: &mut Service,
++        file: SnapshotFile,
++        seal_identity: [u8; 32],
++        actor: &mut impl FnMut(&Service) -> Result<(), Response>,
++    ) -> Result<(NativeHaReadProof, NativeV6ArchiveReport), Response> {
++        actor(service)?;
++        self.check_local(service)?;
++        // Reopen the complete local typed graph after out-of-writer upload.
++        // A matching root hash cannot authenticate a changed warm KV cache.
++        let mut durable = service.durable.take().ok_or_else(unavailable)?;
++        let checked = (|| {
++            self.selected.check(&mut durable, self.selected.initial_generation)
++                .map_err(storage_rejected)?;
++            let root = self.selected.native.as_ref().ok_or_else(unavailable)?;
++            let mut gate = || {
++                actor(service).map_err(|_| ServiceError::BarrierFailure)?;
++                self.check_instance(service).map_err(|_| ServiceError::BarrierFailure)
++            };
++            let (metadata, native) = materialize_local(
++                &mut durable, root, self.environment.deadline, &mut gate,
++            )?;
++            Service::check_native_installed(
++                service.state.as_ref().ok_or_else(unavailable)?, &metadata, &native,
++                root, self.environment.deadline,
++            )?;
++            self.selected.check(&mut durable, self.selected.initial_generation)
++                .map_err(storage_rejected)?;
++            gate().map_err(storage_rejected)
++        })();
++        service.durable = Some(durable);
++        checked?;
++        let barrier = AeadBarrier::new(**service.barrier_key.as_ref().ok_or_else(unavailable)?)
++            .map_err(|_| unavailable())?;
++        let process = self.environment.ha.lock_for_request().map_err(|_| unavailable())?;
++        let repaired = process.repair_native_v6_current_closure_from_admitted_archive(
++            file, seal_identity, &barrier, &self.anchor,
++            &mut |enrollment, published| {
++                actor(service).map_err(|_| NativeV6ArchiveError::Gate)?;
++                self.check_local(service).map_err(|_| NativeV6ArchiveError::Gate)?;
++                matches_current(&self.selected, enrollment, published)
++                    .map_err(|_| NativeV6ArchiveError::WrongSelection)
++            },
++        ).map_err(|error| match error {
++            NativeV6ArchiveError::WrongSelection => Response::error(409, "archive is not the admitted current native HA root"),
++            NativeV6ArchiveError::Invalid | NativeV6ArchiveError::Corrupt =>
++                Response::error(400, "native HA archive authentication failed"),
++            NativeV6ArchiveError::TooLarge => Response::error(413, "native HA archive exceeds its bound"),
++            _ => unavailable(),
++        })?;
++        let (committed, report) = repaired.into_parts();
++        self.check_local(service)?;
++        actor(service)?;
++        drop(process);
++        let proof = NativeHaReadProof {
++            environment: self.environment,
++            selected: self.selected,
++            committed,
++            identity: self.identity,
++            owner_fingerprints: self.owner_fingerprints,
++        };
++        // Only the repaired, freshly verified closure can now produce the
++        // existing business proof. The archived core/ledger was never installed.
++        proof.check_with(service, Service::check_native_installed)?;
++        actor(service)?;
++        proof.check_warm(service)?;
++        Ok((proof, report))
++    }
++}
++
++impl Service {
++    pub(in crate::service) fn capture_native_ha_archive_repair_source(
++        &mut self,
++    ) -> Result<NativeHaArchiveRepairSource, Response> {
++        let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
++        let ha = self.ha.as_ref().ok_or_else(unavailable)?.clone();
++        let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
++        let environment = LocalHaEnvironment::capture(self, &ha, &key, deadline)?;
++        let identity = self.current_state_identity()?;
++        let process = ha.lock_for_request().map_err(|_| unavailable())?;
++        if !process.native_v6_enabled() || !process.is_leader().unwrap_or(false) {
++            return Err(unavailable());
++        }
++        let cluster_id = process.cluster_id().to_owned();
++        let mut durable = self.durable.take().ok_or_else(unavailable)?;
++        let captured = process.with_native_v6_archive_root(deadline, |enrollment, published, actual| {
++            let selected = current_local_selection(&mut durable, enrollment, published, deadline)
++                .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
++            let root = selected.native.as_ref().ok_or(NativeV6ArchiveError::WrongSelection)?;
++            if identity != StateIdentity::RecordsV6(published.root_digest()) || root.cluster_id != cluster_id {
++                return Err(NativeV6ArchiveError::WrongSelection);
++            }
++            let mut gate = || {
++                environment.check(self).map_err(|_| ServiceError::BarrierFailure)?;
++                actual().map_err(|_| ServiceError::BarrierFailure)
++            };
++            let (metadata, native) = materialize_local(&mut durable, root, deadline, &mut gate)
++                .map_err(|_| NativeV6ArchiveError::Storage)?;
++            Service::check_native_installed(
++                self.state.as_ref().ok_or(NativeV6ArchiveError::Gate)?,
++                &metadata, &native, root, deadline,
++            ).map_err(|_| NativeV6ArchiveError::WrongSelection)?;
++            selected.check(&mut durable, selected.initial_generation)
++                .map_err(|_| NativeV6ArchiveError::Storage)?;
++            gate().map_err(|_| NativeV6ArchiveError::Gate)?;
++            let owner_fingerprints = fingerprints(&metadata, deadline)
++                .map_err(|_| NativeV6ArchiveError::Gate)?;
++            Ok((selected, owner_fingerprints))
++        });
++        self.durable = Some(durable);
++        drop(process);
++        let ((selected, owner_fingerprints), anchor) = captured.map_err(|_| unavailable())?;
++        let source = NativeHaArchiveRepairSource {
++            environment, selected, anchor, identity, owner_fingerprints,
++        };
++        source.check_local(self)?;
++        Ok(source)
++    }
++}
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_install.rs b/crates/heptabao-server/src/service_native_v6_ha_install.rs
+index 7a4aeda096f0eea4ceb300107174ae9ebb72a11b..231c32e1f9288ba5806abb9e7d51269614a91cf2 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_install.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_install.rs
+@@ -24,7 +24,7 @@ use std::cell::{Cell, RefCell};
+ mod read;
+ #[cfg(test)]
+ use read::ColdNativeHaRead;
+-pub(crate) use read::{NativeHaReadProof, load_cold_native_ha};
++pub(crate) use read::{NativeHaArchiveRepairSource, NativeHaReadProof, load_cold_native_ha};
+ 
+ pub(super) const HA_CURSOR_RESOURCE: &str = "state-native-v6/ha-publication-cursor";
+ const HA_CURSOR_FORMAT: &str = "heptabao-native-v6-ha-local-publication-v1";
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
+index c2e935c7a7d68c5dc3f47ff4af455d9f5da716f3..91fb89732fdb5a6a18a5bc2ead33fd61841268bd 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
+@@ -6,6 +6,12 @@
+ //! It exercises the Service HTTP handlers without claiming a public HTTP
+ //! socket test. Peer forwarding and all Raft/ciphertext traffic use the actual
+ //! production TLS listeners. Process-owner drop is not a physical SIGKILL test.
++#[path = "service_native_v6_ha_snapshot_tests.rs"]
++mod snapshot_tests;
++
++#[path = "service_native_v6_ha_snapshot_repair_tests.rs"]
++mod snapshot_repair_tests;
++
+ use super::*;
+ use crate::ha::{HaPeerConfig, HaProcessConfig};
+ use crate::request_deadline::{RequestDeadlineScope, lock_until};
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_read.rs b/crates/heptabao-server/src/service_native_v6_ha_read.rs
+index f90973509b00340f15e4500eabd76c2cecefb404..e832b540c18aaeb5dd9929531369e92d96ab17e7 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_read.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_read.rs
+@@ -3,6 +3,13 @@
+ //! A request proof separately requires the same fresh opaque ReadIndex.
+ use super::*;
+ 
++#[path = "service_native_v6_ha_snapshot.rs"]
++mod snapshot;
++
++#[path = "service_native_v6_ha_archive_source.rs"]
++mod archive_source;
++pub(crate) use archive_source::NativeHaArchiveRepairSource;
++
+ pub(crate) struct ColdNativeHaRead {
+     pub(in crate::service) metadata: State,
+     pub(in crate::service) native: BTreeMap<MountScope, NativeReadView>,
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_snapshot.rs b/crates/heptabao-server/src/service_native_v6_ha_snapshot.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f0d01c4171b58c19e0bcf5b1a5241257728bbd5
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot.rs
+@@ -0,0 +1,170 @@
++//! Dual-pack export under the original native request proof. The archive is
++//! only data: the retained affine proof, not its provenance bytes or hashes,
++//! must also survive actual Service finalization before HTTP delivery.
++use super::*;
++use crate::ha::native_v6_backup::{
++    NativeV6ArchiveError, NativeV6ArchiveReport, NativeV6ArchiveSelection,
++    prepare_native_v6_local_pack, write_native_v6_archive,
++};
++use crate::ha_state::native_v6::NativeV6CodecError;
++use crate::snapshot_file::SnapshotFile;
++
++impl NativeHaReadProof {
++    /// The Service calls this only after consuming its exact terminal-clock
++    /// receipt. The archive retains this proof's A identity; the new proof
++    /// independently authenticates the one observed-clock successor B.
++    pub(in crate::service) fn check_snapshot_terminal_successor(
++        &self,
++        service: &Service,
++        successor: &Self,
++    ) -> Result<(), Response> {
++        self.environment.check(service)?;
++        if self.environment.deadline.instant() != successor.environment.deadline.instant()
++            || !Arc::ptr_eq(&self.environment.ha, &successor.environment.ha)
++            || self.committed.enrollment() != successor.committed.enrollment()
++        {
++            return Err(unavailable());
++        }
++        let original = self.committed.published();
++        let current = successor.committed.published();
++        let intent = current.intent();
++        if intent.epoch != original.intent().epoch
++            || intent.prior_root_digest != original.root_digest()
++            || intent.prior_generation != original.generation()
++            || intent.expected_previous_commit_index != original.publication_log_id().index
++            || original.generation().checked_add(1) != Some(current.generation())
++            || current.migration_source() != original.migration_source()
++            || successor.identity != StateIdentity::RecordsV6(current.root_digest())
++        {
++            return Err(unavailable());
++        }
++        successor.check_warm(service)?;
++        self.environment.check(service)
++    }
++
++    /// Both files come from the original descriptor-owned snapshot lease.
++    /// No callback receives a raw root, enrollment, store or publication grant.
++    pub(in crate::service) fn export_snapshot_archive(
++        &self,
++        service: &mut Service,
++        local_file: SnapshotFile,
++        mut archive_file: SnapshotFile,
++        seal_identity: [u8; 32],
++        original_actor: &mut impl FnMut(&Service) -> Result<(), Response>,
++    ) -> Result<(SnapshotFile, NativeV6ArchiveReport), Response> {
++        original_actor(service)?;
++        self.check_warm(service)?;
++        let key = Zeroizing::new(**service.barrier_key.as_ref().ok_or_else(unavailable)?);
++        let barrier = AeadBarrier::new(*key).map_err(|_| unavailable())?;
++        let deadline = self.environment.deadline;
++        let process = self
++            .environment
++            .ha
++            .lock_for_request()
++            .map_err(|_| unavailable())?;
++        process
++            .verify_native_v6_committed_read(&self.committed)
++            .map_err(|_| unavailable())?;
++        let mut durable = service.durable.take().ok_or_else(unavailable)?;
++        let result = (|| {
++            self.selected
++                .check(&mut durable, self.selected.initial_generation)
++                .map_err(storage_rejected)?;
++            let root = self.selected.native.as_ref().ok_or_else(unavailable)?;
++            let mut gate = || {
++                original_actor(service).map_err(|_| ServiceError::BarrierFailure)?;
++                self.check_instance(service)
++                    .map_err(|_| ServiceError::BarrierFailure)?;
++                process
++                    .verify_native_v6_committed_read(&self.committed)
++                    .map_err(|_| ServiceError::BarrierFailure)?;
++                deadline.check().map_err(|_| ServiceError::BarrierFailure)
++            };
++            // This is the full typed materializer, including retained payload
++            // history and every paged block, under the local barrier owner.
++            let (metadata, native) = materialize_local(&mut durable, root, deadline, &mut gate)?;
++            Service::check_native_installed(
++                service.state.as_ref().ok_or_else(unavailable)?,
++                &metadata,
++                &native,
++                root,
++                deadline,
++            )?;
++            let report = process
++                .with_native_v6_source(&self.committed, |codec, store| {
++                    let mut codec_gate = || gate().map_err(|_| NativeV6CodecError::Gate);
++                    // Independently open the shared-key directory and its
++                    // complete typed closure; matching counts cannot do this.
++                    let received = open_native_v6_ha_objects(
++                        codec,
++                        self.committed.enrollment(),
++                        self.committed.published(),
++                        store,
++                        context(root)?,
++                        deadline,
++                        &mut codec_gate,
++                    )
++                    .map_err(|_| unavailable())?;
++                    if received.root_bytes() != self.selected.root_bytes.expose() {
++                        return Err(unavailable());
++                    }
++                    let (shared_state, shared_native, _) = received
++                        .into_detached_parts(&mut codec_gate)
++                        .map_err(|_| unavailable())?;
++                    Service::check_native_installed(
++                        service.state.as_ref().ok_or_else(unavailable)?,
++                        &shared_state,
++                        &shared_native,
++                        root,
++                        deadline,
++                    )?;
++                    let selection = NativeV6ArchiveSelection::from_committed(
++                        self.committed.enrollment(),
++                        self.committed.published(),
++                    )
++                    .map_err(|_| unavailable())?;
++                    let mut archive_gate = || gate().map_err(|_| NativeV6ArchiveError::Gate);
++                    let local = prepare_native_v6_local_pack(
++                        &mut durable,
++                        &selection,
++                        local_file,
++                        deadline,
++                        &mut archive_gate,
++                        // The complete typed local graph was just checked.
++                        // Durable export independently AEAD-checks every
++                        // registered ciphertext under its held source session.
++                        &mut |_, _| Ok(()),
++                    )
++                    .map_err(|_| unavailable())?;
++                    write_native_v6_archive(
++                        &selection,
++                        local,
++                        store,
++                        seal_identity,
++                        &barrier,
++                        &mut archive_file,
++                        &mut archive_gate,
++                    )
++                    .map_err(|_| unavailable())
++                })
++                .map_err(|_| unavailable())??;
++            self.selected
++                .check(&mut durable, self.selected.initial_generation)
++                .map_err(storage_rejected)?;
++            gate().map_err(storage_rejected)?;
++            if archive_file.len() != report.archive_bytes {
++                return Err(unavailable());
++            }
++            archive_file.rewind_checked().map_err(|_| unavailable())?;
++            Ok(report)
++        })();
++        service.durable = Some(durable);
++        drop(process);
++        // Every failure leaves only lease-owned transfer files, never a root
++        // mutation, fsync ACK or substitute consensus selection.
++        let report = result?;
++        self.check_warm(service)?;
++        original_actor(service)?;
++        Ok((archive_file, report))
++    }
++}
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..f40e9e672f47ed2984ed6d5fbde30761ca0a6909
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs
+@@ -0,0 +1,285 @@
++//! Actual three-voter/mTLS Service export -> bounded upload -> warm repair.
++//! These are Service transport-owner regressions, not physical-host claims.
++use super::*;
++use heptabao_raft_runtime::{LocalV6BlobError, RecordObjectRef};
++use std::io::Read;
++
++const REPAIR: &str = "sys/storage/raft/snapshot-repair";
++type LocalAnchor = (u64, u64, Vec<Option<Vec<u8>>>);
++
++fn activate(pipeline: &Pipeline, leader: usize) -> TestResult {
++    expect(pipeline.call(leader, "POST", "sys/internal/native-v6/activate",
++        pipeline.admin(), json!({}))?, 204, "repair-native-activation")?;
++    Ok(())
++}
++
++fn local_anchor(service: &Service) -> TestResult<LocalAnchor> {
++    let durable = service.durable.as_ref().ok_or("repair durable absent")?;
++    let resources = [
++        "state", native_v6_reader::ACTIVE_CURSOR_RESOURCE,
++        native_v6_reader::ACTIVE_SOURCE_ROOT_RESOURCE,
++        native_v6_ha_install::HA_CURSOR_RESOURCE,
++    ].into_iter().map(|resource| {
++        durable.get("system", resource).map(|secret| secret.map(|value| value.expose().to_vec()))
++    }).collect::<Result<Vec<_>, _>>()?;
++    Ok((durable.generation(), durable.replay_epoch(), resources))
++}
++
++fn admitted(
++    service: &mut Service,
++    method: &str,
++    path: &str,
++    token: &str,
++    until: Instant,
++) -> TestResult<Box<PendingExternalRequest>> {
++    match service.begin_native_snapshot_before(
++        ServiceRequest::new(method, path, "", token, json!({})), until,
++    ) {
++        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),
++        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
++            errors_only("repair-admission", &response);
++            Err(format!("repair admission HTTP {}", response.status).into())
++        }
++        NativeSnapshotAdmission::Redirect(_) => Err("repair leader unexpectedly redirected".into()),
++    }
++}
++
++fn export(pipeline: &Pipeline, leader: usize) -> TestResult<Vec<u8>> {
++    let until = Instant::now() + REQUEST_BUDGET;
++    let _scope = RequestDeadlineScope::enter(until);
++    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
++    let mut writer = lock_until(service, until).map_err(|_| "export writer")?;
++    let mut pending = admitted(&mut writer, "GET", "sys/storage/raft/snapshot", pipeline.admin(), until)?;
++    let (result, file) = pending.execute_snapshot_transfer(&mut io::empty());
++    expect(writer.finish_external_request(*pending, result), 200, "repair-source-export")?;
++    drop(writer);
++    let mut file = file.ok_or("repair-source archive absent")?;
++    let mut bytes = Vec::new();
++    file.read_to_end(&mut bytes)?;
++    Ok(bytes)
++}
++
++fn selected_shared(pipeline: &Pipeline, leader: usize) -> TestResult<Vec<(RecordObjectRef, Vec<u8>)>> {
++    let _scope = scope();
++    let process = pipeline.processes[leader].as_ref().ok_or("repair process absent")?
++        .lock_for_request().map_err(|_| "repair selection lock")?;
++    let read = process.native_v6_committed_read(OriginalDeadline::capture()?)?
++        .ok_or("repair selected root absent")?;
++    let files = process.with_native_v6_source(&read, |_, store| {
++        let (_, refs) = store.reopen_root_closure_archive(read.published(), &mut || Ok(()))?;
++        refs.into_iter().map(|reference| {
++            let bytes = store.read_local_checked(&reference, &mut || Ok(()))?;
++            Ok((reference, bytes))
++        }).collect::<Result<Vec<_>, LocalV6BlobError>>()
++    })??;
++    assert!(!files.is_empty());
++    Ok(files)
++}
++
++fn leaf(pipeline: &Pipeline, voter: usize, reference: &RecordObjectRef) -> PathBuf {
++    pipeline.configs[voter].raft_dir.join("native-v6-ciphertext")
++        .join(format!("v6-{}.blob", hex(&reference.id)))
++}
++
++fn lose_all_shared(pipeline: &Pipeline, files: &[(RecordObjectRef, Vec<u8>)]) -> TestResult {
++    // Exact selected ciphertext in this fresh synthetic Root only. Raft logs,
++    // local-barrier files, Auth, epochs and cursors remain physically intact.
++    for voter in 0..3 {
++        for (reference, _) in files {
++            let path = leaf(pipeline, voter, reference);
++            match fs::remove_file(path) {
++                Ok(()) => {}
++                Err(error) if error.kind() == io::ErrorKind::NotFound => {}
++                Err(error) => return Err(error.into()),
++            }
++        }
++        File::open(pipeline.configs[voter].raft_dir.join("native-v6-ciphertext"))?.sync_all()?;
++    }
++    assert_missing(pipeline, files);
++    Ok(())
++}
++
++fn assert_missing(pipeline: &Pipeline, files: &[(RecordObjectRef, Vec<u8>)]) {
++    for voter in 0..3 {
++        for (reference, _) in files {
++            assert!(!leaf(pipeline, voter, reference).exists());
++        }
++    }
++}
++
++fn repair(pipeline: &Pipeline, leader: usize, archive: &[u8]) -> TestResult<Response> {
++    let until = Instant::now() + REQUEST_BUDGET;
++    let _scope = RequestDeadlineScope::enter(until);
++    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
++    let mut writer = lock_until(service, until).map_err(|_| "repair writer")?;
++    let mut pending = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;
++    assert!(writer.native_request_binding.is_none());
++    drop(writer);
++    let (result, file) = pending.execute_snapshot_transfer(&mut &archive[..]);
++    assert!(file.is_none());
++    let mut writer = lock_until(service, until).map_err(|_| "repair finalizer")?;
++    let response = writer.finish_external_request(*pending, result);
++    assert!(writer.native_request_binding.is_none());
++    Ok(response)
++}
++
++#[test]
++fn native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens() -> TestResult {
++    let mut pipeline = Pipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    activate(&pipeline, leader)?;
++    let value = "archive-repair-retained-history".repeat(4096);
++    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
++        json!({"options":{"cas":1},"data":{"value":value}}))?, 200, "repair-history-write")?;
++    let before = pipeline.native_selection(leader)?;
++    let local = pipeline.with_service(leader, local_anchor)?;
++    let archive = export(&pipeline, leader)?;
++    let files = selected_shared(&pipeline, leader)?;
++    lose_all_shared(&pipeline, &files)?;
++    // Admission must still deny anonymous callers before it allocates a lease.
++    {
++        let until = Instant::now() + REQUEST_BUDGET;
++        let _scope = RequestDeadlineScope::enter(until);
++        let service = pipeline.services[leader].as_ref().ok_or("repair Service")?;
++        let mut writer = lock_until(service, until).map_err(|_| "anonymous repair writer")?;
++        let denied = writer.begin_native_snapshot_before(
++            ServiceRequest::new("POST", REPAIR, "", "", json!({})), until,
++        );
++        assert!(matches!(denied, NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref response))
++            if response.status == 403));
++        assert!(writer.snapshot_spool.as_ref().ok_or("export spool")?.lease().is_ok());
++    }
++    assert_missing(&pipeline, &files);
++    let response = expect(repair(&pipeline, leader, &archive)?, 200, "actual-warm-archive-repair")?;
++    assert_eq!(response.body["data"]["shared_object_count"], files.len() as u64);
++    for (reference, bytes) in &files {
++        assert!(fs::read(leaf(&pipeline, leader, reference))? == *bytes);
++    }
++    assert_eq!(pipeline.native_selection(leader)?, before);
++    assert!(pipeline.with_service(leader, local_anchor)? == local);
++    for voter in 0..3 {
++        pipeline.assert_history(voter, &[(1, "seed-v5"), (2, &value)])?;
++    }
++    pipeline.stop_process(leader)?;
++    let next = pipeline.ready_leader()?;
++    assert_ne!(next, leader);
++    pipeline.start_process(leader)?;
++    pipeline.unseal(leader)?;
++    assert_eq!(pipeline.native_selection(leader)?, before);
++    pipeline.assert_history(leader, &[(1, "seed-v5"), (2, &value)])?;
++    Ok(())
++}
++
++#[test]
++fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf() -> TestResult {
++    let pipeline = Pipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    activate(&pipeline, leader)?;
++    let old = export(&pipeline, leader)?;
++    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
++        json!({"options":{"cas":1},"data":{"value":"later-current-root"}}))?,
++        200, "repair-later-current-root")?;
++    let current = export(&pipeline, leader)?;
++    let local = pipeline.with_service(leader, local_anchor)?;
++    let before = pipeline.native_selection(leader)?;
++    let files = selected_shared(&pipeline, leader)?;
++    lose_all_shared(&pipeline, &files)?;
++    let stale = repair(&pipeline, leader, &old)?;
++    assert_eq!(stale.status, 409);
++    assert!(stale.body.get("data").is_none());
++    assert_missing(&pipeline, &files);
++    // Invalid transport bytes cannot reach any shared staging operation.
++    let mut damaged = current.clone();
++    let middle = damaged.len() / 2;
++    damaged[middle] ^= 1;
++    let rejected = repair(&pipeline, leader, &damaged)?;
++    assert!(rejected.status >= 400 && rejected.body.get("data").is_none());
++    assert_missing(&pipeline, &files);
++    let (reference, bytes) = files.first().ok_or("repair selected leaf")?;
++    let path = leaf(&pipeline, leader, reference);
++    let mut corrupt = bytes.clone();
++    *corrupt.last_mut().ok_or("repair nonempty ciphertext")? ^= 1;
++    let mut options = OpenOptions::new();
++    options.write(true).create_new(true);
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::OpenOptionsExt;
++        options.mode(0o600);
++    }
++    let mut bad = options.open(&path)?;
++    bad.write_all(&corrupt)?;
++    bad.sync_all()?;
++    drop(bad);
++    let rejected = repair(&pipeline, leader, &current)?;
++    assert!(rejected.status >= 400 && rejected.body.get("data").is_none());
++    assert!(fs::read(&path)? == corrupt);
++    assert!(pipeline.with_service(leader, local_anchor)? == local);
++    // Explicit fixture quarantine, never an automatic repair overwrite.
++    fs::rename(&path, path.with_extension("corrupt-repair-fixture"))?;
++    expect(repair(&pipeline, leader, &current)?, 200, "repair-after-explicit-fixture-quarantine")?;
++    assert_eq!(pipeline.native_selection(leader)?, before);
++    Ok(())
++}
++
++#[test]
++fn native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody() -> TestResult {
++    let pipeline = Pipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    activate(&pipeline, leader)?;
++    let archive = export(&pipeline, leader)?;
++    let until = Instant::now() + REQUEST_BUDGET;
++    let scope = RequestDeadlineScope::enter(until);
++    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
++    let mut writer = lock_until(service, until).map_err(|_| "repair original writer")?;
++    let cancelled = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;
++    drop(cancelled);
++    assert!(!writer.recovery_required && writer.native_request_binding.is_none());
++    let mut pending = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;
++    drop(writer);
++    let (result, _) = pending.execute_snapshot_transfer(&mut archive.as_slice());
++    // Publish through the actual Service and actual TLS majority while the
++    // original archive owner is outside the writer receiving its body.
++    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
++        json!({"options":{"cas":1},"data":{"value":"changed-during-upload"}}))?,
++        200, "repair-concurrent-root")?;
++    let changed = pipeline.native_selection(leader)?;
++    let files = selected_shared(&pipeline, leader)?;
++    lose_all_shared(&pipeline, &files)?;
++    let mut writer = lock_until(service, until).map_err(|_| "repair changed-source writer")?;
++    let response = writer.finish_external_request(*pending, result);
++    assert!(response.status >= 400 && response.body.get("data").is_none());
++    assert!(writer.native_request_binding.is_none());
++    assert_eq!(writer.current_state_identity().map_err(|_| "repair current identity")?.digest(), changed.1);
++    drop((writer, scope));
++    assert_missing(&pipeline, &files);
++    Ok(())
++}
++
++#[test]
++fn native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair() -> TestResult {
++    let pipeline = Pipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    activate(&pipeline, leader)?;
++    let archive = export(&pipeline, leader)?;
++    let files = selected_shared(&pipeline, leader)?;
++    lose_all_shared(&pipeline, &files)?;
++    let until = Instant::now() + REQUEST_BUDGET;
++    let _scope = RequestDeadlineScope::enter(until);
++    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
++    let mut writer = lock_until(service, until).map_err(|_| "repair audit writer")?;
++    let before = local_anchor(&writer)?;
++    let mut pending = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;
++    let (result, _) = pending.execute_snapshot_transfer(&mut archive.as_slice());
++    // Existing mandatory-audit I/O fault, after successful request audit. No
++    // early audit_failed flag prevents the physical path from being exercised.
++    writer.audit_capacity = 0;
++    let response = writer.finish_external_request(*pending, result);
++    assert_eq!(response.status, 503);
++    assert!(response.body.get("data").is_none());
++    assert!(writer.recovery_required && writer.ha_activation.is_none());
++    assert!(local_anchor(&writer)? == before);
++    for (reference, bytes) in &files {
++        assert!(fs::read(leaf(&pipeline, leader, reference))? == *bytes);
++    }
++    Ok(())
++}
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..ebdb6e7ffb5f616655b6f8d75ab9469e349b42a7
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs
+@@ -0,0 +1,321 @@
++//! Existing Service admission/finalization over the real three-voter mTLS
++//! pipeline. This is an export test, not a restore or physical-host claim.
++use super::*;
++use crate::crypto::AeadBarrier;
++use crate::ha::native_v6_backup::{NativeV6ArchiveSelection, validate_native_v6_archive};
++use crate::snapshot_archive::{self, Metadata};
++use crate::snapshot_file::SnapshotSpool;
++use heptabao_durable_service::Barrier;
++use std::io::Read;
++
++fn pending(
++    service: &mut Service,
++    token: &str,
++    deadline: Instant,
++) -> TestResult<Box<PendingExternalRequest>> {
++    match service.begin_native_snapshot_before(
++        ServiceRequest::new("GET", "sys/storage/raft/snapshot", "", token, json!({})),
++        deadline,
++    ) {
++        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),
++        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
++            errors_only("native-HA-snapshot-admission", &response);
++            Err(format!("snapshot admission HTTP {}", response.status).into())
++        }
++        NativeSnapshotAdmission::Redirect(_) => Err("selected leader redirected snapshot".into()),
++    }
++}
++
++#[test]
++fn native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root() -> TestResult {
++    let pipeline = Pipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "sys/internal/native-v6/activate",
++            pipeline.admin(),
++            json!({}),
++        )?,
++        204,
++        "native-snapshot-activation",
++    )?;
++    let value = "native-ha-snapshot-history-block".repeat(8192);
++    expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "secret/data/pipeline/history",
++            pipeline.admin(),
++            json!({"options":{"cas":1},"data":{"value":value}}),
++        )?,
++        200,
++        "native-snapshot-history",
++    )?;
++    let original = pipeline.native_selection(leader)?;
++    let until = Instant::now() + REQUEST_BUDGET;
++    let scope = RequestDeadlineScope::enter(until);
++    let service = pipeline.services[leader].as_ref().ok_or("Service absent")?;
++    let mut writer = lock_until(service, until).map_err(|_| "snapshot writer lock")?;
++    assert!(writer.native_candidate_profile.is_none());
++    let denied = writer.begin_native_snapshot_before(
++        ServiceRequest::new("GET", "sys/storage/raft/snapshot", "", "", json!({})),
++        until,
++    );
++    assert!(matches!(
++        denied,
++        NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref response))
++            if response.status == 403
++    ));
++    assert!(writer.snapshot_spool.is_none());
++    let generation = writer
++        .durable
++        .as_ref()
++        .ok_or("durable absent")?
++        .generation();
++    let barrier = AeadBarrier::new(**writer.barrier_key.as_ref().ok_or("barrier absent")?)?;
++    let mut request = pending(&mut writer, pipeline.admin(), until)?;
++    let (result, file) = request.execute_snapshot_transfer(&mut io::empty());
++    expect(
++        writer.finish_external_request(*request, result),
++        200,
++        "native-snapshot-finalization",
++    )?;
++    assert_eq!(
++        writer
++            .durable
++            .as_ref()
++            .ok_or("durable absent")?
++            .generation(),
++        generation
++    );
++    drop(writer);
++    let output = file.ok_or("snapshot output absent")?;
++    let verify_dir = pipeline.files.path.join("snapshot-verifier");
++    private_directory(&verify_dir)?;
++    let spool = SnapshotSpool::open(&verify_dir)?;
++    let lease = spool.lease()?;
++    let imported = snapshot_archive::import(output, &lease, until)?;
++    assert!(imported.metadata.is_v6_ha());
++    assert_eq!(imported.metadata.generation(), generation);
++    let plain_sums = barrier.open(snapshot_archive::CHECKSUM_CONTEXT, &imported.sealed_sums)?;
++    assert_eq!(plain_sums.as_slice(), imported.sums.as_slice());
++    let json = serde_json::to_value(&imported.metadata)?;
++    assert_eq!(json["format"], "heptabao-native-ha-object-snapshot-v1");
++    let hex_digest = json["seal_identity"]["sha256"]
++        .as_str()
++        .ok_or("seal digest")?;
++    let mut seal_digest = [0u8; 32];
++    for (slot, pair) in seal_digest
++        .iter_mut()
++        .zip(hex_digest.as_bytes().chunks_exact(2))
++    {
++        *slot = u8::from_str_radix(std::str::from_utf8(pair)?, 16)?;
++    }
++    let process = pipeline.processes[leader]
++        .as_ref()
++        .ok_or("process absent")?
++        .lock_for_request()
++        .map_err(|_| "snapshot validation process lock")?;
++    let selected = process
++        .native_v6_committed_read(OriginalDeadline::capture()?)?
++        .ok_or("committed root absent")?;
++    let selection =
++        NativeV6ArchiveSelection::from_committed(selected.enrollment(), selected.published())?;
++    let mut verified = validate_native_v6_archive(
++        imported.state,
++        &selection,
++        seal_digest,
++        &barrier,
++        OriginalDeadline::capture()?,
++        &mut || Ok(()),
++    )?;
++    assert_eq!(verified.report().local.generation, generation);
++    assert!(verified.report().shared_ciphertext_bytes > value.len() as u64);
++    let mut leaves = 0;
++    verified.visit_shared_ciphertext(&mut || Ok(()), &mut |_, _| {
++        leaves += 1;
++        Ok(())
++    })?;
++    assert_eq!(leaves, verified.report().shared_object_count);
++    let mut local = lease.file(crate::snapshot_file::MAX_V6_SNAPSHOT_STATE, until)?;
++    verified.copy_local_pack_to(&mut local, &mut || Ok(()))?;
++    local.rewind_checked()?;
++    let mut magic = [0; 8];
++    local.read_exact(&mut magic)?;
++    assert_eq!(&magic, b"HBV6PK01");
++    process.verify_native_v6_committed_read(&selected)?;
++    drop((process, local, verified, lease, spool, scope));
++    assert_eq!(pipeline.native_selection(leader)?, original);
++
++    // Exercise the actual affine transfer across a later live root publication.
++    // The output may exist privately; it must never finalize successfully.
++    let until = Instant::now() + REQUEST_BUDGET;
++    let _scope = RequestDeadlineScope::enter(until);
++    let mut writer = lock_until(service, until).map_err(|_| "second snapshot writer")?;
++    let mut request = pending(&mut writer, pipeline.admin(), until)?;
++    let (result, private_file) = request.execute_snapshot_transfer(&mut io::empty());
++    drop(writer);
++    expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "secret/data/pipeline/history",
++            pipeline.admin(),
++            json!({"options":{"cas":2},"data":{"value":"changed-after-export"}}),
++        )?,
++        200,
++        "snapshot-racing-root-publication",
++    )?;
++    let changed = pipeline.native_selection(leader)?;
++    assert_ne!(changed, original);
++    let mut writer = lock_until(service, until).map_err(|_| "stale snapshot finalizer")?;
++    let response = writer.finish_external_request(*request, result);
++    assert!(response.status == 409 || response.status == 503);
++    assert!(response.body.get("data").is_none());
++    drop((writer, private_file));
++    assert_eq!(pipeline.native_selection(leader)?, changed);
++    Ok(())
++}
++
++#[test]
++fn native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits() -> TestResult {
++    let seal = [7; 32];
++    let beyond_local = crate::snapshot_file::MAX_V6_SNAPSHOT_STATE + 1;
++    let ha = Metadata::new_v6_ha(1, beyond_local, &seal);
++    assert!(ha.valid() && ha.is_v6() && ha.is_v6_ha());
++    assert!(!Metadata::new_v6(1, beyond_local, &seal).valid());
++    assert!(!Metadata::new(1, beyond_local, &seal).valid());
++    assert!(!Metadata::new_v6_ha(0, beyond_local, &seal).valid());
++    assert!(
++        !Metadata::new_v6_ha(1, crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE + 1, &seal).valid()
++    );
++    assert!(crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE < 1 << 33);
++    let mut encoded = serde_json::to_value(ha)?;
++    encoded["state_format"] = json!("heptabao-encrypted-object-backup/HBV6PK01");
++    assert!(!serde_json::from_value::<Metadata>(encoded)?.valid());
++    Ok(())
++}
++
++#[test]
++fn native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b() -> TestResult {
++    let pipeline = Pipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    let mut issued = expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "auth/token/create",
++            pipeline.admin(),
++            json!({"policies":["root"],"ttl":"60s","no_default_policy":true,"no_parent":true}),
++        )?,
++        200,
++        "snapshot-precision-token-setup",
++    )?;
++    let token = secret_field(&mut issued, "/auth/client_token")?;
++    expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "sys/internal/native-v6/activate",
++            pipeline.admin(),
++            json!({}),
++        )?,
++        204,
++        "snapshot-precision-activation",
++    )?;
++    let until = Instant::now() + REQUEST_BUDGET;
++    let _scope = RequestDeadlineScope::enter(until);
++    let service = pipeline.services[leader].as_ref().ok_or("Service absent")?;
++    let mut writer = lock_until(service, until).map_err(|_| "snapshot precision writer")?;
++    assert!(
++        writer
++            .state
++            .as_ref()
++            .ok_or("state absent")?
++            .has_token_api_precision_state()
++    );
++    let barrier = AeadBarrier::new(**writer.barrier_key.as_ref().ok_or("barrier absent")?)?;
++    let mut request = pending(&mut writer, &token, until)?;
++    let archive_generation = writer
++        .durable
++        .as_ref()
++        .ok_or("durable absent")?
++        .generation();
++    let process = pipeline.processes[leader]
++        .as_ref()
++        .ok_or("process absent")?;
++    let process_guard = process
++        .lock_for_request()
++        .map_err(|_| "original selection lock")?;
++    let original = process_guard
++        .native_v6_committed_read(OriginalDeadline::capture()?)?
++        .ok_or("original root absent")?;
++    let archive_selection =
++        NativeV6ArchiveSelection::from_committed(original.enrollment(), original.published())?;
++    let a = original.published().clone();
++    drop(process_guard);
++    let (result, file) = request.execute_snapshot_transfer(&mut io::empty());
++    // The precise terminal observation must be strictly later than admission.
++    thread::sleep(Duration::from_millis(2));
++    expect(
++        writer.finish_external_request(*request, result),
++        200,
++        "snapshot-precision-after-audit",
++    )?;
++    assert!(writer.native_request_binding.is_none());
++    assert!(!writer.recovery_required);
++    let final_generation = writer
++        .durable
++        .as_ref()
++        .ok_or("durable absent")?
++        .generation();
++    assert!(final_generation > archive_generation);
++    drop(writer);
++    let process_guard = process
++        .lock_for_request()
++        .map_err(|_| "terminal selection lock")?;
++    let current = process_guard
++        .native_v6_committed_read(OriginalDeadline::capture()?)?
++        .ok_or("terminal root absent")?;
++    let b = current.published();
++    assert_eq!(b.intent().prior_root_digest, a.root_digest());
++    assert_eq!(b.intent().prior_generation, a.generation());
++    assert_eq!(
++        b.intent().expected_previous_commit_index,
++        a.publication_log_id().index
++    );
++    assert_eq!(b.intent().epoch, a.intent().epoch);
++    assert_eq!(b.generation(), a.generation() + 1);
++    assert_ne!(b.root_digest(), a.root_digest());
++    let verify_dir = pipeline.files.path.join("snapshot-terminal-verifier");
++    private_directory(&verify_dir)?;
++    let spool = SnapshotSpool::open(&verify_dir)?;
++    let lease = spool.lease()?;
++    let imported = snapshot_archive::import(file.ok_or("archive absent")?, &lease, until)?;
++    assert_eq!(imported.metadata.generation(), archive_generation);
++    assert_ne!(imported.metadata.generation(), final_generation);
++    let metadata = serde_json::to_value(&imported.metadata)?;
++    let digest = metadata["seal_identity"]["sha256"]
++        .as_str()
++        .ok_or("archive seal digest")?;
++    let mut expected_seal = [0u8; 32];
++    for (slot, pair) in expected_seal
++        .iter_mut()
++        .zip(digest.as_bytes().chunks_exact(2))
++    {
++        *slot = u8::from_str_radix(std::str::from_utf8(pair)?, 16)?;
++    }
++    let verified = validate_native_v6_archive(
++        imported.state,
++        &archive_selection,
++        expected_seal,
++        &barrier,
++        OriginalDeadline::capture()?,
++        &mut || Ok(()),
++    )?;
++    assert_eq!(verified.report().local.generation, archive_generation);
++    process_guard.verify_native_v6_committed_read(&current)?;
++    Ok(())
++}
+diff --git a/crates/heptabao-server/src/service_snapshot_transfer.rs b/crates/heptabao-server/src/service_snapshot_transfer.rs
+index f808d861e144476bc7357fbbe18e909d1b349e6b..8f1b2397d8d2cfd83c4acb9ff36dd65acaa93296 100644
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -10,6 +10,8 @@ use crate::{
+ use sha2::{Digest, Sha256};
+ use std::time::Instant;
+ 
++pub(super) const NATIVE_HA_REPAIR_PATH: &str = "sys/storage/raft/snapshot-repair";
++
+ #[cfg(feature = "fixture-native-v6-service")]
+ #[path = "service_snapshot_v6.rs"]
+ mod v6;
+@@ -56,6 +58,10 @@ pub(super) struct SnapshotTransferPlan {
+     // next unrelated request; finalization restores exactly the original one.
+     #[cfg(feature = "fixture-native-v6-service")]
+     native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
++    #[cfg(feature = "experimental-native-v6-ha")]
++    native_ha_source: Option<native_v6_ha_install::NativeHaReadProof>,
++    #[cfg(feature = "experimental-native-v6-ha")]
++    native_ha_repair: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
+ }
+ impl SnapshotTransferPlan {
+     pub(super) fn original_deadline(&self) -> Instant {
+@@ -185,15 +191,6 @@ impl Service {
+         Ok((identity, seal, bytes))
+     }
+ 
+-    fn current_snapshot_seal_identity(
+-        &self,
+-        lease: &SnapshotLease,
+-        deadline: Instant,
+-    ) -> Result<[u8; 32], Response> {
+-        self.current_snapshot_seal_identity_and_raw(lease, deadline)
+-            .map(|(identity, _, _)| identity)
+-    }
+-
+     // An equal snapshot of the BYTES from the checked parent descriptor proves
+     // the same canonical metadata authenticated at admission. When ANY bytes
+     // differ, preserve the prior full JSON, in-memory seal and canonical SHA
+@@ -252,7 +249,7 @@ impl Service {
+         }
+         if !matches!(
+             request.path,
+-            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force" | NATIVE_HA_REPAIR_PATH
+         ) {
+             erase_json(&mut request.body);
+             return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(
+@@ -367,10 +364,11 @@ impl Service {
+         }
+         let download =
+             request.path == "sys/storage/raft/snapshot" && matches!(request.method, "GET" | "HEAD");
++        let repair = request.path == NATIVE_HA_REPAIR_PATH;
+         if !download && !matches!(request.method, "POST" | "PUT") {
+             return Response::error(405, "snapshot restore requires POST or PUT");
+         }
+-        if !download
++        if !download && !repair
+             && self.state.as_ref().is_some_and(|state| {
+                 !state.database.is_empty() || state.engines.has_openldap_mount()
+             })
+@@ -428,12 +426,16 @@ impl Service {
+             is_download: download,
+             #[cfg(feature = "fixture-native-v6-service")]
+             native_request_binding: None,
++            #[cfg(feature = "experimental-native-v6-ha")]
++            native_ha_source: None,
++            #[cfg(feature = "experimental-native-v6-ha")]
++            native_ha_repair: None,
+         };
+         let source = if download {
+             let result = (|| -> Result<DownloadSource, Response> {
+                 #[cfg(feature = "fixture-native-v6-service")]
+                 if self.native_root.is_some() {
+-                    return self.prepare_v6_snapshot_download(&plan);
++                    return self.prepare_v6_snapshot_download(&mut plan);
+                 }
+                 #[cfg(feature = "fixture-native-v6-service")]
+                 self.repair_unreachable_native_migration_slots_before_v5_snapshot(&plan)?;
+@@ -520,13 +522,49 @@ impl Service {
+         Ok(())
+     }
+ 
+-    pub(super) fn finalize_snapshot_transfer(
++    // Snapshot owns its capsule until terminal clock persistence, mandatory
++    // audit and the final original-Actor/selection check have all completed.
++    pub(super) fn complete_snapshot_transfer(
+         &mut self,
+-        plan: SnapshotTransferPlan,
++        mut plan: SnapshotTransferPlan,
+         result: Result<Observation, Response>,
++        fingerprint: &str,
++        clock: (u64, Option<RequestClock>),
+     ) -> Response {
++        let response = self.finalize_snapshot_transfer(&mut plan, result);
++        #[cfg(feature = "experimental-native-v6-ha")]
++        let response = if plan.native_ha_source.is_some() {
++            self.complete_native_ha_snapshot_delivery(&plan, response, fingerprint, clock)
++        } else {
++            self.audit_completed_response(fingerprint, clock.0, clock.1, response)
++        };
++        #[cfg(not(feature = "experimental-native-v6-ha"))]
++        let response = self.audit_completed_response(fingerprint, clock.0, clock.1, response);
+         #[cfg(feature = "fixture-native-v6-service")]
+-        let mut plan = plan;
++        self.retire_native_external_binding(fingerprint, clock.1);
++        response
++    }
++
++    #[cfg(feature = "fixture-native-v6-service")]
++    pub(super) fn native_ha_snapshot_transport_enabled(&self) -> bool {
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if self.native_root.is_some()
++            && self.native_candidate_profile.is_none()
++            && self.ha.as_ref().is_some_and(|ha| {
++                ha.lock_for_request()
++                    .is_ok_and(|process| process.native_v6_enabled())
++            })
++        {
++            return true;
++        }
++        false
++    }
++
++    pub(super) fn finalize_snapshot_transfer(
++        &mut self,
++        plan: &mut SnapshotTransferPlan,
++        result: Result<Observation, Response>,
++    ) -> Response {
+         #[cfg(feature = "fixture-native-v6-service")]
+         {
+             if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
+@@ -557,6 +595,13 @@ impl Service {
+         {
+             return Response::error(409, "snapshot transfer authority changed");
+         }
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if plan.native_ha_repair.is_some() {
++            // Normal HA synchronization first pulls the missing shared leaves.
++            // This dedicated owner independently verifies the actual selection
++            // and its complete local Auth graph before repairing those leaves.
++            return self.finish_native_ha_snapshot_repair(plan, result);
++        }
+         if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
+             return response;
+         }
+@@ -586,7 +631,7 @@ impl Service {
+         ) {
+             return Response::error(error.status, &error.message);
+         }
+-        let live_seal = match self.current_snapshot_seal_identity(&plan.lease, plan.deadline) {
++        let live_seal = match self.current_snapshot_seal_identity_for_plan(plan) {
+             Ok(value) => value,
+             Err(response) => return response,
+         };
+@@ -598,7 +643,13 @@ impl Service {
+             Err(error) => return error,
+         };
+         match observation {
+-            Observation::Download if plan.is_download => Response::ok(Value::Null),
++            Observation::Download if plan.is_download => {
++                #[cfg(feature = "experimental-native-v6-ha")]
++                if plan.native_ha_source.is_some() {
++                    return self.finish_native_ha_snapshot_download(plan);
++                }
++                Response::ok(Value::Null)
++            }
+             Observation::Upload(mut imported) if !plan.is_download => {
+                 #[cfg(feature = "fixture-native-v6-service")]
+                 if self.native_root.is_some() && !imported.metadata.is_v6() {
+@@ -610,7 +661,7 @@ impl Service {
+                 }
+                 #[cfg(feature = "fixture-native-v6-service")]
+                 if imported.metadata.is_v6() {
+-                    return self.finish_v6_snapshot_upload(imported, &plan, live_seal);
++                    return self.finish_v6_snapshot_upload(imported, plan, live_seal);
+                 }
+                 let result = (|| -> Result<backup_restore::PreparedSnapshotRestore, Response> {
+                     let binding = imported.metadata.seal_identity().ok_or_else(|| {
+@@ -816,7 +867,7 @@ impl Service {
+         ) {
+             return Err(Response::error(error.status, &error.message));
+         }
+-        let live_seal = self.current_snapshot_seal_identity(&plan.lease, plan.deadline)?;
++        let live_seal = self.current_snapshot_seal_identity_for_plan(&plan)?;
+         if live_seal != plan.seal_identity {
+             return Err(Response::error(
+                 409,
+diff --git a/crates/heptabao-server/src/service_snapshot_v6.rs b/crates/heptabao-server/src/service_snapshot_v6.rs
+index d99ec69e5ed0e809e99afea533d93cf5582df601..394d50618cdb7ca158b17d5153088d6dddae86b2 100644
+--- a/crates/heptabao-server/src/service_snapshot_v6.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6.rs
+@@ -10,6 +10,9 @@ use heptabao_durable_service::PreparedV6Restore;
+ use std::cell::RefCell;
+ use std::io::{Read, Seek};
+ 
++#[cfg(feature = "experimental-native-v6-ha")]
++#[path = "service_snapshot_v6_ha.rs"]
++mod ha;
+ #[path = "service_native_v6_staging_repair.rs"]
+ mod staging_repair;
+ 
+@@ -168,8 +171,12 @@ impl Service {
+ 
+     pub(super) fn prepare_v6_snapshot_download(
+         &mut self,
+-        plan: &SnapshotTransferPlan,
++        plan: &mut SnapshotTransferPlan,
+     ) -> Result<DownloadSource, Response> {
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if self.ha.is_some() || plan.ha.is_some() {
++            return self.prepare_native_ha_snapshot_download(plan);
++        }
+         self.check_v6_snapshot_owner(plan)?;
+         let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
+         let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
+diff --git a/crates/heptabao-server/src/service_snapshot_v6_ha.rs b/crates/heptabao-server/src/service_snapshot_v6_ha.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..6441bca04ee7990b56e541b05e534b965b1aa375
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha.rs
+@@ -0,0 +1,245 @@
++//! Native HA snapshot custody at the existing affine Service transfer boundary.
++//! Download retains its actual request proof through finalization; an archive
++//! cannot supply that proof or authorize a restore publication.
++use super::*;
++
++#[path = "service_snapshot_v6_ha_repair.rs"]
++mod repair;
++
++impl Service {
++    fn check_native_ha_snapshot_owner(&self, plan: &SnapshotTransferPlan) -> Result<(), Response> {
++        self.check_native_ha_snapshot_owner_at(plan, plan.base)
++    }
++
++    fn check_native_ha_snapshot_owner_at(
++        &self,
++        plan: &SnapshotTransferPlan,
++        expected: StateIdentity,
++    ) -> Result<(), Response> {
++        let same_ha = match (&self.ha, &plan.ha) {
++            (Some(current), Some(admitted)) => Arc::ptr_eq(current, admitted),
++            _ => false,
++        };
++        if !same_ha
++            || Instant::now() >= plan.deadline
++            || self.audit_failed
++            || self.recovery_required
++            || self.barrier_key.is_none()
++            || self.unseal_nonce != plan.activation
++            || self.current_state_identity().ok() != Some(expected)
++            || self.native_root.is_none()
++            || self.record_root.is_some()
++            || self.postgres_durable.is_some()
++            || self.durable_profile.is_some()
++            || self.openbao_wrapper_owner.is_some()
++            || self.native_candidate_profile.is_some()
++        {
++            return Err(unavailable());
++        }
++        if !plan.actor.is_root() || !plan.namespace.is_empty() {
++            return Err(Response::error(403, "permission denied"));
++        }
++        let now = snapshot_observed_time(plan.now, plan.started.elapsed());
++        self.state
++            .as_ref()
++            .ok_or_else(unavailable)?
++            .auth
++            .authorize_request(
++                &plan.actor,
++                &plan.namespace,
++                &plan.path,
++                if plan.is_download { "read" } else { "update" },
++                now,
++            )
++            .map_err(|error| Response::error(error.status, &error.message))?;
++        if self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity {
++            return Err(Response::error(409, "native HA snapshot live seal changed"));
++        }
++        if Instant::now() >= plan.deadline {
++            return Err(unavailable());
++        }
++        Ok(())
++    }
++
++    pub(in crate::service::snapshot_transfer::v6) fn prepare_native_ha_snapshot_download(
++        &mut self,
++        plan: &mut SnapshotTransferPlan,
++    ) -> Result<DownloadSource, Response> {
++        self.check_native_ha_snapshot_owner(plan)?;
++        if !plan.is_download || plan.native_ha_source.is_some() {
++            return Err(unavailable());
++        }
++        // ReadIndex is obtained by this actual Service request proof. It must
++        // remain valid under the admitted root, Actor and original deadline.
++        let source_auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
++        let proof = self
++            .capture_native_ha_request_proof(&mut || {
++                if Instant::now() >= plan.deadline {
++                    return Err(unavailable());
++                }
++                source_auth
++                    .authorize_request(
++                        &plan.actor,
++                        &plan.namespace,
++                        &plan.path,
++                        "read",
++                        snapshot_observed_time(plan.now, plan.started.elapsed()),
++                    )
++                    .map_err(|error| Response::error(error.status, &error.message))
++            })?
++            .ok_or_else(unavailable)?;
++        self.check_native_ha_snapshot_owner(plan)?;
++        let local = plan
++            .lease
++            .file(crate::snapshot_file::MAX_V6_SNAPSHOT_STATE, plan.deadline)
++            .map_err(|_| unavailable())?;
++        let output = plan
++            .lease
++            .file(
++                crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE,
++                plan.deadline,
++            )
++            .map_err(|_| unavailable())?;
++        let (state, report) = proof.export_snapshot_archive(
++            self,
++            local,
++            output,
++            plan.seal_identity,
++            &mut |service| service.check_native_ha_snapshot_owner(plan),
++        )?;
++        let metadata = serde_json::to_vec(&Metadata::new_v6_ha(
++            report.local.generation,
++            report.archive_bytes,
++            &plan.seal_identity,
++        ))
++        .map_err(|_| invalid())?;
++        let sums = snapshot_archive::sums(&metadata, &report.archive_sha256);
++        let barrier = AeadBarrier::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?)
++            .map_err(|_| unavailable())?;
++        let sealed_sums = barrier
++            .seal(snapshot_archive::CHECKSUM_CONTEXT, &sums)
++            .map_err(|_| unavailable())?;
++        self.check_native_ha_snapshot_owner(plan)?;
++        proof.check_warm(self)?;
++        plan.native_ha_source = Some(proof);
++        Ok(DownloadSource {
++            state,
++            metadata,
++            sums,
++            sealed_sums,
++        })
++    }
++
++    pub(in crate::service::snapshot_transfer) fn finish_native_ha_snapshot_download(
++        &mut self,
++        plan: &SnapshotTransferPlan,
++    ) -> Response {
++        let result = (|| {
++            self.check_native_ha_snapshot_owner(plan)?;
++            let proof = plan.native_ha_source.as_ref().ok_or_else(unavailable)?;
++            proof.check_with(self, Service::check_native_installed)?;
++            self.check_native_ha_snapshot_owner(plan)
++        })();
++        match result {
++            Ok(()) => Response::ok(Value::Null),
++            Err(error) => error,
++        }
++    }
++
++    pub(in crate::service::snapshot_transfer) fn complete_native_ha_snapshot_delivery(
++        &mut self,
++        plan: &SnapshotTransferPlan,
++        mut response: Response,
++        fingerprint: &str,
++        clock: (u64, Option<RequestClock>),
++    ) -> Response {
++        let exported_checkpoint: Result<_, Response> = (|| {
++            self.check_native_ha_snapshot_owner(plan)?;
++            Ok((plan.base, self.external_effect_generation()?))
++        })();
++        if response.status < 400
++            && let Err(error) = &exported_checkpoint
++        {
++            response = Response::error(
++                error.status,
++                "native HA snapshot source changed before terminal audit",
++            );
++        }
++        let (mut response, receipt) = self.audit_completed_response_with_clock_receipt(
++            fingerprint,
++            clock,
++            response,
++            || {},
++            true,
++        );
++        if response.status >= 400 {
++            return response;
++        }
++        let checked: Result<(), Response> = (|| {
++            let exported_checkpoint = exported_checkpoint?;
++            let exported = plan.native_ha_source.as_ref().ok_or_else(unavailable)?;
++            if let Some(receipt) = receipt {
++                // This is one observation-only successor of archive A, never
++                // permission to change A's archived root/generation/provenance.
++                let terminal = receipt.bind_native_snapshot(exported_checkpoint)?;
++                if self.current_state_identity()? != terminal.0
++                    || self.external_effect_generation()? != terminal.1
++                {
++                    return Err(unavailable());
++                }
++                self.check_native_ha_snapshot_owner_at(plan, terminal.0)?;
++                let source_auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
++                let current = self
++                    .capture_native_ha_request_proof(&mut || {
++                        if Instant::now() >= plan.deadline {
++                            return Err(unavailable());
++                        }
++                        source_auth
++                            .authorize_request(
++                                &plan.actor,
++                                &plan.namespace,
++                                &plan.path,
++                                if plan.is_download { "read" } else { "update" },
++                                snapshot_observed_time(plan.now, plan.started.elapsed()),
++                            )
++                            .map_err(|error| Response::error(error.status, &error.message))
++                    })?
++                    .ok_or_else(unavailable)?;
++                exported.check_snapshot_terminal_successor(self, &current)?;
++                self.check_native_ha_snapshot_owner_at(plan, terminal.0)?;
++            } else {
++                if self.current_state_identity()? != exported_checkpoint.0
++                    || self.external_effect_generation()? != exported_checkpoint.1
++                {
++                    return Err(unavailable());
++                }
++                exported.check_with(self, Service::check_native_installed)?;
++                self.check_native_ha_snapshot_owner(plan)?;
++            }
++            Ok(())
++        })();
++        if let Err(error) = checked {
++            erase_json(&mut response.body);
++            response.consistency_index = None;
++            let now = snapshot_observed_time(plan.now, plan.started.elapsed());
++            if self
++                .audit_event(
++                    "native-ha-snapshot-delivery-veto",
++                    fingerprint,
++                    now,
++                    Some(error.status),
++                )
++                .is_err()
++            {
++                self.recovery_required = true;
++                self.ha_activation = None;
++                return Response::error(
++                    503,
++                    "native HA snapshot delivery veto audit failed; recovery required",
++                );
++            }
++            return error;
++        }
++        response
++    }
++}
+diff --git a/crates/heptabao-server/src/service_snapshot_v6_ha_repair.rs b/crates/heptabao-server/src/service_snapshot_v6_ha_repair.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..a259fb3476d03025fde94076078b6dde2ebbf6b4
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha_repair.rs
+@@ -0,0 +1,130 @@
++//! Explicit current-root repair; the ordinary snapshot restore route keeps
++//! its separate historical restore contract. No archived Auth or replay state
++//! is ever installed by this operation.
++use super::*;
++
++impl Service {
++    pub(in crate::service) fn admit_native_ha_snapshot_repair(
++        &mut self,
++        request: &RequestView<'_>,
++    ) -> Response {
++        let admitted = (|| {
++            if !self.native_ha_snapshot_transport_enabled()
++                || request.path != NATIVE_HA_REPAIR_PATH
++                || !self.native_snapshot_transport
++            {
++                return Err(Response::error(501, "current-root repair requires an active native HA owner"));
++            }
++            if !matches!(request.method, "POST" | "PUT") {
++                return Err(Response::error(405, "current-root repair requires POST or PUT"));
++            }
++            if !request.namespace.is_empty()
++                || request.body.as_object().is_none_or(|body| !body.is_empty())
++            {
++                return Err(Response::error(400, "current-root repair requires the root namespace and no query fields"));
++            }
++            if self.audit_failed || self.recovery_required || request.token_clock.is_none() {
++                return Err(unavailable());
++            }
++            // This path must not try peer recovery or publish lease/clock
++            // maintenance before the shared leaves have been repaired. It
++            // instead authenticates the entire CURRENT local graph under a
++            // fresh actual ReadIndex, preserving all four journal conditions.
++            let source = self.capture_native_ha_archive_repair_source()?;
++            let mut state = self.state.as_ref().ok_or_else(unavailable)?.clone();
++            let time = request.token_time()?;
++            let mut actor = state.auth.authenticate_from_observed(
++                request.token, time, request.origin_peer,
++            ).map_err(|error| Response::error(error.status, &error.message))?;
++            actor.bind_request_clock(request.token_clock)
++                .map_err(|error| Response::error(error.status, &error.message))?;
++            actor.bind_request_wrapping_ttl(request.wrap_ttl_seconds);
++            Self::bind_identity_principal(&state, &mut actor, request.namespace)?;
++            if !actor.is_root() {
++                return Err(Response::error(403, "permission denied"));
++            }
++            // Finite-use consumption is a real root publication. Do not lose
++            // its consumption or perform that write with an absent closure.
++            // A bounded-TTL root Actor with unlimited uses remains supported.
++            if actor.consumed_use() {
++                return Err(Response::error(409, "current-root repair requires a root credential without a use limit"));
++            }
++            state.auth.authorize_request_parameters_observed(
++                &actor, request.namespace, request.method, request.path, request.body, time,
++            ).map_err(|error| Response::error(error.status, &error.message))?;
++            state.auth.authorize_request(
++                &actor, request.namespace, request.path, "update", request.now,
++            ).map_err(|error| Response::error(error.status, &error.message))?;
++            // The observed clock is persisted by the unchanged terminal writer
++            // before mandatory response audit. This candidate Auth clone is
++            // never installed or substituted for the original source owner.
++            source.check_local(self)?;
++            Ok((actor, source))
++        })();
++        let (actor, source) = match admitted {
++            Ok(value) => value,
++            Err(error) => return error,
++        };
++        let response = self.stage_snapshot_transfer(actor, request);
++        if response.status >= 400 {
++            return response;
++        }
++        let Some(plan) = self.pending_snapshot_transfer.as_mut() else {
++            return unavailable();
++        };
++        if plan.is_download || plan.path != NATIVE_HA_REPAIR_PATH || plan.native_ha_repair.is_some() {
++            return unavailable();
++        }
++        plan.native_ha_repair = Some(source);
++        response
++    }
++
++    pub(in crate::service::snapshot_transfer) fn finish_native_ha_snapshot_repair(
++        &mut self,
++        plan: &mut SnapshotTransferPlan,
++        result: Result<Observation, Response>,
++    ) -> Response {
++        let checked = (|| {
++            self.check_native_ha_snapshot_owner(plan)?;
++            if plan.is_download || plan.path != NATIVE_HA_REPAIR_PATH || plan.native_ha_source.is_some() {
++                return Err(unavailable());
++            }
++            let source = plan.native_ha_repair.take().ok_or_else(unavailable)?;
++            source.check_local(self)?;
++            let imported = match result? {
++                Observation::Upload(imported) => imported,
++                Observation::Download => return Err(unavailable()),
++            };
++            if !imported.metadata.is_v6_ha() {
++                return Err(Response::error(400, "current-root repair requires a native HA dual-pack archive"));
++            }
++            let binding = imported.metadata.seal_identity().ok_or_else(invalid)?;
++            if !binding.matches(&plan.seal_identity) {
++                return Err(Response::error(400, "native HA repair archive seal differs"));
++            }
++            let barrier = AeadBarrier::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?)
++                .map_err(|_| unavailable())?;
++            let opened = Zeroizing::new(barrier.open(
++                snapshot_archive::CHECKSUM_CONTEXT, &imported.sealed_sums,
++            ).map_err(|_| invalid())?);
++            if opened.as_slice() != imported.sums.as_slice() {
++                return Err(invalid());
++            }
++            self.check_native_ha_snapshot_owner(plan)?;
++            let (proof, report) = source.repair(
++                self, imported.state, plan.seal_identity,
++                &mut |service| service.check_native_ha_snapshot_owner(plan),
++            )?;
++            if report.local.generation != imported.metadata.generation() {
++                return Err(invalid());
++            }
++            self.check_native_ha_snapshot_owner(plan)?;
++            plan.native_ha_source = Some(proof);
++            Ok(Response::ok(json!({"data":{
++                "repaired_root": hex(&plan.base.digest()),
++                "shared_object_count": report.shared_object_count,
++            }})))
++        })();
++        checked.unwrap_or_else(|error| error)
++    }
++}
+diff --git a/crates/heptabao-server/src/service_token_precision.rs b/crates/heptabao-server/src/service_token_precision.rs
+index edde6815eaae6cf06cf0723d1e1cea00d511703d..6220e98d3f5e4094e3db0993483a6ee08718d483 100644
+--- a/crates/heptabao-server/src/service_token_precision.rs
++++ b/crates/heptabao-server/src/service_token_precision.rs
+@@ -30,6 +30,43 @@ impl TerminalClockReceipt {
+         }
+     }
+ 
++    /// Snapshot keeps archive A immutable. This receipt binds only this
++    /// operation's terminal observation B to the exact exported checkpoint A;
++    /// it neither relabels archive bytes as B nor provides current-read custody.
++    /// A new actual B proof must separately prove the direct A -> B root CAS.
++    #[cfg(feature = "experimental-native-v6-ha")]
++    pub(super) fn bind_native_snapshot(
++        self,
++        exported: (
++            crate::state_record_root::StateIdentity,
++            plugin::PublicationGeneration,
++        ),
++    ) -> Result<
++        (
++            crate::state_record_root::StateIdentity,
++            plugin::PublicationGeneration,
++        ),
++        Response,
++    > {
++        if exported != self.before
++            || !matches!(
++                self.before.0,
++                crate::state_record_root::StateIdentity::RecordsV6(_)
++            )
++            || !matches!(
++                self.after.0,
++                crate::state_record_root::StateIdentity::RecordsV6(_)
++            )
++            || self.before == self.after
++        {
++            return Err(Response::error(
++                503,
++                "snapshot terminal observation differs from archive source",
++            ));
++        }
++        Ok(self.after)
++    }
++
+     /// Consume this actual observation-only publication exactly once. Native
+     /// Auth must not replace an unrelated post-operation checkpoint with the
+     /// receipt's newer frontier, even if both roots happen to share an Auth
+diff --git a/crates/heptabao-server/src/snapshot_archive.rs b/crates/heptabao-server/src/snapshot_archive.rs
+index 8cf9c07098804d5bbf1666536797a7dc850c19d2..4944daeef54952bfeb49eadc27f1a875050ac30f 100644
+--- a/crates/heptabao-server/src/snapshot_archive.rs
++++ b/crates/heptabao-server/src/snapshot_archive.rs
+@@ -69,6 +69,14 @@ pub(crate) enum Metadata {
+         state_bytes: u64,
+         seal_identity: SealIdentity,
+     },
++    #[cfg(feature = "experimental-native-v6-ha")]
++    #[serde(rename = "heptabao-native-ha-object-snapshot-v1")]
++    V6Ha {
++        state_format: String,
++        generation: u64,
++        state_bytes: u64,
++        seal_identity: SealIdentity,
++    },
+ }
+ impl Metadata {
+     pub(crate) fn new(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
+@@ -84,6 +92,8 @@ impl Metadata {
+             Self::V1 { generation, .. } | Self::V2 { generation, .. } => *generation,
+             #[cfg(feature = "fixture-native-v6-service")]
+             Self::V6 { generation, .. } => *generation,
++            #[cfg(feature = "experimental-native-v6-ha")]
++            Self::V6Ha { generation, .. } => *generation,
+         }
+     }
+     pub(crate) fn state_bytes(&self) -> u64 {
+@@ -91,6 +101,8 @@ impl Metadata {
+             Self::V1 { state_bytes, .. } | Self::V2 { state_bytes, .. } => *state_bytes,
+             #[cfg(feature = "fixture-native-v6-service")]
+             Self::V6 { state_bytes, .. } => *state_bytes,
++            #[cfg(feature = "experimental-native-v6-ha")]
++            Self::V6Ha { state_bytes, .. } => *state_bytes,
+         }
+     }
+     pub(crate) fn seal_identity(&self) -> Option<&SealIdentity> {
+@@ -99,6 +111,8 @@ impl Metadata {
+             Self::V2 { seal_identity, .. } => Some(seal_identity),
+             #[cfg(feature = "fixture-native-v6-service")]
+             Self::V6 { seal_identity, .. } => Some(seal_identity),
++            #[cfg(feature = "experimental-native-v6-ha")]
++            Self::V6Ha { seal_identity, .. } => Some(seal_identity),
+         }
+     }
+     #[cfg(feature = "fixture-native-v6-service")]
+@@ -110,7 +124,26 @@ impl Metadata {
+             seal_identity: SealIdentity::new(seal_digest),
+         }
+     }
++    #[cfg(feature = "experimental-native-v6-ha")]
++    pub(crate) fn new_v6_ha(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
++        Self::V6Ha {
++            state_format: "heptabao-encrypted-ha-object-backup/HBV6HA01".into(),
++            generation,
++            state_bytes,
++            seal_identity: SealIdentity::new(seal_digest),
++        }
++    }
++    pub(crate) fn is_v6_ha(&self) -> bool {
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if matches!(self, Self::V6Ha { .. }) {
++            return true;
++        }
++        false
++    }
+     pub(crate) fn is_v6(&self) -> bool {
++        if self.is_v6_ha() {
++            return true;
++        }
+         #[cfg(feature = "fixture-native-v6-service")]
+         if matches!(self, Self::V6 { .. }) {
+             return true;
+@@ -118,13 +151,24 @@ impl Metadata {
+         false
+     }
+     pub(crate) fn state_limit(&self) -> u64 {
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if self.is_v6_ha() {
++            return crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE;
++        }
++        #[cfg(feature = "fixture-native-v6-service")]
+         if self.is_v6() {
+-            MAX_SNAPSHOT_ENTRY
+-        } else {
+-            MAX_NATIVE_STATE
++            return crate::snapshot_file::MAX_V6_SNAPSHOT_STATE;
+         }
++        MAX_NATIVE_STATE
+     }
+     pub(crate) fn valid(&self) -> bool {
++        #[cfg(feature = "experimental-native-v6-ha")]
++        if let Self::V6Ha { state_format, .. } = self {
++            return state_format == "heptabao-encrypted-ha-object-backup/HBV6HA01"
++                && self.generation() != 0
++                && (237..=self.state_limit()).contains(&self.state_bytes())
++                && self.seal_identity().is_some_and(SealIdentity::valid);
++        }
+         #[cfg(feature = "fixture-native-v6-service")]
+         if let Self::V6 { state_format, .. } = self {
+             return state_format == "heptabao-encrypted-object-backup/HBV6PK01"
+@@ -135,6 +179,8 @@ impl Metadata {
+             Self::V1 { state_format, .. } | Self::V2 { state_format, .. } => state_format,
+             #[cfg(feature = "fixture-native-v6-service")]
+             Self::V6 { .. } => return false,
++            #[cfg(feature = "experimental-native-v6-ha")]
++            Self::V6Ha { .. } => return false,
+         };
+         state_format == "heptabao-encrypted-backup-v1/HBB2"
+             && (60..=MAX_NATIVE_STATE).contains(&self.state_bytes())
+@@ -338,7 +384,9 @@ pub(crate) fn import(
+     state.rewind_checked()?;
+     let mut magic = [0; 8];
+     state.read_exact(&mut magic)?;
+-    if (metadata.is_v6() && &magic != b"HBV6PK01") || (!metadata.is_v6() && &magic[..4] != b"HBB2")
++    if (metadata.is_v6_ha() && &magic != b"HBV6HA01")
++        || (metadata.is_v6() && !metadata.is_v6_ha() && &magic != b"HBV6PK01")
++        || (!metadata.is_v6() && &magic[..4] != b"HBB2")
+     {
+         return Err(bad());
+     }
+diff --git a/crates/heptabao-server/src/snapshot_file.rs b/crates/heptabao-server/src/snapshot_file.rs
+index 522f3aa87fbec5df3f7e38a47c908ca84160abc0..1689ae5226876bf520dde731939623ddf29d1314 100644
+--- a/crates/heptabao-server/src/snapshot_file.rs
++++ b/crates/heptabao-server/src/snapshot_file.rs
+@@ -21,7 +21,17 @@ pub(crate) const MAX_NATIVE_STATE: u64 = 130 * 1024 * 1024;
+ #[cfg(feature = "fixture-native-v6-service")]
+ pub(crate) const MAX_V6_SNAPSHOT_STATE: u64 =
+     MAX_NATIVE_STATE + 1024 * 1024 * 1024 + 65_536 * 4 + 4132;
+-#[cfg(feature = "fixture-native-v6-service")]
++// HA carries both the independent local pack and shared-key typed closure.
++// Keep this explicit transport bound below the 8 GiB ustar size-field limit;
++// each constituent retains its own stricter validation and source limit.
++#[cfg(feature = "experimental-native-v6-ha")]
++pub(crate) const MAX_V6_HA_SNAPSHOT_STATE: u64 = 2 * MAX_V6_SNAPSHOT_STATE + 64 * 1024 * 1024;
++#[cfg(feature = "experimental-native-v6-ha")]
++pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_HA_SNAPSHOT_STATE;
++#[cfg(all(
++    feature = "fixture-native-v6-service",
++    not(feature = "experimental-native-v6-ha")
++))]
+ pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_SNAPSHOT_STATE;
+ #[cfg(not(feature = "fixture-native-v6-service"))]
+ pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_NATIVE_STATE;

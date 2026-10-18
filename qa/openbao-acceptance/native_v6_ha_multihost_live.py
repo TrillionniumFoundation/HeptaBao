@@ -37,6 +37,7 @@ import urllib.parse
 
 import ha_multihost_live as base
 import ha_three_host_loopback_live as loopback
+import native_fixture_recovery as recovery
 
 MIB = 1024 * 1024
 PAYLOAD_BYTES = 2 * MIB
@@ -472,6 +473,8 @@ def cipher_inventory(node, run_id: str, action: str) -> dict:
 
 
 class NativeRun:
+    required_checks = REQUIRED_CHECKS
+
     def __init__(self, args, nodes, mesh, sources, receipts, expected):
         self.args, self.nodes, self.mesh = args, nodes, mesh
         self.sources, self.receipts, self.expected = sources, receipts, expected
@@ -490,9 +493,12 @@ class NativeRun:
         self.phases = self.work / "phases"
         self.phases.mkdir(mode=0o700)
         paths = (Path(__file__), Path(base.__file__), Path(loopback.__file__),
-                 Path(loopback.mesh_plan.__code__.co_filename))
+                 Path(loopback.mesh_plan.__code__.co_filename), Path(recovery.__file__))
         self.source_files = {str(path.resolve()): base.sha256_file(path) for path in paths}
         self.local_binaries = {}
+        self.recovery = recovery.FixtureRecoveryLedger(
+            self.work, self.run_id, args.source_commit, args.source_tree,
+            nodes, expected, error_type=base.FixtureError)
         self.report = {
             "schema": SCHEMA, "status": "failed", "source_commit": args.source_commit,
             "source_tree": args.source_tree, "runner_sha256": base.sha256_file(Path(__file__)),
@@ -500,7 +506,7 @@ class NativeRun:
             "node_roots": {str(node.node_id): {"alias": node.alias, "root": node.root}
                            for node in nodes},
             "helper_sha256": self.source_files, "expected_node_binary_sha256": expected,
-            "required_check_count": len(REQUIRED_CHECKS), "checks": self.checks,
+            "required_check_count": len(self.required_checks), "checks": self.checks,
             "events": self.events, "host_count": 3,
             "scope": "synthetic-native-v6-physical-hosts-pinned-tls-original-budgets",
             "transport": "coordinator-mediated-ssh-with-end-to-end-mtls",
@@ -511,6 +517,7 @@ class NativeRun:
             "large_http_forwarding_verified": False,
             "history_payload_target_bytes": TARGET_BYTES,
             "mutating_requests_retried": False,
+            "fixture_recovery": self.recovery.public_receipt,
             "qualification": False, "independent_qualification": False,
             "production_authority": False, "direct_lan_qualification": False,
             "full_openbao_compatibility": False,
@@ -529,7 +536,7 @@ class NativeRun:
         write_private(self.phases / f"{self.phase_number:05d}.json", canonical(safe) + b"\n")
 
     def check(self, name, condition, **details):
-        if name not in REQUIRED_CHECKS or any(row["case"] == name for row in self.checks):
+        if name not in self.required_checks or any(row["case"] == name for row in self.checks):
             raise base.FixtureError("native_check_denominator_or_duplicate")
         self.checks.append({"case": name, "passed": condition is True, **details})
         self.checkpoint()
@@ -543,13 +550,35 @@ class NativeRun:
     def request(self, node, method, path, body=None, *, authenticate=True, timeout=REQUEST_SECONDS):
         if not 0 < timeout <= REQUEST_SECONDS:
             raise base.FixtureError("original_http_budget_must_not_increase")
+        mutation = method not in ("GET", "HEAD", "LIST")
+        intent = self.recovery.begin(node, method, path, body, stage=self.stage,
+                                     timeout=timeout) if mutation else None
         started = time.monotonic()
-        status, response = base.api(self.context, node, method, path, body,
-                                    self.root_token if authenticate else "", timeout=timeout)
+        try:
+            status, response = base.api(self.context, node, method, path, body,
+                                        self.root_token if authenticate else "", timeout=timeout)
+        except BaseException as error:
+            if mutation:
+                self.recovery.outcome(intent, elapsed=time.monotonic() - started,
+                                      timeout=timeout, error=error)
+            raise
         elapsed = time.monotonic() - started
+        if mutation:
+            if method == "POST" and path == "sys/init" and status == 200:
+                # Capture before any public checkpoint, so a custody failure
+                # cannot make an initialization response evade secret redaction.
+                value = response.get("root_token") if isinstance(response, dict) else None
+                keys = response.get("keys_base64") if isinstance(response, dict) else None
+                if isinstance(value, str):
+                    self.root_token = value
+                if isinstance(keys, list) and len(keys) == 1 and isinstance(keys[0], str):
+                    self.unseal_key = keys[0]
+                self.recovery.preserve_initialization(node, response)
+            self.recovery.outcome(intent, status=status, response=response,
+                                  elapsed=elapsed, timeout=timeout)
         if elapsed > timeout:
             raise base.FixtureError("response_arrived_after_original_http_budget")
-        if method not in ("GET", "HEAD", "LIST"):
+        if mutation:
             self.event("mutation_attempted_once", node=node.node_id, method=method,
                        path_kind=path.split("/")[0:2], status=status,
                        elapsed_ms=round(elapsed * 1000, 3))
@@ -624,8 +653,6 @@ class NativeRun:
 
     def read_data(self, node, path, *, version=None):
         # The real HTTP GET parser selects KV2 fields from the URL only.
-        # A framed JSON body is consumed but ignored, which would silently
-        # select the latest version and invalidate historical assertions.
         route = "secret/data/" + path
         if version is not None:
             if type(version) is not int or version < 1:
@@ -761,7 +788,28 @@ class NativeRun:
             abi_matches(self.abis[alias], actual) for alias, actual in self.hosts.items()),
             actual_native_abis=self.abis)
         self.mesh.start(self.nodes, self.work, self.event)
+        self.transport_ready()
+
+    def transport_ready(self):
         self.check("complete_loopback_mesh", True, physical_hosts=3, directed_peer_links=6)
+
+    def provision_fixture_kv2(self, node):
+        # Route the unchanged mount contract through this run's recorded
+        # request boundary; the shared helper otherwise bypasses NativeRun.
+        def submit(method, path, body=None, **options):
+            return self.request(node, method, path, body, **options)
+        base.provision_secret_kv2(submit, error_type=base.FixtureError, timeout=12)
+        status, body = self.request(node, "GET", "sys/mounts", timeout=12)
+        mounts = body.get("data") if isinstance(body, dict) else None
+        mount = mounts.get("secret/") if isinstance(mounts, dict) else None
+        options = mount.get("options") if isinstance(mount, dict) else None
+        if (type(status) is not int or status != 200 or not isinstance(mount, dict)
+                or mount.get("type") != "kv" or not isinstance(options, dict)
+                or options.get("version") != "2"):
+            raise base.FixtureError("fixture_exact_kv2_inventory_failed")
+        metadata = base.completed_kv2_mount_metadata()
+        metadata["inventory_confirmed"] = True
+        return metadata
 
     def bootstrap_v5(self):
         self.stage = "fresh_standalone_v5_seed"
@@ -781,8 +829,7 @@ class NativeRun:
         self.unseal(seed)
         self.check("seed_unsealed", True)
         # The original mount helper sends each mount mutation once.
-        self.report["fixture_mount_setup"] = base.provision_seed_kv2(
-            self.context, seed, self.root_token)
+        self.report["fixture_mount_setup"] = self.provision_fixture_kv2(seed)
         status, _ = self.request(seed, "POST", "secret/config",
                                  {"max_versions": 32, "cas_required": True})
         if status != 204:
@@ -1269,9 +1316,13 @@ def failure_code(error):
 
 def main(argv=None):
     args, nodes, mesh, sources, receipts, expected = parsed_arguments(argv)
+    return execute_fixture(args, nodes, mesh, sources, receipts, expected)
+
+
+def execute_fixture(args, nodes, mesh, sources, receipts, expected, run_type=NativeRun):
     os.umask(0o077)
     args.work_root.mkdir(mode=0o700)
-    run = NativeRun(args, nodes, mesh, sources, receipts, expected)
+    run = run_type(args, nodes, mesh, sources, receipts, expected)
     completed, cleanup = False, False
     handlers = base.install_signal_handlers()
     try:
@@ -1294,8 +1345,8 @@ def main(argv=None):
         base.restore_signal_handlers(handlers)
     complete_before_final = (
         completed and cleanup and not run.report.get("failure_code")
-        and len(run.checks) == len(REQUIRED_CHECKS) - 1
-        and {row["case"] for row in run.checks} == REQUIRED_CHECKS - {"native.complete"}
+        and len(run.checks) == len(run.required_checks) - 1
+        and {row["case"] for row in run.checks} == run.required_checks - {"native.complete"}
         and all(row.get("passed") is True for row in run.checks)
         and base.report_is_secret_safe(run.report, run.secrets())
     )
@@ -1310,7 +1361,7 @@ def main(argv=None):
         run.report.setdefault("failure_code", "native_fixed_denominator_incomplete")
     run.report["observed_check_count"] = len(run.checks)
     run.report["passed_check_count"] = sum(row.get("passed") is True for row in run.checks)
-    run.report["missing_checks"] = sorted(REQUIRED_CHECKS - {row["case"] for row in run.checks})
+    run.report["missing_checks"] = sorted(run.required_checks - {row["case"] for row in run.checks})
     final = base.secret_safe_report(run.report, run.secrets())
     # Runtime secrets stay only in the private test roots and are never copied
     # into the public receipt. The existing remote evidence files are retained
@@ -1324,8 +1375,8 @@ def main(argv=None):
                           "failure_code": "private_report_unavailable"}, sort_keys=True))
         return 1
     passed = (final.get("status") == "passed" and cleanup
-              and len(run.checks) == len(REQUIRED_CHECKS)
-              and {row["case"] for row in run.checks} == REQUIRED_CHECKS
+              and len(run.checks) == len(run.required_checks)
+              and {row["case"] for row in run.checks} == run.required_checks
               and all(row.get("passed") is True for row in run.checks))
     print(json.dumps({"status": "passed" if passed else "failed", "checks": len(run.checks),
                       "failure_code": None if passed else "fixture_failed"}, sort_keys=True))
@@ -1334,3 +1385,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

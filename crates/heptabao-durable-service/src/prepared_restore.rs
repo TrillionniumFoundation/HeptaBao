@@ -3,6 +3,9 @@
 use super::*;
 use std::sync::Arc;
 
+#[path = "epoch_publication.rs"]
+mod epoch_publication;
+
 /// Public, non-secret facts about the authenticated incoming backup.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PreparedRestoreMetadata {

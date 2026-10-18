@@ -1,0 +1,45 @@
+{
+  "base_commit": "e0f95a38850a4a3b0220112eff27e2e32efb7742",
+  "base_unchanged": true,
+  "elapsed_seconds": 61.696,
+  "full_historical_ha_restore_implemented": false,
+  "groups": [
+    {
+      "elapsed_seconds": 37.274,
+      "exit_code": 0,
+      "group": "epoch_publication_",
+      "log_path": "/home/qian-qi/heptabao-next-gates-20261017/r8q-historical-local-linux-verify-01/epoch_publication_.log",
+      "log_sha256": "67fa9c6934a98c248ff14768b08f192377233c92888c201b0547ce38fe1eb5f2",
+      "summaries": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 171 filtered out; finished in 1.77s"
+      ]
+    },
+    {
+      "elapsed_seconds": 10.296,
+      "exit_code": 0,
+      "group": "prepared_restore::tests",
+      "log_path": "/home/qian-qi/heptabao-next-gates-20261017/r8q-historical-local-linux-verify-01/prepared_restore__tests.log",
+      "log_sha256": "ad68551bf30e12a3b22616be7089c74d7741e093a65feaed9b6bf4cbc04304d3",
+      "summaries": [
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 164 filtered out; finished in 10.03s"
+      ]
+    },
+    {
+      "elapsed_seconds": 12.702,
+      "exit_code": 0,
+      "group": "restore_transaction::tests",
+      "log_path": "/home/qian-qi/heptabao-next-gates-20261017/r8q-historical-local-linux-verify-01/restore_transaction__tests.log",
+      "log_sha256": "ac7b25a1eee80d6ab1fd64742f73afe28e562c91c8876cd99227944439e14d4c",
+      "summaries": [
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 167 filtered out; finished in 12.44s"
+      ]
+    }
+  ],
+  "host": "qian-qi",
+  "ok": true,
+  "patch_sha256": "dd1d0b77a2f945571dd5d1cebf4f56c2eae6c77e1b7abd0394a0e7bab8d0b9ab",
+  "production_cutover": false,
+  "schema": "heptabao.historical-local-atomic-epoch-candidate.v1",
+  "source_root": "/home/qian-qi/heptabao-next-gates-20261017/source-r8q-historical-local-01",
+  "source_unchanged": true
+}

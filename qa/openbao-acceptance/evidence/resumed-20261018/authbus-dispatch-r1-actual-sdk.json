@@ -1,0 +1,248 @@
+{
+  "schema": "authbus-final-dispatch-actual-sdk-r1",
+  "ok": true,
+  "checks": [
+    {
+      "case": "all_actual_sdk_overlays_loaded",
+      "passed": true
+    },
+    {
+      "case": "actual_sdk_agent_scope",
+      "passed": true
+    },
+    {
+      "case": "new_scoped_database_absent",
+      "passed": true
+    },
+    {
+      "case": "actual_sdk_fixture_credential_seeded",
+      "passed": true
+    },
+    {
+      "case": "actual_resolver_owns_selected_profile_11",
+      "passed": true
+    },
+    {
+      "case": "actual_simple_completion_reaches_loopback_receiver",
+      "passed": true
+    },
+    {
+      "case": "actual_simple_completion_parses_fixture_answer",
+      "passed": true
+    },
+    {
+      "case": "actual_model_fetch_positive",
+      "passed": true
+    },
+    {
+      "case": "actual_resolver_owns_selected_profile_12",
+      "passed": true
+    },
+    {
+      "case": "expiry_after_actual_async_dns_denied",
+      "passed": true
+    },
+    {
+      "case": "expiry_after_actual_async_dns_zero_receiver_delta",
+      "passed": true
+    },
+    {
+      "case": "actual_dns_pause_entered_and_natural_deadline_elapsed",
+      "passed": true
+    },
+    {
+      "case": "expiry_is_durably_closed",
+      "passed": true
+    },
+    {
+      "case": "actual_resolver_owns_selected_profile_13",
+      "passed": true
+    },
+    {
+      "case": "real_sqlite_abort_preserves_previous_store",
+      "passed": true
+    },
+    {
+      "case": "failed_revoke_is_durable_pending",
+      "passed": true
+    },
+    {
+      "case": "failed_revoke_after_actual_resolution_denied",
+      "passed": true
+    },
+    {
+      "case": "failed_revoke_after_actual_resolution_zero_receiver_delta",
+      "passed": true
+    },
+    {
+      "case": "actual_resolver_owns_selected_profile_15",
+      "passed": true
+    },
+    {
+      "case": "old_capability_after_higher_epoch_denied",
+      "passed": true
+    },
+    {
+      "case": "old_capability_after_higher_epoch_zero_receiver_delta",
+      "passed": true
+    },
+    {
+      "case": "wrong_wire_credential_denied",
+      "passed": true
+    },
+    {
+      "case": "wrong_wire_credential_zero_receiver_delta",
+      "passed": true
+    },
+    {
+      "case": "missing_capability_denied",
+      "passed": true
+    },
+    {
+      "case": "missing_capability_zero_receiver_delta",
+      "passed": true
+    },
+    {
+      "case": "actual_resolver_owns_selected_profile_16",
+      "passed": true
+    },
+    {
+      "case": "redirect_after_natural_expiry_denied",
+      "passed": true
+    },
+    {
+      "case": "redirect_after_natural_expiry_zero_receiver_delta",
+      "passed": true
+    },
+    {
+      "case": "redirect_first_request_was_authorized",
+      "passed": true
+    },
+    {
+      "case": "all_network_was_scoped_to_fixture",
+      "passed": true
+    }
+  ],
+  "syntheticCredentials": true,
+  "actualSdk": true,
+  "actualSqlite": true,
+  "actualLoopbackHttp": true,
+  "actualSimpleCompletion": true,
+  "actualSharedLlmHttpDispatchQualified": true,
+  "naturalDeadlineWaited": true,
+  "coldProcessQualified": false,
+  "actualEmbeddedAgentLifecycle": false,
+  "allProductDispatchCoverageQualified": false,
+  "oauthRefreshOwnershipQualified": false,
+  "productionBootstrapQualified": false,
+  "productionMutation": false,
+  "providerNetworkAllowed": false,
+  "externalNetworkAttempts": 0,
+  "externalProcessAttempts": 0,
+  "candidateSourceBindings": [
+    {
+      "relative": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    },
+    {
+      "relative": "authbus_admission_registry_candidate.mjs",
+      "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e"
+    },
+    {
+      "relative": "authbus_sdk_admission_candidate.mjs",
+      "sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33"
+    },
+    {
+      "relative": "authbus_sdk_explicit_deny_candidate.mjs",
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2"
+    },
+    {
+      "relative": "authbus_dispatch_registry_candidate.mjs",
+      "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0"
+    },
+    {
+      "relative": "authbus_dispatch_sdk_candidate.mjs",
+      "sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674"
+    },
+    {
+      "relative": "authbus_dispatch_sdk_live.mjs",
+      "sha256": "c12daa129067e3777bcef48a23636f513ff64286d3d795302863d75a04c7bbc4"
+    }
+  ],
+  "sdkCandidateModules": [
+    {
+      "relative": "dist/store-DH33UrUj.js",
+      "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+      "loaded": true
+    },
+    {
+      "relative": "dist/source-check-ZSz5NzGW.js",
+      "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+      "loaded": true
+    },
+    {
+      "relative": "dist/profiles-DyU-YCq2.js",
+      "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+      "loaded": true
+    }
+  ],
+  "dispatchSdkModules": [
+    {
+      "relative": "dist/order-CeBlX0NH.js",
+      "originalSha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+      "candidateSha256": "b59280059dbcda0c658cd3aba96207d425ca683ff3b06be866b6e21f14bdce4e",
+      "loaded": true
+    },
+    {
+      "relative": "dist/model-auth-CJEm9SNp.js",
+      "originalSha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+      "candidateSha256": "01a42eb673bc1182bca83d6839974b4f992b8fca81d73f2796d27b372a06a4ab",
+      "loaded": true
+    },
+    {
+      "relative": "dist/oauth-B4aOCsid.js",
+      "originalSha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+      "candidateSha256": "d7582cb52d7d5ca5c289a95af4cedcc985639145a3f53bea0925d08218c97e08",
+      "loaded": true
+    },
+    {
+      "relative": "dist/stream-BcRkg2P0.js",
+      "originalSha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e",
+      "candidateSha256": "2809d57f6ecffc9c1ae8c3dba1450812a41ef3691be34ca8246fa2981877d887",
+      "loaded": true
+    },
+    {
+      "relative": "dist/fetch-guard-6VNcgVVc.js",
+      "originalSha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc",
+      "candidateSha256": "b1f4b7ee09e21d023acf833b4e947f7afa674db4aa146116e251e1d8c3099e3d",
+      "loaded": true
+    }
+  ],
+  "sdkVersion": "2026.7.1-2",
+  "dispatchObservations": {
+    "boundCredentials": 5,
+    "boundModels": 5,
+    "attempts": 9,
+    "allowed": 3,
+    "denied": 6,
+    "unmanaged": 0
+  },
+  "receiverCounts": {
+    "/v1/chat/completions": 1,
+    "/transport-positive": 1,
+    "/redirect-expire": 1
+  },
+  "remainingBlockers": [
+    "non_llm_dispatch_callers_not_integrated",
+    "derived_runtime_credentials_not_qualified",
+    "oauth_refresh_lease_ownership_not_qualified",
+    "production_gateway_authority_bootstrap_not_integrated",
+    "cold_same_epoch_control_reconciliation_requires_additional_freshness_protocol"
+  ],
+  "installedSdkUnchanged": true,
+  "candidateSourcesUnchanged": true,
+  "diagnosticsRedacted": true
+}

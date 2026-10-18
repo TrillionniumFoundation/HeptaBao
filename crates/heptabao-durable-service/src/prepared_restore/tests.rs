@@ -2,6 +2,9 @@ use super::*;
 use crate::tests::{TestBarrier, TestRoot, put_request, serial_test};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
+#[path = "../epoch_publication_tests.rs"]
+mod epoch_publication_tests;
+
 #[derive(Clone)]
 struct CountingBarrier {
     inner: TestBarrier,

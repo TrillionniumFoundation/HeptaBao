@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.direct-lan-readonly-prerequisites.v1",
+  "observed_at": "2026-10-18",
+  "hosts": [
+    {
+      "alias": "rog",
+      "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+      "routes": {
+        "192.168.0.4": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.4\",\"dev\":\"wlp194s0\",\"prefsrc\":\"192.168.0.10\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.7": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.7\",\"dev\":\"wlp194s0\",\"prefsrc\":\"192.168.0.10\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.10": {
+          "exit": 0,
+          "out": "[{\"type\":\"local\",\"dst\":\"192.168.0.10\",\"dev\":\"lo\",\"table\":\"local\",\"prefsrc\":\"192.168.0.10\",\"flags\":[],\"uid\":1000,\"cache\":[\"local\"]}]\n",
+          "err": ""
+        },
+        "192.168.0.9": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.9\",\"dev\":\"wlp194s0\",\"prefsrc\":\"192.168.0.10\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.13": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.13\",\"dev\":\"wlp194s0\",\"prefsrc\":\"192.168.0.10\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        }
+      },
+      "firewall": {
+        "ufw": {
+          "exit": 0,
+          "out": "Status: inactive\n",
+          "err": ""
+        },
+        "filter": {
+          "exit": 0,
+          "out": "-P INPUT ACCEPT\n-A INPUT -j ts-input\n",
+          "err": ""
+        }
+      },
+      "ethernet": null
+    },
+    {
+      "alias": "pocket4",
+      "hostname": "alex-G1628-04",
+      "routes": {
+        "192.168.0.4": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.4\",\"dev\":\"wlp195s0\",\"prefsrc\":\"192.168.0.9\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.7": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.7\",\"dev\":\"wlp195s0\",\"prefsrc\":\"192.168.0.9\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.10": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.10\",\"dev\":\"wlp195s0\",\"prefsrc\":\"192.168.0.9\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.9": {
+          "exit": 0,
+          "out": "[{\"type\":\"local\",\"dst\":\"192.168.0.9\",\"dev\":\"lo\",\"table\":\"local\",\"prefsrc\":\"192.168.0.9\",\"flags\":[],\"uid\":1000,\"cache\":[\"local\"]}]\n",
+          "err": ""
+        },
+        "192.168.0.13": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.13\",\"dev\":\"wlp195s0\",\"prefsrc\":\"192.168.0.9\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        }
+      },
+      "firewall": {
+        "ufw": {
+          "exit": 0,
+          "out": "Status: active\n\nTo                         Action      From\n--                         ------      ----\n22/tcp                     ALLOW       192.168.0.0/24             # SSH home LAN\n22/tcp on tailscale0       ALLOW       Anywhere                   # SSH Tailscale\n22/tcp                     ALLOW       192.168.77.0/24            # Pocket4 direct SSH\n31000:31099/tcp            ALLOW       192.168.0.0/24             # TRNM PoCO LAN P2P\n10.77.0.4 22/tcp on thunderbolt+ ALLOW       10.77.0.0/24               # AI395 USB4 v2 SSH\n5353/udp on wlp195s0       ALLOW       192.168.0.6                # RAZR ADB mDNS Oct14\n192.168.0.9 46230:46231/tcp on wlp195s0 ALLOW       192.168.0.4                # HeptaBao HA lab LAN4\n192.168.0.9 46230:46231/tcp on wlp195s0 ALLOW       192.168.0.7                # HeptaBao HA lab LAN4\n192.168.0.9 46230:46231/tcp on wlp195s0 ALLOW       192.168.0.10               # HeptaBao HA lab LAN4\n22/tcp (v6) on tailscale0  ALLOW       Anywhere (v6)              # SSH Tailscale\n\n",
+          "err": ""
+        },
+        "filter": {
+          "exit": 0,
+          "out": "-P INPUT DROP\n-A INPUT -j ts-input\n-A INPUT -j ufw-before-logging-input\n-A INPUT -j ufw-before-input\n-A INPUT -j ufw-after-input\n-A INPUT -j ufw-after-logging-input\n-A INPUT -j ufw-reject-input\n-A INPUT -j ufw-track-input\n",
+          "err": ""
+        }
+      },
+      "ethernet": null
+    },
+    {
+      "alias": "x230-ts",
+      "hostname": "qian-ThinkPad-X230",
+      "routes": {
+        "192.168.0.4": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.4\",\"dev\":\"enp0s25\",\"prefsrc\":\"192.168.0.13\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.7": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.7\",\"dev\":\"enp0s25\",\"prefsrc\":\"192.168.0.13\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.10": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.10\",\"dev\":\"enp0s25\",\"prefsrc\":\"192.168.0.13\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.9": {
+          "exit": 0,
+          "out": "[{\"dst\":\"192.168.0.9\",\"dev\":\"enp0s25\",\"prefsrc\":\"192.168.0.13\",\"flags\":[],\"uid\":1000,\"cache\":[]}]\n",
+          "err": ""
+        },
+        "192.168.0.13": {
+          "exit": 0,
+          "out": "[{\"type\":\"local\",\"dst\":\"192.168.0.13\",\"dev\":\"lo\",\"table\":\"local\",\"prefsrc\":\"192.168.0.13\",\"flags\":[],\"uid\":1000,\"cache\":[\"local\"]}]\n",
+          "err": ""
+        }
+      },
+      "firewall": {
+        "ufw": {
+          "exit": 0,
+          "out": "状态： 激活\n\n至                          动作          来自\n-                          --          --\n51820/udp                  ALLOW       Anywhere                  \nOpenSSH                    ALLOW       Anywhere                  \n22/tcp                     ALLOW       Anywhere                  \n31000:31099/tcp            ALLOW       192.168.0.0/24             # TRNM PoCO LAN P2P\n51820/udp (v6)             ALLOW       Anywhere (v6)             \nOpenSSH (v6)               ALLOW       Anywhere (v6)             \n22/tcp (v6)                ALLOW       Anywhere (v6)             \n\n",
+          "err": ""
+        },
+        "filter": {
+          "exit": 0,
+          "out": "-P INPUT DROP\n-A INPUT -j ts-input\n-A INPUT -j LIBVIRT_INP\n-A INPUT -j ufw-before-logging-input\n-A INPUT -j ufw-before-input\n-A INPUT -j ufw-after-input\n-A INPUT -j ufw-after-logging-input\n-A INPUT -j ufw-reject-input\n-A INPUT -j ufw-track-input\n",
+          "err": ""
+        }
+      },
+      "ethernet": {
+        "operstate": "up",
+        "carrier": "1",
+        "address": "3c:97:0e:71:c9:ca"
+      }
+    }
+  ],
+  "firewall_changed": false,
+  "primary_retry_uses_existing_allowed_ports": [
+    46230,
+    46231
+  ]
+}

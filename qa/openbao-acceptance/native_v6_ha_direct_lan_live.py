@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Run the native V6 physical profile with direct LAN API and Raft traffic.
+
+Accepts the same source, build receipt, node and port bindings as the existing
+native physical runner; --allow-private-lan is mandatory. SSH only installs
+owned fixtures and controls their exact processes. No forwarding, route or
+firewall changes are made. All 34 MiB, original-budget, mutation-once, failure,
+cold-recovery and owned-cleanup checks remain mandatory.
+"""
+from __future__ import annotations
+
+from dataclasses import replace
+import hashlib
+import ipaddress
+import json
+from pathlib import Path
+import socket
+import ssl
+import sys
+
+import native_v6_ha_multihost_live as native
+
+base = native.base
+PEER_PREFLIGHT = Path(__file__).resolve().parents[2] / "tools/physical_ha_peer_preflight.py"
+DIRECT_CHECKS = frozenset(
+    (native.REQUIRED_CHECKS - {"complete_loopback_mesh"})
+    | {"direct_lan_endpoints_configured"}
+    | {f"direct_lan_mtls_{source}_to_{target}"
+       for source in (1, 2, 3) for target in (1, 2, 3) if source != target}
+    | {f"direct_lan_api_leaf_{node}" for node in (1, 2, 3)}
+)
+
+
+class DirectLanTransport:
+    """Keep declared addresses intact; never create a tunnel child."""
+
+    def configure_server(self, node, config):
+        return config
+
+    def configure(self, node, config):
+        return config
+
+    def start(self, nodes, work, event):
+        for node in nodes:
+            # Refuse an occupied or foreign-address endpoint before starting
+            # the fixture; this grants no ownership of an existing listener.
+            script = (
+                "import socket\n"
+                f"host={node.ip!r}\n"
+                f"for port in {(node.api_port, node.raft_port)!r}:\n"
+                "    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as endpoint:\n"
+                "        endpoint.bind((host, port))\n"
+            )
+            base.ssh(node, "python3 - <<'PY2'\n" + script + "PY2\n", timeout=15)
+        event("direct_lan_endpoints_available", physical_hosts=3, tunnel_children=0)
+
+    def stop(self, event):
+        event("direct_lan_no_tunnel_children", tunnel_children=0)
+
+
+class DirectLanRun(native.NativeRun):
+    required_checks = DIRECT_CHECKS
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        for path in (Path(__file__).resolve(), PEER_PREFLIGHT):
+            self.source_files[str(path)] = base.sha256_file(path)
+        self.report.update({
+            "schema": "heptabao.native-v6-direct-lan-ha.v1",
+            "runner_sha256": base.sha256_file(Path(__file__)),
+            "transport": "direct-private-lan-api-and-raft-mtls",
+            "ssh_role": "owned-file-and-process-control-only",
+            "tunnel_children": 0,
+            "direct_peer_probe_scope": "six_real_mtls_handshakes_with_raft_alpn_and_leaf_pins",
+            "scope": "synthetic-native-v6-direct-lan-original-budgets",
+        })
+
+    def transport_ready(self):
+        self.check("direct_lan_endpoints_configured", all(
+            node.api_connect_port is None for node in self.nodes),
+            physical_hosts=3, tunnel_children=0,
+            endpoints={str(node.node_id): {"api": node.api_origin,
+                       "raft": f"{node.ip}:{node.raft_port}"} for node in self.nodes})
+
+    def bootstrap_v5(self):
+        leader = super().bootstrap_v5()
+        self.stage = "direct_lan_peer_and_api_tls"
+        manifest = self.work / "direct-peer-preflight-manifest.json"
+        native.write_private(manifest, native.canonical({
+            "cluster_id": self.cluster_id, "synthetic_only": True,
+            "allow_production": False, "v6_ha_admitted": False,
+        }) + b"\n")
+        helper_sha = self.source_files[str(PEER_PREFLIGHT)]
+        observations = []
+        for node in self.nodes:
+            helper = node.root + "/direct-peer-preflight.py"
+            marker = node.root + "/direct-peer-preflight-manifest.json"
+            base.upload(node, PEER_PREFLIGHT, helper, 0o600)
+            base.upload(node, manifest, marker, 0o600)
+            script = (
+                "import hashlib,json,pathlib,runpy\n"
+                f"helper=pathlib.Path({helper!r})\n"
+                f"assert hashlib.sha256(helper.read_bytes()).hexdigest()=={helper_sha!r}\n"
+                "module=runpy.run_path(str(helper))\n"
+                f"config,_,root=module['load_fixture'](pathlib.Path({node.root!r}),"
+                f"pathlib.Path({marker!r}))\n"
+                "rows=[]\n"
+                "for target in sorted(int(peer) for peer in config['peers']):\n"
+                "    if target==config['node_id']: continue\n"
+                "    row={'source':config['node_id'],'target':target,'passed':False}\n"
+                "    try:\n"
+                "        row['tls_version']=module['probe_peer'](config,root,target,2.0)\n"
+                "        row['passed']=True\n"
+                "    except module['Refusal'] as error: row['reason']=error.label\n"
+                "    rows.append(row)\n"
+                "print(json.dumps(rows,sort_keys=True))\n"
+            )
+            rows = json.loads(base.ssh(node, "python3 - <<'PY2'\n" + script + "PY2\n", timeout=15))
+            if (not isinstance(rows, list) or len(rows) != 2
+                    or {row.get("target") for row in rows}
+                    != {peer.node_id for peer in self.nodes if peer != node}
+                    or any(row.get("source") != node.node_id for row in rows)):
+                raise base.FixtureError("direct_lan_probe_inventory_differs")
+            observations.extend(rows)
+        self.report["direct_peer_tls_observations"] = observations
+        for row in observations:
+            self.check(f"direct_lan_mtls_{row['source']}_to_{row['target']}",
+                       row["passed"] is True, tls_version=row.get("tls_version"),
+                       refusal=row.get("reason"))
+        for node in self.nodes:
+            # The HTTPS caller also pins the exact API leaf, in addition to
+            # the ordinary CA and SAN checks used by all real API requests.
+            context = ssl.create_default_context(cafile=str(self.work / "ca.crt"))
+            context.minimum_version = ssl.TLSVersion.TLSv1_2
+            with socket.create_connection((node.ip, node.api_port), timeout=2.0) as tcp:
+                with context.wrap_socket(tcp, server_hostname=node.server_name) as tls:
+                    leaf = tls.getpeercert(binary_form=True)
+                    actual = hashlib.sha256(leaf).hexdigest() if leaf else None
+            self.check(f"direct_lan_api_leaf_{node.node_id}",
+                       actual == self.peers[str(node.node_id)]["certificate_sha256"],
+                       observed_leaf_sha256=actual)
+        return leader
+
+    def check(self, name, condition, **details):
+        super().check(name, condition, **details)
+        # The parent calls this final case only after every required case and
+        # owned cleanup passed. This flag is limited to this direct LAN profile;
+        # full OpenBao compatibility and production authority remain false.
+        if name == "native.complete" and condition is True:
+            self.report["direct_lan_qualification"] = True
+
+
+def parsed_arguments(argv=None):
+    args, nodes, _, sources, receipts, expected = native.parsed_arguments(argv)
+    if not args.allow_private_lan or args.allow_private_tailnet:
+        raise SystemExit("direct native HA requires --allow-private-lan")
+    ranges = tuple(ipaddress.ip_network(value) for value in
+                   ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"))
+    if any(not any(ipaddress.ip_address(node.ip) in network for network in ranges)
+           for node in nodes):
+        raise SystemExit("direct native HA requires three declared RFC1918 IPv4 endpoints")
+    nodes = [replace(node, api_connect_port=None) for node in nodes]
+    return args, nodes, DirectLanTransport(), sources, receipts, expected
+
+
+def main(argv=None):
+    return native.execute_fixture(*parsed_arguments(argv), run_type=DirectLanRun)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
