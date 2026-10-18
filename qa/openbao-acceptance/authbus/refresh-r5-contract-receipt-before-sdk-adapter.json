@@ -1,0 +1,466 @@
+{
+  "schema": "authbus-refresh-r5-process-http-contract",
+  "ok": true,
+  "actualNativeHeptaBao": false,
+  "actualSdk": false,
+  "actualColdProcess": true,
+  "actualProviderHttp": true,
+  "providerSynthetic": true,
+  "tlsControlEmulator": true,
+  "productionMutation": false,
+  "checks": [
+    {
+      "case": "close-fails: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "close-fails: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "close-fails: durable control state",
+      "passed": true
+    },
+    {
+      "case": "fence-write-denied: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "fence-write-denied: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "fence-write-denied: durable control state",
+      "passed": true
+    },
+    {
+      "case": "fence-commit-response-lost: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "fence-commit-response-lost: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "fence-commit-response-lost: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "fence-commit-response-lost: durable control state",
+      "passed": true
+    },
+    {
+      "case": "provider-response-lost: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "provider-response-lost: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "provider-response-lost: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "provider-response-lost: durable control state",
+      "passed": true
+    },
+    {
+      "case": "kill-after-response: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "kill-after-response: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "kill-after-response: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "kill-after-response: durable control state",
+      "passed": true
+    },
+    {
+      "case": "sdk-false: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "sdk-false: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "sdk-false: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "sdk-false: durable control state",
+      "passed": true
+    },
+    {
+      "case": "sdk-lying-success: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "sdk-lying-success: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "sdk-lying-success: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "sdk-lying-success: durable control state",
+      "passed": true
+    },
+    {
+      "case": "duplicate-dispatch: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "duplicate-dispatch: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "duplicate-dispatch: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "duplicate-dispatch: durable control state",
+      "passed": true
+    },
+    {
+      "case": "dispatch-deadline-expired: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "dispatch-deadline-expired: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "dispatch-deadline-expired: cold retry after lease expiry denied",
+      "passed": true
+    },
+    {
+      "case": "dispatch-deadline-expired: durable control state",
+      "passed": true
+    },
+    {
+      "case": "completion-response-lost: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "completion-response-lost: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "completion-response-lost: cold old-credential reissue denied",
+      "passed": true
+    },
+    {
+      "case": "completion-response-lost: verified publication cold reissue without repeating provider I/O",
+      "passed": true
+    },
+    {
+      "case": "completion-response-lost: durable control state",
+      "passed": true
+    },
+    {
+      "case": "success: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "success: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "success: cold old-credential reissue denied",
+      "passed": true
+    },
+    {
+      "case": "success: durable control state",
+      "passed": true
+    },
+    {
+      "case": "same-owner-race: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "same-owner-race: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "same-owner-race: cold old-credential reissue denied",
+      "passed": true
+    },
+    {
+      "case": "same-owner-race: durable control state",
+      "passed": true
+    },
+    {
+      "case": "registry-success: exact provider request count",
+      "passed": true
+    },
+    {
+      "case": "registry-success: actual process outcome",
+      "passed": true
+    },
+    {
+      "case": "registry successor admits exact new wire credential and rejects old credential",
+      "passed": true
+    },
+    {
+      "case": "registry-success: cold old-credential reissue denied",
+      "passed": true
+    },
+    {
+      "case": "registry-success: durable control state",
+      "passed": true
+    }
+  ],
+  "observations": [
+    {
+      "scenario": "close-fails",
+      "providerCount": 0,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_refresh_admission_close_failed",
+        "counts": {
+          "providerCalls": 0,
+          "writes": 0,
+          "closes": 1
+        }
+      },
+      "attemptStatus": null,
+      "controlVersion": 1
+    },
+    {
+      "scenario": "fence-write-denied",
+      "providerCount": 0,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_control_write_denied",
+        "counts": {
+          "providerCalls": 0,
+          "writes": 0,
+          "closes": 1
+        }
+      },
+      "attemptStatus": null,
+      "controlVersion": 1
+    },
+    {
+      "scenario": "fence-commit-response-lost",
+      "providerCount": 0,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_control_request_io_failed",
+        "counts": {
+          "providerCalls": 0,
+          "writes": 0,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "provider-response-lost",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "test_error",
+        "counts": {
+          "providerCalls": 1,
+          "writes": 0,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "kill-after-response",
+      "providerCount": 1,
+      "processSignal": "SIGKILL",
+      "result": null,
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "sdk-false",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_refresh_sdk_write_failed",
+        "counts": {
+          "providerCalls": 1,
+          "writes": 1,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "sdk-lying-success",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_refresh_sdk_publication_not_verified",
+        "counts": {
+          "providerCalls": 1,
+          "writes": 1,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "duplicate-dispatch",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_refresh_dispatch_already_consumed",
+        "counts": {
+          "providerCalls": 1,
+          "writes": 0,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "dispatch-deadline-expired",
+      "providerCount": 0,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_refresh_dispatch_deadline_expired",
+        "counts": {
+          "providerCalls": 1,
+          "writes": 0,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "UNKNOWN",
+      "controlVersion": 2
+    },
+    {
+      "scenario": "completion-response-lost",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": false,
+        "code": "trusted_control_request_io_failed",
+        "counts": {
+          "providerCalls": 1,
+          "writes": 1,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "PUBLISHED",
+      "controlVersion": 3
+    },
+    {
+      "scenario": "success",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": true,
+        "fenceEpoch": 2,
+        "publishedEpoch": 3,
+        "newGrantEpoch": 4,
+        "newGrantReadable": true,
+        "successorChecked": false,
+        "counts": {
+          "providerCalls": 1,
+          "writes": 1,
+          "closes": 1
+        }
+      },
+      "attemptStatus": "PUBLISHED",
+      "controlVersion": 4
+    },
+    {
+      "scenario": "same-owner-race",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": true,
+        "fenceEpoch": 2,
+        "publishedEpoch": 3,
+        "newGrantEpoch": 4,
+        "newGrantReadable": true,
+        "successorChecked": false,
+        "counts": {
+          "providerCalls": 1,
+          "writes": 1,
+          "closes": 2
+        }
+      },
+      "attemptStatus": "PUBLISHED",
+      "controlVersion": 4
+    },
+    {
+      "scenario": "registry-success",
+      "providerCount": 1,
+      "processSignal": null,
+      "result": {
+        "ok": true,
+        "fenceEpoch": 2,
+        "publishedEpoch": 3,
+        "newGrantEpoch": 4,
+        "newGrantReadable": true,
+        "successorChecked": true,
+        "counts": {
+          "providerCalls": 1,
+          "writes": 1,
+          "closes": 0
+        }
+      },
+      "attemptStatus": "PUBLISHED",
+      "controlVersion": 4
+    }
+  ],
+  "sourceManifest": [
+    {
+      "name": "authbus_refresh_control_contract_test.mjs",
+      "sha256": "1244e996c4ba8adcc418d69a72a89da3904cc9f51a641c5a4e4f77f00d2b8de2"
+    },
+    {
+      "name": "authbus_trusted_control_candidate.mjs",
+      "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637"
+    },
+    {
+      "name": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    },
+    {
+      "name": "authbus_trusted_admission_candidate.mjs",
+      "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad"
+    },
+    {
+      "name": "authbus_refresh_registry_candidate.mjs",
+      "sha256": "73e2df127edc4dac74bfcf327e98245729198b2595e3776f826d689f61312d8e"
+    },
+    {
+      "name": "authbus_dispatch_registry_candidate.mjs",
+      "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0"
+    },
+    {
+      "name": "authbus_admission_registry_candidate.mjs",
+      "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e"
+    }
+  ],
+  "checksPassed": 52
+}

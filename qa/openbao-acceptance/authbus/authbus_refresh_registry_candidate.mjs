@@ -20,7 +20,7 @@ export class TrustedRefreshAdmissionRegistry extends DispatchAdmissionRegistry {
     for (const binding of refreshBindings) {
       const authority = this.requireOwner(binding.scope), key = scopeKey(authority.scope);
       check(!this.#refreshBindings.has(key) && binding.controlSource && binding.coordinator &&
-        typeof binding.sdk?.upsertAuthProfileWithLock === "function", "trusted_refresh_binding_invalid");
+        typeof binding.commitCredential === "function", "trusted_refresh_binding_invalid");
       this.#refreshBindings.set(key, Object.freeze({ ...binding, authority }));
     }
     this.refreshObservations = { attempts: 0, published: 0, failed: 0, successorResolutions: 0 };
@@ -49,8 +49,8 @@ export class TrustedRefreshAdmissionRegistry extends DispatchAdmissionRegistry {
         readCredential,
         closeAdmission: () => { authority.closeUnresolved(); return !authority.inspect().allowed; },
         refreshCredential: runProviderRefresh,
-        writeCredential: credential => binding.sdk.upsertAuthProfileWithLock({
-          agentDir: authority.scope.agentDir, profileId: params.profileId, credential,
+        writeCredential: credential => binding.commitCredential({
+          agentDir: authority.scope.agentDir, profileId: params.profileId, credential, expectedCredentialDigest: permit.credentialDigest,
         }),
       });
       const nextRequest = binding.controlSource.bootstrapRequest(authority.scope, { model: current.grant.model,

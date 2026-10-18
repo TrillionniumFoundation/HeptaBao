@@ -435,7 +435,7 @@
   "sourceManifest": [
     {
       "name": "authbus_refresh_control_contract_test.mjs",
-      "sha256": "1244e996c4ba8adcc418d69a72a89da3904cc9f51a641c5a4e4f77f00d2b8de2"
+      "sha256": "552525fcdf2ee0466dc4a4632cc2d61a0837c5e95f89ec1430bc7d356277a652"
     },
     {
       "name": "authbus_trusted_control_candidate.mjs",
@@ -451,7 +451,7 @@
     },
     {
       "name": "authbus_refresh_registry_candidate.mjs",
-      "sha256": "73e2df127edc4dac74bfcf327e98245729198b2595e3776f826d689f61312d8e"
+      "sha256": "dcd8a9c7d18b7dfb1cd6fc341b31db0f52e60056c54ca8a8e688f453f29aadf5"
     },
     {
       "name": "authbus_dispatch_registry_candidate.mjs",

@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.continuation.checkpoint.v1",
+  "recorded_at_utc": "2026-10-18T16:24:00Z",
+  "full_openbao_2_7_1_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_openbao_cleanup_performed": false,
+  "mac_baseline": {
+    "commit": "40b183000db486a677fadf9bd2fd34873a28c78e",
+    "tree": "50c821b2487000cf1d536cbd8d84dce0feedb544",
+    "verified_blobs_and_modes": 2762,
+    "full_tree_verified": true,
+    "rust": "1.98.0",
+    "status": "compile_failed",
+    "errors": 8,
+    "tests_executed": 0,
+    "elapsed_seconds": 53.884,
+    "log_sha256": "d72c776d098ad297e7182d50087d92b570c72d2490ea1cce20ad1bd429bbb5a7",
+    "evidence_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/baseline-service-r1"
+  },
+  "mac_r2_dispatch": {
+    "status": "unknown_no_execution_receipt",
+    "reason": "MCP_request_timed_out_then_host_tunnel_disconnected",
+    "automatic_replay_allowed": false,
+    "commit": "a84c31b3bae4335958048b2e7f8a7db35fffe13d",
+    "tree": "84b91387ace4fcc388e779768b4f9e2c3e20acb5",
+    "check_before_any_replay": [
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/integrated-r2-materialization.json",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/integrated-r2-service-r1/summary.json",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/integrated-r2-service-r1/owned-process.json"
+    ],
+    "source_destination": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r2",
+    "shared_target": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+    "intended_maximum_seconds_per_cargo_step": 1800
+  },
+  "tls_diagnostic": {
+    "fixture": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/tls-diagnostic-r1",
+    "binary_sha256": "1546755960a23eb5e27cf5be474e63d63466a79ecb1f69e425cad95f78c9dcb4",
+    "main_to_mac_tls": "TLSv1.3",
+    "mac_lan_self_tls": "TLSv1.2",
+    "exact_leaf_pinned": true,
+    "firewall_changes": false,
+    "initialization": false,
+    "owned_process_stopped": true,
+    "http_health_qualified": false,
+    "scope_correction": "Raw probe passed flag observed only a TLS connection and first HTTP fragment; no complete HTTP status/body was read."
+  },
+  "authbus_r5": {
+    "commit": "09a2e8c38d1565cc8f6a3f1ef48f3b050d6a204e",
+    "scenarios": 13,
+    "assertions": 52,
+    "bootstrap_regressions": 11,
+    "contract_receipt_sha256": "c237f5f3b5b150a67f972990210a1f0f1925f49008b1b3b9d499394900f84a92",
+    "native_heptabao_backend": false,
+    "actual_sdk_oauth": false,
+    "real_provider_credential_refresh": false,
+    "actual_sdk_root": "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+    "sdk_extension_overlay_sha256": "6f1d4d371e64aa319d27fad59cd8154e19fa9d77eff94fd53846e4ac64f2b655",
+    "sdk_adapter_contract_receipt_sha256": "d52b3b317f8fed0d853412c9a82cb1bdbde0cf690a83e335be0b132bcb05ffd9"
+  },
+  "current_connection": {
+    "status": "disconnected",
+    "observed_error_codes": [
+      "tunnel_client_not_connected",
+      "tunnel_client_not_seen"
+    ],
+    "last_error_message": "Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected."
+  },
+  "original_budgets_seconds": {
+    "http": 15,
+    "native_admission": 8
+  },
+  "physical_lan_qualification": false,
+  "x230_qualification": false,
+  "native_rust_candidate_commit": "3ab3ec01787791b80063586c01ea2897a6bde24e",
+  "native_rust_candidate_tree": "96320ac5f4f7d191db2581ed6555c3cfc069a8b3",
+  "kv2_migration": {
+    "raw_decoder_max_record_bytes": 1048576,
+    "raw_decoder_2_mib_rejection_observed": true,
+    "bundle_bound_bytes": 16777216,
+    "http_response_bound_bytes": 2097152,
+    "native_graph_import_route_implemented": false,
+    "native_aggregate_import_status": 501,
+    "full_lossless_34_mib_migration_proven": false
+  },
+  "pending_restore": {
+    "exact_reference_reconciliation_implemented": true,
+    "rust_execution_observed": false,
+    "lost_reference_discovery_implemented": false
+  }
+}

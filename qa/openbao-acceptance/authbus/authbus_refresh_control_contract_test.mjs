@@ -70,10 +70,13 @@ if (process.argv[2] === "--worker") {
         const authority = new TrustedAdmissionAuthority({ directory, scope, controlSource: source });
         const readStore = () => ({ version: 1, profiles: { [binding.profileId]: callbacks.readCredential() },
           order: { [scope.provider]: [binding.profileId] } });
-        const fixtureSdk = { upsertAuthProfileWithLock: ({ credential }) => callbacks.writeCredential(credential) };
+        const fixtureCommit = ({ credential, expectedCredentialDigest }) => {
+          if (digest(callbacks.readCredential()) !== expectedCredentialDigest) return false;
+          return callbacks.writeCredential(credential);
+        };
         const registry = new TrustedRefreshAdmissionRegistry({ authorities: [authority],
           resolveDefaultAgentDir: () => scope.agentDir, resolveProviderIdForAuth: value => value,
-          readStore, refreshBindings: [{ scope, controlSource: source, coordinator, sdk: fixtureSdk, leaseMs: 3000 }] });
+          readStore, refreshBindings: [{ scope, controlSource: source, coordinator, commitCredential: fixtureCommit, leaseMs: 3000 }] });
         const uninstall = registry.install();
         try {
           await applyFromTrustedControl({ authority, controlSource: source, updateStore: () => true,
