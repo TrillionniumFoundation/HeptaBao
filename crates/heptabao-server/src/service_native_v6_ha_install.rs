@@ -712,7 +712,7 @@ impl Service {
                     .check(&mut durable, selected.initial_generation)
                     .map_err(storage_rejected)?;
                 gate().map_err(storage_rejected)?;
-                return Ok(actual.clone());
+                return Ok(actual);
             }
             process
                 .with_native_v6_source(&committed, |codec, store| {

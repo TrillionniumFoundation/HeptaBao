@@ -841,20 +841,15 @@ impl Service {
         }
         let parent = root.kv2_parent_key().map_err(|_| unavailable())?;
         let check = || deadline.check().map_err(|_| RecordError::Invalid);
-        installed
+        let (opaque, graphs) = installed
             .engines
-            .validate_native_roots(&parent, &root.kv2, &check)
+            .project_checked_native_roots(
+                &parent,
+                &root.kv2,
+                root.reader_floor.native_kv2_format,
+                &check,
+            )
             .map_err(|_| unavailable())?;
-        let (opaque, graphs) = if root.reader_floor.native_kv2_format == 2 {
-            installed
-                .engines
-                .project_v6_native_paged(&parent, &check, |_, _| check())
-        } else {
-            installed
-                .engines
-                .project_v6_native(&parent, &check, |_, _| check())
-        }
-        .map_err(|_| unavailable())?;
         if crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
             .map_err(|_| unavailable())?
             .as_slice()

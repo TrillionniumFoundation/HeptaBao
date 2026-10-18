@@ -20,6 +20,9 @@ use std::{
 };
 use zeroize::Zeroizing;
 
+#[path = "immutable_cipher_reuse.rs"]
+mod reuse;
+
 /// A per-object physical bound. Existing snapshot/journal limits are unchanged.
 pub const MAX_IMMUTABLE_CIPHERTEXT_BYTES: usize = 512 * 1024;
 const TEMPORARY_LEAF: &str = "native-v6-object.tmp";
@@ -222,12 +225,70 @@ fn object_identity(_file: &File, _exact_len: usize) -> Result<ObjectIdentity, Ba
     Err(BackendError::Unsupported)
 }
 
+// A wire digest alone misses A -> B -> A rewrites spanning synchronization.
+// This actual fstat witness is additional to, never a substitute for, both
+// full descriptor reads and the caller's final AEAD/plaintext authentication.
+// Do not include atime: the required real reads may legitimately change it.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct ObjectMetadataWitness {
+    identity: ObjectIdentity,
+    links: u64,
+    mode: u32,
+    uid: u32,
+    gid: u32,
+    modified_seconds: i64,
+    modified_nanos: i64,
+    changed_seconds: i64,
+    changed_nanos: i64,
+}
+#[cfg(unix)]
+fn object_metadata_witness(
+    file: &File,
+    exact_len: usize,
+) -> Result<ObjectMetadataWitness, BackendError> {
+    use std::os::unix::fs::MetadataExt;
+    let metadata = file.metadata().map_err(|_| BackendError::Io)?;
+    if !metadata.is_file() || metadata.nlink() != 1 || metadata.len() != exact_len as u64 {
+        return Err(BackendError::Corrupt);
+    }
+    Ok(ObjectMetadataWitness {
+        identity: ObjectIdentity {
+            device: metadata.dev(),
+            inode: metadata.ino(),
+            length: exact_len,
+        },
+        links: metadata.nlink(),
+        mode: metadata.mode(),
+        uid: metadata.uid(),
+        gid: metadata.gid(),
+        modified_seconds: metadata.mtime(),
+        modified_nanos: metadata.mtime_nsec(),
+        changed_seconds: metadata.ctime(),
+        changed_nanos: metadata.ctime_nsec(),
+    })
+}
+#[cfg(not(unix))]
+fn object_metadata_witness(
+    _file: &File,
+    _exact_len: usize,
+) -> Result<ObjectMetadataWitness, BackendError> {
+    Err(BackendError::Unsupported)
+}
+
 struct PinnedObject {
     file: File,
     locator: BlobLocator,
     identity: ObjectIdentity,
     directory_identity: [u8; 16],
     lease: Weak<ImmutableLease>,
+    // Only existing-leaf reuse pins carry this pre-sync wire commitment. A
+    // dev/ino/length check cannot detect same-inode, same-length rewriting.
+    // Actual checked reads must still read every byte and match this digest.
+    synchronized_ciphertext_digest: Option<[u8; 32]>,
+    // Reuse only: retained from before its first full read through both real
+    // synchronization boundaries and the final checked read/AEAD gate.
+    // Ordinary pins keep None and retain their original read semantics.
+    synchronized_metadata: Option<ObjectMetadataWitness>,
 }
 
 /// An owned read-only physical ciphertext pin. It keeps the object descriptor
@@ -254,11 +315,20 @@ impl ImmutableBlobReadPin {
     pub fn directory_identity(&self) -> [u8; 16] {
         self.0.directory_identity
     }
+    pub(crate) fn has_synchronized_ciphertext(&self) -> bool {
+        self.0.synchronized_ciphertext_digest.is_some()
+            && self.0.synchronized_metadata.is_some()
+    }
     fn check(&self) -> Result<Arc<ImmutableLease>, BackendError> {
         let lease = self.0.lease.upgrade().ok_or(BackendError::Unavailable)?;
         lease.check()?;
         if object_identity(&self.0.file, self.0.identity.length)? != self.0.identity {
             return Err(BackendError::Corrupt);
+        }
+        if let Some(expected) = self.0.synchronized_metadata {
+            if object_metadata_witness(&self.0.file, self.0.identity.length)? != expected {
+                return Err(BackendError::Corrupt);
+            }
         }
         lease.check()?;
         Ok(lease)
@@ -360,7 +430,18 @@ impl ImmutableBlobReadPin {
         gate().map_err(PinReadError::Gate)?;
         self.check().map_err(PinReadError::Backend)?;
         lease.check().map_err(PinReadError::Backend)?;
+        if self.0.synchronized_ciphertext_digest.is_some_and(|expected| {
+            crate::digest32(b"heptabao.immutable-reuse-ciphertext.v1", bytes.as_slice())
+                != expected
+        }) {
+            return Err(PinReadError::Backend(BackendError::Corrupt));
+        }
         gate().map_err(PinReadError::Gate)?;
+        if self.0.synchronized_metadata.is_some() {
+            // The final arbitrary caller gate may itself rewrite and restore
+            // bytes. Keep the synchronization witness after that gate too.
+            self.check().map_err(PinReadError::Backend)?;
+        }
         Ok(Arc::new(bytes))
     }
 }
@@ -437,6 +518,8 @@ impl FileBackend {
             identity,
             directory_identity: profile.directory_identity,
             lease: Arc::downgrade(&self.immutable_lease),
+            synchronized_ciphertext_digest: None,
+            synchronized_metadata: None,
         })))
     }
 

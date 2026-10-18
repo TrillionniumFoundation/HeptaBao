@@ -4,6 +4,9 @@
 use super::*;
 use std::sync::{Arc, Weak};
 
+#[path = "immutable_source_reuse.rs"]
+mod reuse;
+
 const MAX_SESSION_ROOT_BYTES: usize = 1024 * 1024;
 const MAX_OBJECT_CONTEXT_BYTES: usize = 4096;
 

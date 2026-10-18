@@ -128,4 +128,91 @@ impl EngineState {
         }
         check()
     }
+
+    /// Project each live native view once, including its pending changes, and
+    /// prove the resulting complete references equal the authenticated roots.
+    /// The ordinary projection also accepts migration placeholders, so bind
+    /// actual live owners before calling it. No cached root is a substitute for
+    /// its checked encoder; physical source/AEAD and Service authority remain
+    /// the caller's separate prerequisites.
+    pub(crate) fn project_checked_native_roots(
+        &self,
+        parent: &AddressKey,
+        roots: &[Kv2GraphRef],
+        native_kv2_format: u32,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<(EngineState, Vec<Kv2GraphRef>)> {
+        check()?;
+        let format = match native_kv2_format {
+            1 => NATIVE_FORMAT,
+            2 => PAGED_NATIVE_FORMAT,
+            _ => return Err(RecordError::Invalid),
+        };
+        let expected: BTreeMap<_, _> = roots
+            .iter()
+            .map(|root| (root.scope.clone(), root))
+            .collect();
+        if expected.len() != roots.len() {
+            return Err(RecordError::Corrupt);
+        }
+        let mut actual = BTreeSet::new();
+        for (namespace, owner) in &self.namespaces {
+            for (mount, descriptor) in &owner.mounts {
+                check()?;
+                match &descriptor.backend {
+                    Backend::Kv2Native(view) => {
+                        let scope = MountScope {
+                            namespace: namespace.clone(),
+                            mount: mount.clone(),
+                            incarnation: descriptor.incarnation,
+                        };
+                        let reference = expected.get(&scope).ok_or(RecordError::Missing)?;
+                        if reference.graph_format != format
+                            || view.is_paged() != (native_kv2_format == 2)
+                            || view.logical_payload_bytes()? != reference.logical_payload_bytes
+                        {
+                            return Err(RecordError::Corrupt);
+                        }
+                        actual.insert(scope);
+                    }
+                    Backend::Kv2(_) => return Err(RecordError::Corrupt),
+                    _ => {}
+                }
+                check()?;
+            }
+        }
+        if actual.len() != expected.len() {
+            return Err(RecordError::Corrupt);
+        }
+        check()?;
+        // Keep the existing per-mount and aggregate bounds, checked encoding
+        // of pending edits and per-object visitor gates. Only the duplicate
+        // encode formerly performed by validate_native_roots is eliminated.
+        let (opaque, projected) = if native_kv2_format == 2 {
+            self.project_v6_native_paged(parent, check, |_, _| check())
+        } else {
+            self.project_v6_native(parent, check, |_, _| check())
+        }?;
+        check()?;
+        if projected.len() != roots.len() {
+            return Err(RecordError::Corrupt);
+        }
+        for (observed, expected) in projected.iter().zip(roots) {
+            check()?;
+            if observed.scope != expected.scope
+                || observed.graph_format != expected.graph_format
+                || observed.logical_payload_bytes != expected.logical_payload_bytes
+                || observed.root != expected.root
+            {
+                return Err(RecordError::Corrupt);
+            }
+            check()?;
+        }
+        check()?;
+        Ok((opaque, projected))
+    }
 }
+
+#[cfg(test)]
+#[path = "kv2_native_install_projection_tests.rs"]
+mod projection_tests;

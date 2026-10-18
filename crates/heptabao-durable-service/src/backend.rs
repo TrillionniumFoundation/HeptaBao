@@ -176,6 +176,20 @@ pub trait DurableBackend: Send {
     ) -> Result<ImmutableBlobReadPin, BackendError> {
         Err(BackendError::Unsupported)
     }
+    /// Re-admit an existing immutable leaf without creating or sealing bytes.
+    /// Some requires the same opened descriptor and containing directory to
+    /// have completed their real durability barriers under the original gate.
+    /// None means only that the first guarded open observed ENOENT. An opened
+    /// leaf that later disappears or changes must fail, never become None.
+    /// Unsupported is distinct from absence; callers may retain ordinary stage.
+    fn reuse_immutable_ciphertext_checked(
+        &mut self,
+        _locator: BlobLocator,
+        _exact_len: usize,
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Option<ImmutableBlobReadPin>, BackendError> {
+        Err(BackendError::Unsupported)
+    }
     /// Confirm current ownership before an external metadata publication.
     /// Remote backends must query their existing session without reconnecting.
     fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
@@ -305,6 +319,15 @@ impl DurableBackend for Box<dyn DurableBackend> {
         exact_len: usize,
     ) -> Result<ImmutableBlobReadPin, BackendError> {
         self.as_ref().pin_immutable_ciphertext(locator, exact_len)
+    }
+    fn reuse_immutable_ciphertext_checked(
+        &mut self,
+        locator: BlobLocator,
+        exact_len: usize,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Option<ImmutableBlobReadPin>, BackendError> {
+        self.as_mut()
+            .reuse_immutable_ciphertext_checked(locator, exact_len, gate)
     }
 
     fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
@@ -629,6 +652,14 @@ impl DurableBackend for FileBackend {
         exact_len: usize,
     ) -> Result<ImmutableBlobReadPin, BackendError> {
         FileBackend::pin_immutable_ciphertext(self, locator, exact_len)
+    }
+    fn reuse_immutable_ciphertext_checked(
+        &mut self,
+        locator: BlobLocator,
+        exact_len: usize,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Option<ImmutableBlobReadPin>, BackendError> {
+        FileBackend::reuse_immutable_ciphertext_checked(self, locator, exact_len, gate)
     }
 
     fn load(&mut self) -> Result<BackendBundle, BackendError> {

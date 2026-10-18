@@ -69,15 +69,20 @@ pub(in crate::service) fn stage_verified_received(
         // the fresh verified plaintext and still leaves the journal untouched.
     }
     before()?;
-    // The real durable owner seals with its local barrier, checks every write,
-    // fsync/link/directory boundary, and reopens the selected file through AEAD
-    // with exact plaintext equality. A same-address orphan from an interrupted
-    // earlier attempt is therefore reusable only after fresh authentication.
-    // A registered but missing file is repaired with the same no-replace write;
-    // an existing corrupt file is authenticated and rejected, never overwritten.
-    let pin = durable.stage_immutable_object_before_publish(
+    // HBA1 has an exact 32-byte overhead; a generic Barrier's length bound is
+    // not an exact ciphertext length. Existing physical leaves are synced on
+    // their actual descriptor and directory, then opened with this local
+    // barrier and compared to the fresh typed borrow. Only initial absence
+    // takes the ordinary seal/no-replace write path. A changed or corrupt leaf
+    // cannot be repaired by overwriting it, even when a locator is registered.
+    let exact_ciphertext_bytes = plaintext
+        .len()
+        .checked_add(32)
+        .ok_or(ServiceError::RequestCapacityExhausted)?;
+    let pin = durable.stage_immutable_object_reusing_existing_before_publish(
         session,
         locator,
+        exact_ciphertext_bytes,
         &aad,
         plaintext,
         &mut before,
