@@ -11,7 +11,7 @@ import https from "node:https";
 import { performance } from "node:perf_hooks";
 import { digest } from "./authbus_admission_authority_candidate.mjs";
 
-export const CONTROL_PROTOCOL = "heptabao-authbus-trusted-bootstrap-r4";
+export const CONTROL_PROTOCOL = "heptabao-authbus-trusted-bootstrap-r5";
 const MAX_BYTES = 2 * 1024 * 1024;
 const SOURCE = new WeakMap(), PROOF = new WeakMap();
 const fail = code => { throw Object.assign(new Error(code), { diagnosticCode: code }); };
@@ -165,7 +165,8 @@ function validateDocument(document, source) {
   "trusted_control_document_provenance_invalid");
   integer(document.generation, "generation", 1);
   check(Array.isArray(document.scopes) && Array.isArray(document.assignments) && Array.isArray(document.refreshLeases) &&
-    document.scopes.length <= 256 && document.assignments.length <= 256 && document.refreshLeases.length <= 256,
+    document.scopes.length <= 256 && document.assignments.length <= 256 && document.refreshLeases.length <= 256 &&
+    Array.isArray(document.refreshAttempts) && document.refreshAttempts.length <= 256,
   "trusted_control_document_shape_invalid");
   return document;
 }
@@ -253,9 +254,15 @@ export class TrustedBaoCoordinator {
     const response = await this.#transport.read();
     let document = response.document ? freezeCopy(validateDocument(response.document, this.identity)) : {
       schemaVersion: 1, protocol: CONTROL_PROTOCOL, issuerId: this.identity.issuerId, sourceDigest: this.identity.sourceDigest,
-      generation: 0, scopes: [], assignments: [], refreshLeases: [] };
+      generation: 0, scopes: [], assignments: [], refreshLeases: [], refreshAttempts: [] };
     const owners = document.refreshLeases.filter(item => item.provider === scope.provider && item.profileId === request.profileId);
     check(owners.length <= 1, "trusted_control_refresh_owner_ambiguous");
+    const attempts = document.refreshAttempts.filter(item => item.provider === scope.provider && item.profileId === request.profileId);
+    check(attempts.length <= 1, "trusted_refresh_attempt_ambiguous");
+    if (attempts.length) {
+      check(attempts[0].status === "PUBLISHED", "trusted_refresh_outcome_unknown");
+      check(attempts[0].publishedDigest === request.credentialDigest, "trusted_refresh_old_credential_fenced");
+    }
     const previousOwner = owners[0];
     // A different process/host cannot preempt an unexpired refresh owner. Use
     // Date's lower bound here (opposite to admission's conservative upper bound).
@@ -284,6 +291,112 @@ export class TrustedBaoCoordinator {
     const committed = await this.#transport.cas(document, response.version);
     return { grant: grantFields(assignment), version: committed.version, bootId: request.bootId,
       sourceDigest: this.identity.sourceDigest, refreshOwnerBound: true };
+  }
+  /**
+   * The caller must be the configured SDK credential owner. All callbacks are
+   * bootstrap-owned adapter functions, never supplied by provider responses.
+   * No code here retries a provider request. Even a failed/ambiguous CAS leaves
+   * I/O unsent; every failure after committed intent retains UNKNOWN forever.
+   */
+  async refreshOnce(request, { readCredential, refreshCredential, writeCredential, closeAdmission }) {
+    check(own(request) && request.protocol === CONTROL_PROTOCOL && request.sourceDigest === this.identity.sourceDigest,
+      "trusted_control_bootstrap_request_source_mismatch");
+    check([readCredential, refreshCredential, writeCredential, closeAdmission].every(value => typeof value === "function"),
+      "trusted_refresh_sdk_adapter_required");
+    const scope = scopeFields(request.scope);
+    field(request.bootId, "bootstrap_id"); field(request.profileId, "profile");
+    check(this.#bindings.some(binding => digest(binding.scope) === digest(scope) && binding.model === request.model &&
+      binding.profileId === request.profileId && binding.credentialDigest === request.credentialDigest),
+      "trusted_control_issuer_scope_not_authorized");
+    const original = await readCredential();
+    check(own(original) && original.type === "oauth" && original.provider === scope.provider &&
+      digest(original) === request.credentialDigest, "trusted_refresh_sdk_credential_mismatch");
+    // This fsync-backed negative admission publication precedes remote intent.
+    // If it throws, no CAS and no refresh provider I/O have occurred.
+    check(closeAdmission() === true, "trusted_refresh_admission_close_failed");
+    const response = await this.#transport.read();
+    const document = freezeCopy(validateDocument(response.document, this.identity));
+    const matches = document.assignments.filter(item => item.hostId === scope.hostId && item.agentId === scope.agentId && item.provider === scope.provider);
+    check(matches.length === 1, "trusted_control_assignment_ambiguous");
+    const assignment = matches[0];
+    check(assignment.scopeDigest === digest(scope) && assignment.bootId === request.bootId && assignment.status === "ASSIGNED" &&
+      assignment.profileId === request.profileId && assignment.digest === request.credentialDigest && assignment.model === request.model,
+      "trusted_refresh_assignment_changed");
+    const owners = document.refreshLeases.filter(item => item.provider === scope.provider && item.profileId === request.profileId);
+    check(owners.length === 1 && owners[0].holderHost === scope.hostId && owners[0].bootId === request.bootId &&
+      owners[0].digest === request.credentialDigest && owners[0].epoch === assignment.epoch &&
+      owners[0].leaseId === assignment.leaseId && owners[0].expiresAt === assignment.expiresAt,
+      "trusted_control_refresh_owner_mismatch");
+    const remaining = Math.min(this.identity.maxLeaseMs, assignment.expiresAt - response.serverUpper);
+    const deadlineMono = response.startedMono + remaining;
+    check(remaining > 0 && performance.now() < deadlineMono, "trusted_control_lease_expired");
+    const previous = document.refreshAttempts.filter(item => item.provider === scope.provider && item.profileId === request.profileId);
+    check(previous.length <= 1, "trusted_refresh_attempt_ambiguous");
+    if (previous.length) {
+      check(previous[0].status === "PUBLISHED", "trusted_refresh_outcome_unknown");
+      check(previous[0].publishedDigest === request.credentialDigest, "trusted_refresh_old_credential_fenced");
+    }
+    const epoch = Math.max(document.generation, ...document.assignments.map(item => integer(item.epoch, "stored_assignment_epoch")),
+      ...document.refreshLeases.map(item => integer(item.epoch, "stored_refresh_epoch"))) + 1;
+    check(Number.isSafeInteger(epoch), "trusted_control_epoch_exhausted");
+    const attempt = { provider: scope.provider, profileId: request.profileId, attemptId: crypto.randomUUID(),
+      holderHost: scope.hostId, bootId: request.bootId, credentialDigest: request.credentialDigest,
+      scopeDigest: digest(scope), sourceEpoch: assignment.epoch, fenceEpoch: epoch, status: "UNKNOWN",
+      startedAt: response.serverDate, parentAttemptId: previous[0]?.attemptId ?? null };
+    document.refreshAttempts = document.refreshAttempts.filter(item => !(item.provider === scope.provider && item.profileId === request.profileId));
+    document.refreshAttempts.push(attempt);
+    for (const item of document.assignments) if (item.provider === scope.provider && item.profileId === request.profileId) {
+      item.status = "REFRESH_PENDING"; item.epoch = epoch;
+    }
+    document.generation = epoch;
+    // A lost response is not success. A new owner must inspect the persistent
+    // attempt, and is forbidden to infer that lease expiry permits a retry.
+    const intent = await this.#transport.cas(document, response.version);
+    check(performance.now() < deadlineMono, "trusted_refresh_dispatch_deadline_expired");
+    check(digest(await readCredential()) === request.credentialDigest, "trusted_refresh_sdk_changed_before_dispatch");
+    check(performance.now() < deadlineMono, "trusted_refresh_dispatch_deadline_expired");
+    // Single call, with UNKNOWN already durably acknowledged. Provider errors,
+    // socket losses and process death never enter a retry/finally-clear path.
+    let dispatchOpen = true, dispatches = 0;
+    const dispatch = send => {
+      check(dispatchOpen && dispatches === 0, "trusted_refresh_dispatch_already_consumed");
+      check(typeof send === "function", "trusted_refresh_transport_callback_required");
+      check(performance.now() < deadlineMono, "trusted_refresh_dispatch_deadline_expired");
+      dispatches += 1;
+      return send();
+    };
+    let refreshed;
+    try { refreshed = await refreshCredential(freezeCopy(original), dispatch); }
+    finally { dispatchOpen = false; }
+    check(dispatches === 1, "trusted_refresh_final_dispatch_not_observed");
+    check(own(refreshed) && refreshed.type === "oauth" && refreshed.provider === scope.provider &&
+      typeof refreshed.access === "string" && refreshed.access.length > 0 &&
+      typeof refreshed.refresh === "string" && refreshed.refresh.length > 0 &&
+      Number.isSafeInteger(refreshed.expires) &&
+      refreshed.expires > response.serverUpper + Math.max(0, performance.now() - response.startedMono),
+      "trusted_refresh_provider_result_invalid");
+    const publishedDigest = digest(refreshed);
+    check(publishedDigest !== request.credentialDigest, "trusted_refresh_unchanged_credential");
+    check(await writeCredential(freezeCopy(refreshed)) === true, "trusted_refresh_sdk_write_failed");
+    check(digest(await readCredential()) === publishedDigest, "trusted_refresh_sdk_publication_not_verified");
+    const completion = await this.#transport.read();
+    const current = freezeCopy(validateDocument(completion.document, this.identity));
+    const active = current.refreshAttempts.filter(item => item.provider === scope.provider && item.profileId === request.profileId);
+    check(active.length === 1 && digest(active[0]) === digest(attempt), "trusted_refresh_attempt_changed");
+    const publishedEpoch = Math.max(current.generation, attempt.fenceEpoch) + 1;
+    check(Number.isSafeInteger(publishedEpoch), "trusted_control_epoch_exhausted");
+    active[0].status = "PUBLISHED"; active[0].publishedDigest = publishedDigest;
+    active[0].publishedEpoch = publishedEpoch; active[0].sdkVerified = true;
+    current.refreshLeases = current.refreshLeases.filter(item => !(item.provider === scope.provider && item.profileId === request.profileId));
+    current.generation = publishedEpoch;
+    const committed = await this.#transport.cas(current, completion.version);
+    // Authorization still needs a fresh trusted grant. Updating the binding is
+    // permitted only after provider result -> actual SDK write/read -> CAS.
+    this.#bindings = this.#bindings.map(binding => binding.scope.provider === scope.provider &&
+      binding.profileId === request.profileId && binding.credentialDigest === request.credentialDigest
+      ? { ...binding, credentialDigest: publishedDigest } : binding);
+    return Object.freeze({ attemptId: attempt.attemptId, fenceEpoch: epoch, publishedEpoch,
+      intentVersion: intent.version, publishedVersion: committed.version, credentialDigest: publishedDigest, sdkVerified: true });
   }
   async renew() { return this.#transport.renew(); }
   async close() { return this.#transport.close(); }
