@@ -1,0 +1,86 @@
+{
+  "schema": "authbus-refresh-r5-actual-sdk-store",
+  "ok": false,
+  "syntheticCredentials": true,
+  "actualSdk": true,
+  "actualSqlite": true,
+  "actualSdkOAuthRefreshCaller": false,
+  "actualProviderRefresh": false,
+  "actualNativeHeptaBao": false,
+  "productionMutation": false,
+  "externalNetworkAttempts": 0,
+  "externalProcessAttempts": 0,
+  "outsideFixtureWriteAttempts": 0,
+  "outsideFixtureHomeReadAttempts": 0,
+  "checks": [
+    {
+      "case": "all_exact_store_modules_loaded",
+      "passed": true
+    },
+    {
+      "case": "managed_commit_bridge_loaded",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_initially_absent",
+      "passed": true
+    },
+    {
+      "case": "actual_oauth_seed_readback",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_created",
+      "passed": true
+    },
+    {
+      "case": "actual_locked_sdk_commit_success",
+      "passed": false
+    }
+  ],
+  "sourceManifest": [
+    {
+      "name": "authbus_refresh_sdk_store_live.mjs",
+      "sha256": "0f074404b73a5687982bba3f3c9b7f6f3012505c06a63a1ae9cfe4c3f5c4134d"
+    },
+    {
+      "name": "authbus_refresh_store_sdk_candidate.mjs",
+      "sha256": "2e1cc9a336b4781fc13abe75fe09658f618f9d6ad1dbfe29dff0a644e59561de"
+    },
+    {
+      "name": "authbus_sdk_explicit_deny_candidate.mjs",
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2"
+    },
+    {
+      "name": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    }
+  ],
+  "refreshStoreSdkModules": [
+    {
+      "relative": "dist/store-DH33UrUj.js",
+      "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+      "loaded": true
+    },
+    {
+      "relative": "dist/source-check-ZSz5NzGW.js",
+      "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+      "loaded": true
+    },
+    {
+      "relative": "dist/profiles-DyU-YCq2.js",
+      "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "candidateSha256": "cbdaddc38b4c99fd511ea5d0246384ede32e8aa0a02fea230a8b2ddc29ee9ac3",
+      "loaded": true
+    }
+  ],
+  "sdkVersion": "2026.7.1-2",
+  "error": {
+    "code": "actual_locked_sdk_commit_success",
+    "messageSha256": "411bcb3b9c6a2f68edf0dba3e8d3a4600e2b5ab4e8d692d6d4036b88fda23bc1"
+  },
+  "installedSdkUnchanged": true,
+  "checksPassed": 5
+}

@@ -1,0 +1,16 @@
+{
+  "started_utc": "2026-10-18T16:46:04.828821+00:00",
+  "argv": [
+    "node",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-actual-sdk-20261018-01/qa/openbao-acceptance/authbus/authbus_refresh_sdk_store_live.mjs",
+    "--openclaw-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+    "--work-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-actual-sdk-20261018-01/sdk-store-fixture-01"
+  ],
+  "source_commit": "9440e5127880b5510f481db9dc0ca899d1b810eb",
+  "returncode": 1,
+  "finished_utc": "2026-10-18T16:46:10.614751+00:00",
+  "stdout_sha256": "e56b59bd2d95b263f2a1a538acb74209fb43359e85af578541be53af44839dfb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

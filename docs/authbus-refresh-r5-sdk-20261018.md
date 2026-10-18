@@ -111,3 +111,23 @@ exact-source hooks, realistic response-loss/crash tests and every caller entry
 checked. R5 must then run against an isolated native HeptaBao TLS/AppRole/KV2
 backend with restart and multi-host CAS evidence. Production bootstrap,
 per-host real credential migration and OpenBao removal remain separate work.
+
+## Actual SDK follow-up: first attempt and return-contract repair
+
+On 2026-10-18 the main host connection recovered. The bounded inspector read
+15 code files (210,424 bytes); all three R4 boundary hashes matched. The runner
+then imported the actual SDK 2026.7.1-2 on Node v22.23.3, created a new SQLite
+fixture and reread its synthetic OAuth seed. The next check failed: the bridge
+returned the SDK store object while the coordinator requires a strict boolean.
+The original failed receipt is retained as
+`qa/openbao-acceptance/authbus/refresh-r5-sdk-actual-before-return-fix.json`.
+
+The observed SDK transaction returns a store even when the updater makes no
+change, and returns null after a caught transaction error. The repaired bridge
+tracks whether its locked updater accepted the expected prior digest, then
+requires the returned store to contain the exact successor credential digest
+before reporting true. A no-op or failed transaction reports false. The exact
+SDK source bindings and external synchronization restrictions remain in place.
+This repair still requires a new actual-SDK fixture execution; the first failed
+attempt must not be reclassified as passed. No real provider refresh or native
+HeptaBao backend was used in this first attempt.

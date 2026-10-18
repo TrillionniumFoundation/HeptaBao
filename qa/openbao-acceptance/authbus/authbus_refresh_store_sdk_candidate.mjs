@@ -25,7 +25,8 @@ async function heptaBaoCommitManagedOAuthCredential(params) {
     throw Object.assign(new Error("AuthBus managed OAuth commit binding invalid"), { diagnosticCode: "trusted_refresh_sdk_commit_binding_invalid" });
   }
   const credential = structuredClone(params.credential), agentDir = params.agentDir, profileId = params.profileId, expectedDigest = params.expectedCredentialDigest;
-  return await updateAuthProfileStoreWithLock({
+  let updaterApplied = false;
+  const saved = await updateAuthProfileStoreWithLock({
     agentDir,
     saveOptions: { filterExternalAuthProfiles: false, syncExternalCli: false },
     updater: store => {
@@ -33,9 +34,14 @@ async function heptaBaoCommitManagedOAuthCredential(params) {
       if (!previous || previous.type !== "oauth" || previous.provider !== credential.provider ||
           heptaBaoRefreshDigest(previous) !== expectedDigest) return false;
       store.profiles[profileId] = credential;
+      updaterApplied = true;
       return true;
     },
   });
+  // The frozen SDK returns a store for a no-op and null for a transaction
+  // failure. A truthy return alone does not prove that this credential won.
+  return updaterApplied && Boolean(saved?.profiles?.[profileId]) &&
+    heptaBaoRefreshDigest(saved.profiles[profileId]) === heptaBaoRefreshDigest(credential);
 }
 export { heptaBaoCommitManagedOAuthCredential };
 `;
