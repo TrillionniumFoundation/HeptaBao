@@ -51,6 +51,47 @@ pub(crate) struct NativeV6ArchiveRootAnchor {
     deadline: OriginalDeadline,
 }
 
+impl NativeV6ArchiveRootAnchor {
+    // Static facts only. Neither getter grants liveness, local custody or an
+    // Actor; historical archive validation uses them only to reject foreign
+    // data before its independently owned Begin/Stage/CAS coordinator runs.
+    pub(crate) fn enrollment(&self) -> &NativeV6PeerEnrollment {
+        self.selected.enrollment()
+    }
+    pub(crate) fn published(&self) -> &NativeV6PublishedRoot {
+        self.selected.root()
+    }
+    pub(super) fn deadline(&self) -> OriginalDeadline { self.deadline }
+
+    pub(super) fn fresh_for_epoch_restore(
+        &self, process: &HaProcess,
+    ) -> ArchiveResult<NativeV6CommittedRootRead> {
+        original_operation(self.deadline)?;
+        let native = process.native_v6.as_ref().filter(|value| value.enabled())
+            .ok_or(NativeV6ArchiveError::Gate)?;
+        let node = process.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
+        if !Arc::ptr_eq(&self.instance, &native.identity) {
+            return Err(NativeV6ArchiveError::WrongSelection);
+        }
+        let fresh = process.runtime.block_on(
+            node.native_v6_committed_root_read(self.deadline.instant()),
+        ).map_err(|_| NativeV6ArchiveError::Gate)?
+            .ok_or(NativeV6ArchiveError::WrongSelection)?;
+        if !fresh.same_selection(&self.selected)
+            || fresh.operation_deadline() != self.deadline.instant()
+            || fresh.leader_id() != node.id()
+        {
+            return Err(NativeV6ArchiveError::WrongSelection);
+        }
+        native.validate_enrollment(&process.codec, fresh.enrollment())
+            .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
+        process.runtime.block_on(node.verify_native_v6_committed_root_read(&fresh))
+            .map_err(|_| NativeV6ArchiveError::Gate)?;
+        original_operation(self.deadline)?;
+        Ok(fresh)
+    }
+}
+
 impl NativeV6ArchiveRepair {
     pub(crate) fn into_parts(self) -> (CommittedNativeV6Read, NativeV6ArchiveReport) {
         (self.read, self.archive)

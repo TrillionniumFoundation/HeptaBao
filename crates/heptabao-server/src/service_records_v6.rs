@@ -8,6 +8,12 @@ use crate::v6_read_validation::{ObjectSource, ReadContext, ReadError, ReadReceip
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_records_v6_historical.rs"]
+mod historical;
+#[cfg(feature = "experimental-native-v6-ha")]
+pub(super) use historical::prepare_historical_native_root;
+
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct EngineMetadata {

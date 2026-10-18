@@ -6,6 +6,10 @@ use super::*;
 #[path = "service_snapshot_v6_ha_repair.rs"]
 mod repair;
 
+#[path = "service_snapshot_v6_ha_restore.rs"]
+mod restore;
+pub(in crate::service::snapshot_transfer) use restore::NativeHaHistoricalReceipt;
+
 impl Service {
     fn check_native_ha_snapshot_owner(&self, plan: &SnapshotTransferPlan) -> Result<(), Response> {
         self.check_native_ha_snapshot_owner_at(plan, plan.base)

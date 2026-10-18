@@ -108,6 +108,16 @@ impl NativeV6PeerEnrollment {
     pub fn enrollment_log_id(&self) -> LogIdOf<TypeConfig> {
         self.0.log
     }
+    /// Static trust comparison only, never an epoch or request capability.
+    /// A long-lived TLS endpoint may retain these exact configured peers while
+    /// EVERY request still obtains the full active/pending enrollment from its
+    /// own actual quorum witness. Epoch and enrollment LogId remain mandatory
+    /// in that fresh request's binding, not in this static pin-map comparison.
+    pub fn same_peer_configuration(&self, other: &Self) -> bool {
+        self.cluster_digest() == other.cluster_digest()
+            && self.membership_log_id() == other.membership_log_id()
+            && self.pins() == other.pins()
+    }
 }
 impl fmt::Debug for NativeV6PeerEnrollment {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -247,10 +257,13 @@ pub(crate) struct NativeV6RootState {
     // the actual committed V5 migration source, rather than inventing genesis.
     pub(crate) migration_source_digest: [u8; 32],
     pub(crate) migration_source_log: LogIdOf<TypeConfig>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty", with = "crate::v6_epoch_restore::lineage_wire")]
+    pub(crate) restore_lineage: Vec<crate::v6_epoch_restore::NativeV6EpochRestoreRecord>,
 }
 impl NativeV6RootState {
     pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
         self.command.validate()?;
+        crate::v6_epoch_restore::validate_lineage(self)?;
         if !valid_log(self.publication_log)
             || !valid_log(self.migration_source_log)
             || self.migration_source_digest == [0; 32]
@@ -297,6 +310,18 @@ impl NativeV6PublishedRoot {
     pub fn migration_source(&self) -> ([u8; 32], LogIdOf<TypeConfig>) {
         (self.0.migration_source_digest, self.0.migration_source_log)
     }
+    pub fn epoch_transitions(&self)
+    -> impl ExactSizeIterator<Item = crate::NativeV6EpochTransition<'_>> + DoubleEndedIterator {
+        self.0.restore_lineage.iter().map(crate::NativeV6EpochTransition)
+    }
+    /// The epoch in which this lineage first activated native storage. The
+    /// retained V5 source stays tied to that real activation, even after an
+    /// online native restore. This is metadata, not permission to change epoch.
+    pub fn native_origin_epoch(&self) -> u64 {
+        self.0.restore_lineage.first()
+            .map(|step| step.pending.command.source.enrollment.command.epoch)
+            .unwrap_or(self.0.command.intent.epoch)
+    }
 }
 impl fmt::Debug for NativeV6PublishedRoot {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -311,6 +336,14 @@ impl fmt::Debug for NativeV6PublishedRoot {
 impl crate::StateMachine {
     pub(crate) fn validate_native_v6_state(&self) -> Result<(), RecordRejection> {
         let last = self.last_applied_log.map(|log| log.index).unwrap_or(0);
+        if self.v6_epoch_protocol.is_some_and(|version| version != 1)
+            || (self.v6_epoch_protocol.is_some() && self.v6_root.is_none())
+            || (self.v6_epoch_protocol != Some(1)
+                && (self.v6_pending_epoch_restore.is_some()
+                    || self.v6_root.as_ref().is_some_and(|root| !root.restore_lineage.is_empty())))
+        {
+            return Err(RecordRejection::Invalid);
+        }
         if self
             .v5_root_log
             .is_some_and(|log| !valid_log(log) || log.index > last)
@@ -360,6 +393,26 @@ impl crate::StateMachine {
                 return Err(RecordRejection::Invalid);
             }
         }
+        if let Some(pending) = &self.v6_pending_epoch_restore {
+            pending.matches_current(
+                self.v6_enrollment.as_ref().ok_or(RecordRejection::Invalid)?,
+                self.v6_root.as_ref().ok_or(RecordRejection::Invalid)?,
+            )?;
+            if pending.begin_log.index > last {
+                return Err(RecordRejection::Invalid);
+            }
+            if let Some(intent) = &pending.intent {
+                let object = crate::SealedRecordObject::new_native_v6_commit_intent(intent.intent)
+                    .map_err(|_| RecordRejection::Invalid)?;
+                if intent.log.index > last
+                    || self.v6_intent_log_id(&object.reference().id) != Some(intent.log)
+                    || self.records_v5.as_ref().ok_or(RecordRejection::Invalid)?
+                        .object(object.reference())? != Some(object)
+                {
+                    return Err(RecordRejection::Invalid);
+                }
+            }
+        }
         Ok(())
     }
 
@@ -379,6 +432,18 @@ impl crate::StateMachine {
                     request
                         .validate_size()
                         .and_then(|()| self.apply_native_v6_root(root)),
+                ),
+                RecordCommand::BeginNativeV6EpochRestore { pending } => Some(
+                    request.validate_size()
+                        .and_then(|()| self.apply_begin_native_v6_epoch_restore(pending)),
+                ),
+                RecordCommand::CancelNativeV6EpochRestore { pending } => Some(
+                    request.validate_size()
+                        .and_then(|()| self.apply_cancel_native_v6_epoch_restore(pending)),
+                ),
+                RecordCommand::PublishNativeV6EpochRestore { publication } => Some(
+                    request.validate_size()
+                        .and_then(|()| self.apply_publish_native_v6_epoch_restore(publication)),
                 ),
                 RecordCommand::Stage { object }
                     if self.v6_root.is_some()
@@ -483,9 +548,14 @@ impl crate::StateMachine {
             publication_log: log,
             migration_source_digest: source_digest,
             migration_source_log: source_log,
+            restore_lineage: self.v6_root.as_ref()
+                .map(|root| root.restore_lineage.clone()).unwrap_or_default(),
         };
         candidate.validate()?;
         self.v6_root = Some(candidate);
+        // An ordinary successful write supersedes the exact source of a
+        // pending restore. It never silently retargets that restore operation.
+        self.v6_pending_epoch_restore = None;
         Ok(())
     }
 }

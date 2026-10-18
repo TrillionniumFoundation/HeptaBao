@@ -16,7 +16,7 @@ use crate::state_record_root::{RecordStateRoot, StateIdentity};
 use crate::state_record_root_v6::{MountScope, RecordStateRootV6};
 use crate::v6_native_custody::OriginalDeadline;
 use crate::v6_read_validation::{ReadContext, ReadIdentity};
-use heptabao_durable_service::{BatchPublication, PublicationCondition};
+use heptabao_durable_service::{BatchPublication, ImmutableSourceSession, PublicationCondition};
 use heptabao_raft_runtime::{LocalV6BlobStage, NativeV6PublishedRoot};
 use std::cell::{Cell, RefCell};
 
@@ -28,6 +28,36 @@ pub(crate) use read::{NativeHaArchiveRepairSource, NativeHaReadProof, load_cold_
 
 pub(super) const HA_CURSOR_RESOURCE: &str = "state-native-v6/ha-publication-cursor";
 const HA_CURSOR_FORMAT: &str = "heptabao-native-v6-ha-local-publication-v1";
+
+pub(in crate::service) fn validate_historical_archive_cursor(
+    root: &RecordStateRootV6,
+    retained: &RecordStateRoot,
+    active: &[u8],
+    ha: &[u8],
+    archive_generation: u64,
+    origin_epoch: u64,
+    facts: &crate::ha::native_v6_backup::HistoricalNativeV6ArchiveFacts,
+) -> Result<(), Response> {
+    NativeActiveCursor::decode(active)?.validate(retained, root, archive_generation)?;
+    let cursor = NativeHaCursor::decode(ha)?;
+    let exact = |log: [u64; 3]| ExactLog { term: log[0], node: log[1], index: log[2] };
+    if root.cluster_id != retained.cluster_id || root.replay_epoch != facts.replay_epoch()
+        || cursor.cluster_digest != facts.cluster_digest()
+        || retained.replay_epoch != origin_epoch || cursor.replay_epoch != facts.replay_epoch()
+        || cursor.enrollment_digest != facts.enrollment_digest()
+        || cursor.root_digest != facts.root_digest()
+        || cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
+        || cursor.raft_generation != facts.raft_generation()
+        || cursor.migration_digest != facts.migration_digest()
+        || cursor.migration_digest != retained.identity().map_err(|_| unavailable())?.digest()
+        || cursor.publication_log != exact(facts.publication_log())
+        || cursor.intent_log != exact(facts.intent_log())
+        || cursor.migration_log != exact(facts.migration_log())
+        || cursor.local_publication_generation > archive_generation
+        || cursor.local_publication_generation != active_generation(active)?
+    { return Err(unavailable()); }
+    Ok(())
+}
 
 fn unavailable() -> Response {
     Response::error(503, "native V6 HA local publication is unavailable")
@@ -198,6 +228,9 @@ impl NativeHaCursor {
     fn covered_by(&self, read: &CommittedNativeV6Read) -> Result<(), Response> {
         self.validate()?;
         let published = read.published();
+        if self.replay_epoch != read.enrollment().epoch() {
+            return self.covered_by_epoch_lineage(read);
+        }
         if self.cluster_digest != read.enrollment().cluster_digest()
             || self.enrollment_digest != read.enrollment().digest()
             || self.replay_epoch != read.enrollment().epoch()
@@ -212,6 +245,53 @@ impl NativeHaCursor {
                     || self.root_digest != published.root_digest()))
             || (self.raft_generation < published.generation()
                 && self.publication_log.index >= published.publication_log_id().index)
+        {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+
+    // Only actual committed lineage can cover an older authenticated local
+    // cursor. Preserve the ordinary same-epoch predicate above unchanged.
+    // Mere epoch ordering or a manifest's numeric index is insufficient.
+    fn covered_by_epoch_lineage(&self, read: &CommittedNativeV6Read) -> Result<(), Response> {
+        self.validate()?;
+        let published = read.published();
+        if self.replay_epoch >= read.enrollment().epoch()
+            || self.cluster_digest != read.enrollment().cluster_digest()
+            || self.migration_digest != published.migration_source().0
+            || self.migration_log != ExactLog::migration(published)
+        {
+            return Err(unavailable());
+        }
+        let step = published.epoch_transitions()
+            .find(|step| step.source_enrollment().epoch() == self.replay_epoch)
+            .ok_or_else(unavailable)?;
+        let enrollment = step.source_enrollment();
+        let source_publication = step.source_publication_log_id();
+        let source_intent = step.source_intent_log_id();
+        let exact_publication = ExactLog {
+            term: source_publication.committed_leader_id().term,
+            node: source_publication.committed_leader_id().node_id,
+            index: source_publication.index,
+        };
+        let exact_intent = ExactLog {
+            term: source_intent.committed_leader_id().term,
+            node: source_intent.committed_leader_id().node_id,
+            index: source_intent.index,
+        };
+        if enrollment.digest() != self.enrollment_digest
+            || !enrollment.same_peer_configuration(read.enrollment())
+            || self.raft_generation > step.source_generation()
+            || self.publication_log.term > exact_publication.term
+            || (self.publication_log.term == exact_publication.term
+                && self.publication_log.node != exact_publication.node)
+            || (self.raft_generation == step.source_generation()
+                && (self.publication_log != exact_publication
+                    || self.intent_log != exact_intent
+                    || self.root_digest != step.source_root_digest()))
+            || (self.raft_generation < step.source_generation()
+                && self.publication_log.index >= exact_publication.index)
         {
             return Err(unavailable());
         }
@@ -348,6 +428,7 @@ struct LocalSelection {
     active: Option<NativeActiveCursor>,
     native: Option<RecordStateRootV6>,
     initial_generation: u64,
+    local_epoch: u64,
 }
 impl LocalSelection {
     fn read(
@@ -356,9 +437,10 @@ impl LocalSelection {
     ) -> Result<Self, Response> {
         live(read.deadline())?;
         durable.verify_live_ownership().map_err(storage_rejected)?;
-        if durable.recovery_required() || durable.replay_epoch() != read.enrollment().epoch() {
+        if durable.recovery_required() || durable.replay_epoch() > read.enrollment().epoch() {
             return Err(unavailable());
         }
+        let local_epoch = durable.replay_epoch();
         let initial_generation = durable.generation();
         let root_bytes = durable
             .get("system", "state")
@@ -380,6 +462,8 @@ impl LocalSelection {
                 || ha_bytes.is_some()
                 || root.identity().map_err(|_| unavailable())?.digest()
                     != read.published().migration_source().0
+                || root.replay_epoch != local_epoch
+                || root.replay_epoch != read.published().native_origin_epoch()
             {
                 return Err(unavailable());
             }
@@ -396,7 +480,8 @@ impl LocalSelection {
             let cursor =
                 NativeHaCursor::decode(ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?;
             cursor.covered_by(read)?;
-            if cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
+            if root.replay_epoch != local_epoch || cursor.replay_epoch != local_epoch
+                || cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
                 || cursor.migration_digest != source.identity().map_err(|_| unavailable())?.digest()
                 || cursor.local_publication_generation > initial_generation
                 || cursor.local_publication_generation
@@ -406,7 +491,7 @@ impl LocalSelection {
             }
             (source, Some(active), Some(root))
         };
-        if source.replay_epoch != read.enrollment().epoch() {
+        if source.replay_epoch != read.published().native_origin_epoch() {
             return Err(unavailable());
         }
         live(read.deadline())?;
@@ -419,6 +504,7 @@ impl LocalSelection {
             active,
             native,
             initial_generation,
+            local_epoch,
         })
     }
     fn conditions(&self) -> Vec<PublicationCondition> {
@@ -447,7 +533,7 @@ impl LocalSelection {
         generation: u64,
     ) -> Result<(), ServiceError> {
         durable.verify_live_ownership()?;
-        if durable.generation() != generation || durable.replay_epoch() != self.source.replay_epoch
+        if durable.generation() != generation || durable.replay_epoch() != self.local_epoch
         {
             return Err(ServiceError::PublicationConditionConflict);
         }
@@ -460,6 +546,37 @@ impl LocalSelection {
             }
         }
         Ok(())
+    }
+}
+
+// Constructed only after LocalSelection authenticated the exact four local
+// resources and checked their older epoch against the ACTUAL committed Raft
+// lineage. This borrowed scope permits staging only; it cannot publish epoch,
+// authorise a read, stand in for the Actor or renew the original witness.
+pub(in crate::service) struct EpochInstallScope<'a> {
+    selected: &'a LocalSelection,
+    committed: &'a CommittedNativeV6Read,
+}
+impl EpochInstallScope<'_> {
+    pub(in crate::service) fn check_received(
+        &self,
+        session: &ImmutableSourceSession,
+        object: &crate::service::native_v6_ha_objects::VerifiedNativeV6Object<'_>,
+    ) -> Result<(), ServiceError> {
+        self.committed.deadline().check().map_err(|_| ServiceError::BarrierFailure)?;
+        let target = self.committed.enrollment().epoch();
+        if self.selected.local_epoch >= target
+            || session.replay_epoch() != self.selected.local_epoch
+            || object.root().replay_epoch != target
+            || object.root().cluster_id != self.selected.source.cluster_id
+            || object.root().identity().map_err(|_| ServiceError::CorruptState)?.digest()
+                != self.committed.published().root_digest()
+        {
+            return Err(ServiceError::PublicationConditionConflict);
+        }
+        // Its typed borrow retains the same original full closure/Actor gate,
+        // including the actual consensus witness. No archived object can mint it.
+        object.check_original().map_err(|_| ServiceError::BarrierFailure)
     }
 }
 
@@ -620,13 +737,16 @@ impl Service {
         process
             .verify_native_v6_committed_read(&committed)
             .map_err(|_| unavailable())?;
+        // Raft already committed any higher epoch. Allocate the new activation
+        // before local publication; an entropy failure fences that authority.
+        let next_activation = self.prepare_epoch_activation(committed.enrollment().epoch(), true)?;
         let mut durable = self.durable.take().ok_or_else(unavailable)?;
         let root_committed = Cell::new(false);
         let denial = RefCell::new(None);
         let result = (|| -> Result<State, Response> {
             let selected = LocalSelection::read(&mut durable, &committed)?;
             if selected.source.cluster_id != actual.cluster_id
-                || selected.source.replay_epoch != actual.replay_epoch
+                || selected.local_epoch != actual.replay_epoch
                 || match selected.native.as_ref() {
                     Some(root) => {
                         root.identity().map_err(|_| unavailable())? != old_identity
@@ -778,6 +898,7 @@ impl Service {
         self.record_root = None;
         self.native_root = Some(root);
         self.record_writes_since_gc = 0;
+        self.install_epoch_activation(next_activation);
         live(deadline).inspect_err(|_| {
             self.recovery_required = true;
             self.ha_activation = None;
@@ -811,7 +932,7 @@ impl Service {
             ReadContext {
                 expected_identity: ReadIdentity::RecordsV6(read.published().root_digest()),
                 cluster_id: &selected.source.cluster_id,
-                replay_epoch: selected.source.replay_epoch,
+                replay_epoch: read.enrollment().epoch(),
                 minimum_state_schema: selected.source.state_schema,
                 maximum_state_schema: RATE_LIMIT_QUOTA_STATE_SCHEMA,
                 reader_format: crate::state_record_root_v6::READER_FORMAT,
@@ -823,7 +944,7 @@ impl Service {
         let root = received.root().clone();
         let root_bytes = Zeroizing::new(received.root_bytes().to_vec());
         if root.reader_floor.native_kv2_format != 2
-            || root.replay_epoch != selected.source.replay_epoch
+            || root.replay_epoch != read.enrollment().epoch()
         {
             return Err(unavailable());
         }
@@ -839,17 +960,22 @@ impl Service {
             ));
         }
         let identity = root.identity().map_err(|_| unavailable())?;
+        let epoch_scope = (selected.local_epoch < root.replay_epoch)
+            .then_some(EpochInstallScope { selected, committed: read });
         let mut locators = Vec::new();
         let session = native_blob_source::session(durable, selected.root_bytes.expose())
             .map_err(storage_rejected)?;
         received
             .visit_verified_objects(codec, store, &mut || codec_gate(), &mut |object| {
-                let marker = native_blob_source::stage_verified_received(
-                    durable,
-                    &session,
-                    object,
-                    &mut || (shared_gate.borrow_mut())(),
-                )
+                let marker = if let Some(scope) = &epoch_scope {
+                    native_blob_source::ha_local_stage::stage_verified_epoch_received(
+                        durable, &session, object, scope, &mut || (shared_gate.borrow_mut())(),
+                    )
+                } else {
+                    native_blob_source::stage_verified_received(
+                        durable, &session, object, &mut || (shared_gate.borrow_mut())(),
+                    )
+                }
                 .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?;
                 let resource = v6_records::native_resource(object.domain(), object.reference());
                 match durable
@@ -870,11 +996,33 @@ impl Service {
         let (mut installed, native, _) = received
             .into_detached_parts(&mut || codec_gate())
             .map_err(|_| unavailable())?;
-        root_namespace_only(&installed)?;
         installed
             .engines
             .install_native_views(native)
             .map_err(Response::from_engine_error)?;
+        root_namespace_only(&installed)?;
+        if epoch_scope.is_some() {
+            if let Some(current) = self.state.as_ref() {
+                Self::validate_snapshot_protected_floor(current, &installed)?;
+            }
+            // A cold node has no warm State. Its authenticated old local
+            // protected owners still supply the non-regression floor; missing
+            // obsolete KV payloads need not be read, and no archived/new Auth
+            // substitutes for that original protected source.
+            if let Some(previous) = selected.native.as_ref() {
+                let source = native_blob_source::NativeSource::new_checked(
+                    durable, deadline, || (shared_gate.borrow_mut())(),
+                ).map_err(|_| unavailable())?;
+                let (mut metadata, native) = v6_records::materialize_metadata_for_service(
+                    previous, context(previous)?, &source,
+                ).map_err(|_| unavailable())?;
+                metadata.engines.install_native_views(native).map_err(Response::from_engine_error)?;
+                root_namespace_only(&metadata)?;
+                Self::validate_snapshot_protected_floor(&metadata, &installed)?;
+            } else if self.state.is_none() {
+                return Err(unavailable());
+            }
+        }
         root_namespace_only(&installed)?;
         let operation = format!(
             "native6-ha-install-{}",
@@ -892,7 +1040,7 @@ impl Service {
             durable
                 .apply_batch_conditionally_before_publish(
                     BatchPublication {
-                        replay_epoch: root.replay_epoch,
+                        replay_epoch: selected.local_epoch,
                         principal: "heptabao-server".into(),
                         namespace: "system".into(),
                         request_id: format!("{operation}-locators-{batch_index}"),
@@ -949,24 +1097,28 @@ impl Service {
             ));
         }
         (shared_gate.borrow_mut())().map_err(storage_rejected)?;
-        durable
-            .apply_batch_conditionally_before_publish(
-                BatchPublication {
+        let publication = BatchPublication {
                     replay_epoch: root.replay_epoch,
                     principal: "heptabao-server".into(),
                     namespace: "system".into(),
                     request_id: format!("{operation}-root"),
                     authorization_digest: identity.digest(),
                     mutations,
-                },
-                selected.conditions(),
-                &mut || (shared_gate.borrow_mut())(),
+                };
+        if epoch_scope.is_some() {
+            durable.publish_epoch_batch_conditionally_before_publish(
+                expected_generation, selected.local_epoch, publication,
+                selected.conditions(), &mut || (shared_gate.borrow_mut())(),
             )
-            .map_err(storage_rejected)?;
+        } else {
+            durable.apply_batch_conditionally_before_publish(
+                publication, selected.conditions(), &mut || (shared_gate.borrow_mut())(),
+            )
+        }.map_err(storage_rejected)?;
         root_committed.set(true);
         (shared_gate.borrow_mut())().map_err(storage_rejected)?;
         durable.verify_live_ownership().map_err(storage_rejected)?;
-        if durable.generation() != publication_generation {
+        if durable.generation() != publication_generation || durable.replay_epoch() != root.replay_epoch {
             return Err(unavailable());
         }
         for (resource, expected) in [

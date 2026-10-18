@@ -62,6 +62,10 @@ pub(super) struct SnapshotTransferPlan {
     native_ha_source: Option<native_v6_ha_install::NativeHaReadProof>,
     #[cfg(feature = "experimental-native-v6-ha")]
     native_ha_repair: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_ha_restore_source: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_ha_restored: Option<v6::NativeHaHistoricalReceipt>,
 }
 impl SnapshotTransferPlan {
     pub(super) fn original_deadline(&self) -> Instant {
@@ -430,6 +434,10 @@ impl Service {
             native_ha_source: None,
             #[cfg(feature = "experimental-native-v6-ha")]
             native_ha_repair: None,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_ha_restore_source: None,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_ha_restored: None,
         };
         let source = if download {
             let result = (|| -> Result<DownloadSource, Response> {
@@ -488,6 +496,13 @@ impl Service {
             None
         };
         plan.download = source;
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if !download && self.native_ha_snapshot_transport_enabled()
+            && plan.path == "sys/storage/raft/snapshot"
+            && let Err(error) = self.prepare_native_ha_historical_upload(&mut plan)
+        {
+            return error;
+        }
         #[cfg(feature = "fixture-native-v6-service")]
         {
             plan.native_request_binding = self.native_request_binding.take();
@@ -533,7 +548,9 @@ impl Service {
     ) -> Response {
         let response = self.finalize_snapshot_transfer(&mut plan, result);
         #[cfg(feature = "experimental-native-v6-ha")]
-        let response = if plan.native_ha_source.is_some() {
+        let response = if plan.native_ha_restored.is_some() {
+            self.complete_native_ha_historical_delivery(&plan, response, fingerprint, clock)
+        } else if plan.native_ha_source.is_some() {
             self.complete_native_ha_snapshot_delivery(&plan, response, fingerprint, clock)
         } else {
             self.audit_completed_response(fingerprint, clock.0, clock.1, response)
@@ -601,6 +618,13 @@ impl Service {
             // This dedicated owner independently verifies the actual selection
             // and its complete local Auth graph before repairing those leaves.
             return self.finish_native_ha_snapshot_repair(plan, result);
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if plan.native_ha_restore_source.is_some() {
+            // Restore owns the original exact local/Actor/ReadIndex anchor.
+            // The new epoch is derived by actual Raft; it is not a local
+            // restore of captured consensus or replay-ledger bytes.
+            return self.finish_native_ha_historical_upload(plan, result);
         }
         if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
             return response;

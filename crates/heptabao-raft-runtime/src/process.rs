@@ -19,7 +19,7 @@ pub use network::{
 };
 pub use node::{ApplicationReadWitness, CommittedApplicationPrefix, ProcessRaftNode};
 #[cfg(feature = "experimental-v6-raft-objects")]
-pub use node::{NativeV6ClosureAdmission, NativeV6CommittedRootRead};
+pub use node::{NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead};
 
 #[cfg(test)]
 mod replication_tests;

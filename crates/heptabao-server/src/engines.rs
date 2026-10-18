@@ -45,6 +45,9 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "engine_native_snapshot_clocks.rs"]
+mod native_snapshot_clocks;
 #[path = "engine_pki_revocation.rs"]
 mod pki_revocation;
 pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
@@ -4105,3 +4108,4 @@ mod lossless_json_tests;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "engine_native_paged_dispatch.rs"]
 mod native_paged_dispatch;
+

@@ -19,6 +19,9 @@ use std::sync::{
 use std::time::{Duration, Instant};
 use tokio::sync::RwLock;
 
+#[path = "v6_epoch_restore_tests.rs"]
+mod epoch_restore_tests;
+
 static SEQ: AtomicU64 = AtomicU64::new(0);
 #[derive(Default)]
 struct Router {

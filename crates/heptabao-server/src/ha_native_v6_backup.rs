@@ -25,6 +25,10 @@ use zeroize::Zeroizing;
 mod format;
 use format::*;
 
+#[path = "ha_native_v6_backup_historical.rs"]
+mod historical;
+pub(crate) use historical::{HistoricalNativeV6ArchiveFacts, validate_historical_native_v6_archive};
+
 #[derive(Debug)]
 pub(crate) enum NativeV6ArchiveError {
     Invalid,
@@ -415,12 +419,30 @@ impl<R: Read + Seek> VerifiedNativeV6Archive<R> {
 /// that check and any recovery decision belong to the future Service owner.
 /// No untrusted bytes are decoded into opaque Raft types or a restore plan.
 pub(crate) fn validate_native_v6_archive<R: Read + Seek>(
-    mut reader: R,
+    reader: R,
     expected: &NativeV6ArchiveSelection,
     expected_seal_identity: [u8; 32],
     barrier: &AeadBarrier,
     deadline: OriginalDeadline,
     gate: &mut impl FnMut() -> ArchiveResult<()>,
+) -> ArchiveResult<VerifiedNativeV6Archive<R>> {
+    validate_archive_inner(reader, expected_seal_identity, barrier, deadline, gate, |provenance| {
+        if provenance != expected.provenance {
+            return Err(NativeV6ArchiveError::WrongSelection);
+        }
+        Ok(expected.intent())
+    })
+}
+
+// The selection callback can return DATA only. The entire canonical pack and
+// AEAD transcript must verify before a caller can receive this affine archive.
+fn validate_archive_inner<R: Read + Seek>(
+    mut reader: R,
+    expected_seal_identity: [u8; 32],
+    barrier: &AeadBarrier,
+    deadline: OriginalDeadline,
+    gate: &mut impl FnMut() -> ArchiveResult<()>,
+    select: impl FnOnce(&[u8]) -> ArchiveResult<NativeV6CommitIntent>,
 ) -> ArchiveResult<VerifiedNativeV6Archive<R>> {
     check(deadline, gate)?;
     let length = seek(&mut reader, SeekFrom::End(0), deadline, gate)?;
@@ -443,13 +465,8 @@ pub(crate) fn validate_native_v6_archive<R: Read + Seek>(
         gate,
     )?;
     let header = Header::decode(&bytes)?;
-    let intent = expected.intent();
     if header.seal_identity != expected_seal_identity
         || expected_seal_identity == [0; 32]
-        || header.shared_object_count != intent.object_count
-        || header.shared_ciphertext_bytes != intent.ciphertext_bytes
-        || header.provenance_bytes != expected.provenance.len()
-        || header.provenance_sha256 != <[u8; 32]>::from(Sha256::digest(&expected.provenance))
     {
         return Err(NativeV6ArchiveError::WrongSelection);
     }
@@ -466,7 +483,13 @@ pub(crate) fn validate_native_v6_archive<R: Read + Seek>(
         deadline,
         gate,
     )?;
-    if provenance != expected.provenance {
+    if header.provenance_sha256 != <[u8; 32]>::from(Sha256::digest(&provenance)) {
+        return Err(NativeV6ArchiveError::Corrupt);
+    }
+    let intent = select(&provenance)?;
+    if header.shared_object_count != intent.object_count
+        || header.shared_ciphertext_bytes != intent.ciphertext_bytes
+    {
         return Err(NativeV6ArchiveError::WrongSelection);
     }
     let local_offset = HEADER_BYTES as u64 + header.provenance_bytes as u64;

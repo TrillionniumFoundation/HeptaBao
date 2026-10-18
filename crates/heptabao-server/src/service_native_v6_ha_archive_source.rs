@@ -45,6 +45,7 @@ fn current_local_selection(
     let selected = LocalSelection {
         root_bytes, active_bytes, source_bytes, ha_bytes,
         source, active: Some(active), native: Some(root), initial_generation,
+        local_epoch: durable.replay_epoch(),
     };
     matches_current(&selected, enrollment, published)?;
     selected.check(durable, initial_generation).map_err(storage_rejected)?;
@@ -73,7 +74,8 @@ fn matches_current(
         || cursor.local_publication_generation > selected.initial_generation
         || cursor.local_publication_generation
             != active_generation(selected.active_bytes.as_ref().ok_or_else(unavailable)?.expose())?
-        || selected.source.replay_epoch != enrollment.epoch()
+        || selected.source.replay_epoch != published.native_origin_epoch()
+        || selected.local_epoch != enrollment.epoch()
         || root.replay_epoch != enrollment.epoch()
         || root.reader_floor.native_kv2_format != 2
     {
@@ -83,7 +85,7 @@ fn matches_current(
 }
 
 impl NativeHaArchiveRepairSource {
-    fn check_instance(&self, service: &Service) -> Result<(), Response> {
+    pub(in crate::service) fn check_instance(&self, service: &Service) -> Result<(), Response> {
         self.environment.check(service)?;
         if service.record_root.is_some() || service.current_state_identity()? != self.identity {
             return Err(unavailable());
@@ -108,7 +110,7 @@ impl NativeHaArchiveRepairSource {
         let durable = service.durable.as_ref().ok_or_else(unavailable)?;
         if durable.recovery_required()
             || durable.generation() != self.selected.initial_generation
-            || durable.replay_epoch() != self.selected.source.replay_epoch
+            || durable.replay_epoch() != self.selected.local_epoch
         {
             return Err(unavailable());
         }
@@ -118,6 +120,22 @@ impl NativeHaArchiveRepairSource {
                 return Err(unavailable());
             }
         }
+        self.check_instance(service)
+    }
+
+    // Restore shares the same authenticated original local capture. These
+    // accessors expose comparison data only; they do not construct a business
+    // read or replace the independently actual epoch-restore coordinator.
+    pub(in crate::service) fn restore_anchor(&self) -> &NativeV6ArchiveRootAnchor { &self.anchor }
+    pub(in crate::service) fn restore_generation(&self) -> u64 { self.selected.initial_generation }
+    pub(in crate::service) fn restore_conditions(&self) -> Vec<PublicationCondition> {
+        self.selected.conditions()
+    }
+    pub(in crate::service) fn check_taken(
+        &self, service: &Service, durable: &mut DurableService<AeadBarrier>,
+    ) -> Result<(), Response> {
+        self.check_instance(service)?;
+        self.selected.check(durable, self.selected.initial_generation).map_err(storage_rejected)?;
         self.check_instance(service)
     }
 

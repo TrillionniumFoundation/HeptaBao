@@ -19,6 +19,9 @@ pub(crate) use archive_repair::NativeV6ArchiveRootAnchor;
 mod publication;
 pub(crate) use publication::NativeHaPublicationError;
 
+#[path = "ha_native_v6_epoch_restore.rs"]
+mod epoch_restore;
+
 #[cfg(test)]
 #[path = "ha_native_v6_install_test_support.rs"]
 pub(super) mod install_test_support;

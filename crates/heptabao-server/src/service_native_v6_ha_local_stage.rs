@@ -13,11 +13,34 @@ pub(in crate::service) fn stage_verified_received(
     object: &VerifiedNativeV6Object<'_>,
     target_gate: &mut impl FnMut() -> Result<(), ServiceError>,
 ) -> Result<Secret, ServiceError> {
+    stage_received(durable, session, object, None, target_gate)
+}
+
+pub(in crate::service) fn stage_verified_epoch_received(
+    durable: &mut DurableService<AeadBarrier>,
+    session: &ImmutableSourceSession,
+    object: &VerifiedNativeV6Object<'_>,
+    scope: &crate::service::native_v6_ha_install::EpochInstallScope<'_>,
+    target_gate: &mut impl FnMut() -> Result<(), ServiceError>,
+) -> Result<Secret, ServiceError> {
+    stage_received(durable, session, object, Some(scope), target_gate)
+}
+
+fn stage_received(
+    durable: &mut DurableService<AeadBarrier>,
+    session: &ImmutableSourceSession,
+    object: &VerifiedNativeV6Object<'_>,
+    epoch_scope: Option<&crate::service::native_v6_ha_install::EpochInstallScope<'_>>,
+    target_gate: &mut impl FnMut() -> Result<(), ServiceError>,
+) -> Result<Secret, ServiceError> {
     let mut before = || {
         object
             .check_original()
             .map_err(|_| ServiceError::BarrierFailure)?;
         target_gate()?;
+        if let Some(scope) = epoch_scope {
+            scope.check_received(session, object)?;
+        }
         object
             .check_original()
             .map_err(|_| ServiceError::BarrierFailure)
@@ -25,7 +48,7 @@ pub(in crate::service) fn stage_verified_received(
     before()?;
     let reference = object.reference();
     let plaintext = object.plaintext();
-    if session.replay_epoch() != object.root().replay_epoch
+    if (epoch_scope.is_none() && session.replay_epoch() != object.root().replay_epoch)
         || session.store_id() != store_id(object.root_bytes())?
         || plaintext.len() != reference.encoded_bytes as usize
     {

@@ -12,6 +12,9 @@ mod snapshot_tests;
 #[path = "service_native_v6_ha_snapshot_repair_tests.rs"]
 mod snapshot_repair_tests;
 
+#[path = "service_native_v6_ha_historical_restore_tests.rs"]
+mod historical_restore_tests;
+
 use super::*;
 use crate::ha::{HaPeerConfig, HaProcessConfig};
 use crate::request_deadline::{RequestDeadlineScope, lock_until};

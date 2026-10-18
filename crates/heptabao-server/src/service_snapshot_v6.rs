@@ -13,6 +13,8 @@ use std::io::{Read, Seek};
 #[cfg(feature = "experimental-native-v6-ha")]
 #[path = "service_snapshot_v6_ha.rs"]
 mod ha;
+#[cfg(feature = "experimental-native-v6-ha")]
+pub(super) use ha::NativeHaHistoricalReceipt;
 #[path = "service_native_v6_staging_repair.rs"]
 mod staging_repair;
 
