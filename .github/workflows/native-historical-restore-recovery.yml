@@ -40,14 +40,18 @@ jobs:
         shell: bash
     env:
       EXPECTED_SOURCE: ${{ github.sha }}
-      CARGO_TARGET_DIR: ${{ runner.temp }}/heptabao-native-recovery-target
-      RECOVERY_REPORT_DIR: ${{ runner.temp }}/heptabao-native-recovery-reports
       CARGO_TERM_COLOR: never
       CARGO_BUILD_JOBS: '2'
       CMAKE_BUILD_PARALLEL_LEVEL: '2'
       RUST_BACKTRACE: '1'
 
     steps:
+      - name: Set runner-local output paths
+        run: |
+          set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/heptabao-native-recovery-target" >> "$GITHUB_ENV"
+          printf 'RECOVERY_REPORT_DIR=%s\n' "$RUNNER_TEMP/heptabao-native-recovery-reports" >> "$GITHUB_ENV"
+
       - name: Checkout the exact candidate without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
