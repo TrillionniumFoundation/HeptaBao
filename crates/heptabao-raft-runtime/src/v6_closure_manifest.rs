@@ -107,6 +107,7 @@ fn read_manifest(
 ) -> Result<Vec<u8>, LocalV6BlobError> {
     gate()?;
     let len = file.metadata()?.len();
+    gate()?;
     if len < HEADER_BYTES as u64 || len > MAX_MANIFEST_BYTES as u64 {
         return Err(LocalV6BlobError::InvalidClosure);
     }
@@ -217,14 +218,14 @@ impl LocalV6BlobStage {
             .validate()
             .map_err(|_| LocalV6BlobError::InvalidClosure)?;
         let intent = root.intent();
-        let mut manifest = self
-            .directory
-            .open_file(name(&intent.closure_manifest_sha256)?, FileAccess::Read)?;
+        let manifest_name = name(&intent.closure_manifest_sha256)?;
+        gate()?;
+        let mut manifest = self.directory.open_file(&manifest_name, FileAccess::Read)?;
         let bytes = read_manifest(&mut manifest, gate)?;
         let refs = Self::validate_archived_closure_manifest(&bytes, &intent)?;
         for reference in &refs {
             gate()?;
-            drop(self.read_local(reference)?);
+            drop(self.read_local_checked(reference, gate)?);
             gate()?;
         }
         gate()?;

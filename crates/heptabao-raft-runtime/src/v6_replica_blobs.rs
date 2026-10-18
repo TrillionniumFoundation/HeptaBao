@@ -244,6 +244,68 @@ impl LocalV6BlobStage {
         Self::read_checked(&mut file, reference)
     }
 
+    /// Read one exact local ciphertext under the original caller gate. The
+    /// same gate surrounds opening, metadata, seeking and every actual read,
+    /// including short reads and the final EOF check. Each read is at most
+    /// 64 KiB; no fsync receipt, live read authority or root is created.
+    pub fn read_local_checked(
+        &self,
+        reference: &RecordObjectRef,
+        gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+    ) -> Result<Vec<u8>, LocalV6BlobError> {
+        gate()?;
+        let destination = Self::leaf(reference)?;
+        gate()?;
+        let mut file = self.directory.open_file(&destination, FileAccess::Read)?;
+        gate()?;
+        let length = file.metadata()?.len();
+        gate()?;
+        if length != reference.payload_bytes {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        if file.seek(SeekFrom::Start(0))? != 0 {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        gate()?;
+        let expected = reference.encoded_bytes as usize;
+        let mut bytes = Vec::with_capacity(expected);
+        let mut scratch = [0u8; 64 * 1024];
+        let mut interrupts = 0;
+        loop {
+            // Read at most the remaining exact payload plus one byte so a
+            // file that grows after metadata cannot hide trailing data.
+            let limit = scratch.len().min(expected - bytes.len() + 1);
+            gate()?;
+            let read = file.read(&mut scratch[..limit]);
+            gate()?;
+            let count = match read {
+                Ok(count) => count,
+                Err(error) if error.kind() == io::ErrorKind::Interrupted && interrupts < 64 => {
+                    interrupts += 1;
+                    continue;
+                }
+                Err(error) => return Err(error.into()),
+            };
+            if count == 0 {
+                break;
+            }
+            if count > expected - bytes.len() {
+                return Err(LocalV6BlobError::CorruptOrChanged);
+            }
+            bytes.extend_from_slice(&scratch[..count]);
+        }
+        if bytes.len() != expected {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        let verified = SealedRecordObject::new_native_v6_ciphertext_chunk(bytes.clone())
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        if verified.reference() != reference {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        gate()?;
+        Ok(bytes)
+    }
+
     /// Compare a *declared* Raft-stage V6 intent with a fresh physical read
     /// of every local ciphertext object in its proposed closure.
     ///

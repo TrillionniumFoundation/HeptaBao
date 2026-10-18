@@ -325,7 +325,9 @@ fn read_leaf(
 ) -> ArchiveResult<Vec<u8>> {
     check(deadline, gate)?;
     let bytes = store
-        .read_local(reference)
+        .read_local_checked(reference, &mut || {
+            check(deadline, gate).map_err(|_| LocalV6BlobError::CorruptOrChanged)
+        })
         .map_err(|_| NativeV6ArchiveError::Storage)?;
     check(deadline, gate)?;
     Ok(bytes)
