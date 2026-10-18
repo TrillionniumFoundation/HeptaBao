@@ -93,7 +93,7 @@ impl Service {
             source.check_local(self)?;
             let imported = match result? {
                 Observation::Upload(imported) => imported,
-                Observation::Download => return Err(unavailable()),
+                _ => return Err(unavailable()),
             };
             if !imported.metadata.is_v6_ha() {
                 return Err(Response::error(400, "current-root repair requires a native HA dual-pack archive"));

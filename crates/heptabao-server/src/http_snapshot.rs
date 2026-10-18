@@ -484,4 +484,36 @@ mod tests {
         assert!(read_request_mode(&mut get.as_bytes(), Duration::from_secs(1), true)
             .is_ok_and(|request| request.native_snapshot.is_none()));
     }
+
+    #[cfg(feature = "experimental-native-v6-ha")]
+    #[test]
+    fn native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes() -> io::Result<()> {
+        let reference = format!("native-v6-restore-{}", "1".repeat(64));
+        let query = format!("cancel_pending_restore={reference}");
+        for method in ["POST", "PUT"] {
+            for framing in ["Content-Length: 0\r\n\r\n", "Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n"] {
+                let raw = format!("{method} /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\n{framing}");
+                let mut request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                    .unwrap_or_else(|_| panic!("explicit pending selector must reach native admission"));
+                assert_eq!(request.body.0["cancel_pending_restore"], reference);
+                let native = request.native_snapshot.take().expect("empty native binary request");
+                let mut source = io::empty();
+                let mut body = BodyReader::new(&mut source, native.body,
+                    Instant::now() + Duration::from_secs(1))?;
+                assert_eq!(body.read(&mut [0; 1])?, 0);
+            }
+        }
+        for (method, path, query) in [
+            ("GET", "sys/storage/raft/snapshot", query.clone()),
+            ("HEAD", "sys/storage/raft/snapshot", query.clone()),
+            ("POST", "sys/storage/raft/snapshot-force", query.clone()),
+            ("POST", "sys/storage/raft/snapshot-repair", query.clone()),
+            ("POST", "secret/data/example", query.clone()),
+            ("POST", "sys/storage/raft/snapshot", format!("{query}&{query}")),
+        ] {
+            let raw = format!("{method} /v1/{path}?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n");
+            assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
+        }
+        Ok(())
+    }
 }

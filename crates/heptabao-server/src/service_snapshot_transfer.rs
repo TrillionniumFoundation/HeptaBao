@@ -12,6 +12,33 @@ use std::time::Instant;
 
 pub(super) const NATIVE_HA_REPAIR_PATH: &str = "sys/storage/raft/snapshot-repair";
 
+#[cfg(feature = "experimental-native-v6-ha")]
+fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<[u8; 32]>, Response> {
+    let invalid = || Response::error(400, "unsupported native snapshot query fields");
+    let fields = body.as_object().ok_or_else(invalid)?;
+    if fields.is_empty() {
+        return Ok(None);
+    }
+    if !enabled || fields.len() != 1 {
+        return Err(invalid());
+    }
+    let raw = fields.get("cancel_pending_restore").and_then(Value::as_str)
+        .and_then(|value| value.strip_prefix("native-v6-restore-"))
+        .ok_or_else(invalid)?;
+    if raw.len() != 64 || !raw.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f')) {
+        return Err(invalid());
+    }
+    let mut operation = [0; 32];
+    for (index, byte) in operation.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&raw[index * 2..index * 2 + 2], 16)
+            .map_err(|_| invalid())?;
+    }
+    if operation == [0; 32] {
+        return Err(invalid());
+    }
+    Ok(Some(operation))
+}
+
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_snapshot_v6.rs"]
 mod v6;
@@ -65,6 +92,10 @@ pub(super) struct SnapshotTransferPlan {
     #[cfg(feature = "experimental-native-v6-ha")]
     native_ha_restore_source: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
     #[cfg(feature = "experimental-native-v6-ha")]
+    native_ha_cancel_pending: Option<[u8; 32]>,
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_ha_restore_attempt: Option<([u8; 32], bool)>,
+    #[cfg(feature = "experimental-native-v6-ha")]
     native_ha_restored: Option<v6::NativeHaHistoricalReceipt>,
 }
 impl SnapshotTransferPlan {
@@ -108,6 +139,8 @@ fn canonical_seal_identity(seal: &SealMetadata) -> Result<[u8; 32], &'static str
 pub(crate) enum Observation {
     Download,
     Upload(Import),
+    #[cfg(feature = "experimental-native-v6-ha")]
+    CancelPendingRestore,
 }
 
 // Retain the wall-clock fraction captured at admission. Rounding only after
@@ -148,6 +181,20 @@ impl PendingExternalRequest {
             }
         } else {
             (|| {
+                #[cfg(feature = "experimental-native-v6-ha")]
+                if plan.native_ha_cancel_pending.is_some() {
+                    if Instant::now() >= plan.deadline {
+                        return Err(Response::error(503, "snapshot transfer deadline exceeded"));
+                    }
+                    let mut byte = [0; 1];
+                    let count = reader.read(&mut byte)
+                        .map_err(|_| Response::error(400, "incomplete snapshot body"))?;
+                    if Instant::now() >= plan.deadline {
+                        return Err(Response::error(503, "snapshot transfer deadline exceeded"));
+                    }
+                    return if count == 0 { Ok(Observation::CancelPendingRestore) }
+                        else { Err(Response::error(400, "pending restore reconciliation requires an empty body")) };
+                }
                 let mut archive = plan
                     .lease
                     .file(MAX_NATIVE_ARCHIVE, plan.deadline)
@@ -349,16 +396,25 @@ impl Service {
         actor: Principal,
         request: &RequestView<'_>,
     ) -> Response {
-        if !request.namespace.is_empty()
-            || request
-                .body
-                .as_object()
-                .is_none_or(|object| !object.is_empty())
-        {
+        if !request.namespace.is_empty() || !request.body.is_object() {
             return Response::error(
                 400,
                 "native snapshot requires the root namespace and no query fields",
             );
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let native_ha_cancel_pending = match pending_restore_query(
+            request.body,
+            self.native_ha_snapshot_transport_enabled()
+                && request.path == "sys/storage/raft/snapshot"
+                && matches!(request.method, "POST" | "PUT"),
+        ) {
+            Ok(operation) => operation,
+            Err(response) => return response,
+        };
+        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        if request.body.as_object().is_none_or(|object| !object.is_empty()) {
+            return Response::error(400, "native snapshot requires the root namespace and no query fields");
         }
         let Some((started, now)) = self.native_snapshot_clock else {
             return Response::error(503, "snapshot admission clock unavailable");
@@ -436,6 +492,10 @@ impl Service {
             native_ha_repair: None,
             #[cfg(feature = "experimental-native-v6-ha")]
             native_ha_restore_source: None,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_ha_cancel_pending,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_ha_restore_attempt: None,
             #[cfg(feature = "experimental-native-v6-ha")]
             native_ha_restored: None,
         };
@@ -548,7 +608,7 @@ impl Service {
     ) -> Response {
         let response = self.finalize_snapshot_transfer(&mut plan, result);
         #[cfg(feature = "experimental-native-v6-ha")]
-        let response = if plan.native_ha_restored.is_some() {
+        let mut response = if plan.native_ha_restored.is_some() {
             self.complete_native_ha_historical_delivery(&plan, response, fingerprint, clock)
         } else if plan.native_ha_source.is_some() {
             self.complete_native_ha_snapshot_delivery(&plan, response, fingerprint, clock)
@@ -557,6 +617,30 @@ impl Service {
         };
         #[cfg(not(feature = "experimental-native-v6-ha"))]
         let response = self.audit_completed_response(fingerprint, clock.0, clock.1, response);
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if let Some((operation, root_attempted)) = plan.native_ha_restore_attempt {
+            // A committed Begin or uncertain root CAS remains identifiable
+            // even if the generic failure audit overwrites its first response.
+            // These bytes grant no restore, retry or current-read authority.
+            if let Some(body) = response.body.as_object_mut() {
+                body.insert("recovery_reference".into(),
+                    json!(format!("native-v6-restore-{}", hex(&operation))));
+                body.insert("root_attempted".into(), json!(root_attempted));
+                body.insert("retry_allowed".into(), json!(false));
+            }
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if let Some(operation) = plan.native_ha_cancel_pending {
+            // Cancellation delivery can also be uncertain after an actual
+            // Raft write. Retain its exact query reference even when terminal
+            // clock or mandatory audit replaces the original response.
+            if let Some(body) = response.body.as_object_mut() {
+                body.insert("recovery_reference".into(),
+                    json!(format!("native-v6-restore-{}", hex(&operation))));
+                body.insert("restore_performed".into(), json!(false));
+                body.insert("retry_allowed".into(), json!(false));
+            }
+        }
         #[cfg(feature = "fixture-native-v6-service")]
         self.retire_native_external_binding(fingerprint, clock.1);
         response
@@ -618,6 +702,10 @@ impl Service {
             // This dedicated owner independently verifies the actual selection
             // and its complete local Auth graph before repairing those leaves.
             return self.finish_native_ha_snapshot_repair(plan, result);
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if plan.native_ha_cancel_pending.is_some() {
+            return self.finish_native_ha_pending_restore_cancellation(plan, result);
         }
         #[cfg(feature = "experimental-native-v6-ha")]
         if plan.native_ha_restore_source.is_some() {
@@ -900,7 +988,7 @@ impl Service {
         }
         let mut imported = match result {
             Ok(Observation::Upload(value)) => value,
-            Ok(Observation::Download) => {
+            Ok(_) => {
                 return Err(Response::error(
                     503,
                     "fixture native upload observation mismatch",

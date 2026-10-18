@@ -113,21 +113,55 @@ impl Service {
         Ok(())
     }
 
-    pub(in crate::service::snapshot_transfer) fn finish_native_ha_historical_upload(
+    pub(in crate::service::snapshot_transfer) fn finish_native_ha_pending_restore_cancellation(
         &mut self, plan: &mut SnapshotTransferPlan, result: Result<Observation, Response>,
     ) -> Response {
-        let root_attempted = Cell::new(false);
-        let committed_operation = Cell::new(None);
         let checked = (|| -> Result<Response, Response> {
             self.check_native_ha_snapshot_owner(plan)?;
             if plan.is_download || plan.path != "sys/storage/raft/snapshot"
                 || plan.native_ha_source.is_some() || plan.native_ha_restored.is_some()
+                || plan.native_ha_repair.is_some()
+            { return Err(unavailable()); }
+            let operation = plan.native_ha_cancel_pending.ok_or_else(unavailable)?;
+            if !matches!(result?, Observation::CancelPendingRestore) {
+                return Err(Response::error(400, "pending restore reconciliation requires an empty body"));
+            }
+            let source = plan.native_ha_restore_source.take().ok_or_else(unavailable)?;
+            let (proof, outcome) = source.reconcile_pending_restore(
+                self, operation, &mut |service| service.check_native_ha_snapshot_owner(plan),
+            )?;
+            self.check_native_ha_snapshot_owner(plan)?;
+            let epoch = self.state.as_ref().ok_or_else(unavailable)?.replay_epoch;
+            // Use the existing unchanged-root snapshot response custody through
+            // terminal-clock persistence, mandatory audit and the original
+            // live Actor check. This operation never creates a restore receipt.
+            plan.native_ha_source = Some(proof);
+            Ok(Response::ok(json!({"data":{
+                "recovery_reference":historical_recovery_reference(operation),
+                "state":outcome, "cancelled":outcome == "cancelled",
+                "restore_performed":false, "replay_epoch":epoch,
+                "selected_root":hex(&plan.base.digest()),
+            }, "retry_allowed":false, "restore_performed":false})))
+        })();
+        checked.unwrap_or_else(|error| error)
+    }
+
+    pub(in crate::service::snapshot_transfer) fn finish_native_ha_historical_upload(
+        &mut self, plan: &mut SnapshotTransferPlan, result: Result<Observation, Response>,
+    ) -> Response {
+        let root_attempted = Cell::new(false);
+        let operation_reference = Cell::new(None);
+        let checked = (|| -> Result<Response, Response> {
+            self.check_native_ha_snapshot_owner(plan)?;
+            if plan.is_download || plan.path != "sys/storage/raft/snapshot"
+                || plan.native_ha_source.is_some() || plan.native_ha_restored.is_some()
+                || plan.native_ha_cancel_pending.is_some()
             { return Err(unavailable()); }
             let source = plan.native_ha_restore_source.take().ok_or_else(unavailable)?;
             source.check_local(self)?;
             let imported = match result? {
                 Observation::Upload(imported) => imported,
-                Observation::Download => return Err(unavailable()),
+                _ => return Err(unavailable()),
             };
             if !imported.metadata.is_v6_ha() { return Err(invalid()); }
             let binding = imported.metadata.seal_identity().ok_or_else(invalid)?;
@@ -259,6 +293,7 @@ impl Service {
                 );
                 let committed = published.map_err(|error| {
                     root_attempted.set(error.root_attempted());
+                    operation_reference.set(error.operation_digest());
                     Response { status: 503, body: json!({"errors":[error.to_string()],
                         "recovery_reference":error.reference_id(), "retry_allowed":false,
                         "root_attempted":error.root_attempted()}), unwrapped_json: None,
@@ -266,7 +301,7 @@ impl Service {
                 })?;
                 root_attempted.set(true);
                 let operation = committed.published().intent().operation_digest;
-                committed_operation.set(Some(operation));
+                operation_reference.set(Some(operation));
                 original()?;
                 Ok((committed, digest, imported_generation, operation))
             })();
@@ -299,6 +334,8 @@ impl Service {
                 "published_local_generation":published_local_generation, "replay_epoch":next_epoch,
                 "restored_root":hex(&digest), "cluster_coordinated":true }})))
         })();
+        plan.native_ha_restore_attempt = operation_reference.get()
+            .map(|operation| (operation, root_attempted.get()));
         match checked {
             Ok(response) => response,
             Err(mut error) => {
@@ -310,7 +347,7 @@ impl Service {
                         body.insert("recovery_required".into(), json!(true));
                         body.insert("retry_allowed".into(), json!(false));
                         body.insert("root_attempted".into(), json!(true));
-                        if let Some(operation) = committed_operation.get() {
+                        if let Some(operation) = operation_reference.get() {
                             body.insert("recovery_reference".into(),
                                 json!(historical_recovery_reference(operation)));
                         }

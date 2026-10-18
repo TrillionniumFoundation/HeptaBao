@@ -2358,6 +2358,20 @@ fn merge_query_fields(
             object.insert(key, Value::String(value.to_string()));
             continue;
         }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if path == "sys/storage/raft/snapshot"
+            && matches!(method, "POST" | "PUT")
+            && key == "cancel_pending_restore"
+        {
+            // Preserve only this explicit native reconciliation selector.
+            // Service still checks the live native owner, original root Actor,
+            // canonical reference and empty streamed body before any effect.
+            if object.contains_key(&key) {
+                return Err(invalid_query("duplicate body/query parameter"));
+            }
+            object.insert(key, Value::String(value.to_string()));
+            continue;
+        }
         if !matches!(
             key.as_str(),
             "version"

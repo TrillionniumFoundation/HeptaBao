@@ -8,8 +8,13 @@ const SNAPSHOT: &str = "sys/storage/raft/snapshot";
 fn admit(service: &mut Service, method: &str, token: &str, until: Instant)
     -> TestResult<Box<PendingExternalRequest>>
 {
+    admit_with_query(service, method, token, json!({}), until)
+}
+fn admit_with_query(service: &mut Service, method: &str, token: &str, query: Value, until: Instant)
+    -> TestResult<Box<PendingExternalRequest>>
+{
     match service.begin_native_snapshot_before(
-        ServiceRequest::new(method, SNAPSHOT, "", token, json!({})), until,
+        ServiceRequest::new(method, SNAPSHOT, "", token, query), until,
     ) {
         NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),
         NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
@@ -70,6 +75,37 @@ fn root_token(pipeline: &Pipeline, leader: usize, ttl: &str) -> TestResult<Zeroi
         json!({"policies":["root"],"ttl":ttl,"no_default_policy":true,"no_parent":true}))?,
         200, "historical-root-token")?;
     secret_field(&mut issued, "/auth/client_token")
+}
+
+fn observed_pending_reference(pipeline: &Pipeline, leader: usize) -> TestResult<Option<String>> {
+    let _scope = scope();
+    let process = pipeline.processes[leader].as_ref().ok_or("pending restore process")?
+        .lock_for_request().map_err(|_| "pending restore selection lock")?;
+    let read = process.native_v6_committed_read(OriginalDeadline::capture()?)?
+        .ok_or("pending restore committed root")?;
+    let operation = process.pending_native_v6_restore_for_test(&read)?;
+    Ok(operation.map(|operation| format!("native-v6-restore-{}", operation
+        .iter().map(|byte| format!("{byte:02x}")).collect::<String>())))
+}
+
+fn cancel_pending_restore(pipeline: &Pipeline, leader: usize, reference: &str, body: &[u8])
+    -> TestResult<Response>
+{
+    let until = Instant::now() + REQUEST_BUDGET;
+    let _scope = RequestDeadlineScope::enter(until);
+    let service = pipeline.services[leader].as_ref().ok_or("pending cancellation Service")?;
+    let mut writer = lock_until(service, until).map_err(|_| "pending cancellation writer")?;
+    let mut pending = admit_with_query(&mut writer, "POST", pipeline.admin(),
+        json!({"cancel_pending_restore":reference}), until)?;
+    drop(writer);
+    let (observed, output) = pending.execute_snapshot_transfer(&mut &body[..]);
+    assert!(output.is_none(), "cancellation does not download or upload an archive");
+    let mut writer = lock_until(service, until).map_err(|_| "pending cancellation finalizer")?;
+    let response = writer.finish_external_request(*pending, observed);
+    errors_only("historical-pending-cancellation", &response);
+    assert!(writer.native_request_binding.is_none());
+    assert!(Instant::now() < until, "cancellation retains its original deadline");
+    Ok(response)
 }
 
 #[test]
@@ -303,5 +339,159 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
     expect(pipeline.call(leader, "GET", "secret/data/pipeline/history", pipeline.admin(),
         json!({"version":3}))?, 404, "cold-recovered-future-version-absent")?;
     assert_eq!(selection(&pipeline, leader)?.1.epoch_transitions().len(), 1);
+    Ok(())
+}
+
+#[test]
+fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation() -> TestResult {
+    let mut pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    activate(&pipeline, leader)?;
+    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"options":{"cas":1},"data":{"value":"pending-archive-A"}}))?,
+        200, "pending-archive-A-write")?;
+    let archive = export(&pipeline, leader, pipeline.admin())?;
+    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"options":{"cas":2},"data":{"value":"pending-later-B"}}))?,
+        200, "pending-later-B-write")?;
+    let before = selection(&pipeline, leader)?;
+    assert_eq!(before.0, 0);
+
+    let until = Instant::now() + REQUEST_BUDGET;
+    let _scope = RequestDeadlineScope::enter(until);
+    let service = pipeline.services[leader].as_ref().ok_or("pending staging Service")?;
+    let mut writer = lock_until(service, until).map_err(|_| "pending staging admission")?;
+    // The bootstrap Actor has no precise-token state or finite-use debit.
+    // Thus no unrelated observation-only root publication can legitimately
+    // retire this pending source while this regression measures its survival.
+    assert!(!writer.state.as_ref().ok_or("pending staging State")?.has_token_api_precision_state());
+    let mut pending = admit(&mut writer, "POST", pipeline.admin(), until)?;
+    drop(writer);
+    let (observed, output) = pending.execute_snapshot_transfer(&mut &archive[..]);
+    assert!(output.is_none());
+
+    // Break actual ciphertext staging only after admission and complete body
+    // authentication transport. The directory guard intentionally survives a
+    // rename, so merely renaming the path would not exercise this failure.
+    // Keep every existing file byte, then unlink the emptied directory while
+    // the real runtime still holds its FD: the subsequent openat(CreateNew)
+    // fails after a real Raft Begin and before any historical root CAS.
+    let cipher_root = pipeline.configs[leader].raft_dir.join("native-v6-ciphertext");
+    let saved_root = pipeline.configs[leader].raft_dir.join("pending-test-saved-ciphertext");
+    private_directory(&saved_root)?;
+    let files = fs::read_dir(&cipher_root)?.map(|entry| entry.map(|entry| entry.file_name()))
+        .collect::<Result<Vec<_>, _>>()?;
+    assert!(!files.is_empty(), "real native source ciphertext must exist before the fault");
+    for name in &files { fs::rename(cipher_root.join(name), saved_root.join(name))?; }
+    fs::remove_dir(&cipher_root)?;
+    let mut writer = lock_until(service, until).map_err(|_| "pending staging finalizer")?;
+    let denied = writer.finish_external_request(*pending, observed);
+    // Restore exactly the old fixture files before dropping the failed owner.
+    // Only a new process can acquire this new directory; the old held FD is
+    // still unlinked and cannot be silently rebound to the replacement path.
+    private_directory(&cipher_root)?;
+    for name in &files { fs::rename(saved_root.join(name), cipher_root.join(name))?; }
+    fs::remove_dir(&saved_root)?;
+    assert_eq!(denied.status, 503);
+    assert_eq!(denied.body["root_attempted"], false);
+    assert_eq!(denied.body["retry_allowed"], false);
+    assert!(denied.body.get("data").is_none());
+    let reference = denied.body["recovery_reference"].as_str()
+        .ok_or("Begin failure must retain its exact recovery reference")?.to_owned();
+    assert_eq!(writer.state.as_ref().ok_or("pending failed State")?.replay_epoch, 0);
+    assert_eq!(writer.durable.as_ref().ok_or("pending failed Durable")?.replay_epoch(), 0);
+    assert_eq!(writer.current_state_identity().map_err(|_| "pending failed identity")?.digest(),
+        before.1.root_digest());
+    assert!(writer.native_request_binding.is_none());
+    drop(writer);
+    drop(_scope);
+
+    // Reopen the actual disk owner and TLS/Raft process without resubmitting
+    // any archive. A fresh real quorum observation must still name that Begin.
+    pipeline.stop_process(leader)?;
+    let successor = pipeline.ready_leader()?;
+    assert_ne!(successor, leader);
+    pipeline.start_process(leader)?;
+    pipeline.unseal(leader)?;
+    pipeline.assert_history(successor,
+        &[(1, "seed-v5"), (2, "pending-archive-A"), (3, "pending-later-B")])?;
+    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
+
+    // A syntactically valid selector grants no Actor authority.
+    {
+        let until = Instant::now() + REQUEST_BUDGET;
+        let _scope = RequestDeadlineScope::enter(until);
+        let service = pipeline.services[successor].as_ref().ok_or("pending denial Service")?;
+        let mut writer = lock_until(service, until).map_err(|_| "pending denial writer")?;
+        match writer.begin_native_snapshot_before(ServiceRequest::new("POST", SNAPSHOT, "",
+            "synthetic-invalid-pending-token", json!({"cancel_pending_restore":reference})), until)
+        {
+            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
+                assert_eq!(response.status, 403);
+                assert!(response.body.get("data").is_none());
+            }
+            _ => return Err("invalid pending Actor reached a transfer or redirect".into()),
+        }
+    }
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
+    let nonempty = expect(cancel_pending_restore(&pipeline, successor, &reference, b"x")?,
+        400, "pending-cancellation-body-rejected")?;
+    assert_eq!(nonempty.body["recovery_reference"], reference);
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
+    let raw = reference.strip_prefix("native-v6-restore-").ok_or("pending reference prefix")?;
+    let other = format!("native-v6-restore-{}{}", if raw.starts_with('1') { "2" } else { "1" }, &raw[1..]);
+    let different = expect(cancel_pending_restore(&pipeline, successor, &other, &[])?,
+        200, "different-pending-operation-is-not-cancelled")?;
+    assert_eq!(different.body["data"]["state"], "different_pending");
+    assert_eq!(different.body["data"]["cancelled"], false);
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
+    assert_eq!(selection(&pipeline, successor)?, before);
+
+    let cancelled = expect(cancel_pending_restore(&pipeline, successor, &reference, &[])?,
+        200, "matching-pending-operation-cancelled")?;
+    assert_eq!(cancelled.body["data"]["state"], "cancelled");
+    assert_eq!(cancelled.body["data"]["cancelled"], true);
+    assert_eq!(cancelled.body["restore_performed"], false);
+    assert_eq!(cancelled.body["retry_allowed"], false);
+    assert_eq!(observed_pending_reference(&pipeline, successor)?, None);
+    assert_eq!(selection(&pipeline, successor)?, before);
+
+    // A lost cancellation reply is reconciled by a NEW explicit request after
+    // another cold owner reopen. Verified absence never starts a replacement.
+    pipeline.stop_process(successor)?;
+    let active = pipeline.ready_leader()?;
+    pipeline.start_process(successor)?;
+    pipeline.unseal(successor)?;
+    pipeline.assert_history(active,
+        &[(1, "seed-v5"), (2, "pending-archive-A"), (3, "pending-later-B")])?;
+    let absent = expect(cancel_pending_restore(&pipeline, active, &reference, &[])?,
+        200, "cancelled-operation-remains-absent-after-cold-reopen")?;
+    assert_eq!(absent.body["data"]["state"], "not_pending");
+    assert_eq!(absent.body["restore_performed"], false);
+    assert_eq!(observed_pending_reference(&pipeline, active)?, None);
+    assert_eq!(selection(&pipeline, active)?, before);
+
+    // Only this separate, explicitly admitted archive request may Begin a NEW
+    // operation. Reconciliation of its committed ID cannot replay its epoch.
+    expect(restore(&pipeline, active, pipeline.admin(), &archive)?, 200,
+        "new-explicit-restore-after-pending-cancellation")?;
+    let installed = selection(&pipeline, active)?;
+    assert_eq!(installed.0, 1);
+    assert_eq!(installed.1.epoch_transitions().len(), 1);
+    let operation = installed.1.epoch_transitions().last().ok_or("new committed transition")?
+        .operation_digest();
+    let committed_reference = format!("native-v6-restore-{}", operation
+        .iter().map(|byte| format!("{byte:02x}")).collect::<String>());
+    assert_ne!(committed_reference, reference);
+    let committed = expect(cancel_pending_restore(&pipeline, active, &committed_reference, &[])?,
+        200, "committed-operation-is-observed-not-replayed")?;
+    assert_eq!(committed.body["data"]["state"], "committed");
+    assert_eq!(committed.body["data"]["cancelled"], false);
+    assert_eq!(committed.body["restore_performed"], false);
+    assert_eq!(selection(&pipeline, active)?, installed);
+    pipeline.assert_history(active, &[(1, "seed-v5"), (2, "pending-archive-A")])?;
+    expect(pipeline.call(active, "GET", "secret/data/pipeline/history", pipeline.admin(),
+        json!({"version":3}))?, 404, "pending-recovery-future-B-version-absent")?;
     Ok(())
 }

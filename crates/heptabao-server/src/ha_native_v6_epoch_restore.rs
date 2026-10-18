@@ -21,6 +21,7 @@ pub(crate) struct NativeHaEpochRestoreError {
 }
 impl NativeHaEpochRestoreError {
     pub(crate) fn root_attempted(&self) -> bool { self.root_attempted }
+    pub(crate) fn operation_digest(&self) -> Option<[u8; 32]> { self.operation }
     pub(crate) fn reference_id(&self) -> Option<String> {
         self.operation.map(|operation| {
             let mut text = String::from("native-v6-restore-");
@@ -36,6 +37,23 @@ impl fmt::Display for NativeHaEpochRestoreError {
     }
 }
 impl std::error::Error for NativeHaEpochRestoreError {}
+
+pub(crate) enum NativeHaPendingRestoreOutcome {
+    Cancelled,
+    NotPending,
+    Committed,
+    DifferentPending,
+}
+impl NativeHaPendingRestoreOutcome {
+    pub(crate) fn as_str(&self) -> &'static str {
+        match self {
+            Self::Cancelled => "cancelled",
+            Self::NotPending => "not_pending",
+            Self::Committed => "committed",
+            Self::DifferentPending => "different_pending",
+        }
+    }
+}
 
 fn original(deadline: OriginalDeadline, gate: &mut dyn FnMut() -> CodecResult<()>) -> CodecResult<()> {
     if crate::request_deadline::current() != Some(deadline.instant()) {
@@ -84,6 +102,101 @@ impl PendingOwner<'_> {
 }
 
 impl HaProcess {
+    /// A NEW explicitly admitted request may reconcile one exact operation.
+    /// This method never invokes Begin, Stage or a historical root CAS. Only a
+    /// matching actual pending operation can be cancelled; a committed lineage
+    /// entry, verified absence and a different pending operation are read-only
+    /// outcomes. Cancellation timeout never becomes absence or success.
+    pub(crate) fn reconcile_native_v6_historical_restore(
+        &self,
+        anchor: &NativeV6ArchiveRootAnchor,
+        operation: [u8; 32],
+        original_gate: &mut dyn FnMut() -> CodecResult<()>,
+    ) -> Result<(CommittedNativeV6Read, NativeHaPendingRestoreOutcome), NativeHaEpochRestoreError> {
+        let deadline = anchor.deadline();
+        let stopped = |reason: String| NativeHaEpochRestoreError {
+            operation: Some(operation), root_attempted: false, reason,
+        };
+        original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
+        if operation == [0; 32] {
+            return Err(stopped("invalid pending restore reference".into()));
+        }
+        let node = self.node.as_ref().ok_or_else(|| stopped("HA process is shut down".into()))?;
+        let selected = anchor.fresh_for_epoch_restore(self)
+            .map_err(|error| stopped(error.to_string()))?;
+        let (selected, outcome) = if selected.root().epoch_transitions()
+            .any(|step| step.operation_digest() == operation)
+        {
+            (selected, NativeHaPendingRestoreOutcome::Committed)
+        } else {
+            match self.runtime.block_on(node.native_v6_pending_epoch_restore_operation(&selected))
+                .map_err(|error| stopped(error.to_string()))?
+            {
+                None => (selected, NativeHaPendingRestoreOutcome::NotPending),
+                Some(pending_operation) if pending_operation != operation =>
+                    (selected, NativeHaPendingRestoreOutcome::DifferentPending),
+                Some(_) => {
+                    let pending = self.runtime.block_on(node.native_v6_epoch_restore_read(
+                        operation, deadline.instant(),
+                    )).map_err(|error| stopped(error.to_string()))?;
+                    if pending.source_root() != selected.root()
+                        || pending.source_enrollment() != selected.enrollment()
+                        || pending.leader_id() != node.id()
+                        || pending.term() != selected.term()
+                        || pending.operation_deadline() != deadline.instant()
+                    {
+                        return Err(stopped("pending cancellation changed original source custody".into()));
+                    }
+                    let serial = self.runtime.block_on(node.next_production_client_serial())
+                        .map_err(|error| stopped(error.to_string()))?;
+                    original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
+                    self.runtime.block_on(node.cancel_native_v6_epoch_restore(serial, &pending))
+                        .map_err(|error| stopped(error.to_string()))?;
+                    original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
+                    // Own cancellation changes applied generation. Retire both
+                    // old witnesses; only a new actual read of the unchanged
+                    // complete source under the original leader/term may pass.
+                    let fresh = self.runtime.block_on(node.native_v6_committed_root_read(deadline.instant()))
+                        .map_err(|error| stopped(error.to_string()))?
+                        .ok_or_else(|| stopped("native source absent after pending cancellation".into()))?;
+                    if fresh.root() != selected.root() || fresh.enrollment() != selected.enrollment()
+                        || fresh.leader_id() != node.id() || fresh.term() != selected.term()
+                        || fresh.operation_deadline() != deadline.instant()
+                    {
+                        return Err(stopped("native source changed after pending cancellation".into()));
+                    }
+                    if self.runtime.block_on(node.native_v6_pending_epoch_restore_operation(&fresh))
+                        .map_err(|error| stopped(error.to_string()))?.is_some()
+                    {
+                        return Err(stopped("pending cancellation requires reconciliation".into()));
+                    }
+                    (fresh, NativeHaPendingRestoreOutcome::Cancelled)
+                }
+            }
+        };
+        original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
+        let read = self.native_v6_committed_read(deadline).map_err(stopped)?
+            .ok_or_else(|| stopped("native reconciliation source is absent".into()))?;
+        if !read.selected.same_selection(&selected) {
+            return Err(stopped("native reconciliation observation changed".into()));
+        }
+        self.verify_native_v6_committed_read(&read).map_err(stopped)?;
+        original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
+        Ok((read, outcome))
+    }
+
+    #[cfg(test)]
+    pub(crate) fn pending_native_v6_restore_for_test(
+        &self, read: &CommittedNativeV6Read,
+    ) -> Result<Option<[u8; 32]>, String> {
+        self.verify_native_v6_committed_read(read)?;
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
+        let operation = self.runtime.block_on(node.native_v6_pending_epoch_restore_operation(&read.selected))
+            .map_err(|error| error.to_string())?;
+        self.verify_native_v6_committed_read(read)?;
+        Ok(operation)
+    }
+
     /// The proposed digest is computed from the completely authenticated
     /// historical typed graph with live protected floors before Begin. Only
     /// the actual committed Begin creates the target enrollment used to seal

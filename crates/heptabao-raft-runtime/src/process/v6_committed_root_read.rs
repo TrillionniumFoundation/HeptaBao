@@ -126,4 +126,32 @@ impl ProcessRaftNode {
         })
         .await
     }
+
+    /// Observe only the pending operation selector under this SAME actual
+    /// committed-root witness. None is a verified absence, not a timeout or a
+    /// failed lookup. The selector grants no cancellation or publication: a
+    /// caller must obtain the existing opaque pending read and its full Begin
+    /// provenance before using the explicit cancellation primitive.
+    pub async fn native_v6_pending_epoch_restore_operation(
+        &self,
+        selected: &NativeV6CommittedRootRead,
+    ) -> Result<Option<[u8; 32]>, RemoteRaftError> {
+        super::super::with_read_index_deadline(selected.operation_deadline, async {
+            self.verify_native_v6_committed_root_read(selected).await?;
+            let pending = tokio::time::timeout_at(
+                selected.witness.deadline,
+                self.state_machine.native_v6_pending_epoch_restore(),
+            ).await.map_err(|_| RemoteRaftError::Consensus(
+                "native pending restore observation deadline elapsed".into(),
+            ))?;
+            if let Some(pending) = &pending {
+                pending.matches_current(&selected.enrollment.0, &selected.root.0)
+                    .map_err(|_| RemoteRaftError::Consensus(
+                        "native pending restore differs from selected current root".into(),
+                    ))?;
+            }
+            self.verify_native_v6_committed_root_read(selected).await?;
+            Ok(pending.map(|pending| pending.command.operation_digest))
+        }).await
+    }
 }

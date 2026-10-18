@@ -6,6 +6,7 @@
 use super::*;
 use crate::ha::NativeV6ArchiveRootAnchor;
 use crate::ha::native_v6_backup::{NativeV6ArchiveError, NativeV6ArchiveReport};
+use crate::ha_state::native_v6::NativeV6CodecError;
 use crate::snapshot_file::SnapshotFile;
 use heptabao_raft_runtime::NativeV6PeerEnrollment;
 
@@ -137,6 +138,57 @@ impl NativeHaArchiveRepairSource {
         self.check_instance(service)?;
         self.selected.check(durable, self.selected.initial_generation).map_err(storage_rejected)?;
         self.check_instance(service)
+    }
+
+    pub(in crate::service) fn reconcile_pending_restore(
+        self,
+        service: &mut Service,
+        operation: [u8; 32],
+        actor: &mut impl FnMut(&Service) -> Result<(), Response>,
+    ) -> Result<(NativeHaReadProof, &'static str), Response> {
+        actor(service)?;
+        self.check_local(service)?;
+        let process = self.environment.ha.lock_for_request().map_err(|_| unavailable())?;
+        // The operation reference is only a selector. Current local custody,
+        // original live Actor and an actual pending-read witness independently
+        // authorize the one cancellation; the archive is never consulted.
+        let mut durable = service.durable.take().ok_or_else(unavailable)?;
+        let reconciled = process.reconcile_native_v6_historical_restore(
+            &self.anchor, operation, &mut || {
+                actor(service).map_err(|_| NativeV6CodecError::Gate)?;
+                self.check_taken(service, &mut durable).map_err(|_| NativeV6CodecError::Gate)
+            },
+        );
+        // Restore the actual affine journal owner before every error path can
+        // reach the existing terminal clock and mandatory audit writer.
+        service.durable = Some(durable);
+        let (committed, outcome) = reconciled.map_err(|error| {
+            let mut response = Response::error(503, "pending restore reconciliation is uncertain");
+            if let Some(body) = response.body.as_object_mut() {
+                body.insert("recovery_reference".into(), json!(error.reference_id()));
+                body.insert("retry_allowed".into(), json!(false));
+                body.insert("restore_performed".into(), json!(false));
+            }
+            response
+        })?;
+        self.check_local(service)?;
+        actor(service)?;
+        matches_current(&self.selected, committed.enrollment(), committed.published())?;
+        drop(process);
+        let proof = NativeHaReadProof {
+            environment: self.environment,
+            selected: self.selected,
+            committed,
+            identity: self.identity,
+            owner_fingerprints: self.owner_fingerprints,
+        };
+        // Cancellation changes only pending Raft metadata. The response still
+        // needs a new actual read of the complete unchanged current graph,
+        // and the existing terminal-delivery checks retain this exact proof.
+        proof.check_with(service, Service::check_native_installed)?;
+        actor(service)?;
+        proof.check_warm(service)?;
+        Ok((proof, outcome.as_str()))
     }
 
     pub(in crate::service) fn repair(
