@@ -11,6 +11,9 @@ use heptabao_raft_runtime::{
 };
 use std::sync::OnceLock;
 
+#[path = "ha_native_v6_archive_repair.rs"]
+mod archive_repair;
+
 #[path = "ha_native_v6_publication.rs"]
 mod publication;
 pub(crate) use publication::NativeHaPublicationError;
