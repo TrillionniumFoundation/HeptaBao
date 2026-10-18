@@ -3,6 +3,13 @@
 //! A request proof separately requires the same fresh opaque ReadIndex.
 use super::*;
 
+#[path = "service_native_v6_ha_snapshot.rs"]
+mod snapshot;
+
+#[path = "service_native_v6_ha_archive_source.rs"]
+mod archive_source;
+pub(crate) use archive_source::NativeHaArchiveRepairSource;
+
 pub(crate) struct ColdNativeHaRead {
     pub(in crate::service) metadata: State,
     pub(in crate::service) native: BTreeMap<MountScope, NativeReadView>,

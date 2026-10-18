@@ -10,6 +10,9 @@ use heptabao_durable_service::PreparedV6Restore;
 use std::cell::RefCell;
 use std::io::{Read, Seek};
 
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_snapshot_v6_ha.rs"]
+mod ha;
 #[path = "service_native_v6_staging_repair.rs"]
 mod staging_repair;
 
@@ -168,8 +171,12 @@ impl Service {
 
     pub(super) fn prepare_v6_snapshot_download(
         &mut self,
-        plan: &SnapshotTransferPlan,
+        plan: &mut SnapshotTransferPlan,
     ) -> Result<DownloadSource, Response> {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.ha.is_some() || plan.ha.is_some() {
+            return self.prepare_native_ha_snapshot_download(plan);
+        }
         self.check_v6_snapshot_owner(plan)?;
         let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
         let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);

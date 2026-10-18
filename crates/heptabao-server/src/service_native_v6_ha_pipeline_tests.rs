@@ -6,6 +6,12 @@
 //! It exercises the Service HTTP handlers without claiming a public HTTP
 //! socket test. Peer forwarding and all Raft/ciphertext traffic use the actual
 //! production TLS listeners. Process-owner drop is not a physical SIGKILL test.
+#[path = "service_native_v6_ha_snapshot_tests.rs"]
+mod snapshot_tests;
+
+#[path = "service_native_v6_ha_snapshot_repair_tests.rs"]
+mod snapshot_repair_tests;
+
 use super::*;
 use crate::ha::{HaPeerConfig, HaProcessConfig};
 use crate::request_deadline::{RequestDeadlineScope, lock_until};

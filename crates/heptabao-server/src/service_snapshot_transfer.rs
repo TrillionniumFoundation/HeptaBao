@@ -10,6 +10,8 @@ use crate::{
 use sha2::{Digest, Sha256};
 use std::time::Instant;
 
+pub(super) const NATIVE_HA_REPAIR_PATH: &str = "sys/storage/raft/snapshot-repair";
+
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_snapshot_v6.rs"]
 mod v6;
@@ -56,6 +58,10 @@ pub(super) struct SnapshotTransferPlan {
     // next unrelated request; finalization restores exactly the original one.
     #[cfg(feature = "fixture-native-v6-service")]
     native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_ha_source: Option<native_v6_ha_install::NativeHaReadProof>,
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_ha_repair: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
 }
 impl SnapshotTransferPlan {
     pub(super) fn original_deadline(&self) -> Instant {
@@ -185,15 +191,6 @@ impl Service {
         Ok((identity, seal, bytes))
     }
 
-    fn current_snapshot_seal_identity(
-        &self,
-        lease: &SnapshotLease,
-        deadline: Instant,
-    ) -> Result<[u8; 32], Response> {
-        self.current_snapshot_seal_identity_and_raw(lease, deadline)
-            .map(|(identity, _, _)| identity)
-    }
-
     // An equal snapshot of the BYTES from the checked parent descriptor proves
     // the same canonical metadata authenticated at admission. When ANY bytes
     // differ, preserve the prior full JSON, in-memory seal and canonical SHA
@@ -252,7 +249,7 @@ impl Service {
         }
         if !matches!(
             request.path,
-            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force" | NATIVE_HA_REPAIR_PATH
         ) {
             erase_json(&mut request.body);
             return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(
@@ -367,10 +364,11 @@ impl Service {
         }
         let download =
             request.path == "sys/storage/raft/snapshot" && matches!(request.method, "GET" | "HEAD");
+        let repair = request.path == NATIVE_HA_REPAIR_PATH;
         if !download && !matches!(request.method, "POST" | "PUT") {
             return Response::error(405, "snapshot restore requires POST or PUT");
         }
-        if !download
+        if !download && !repair
             && self.state.as_ref().is_some_and(|state| {
                 !state.database.is_empty() || state.engines.has_openldap_mount()
             })
@@ -428,12 +426,16 @@ impl Service {
             is_download: download,
             #[cfg(feature = "fixture-native-v6-service")]
             native_request_binding: None,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_ha_source: None,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_ha_repair: None,
         };
         let source = if download {
             let result = (|| -> Result<DownloadSource, Response> {
                 #[cfg(feature = "fixture-native-v6-service")]
                 if self.native_root.is_some() {
-                    return self.prepare_v6_snapshot_download(&plan);
+                    return self.prepare_v6_snapshot_download(&mut plan);
                 }
                 #[cfg(feature = "fixture-native-v6-service")]
                 self.repair_unreachable_native_migration_slots_before_v5_snapshot(&plan)?;
@@ -520,13 +522,49 @@ impl Service {
         Ok(())
     }
 
+    // Snapshot owns its capsule until terminal clock persistence, mandatory
+    // audit and the final original-Actor/selection check have all completed.
+    pub(super) fn complete_snapshot_transfer(
+        &mut self,
+        mut plan: SnapshotTransferPlan,
+        result: Result<Observation, Response>,
+        fingerprint: &str,
+        clock: (u64, Option<RequestClock>),
+    ) -> Response {
+        let response = self.finalize_snapshot_transfer(&mut plan, result);
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let response = if plan.native_ha_source.is_some() {
+            self.complete_native_ha_snapshot_delivery(&plan, response, fingerprint, clock)
+        } else {
+            self.audit_completed_response(fingerprint, clock.0, clock.1, response)
+        };
+        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        let response = self.audit_completed_response(fingerprint, clock.0, clock.1, response);
+        #[cfg(feature = "fixture-native-v6-service")]
+        self.retire_native_external_binding(fingerprint, clock.1);
+        response
+    }
+
+    #[cfg(feature = "fixture-native-v6-service")]
+    pub(super) fn native_ha_snapshot_transport_enabled(&self) -> bool {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.native_root.is_some()
+            && self.native_candidate_profile.is_none()
+            && self.ha.as_ref().is_some_and(|ha| {
+                ha.lock_for_request()
+                    .is_ok_and(|process| process.native_v6_enabled())
+            })
+        {
+            return true;
+        }
+        false
+    }
+
     pub(super) fn finalize_snapshot_transfer(
         &mut self,
-        plan: SnapshotTransferPlan,
+        plan: &mut SnapshotTransferPlan,
         result: Result<Observation, Response>,
     ) -> Response {
-        #[cfg(feature = "fixture-native-v6-service")]
-        let mut plan = plan;
         #[cfg(feature = "fixture-native-v6-service")]
         {
             if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
@@ -557,6 +595,13 @@ impl Service {
         {
             return Response::error(409, "snapshot transfer authority changed");
         }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if plan.native_ha_repair.is_some() {
+            // Normal HA synchronization first pulls the missing shared leaves.
+            // This dedicated owner independently verifies the actual selection
+            // and its complete local Auth graph before repairing those leaves.
+            return self.finish_native_ha_snapshot_repair(plan, result);
+        }
         if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
             return response;
         }
@@ -586,7 +631,7 @@ impl Service {
         ) {
             return Response::error(error.status, &error.message);
         }
-        let live_seal = match self.current_snapshot_seal_identity(&plan.lease, plan.deadline) {
+        let live_seal = match self.current_snapshot_seal_identity_for_plan(plan) {
             Ok(value) => value,
             Err(response) => return response,
         };
@@ -598,7 +643,13 @@ impl Service {
             Err(error) => return error,
         };
         match observation {
-            Observation::Download if plan.is_download => Response::ok(Value::Null),
+            Observation::Download if plan.is_download => {
+                #[cfg(feature = "experimental-native-v6-ha")]
+                if plan.native_ha_source.is_some() {
+                    return self.finish_native_ha_snapshot_download(plan);
+                }
+                Response::ok(Value::Null)
+            }
             Observation::Upload(mut imported) if !plan.is_download => {
                 #[cfg(feature = "fixture-native-v6-service")]
                 if self.native_root.is_some() && !imported.metadata.is_v6() {
@@ -610,7 +661,7 @@ impl Service {
                 }
                 #[cfg(feature = "fixture-native-v6-service")]
                 if imported.metadata.is_v6() {
-                    return self.finish_v6_snapshot_upload(imported, &plan, live_seal);
+                    return self.finish_v6_snapshot_upload(imported, plan, live_seal);
                 }
                 let result = (|| -> Result<backup_restore::PreparedSnapshotRestore, Response> {
                     let binding = imported.metadata.seal_identity().ok_or_else(|| {
@@ -816,7 +867,7 @@ impl Service {
         ) {
             return Err(Response::error(error.status, &error.message));
         }
-        let live_seal = self.current_snapshot_seal_identity(&plan.lease, plan.deadline)?;
+        let live_seal = self.current_snapshot_seal_identity_for_plan(&plan)?;
         if live_seal != plan.seal_identity {
             return Err(Response::error(
                 409,

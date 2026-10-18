@@ -21,7 +21,17 @@ pub(crate) const MAX_NATIVE_STATE: u64 = 130 * 1024 * 1024;
 #[cfg(feature = "fixture-native-v6-service")]
 pub(crate) const MAX_V6_SNAPSHOT_STATE: u64 =
     MAX_NATIVE_STATE + 1024 * 1024 * 1024 + 65_536 * 4 + 4132;
-#[cfg(feature = "fixture-native-v6-service")]
+// HA carries both the independent local pack and shared-key typed closure.
+// Keep this explicit transport bound below the 8 GiB ustar size-field limit;
+// each constituent retains its own stricter validation and source limit.
+#[cfg(feature = "experimental-native-v6-ha")]
+pub(crate) const MAX_V6_HA_SNAPSHOT_STATE: u64 = 2 * MAX_V6_SNAPSHOT_STATE + 64 * 1024 * 1024;
+#[cfg(feature = "experimental-native-v6-ha")]
+pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_HA_SNAPSHOT_STATE;
+#[cfg(all(
+    feature = "fixture-native-v6-service",
+    not(feature = "experimental-native-v6-ha")
+))]
 pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_SNAPSHOT_STATE;
 #[cfg(not(feature = "fixture-native-v6-service"))]
 pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_NATIVE_STATE;

@@ -69,6 +69,14 @@ pub(crate) enum Metadata {
         state_bytes: u64,
         seal_identity: SealIdentity,
     },
+    #[cfg(feature = "experimental-native-v6-ha")]
+    #[serde(rename = "heptabao-native-ha-object-snapshot-v1")]
+    V6Ha {
+        state_format: String,
+        generation: u64,
+        state_bytes: u64,
+        seal_identity: SealIdentity,
+    },
 }
 impl Metadata {
     pub(crate) fn new(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
@@ -84,6 +92,8 @@ impl Metadata {
             Self::V1 { generation, .. } | Self::V2 { generation, .. } => *generation,
             #[cfg(feature = "fixture-native-v6-service")]
             Self::V6 { generation, .. } => *generation,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::V6Ha { generation, .. } => *generation,
         }
     }
     pub(crate) fn state_bytes(&self) -> u64 {
@@ -91,6 +101,8 @@ impl Metadata {
             Self::V1 { state_bytes, .. } | Self::V2 { state_bytes, .. } => *state_bytes,
             #[cfg(feature = "fixture-native-v6-service")]
             Self::V6 { state_bytes, .. } => *state_bytes,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::V6Ha { state_bytes, .. } => *state_bytes,
         }
     }
     pub(crate) fn seal_identity(&self) -> Option<&SealIdentity> {
@@ -99,6 +111,8 @@ impl Metadata {
             Self::V2 { seal_identity, .. } => Some(seal_identity),
             #[cfg(feature = "fixture-native-v6-service")]
             Self::V6 { seal_identity, .. } => Some(seal_identity),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::V6Ha { seal_identity, .. } => Some(seal_identity),
         }
     }
     #[cfg(feature = "fixture-native-v6-service")]
@@ -110,7 +124,26 @@ impl Metadata {
             seal_identity: SealIdentity::new(seal_digest),
         }
     }
+    #[cfg(feature = "experimental-native-v6-ha")]
+    pub(crate) fn new_v6_ha(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
+        Self::V6Ha {
+            state_format: "heptabao-encrypted-ha-object-backup/HBV6HA01".into(),
+            generation,
+            state_bytes,
+            seal_identity: SealIdentity::new(seal_digest),
+        }
+    }
+    pub(crate) fn is_v6_ha(&self) -> bool {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if matches!(self, Self::V6Ha { .. }) {
+            return true;
+        }
+        false
+    }
     pub(crate) fn is_v6(&self) -> bool {
+        if self.is_v6_ha() {
+            return true;
+        }
         #[cfg(feature = "fixture-native-v6-service")]
         if matches!(self, Self::V6 { .. }) {
             return true;
@@ -118,13 +151,24 @@ impl Metadata {
         false
     }
     pub(crate) fn state_limit(&self) -> u64 {
-        if self.is_v6() {
-            MAX_SNAPSHOT_ENTRY
-        } else {
-            MAX_NATIVE_STATE
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.is_v6_ha() {
+            return crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE;
         }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if self.is_v6() {
+            return crate::snapshot_file::MAX_V6_SNAPSHOT_STATE;
+        }
+        MAX_NATIVE_STATE
     }
     pub(crate) fn valid(&self) -> bool {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if let Self::V6Ha { state_format, .. } = self {
+            return state_format == "heptabao-encrypted-ha-object-backup/HBV6HA01"
+                && self.generation() != 0
+                && (237..=self.state_limit()).contains(&self.state_bytes())
+                && self.seal_identity().is_some_and(SealIdentity::valid);
+        }
         #[cfg(feature = "fixture-native-v6-service")]
         if let Self::V6 { state_format, .. } = self {
             return state_format == "heptabao-encrypted-object-backup/HBV6PK01"
@@ -135,6 +179,8 @@ impl Metadata {
             Self::V1 { state_format, .. } | Self::V2 { state_format, .. } => state_format,
             #[cfg(feature = "fixture-native-v6-service")]
             Self::V6 { .. } => return false,
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::V6Ha { .. } => return false,
         };
         state_format == "heptabao-encrypted-backup-v1/HBB2"
             && (60..=MAX_NATIVE_STATE).contains(&self.state_bytes())
@@ -338,7 +384,9 @@ pub(crate) fn import(
     state.rewind_checked()?;
     let mut magic = [0; 8];
     state.read_exact(&mut magic)?;
-    if (metadata.is_v6() && &magic != b"HBV6PK01") || (!metadata.is_v6() && &magic[..4] != b"HBB2")
+    if (metadata.is_v6_ha() && &magic != b"HBV6HA01")
+        || (metadata.is_v6() && !metadata.is_v6_ha() && &magic != b"HBV6PK01")
+        || (!metadata.is_v6() && &magic[..4] != b"HBB2")
     {
         return Err(bad());
     }

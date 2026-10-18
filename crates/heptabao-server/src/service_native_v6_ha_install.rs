@@ -24,7 +24,7 @@ use std::cell::{Cell, RefCell};
 mod read;
 #[cfg(test)]
 use read::ColdNativeHaRead;
-pub(crate) use read::{NativeHaReadProof, load_cold_native_ha};
+pub(crate) use read::{NativeHaArchiveRepairSource, NativeHaReadProof, load_cold_native_ha};
 
 pub(super) const HA_CURSOR_RESOURCE: &str = "state-native-v6/ha-publication-cursor";
 const HA_CURSOR_FORMAT: &str = "heptabao-native-v6-ha-local-publication-v1";

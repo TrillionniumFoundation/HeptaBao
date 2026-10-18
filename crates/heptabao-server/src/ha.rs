@@ -54,7 +54,9 @@ pub(crate) use records::{CommittedRecordState, RecordPublicationPreflightError};
 #[path = "ha_native_v6_runtime.rs"]
 mod native_v6_runtime;
 #[cfg(feature = "experimental-native-v6-ha")]
-pub(crate) use native_v6_runtime::{CommittedNativeV6Read, NativeHaPublicationError};
+pub(crate) use native_v6_runtime::{
+    CommittedNativeV6Read, NativeHaPublicationError, NativeV6ArchiveRootAnchor,
+};
 
 #[cfg(feature = "experimental-native-v6-ha")]
 #[path = "ha_native_v6_backup.rs"]

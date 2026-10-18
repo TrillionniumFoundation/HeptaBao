@@ -13,7 +13,8 @@ impl NativeTarget {
             || target.contains('#')
             || !matches!(
                 target.split('?').next(),
-                Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force")
+                Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force"
+                    | "/v1/sys/storage/raft/snapshot-repair")
             )
         {
             return Err(bad("invalid native snapshot target"));
@@ -470,5 +471,17 @@ mod tests {
         );
         let json = "POST /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nContent-Length: 25000000\r\n\r\n";
         assert!(read_request_mode(&mut json.as_bytes(), Duration::from_secs(1), true).is_err());
+    }
+
+    #[test]
+    fn current_root_repair_retains_binary_header_admission_and_bounded_json_lane() {
+        let raw = "POST /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\nContent-Length: 25000000\r\n\r\n";
+        assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+            .is_ok_and(|request| request.native_snapshot.is_some()));
+        let json = "POST /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nContent-Length: 25000000\r\n\r\n";
+        assert!(read_request_mode(&mut json.as_bytes(), Duration::from_secs(1), true).is_err());
+        let get = "GET /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\n\r\n";
+        assert!(read_request_mode(&mut get.as_bytes(), Duration::from_secs(1), true)
+            .is_ok_and(|request| request.native_snapshot.is_none()));
     }
 }

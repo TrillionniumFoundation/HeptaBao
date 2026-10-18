@@ -2495,7 +2495,14 @@ impl Service {
             (
                 ExternalEffectPlan::SnapshotTransfer(plan),
                 ExternalEffectResult::SnapshotTransfer(result),
-            ) => self.finalize_snapshot_transfer(*plan, result),
+            ) => {
+                return self.complete_snapshot_transfer(
+                    *plan,
+                    result,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                );
+            }
             _ => {
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
@@ -3428,6 +3435,10 @@ impl Service {
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
         }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.native_snapshot_transport && path == snapshot_transfer::NATIVE_HA_REPAIR_PATH {
+            return self.admit_native_ha_snapshot_repair(&request);
+        }
         if let Some(ha) = self.ha.as_ref().cloned() {
             let (leader, local) = match ha.lock_for_request() {
                 Ok(ha) => {
@@ -4051,7 +4062,7 @@ impl Service {
                 return Response::error(503, "trusted token clock is required");
             }
             let native_snapshot_route = self.native_snapshot_transport
-                && self.ha.is_none()
+                && (self.ha.is_none() || self.native_ha_snapshot_transport_enabled())
                 && namespace.is_empty()
                 && matches!(
                     path,

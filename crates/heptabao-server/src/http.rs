@@ -1716,7 +1716,8 @@ fn read_request_with_ui(
             let native_upload = native_wire
                 && matches!(
                     api_target.split('?').next(),
-                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
+                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                        | "sys/storage/raft/snapshot-repair")
                 );
             if !native_upload {
                 discard_rejected_ordinary_body(
@@ -1803,6 +1804,7 @@ fn read_request_with_ui(
     let snapshot_route = matches!(
         route,
         "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+            | "sys/storage/raft/snapshot-repair"
     );
     let download =
         matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";

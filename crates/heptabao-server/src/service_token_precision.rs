@@ -30,6 +30,43 @@ impl TerminalClockReceipt {
         }
     }
 
+    /// Snapshot keeps archive A immutable. This receipt binds only this
+    /// operation's terminal observation B to the exact exported checkpoint A;
+    /// it neither relabels archive bytes as B nor provides current-read custody.
+    /// A new actual B proof must separately prove the direct A -> B root CAS.
+    #[cfg(feature = "experimental-native-v6-ha")]
+    pub(super) fn bind_native_snapshot(
+        self,
+        exported: (
+            crate::state_record_root::StateIdentity,
+            plugin::PublicationGeneration,
+        ),
+    ) -> Result<
+        (
+            crate::state_record_root::StateIdentity,
+            plugin::PublicationGeneration,
+        ),
+        Response,
+    > {
+        if exported != self.before
+            || !matches!(
+                self.before.0,
+                crate::state_record_root::StateIdentity::RecordsV6(_)
+            )
+            || !matches!(
+                self.after.0,
+                crate::state_record_root::StateIdentity::RecordsV6(_)
+            )
+            || self.before == self.after
+        {
+            return Err(Response::error(
+                503,
+                "snapshot terminal observation differs from archive source",
+            ));
+        }
+        Ok(self.after)
+    }
+
     /// Consume this actual observation-only publication exactly once. Native
     /// Auth must not replace an unrelated post-operation checkpoint with the
     /// receipt's newer frontier, even if both roots happen to share an Auth

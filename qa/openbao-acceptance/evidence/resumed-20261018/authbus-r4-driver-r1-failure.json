@@ -1,0 +1,342 @@
+{
+  "schema": "authbus-trusted-bootstrap-actual-sdk-r4",
+  "ok": false,
+  "checks": [
+    {
+      "case": "exact_frozen_r3_authority_included",
+      "passed": true
+    },
+    {
+      "case": "new_isolated_authority_has_no_persisted_epoch",
+      "passed": true
+    },
+    {
+      "case": "actual_first_issuance_and_sdk_grant_match",
+      "passed": true
+    },
+    {
+      "case": "active_refresh_owner_cannot_be_preempted",
+      "passed": true
+    },
+    {
+      "case": "coordinator_cannot_issue_outside_pinned_scope",
+      "passed": true
+    },
+    {
+      "case": "first_independent_process_exited_cleanly",
+      "passed": true
+    },
+    {
+      "case": "actual_second_process_has_distinct_bootstrap_id",
+      "passed": true
+    },
+    {
+      "case": "actual_cold_floor_matches_old_grant",
+      "passed": true
+    },
+    {
+      "case": "only_actual_strictly_higher_cas_issuance_reopens_cold_process",
+      "passed": true
+    }
+  ],
+  "processes": [
+    {
+      "label": "first",
+      "pid": 77323,
+      "bootId": "2fc28505-6e28-4e16-91ef-b8ddd2444257",
+      "rawWallOffsetMs": 0,
+      "epochFloor": -1,
+      "result": {
+        "checks": [
+          {
+            "case": "actual_sdk_fixture_credential_seeded",
+            "passed": true
+          },
+          {
+            "case": "actual_sqlite_credential_digest_matches",
+            "passed": true
+          },
+          {
+            "case": "cold_instance_initially_closed",
+            "passed": true
+          },
+          {
+            "case": "authenticated_higher_epoch_actual_store_committed_1",
+            "passed": true
+          },
+          {
+            "case": "actual_sdk_resolver_accepts_trusted_scope_1",
+            "passed": true
+          },
+          {
+            "case": "all_exact_sdk_overlays_loaded_1",
+            "passed": true
+          },
+          {
+            "case": "even_authenticated_same_epoch_is_denied_to_cold_authority_1",
+            "passed": true
+          },
+          {
+            "case": "same_epoch_cold_proof_never_touches_store_1",
+            "passed": true
+          },
+          {
+            "case": "proof_cannot_authorize_other_scope_1",
+            "passed": true
+          },
+          {
+            "case": "reader_role_is_read_only_1",
+            "passed": true
+          },
+          {
+            "case": "reader_approle_token_renewed_1",
+            "passed": true
+          },
+          {
+            "case": "trusted_provenance_durably_bound_1",
+            "passed": true
+          },
+          {
+            "case": "reader_token_revoked_and_cold_denied",
+            "passed": true
+          },
+          {
+            "case": "provider_egress_attempts_zero",
+            "passed": true
+          },
+          {
+            "case": "all_actual_sdk_source_unchanged",
+            "passed": true
+          }
+        ],
+        "sourceCounts": {
+          "tlsVerified": 8,
+          "logins": 1,
+          "reads": 3,
+          "writes": 0,
+          "renewals": 1,
+          "revocations": 1,
+          "deniedWrites": 1
+        },
+        "cleanup": {
+          "revoked": true,
+          "coldDenied": true
+        },
+        "actualSdk": true,
+        "actualSqlite": true,
+        "actualProviderRefresh": false,
+        "originalSdkSourceUnchanged": true,
+        "actualOverlayBindings": {
+          "sdk": [
+            {
+              "relative": "dist/store-DH33UrUj.js",
+              "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+              "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+              "loaded": true
+            },
+            {
+              "relative": "dist/source-check-ZSz5NzGW.js",
+              "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+              "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+              "loaded": true
+            },
+            {
+              "relative": "dist/profiles-DyU-YCq2.js",
+              "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+              "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+              "loaded": true
+            }
+          ],
+          "dispatch": [
+            {
+              "relative": "dist/order-CeBlX0NH.js",
+              "originalSha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+              "candidateSha256": "b59280059dbcda0c658cd3aba96207d425ca683ff3b06be866b6e21f14bdce4e",
+              "loaded": true
+            },
+            {
+              "relative": "dist/model-auth-CJEm9SNp.js",
+              "originalSha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+              "candidateSha256": "01a42eb673bc1182bca83d6839974b4f992b8fca81d73f2796d27b372a06a4ab",
+              "loaded": true
+            },
+            {
+              "relative": "dist/oauth-B4aOCsid.js",
+              "originalSha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+              "candidateSha256": "d7582cb52d7d5ca5c289a95af4cedcc985639145a3f53bea0925d08218c97e08",
+              "loaded": true
+            },
+            {
+              "relative": "dist/stream-BcRkg2P0.js",
+              "originalSha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e",
+              "candidateSha256": "2809d57f6ecffc9c1ae8c3dba1450812a41ef3691be34ca8246fa2981877d887",
+              "loaded": true
+            },
+            {
+              "relative": "dist/fetch-guard-6VNcgVVc.js",
+              "originalSha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc",
+              "candidateSha256": "b1f4b7ee09e21d023acf833b4e947f7afa674db4aa146116e251e1d8c3099e3d",
+              "loaded": true
+            }
+          ]
+        }
+      },
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "outputBytes": 0,
+        "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "actualTlsAppRoleKv2": false,
+  "actualCoordinatorCasIssuance": false,
+  "actualColdProcess": false,
+  "actualSdk": false,
+  "actualSqlite": false,
+  "coldSameEpochDenied": false,
+  "strictlyHigherTrustedBootstrapQualified": false,
+  "refreshLeaseControlOwnershipQualified": false,
+  "actualOAuthProviderRefreshQualified": false,
+  "productionGatewayBootstrapQualified": false,
+  "allProductDispatchCoverageQualified": false,
+  "productionCutover": false,
+  "productionMutation": false,
+  "j3160Contacted": false,
+  "syntheticCredentials": true,
+  "frozenR3AuthoritySha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b",
+  "candidateSourceBindings": [
+    {
+      "relative": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    },
+    {
+      "relative": "authbus_admission_registry_candidate.mjs",
+      "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e"
+    },
+    {
+      "relative": "authbus_sdk_admission_candidate.mjs",
+      "sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33"
+    },
+    {
+      "relative": "authbus_sdk_explicit_deny_candidate.mjs",
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2"
+    },
+    {
+      "relative": "authbus_dispatch_registry_candidate.mjs",
+      "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0"
+    },
+    {
+      "relative": "authbus_dispatch_sdk_candidate.mjs",
+      "sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674"
+    },
+    {
+      "relative": "authbus_trusted_control_candidate.mjs",
+      "sha256": "cfd295f4a28d4ddce01152489960bafcf7795d8937b3da37c2ba296db0869129"
+    },
+    {
+      "relative": "authbus_trusted_admission_candidate.mjs",
+      "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad"
+    },
+    {
+      "relative": "authbus_trusted_bootstrap_live.mjs",
+      "sha256": "3379dd65446de344b97acdd73f2abba07006e22ebf295f52c02e0dfd3b743c4b"
+    }
+  ],
+  "failedChild": {
+    "label": "cold-wall-rollback",
+    "type": "failed",
+    "id": 4,
+    "errorCode": "actual_sqlite_failure_preserves_previous_store",
+    "errorSha256": "ce15cb78679ec954944b3e2cefdc6f63ad10a050f0bdbe124fd44446dfe0eb31",
+    "checks": [
+      {
+        "case": "actual_sqlite_credential_digest_matches",
+        "passed": true
+      },
+      {
+        "case": "cold_instance_initially_closed",
+        "passed": true
+      },
+      {
+        "case": "old_epoch_verify_true_cannot_cold_reconcile",
+        "passed": true
+      },
+      {
+        "case": "old_epoch_forged_proof_cannot_cold_apply",
+        "passed": true
+      },
+      {
+        "case": "old_epoch_cold_attempts_never_touch_store",
+        "passed": true
+      },
+      {
+        "case": "old_bootstrap_id_fails_actual_fresh_tls_read",
+        "passed": true
+      },
+      {
+        "case": "raw_wall_is_behind_persisted_observation",
+        "passed": true
+      },
+      {
+        "case": "authenticated_higher_epoch_actual_store_committed_2",
+        "passed": true
+      },
+      {
+        "case": "actual_sdk_resolver_accepts_trusted_scope_2",
+        "passed": true
+      },
+      {
+        "case": "all_exact_sdk_overlays_loaded_2",
+        "passed": true
+      },
+      {
+        "case": "even_authenticated_same_epoch_is_denied_to_cold_authority_2",
+        "passed": true
+      },
+      {
+        "case": "same_epoch_cold_proof_never_touches_store_2",
+        "passed": true
+      },
+      {
+        "case": "proof_cannot_authorize_other_scope_2",
+        "passed": true
+      },
+      {
+        "case": "reader_role_is_read_only_2",
+        "passed": true
+      },
+      {
+        "case": "reader_approle_token_renewed_2",
+        "passed": true
+      },
+      {
+        "case": "trusted_provenance_durably_bound_2",
+        "passed": true
+      },
+      {
+        "case": "actual_sqlite_failure_preserves_previous_store",
+        "passed": false
+      }
+    ]
+  },
+  "errorCode": "actual_sqlite_failure_preserves_previous_store",
+  "errorSha256": "ce15cb78679ec954944b3e2cefdc6f63ad10a050f0bdbe124fd44446dfe0eb31",
+  "issuerCleanup": {
+    "revoked": true,
+    "coldDenied": true
+  },
+  "issuerCounts": {
+    "tlsVerified": 10,
+    "logins": 1,
+    "reads": 4,
+    "writes": 3,
+    "renewals": 0,
+    "revocations": 1,
+    "deniedWrites": 0
+  },
+  "allGracefulReaderTokensRevoked": false,
+  "allIssuedFixtureBindingsDestroyed": false,
+  "fixtureCleanupOwnedByOuterController": true,
+  "candidateSourceUnchanged": true
+}

@@ -1,12 +1,12 @@
 //! Exact-current archive repair under an actual running Native V6 Raft owner.
 //!
-//! This child of `ha_native_v6_runtime` is wired into internal compilation.
-//! No Service coordinator or HTTP recovery route invokes it yet. Only that
-//! actual owner can select a root before recovering missing external ciphertext.
+//! This child of `ha_native_v6_runtime` supplies the warm Service archive
+//! coordinator. Only the actual owner can select a root before recovering
+//! missing external ciphertext; admission retains its exact comparison anchor.
 //! The archive is data. Its provenance never constructs or renews a read,
 //! enrollment, publication, quorum receipt, Actor, local core or replay ledger.
 //!
-//! The eventual Service coordinator must retain and check its original Actor,
+//! The Service coordinator must retain and check its original Actor,
 //! source Auth, clock, seal/activation, barrier and local-generation custody in
 //! `original_owner`. The callback receives the actual selection's enrollment
 //! and root so it can bind that local source exactly, never authorize a stale
@@ -39,6 +39,16 @@ fn original_operation(deadline: OriginalDeadline) -> ArchiveResult<()> {
 pub(crate) struct NativeV6ArchiveRepair {
     read: CommittedNativeV6Read,
     archive: NativeV6ArchiveReport,
+}
+
+/// A comparison anchor from this running owner's actual ReadIndex. This is
+/// deliberately not a CommittedNativeV6Read: the external closure may be lost.
+/// It cannot read objects, publish a root or authorize an Actor. Expiry never
+/// revives it; repair must obtain a new actual read of this exact selection.
+pub(crate) struct NativeV6ArchiveRootAnchor {
+    instance: Arc<()>,
+    selected: NativeV6CommittedRootRead,
+    deadline: OriginalDeadline,
 }
 
 impl NativeV6ArchiveRepair {
@@ -154,6 +164,53 @@ fn archive_gate<G: FnMut(&NativeV6PeerEnrollment, &NativeV6PublishedRoot) -> Arc
 }
 
 impl HaProcess {
+    /// Authenticate an already complete local graph before reading an upload.
+    /// The callback runs under real consensus gates but grants no business
+    /// read: it receives only provenance and a bounded currentness check.
+    pub(crate) fn with_native_v6_archive_root<T>(
+        &self,
+        deadline: OriginalDeadline,
+        action: impl FnOnce(
+            &NativeV6PeerEnrollment,
+            &NativeV6PublishedRoot,
+            &mut dyn FnMut() -> ArchiveResult<()>,
+        ) -> ArchiveResult<T>,
+    ) -> ArchiveResult<(T, NativeV6ArchiveRootAnchor)> {
+        original_operation(deadline)?;
+        if tokio::runtime::Handle::try_current().is_ok() {
+            return Err(NativeV6ArchiveError::Gate);
+        }
+        let native = self.native_v6.as_ref().filter(|native| native.enabled())
+            .ok_or(NativeV6ArchiveError::Gate)?;
+        let node = self.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
+        let initial = self.runtime
+            .block_on(node.native_v6_committed_root_read(deadline.instant()))
+            .map_err(|_| NativeV6ArchiveError::Gate)?
+            .ok_or(NativeV6ArchiveError::WrongSelection)?;
+        native.validate_enrollment(&self.codec, initial.enrollment())
+            .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
+        let enrollment = initial.enrollment().clone();
+        let published = initial.root().clone();
+        let mut metadata_only = |_: &NativeV6PeerEnrollment, _: &NativeV6PublishedRoot| Ok(());
+        let mut owner = ActualArchiveRoot {
+            process: self,
+            native,
+            initial,
+            active: None,
+            deadline,
+            original_owner: &mut metadata_only,
+        };
+        owner.check()?;
+        let value = action(&enrollment, &published, &mut || owner.check())?;
+        owner.check()?;
+        let anchor = NativeV6ArchiveRootAnchor {
+            instance: Arc::clone(&native.identity),
+            selected: owner.initial,
+            deadline,
+        };
+        Ok((value, anchor))
+    }
+
     /// Repair only the exact CURRENT root's original ciphertext while its real
     /// quorum exists. This intentionally bypasses only the normal *peer pull*
     /// attempt, which cannot succeed when all donors lost these external files.
@@ -176,6 +233,43 @@ impl HaProcess {
             &NativeV6PublishedRoot,
         ) -> ArchiveResult<()>,
     ) -> ArchiveResult<NativeV6ArchiveRepair> {
+        self.repair_native_v6_archive_inner(
+            reader, expected_seal_identity, archive_barrier, deadline, original_owner, None,
+        )
+    }
+
+    /// HTTP admission retains the exact process/store/term/leader/full-log
+    /// selection across body transfer. A same root in a changed authority is
+    /// not silently rebound to the earlier Actor or local source.
+    pub(crate) fn repair_native_v6_current_closure_from_admitted_archive<R: Read + Seek>(
+        &self,
+        reader: R,
+        expected_seal_identity: [u8; 32],
+        archive_barrier: &AeadBarrier,
+        anchor: &NativeV6ArchiveRootAnchor,
+        original_owner: &mut impl FnMut(
+            &NativeV6PeerEnrollment,
+            &NativeV6PublishedRoot,
+        ) -> ArchiveResult<()>,
+    ) -> ArchiveResult<NativeV6ArchiveRepair> {
+        self.repair_native_v6_archive_inner(
+            reader, expected_seal_identity, archive_barrier, anchor.deadline,
+            original_owner, Some(anchor),
+        )
+    }
+
+    fn repair_native_v6_archive_inner<R: Read + Seek>(
+        &self,
+        reader: R,
+        expected_seal_identity: [u8; 32],
+        archive_barrier: &AeadBarrier,
+        deadline: OriginalDeadline,
+        original_owner: &mut impl FnMut(
+            &NativeV6PeerEnrollment,
+            &NativeV6PublishedRoot,
+        ) -> ArchiveResult<()>,
+        anchor: Option<&NativeV6ArchiveRootAnchor>,
+    ) -> ArchiveResult<NativeV6ArchiveRepair> {
         original_operation(deadline)?;
         if tokio::runtime::Handle::try_current().is_ok() {
             return Err(NativeV6ArchiveError::Gate);
@@ -197,6 +291,13 @@ impl HaProcess {
         native
             .validate_enrollment(&self.codec, initial.enrollment())
             .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
+        if anchor.is_some_and(|anchor| {
+            !Arc::ptr_eq(&anchor.instance, &native.identity)
+                || anchor.deadline.instant() != deadline.instant()
+                || !initial.same_selection(&anchor.selected)
+        }) {
+            return Err(NativeV6ArchiveError::WrongSelection);
+        }
         original_owner(initial.enrollment(), initial.root())?;
         original_operation(deadline)?;
         let expected =
