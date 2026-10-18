@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "import base64,hashlib,json,os,pathlib,stat,subprocess\nroot=pathlib.Path(\"/home/qian-qi/heptabao-next-gates-20261017/r8-archive-logs-recovered-20261018-01\")\nassert not root.exists();root.mkdir(mode=0o700)\nentries=[\n(\"r8f-mac-34mib-component.log\",\"/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8f-server-native-ha-34mib-pinned-mtls.log\",\"6b2f36d9aed91c0da49826c927bc54d955857f33b5bf2cf56fcb8d9274f2ae1d\"),\n(\"r8k-mac-archive34.log\",\"/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8k-server-native-ha-archive.log\",\"eed6bd8187854c3780a867b57983c5e515c207021d0d06b4bdf6530d7ccc39a2\")]\nworker=\"\"\"import base64,hashlib,json,os,pathlib,stat,sys\nentries=json.loads(sys.stdin.read())\nrows=[]\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\nfor name,path,digest in entries:\n p=pathlib.Path(path);assert p.resolve(strict=True)==p\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n with os.fdopen(fd,\"rb\") as f:\n  before=os.fstat(f.fileno());assert stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_uid==os.getuid() and before.st_size<=65536\n  data=f.read(65537);assert len(data)==before.st_size and identity(before)==identity(os.fstat(f.fileno()))==identity(p.lstat())\n assert hashlib.sha256(data).hexdigest()==digest\n rows.append({\"name\":name,\"source\":path,\"bytes\":len(data),\"sha256\":digest,\"content_base64\":base64.b64encode(data).decode()})\nprint(json.dumps(rows))\n\"\"\"\nimport shlex\np=subprocess.run([\"ssh\",\"-T\",\"-o\",\"BatchMode=yes\",\"-o\",\"StrictHostKeyChecking=yes\",\"-o\",\"ConnectTimeout=10\",\"macbook-pro\",\"python3 -c \"+shlex.quote(worker)],input=json.dumps(entries).encode(),stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=40)\nassert p.returncode==0 and len(p.stdout)<196608,(\"readonly_original_log_fetch_failed\",p.returncode)\nrows=json.loads(p.stdout);assert len(rows)==2\npublic=[]\nfor row in rows:\n b=base64.b64decode(row.pop(\"content_base64\"),validate=True);assert len(b)==row[\"bytes\"] and hashlib.sha256(b).hexdigest()==row[\"sha256\"]\n with (root/row[\"name\"]).open(\"xb\") as f:f.write(b);f.flush();os.fsync(f.fileno())\n public.append(row)\nwith (root/\"public-receipt.json\").open(\"x\") as f:json.dump({\"schema\":\"heptabao.original-public-log-recovery.v1\",\"files\":public,\"tests_rerun\":False},f,indent=2);f.write(\"\\n\");f.flush();os.fsync(f.fileno())\nprint(json.dumps({\"ok\":True,\"files\":public,\"tests_rerun\":False}))\n"
+    ],
+    "created_unix_ms": 1792293468725,
+    "cwd": "/home/qian-qi/heptabao-next-gates-20261017",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "main",
+    "id": "1a14d03fa35-1b6abb-838",
+    "idempotency_key": "heptabao-original-r8f-r8k-log-read-20261018-01",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a14d03fa35-1b6abb-838",
+    "request_digest": "7d356fc4149a61cf668938d4e384043437357c4c13967d12b68dd1ca4e86b162",
+    "request_fingerprint": 9022240316456591000,
+    "ssh_target": "localhost",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a14d03fa35-1b6abb-838"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a14d03fa35-1b6abb-838"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

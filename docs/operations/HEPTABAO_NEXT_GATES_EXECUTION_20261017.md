@@ -47,6 +47,7 @@
 | R8k Mac 34 MiB archive | 1 项通过，21.23 秒 | 原请求预算内执行的真实双对象包/hostile 输入回归；整项测试时间不等于单请求时限 |
 | R8m Mac 当前闭包修复 | 3 / 3 通过，22.78 秒 | donor 全缺、独立 cold owner、真实 ReadIndex 超过 8 秒后保持原 15 秒截止、checkpoint 漂移及历史根拒绝 |
 | R8m Mac 34 MiB archive | 1 / 1 通过，21.20 秒 | 真实双对象包往返和 hostile 输入；完整 2,588 文件源树运行前后相同，原 R8k 基础目录亦未变 |
+| R8n shared-01 Mac 对象同步 | 13 / 13 通过，0.95 秒 | 11 个新增和 2 个既有 checked I/O 测试；真实同 fd/目录同步、坏叶/替换/原截止拒绝；2,590 文件前后完整校验；没有执行本候选的完整 HTTP 或物理 HA |
 | 合成中央 AuthBus R1 | 314 个检查通过 | 原生产者/消费者、manifest CAS、真实 HTTPS/SDK、进程中断与冷重启；没有真实 provider 凭证或 OAuth 刷新 |
 | 实际 owned-source AuthBus R2 | 驱动成功；293 事件 / 292 不同标签 | 实际来源 A、原 SDK、中央提交/消费者、私有 journal、服务冷重启、SQLite A 恢复、15 个 bearer 及 3 个 SID 的撤销持久化；原外层 false 单独严格对账 |
 | migration-gap v3 四机扫描 | 4 / 4 回执有效 | 批准范围内 metadata/配置投影，未打开凭证载荷、未连接 J3160；有限枚举和历史 reused 观察明确标识，迁移/备份/切流/清理资格均 false |
@@ -135,10 +136,11 @@ R8m 的内部 `HaProcess::repair_native_v6_current_closure_from_archive` 已完�
 
 ## 源码及恢复执行顺序
 
-| 版本 | 实際受检源码 / tree | 准确范围 |
+| 版本 | 实际受检源码 / tree | 准确范围 |
 | --- | --- | --- |
 | R8j | 原 `4f0bacd59be21d204783d69b500d2a19ef6af55a`；tree `9514b66b8cda559938e135d6c7c5b9606296fd4a`；恢复检查点 `675d842e3f086b84512e398368d9ffd38071c636` | Mac 30 项、两种原生构建、Mac/ROG/Pocket4 physical 01/02；物理 QA query 修复另有独立摘要 |
 | R8m | `090da802ce1d26c890f7c4100623f05bf488002f`；tree `f8413d46654dde2425260d044f0000ad3a2fda87` | 实际 Mac 3+1；2,588 文件前后完整校验；GitHub 同树检查点 `2193185dc1a89d54513c2d9009fd17a968549d6b` |
+| R8n shared-01 | `a6b8990d40bac15b1d9a066dc2303658d73372cb`；tree `9277b345ca1f9c1117b03332958b51b7c25ed772` | 实际 Mac 13 项 checked I/O；GitHub 同树检查点 `70ee76774ecdb5ce24a2620f5813c4c596c3fe78`；其余尚在实现的优化不属于该受检树 |
 
 分支中的 `94640adbb200d97b52ef69a465f262e8976b5fc5` 保留并发的历史 URL query 实测与其他硬件证据，再合入 R8m 五文件；它的 tree 与受检 R8m tree 不同，不能把合并提交整体说成原 R8m 已运行源码。
 
