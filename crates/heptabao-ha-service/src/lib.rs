@@ -737,14 +737,17 @@ pub struct MutualTlsPeerTransport {
 // Logs contain only constant phase labels and io::ErrorKind classifications;
 // never addresses, certificates, request frames, tokens or raw error text.
 fn forward_transport_io_error(stage: &'static str, error: &io::Error) -> HaError {
+    forward_io_error_as(stage, error, HaError::Transport)
+}
+fn forward_io_error_as(stage: &'static str, error: &io::Error, category: HaError) -> HaError {
     #[cfg(feature = "private-forward-stage-diagnostic")]
     eprintln!(
-        "HBHA-PRIVATE-STAGE phase={stage} io_kind={:?}",
+        "HBHA-PRIVATE-STAGE phase={stage} category={category:?} io_kind={:?}",
         error.kind()
     );
     #[cfg(not(feature = "private-forward-stage-diagnostic"))]
     let _ = (stage, error);
-    HaError::Transport
+    category
 }
 fn forward_transport_frame_error(stage: &'static str, error: HaError) -> HaError {
     #[cfg(feature = "private-forward-stage-diagnostic")]
@@ -811,7 +814,9 @@ impl MutualTlsPeerTransport {
         // Finish the authenticated TLS handshake BEFORE sending any V6 frame.
         tls.conn
             .complete_io(&mut tls.sock)
-            .map_err(|_| HaError::PeerAuthenticationFailed)?;
+            .map_err(|error| forward_io_error_as(
+                "pinned_client_tls_handshake", &error, HaError::PeerAuthenticationFailed,
+            ))?;
         if tls.conn.alpn_protocol() != Some(RAFT_ALPN_PROTOCOL) {
             return Err(HaError::PeerAuthenticationFailed);
         }
@@ -875,10 +880,24 @@ impl MutualTlsPeerTransport {
             })?;
         let mut tls = rustls::StreamOwned::new(connection, stream);
         write_bounded_frame(&mut tls, frame)
-            .map_err(|error| forward_transport_frame_error("tls_frame_write", error))?;
+            .map_err(|error| {
+                #[cfg(feature = "private-forward-stage-diagnostic")]
+                eprintln!(
+                    "HBHA-PRIVATE-STAGE phase=client_frame_write_tls_state handshaking={}",
+                    tls.conn.is_handshaking()
+                );
+                forward_transport_frame_error("tls_frame_write", error)
+            })?;
         let mut response = zeroize::Zeroizing::new(
             read_bounded_frame(&mut tls)
-                .map_err(|error| forward_transport_frame_error("tls_frame_read", error))?,
+                .map_err(|error| {
+                    #[cfg(feature = "private-forward-stage-diagnostic")]
+                    eprintln!(
+                        "HBHA-PRIVATE-STAGE phase=client_frame_read_tls_state handshaking={}",
+                        tls.conn.is_handshaking()
+                    );
+                    forward_transport_frame_error("tls_frame_read", error)
+                })?,
         );
         // Buffered TLS plaintext must not bypass the final deadline check, and
         // a rejected late response must erase its plaintext before deallocation.
@@ -1028,7 +1047,9 @@ where
     let mut tls = rustls::StreamOwned::new(connection, stream);
     tls.conn
         .complete_io(&mut tls.sock)
-        .map_err(|_| HaError::PeerAuthenticationFailed)?;
+        .map_err(|error| forward_io_error_as(
+            "legacy_receiver_tls_handshake", &error, HaError::PeerAuthenticationFailed,
+        ))?;
     require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)?;
     let certificates = tls
         .conn
@@ -1079,7 +1100,7 @@ fn configure_accepted_peer_stream(stream: &TcpStream, timeout: Duration) -> Resu
         .and_then(|()| stream.set_nodelay(true))
         .and_then(|()| stream.set_read_timeout(Some(timeout)))
         .and_then(|()| stream.set_write_timeout(Some(timeout)))
-        .map_err(|_| HaError::Transport)
+        .map_err(|error| forward_transport_io_error("receiver_socket_config", &error))
 }
 
 fn require_raft_alpn(
@@ -1522,24 +1543,28 @@ fn write_bounded_frame(writer: &mut impl Write, frame: &[u8]) -> Result<(), HaEr
     let length = u32::try_from(frame.len()).map_err(|_| HaError::InvalidFrame)?;
     writer
         .write_all(&length.to_be_bytes())
-        .and_then(|()| writer.write_all(frame))
-        .and_then(|()| writer.flush())
-        .map_err(|_| HaError::Transport)
+        .map_err(|error| forward_transport_io_error("frame_write_length", &error))?;
+    writer
+        .write_all(frame)
+        .map_err(|error| forward_transport_io_error("frame_write_payload", &error))?;
+    writer
+        .flush()
+        .map_err(|error| forward_transport_io_error("frame_flush", &error))
 }
 
 fn read_bounded_frame(reader: &mut impl Read) -> Result<Vec<u8>, HaError> {
     let mut length = [0_u8; 4];
     reader
         .read_exact(&mut length)
-        .map_err(|_| HaError::Transport)?;
+        .map_err(|error| forward_transport_io_error("frame_read_length", &error))?;
     let length = u32::from_be_bytes(length) as usize;
     if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
-        return Err(HaError::InvalidFrame);
+        return Err(forward_transport_frame_error("frame_read_length_invalid", HaError::InvalidFrame));
     }
     let mut frame = zeroize::Zeroizing::new(vec![0_u8; length]);
     reader
         .read_exact(&mut frame)
-        .map_err(|_| HaError::Transport)?;
+        .map_err(|error| forward_transport_io_error("frame_read_payload", &error))?;
     Ok(std::mem::take(&mut *frame))
 }
 
@@ -2095,6 +2120,61 @@ mod tests {
         assert_eq!(
             forward_transport_frame_error("tls_frame_write", HaError::Transport),
             HaError::Transport,
+        );
+        assert_eq!(
+            forward_io_error_as(
+                "receiver_tls_handshake",
+                &io::Error::new(io::ErrorKind::InvalidData, "synthetic-error-text-must-not-be-logged"),
+                HaError::PeerAuthenticationFailed,
+            ),
+            HaError::PeerAuthenticationFailed,
+        );
+    }
+
+    #[test]
+    fn private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes() {
+        struct FailAt {
+            calls: usize,
+            fail_at: usize,
+        }
+        impl Write for FailAt {
+            fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
+                self.calls += 1;
+                if self.calls == self.fail_at {
+                    return Err(io::Error::new(
+                        io::ErrorKind::BrokenPipe, "synthetic-private-write-error",
+                    ));
+                }
+                Ok(buffer.len())
+            }
+            fn flush(&mut self) -> io::Result<()> {
+                self.calls += 1;
+                if self.calls == self.fail_at {
+                    return Err(io::Error::new(
+                        io::ErrorKind::TimedOut, "synthetic-private-flush-error",
+                    ));
+                }
+                Ok(())
+            }
+        }
+        for fail_at in 1..=3 {
+            let mut writer = FailAt { calls: 0, fail_at };
+            assert_eq!(write_bounded_frame(&mut writer, b"fixture"), Err(HaError::Transport));
+            assert_eq!(writer.calls, fail_at, "no I/O after the original failing operation");
+        }
+        let mut wire = Vec::new();
+        assert_eq!(write_bounded_frame(&mut wire, b"fixture"), Ok(()));
+        assert_eq!(wire, [7_u32.to_be_bytes().as_slice(), b"fixture"].concat());
+        assert_eq!(read_bounded_frame(&mut io::Cursor::new(&wire)), Ok(b"fixture".to_vec()));
+        for end in [2, wire.len() - 1] {
+            assert_eq!(
+                read_bounded_frame(&mut io::Cursor::new(&wire[..end])),
+                Err(HaError::Transport),
+            );
+        }
+        assert_eq!(
+            read_bounded_frame(&mut io::Cursor::new(0_u32.to_be_bytes())),
+            Err(HaError::InvalidFrame),
         );
     }
 
