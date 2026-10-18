@@ -22,6 +22,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 static NEXT_TEMPORARY: AtomicU64 = AtomicU64::new(1);
 
+#[path = "v6_replica_blobs_checked.rs"]
+mod checked;
+
 #[derive(Debug)]
 pub enum LocalV6BlobError {
     InvalidCiphertext,
@@ -241,6 +244,68 @@ impl LocalV6BlobStage {
         Self::read_checked(&mut file, reference)
     }
 
+    /// Read one exact local ciphertext under the original caller gate. The
+    /// same gate surrounds opening, metadata, seeking and every actual read,
+    /// including short reads and the final EOF check. Each read is at most
+    /// 64 KiB; no fsync receipt, live read authority or root is created.
+    pub fn read_local_checked(
+        &self,
+        reference: &RecordObjectRef,
+        gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+    ) -> Result<Vec<u8>, LocalV6BlobError> {
+        gate()?;
+        let destination = Self::leaf(reference)?;
+        gate()?;
+        let mut file = self.directory.open_file(&destination, FileAccess::Read)?;
+        gate()?;
+        let length = file.metadata()?.len();
+        gate()?;
+        if length != reference.payload_bytes {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        if file.seek(SeekFrom::Start(0))? != 0 {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        gate()?;
+        let expected = reference.encoded_bytes as usize;
+        let mut bytes = Vec::with_capacity(expected);
+        let mut scratch = [0u8; 64 * 1024];
+        let mut interrupts = 0;
+        loop {
+            // Read at most the remaining exact payload plus one byte so a
+            // file that grows after metadata cannot hide trailing data.
+            let limit = scratch.len().min(expected - bytes.len() + 1);
+            gate()?;
+            let read = file.read(&mut scratch[..limit]);
+            gate()?;
+            let count = match read {
+                Ok(count) => count,
+                Err(error) if error.kind() == io::ErrorKind::Interrupted && interrupts < 64 => {
+                    interrupts += 1;
+                    continue;
+                }
+                Err(error) => return Err(error.into()),
+            };
+            if count == 0 {
+                break;
+            }
+            if count > expected - bytes.len() {
+                return Err(LocalV6BlobError::CorruptOrChanged);
+            }
+            bytes.extend_from_slice(&scratch[..count]);
+        }
+        if bytes.len() != expected {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        let verified = SealedRecordObject::new_native_v6_ciphertext_chunk(bytes.clone())
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        if verified.reference() != reference {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        gate()?;
+        Ok(bytes)
+    }
+
     /// Compare a *declared* Raft-stage V6 intent with a fresh physical read
     /// of every local ciphertext object in its proposed closure.
     ///
@@ -312,6 +377,9 @@ impl LocalV6BlobStage {
         })
     }
 }
+
+#[path = "v6_closure_manifest.rs"]
+mod closure_manifest;
 
 #[cfg(all(test, unix))]
 mod tests {
@@ -563,8 +631,16 @@ mod tests {
             store.observe_intent_local_closure(&wrong_bytes, &refs),
             Err(LocalV6BlobError::InvalidClosure)
         ));
+        // The application's actual initial replay epoch is zero. It remains
+        // valid without inventing an epoch offset in the replicated intent.
+        let mut initial_epoch = intent;
+        initial_epoch.epoch = 0;
+        assert_eq!(
+            store.observe_intent_local_closure(&initial_epoch, &refs)?,
+            physical
+        );
         let mut invalid = intent;
-        invalid.epoch = 0;
+        invalid.proposed_generation = invalid.prior_generation;
         assert!(matches!(
             store.observe_intent_local_closure(&invalid, &refs),
             Err(LocalV6BlobError::InvalidClosure)

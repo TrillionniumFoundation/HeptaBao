@@ -160,6 +160,7 @@ class Node:
     root: str
     api_port: int
     raft_port: int
+    api_connect_port: int | None = None
 
     @property
     def name(self) -> str:
@@ -171,6 +172,8 @@ class Node:
 
     @property
     def api_origin(self) -> str:
+        if self.api_connect_port is not None:
+            return f"https://127.0.0.1:{self.api_connect_port}"
         return f"https://{self.ip}:{self.api_port}"
 
 
@@ -841,7 +844,8 @@ def create_fixture_node_certificate(node: Node, directory: Path,
         "extendedKeyUsage=serverAuth,clientAuth\n"
         "subjectKeyIdentifier=hash\n"
         "authorityKeyIdentifier=keyid:always\n"
-        f"subjectAltName=DNS:{node.server_name},IP:{node.ip}\n"
+        f"subjectAltName=DNS:{node.server_name},IP:{node.ip}"
+        + (",IP:127.0.0.1" if node.api_connect_port is not None else "") + "\n"
     )
     openssl("x509", "-req", "-in", str(csr), "-CA", str(ca_cert),
             "-CAkey", str(ca_key), "-CAcreateserial", "-out", str(cert),
@@ -928,7 +932,7 @@ done
 """, timeout=12).splitlines()
 
 
-def main(*, extension=None) -> int:
+def main(*, extension=None, mesh=None, full_restart=False) -> int:
     # The baseline retains its original fixed denominator. A separately named
     # composed profile must satisfy both sets; it cannot borrow baseline success.
     required_checks = REQUIRED_CHECKS
@@ -936,6 +940,15 @@ def main(*, extension=None) -> int:
         if not extension.required_checks or extension.required_checks & REQUIRED_CHECKS:
             raise FixtureError("invalid_lifecycle_extension_denominator")
         required_checks = REQUIRED_CHECKS | extension.required_checks
+    if mesh is not None:
+        required_checks = required_checks | {"complete_loopback_raft_mesh_started"}
+    if full_restart:
+        required_checks = required_checks | {
+            "all_voters_restarted_from_persisted_state",
+            "full_restart_readindex_preserves_acknowledged_data",
+            "full_restart_new_write_replicated",
+            "cleanup_after-full-restart",
+        }
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary-source", required=True,
                         help="ssh-alias:/absolute/path/to/heptabao-server")
@@ -981,6 +994,8 @@ def main(*, extension=None) -> int:
              for index, value in enumerate(args.node)]
     if len({node.ip for node in nodes}) != 3 or len({node.root for node in nodes}) != 3:
         parser.error("node IPs and roots must be unique")
+    if mesh is not None:
+        nodes = mesh.prepare_nodes(nodes)
     native_sources = {}
     try:
         for specification in args.node_binary:
@@ -1043,6 +1058,11 @@ def main(*, extension=None) -> int:
                        "shared_runner_sha256": initial_shared_runner_sha256,
                        "baseline_check_count": len(REQUIRED_CHECKS),
                        "extension_check_count": len(extension.required_checks)})
+    if mesh is not None:
+        report["transport"] = "coordinator-mediated-ssh-with-end-to-end-mtls"
+        report["direct_lan_qualification"] = False
+        report["mesh_runner_sha256"] = sha256_file(Path(mesh.runner_path))
+    report["full_cluster_restart_requested"] = full_restart is True
 
     phase_dir = work / "phases"
     phase_dir.mkdir(mode=0o700)
@@ -1177,6 +1197,8 @@ uname -s
                 "rate_limit_entries": 512,
                 "lifecycle_interval_seconds": 1,
             }
+            if mesh is not None:
+                server = mesh.configure_server(node, server)
             server_path = node_dir / "server.json"
             server_path.write_text(json.dumps(server, sort_keys=True))
             server_path.chmod(0o600)
@@ -1188,6 +1210,11 @@ uname -s
             remote_digest = remote_binary_digest(node)
             check(f"node_{node.node_id}_binary_digest",
                   remote_digest == expected_digests[str(node.node_id)], sha256=remote_digest)
+
+        if mesh is not None:
+            stage = "loopback_mesh_startup"
+            mesh.start(nodes, work, event)
+            check("complete_loopback_raft_mesh_started", True)
 
         stage = "single_node_initialization"
         seed = nodes[0]
@@ -1251,6 +1278,8 @@ test -d "$root/data"
                 "forward_timeout_ms": 8000,
                 "max_inflight": 32,
             }
+            if mesh is not None:
+                ha = mesh.configure(node, ha)
             ha_path = node_files[node] / "ha.json"
             ha_path.write_text(json.dumps(ha, sort_keys=True))
             ha_path.chmod(0o600)
@@ -1512,6 +1541,39 @@ test -d "$root/data"
             extension.after_quorum_recovery(nodes)
             extension.cleanup(final_leader)
 
+        if full_restart:
+            stage = "full_cluster_restart"
+            restart_frontier = capture_committed_frontier(context, final_leader)
+            for node in nodes:
+                pid = remote_stop(node)
+                started.discard(node)
+                event("full_restart_voter_stopped", node=node.node_id, pid=pid)
+            # Reopen all three existing durable roots, without reseeding,
+            # cloning, reinitializing or deleting application/Raft state.
+            for node in nodes[1:] + nodes[:1]:
+                pid = remote_start(node, ha=True)
+                started.add(node)
+                event("full_restart_voter_started", node=node.node_id, pid=pid)
+            for node in nodes:
+                wait_listener(context, node)
+                status, _ = api(context, node, "POST", "sys/unseal", {"key": unseal_key}, timeout=10)
+                if status != 200:
+                    raise FixtureError(f"full_restart_node_{node.node_id}_unseal_failed")
+            final_leader = wait_leader(context, nodes, root_token, seconds=60)
+            check("all_voters_restarted_from_persisted_state", True)
+            for node in nodes:
+                wait_local_frontier(context, node, restart_frontier, seconds=60, record=event)
+                for key, value in acknowledged.items():
+                    read_exact(context, node, root_token, key, value)
+                wait_absent(context, node, root_token, rejected_path)
+            check("full_restart_readindex_preserves_acknowledged_data", True,
+                  required_index=restart_frontier, acknowledged_values=len(acknowledged))
+            path, value = new_value("after-full-restart")
+            write_once(context, final_leader, root_token, path, value)
+            for node in nodes:
+                read_exact(context, node, root_token, path, value)
+            check("full_restart_new_write_replicated", True)
+
         stage = "application_cleanup"
         for key in acknowledged:
             status, _ = api(context, final_leader, "DELETE", f"secret/metadata/{key}",
@@ -1535,6 +1597,8 @@ test -d "$root/data"
             and all(sha256_file(path) == native_sources[alias][2]
                     for alias, path in native_copies.items())
         )
+        if mesh is not None:
+            unchanged = unchanged and sha256_file(Path(mesh.runner_path)) == report["mesh_runner_sha256"]
         check("source_and_binary_unchanged", unchanged)
         runtime_secrets = (root_token, unseal_key)
         if extension is not None:
@@ -1576,6 +1640,14 @@ test -d "$root/data"
     finally:
         restore_signal_handlers(handlers)
         stop_owned_processes(nodes, started, report, event)
+        if mesh is not None:
+            try:
+                mesh.stop(event)
+                report["owned_mesh_cleanup"] = True
+            except (OSError, subprocess.SubprocessError, FixtureError):
+                report["owned_mesh_cleanup"] = False
+                report["status"] = "failed"
+                report.setdefault("failure_code", "owned_mesh_cleanup_failed")
         for node in nodes:
             local = work / f"remote-{node.node_id}"
             local.mkdir(exist_ok=True)

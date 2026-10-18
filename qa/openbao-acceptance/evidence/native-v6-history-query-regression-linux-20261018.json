@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.qa-run.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_native_v6_ha_multihost_live.py",
+    "-v"
+  ],
+  "cwd": "/home/qian-qi/heptabao-next-gates-20261017/runner-r8l-history-query-20261017-01",
+  "finished_at_utc": "2026-10-18T02:12:00.417591+00:00",
+  "returncode": 0,
+  "log_sha256": "d524a0b855f86552dee6cb23033842dbfe95cd8a53c792ad0d53796d4127b7a6",
+  "files": {
+    "qa/openbao-acceptance/native_v6_ha_multihost_live.py": "723f160ecb5bc9ad7df242501595c54bed08a1a26070e91dea16ffda8e973d64",
+    "qa/openbao-acceptance/tests/test_native_v6_ha_multihost_live.py": "8a24444c0ec22a561d763dfed2746888d2b307dfde3534dec5f3700aa7f56c1c"
+  },
+  "production_cutover": false
+}

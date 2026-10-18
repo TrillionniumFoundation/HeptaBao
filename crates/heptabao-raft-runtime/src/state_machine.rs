@@ -18,6 +18,39 @@ pub enum ApplicationRequest {
     RecordsV5(RecordRequest),
     Legacy(LegacyRequest),
 }
+
+#[cfg(all(test, not(feature = "experimental-v6-raft-objects")))]
+mod native_format_refusal_tests {
+    use super::*;
+
+    #[test]
+    fn default_build_rejects_native_fields_and_v4_without_discarding_the_root()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = StateMachine {
+            records_v5: Some(RecordState::default()),
+            ..Default::default()
+        };
+        let old = state.snapshot_bytes()?;
+        assert!(
+            StateMachine::from_snapshot(&old).is_ok(),
+            "ordinary V5 snapshots remain readable"
+        );
+        let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
+        bytes["format_version"] = serde_json::json!(4);
+        assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
+        for field in ["v6_root", "v6_enrollment"] {
+            let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
+            bytes["state"][field] = serde_json::json!({"must_not_be_ignored":true});
+            assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
+            let raw: StateMachine = serde_json::from_value(bytes["state"].clone())?;
+            assert!(
+                raw.validate().is_err(),
+                "direct bundle decoding cannot ignore native state either"
+            );
+        }
+        Ok(())
+    }
+}
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct LegacyRequest {
@@ -110,7 +143,24 @@ pub struct StateMachine {
     /// a quorum certificate, root CAS, read grant or client acknowledgment.
     #[cfg(feature = "experimental-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    v6_intent_log_provenance: BTreeMap<String, LogIdOf<TypeConfig>>,
+    pub(crate) v6_intent_log_provenance: BTreeMap<String, LogIdOf<TypeConfig>>,
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v5_root_log: Option<LogIdOf<TypeConfig>>,
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v6_enrollment: Option<crate::v6_root_publication::NativeV6EnrollmentState>,
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v6_root: Option<crate::v6_root_publication::NativeV6RootState>,
+    // Old/default builds must not silently discard an enrolled or published
+    // V6 state even if an input falsely labels its enclosing format as V3.
+    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[serde(default, skip_serializing, rename = "v6_enrollment")]
+    unsupported_v6_enrollment: Option<serde::de::IgnoredAny>,
+    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[serde(default, skip_serializing, rename = "v6_root")]
+    unsupported_v6_root: Option<serde::de::IgnoredAny>,
     #[serde(skip)]
     legacy_json_bytes: Option<usize>,
 }
@@ -199,8 +249,13 @@ impl StateMachine {
         }
     }
     pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
+        #[cfg(not(feature = "experimental-v6-raft-objects"))]
+        if self.unsupported_v6_enrollment.is_some() || self.unsupported_v6_root.is_some() {
+            return Err(RecordRejection::Invalid);
+        }
         #[cfg(feature = "experimental-v6-raft-objects")]
         {
+            self.validate_native_v6_state()?;
             if self.v6_intent_log_provenance.len() > 4096 {
                 return Err(RecordRejection::Budget);
             }
@@ -334,6 +389,16 @@ impl StateMachine {
     }
 
     pub(crate) fn apply(&mut self, request: &ApplicationRequest) -> ApplicationResponse {
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        if let Some(result) = self.apply_native_v6_command(request) {
+            return match result {
+                Ok(()) => ApplicationResponse::Records(RecordResponse {
+                    accepted: true,
+                    rejection: None,
+                }),
+                Err(error) => ApplicationResponse::rejected(error),
+            };
+        }
         #[cfg(feature = "experimental-v6-raft-objects")]
         let v6_applied_provenance = match request {
             ApplicationRequest::RecordsV5(data) => match &data.records_v5 {
@@ -490,6 +555,14 @@ impl StateMachine {
         match result {
             Ok(()) => {
                 #[cfg(feature = "experimental-v6-raft-objects")]
+                if matches!(request, ApplicationRequest::RecordsV5(data)
+                    if matches!(data.records_v5, RecordCommand::Publish { .. }))
+                {
+                    // Actual successful application entry, including an explicit
+                    // unchanged-root refresh after an upgrade from old snapshots.
+                    self.v5_root_log = self.last_applied_log;
+                }
+                #[cfg(feature = "experimental-v6-raft-objects")]
                 if let Some((key, log)) = v6_applied_provenance {
                     // Immutable first-apply identity survives duplicate Stage.
                     self.v6_intent_log_provenance.entry(key).or_insert(log);
@@ -502,15 +575,32 @@ impl StateMachine {
             Err(reason) => ApplicationResponse::rejected(reason),
         }
     }
+    pub(crate) fn records_format_version(&self) -> Option<u16> {
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        if self.v6_enrollment.is_some() || self.v6_root.is_some() {
+            return Some(4);
+        }
+        self.records_v5.as_ref().map(|_| 3)
+    }
+    pub(crate) fn native_v6_is_published(&self) -> bool {
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        {
+            self.v6_root.is_some()
+        }
+        #[cfg(not(feature = "experimental-v6-raft-objects"))]
+        {
+            false
+        }
+    }
     pub(crate) fn snapshot_bytes(&self) -> Result<Vec<u8>, serde_json::Error> {
-        if self.records_v5.is_some() {
+        if let Some(format_version) = self.records_format_version() {
             #[derive(Serialize)]
             struct Wire<'a> {
                 format_version: u16,
                 state: &'a StateMachine,
             }
             serde_json::to_vec(&Wire {
-                format_version: 3,
+                format_version,
                 state: self,
             })
         } else {
@@ -535,7 +625,7 @@ impl StateMachine {
         let state = if header.format_version.is_some() {
             let wire: Wire = serde_json::from_slice(bytes)
                 .map_err(|_| std::io::Error::other("invalid typed snapshot"))?;
-            if wire.format_version != 3 || wire.state.records_v5.is_none() {
+            if wire.state.records_format_version() != Some(wire.format_version) {
                 return Err(std::io::Error::other("invalid records snapshot version"));
             }
             wire.state

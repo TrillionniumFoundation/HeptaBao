@@ -12,6 +12,12 @@ use heptabao_durable_service::{
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_local_stage.rs"]
+pub(super) mod ha_local_stage;
+#[cfg(feature = "experimental-native-v6-ha")]
+pub(super) use ha_local_stage::stage_verified_received;
+
 // One owned unit-test thread may pause its actual payload AEAD observation.
 // This has no production CLI, HTTP route, environment knob or deadline change.
 #[cfg(test)]

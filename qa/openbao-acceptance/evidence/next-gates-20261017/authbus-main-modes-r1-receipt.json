@@ -1,0 +1,2751 @@
+{
+  "binary_sha256": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f",
+  "central_commits": [
+    {
+      "case": "new-profile",
+      "generation": 2,
+      "profile_digest": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4",
+      "profile_published_before_manifest": true
+    },
+    {
+      "case": "duplicate_digest_no_change",
+      "generation": 2,
+      "manifest_version": 2
+    },
+    {
+      "case": "manual-login",
+      "generation": 3,
+      "profile_digest": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17",
+      "profile_published_before_manifest": true
+    }
+  ],
+  "checks": [
+    {
+      "case": "plugin.index.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.order-policy.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.runtime-refresh-policy.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.codex-client-recycler.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.lease-assignments.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.provider-error-classifier.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.bad-refresh-quarantine.js.bounded_source",
+      "passed": true
+    },
+    {
+      "case": "plugin.exact_original",
+      "passed": true
+    },
+    {
+      "case": "server.init",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.kv2",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "server.activate",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "server.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.native_reader_format2",
+      "passed": true
+    },
+    {
+      "case": "server.approle",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-main.policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-main.role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-main.role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "authbus-modes-main.sid",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "authbus-modes-peer.policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-peer.role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-peer.role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "authbus-modes-peer.sid",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "authbus-modes-writer.policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-writer.role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "authbus-modes-writer.role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "authbus-modes-writer.sid",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.actual_approle",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.immutable.a",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.immutable.b",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.manifest",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.order_policy",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.shadow_assignments",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "baseline.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "baseline.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "baseline.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "baseline.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "baseline.scoped",
+      "passed": true
+    },
+    {
+      "case": "baseline.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "baseline.actual_login",
+      "passed": true
+    },
+    {
+      "case": "baseline.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "baseline.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "baseline.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "baseline.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "baseline.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "baseline.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "baseline.initial_empty_sdk",
+      "passed": true
+    },
+    {
+      "case": "baseline.existing_local_not_published",
+      "passed": true
+    },
+    {
+      "case": "baseline.managed_order_applied",
+      "passed": true
+    },
+    {
+      "case": "baseline.persisted_exact_local_digest",
+      "passed": true
+    },
+    {
+      "case": "acl.consumer_canonical_write_denied.manifest",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.consumer_canonical_write_denied.profiles_blocked",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.consumer_canonical_write_denied.order-policy",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.consumer_canonical_write_denied.scheduler-assignments",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.consumer_other_inbox_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.consumer_inbox_read_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.writer_cannot_impersonate_source",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "new_profile.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "new_profile.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "new_profile.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "new_profile.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "new_profile.scoped",
+      "passed": true
+    },
+    {
+      "case": "new_profile.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "new_profile.actual_login",
+      "passed": true
+    },
+    {
+      "case": "new_profile.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "new_profile.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle1.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle1.managed_order",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle1.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "new_profile.cycle1.effective",
+      "passed": true
+    },
+    {
+      "case": "publish_new.actual_event_then_process_dedupe",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_list",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_bound",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.0",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.0",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.1",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.1",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.2",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.2",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.3",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.3",
+      "passed": true
+    },
+    {
+      "case": "publish_new.exactly_one_new_profile_event",
+      "passed": true
+    },
+    {
+      "case": "writer.event_contract",
+      "passed": true
+    },
+    {
+      "case": "writer.manifest_before",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.exact_previous_digest",
+      "passed": true
+    },
+    {
+      "case": "writer.immutable_profile_first",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.manifest_final_cas",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.stale_manifest_cas_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "writer.immutable_profile_cas0_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "writer.manifest_after",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.manifest_exact_after_conflicts",
+      "passed": true
+    },
+    {
+      "case": "writer.event_contract",
+      "passed": true
+    },
+    {
+      "case": "writer.manifest_before",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.duplicate_does_not_advance_manifest",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "central_acknowledged.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.scoped",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.actual_login",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "central_acknowledged.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "central.acknowledged_generation",
+      "passed": true
+    },
+    {
+      "case": "manual_login.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "manual_login.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "manual_login.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "manual_login.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "manual_login.scoped",
+      "passed": true
+    },
+    {
+      "case": "manual_login.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "manual_login.actual_login",
+      "passed": true
+    },
+    {
+      "case": "manual_login.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "manual_login.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "manual_login.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "manual_login.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "manual_login.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "manual_login.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "manual_login.real_pending_contract",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_list",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_bound",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.0",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.0",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.1",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.1",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.2",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.2",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.3",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.3",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.4",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.4",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.5",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.5",
+      "passed": true
+    },
+    {
+      "case": "writer.inbox_read.6",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.inbox_path_binding.6",
+      "passed": true
+    },
+    {
+      "case": "manual_login.one_exact_event",
+      "passed": true
+    },
+    {
+      "case": "writer.event_contract",
+      "passed": true
+    },
+    {
+      "case": "writer.manifest_before",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.exact_previous_digest",
+      "passed": true
+    },
+    {
+      "case": "writer.immutable_profile_first",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.manifest_final_cas",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.stale_manifest_cas_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "writer.immutable_profile_cas0_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "writer.manifest_after",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.manifest_exact_after_conflicts",
+      "passed": true
+    },
+    {
+      "case": "writer.order_policy_cas",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer.order_policy_stale_cas_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "order_changed.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "order_changed.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "order_changed.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "order_changed.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "order_changed.scoped",
+      "passed": true
+    },
+    {
+      "case": "order_changed.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "order_changed.actual_login",
+      "passed": true
+    },
+    {
+      "case": "order_changed.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "order_changed.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "order_changed.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "order_changed.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "order_changed.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "order_changed.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "manage_order.central_change_actual_resolver",
+      "passed": true
+    },
+    {
+      "case": "manual_login.central_acknowledged",
+      "passed": true
+    },
+    {
+      "case": "cold_committed_control.binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold_committed_control.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "cold_committed_control.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_committed_control.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_committed_control.native_reader",
+      "passed": true
+    },
+    {
+      "case": "cold.manifest",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold.manifest_exact",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "fresh_receiver_after_restart.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.scoped",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.actual_login",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "fresh_receiver_after_restart.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "cold.new_sdk_receives_full_manifest",
+      "passed": true
+    },
+    {
+      "case": "cold.new_sdk_receives_order",
+      "passed": true
+    },
+    {
+      "case": "bad_ca_binding.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "bad_ca_binding.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 3,
+      "case": "bad_ca_binding.exit",
+      "expected": 3,
+      "passed": true
+    },
+    {
+      "case": "bad_ca_binding.scoped",
+      "passed": true
+    },
+    {
+      "case": "rollback.bad_ca_has_no_authentication",
+      "passed": true
+    },
+    {
+      "case": "rollback.failed_config_keeps_sdk_state",
+      "passed": true
+    },
+    {
+      "case": "rollback.same_binding_bytes",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.actual_token_shape",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 0,
+      "case": "binding_restored.exit",
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "binding_restored.scoped",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.actual_login",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.verified_tls",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.cycle0.main_defaults",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.cycle0.managed_order",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.cycle0.shadow_does_not_enforce",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.cycle0.effective",
+      "passed": true
+    },
+    {
+      "case": "rollback.actual_reader_restored",
+      "passed": true
+    },
+    {
+      "case": "revoke.actual_plugin_token.0",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.0",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.1",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.1",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.2",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.2",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.3",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.3",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.4",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.4",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.5",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.5",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.6",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.token_denied.6",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.source_sid",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoked_source_login.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "revoked_source_login.receipt_redacted",
+      "passed": true
+    },
+    {
+      "actual": 3,
+      "case": "revoked_source_login.exit",
+      "expected": 3,
+      "passed": true
+    },
+    {
+      "case": "revoked_source_login.scoped",
+      "passed": true
+    },
+    {
+      "case": "revoke.actual_plugin_denied",
+      "passed": true
+    },
+    {
+      "case": "cold_revocation.binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold_revocation.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "cold_revocation.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_revocation.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_revocation.native_reader",
+      "passed": true
+    },
+    {
+      "case": "revoke.cold_token_denied.0",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_token_denied.1",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_token_denied.2",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_token_denied.3",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_token_denied.4",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_token_denied.5",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_token_denied.6",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.cold_sid_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "revoke.fixed_sid_error",
+      "passed": true
+    },
+    {
+      "case": "production.plugin_source_unchanged",
+      "passed": true
+    },
+    {
+      "case": "evidence.no_secret_values",
+      "passed": true
+    }
+  ],
+  "clients": [
+    {
+      "authentications": 1,
+      "case": "baseline",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-local"
+            ],
+            "profiles": {
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-local"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 1,
+            "changedStores": 2,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 2,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 1,
+            "manifestProfiles": 2,
+            "ok": true,
+            "orderPolicyGeneration": 1,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 0,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": null,
+        "profiles": {},
+        "resolvedOrder": []
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 1,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "9b5c01c7f50b78c04eb869836a47ad85e353c71c1ace2a6f3c4c391cbddf5b36",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "canonical_read",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "bd2b679044d42f3802869b363809aae18f89eb2c9a8064e5e50f9d876b22a81c",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "canonical_read",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 6,
+          "route": "canonical_read",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "e00fd4da91a6c603ddc9e26f4fed5b28fa43e2944e41a9fa78728e274d39008a",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 7,
+          "route": "own_inbox",
+          "socketId": 7,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 1,
+      "case": "new_profile",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 0,
+            "changedStores": 0,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 0,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 1,
+            "manifestProfiles": 2,
+            "ok": true,
+            "orderPolicyGeneration": 1,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 1,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        },
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 0,
+            "changedStores": 0,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 0,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 1,
+            "manifestProfiles": 2,
+            "ok": true,
+            "orderPolicyGeneration": 1,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 0,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ]
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 0,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "canonical_read",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "90658a308500a27c288f4781aed81650d55a8df7ad620d74d254e6fdf66ea1ed",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "own_inbox",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "bcddba33badb9b380e7f04c1966c6838349109946d2ae718ce1e59d023b4b8b5",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 6,
+          "route": "own_inbox",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 7,
+          "route": "canonical_read",
+          "socketId": 7,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 8,
+          "route": "canonical_read",
+          "socketId": 8,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 9,
+          "route": "canonical_read",
+          "socketId": 9,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "f4d66c288052b690caae22951176ac237cc1d2e57cf9b2e8d1032dbc7f976554",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 10,
+          "route": "own_inbox",
+          "socketId": 10,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 1,
+      "case": "central_acknowledged",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 0,
+            "changedStores": 0,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 1,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 2,
+            "manifestProfiles": 3,
+            "ok": true,
+            "orderPolicyGeneration": 1,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 0,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+          "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ]
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 0,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "ef556f05625d2af6426f6fafa2de1e123f279e89cd5fb5192143a6cb71d9be80",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "canonical_read",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "canonical_read",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4da517fdfd00baa93504104e65be907dbbbe3f88ad3ae2630c87ff58ddb50f7a",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 6,
+          "route": "own_inbox",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 1,
+      "case": "manual_login",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 0,
+            "changedStores": 0,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 0,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 2,
+            "manifestProfiles": 3,
+            "ok": true,
+            "orderPolicyGeneration": 1,
+            "pendingRuntimeRefreshes": 1,
+            "publishedEvents": 1,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+          "openai:authbus-modes-new": "755e377379ee25bd54ee8f5d70f57321594d1715d3c297c22da16329f8e574e4"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ]
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 0,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "981fc0b2adefb6634317a09277dc13a169e106563befcbbe27e172c53a8bde8a",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "own_inbox",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "canonical_read",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "0057e3bab6a2ff92074fc8e08bac82dcc50eb9c314a8d89d0b88767f04ddbea7",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 6,
+          "route": "own_inbox",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 1,
+      "case": "order_changed",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-a",
+              "google:authbus-modes-b"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 1,
+            "changedStores": 0,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 1,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 3,
+            "manifestProfiles": 3,
+            "ok": true,
+            "orderPolicyGeneration": 2,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 0,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+          "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-a",
+          "google:authbus-modes-b"
+        ]
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 1,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "9e9e42e1152f6238c2a2b419c44df10d679f9582ddf3eccbab2de7316345bb77",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "canonical_read",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "canonical_read",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "66671128ecf3ca1660372917a27f5c9274cb4b1ae6a27730218dd9d99070e50f",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 6,
+          "route": "own_inbox",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 1,
+      "case": "fresh_receiver_after_restart",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "before": {
+            "order": null,
+            "profiles": {},
+            "resolvedOrder": []
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 1,
+            "changedStores": 3,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 3,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 3,
+            "manifestProfiles": 3,
+            "ok": true,
+            "orderPolicyGeneration": 2,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 0,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": null,
+        "profiles": {},
+        "resolvedOrder": []
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 1,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "9b5c01c7f50b78c04eb869836a47ad85e353c71c1ace2a6f3c4c391cbddf5b36",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "canonical_read",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "bd2b679044d42f3802869b363809aae18f89eb2c9a8064e5e50f9d876b22a81c",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "9e9e42e1152f6238c2a2b419c44df10d679f9582ddf3eccbab2de7316345bb77",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "canonical_read",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 6,
+          "route": "canonical_read",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 7,
+          "route": "canonical_read",
+          "socketId": 7,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "7b667dd3bcc2b6476ca57eb732191c6d2c2088c6aab3a6bd86f8ea942a20f765",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 8,
+          "route": "own_inbox",
+          "socketId": 8,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 0,
+      "case": "bad_ca_binding",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "plugin": {
+            "errorSha256": "e950de19e2f8f1787964436744a649fc93a8d774060dbf818ff3b3a553766b15",
+            "leader": false,
+            "ok": false
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "error": "actual_plugin_cycle_failed",
+      "exit_code": 3,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-b",
+          "google:authbus-modes-a"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+          "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-b",
+          "google:authbus-modes-a"
+        ]
+      },
+      "observations": [
+        {
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "requestSocketId": 1,
+          "route": "login"
+        }
+      ],
+      "ok": false,
+      "phase": "actual_plugin",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 1,
+      "case": "binding_restored",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "plugin": {
+            "agentStores": 1,
+            "changedOrders": 0,
+            "changedStores": 0,
+            "effectiveMismatched": 0,
+            "effectiveMissing": 0,
+            "importedProfiles": 0,
+            "leader": false,
+            "managedOrderBindings": 2,
+            "manifestGeneration": 3,
+            "manifestProfiles": 3,
+            "ok": true,
+            "orderPolicyGeneration": 2,
+            "pendingRuntimeRefreshes": 0,
+            "publishedEvents": 0,
+            "releaseGeneration": 201,
+            "schedulerMode": "shadow",
+            "schedulerReports": 1,
+            "strictLeaseAssignments": 0,
+            "strictLeaseShadow": 1,
+            "strictLeaseStale": 0,
+            "verifiedOrderBindings": 2,
+            "verifiedStores": 1
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-b",
+          "google:authbus-modes-a"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+          "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-b",
+          "google:authbus-modes-a"
+        ]
+      },
+      "logCounts": {
+        "debug": 0,
+        "error": 0,
+        "info": 0,
+        "warn": 0
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "09cf6b92b6c3fc0245bd5085689a843937a75ba2627a0d7e3e307fce1254ca30",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 2,
+          "route": "canonical_read",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "e41daa4d6cb2c8d3c697672a551675a10fee78822cd6aa930f7496ed0767ab85",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 3,
+          "route": "canonical_read",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "pathSha256": "530903c0ca10333765122cbaeb0d684c4ca93a0ae7aa7dd46714cfec0667b59b",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 4,
+          "route": "canonical_read",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "e38bc1d12c55e387140d85b337725c8fb522f73efbc313a63eba08d4525ddb6f",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 5,
+          "route": "own_inbox",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "authentications": 0,
+      "case": "revoked_source_login",
+      "cycles": [
+        {
+          "after": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "before": {
+            "order": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ],
+            "profiles": {
+              "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+              "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+              "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+              "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+            },
+            "resolvedOrder": [
+              "google:authbus-modes-b",
+              "google:authbus-modes-a"
+            ]
+          },
+          "plugin": {
+            "errorSha256": "5f5564471db8ccaabd6aba3216adb359531e94092fb06404d5e8b47164e9205c",
+            "leader": false,
+            "ok": false
+          }
+        }
+      ],
+      "defaultAgentScoped": true,
+      "error": "actual_plugin_cycle_failed",
+      "exit_code": 3,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "initial": {
+        "order": [
+          "google:authbus-modes-b",
+          "google:authbus-modes-a"
+        ],
+        "profiles": {
+          "google:authbus-modes-a": "d4970df4d4ce840f63867a22372401b95efaaf2f9c0850356b037aa46cf07dd3",
+          "google:authbus-modes-b": "80cd7556fa33bf380e8a3f6bb93dd31103798fd0660d748d046c973fa6161d87",
+          "google:authbus-modes-local": "840674ab37f87597f3a7a3fb8b5ed039b29f4626fde2934358beb47ac2e5dcf1",
+          "openai:authbus-modes-new": "caf89d792e7b91970ceb2fbcd82b3b093bf61c871b8220422accd71e062b2d17"
+        },
+        "resolvedOrder": [
+          "google:authbus-modes-b",
+          "google:authbus-modes-a"
+        ]
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "pathSha256": "4563a55fd3e6acee2c2024484dcfea90798cc7a7e46a159e05915e23be1217d3",
+          "peerCertificateSha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+          "requestSocketId": 1,
+          "route": "login",
+          "socketId": 1,
+          "status": 400,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": false,
+      "phase": "actual_plugin",
+      "production_coordinator_replacement": false,
+      "production_mutation": false,
+      "provider_network_allowed": false,
+      "real_provider_credentials": false,
+      "schema": "actual-authbus-main-modes-consumer-v1",
+      "sdkVersion": "2026.7.1-2"
+    }
+  ],
+  "consumer_sha256": "fca9e75518670cfa4ca247b8125dc4758aac92d8064c2828a4141fa5dbbe2c48",
+  "created_at": "2026-10-17T12:24:31.268536+00:00",
+  "driver_sha256": "22da6b85f553b971d66a9303b971437853d13db217dc3caba153fa70ae9e5058",
+  "j3160_contacted": false,
+  "main_config_source_sha256": "791d2d5e7166d02b871a8aa21b0194ca65456c0019757451bfe46d0fe8127d55",
+  "oauth_refreshed": false,
+  "ok": true,
+  "plugin_source_sha256": {
+    "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+    "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+    "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+    "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+    "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+    "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+    "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+  },
+  "production_coordinator_replacement": false,
+  "production_cutover": false,
+  "production_mutation": false,
+  "provider_network_allowed": false,
+  "real_provider_credentials": false,
+  "schema": "native-v6-authbus-main-modes-v1",
+  "server_cert_der_sha256": "31ffaeeb90b468ba6f66ab9cdde701c02f0c6b8416fc3a6fa5644b38979f22b7",
+  "server_cycles": [
+    {
+      "case": "cold_committed_control",
+      "exit_code": -9,
+      "pid": 1904451,
+      "stop": "SIGKILL"
+    },
+    {
+      "case": "cold_revocation",
+      "exit_code": -9,
+      "pid": 1905894,
+      "stop": "SIGKILL"
+    }
+  ]
+}
+

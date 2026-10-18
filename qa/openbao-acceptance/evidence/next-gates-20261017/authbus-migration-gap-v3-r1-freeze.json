@@ -1,0 +1,191 @@
+{
+  "allowlist_canonical_sha256": "a37331721a7560b60029c08db9423dd5eda57dc3855c889c492a4a6b79729644",
+  "artifacts": [
+    {
+      "bytes": 114576,
+      "name": "authbus_migration_gap_inventory_v3.py",
+      "sha256": "6e36468e50e6f458cd970779c2a1d7dda7aa761547381edacdb5e1d37e34d2ce"
+    },
+    {
+      "bytes": 112920,
+      "name": "authbus_migration_gap_allowlist_v3.json",
+      "sha256": "a9529e978c15c3f6cf578ff55c95ce42174507baaafd9663190af53ecb6476c5"
+    },
+    {
+      "bytes": 1105,
+      "name": "authbus_migration_gap_source_receipts_v3.json",
+      "sha256": "9aaae531fa476dd930a5425bd03e3f9cbaaae295008547de154bb590b98f6013"
+    },
+    {
+      "bytes": 72022,
+      "name": "authbus_migration_gap_schema_v3.json",
+      "sha256": "b38acfc637736cb5e0dcf8935882881e3098f0fc4eac630c9ae69423f18e67b4"
+    },
+    {
+      "bytes": 14482,
+      "name": "authbus_migration_gap_inventory_v3_tests.py",
+      "sha256": "2457096e0407ca233936dc207cb5611732b317bca3203de6bcf6f84edce00c17"
+    },
+    {
+      "bytes": 35285,
+      "name": "run_authbus_migration_gap_v3_r1.py",
+      "sha256": "aec87e40852bf548982c92833eb75ec88ee1ecca108d7c8fe2dc26ee9061354d"
+    },
+    {
+      "bytes": 10210,
+      "name": "run_authbus_migration_gap_v3_r1_tests.py",
+      "sha256": "9bb4dd5758f41a01133d19cadbcae4c8e3dc2e94e02aea42be809ee5b2e6a563"
+    },
+    {
+      "bytes": 6846,
+      "name": "authbus_migration_gap_v3_provenance_tests.py",
+      "sha256": "bb5554664d8bfecde3675ff17aceea18bfa18c1b4eebf1b0c0edd51df4f0c0b7"
+    },
+    {
+      "bytes": 21214,
+      "name": "rebuild_authbus_migration_gap_v3.py",
+      "sha256": "33cd50ea8c59f6d63812ad99dcdc72016af13e6cb3ceae9510a2b828ca03973a"
+    },
+    {
+      "bytes": 7705,
+      "name": "freeze_authbus_migration_gap_v3.py",
+      "sha256": "430dbd7528786d50f1989594e7d398e018151774665e573cfcc3160be3bbf5b0"
+    },
+    {
+      "bytes": 12993,
+      "name": "authbus_migration_gap_v3.README.md",
+      "sha256": "0f2ad255d5a80f37c3ff5cc32d30d64a905b78903403bc044b36fde384f4ff71"
+    }
+  ],
+  "completed_at": "2026-10-18T02:26:07.720961+00:00",
+  "created_at": "2026-10-18T02:26:04.705551+00:00",
+  "credential_payloads_read": false,
+  "known_v2_changes": [
+    "New path/source authority reconstructed from four verified public receipts",
+    "All environment values omitted; field names only",
+    "Actual returned read bytes charged before checking original deadline"
+  ],
+  "local_only": true,
+  "new_version": true,
+  "original_migration_manifest_recovered": false,
+  "original_v2_plan_recovered": false,
+  "plan_only": {
+    "exit_code": 0,
+    "receipt": {
+      "bytes": 4486,
+      "name": "authbus-migration-gap-v3-r1-plan-only.json",
+      "sha256": "74c13c6c29cbed59677456cab37e5c786d2b16c15d66577feed060ec37cf56e2"
+    },
+    "remote_called": false
+  },
+  "production_mutation": false,
+  "python39_ast_parse_passed": true,
+  "qualification": {
+    "allClientsAndBackupsMigrated": false,
+    "backupRestoreQualified": false,
+    "legacyCleanupQualified": false,
+    "metadataOnly": true,
+    "productionCutoverQualified": false,
+    "providerLivenessQualified": false
+  },
+  "real_hosts_scanned": 0,
+  "runtime_called": false,
+  "schema": "authbus-migration-gap-local-freeze-v3-r1",
+  "schema_engine_validation": {
+    "package": "jsonschema",
+    "schema_json_parse_passed": true,
+    "status": "not_run_package_unavailable"
+  },
+  "scope_counts": {
+    "backup_runtime": 38,
+    "binding_files": 12,
+    "missing_agents": 2,
+    "relay_dependencies": 8,
+    "relay_startups": 4,
+    "secretrefs": 19
+  },
+  "source_receipt_set_sha256": "bf03a5819e325fac277a2de74768c2639dcb9650cf47285d87e77d26a2f1068c",
+  "source_receipts": [
+    {
+      "bytes": 29580,
+      "name": "authbus-current-inventory-r1-main.json",
+      "sha256": "a5083d6c99800054eb50155dafe033fd7429fdec48d8b440569eae5678e62452"
+    },
+    {
+      "bytes": 24261,
+      "name": "authbus-current-inventory-r1-macbook-pro.json",
+      "sha256": "4445db0b874b12f27a11f2f9dab2d9d261dc6457acf827623f840e1705a560fd"
+    },
+    {
+      "bytes": 22917,
+      "name": "authbus-current-inventory-r1-rog.json",
+      "sha256": "0a10171367de4b7588177f750e65bddef9219a5769615667b356ad0c1602440a"
+    },
+    {
+      "bytes": 17586,
+      "name": "authbus-current-inventory-r1-pocket4.json",
+      "sha256": "7282f921223de2fb7ea32a7c39298322e65d22350f0a8e871ed87e3f3a8da293"
+    }
+  ],
+  "ssh_called": false,
+  "test_suites": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/d090566e965e/authbus_migration_gap_inventory_v3_tests.py"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-10-18T02:26:06.701704+00:00",
+      "log": {
+        "bytes": 2305,
+        "name": "authbus-migration-gap-v3-r1-scanner-tests.log",
+        "sha256": "a4be317c3e07503c9b1cbead303837b29b1b7449ee99517f404ced35e268d3a7"
+      },
+      "passed": true,
+      "started_at": "2026-10-18T02:26:04.873032+00:00",
+      "test_file": "authbus_migration_gap_inventory_v3_tests.py",
+      "tests": 14
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/d090566e965e/run_authbus_migration_gap_v3_r1_tests.py"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-10-18T02:26:07.247545+00:00",
+      "log": {
+        "bytes": 1949,
+        "name": "authbus-migration-gap-v3-r1-controller-tests.log",
+        "sha256": "321d25195df9bce75d084fae11541d72ae8e4775b791dc9c91115f067b8dec48"
+      },
+      "passed": true,
+      "started_at": "2026-10-18T02:26:06.701747+00:00",
+      "test_file": "run_authbus_migration_gap_v3_r1_tests.py",
+      "tests": 12
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/d090566e965e/authbus_migration_gap_v3_provenance_tests.py"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-10-18T02:26:07.359754+00:00",
+      "log": {
+        "bytes": 458,
+        "name": "authbus-migration-gap-v3-r1-provenance-tests.log",
+        "sha256": "7617fcb55712a4ceb9e90b120e988ab15ad7ced6dea4d52355dfffa696545f12"
+      },
+      "passed": true,
+      "started_at": "2026-10-18T02:26:07.247584+00:00",
+      "test_file": "authbus_migration_gap_v3_provenance_tests.py",
+      "tests": 2
+    }
+  ],
+  "tests_passed": 28
+}

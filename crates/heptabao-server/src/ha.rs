@@ -16,7 +16,7 @@ use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
 use heptabao_ha_service::{
     MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
-    TlsPeerEndpoint, serve_one_mtls_peer_frame_with_origin,
+    TlsPeerEndpoint, serve_one_mtls_authenticated_peer_frame,
 };
 use heptabao_raft_runtime::{
     CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
@@ -49,6 +49,16 @@ use crate::{
 #[path = "ha_record_runtime.rs"]
 mod records;
 pub(crate) use records::{CommittedRecordState, RecordPublicationPreflightError};
+
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "ha_native_v6_runtime.rs"]
+mod native_v6_runtime;
+#[cfg(feature = "experimental-native-v6-ha")]
+pub(crate) use native_v6_runtime::{CommittedNativeV6Read, NativeHaPublicationError};
+
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "ha_native_v6_backup.rs"]
+pub(crate) mod native_v6_backup;
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
@@ -148,6 +158,10 @@ fn default_max_inflight() -> usize {
 #[path = "ha_peer_budget.rs"]
 mod peer_budget;
 use peer_budget::PeerWorkerBudget;
+
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "ha_native_v6_peer_capacity.rs"]
+mod native_v6_peer_capacity;
 
 struct ParsedPeer {
     id: u64,
@@ -298,6 +312,8 @@ struct RaftWireFrame {
 struct PeerListener {
     stop: Arc<AtomicBool>,
     workers: Vec<JoinHandle<()>>,
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_capacity_installed: bool,
 }
 
 impl Drop for PeerListener {
@@ -582,6 +598,8 @@ pub(crate) struct StorageBinding {
 }
 
 pub struct HaProcess {
+    #[cfg(feature = "experimental-native-v6-ha")]
+    native_v6: Option<Arc<native_v6_runtime::NativeV6Runtime>>,
     storage_dir: PathBuf,
     record_commits_since_gc: AtomicU64,
     bootstrap_ready: AtomicBool,
@@ -590,7 +608,7 @@ pub struct HaProcess {
     bootstrap_history_complete: AtomicBool,
     bootstrap_owner: bool,
     runtime: Runtime,
-    node: Option<ProcessRaftNode>,
+    node: Option<Arc<ProcessRaftNode>>,
     codec: ClusterStateCodec,
     cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
@@ -650,6 +668,21 @@ mod inbound_deadline_tests {
 
 impl HaProcess {
     pub fn start(config: HaProcessConfig) -> Result<Self, String> {
+        Self::start_inner(config, false)
+    }
+
+    /// Install candidate native/ReadIndex workers and ciphertext custody before
+    /// accepting the first peer connection. Ordinary startup remains separate.
+    #[cfg(feature = "experimental-native-v6-ha")]
+    pub fn start_native_v6_candidate(config: HaProcessConfig) -> Result<Self, String> {
+        Self::start_inner(config, true)
+    }
+
+    fn start_inner(config: HaProcessConfig, native_candidate: bool) -> Result<Self, String> {
+        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        if native_candidate {
+            return Err("native HA candidate feature is unavailable".into());
+        }
         validate_config(&config)?;
         let replication_key = load_replication_key(&config.replication_key_file)?;
         let codec = ClusterStateCodec::new(config.cluster_id.clone(), replication_key)
@@ -690,7 +723,7 @@ impl HaProcess {
             .collect::<BTreeMap<_, _>>();
         let pinned = parsed_peers
             .iter()
-            .filter(|peer| peer.id != config.node_id)
+            .filter(|peer| peer.id != config.node_id || native_candidate)
             .flat_map(|peer| {
                 std::iter::once((peer.certificate_sha256, peer.node.clone())).chain(
                     peer.certificate_sha256_next
@@ -700,6 +733,12 @@ impl HaProcess {
             .collect::<BTreeMap<_, _>>();
         let timeout = Duration::from_millis(config.peer_timeout_ms);
         let (client_tls, server_tls, local_leaf_digest) = build_mutual_tls(&config)?;
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let native_v6 = Arc::new(native_v6_runtime::NativeV6Runtime::configured(
+            &config,
+            client_tls.clone(),
+            local_leaf_digest,
+        )?);
         let local = parsed_peers
             .iter()
             .find(|peer| peer.id == config.node_id)
@@ -756,6 +795,11 @@ impl HaProcess {
                 ))
                 .map_err(|error| error.to_string())?
         };
+        let node = Arc::new(node);
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if native_candidate {
+            native_v6.enable()?;
+        }
         let rpc_service = node.rpc_service();
         let listener = TcpListener::bind(config.listen)
             .map_err(|_| "cannot bind HA peer listener".to_owned())?;
@@ -771,13 +815,36 @@ impl HaProcess {
         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
         let worker_budget = PeerWorkerBudget::for_limit(config.max_inflight);
         let forward_slots = Arc::new(Semaphore::new(worker_budget.forwarding));
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let native_capacity = native_candidate.then(|| {
+            Arc::new(native_v6_peer_capacity::NativePeerCapacity::for_budget(
+                &worker_budget,
+            ))
+        });
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let worker_count = native_capacity
+            .as_ref()
+            .map_or(worker_budget.workers, |capacity| capacity.workers);
+        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        let worker_count = worker_budget.workers;
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let read_slots = native_capacity.as_ref().map_or_else(
+            || forward_slots.clone(),
+            |capacity| capacity.read_index.clone(),
+        );
+        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        let read_slots = forward_slots.clone();
         let mut listener_pool = PeerListener {
             stop: stop.clone(),
             workers: Vec::new(),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_capacity_installed: native_candidate,
         };
         let local_id = config.node_id;
         let cluster_id = config.cluster_id.clone();
-        for worker_id in 0..worker_budget.workers {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let native_cluster_digest = codec.native_v6_cluster_digest();
+        for worker_id in 0..worker_count {
             let listener_stop = stop.clone();
             let listener = listener.clone();
             let identities = identities.clone();
@@ -787,8 +854,15 @@ impl HaProcess {
             let runtime_handle = runtime.handle().clone();
             let listener_forward_handler = forward_handler.clone();
             let forward_slots = forward_slots.clone();
+            let read_slots = read_slots.clone();
+            #[cfg(feature = "experimental-native-v6-ha")]
+            let native_capacity = native_capacity.clone();
             let listener_cluster_id = cluster_id.clone();
             let listener_allow_legacy_peer_v1 = allow_legacy_peer_v1;
+            #[cfg(feature = "experimental-native-v6-ha")]
+            let listener_native_v6 = native_v6.clone();
+            #[cfg(feature = "experimental-native-v6-ha")]
+            let listener_native_node = node.clone();
             let worker = thread::Builder::new()
                 .name(format!("heptabao-raft-peer-{local_id}-{worker_id}"))
                 .spawn(move || {
@@ -799,13 +873,29 @@ impl HaProcess {
                         // One actual inbound origin charges TLS/frame/queue time.
                         // Consensus RPCs keep their peer-attempt budget; forwarding
                         // has the separately configured business-request budget.
-                        let result = serve_one_mtls_peer_frame_with_origin(
+                        let result = serve_one_mtls_authenticated_peer_frame(
                             &listener,
                             server_tls.clone(),
                             &identities,
-                            timeout,
+                            forward_timeout,
                             listener_allow_legacy_peer_v1,
-                            |peer, frame, accepted_at| {
+                            |authenticated| {
+                                #[cfg(feature = "experimental-native-v6-ha")]
+                                if heptabao_ha_service::is_native_v6_closure_frame(authenticated.payload())
+                                    || heptabao_ha_service::is_native_v6_root_pull_frame(authenticated.payload()) {
+                                    // These independent native permits were installed
+                                    // with real extra workers at candidate startup.
+                                    // ReadIndex retains its own worker capacity too.
+                                    let capacity = native_capacity.as_ref()
+                                        .ok_or(heptabao_ha_service::HaError::InvalidCluster)?;
+                                    let _native_slot = capacity.native.clone().try_acquire_owned()
+                                        .map_err(|_| heptabao_ha_service::HaError::WriterBusy)?;
+                                    return listener_native_v6.handle_authenticated(
+                                        authenticated, &listener_native_node, handle,
+                                        native_cluster_digest,
+                                    );
+                                }
+                                let (peer, frame, accepted_at) = authenticated.into_legacy_parts();
                                 // Charge TLS/frame parsing and queue delay from TCP
                                 // admission, never the worker's idle accept() wait.
                                 let inbound_deadlines = InboundPeerDeadlines::new(
@@ -814,6 +904,12 @@ impl HaProcess {
                                 let source = *ids
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
+                                // Self pins exist only for a native loopback
+                                // fsync vote. Legacy Raft/forwarding retain the
+                                // old source != target authentication boundary.
+                                if source == local_id {
+                                    return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
+                                }
                                 if is_forward_request(&frame) {
                                     let mut request = decode_forward_request(
                                         &frame,
@@ -821,6 +917,9 @@ impl HaProcess {
                                         listener_allow_legacy_peer_v1,
                                     )
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                    if Instant::now() >= inbound_deadlines.forward_request {
+                                        return Err(heptabao_ha_service::HaError::Transport);
+                                    }
                                     if request.source != source || request.target != local_id {
                                         return Err(
                                             heptabao_ha_service::HaError::PeerAuthenticationFailed,
@@ -901,6 +1000,9 @@ impl HaProcess {
                                     listener_allow_legacy_peer_v1,
                                 )
                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                if Instant::now() >= inbound_deadlines.read_rpc {
+                                    return Err(heptabao_ha_service::HaError::Transport);
+                                }
                                 if request.role != RAFT_FRAME_REQUEST
                                     || request.source != source
                                     || request.target != local_id
@@ -910,32 +1012,35 @@ impl HaProcess {
                                     );
                                 }
                                 let legacy_v1 = request.legacy_v1;
-                                // ReadIndex waits on quorum. Charge it against
-                                // the same bounded application slots as forwarding,
-                                // leaving independent workers for consensus RPCs.
+                                // Candidate native admission needs ReadIndex even
+                                // when forwarding is saturated. Its independent
+                                // slots have real worker capacity. Ordinary startup
+                                // retains the previous shared business slots.
                                 let _read_slot =
                                     if request.kind == RaftRpcKind::ReadIndex {
-                                        Some(forward_slots.clone().try_acquire_owned().map_err(
+                                        Some(read_slots.clone().try_acquire_owned().map_err(
                                             |_| heptabao_ha_service::HaError::WriterBusy,
                                         )?)
                                     } else {
                                         None
                                     };
-                                let payload = if request.kind == RaftRpcKind::ReadIndex {
-                                    handle.block_on(
+                                // Peer workers are ordinary OS threads. Create
+                                // the Tokio timer only after entering this
+                                // process's runtime, retaining the accepted
+                                // frame's original absolute deadline.
+                                let payload = handle.block_on(async {
+                                    tokio::time::timeout_at(
+                                        tokio::time::Instant::from_std(inbound_deadlines.read_rpc),
                                         heptabao_raft_runtime::with_read_index_deadline(
                                             inbound_deadlines.read_rpc,
                                             service.handle(source, request.kind, request.payload),
                                         ),
-                                    )
-                                } else {
-                                    handle.block_on(service.handle(
-                                        source,
-                                        request.kind,
-                                        request.payload,
-                                    ))
-                                }
+                                    ).await
+                                }).map_err(|_| heptabao_ha_service::HaError::Transport)?
                                 .map_err(map_remote_service_error)?;
+                                if Instant::now() >= inbound_deadlines.read_rpc {
+                                    return Err(heptabao_ha_service::HaError::Transport);
+                                }
                                 let response = RaftWireFrame {
                                     cluster_id: listener_cluster_id.clone(),
                                     role: RAFT_FRAME_RESPONSE,
@@ -1017,6 +1122,8 @@ impl HaProcess {
         }
 
         Ok(Self {
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_v6: Some(native_v6),
             storage_dir: config.raft_dir,
             record_commits_since_gc: AtomicU64::new(0),
             bootstrap_ready: AtomicBool::new(bootstrap_ready),
@@ -1340,7 +1447,7 @@ impl HaProcess {
     pub fn local_id(&self) -> Result<u64, String> {
         self.node
             .as_ref()
-            .map(ProcessRaftNode::id)
+            .map(|node| node.id())
             .ok_or_else(|| "HA process is shut down".into())
     }
 
@@ -1518,6 +1625,10 @@ impl HaProcess {
         use crate::state_record_root::StateIdentity;
         if expected.digest() == [0; 32] {
             return Err("HA application identity is not initialized".into());
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if matches!(expected, StateIdentity::RecordsV6(_)) {
+            return self.ensure_native_v6_application_identity(expected);
         }
         // This performs ReadIndex and authenticates the typed root, including
         // its base and public references. A published V5 root never falls back
@@ -1842,6 +1953,47 @@ impl HaProcess {
         String,
     > {
         use crate::state_record_root::StateIdentity;
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.native_v6_enabled() {
+            let deadline = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|error| error.to_string())?;
+            if let Some(read) = self.native_v6_committed_read(deadline)? {
+                // The real selected root includes its enrollment and full
+                // publication provenance. Missing ciphertext is repaired only
+                // through the actual pinned peers before this authentication.
+                let identity = self.with_native_v6_source(&read, |codec, store| {
+                    let closure = codec
+                        .open_native_v6_committed_closure(
+                            read.enrollment(),
+                            read.published(),
+                            store,
+                            &mut || {
+                                self.verify_native_v6_committed_read(&read).map_err(|_| {
+                                    crate::ha_state::native_v6::NativeV6CodecError::Gate
+                                })
+                            },
+                        )
+                        .map_err(|_| "native application witness closure unavailable".to_owned())?;
+                    let identity = closure
+                        .root()
+                        .identity()
+                        .map_err(|_| "native application witness root invalid".to_owned())?;
+                    if identity != StateIdentity::RecordsV6(read.published().root_digest()) {
+                        return Err("native application witness root mismatch".to_owned());
+                    }
+                    Ok(identity)
+                })??;
+                // Preserve this exact applied witness, including its original
+                // capped deadline, generation, term and store identity. The
+                // Service still owes full typed materialization and Actor /
+                // audit / delivery gates; this is not a response permission.
+                self.verify_native_v6_committed_read(&read)?;
+                return Ok((identity, read.into_application_witness()));
+            }
+            // V6 may be absent before activation. The ordinary runtime API
+            // atomically rejects native activation, including a race after the
+            // preceding None, so retained V5 state cannot become a stale reply.
+        }
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
         let (witness, envelope, record) = self
             .block_on_read(node.application_read_witness())
@@ -2228,8 +2380,12 @@ fn reconcile_bootstrap_membership(
 impl Drop for HaProcess {
     fn drop(&mut self) {
         drop(self.listener.take());
+        #[cfg(feature = "experimental-native-v6-ha")]
+        drop(self.native_v6.take());
         if let Some(node) = self.node.take() {
-            let _ = self.runtime.block_on(node.shutdown());
+            if let Ok(node) = Arc::try_unwrap(node) {
+                let _ = self.runtime.block_on(node.shutdown());
+            }
         }
     }
 }
@@ -3521,6 +3677,8 @@ mod tests {
         let mut pool = PeerListener {
             stop: stop.clone(),
             workers: Vec::new(),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            native_capacity_installed: false,
         };
         for _ in 0..4 {
             let flag = stop.clone();

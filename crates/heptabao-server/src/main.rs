@@ -18,6 +18,19 @@ fn main() -> std::process::ExitCode {
 
 fn run() -> Result<(), String> {
     let arguments: Vec<_> = std::env::args().skip(1).collect();
+    #[cfg(feature = "experimental-native-v6-ha")]
+    let (arguments, native_ha_candidate) = {
+        let mut arguments = arguments;
+        let count = arguments
+            .iter()
+            .filter(|argument| argument.as_str() == "--experimental-native-v6-ha")
+            .count();
+        if count > 1 {
+            return Err("duplicate native HA candidate option".into());
+        }
+        arguments.retain(|argument| argument.as_str() != "--experimental-native-v6-ha");
+        (arguments, count == 1)
+    };
     #[cfg(feature = "fixture-native-v6-service")]
     let (arguments, native_candidate) = {
         let mut arguments = arguments;
@@ -49,6 +62,11 @@ fn run() -> Result<(), String> {
     let server_bytes = read_bounded_config(server_path)?;
     let config = heptabao_server::configuration::parse_server(&server_bytes)?;
 
+    #[cfg(feature = "experimental-native-v6-ha")]
+    if native_ha_candidate && (native_candidate || arguments.len() != 4) {
+        return Err("native HA candidate requires --ha-config and independent file custody".into());
+    }
+
     #[cfg(feature = "fixture-native-v6-service")]
     if native_candidate {
         if arguments.len() != 2 {
@@ -63,9 +81,15 @@ fn run() -> Result<(), String> {
     let ha_path = Path::new(&arguments[3]);
     let ha_bytes = read_bounded_config(ha_path)?;
     let ha_config = heptabao_server::configuration::parse_ha(&ha_bytes)?;
-    let ha = Arc::new(Mutex::new(heptabao_server::ha::HaProcess::start(
-        ha_config,
-    )?));
+    #[cfg(not(feature = "experimental-native-v6-ha"))]
+    let process = heptabao_server::ha::HaProcess::start(ha_config)?;
+    #[cfg(feature = "experimental-native-v6-ha")]
+    let process = if native_ha_candidate {
+        heptabao_server::ha::HaProcess::start_native_v6_candidate(ha_config)?
+    } else {
+        heptabao_server::ha::HaProcess::start(ha_config)?
+    };
+    let ha = Arc::new(Mutex::new(process));
     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
     if let Some(fixture) = fixture {
         return heptabao_server::http::serve_with_ha_fixture(config, ha, fixture);

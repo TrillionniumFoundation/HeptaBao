@@ -1,0 +1,22 @@
+   Compiling heptabao-filesystem-guard v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8n-shared-01/crates/heptabao-filesystem-guard)
+   Compiling heptabao-raft-runtime v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8n-shared-01/crates/heptabao-raft-runtime)
+    Finished `test` profile [optimized + debuginfo] target(s) in 40.38s
+     Running unittests src/lib.rs (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_raft_runtime-34641d8626f04125)
+
+running 13 tests
+test v6_replica_blobs::checked::existing::tests::checked_existing_bad_or_truncated_leaf_is_rejected_without_rewrite ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_cancellation_at_actual_boundaries_releases_no_receipt ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_directory_path_replacement_keeps_the_held_directory ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_interrupted_reads_have_a_finite_original_gate_bound ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_original_deadline_after_actual_file_sync_is_not_renewed ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_same_content_name_replacement_at_each_boundary_is_rejected ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_same_inode_mutation_after_each_real_sync_is_rejected ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_short_reads_eintr_and_eof_keep_each_64k_gate ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_symlink_hardlink_and_directory_are_never_missing ... ok
+test v6_replica_blobs::checked::existing::tests::checked_existing_trailing_bytes_and_full_reference_mismatch_are_rejected ... ok
+test v6_replica_blobs::checked::tests::checked_replica_authenticates_bytes_and_never_creates_after_initial_gate_rejection ... ok
+test v6_replica_blobs::checked::tests::checked_replica_rechecks_gate_after_actual_link_and_returns_no_receipt ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 124 filtered out; finished in 0.95s
+

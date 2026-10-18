@@ -499,7 +499,13 @@ impl Service {
             check()?;
             deadline.check().map_err(|_| RecordError::Invalid)
         };
-        if self.ha.is_some() || self.recovery_required {
+        if self.recovery_required {
+            return Err(rejected());
+        }
+        if self.ha.is_some() {
+            #[cfg(feature = "experimental-native-v6-ha")]
+            self.require_native_ha_environment()?;
+            #[cfg(not(feature = "experimental-native-v6-ha"))]
             return Err(rejected());
         }
         check().map_err(|_| rejected())?;

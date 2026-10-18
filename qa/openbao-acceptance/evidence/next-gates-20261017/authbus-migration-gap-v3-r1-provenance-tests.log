@@ -1,0 +1,7 @@
+test_depth_directory_and_total_entry_caps_do_not_expand_scope (__main__.ProvenanceAndBoundsTests.test_depth_directory_and_total_entry_caps_do_not_expand_scope) ... ok
+test_every_fixed_scope_path_and_old_observation_has_real_receipt_authority (__main__.ProvenanceAndBoundsTests.test_every_fixed_scope_path_and_old_observation_has_real_receipt_authority) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.007s
+
+OK

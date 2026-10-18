@@ -3,6 +3,10 @@ use super::native_v6_reader::{
     ACTIVE_CURSOR_RESOURCE, ACTIVE_SOURCE_ROOT_RESOURCE, NativeActiveCursor,
 };
 use super::*;
+
+#[cfg(test)]
+#[path = "service_native_v6_migration_tests.rs"]
+mod migration_tests;
 use crate::state_records::RecordError;
 use crate::v6_native_custody::OriginalDeadline;
 
@@ -72,7 +76,7 @@ impl Service {
         }
     }
 
-    fn capture_native_failure_notice(&mut self, error: &ServiceError) {
+    pub(super) fn capture_native_failure_notice(&mut self, error: &ServiceError) {
         let ServiceError::OutcomeUnknown { recovery_reference } = error else {
             return;
         };
@@ -164,13 +168,21 @@ impl Service {
     }
 
     pub(super) fn require_native_root_candidate(&self, state: &State) -> Result<(), Response> {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.ha.is_some() {
+            self.require_native_ha_environment()?;
+        } else {
+            self.native_candidate_profile
+                .as_ref()
+                .ok_or_else(rejected)?
+                .check_environment(self)?;
+        }
+        #[cfg(not(feature = "experimental-native-v6-ha"))]
         self.native_candidate_profile
             .as_ref()
             .ok_or_else(rejected)?
             .check_environment(self)?;
-        if self.native_candidate_profile.is_none()
-            || self.ha.is_some()
-            || self.postgres_durable.is_some()
+        if self.postgres_durable.is_some()
             || self.durable_profile.is_some()
             || self.openbao_wrapper_owner.is_some()
             || self.recovery_required
@@ -182,6 +194,35 @@ impl Service {
                 .any(|path| !path.is_empty())
             || !state.namespaces.is_empty()
             || !state.namespace_leases.is_empty()
+        {
+            return Err(rejected());
+        }
+        Ok(())
+    }
+
+    #[cfg(feature = "experimental-native-v6-ha")]
+    pub(super) fn require_native_ha_environment(&self) -> Result<(), Response> {
+        let ha = self.ha.as_ref().ok_or_else(rejected)?;
+        let seal = self.seal.as_ref().ok_or_else(rejected)?;
+        if self.native_candidate_profile.is_some()
+            || self.postgres_durable.is_some()
+            || self.durable_profile.is_some()
+            || self.openbao_wrapper_owner.is_some()
+            || self.recovery_required
+            || self.audit_failed
+            || seal.is_wrapper()
+            || !ha
+                .lock_for_request()
+                .map_err(|_| rejected())?
+                .native_v6_enabled()
+        {
+            return Err(rejected());
+        }
+        seal.validate().map_err(|_| rejected())?;
+        if load_seal_metadata(&self.data_dir)
+            .map_err(|_| rejected())?
+            .as_ref()
+            != Some(seal)
         {
             return Err(rejected());
         }
@@ -285,6 +326,10 @@ impl Service {
         purpose: &'static str,
         before_publish: &mut impl FnMut(&AuthState) -> Result<(), Response>,
     ) -> Result<State, Response> {
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.ha.is_some() {
+            return self.commit_native_ha_root_plan(state, plan, migration, before_publish);
+        }
         let deadline = plan.deadline;
         let check = || deadline.check().map_err(|_| RecordError::Invalid);
         check().map_err(|_| rejected())?;
@@ -420,15 +465,56 @@ impl Service {
                     }
                 }
                 // All ciphertext was read back under the original source session.
-                // Locator metadata and the active root/cursor share ONE atomic Apply.
-                // A known stage failure cannot advance generation under an old cursor.
+                // Do not reuse that generation-bound session after any journal
+                // append. A large migration may register unreachable locators
+                // in bounded batches while preserving the exact old root,
+                // cursor and retained-source conditions on every append.
+                drop(blob_session);
                 let root_slots = if migration { 3 } else { 2 };
-                if missing
+                let mut mutations = missing
+                    .into_iter()
+                    .map(|(resource, marker)| (resource, Some(marker)))
+                    .collect::<Vec<_>>();
+                if mutations
                     .len()
                     .checked_add(root_slots)
                     .is_none_or(|count| count > heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
                 {
-                    return Err(ServiceError::RequestCapacityExhausted);
+                    let mut staged = std::mem::take(&mut mutations).into_iter();
+                    let mut batch_index = 0usize;
+                    loop {
+                        let batch: Vec<_> = staged
+                            .by_ref()
+                            .take(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
+                            .collect();
+                        if batch.is_empty() {
+                            break;
+                        }
+                        gate()?;
+                        durable.apply_batch_conditionally_before_publish(
+                            heptabao_durable_service::BatchPublication {
+                                replay_epoch: plan.root.replay_epoch,
+                                principal: "heptabao-server".into(),
+                                namespace: "system".into(),
+                                request_id: format!("{operation}-locators-{batch_index}"),
+                                authorization_digest: identity.digest(),
+                                mutations: batch,
+                            },
+                            conditions_copy(&conditions),
+                            &mut gate,
+                        )?;
+                        gate()?;
+                        batch_index += 1;
+                    }
+                    // Reopen every candidate object through a fresh source
+                    // session at the actual new generation. The typed closure
+                    // must authenticate from durable bytes before the old root
+                    // can be replaced; staged memory is not recovery evidence.
+                    v6_records::verify_durable_native_candidate(
+                        &plan.root, durable, deadline, &mut gate,
+                    )
+                    .map_err(|_| ServiceError::CorruptState)?;
+                    gate()?;
                 }
                 gate()?;
                 let publication_generation = durable
@@ -446,10 +532,6 @@ impl Service {
                 }
                 .map_err(|_| ServiceError::CorruptState)?;
                 let cursor_bytes = cursor.encode().map_err(|_| ServiceError::CorruptState)?;
-                let mut mutations = missing
-                    .into_iter()
-                    .map(|(resource, marker)| (resource, Some(marker)))
-                    .collect::<Vec<_>>();
                 mutations.extend(vec![
                     ("state".into(), Some(Secret::new(plan.bytes.to_vec())?)),
                     (

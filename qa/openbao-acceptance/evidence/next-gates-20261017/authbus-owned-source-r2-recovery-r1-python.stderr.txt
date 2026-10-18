@@ -1,0 +1,16 @@
+test_changed_identity_and_owner (__main__.Contracts.test_changed_identity_and_owner) ... ok
+test_changed_source_refuses_without_alternative (__main__.Contracts.test_changed_source_refuses_without_alternative) ... ok
+test_duplicate_profile_refused (__main__.Contracts.test_duplicate_profile_refused) ... ok
+test_exact_source_and_owner (__main__.Contracts.test_exact_source_and_owner) ... ok
+test_js_canonical_unicode_digest (__main__.Contracts.test_js_canonical_unicode_digest) ... ok
+test_original_deadline_does_not_restart (__main__.Contracts.test_original_deadline_does_not_restart) ... ok
+test_post_dispatch_deadline_does_not_claim_known_failure (__main__.Contracts.test_post_dispatch_deadline_does_not_claim_known_failure) ... ok
+test_private_file_mode_symlink_and_limit (__main__.Contracts.test_private_file_mode_symlink_and_limit) ... ok
+test_profile_identity_and_credentials_are_private (__main__.Contracts.test_profile_identity_and_credentials_are_private) ... ok
+test_refresh_or_provider_claim_refused (__main__.Contracts.test_refresh_or_provider_claim_refused) ... ok
+test_sdk_or_config_changed (__main__.Contracts.test_sdk_or_config_changed) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.245s
+
+OK

@@ -10,6 +10,9 @@ use heptabao_durable_service::PreparedV6Restore;
 use std::cell::RefCell;
 use std::io::{Read, Seek};
 
+#[path = "service_native_v6_staging_repair.rs"]
+mod staging_repair;
+
 // Redacted phase duration only: never request paths, identities or object bytes.
 struct SnapshotPhaseObservation {
     phase: &'static str,

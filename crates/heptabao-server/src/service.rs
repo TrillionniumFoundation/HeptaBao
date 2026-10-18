@@ -365,11 +365,23 @@ pub(crate) use owner_store::OwnerPublicationBinding;
 #[cfg(test)]
 pub(crate) use owner_store::OwnerWritePlan;
 #[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_auth.rs"]
+mod native_auth;
+#[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_blob_source.rs"]
 mod native_blob_source;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_paged_dispatch.rs"]
 mod native_paged_dispatch;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_install.rs"]
+pub(crate) mod native_v6_ha_install;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_objects.rs"]
+pub(crate) mod native_v6_ha_objects;
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_v6_ha_writer.rs"]
+mod native_v6_ha_writer;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_v6_reader.rs"]
 mod native_v6_reader;
@@ -1401,6 +1413,8 @@ pub struct Service {
     pending_workflow_external_hold: Option<Box<PendingExternalRequest>>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    pending_native_auth_delivery: Option<native_auth::NativeAuthDelivery>,
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
@@ -1845,6 +1859,8 @@ impl Service {
             pending_workflow_external_hold: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            pending_native_auth_delivery: None,
             pending_ha_step_down: None,
             pending_forward_delivery: None,
             pending_help_authority: None,
@@ -2535,12 +2551,31 @@ impl Service {
         retain_clock_receipt: bool,
     ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
         let (now, token_clock) = request_clock;
-        let terminal_floor = if self.pending_forward_delivery.is_some() {
-            self.check_pending_forward_delivery(&response)
-                .map(|()| None)
-        } else {
-            self.persist_terminal_token_clock_with_receipt(token_clock, now, retain_clock_receipt)
-        };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_deadline = self.native_auth_terminal_deadline();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let _native_auth_deadline =
+            native_auth_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_terminal = native_auth_deadline.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_auth_terminal = false;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let terminal_owner = self.check_pending_native_auth_before_terminal();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let terminal_owner: Result<(), Response> = Ok(());
+        let terminal_floor = terminal_owner.and_then(|()| {
+            if self.pending_forward_delivery.is_some() {
+                self.check_pending_forward_delivery(&response)
+                    .map(|()| None)
+            } else {
+                self.persist_terminal_token_clock_with_receipt(
+                    token_clock,
+                    now,
+                    retain_clock_receipt || native_auth_terminal,
+                )
+            }
+        });
         if let Err(error) = &terminal_floor {
             crate::ha_forward_completion::diagnostic_response("terminal_floor_veto", error);
         }
@@ -2562,6 +2597,24 @@ impl Service {
                 None
             }
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let (receipt, terminal_floor_succeeded) =
+            if native_auth_terminal && terminal_floor_succeeded {
+                // The original NativeAuth capsule consumes the one exact terminal
+                // self-write receipt. Only then, before the mandatory response
+                // audit below, can it bind its sole real HA read proof.
+                match self.bind_pending_native_auth_before_audit(receipt) {
+                    Ok(()) => (None, true),
+                    Err(cause) => {
+                        erase_json(&mut response.body);
+                        response.consistency_index = None;
+                        response = cause;
+                        (None, false)
+                    }
+                }
+            } else {
+                (receipt, terminal_floor_succeeded)
+            };
         if let Err(cause) = self.check_pending_approle_lookup_before_audit() {
             erase_json(&mut response.body);
             response = cause;
@@ -2677,7 +2730,12 @@ impl Service {
             || self.pending_sdk_credential_list.is_some();
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_pending = false;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_pending = self.pending_native_auth_delivery.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_auth_pending = false;
         if sdk_pending
+            || native_auth_pending
             || self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_database_rotation_effect.is_some()
@@ -2995,6 +3053,12 @@ impl Service {
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_delivery = self.pending_native_auth_delivery.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_auth_expected = native_auth_delivery.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_auth_expected = false;
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
         let namespace_deletion = self.pending_namespace_deletion.take();
@@ -3020,6 +3084,7 @@ impl Service {
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
+            + usize::from(native_auth_expected)
             + usize::from(external_pki_no_effect.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
@@ -3103,6 +3168,10 @@ impl Service {
             self.pending_sdk_control_authority = sdk_control;
         }
         self.pending_token_api_authority = token_api_authority;
+        #[cfg(feature = "fixture-native-v6-service")]
+        {
+            self.pending_native_auth_delivery = native_auth_delivery;
+        }
         self.pending_help_authority = help_authority;
         self.pending_namespace_deletion = namespace_deletion;
         self.pending_approle_tidy = approle_tidy;
@@ -3135,6 +3204,9 @@ impl Service {
         };
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
+        #[cfg(feature = "fixture-native-v6-service")]
+        let response =
+            self.complete_native_auth_delivery(native_auth_expected, response, &fingerprint);
         let response = self.complete_pending_external_pki_no_effect_delivery(
             external_pki_no_effect_expected,
             response,
@@ -3966,6 +4038,11 @@ impl Service {
             return Response::error(error.status, &error.message);
         }
         #[cfg(feature = "fixture-native-v6-service")]
+        let native_local_auth = self.native_root.is_some()
+            && admitted
+                .auth
+                .native_v6_local_auth_route(namespace, method, path, request.body);
+        #[cfg(feature = "fixture-native-v6-service")]
         {
             if path == "sys/internal/native-v6/activate" {
                 return self.activate_native_v6_route(admitted, principal.take(), &request);
@@ -3982,6 +4059,7 @@ impl Service {
                 );
             if self.native_root.is_some()
                 && !native_snapshot_route
+                && !native_local_auth
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -4049,6 +4127,15 @@ impl Service {
             resumed_control_group,
         ) {
             return response;
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if native_local_auth {
+            return self.dispatch_native_auth_request(
+                admitted,
+                principal.take(),
+                &request,
+                token_fields.as_ref(),
+            );
         }
         if path == "sys/plugins/reload/backend" {
             return self.transit_cache_reload_route(admitted, principal, &request);
@@ -7385,43 +7472,51 @@ impl Service {
             let original = crate::v6_native_custody::OriginalDeadline::capture()
                 .map_err(|_| Response::error(503, "native unseal requires original deadline"))?;
             native_v6_reader::load_cold_root(self, profile, &mut durable, key, original)?
+                .map(|cold| (cold.metadata, cold.native, cold.root))
         } else {
             None
         };
-        #[cfg(feature = "fixture-native-v6-service")]
-        let (state, bytes, state_rewrite_required, record_root, native_root) = if let Some(cold) =
-            cold_native
-        {
-            let mut metadata = cold.metadata;
-            metadata
-                .engines
-                .install_native_views(cold.native)
-                .map_err(Response::from_engine_error)?;
-            self.require_native_root_candidate(&metadata)?;
-            metadata.validate_format()?;
-            let owner_bytes = cold
-                .root
-                .owners
-                .iter()
-                .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
-                .ok_or_else(|| Response::error(507, "native opaque owner capacity exhausted"))?;
-            if owner_bytes > self.opaque_owner_limit() as u64 {
-                return Err(Response::error(
-                    507,
-                    "native opaque owner capacity exhausted",
-                ));
-            }
-            let bytes = cold
-                .root
-                .encode()
-                .map_err(|_| Response::error(503, "native cold identity rejected"))?;
-            (metadata, bytes, false, None, Some(cold.root))
+        #[cfg(feature = "experimental-native-v6-ha")]
+        let cold_native = if self.ha.is_some() {
+            let original = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|_| Response::error(503, "native HA unseal requires original deadline"))?;
+            native_v6_ha_install::load_cold_native_ha(self, &mut durable, key, original)?
+                .map(|cold| (cold.metadata, cold.native, cold.root))
         } else {
-            let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
-            let root = records::decode_root(&bytes)?;
-            self.validate_loaded_capacity(&state, root.as_ref())?;
-            (state, bytes, rewrite, root, None)
+            cold_native
         };
+        #[cfg(feature = "fixture-native-v6-service")]
+        let (state, bytes, state_rewrite_required, record_root, native_root) =
+            if let Some((mut metadata, native, root)) = cold_native {
+                metadata
+                    .engines
+                    .install_native_views(native)
+                    .map_err(Response::from_engine_error)?;
+                self.require_native_root_candidate(&metadata)?;
+                metadata.validate_format()?;
+                let owner_bytes = root
+                    .owners
+                    .iter()
+                    .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+                    .ok_or_else(|| {
+                        Response::error(507, "native opaque owner capacity exhausted")
+                    })?;
+                if owner_bytes > self.opaque_owner_limit() as u64 {
+                    return Err(Response::error(
+                        507,
+                        "native opaque owner capacity exhausted",
+                    ));
+                }
+                let bytes = root
+                    .encode()
+                    .map_err(|_| Response::error(503, "native cold identity rejected"))?;
+                (metadata, bytes, false, None, Some(root))
+            } else {
+                let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
+                let root = records::decode_root(&bytes)?;
+                self.validate_loaded_capacity(&state, root.as_ref())?;
+                (state, bytes, rewrite, root, None)
+            };
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let (state, bytes, state_rewrite_required, record_root) = {
             let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
@@ -8839,6 +8934,36 @@ impl Service {
         let Some(ha) = self.ha.as_ref().cloned() else {
             return Ok(ha_received::HaSyncProgress::Current);
         };
+        #[cfg(feature = "experimental-native-v6-ha")]
+        {
+            let selected = {
+                let process = ha
+                    .lock_for_request()
+                    .map_err(|_| Response::error(503, "HA control state is unavailable"))?;
+                if process.native_v6_enabled() {
+                    let deadline =
+                        crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| {
+                            Response::error(503, "native HA read requires original deadline")
+                        })?;
+                    process.native_v6_committed_read(deadline).map_err(|_| {
+                        Response::error(503, "native HA committed root is unavailable")
+                    })?
+                } else {
+                    None
+                }
+            };
+            if let Some(selected) = selected {
+                return self.sync_native_v6_from_ha(&ha, selected);
+            }
+            if self.native_root.is_some() {
+                return Err(Response::error(
+                    503,
+                    "native HA root has no current quorum selection",
+                ));
+            }
+            // A concurrent native activation cannot make the old read safe:
+            // ProcessRaftNode fences V5 and legacy under the same applied lock.
+        }
         let known = self.reusable_ha_cursor().cloned();
         let previous_cache = self.ha_read_cache.take();
         let observation_started = std::time::Instant::now();
@@ -10885,3 +11010,7 @@ mod transit_cache_tests;
 #[cfg(test)]
 #[path = "service_transit_derivation_tests.rs"]
 mod transit_derivation_tests;
+
+#[cfg(all(test, feature = "experimental-native-v6-ha"))]
+#[path = "service_native_v6_ha_pipeline_tests.rs"]
+mod native_v6_ha_pipeline_tests;

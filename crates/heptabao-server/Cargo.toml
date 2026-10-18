@@ -10,6 +10,7 @@ default = []
 fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
 fixture-native-v6-service = []
+experimental-native-v6-ha = ["fixture-native-v6-service", "heptabao-ha-service/experimental-v6-peer-ingress", "heptabao-raft-runtime/experimental-v6-raft-objects"]
 private-ha-forward-diagnostic = ["heptabao-ha-service/private-forward-stage-diagnostic"]
 
 [dependencies]

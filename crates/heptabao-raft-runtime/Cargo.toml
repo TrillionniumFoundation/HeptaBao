@@ -7,7 +7,8 @@ publish = false
 
 [features]
 default = []
-# Experimental Raft staging only. No V6 root publication or HA admission.
+# Experimental external objects and durable V6 root CAS. Service HA admission
+# still requires its original Actor/clock and authenticated majority durability.
 experimental-v6-raft-objects = ["dep:heptabao-filesystem-guard"]
 [dependencies]
 base64 = "=0.22.1"

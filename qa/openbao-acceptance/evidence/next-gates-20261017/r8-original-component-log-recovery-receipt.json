@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.original-public-log-recovery.v1",
+  "files": [
+    {
+      "name": "r8f-mac-34mib-component.log",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8f-server-native-ha-34mib-pinned-mtls.log",
+      "bytes": 5318,
+      "sha256": "6b2f36d9aed91c0da49826c927bc54d955857f33b5bf2cf56fcb8d9274f2ae1d"
+    },
+    {
+      "name": "r8k-mac-archive34.log",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8k-server-native-ha-archive.log",
+      "bytes": 4533,
+      "sha256": "eed6bd8187854c3780a867b57983c5e515c207021d0d06b4bdf6530d7ccc39a2"
+    }
+  ],
+  "tests_rerun": false
+}

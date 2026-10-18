@@ -1,0 +1,55 @@
+{
+  "request": {
+    "args": [
+      "-I",
+      "-B",
+      "/home/qian-qi/heptabao-next-gates-20261017/run_authbus_owned_source_actual_r2.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-next-gates-20261017",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "executable": "/usr/bin/python3",
+    "host": "main",
+    "idempotency_key": "heptabao-real-owned-source-r2-20261018",
+    "memory_max_bytes": 3221225472,
+    "nice": 10,
+    "timeout_seconds": 420
+  },
+  "result": {
+    "audit_recorded": true,
+    "job": {
+      "args": [
+        "-I",
+        "-B",
+        "/home/qian-qi/heptabao-next-gates-20261017/run_authbus_owned_source_actual_r2.py"
+      ],
+      "created_unix_ms": 1792289341596,
+      "cwd": "/home/qian-qi/heptabao-next-gates-20261017",
+      "env_keys": [
+        "PYTHONDONTWRITEBYTECODE"
+      ],
+      "executable": "/usr/bin/python3",
+      "execution_mode": "operator",
+      "host": "main",
+      "id": "1a14cc5009c-1b6abb-4c4",
+      "idempotency_key": "heptabao-real-owned-source-r2-20261018",
+      "launch_error": null,
+      "launch_state": "launched",
+      "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a14cc5009c-1b6abb-4c4",
+      "request_digest": "4971603c56a99d391007c7616550804929a93a8af1857164adad92a107a704c3",
+      "request_fingerprint": 5292116849405304000,
+      "ssh_target": "localhost",
+      "system_jobctl": false,
+      "unit": "hepta-runtime-job-1a14cc5009c-1b6abb-4c4"
+    },
+    "launch": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "ok": true,
+      "unit": "hepta-runtime-job-1a14cc5009c-1b6abb-4c4"
+    },
+    "local_record_pending": false,
+    "reused": false
+  }
+}

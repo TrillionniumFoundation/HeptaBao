@@ -373,16 +373,64 @@ pub(super) struct ColdNativeRead {
     pub(super) metadata: State,
     pub(super) native: BTreeMap<MountScope, NativeReadView>,
     pub(super) root: RecordStateRootV6,
-    pub(super) proof: NativeProof,
+    pub(super) proof: NativeSingleProof,
+}
+
+// Single-node and HA witnesses remain separate affine authorities. Dispatching
+// a shared caller interface does not turn a local cursor into a quorum proof.
+pub(super) enum NativeProof {
+    Single(Box<NativeSingleProof>),
+    #[cfg(feature = "experimental-native-v6-ha")]
+    Ha(Box<super::native_v6_ha_install::NativeHaReadProof>),
+}
+impl NativeProof {
+    pub(super) fn generation(&self) -> u64 {
+        match self {
+            Self::Single(proof) => proof.generation(),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::Ha(proof) => proof.generation(),
+        }
+    }
+    pub(super) fn identity(&self) -> StateIdentity {
+        match self {
+            Self::Single(proof) => proof.identity(),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::Ha(proof) => proof.identity(),
+        }
+    }
+    pub(super) fn check_warm(&self, service: &Service) -> Result<(), Response> {
+        match self {
+            Self::Single(proof) => proof.check_warm(service),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::Ha(proof) => proof.check_warm(service),
+        }
+    }
+    pub(super) fn check_with(
+        &self,
+        service: &mut Service,
+        check_installed: impl FnOnce(
+            &State,
+            &State,
+            &BTreeMap<MountScope, NativeReadView>,
+            &RecordStateRootV6,
+            OriginalDeadline,
+        ) -> Result<(), Response>,
+    ) -> Result<(), Response> {
+        match self {
+            Self::Single(proof) => proof.check_with(service, check_installed),
+            #[cfg(feature = "experimental-native-v6-ha")]
+            Self::Ha(proof) => proof.check_with(service, check_installed),
+        }
+    }
 }
 
 // Used only by local unseal completion through normal mandatory audit. This
 // cannot qualify a business response, actor, lease, HA epoch or request writer.
-pub(super) struct NativeProof {
+pub(super) struct NativeSingleProof {
     permit: ReaderPermit,
     owner_fingerprints: [[u8; 32]; 4],
 }
-impl NativeProof {
+impl NativeSingleProof {
     pub(super) fn generation(&self) -> u64 {
         self.permit.generation
     }
@@ -679,7 +727,7 @@ fn load_from_environment_checked(
         metadata,
         native,
         root,
-        proof: NativeProof {
+        proof: NativeSingleProof {
             permit,
             owner_fingerprints,
         },
@@ -693,6 +741,12 @@ impl Service {
     ) -> Result<Option<NativeProof>, Response> {
         if self.native_root.is_none() {
             return Ok(None);
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.ha.is_some() {
+            return self
+                .capture_native_ha_request_proof(original_gate)
+                .map(|proof| proof.map(|proof| NativeProof::Ha(Box::new(proof))));
         }
         original_gate()?;
         let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
@@ -714,7 +768,7 @@ impl Service {
                 &loaded.root,
                 deadline,
             )?;
-            Ok(Some(loaded.proof))
+            Ok(Some(NativeProof::Single(Box::new(loaded.proof))))
         })();
         self.durable = Some(durable);
         original_gate()?;
@@ -725,6 +779,12 @@ impl Service {
     pub(super) fn capture_native_unseal_proof(&mut self) -> Result<Option<NativeProof>, Response> {
         if self.native_root.is_none() {
             return Ok(None);
+        }
+        #[cfg(feature = "experimental-native-v6-ha")]
+        if self.ha.is_some() {
+            return self
+                .capture_native_ha_unseal_proof()
+                .map(|proof| proof.map(|proof| NativeProof::Ha(Box::new(proof))));
         }
         let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
         live(deadline)?;
@@ -744,7 +804,7 @@ impl Service {
                 &loaded.root,
                 deadline,
             )?;
-            Ok(Some(loaded.proof))
+            Ok(Some(NativeProof::Single(Box::new(loaded.proof))))
         })();
         self.durable = Some(durable);
         live(deadline)?;

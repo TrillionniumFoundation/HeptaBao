@@ -375,7 +375,7 @@ impl PublishedRecordRoot {
         Ok(())
     }
 }
-mod root_envelope {
+pub(crate) mod root_envelope {
     use super::*;
     pub fn serialize<S: serde::Serializer>(
         value: &ReplicatedEnvelope,
@@ -449,6 +449,14 @@ pub enum RecordRejection {
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) enum RecordCommand {
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    EnrollNativeV6 {
+        enrollment: crate::v6_root_publication::NativeV6EnrollmentCommand,
+    },
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    PublishNativeV6 {
+        root: crate::v6_root_publication::NativeV6RootCommand,
+    },
     RetainLegacyChunks {
         expected_manifest: LegacyStatusIdentity,
         active: Vec<LegacyChunkRef>,
@@ -467,6 +475,10 @@ pub(crate) enum RecordCommand {
 impl fmt::Debug for RecordCommand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            Self::EnrollNativeV6 { .. } => "EnrollNativeV6([REDACTED])",
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            Self::PublishNativeV6 { .. } => "PublishNativeV6([REDACTED])",
             Self::RetainLegacyChunks { .. } => "RetainLegacyChunks([REDACTED])",
             Self::Stage { .. } => "Stage([REDACTED])",
             Self::Publish { .. } => "Publish([REDACTED])",
@@ -907,6 +919,12 @@ impl RecordState {
             self.cache = Some(self.build_cache(legacy_bytes)?);
         }
         match command {
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            RecordCommand::EnrollNativeV6 { .. } | RecordCommand::PublishNativeV6 { .. } => {
+                // Requires the actual applied LogId and membership. The outer
+                // state machine handles it before the V5 object machinery.
+                Err(RecordRejection::Invalid)
+            }
             // This maintenance command is validated against the legacy map by
             // StateMachine, before attempting any typed cache admission.
             RecordCommand::RetainLegacyChunks { .. } => Err(RecordRejection::Invalid),

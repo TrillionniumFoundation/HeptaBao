@@ -1,0 +1,49 @@
+{
+  "artifacts": {
+    "base_manifest": {
+      "bytes": 512919,
+      "path": "/workspace/scratch/d090566e965e/r8m-source-freeze-r2/r8k-recovered-base-manifest.json",
+      "sha256": "b9aea7d507f4f02fe75472429c304d91df3a8f723f642e3d2db0d315eebc683e"
+    },
+    "full_source": {
+      "bytes": 12762101,
+      "path": "/workspace/scratch/d090566e965e/r8m-source-freeze-r2/r8m-source-full.json.gz",
+      "sha256": "aeb8721519087bb59ec9d2e00b413954f8e5fdb4e99b233bf3bc92fcd35b4ca2"
+    },
+    "manifest": {
+      "bytes": 513599,
+      "path": "/workspace/scratch/d090566e965e/r8m-source-freeze-r2/r8m-source-manifest.json",
+      "sha256": "22024b1e8a4bebd0fb70943aa18aa21534503131fe106343e75a588bd5cd58be"
+    },
+    "overlay": {
+      "bytes": 358839,
+      "path": "/workspace/scratch/d090566e965e/r8m-source-freeze-r2/r8m-source-overlay.json.gz",
+      "sha256": "d51651b9e11cd15fcdb3da103ce606b7cb6a40372489ac2b465df279e05b15fc"
+    }
+  },
+  "head_unchanged": true,
+  "included_worktree_paths": [
+    "crates/heptabao-server/src/ha_native_v6_archive_repair.rs",
+    "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "crates/heptabao-server/src/service_native_v6_ha_archive_repair_tests.rs",
+    "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+    "docs/storage/HEPTABAO_NATIVE_V6_HA_ARCHIVE_REPAIR_CANDIDATE_20261017.md"
+  ],
+  "ordinary_index_unchanged": true,
+  "overlay_base_commit": "f78a5ab8c8ef32b1a9aff2346c0f6f953bc9e526",
+  "overlay_base_tree": "74f48aff203336f3f56e0a943f97904220343190",
+  "overlay_file_count": 8,
+  "parent_commit": "4eea1bf4f5ac16d1bf14a53c5e34addb38ff79ce",
+  "parent_tree": "182642fba4ccd1058cf3f3295a79d751f82ec4f2",
+  "preserved_r8l_sha256": {
+    "crates/heptabao-raft-runtime/src/v6_closure_manifest.rs": "bd7d5e29be01702131e0f395cc47f392067192dc5d8602aaa78129fa953caa40",
+    "crates/heptabao-raft-runtime/src/v6_replica_blobs.rs": "130f2c42acadcf2f932b053bbc0becf48c4beb250f0b03a6a04c16f871b3895e",
+    "crates/heptabao-server/src/ha_native_v6_backup.rs": "c1ee4f697b084e1c808903bdd416cd8de31c7bb92901f35e56dfca16119b88b0"
+  },
+  "schema": "heptabao.archive-repair-source-freeze.v1",
+  "service_http_recovery_enabled": false,
+  "source_commit": "090da802ce1d26c890f7c4100623f05bf488002f",
+  "source_file_count": 2588,
+  "source_tree": "f8413d46654dde2425260d044f0000ad3a2fda87",
+  "tests_executed": false
+}

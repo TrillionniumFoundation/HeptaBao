@@ -1,0 +1,274 @@
+{
+  "config": {
+    "base_manifest": null,
+    "base_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8k",
+    "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "cargo_home": "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo",
+    "cmake": "/opt/homebrew/bin/cmake",
+    "rustc": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+    "source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8m",
+    "target_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+    "work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01"
+  },
+  "elapsed_seconds": 389.62,
+  "mac": {
+    "base_after": {
+      "all_sha256_and_modes_verified": true,
+      "bytes": 42653542,
+      "files": 2585,
+      "tree": "74f48aff203336f3f56e0a943f97904220343190"
+    },
+    "base_before": {
+      "all_sha256_and_modes_verified": true,
+      "bytes": 42653542,
+      "files": 2585,
+      "tree": "74f48aff203336f3f56e0a943f97904220343190"
+    },
+    "base_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8k",
+    "base_unchanged": true,
+    "cargo_build_jobs": 2,
+    "cargo_home": "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo",
+    "elapsed_seconds": 389.008,
+    "groups": [
+      {
+        "command": [
+          "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "heptabao-server",
+          "--lib",
+          "--features",
+          "experimental-native-v6-ha",
+          "native_ha_archive_repair_",
+          "--",
+          "--nocapture",
+          "--test-threads=1",
+          "--color=never"
+        ],
+        "denominator_and_summary_ok": true,
+        "elapsed_seconds": 362.966,
+        "exit_code": 0,
+        "expected_tests": 3,
+        "filter": "native_ha_archive_repair_",
+        "group": "repair",
+        "log_bytes": 5800,
+        "log_limit_exceeded": false,
+        "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/repair.log",
+        "log_sha256": "14a699fea13aa004393f613a05106a1ba93af7254660cbf266a378d80bb6eb42",
+        "ok": true,
+        "own_process_group_terminated": false,
+        "owned_pid": 6843,
+        "owned_process_group": 6843,
+        "running_test_counts": [
+          "3"
+        ],
+        "status": "completed",
+        "summaries": [
+          "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2704 filtered out; finished in 22.78s"
+        ],
+        "timed_out": false
+      },
+      {
+        "command": [
+          "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "heptabao-server",
+          "--lib",
+          "--features",
+          "experimental-native-v6-ha",
+          "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+          "--",
+          "--nocapture",
+          "--test-threads=1",
+          "--color=never"
+        ],
+        "denominator_and_summary_ok": true,
+        "elapsed_seconds": 22.015,
+        "exit_code": 0,
+        "expected_tests": 1,
+        "filter": "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+        "group": "archive34",
+        "log_bytes": 2480,
+        "log_limit_exceeded": false,
+        "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/archive34.log",
+        "log_sha256": "0197464fa089914c6deab1a9da898c875146d3c866216d242115b8ea0523609c",
+        "ok": true,
+        "own_process_group_terminated": false,
+        "owned_pid": 7691,
+        "owned_process_group": 7691,
+        "running_test_counts": [
+          "1"
+        ],
+        "status": "completed",
+        "summaries": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2706 filtered out; finished in 21.20s"
+        ],
+        "timed_out": false
+      }
+    ],
+    "host": "MacBook-Pro.local",
+    "installed_by_independent_copies": true,
+    "logs": {
+      "archive34": {
+        "bytes": 2480,
+        "content_complete": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/archive34.log",
+        "returned_bytes": 2480,
+        "returned_sha256": "0197464fa089914c6deab1a9da898c875146d3c866216d242115b8ea0523609c",
+        "sha256": "0197464fa089914c6deab1a9da898c875146d3c866216d242115b8ea0523609c"
+      },
+      "cargo-version": {
+        "bytes": 36,
+        "content_complete": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/cargo-version.log",
+        "returned_bytes": 36,
+        "returned_sha256": "fb3f25aefd6d5441842d285f5a9b125b3f0f0b0bf2013d9a32677f9e99c6c854",
+        "sha256": "fb3f25aefd6d5441842d285f5a9b125b3f0f0b0bf2013d9a32677f9e99c6c854"
+      },
+      "cmake-version": {
+        "bytes": 90,
+        "content_complete": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/cmake-version.log",
+        "returned_bytes": 90,
+        "returned_sha256": "49da5b8c6869fe4b385bd4d095bf446bc9e6f32d0f6a86b437022e99e19f4ef7",
+        "sha256": "49da5b8c6869fe4b385bd4d095bf446bc9e6f32d0f6a86b437022e99e19f4ef7"
+      },
+      "repair": {
+        "bytes": 5800,
+        "content_complete": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/repair.log",
+        "returned_bytes": 5800,
+        "returned_sha256": "14a699fea13aa004393f613a05106a1ba93af7254660cbf266a378d80bb6eb42",
+        "sha256": "14a699fea13aa004393f613a05106a1ba93af7254660cbf266a378d80bb6eb42"
+      },
+      "rustc-version": {
+        "bytes": 192,
+        "content_complete": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01/rustc-version.log",
+        "returned_bytes": 192,
+        "returned_sha256": "bd38eb565e393486255b35ff1f74e9dc7ca87425f1febb798b9dd042159a833a",
+        "sha256": "bd38eb565e393486255b35ff1f74e9dc7ca87425f1febb798b9dd042159a833a"
+      }
+    },
+    "machine": "arm64",
+    "native_abi": "aarch64-apple-darwin",
+    "native_readindex_seconds": 8,
+    "ok": true,
+    "overlay_base_commit": "f78a5ab8c8ef32b1a9aff2346c0f6f953bc9e526",
+    "overlay_base_tree": "74f48aff203336f3f56e0a943f97904220343190",
+    "overlay_sha256": "d51651b9e11cd15fcdb3da103ce606b7cb6a40372489ac2b465df279e05b15fc",
+    "physical_89_executed": false,
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "production_cutover": false,
+    "python_version": "3.9.6",
+    "retained_base_manifest": {
+      "identity_basis": "actual_complete_files_modes_and_git_tree",
+      "path": null,
+      "source_commit": null
+    },
+    "schema": "heptabao.r8m-mac-archive-repair.v1",
+    "service_http_recovery_enabled": false,
+    "source_after": {
+      "all_sha256_and_modes_verified": true,
+      "bytes": 42703723,
+      "files": 2588,
+      "tree": "f8413d46654dde2425260d044f0000ad3a2fda87"
+    },
+    "source_before": {
+      "all_sha256_and_modes_verified": true,
+      "bytes": 42703723,
+      "files": 2588,
+      "tree": "f8413d46654dde2425260d044f0000ad3a2fda87"
+    },
+    "source_commit": "090da802ce1d26c890f7c4100623f05bf488002f",
+    "source_manifest_sha256": "22024b1e8a4bebd0fb70943aa18aa21534503131fe106343e75a588bd5cd58be",
+    "source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8m",
+    "source_tree": "f8413d46654dde2425260d044f0000ad3a2fda87",
+    "source_unchanged": true,
+    "target_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+    "test_deadlines_modified": false,
+    "test_request_seconds": 15,
+    "tests_passed": 4,
+    "toolchain": {
+      "cargo": {
+        "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "resolved_path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "sha256": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9"
+      },
+      "cmake": {
+        "path": "/opt/homebrew/bin/cmake",
+        "resolved_path": "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+        "sha256": "ac1172eecbecdeb1a2100e99e049294becd282a46f81fd575004c72f96de4be8"
+      },
+      "rustc": {
+        "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "resolved_path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "sha256": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49"
+      }
+    },
+    "versions": {
+      "cargo": "cargo 1.98.0 (797e8a9bc 2026-08-05)\n",
+      "cmake": "cmake version 4.3.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+      "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n"
+    },
+    "work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8m-archive-repair-verify-01",
+    "worker_deadline_seconds": 1200,
+    "worker_sha256": "7b50253a449cf9815cea87236aed00d12e167de02caef6b2abd29bb59487caa4"
+  },
+  "mac_summary_sha256": "f4b5fa30d8f29f0d22796f1e3b8638c946a2e87ed651e86f1e61f82c3acd8f82",
+  "main_host": "qian-qi",
+  "main_python_version": "3.12.3",
+  "no_automatic_retry": true,
+  "ok": true,
+  "outer_deadline_seconds": 1450,
+  "overlay_sha256": "d51651b9e11cd15fcdb3da103ce606b7cb6a40372489ac2b465df279e05b15fc",
+  "own_ssh_process_group_terminated": false,
+  "production_cutover": false,
+  "returned_logs": {
+    "archive34": {
+      "full_log_returned": true,
+      "mac_full_sha256": "0197464fa089914c6deab1a9da898c875146d3c866216d242115b8ea0523609c",
+      "main_path": "/home/qian-qi/heptabao-next-gates-20261017/r8m-archive-repair-main-01/archive34.log",
+      "main_sha256": "0197464fa089914c6deab1a9da898c875146d3c866216d242115b8ea0523609c"
+    },
+    "cargo-version": {
+      "full_log_returned": true,
+      "mac_full_sha256": "fb3f25aefd6d5441842d285f5a9b125b3f0f0b0bf2013d9a32677f9e99c6c854",
+      "main_path": "/home/qian-qi/heptabao-next-gates-20261017/r8m-archive-repair-main-01/cargo-version.log",
+      "main_sha256": "fb3f25aefd6d5441842d285f5a9b125b3f0f0b0bf2013d9a32677f9e99c6c854"
+    },
+    "cmake-version": {
+      "full_log_returned": true,
+      "mac_full_sha256": "49da5b8c6869fe4b385bd4d095bf446bc9e6f32d0f6a86b437022e99e19f4ef7",
+      "main_path": "/home/qian-qi/heptabao-next-gates-20261017/r8m-archive-repair-main-01/cmake-version.log",
+      "main_sha256": "49da5b8c6869fe4b385bd4d095bf446bc9e6f32d0f6a86b437022e99e19f4ef7"
+    },
+    "repair": {
+      "full_log_returned": true,
+      "mac_full_sha256": "14a699fea13aa004393f613a05106a1ba93af7254660cbf266a378d80bb6eb42",
+      "main_path": "/home/qian-qi/heptabao-next-gates-20261017/r8m-archive-repair-main-01/repair.log",
+      "main_sha256": "14a699fea13aa004393f613a05106a1ba93af7254660cbf266a378d80bb6eb42"
+    },
+    "rustc-version": {
+      "full_log_returned": true,
+      "mac_full_sha256": "bd38eb565e393486255b35ff1f74e9dc7ca87425f1febb798b9dd042159a833a",
+      "main_path": "/home/qian-qi/heptabao-next-gates-20261017/r8m-archive-repair-main-01/rustc-version.log",
+      "main_sha256": "bd38eb565e393486255b35ff1f74e9dc7ca87425f1febb798b9dd042159a833a"
+    }
+  },
+  "schema": "heptabao.r8m-main-archive-repair.v1",
+  "source_commit": "090da802ce1d26c890f7c4100623f05bf488002f",
+  "source_manifest_sha256": "22024b1e8a4bebd0fb70943aa18aa21534503131fe106343e75a588bd5cd58be",
+  "source_tree": "f8413d46654dde2425260d044f0000ad3a2fda87",
+  "ssh_exit_code": 0,
+  "ssh_host": "macbook-pro",
+  "ssh_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "ssh_stdout_sha256": "782ae978eb26bef1ba93e8a5dbdb2a4ef151244b4f2b47e5f82abcd9b3afbc78",
+  "ssh_timed_out": false,
+  "worker_sha256": "7b50253a449cf9815cea87236aed00d12e167de02caef6b2abd29bb59487caa4"
+}

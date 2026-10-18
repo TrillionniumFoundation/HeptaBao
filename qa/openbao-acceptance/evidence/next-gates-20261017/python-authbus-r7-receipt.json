@@ -1,0 +1,705 @@
+{
+  "binary_sha256": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f",
+  "check_count": 111,
+  "checks": [
+    {
+      "case": "tls.verified_leaf_identity",
+      "passed": true
+    },
+    {
+      "case": "tls.untrusted_server_ca_rejected",
+      "passed": true
+    },
+    {
+      "case": "server.init",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "setup.kv2_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.activate",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.actual_reader_floor2",
+      "passed": true
+    },
+    {
+      "case": "native.policy_create",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.approle_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.role_create",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.secret_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "agent.actual_private_file_login",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "agent.actual_private_file_login.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "agent.ready_nonroot_one_authentication",
+      "passed": true
+    },
+    {
+      "case": "agent.private_sink",
+      "passed": true
+    },
+    {
+      "case": "approle.single_use_sid_consumed",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "client.kv_create.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.kv_create",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.kv_create.version",
+      "passed": true,
+      "version": 1
+    },
+    {
+      "case": "client.kv_exact_read.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.kv_exact_read",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.kv_exact_read.exact_readback",
+      "passed": true
+    },
+    {
+      "case": "client.kv_exact_read.version",
+      "passed": true,
+      "version": 1
+    },
+    {
+      "case": "client.stale_cas_denied.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.stale_cas_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "client.kv_unchanged_after_denial.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.kv_unchanged_after_denial",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.kv_unchanged_after_denial.exact_readback",
+      "passed": true
+    },
+    {
+      "case": "client.kv_unchanged_after_denial.version",
+      "passed": true,
+      "version": 1
+    },
+    {
+      "case": "client.outside_policy_denied.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.outside_policy_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "client.kv_cas_update.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.kv_cas_update",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.kv_cas_update.version",
+      "passed": true,
+      "version": 2
+    },
+    {
+      "case": "policy.drop_kv_access",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "client.live_policy_denied.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.live_policy_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "policy.restore_kv_access",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "client.live_policy_restored.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.live_policy_restored",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.live_policy_restored.exact_readback",
+      "passed": true
+    },
+    {
+      "case": "client.live_policy_restored.version",
+      "passed": true,
+      "version": 2
+    },
+    {
+      "case": "agent.real_automatic_renewal",
+      "passed": true
+    },
+    {
+      "case": "agent.renewal_keeps_bearer_and_auth_count",
+      "passed": true
+    },
+    {
+      "case": "server.first_cold_restart.binary_identity",
+      "passed": true
+    },
+    {
+      "case": "server.first_cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "server.first_cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.first_cold_restart.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.first_cold_restart.native_v6_survives",
+      "passed": true
+    },
+    {
+      "case": "client.read_after_server_sigkill.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.read_after_server_sigkill",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.read_after_server_sigkill.exact_readback",
+      "passed": true
+    },
+    {
+      "case": "client.read_after_server_sigkill.version",
+      "passed": true,
+      "version": 2
+    },
+    {
+      "case": "approle.sid_consumption_persisted",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "rollback.mismatched_client_binding_rejected",
+      "exit_code": 2,
+      "passed": true
+    },
+    {
+      "case": "rollback.mismatched_client_binding_rejected.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "rollback.exact_config_restored",
+      "passed": true
+    },
+    {
+      "case": "agent.actual_resume_after_sigkill_and_rollback",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "agent.actual_resume_after_sigkill_and_rollback.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "agent.restart_reuses_persisted_token",
+      "passed": true
+    },
+    {
+      "case": "cert.native_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "cert.native_role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "cert.no_client_certificate_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "cert.same_ca_wrong_leaf_denied.bounded",
+      "passed": true
+    },
+    {
+      "case": "cert.same_ca_wrong_leaf_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "cert.actual_mtls_login.bounded",
+      "passed": true
+    },
+    {
+      "case": "cert.actual_mtls_login",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cert.actual_policy_kv.bounded",
+      "passed": true
+    },
+    {
+      "case": "cert.actual_policy_kv",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cert.exact_kv_read",
+      "passed": true
+    },
+    {
+      "case": "cert.renew_same_leaf.bounded",
+      "passed": true
+    },
+    {
+      "case": "cert.renew_same_leaf",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cert.lease_before_denied_renewals",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cert.renew_without_leaf_denied",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "cert.renew_without_leaf_exact_contract",
+      "passed": true
+    },
+    {
+      "case": "cert.renew_wrong_leaf_denied.bounded",
+      "passed": true
+    },
+    {
+      "case": "cert.renew_wrong_leaf_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "cert.renew_wrong_leaf_exact_contract",
+      "passed": true
+    },
+    {
+      "case": "cert.lease_after_denied_renewals",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cert.denied_renewals_preserve_lease",
+      "passed": true
+    },
+    {
+      "case": "token.first_revoke",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "client.revoked_token_denied.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.revoked_token_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "agent.revoked_token_resume_invalidates_sink",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "agent.revoked_token_resume_invalidates_sink.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "agent.revoked_sink_removed",
+      "passed": true
+    },
+    {
+      "case": "native.fresh_reenrollment_secret_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "agent.real_fresh_reenrollment",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "agent.real_fresh_reenrollment.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "agent.new_token_new_authentication",
+      "passed": true
+    },
+    {
+      "case": "client.new_credential_reads_persisted_kv.process",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "client.new_credential_reads_persisted_kv",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "client.new_credential_reads_persisted_kv.exact_readback",
+      "passed": true
+    },
+    {
+      "case": "client.new_credential_reads_persisted_kv.version",
+      "passed": true,
+      "version": 2
+    },
+    {
+      "case": "token.second_revoke",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "cert.token_revoke",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "server.second_cold_restart.binary_identity",
+      "passed": true
+    },
+    {
+      "case": "server.second_cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "server.second_cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.second_cold_restart.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.second_cold_restart.native_v6_survives",
+      "passed": true
+    },
+    {
+      "case": "revoke.persisted_first",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.persisted_second",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.persisted_cert",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "server.final_kv_read",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.final_data_survives_credentials_revoke",
+      "passed": true
+    },
+    {
+      "case": "server.final_binary_identity",
+      "passed": true
+    },
+    {
+      "case": "agent.checkpoint_redacts_credential_bytes",
+      "passed": true
+    },
+    {
+      "case": "logs.redact_disposable_secrets",
+      "passed": true
+    }
+  ],
+  "client_source_sha256": "a3e310abe0a5671f3ac463d812a821911dfc8c4cf8ec9ebf7a530c83d31e1d84",
+  "consumer_observations": [
+    {
+      "authentications": 1,
+      "case": "client.kv_create",
+      "data_sha256": null,
+      "generation": 2,
+      "status": 200,
+      "version": 1
+    },
+    {
+      "authentications": 1,
+      "case": "client.kv_exact_read",
+      "data_sha256": "54d56c9ce4a90874e46229d547ffb114d96abe891191b7c3f602c9ded5df4dd6",
+      "generation": 2,
+      "status": 200,
+      "version": 1
+    },
+    {
+      "authentications": 1,
+      "case": "client.stale_cas_denied",
+      "data_sha256": null,
+      "generation": 2,
+      "status": 400,
+      "version": null
+    },
+    {
+      "authentications": 1,
+      "case": "client.kv_unchanged_after_denial",
+      "data_sha256": "54d56c9ce4a90874e46229d547ffb114d96abe891191b7c3f602c9ded5df4dd6",
+      "generation": 2,
+      "status": 200,
+      "version": 1
+    },
+    {
+      "authentications": 1,
+      "case": "client.outside_policy_denied",
+      "data_sha256": null,
+      "generation": 2,
+      "status": 403,
+      "version": null
+    },
+    {
+      "authentications": 1,
+      "case": "client.kv_cas_update",
+      "data_sha256": null,
+      "generation": 2,
+      "status": 200,
+      "version": 2
+    },
+    {
+      "authentications": 1,
+      "case": "client.live_policy_denied",
+      "data_sha256": null,
+      "generation": 2,
+      "status": 403,
+      "version": null
+    },
+    {
+      "authentications": 1,
+      "case": "client.live_policy_restored",
+      "data_sha256": "a34a30ce699777a71e50b88a4f408647f61ccddd63603b5b48960b89cfa01f20",
+      "generation": 2,
+      "status": 200,
+      "version": 2
+    },
+    {
+      "authentications": 1,
+      "case": "client.read_after_server_sigkill",
+      "data_sha256": "a34a30ce699777a71e50b88a4f408647f61ccddd63603b5b48960b89cfa01f20",
+      "generation": 4,
+      "status": 200,
+      "version": 2
+    },
+    {
+      "authentications": 1,
+      "case": "client.revoked_token_denied",
+      "data_sha256": null,
+      "generation": 4,
+      "status": 403,
+      "version": null
+    },
+    {
+      "authentications": 2,
+      "case": "client.new_credential_reads_persisted_kv",
+      "data_sha256": "a34a30ce699777a71e50b88a4f408647f61ccddd63603b5b48960b89cfa01f20",
+      "generation": 7,
+      "status": 200,
+      "version": 2
+    }
+  ],
+  "finished_unix_ns": 1792235121847954134,
+  "ha_qualification": false,
+  "harness_sha256": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e",
+  "native_v6_fixture": true,
+  "process_cycles": [
+    {
+      "exit_code": -9,
+      "kind": "agent",
+      "pid": 1791629,
+      "stop": "SIGKILL"
+    },
+    {
+      "exit_code": -9,
+      "kind": "server",
+      "pid": 1791548,
+      "stop": "SIGKILL"
+    },
+    {
+      "exit_code": -9,
+      "kind": "server",
+      "pid": 1792095,
+      "stop": "SIGKILL"
+    }
+  ],
+  "production_credentials_imported": false,
+  "production_cutover": false,
+  "schema": "heptabao.native-v6-authbus-client-live.v1",
+  "started_unix_ns": 1792235086559020429,
+  "status": "passed",
+  "trust": {
+    "ca_pem_sha256": "1c6907740f35f1b59864e7596395e101be94dfc9164f2c633d996ab339184bd7",
+    "client_cert_der_sha256": "78cf5b31af93f1c63409c16a50bb870f1d726bbcdfdf6cb88596b0e1230ab4c7",
+    "j3160_contacted": false,
+    "negotiated_tls": "TLSv1.3",
+    "server_cert_der_sha256": "ebab718171c485e3eab91c7800a71dc7a6f7a53ae904de23a9fa4bb8facebcd4",
+    "source": "new_canary_CA_and_native_local_init",
+    "tls_server_san": [
+      "DNS:localhost",
+      "IP:127.0.0.1"
+    ]
+  }
+}

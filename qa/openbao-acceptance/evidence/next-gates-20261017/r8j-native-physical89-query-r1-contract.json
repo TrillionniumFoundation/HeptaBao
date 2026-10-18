@@ -1,0 +1,229 @@
+{
+  "actualRemoteExecution": false,
+  "binarySourceBinding": {
+    "commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+    "linuxBinarySha256": "c0821bae2a8435eddea8506311a09cd3e1f0533948b8489f1e606e210a073560",
+    "macBinarySha256": "64b88fd098cfe80c92a2462ab8609b84b98145f3ac5955e14fc3911a8c7a18c0",
+    "modified": false,
+    "tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a"
+  },
+  "frozenFiles": {
+    "crates/heptabao-server/src/engines/kv.rs": {
+      "bytes": 36929,
+      "scope": "read_only_source_evidence",
+      "sha256": "60122f0cfe0350298892240cad2f6a3280f372b67b5d7af00c6f75ad4b417904"
+    },
+    "crates/heptabao-server/src/engines/kv2_native_paged.rs": {
+      "bytes": 39222,
+      "scope": "read_only_source_evidence",
+      "sha256": "624bea162f487505d1b13af98b1453058a54c768a9958cf84fa66d3da042ab87"
+    },
+    "crates/heptabao-server/src/http.rs": {
+      "bytes": 215161,
+      "scope": "read_only_source_evidence",
+      "sha256": "3eca556fdc6044f33baa12c9ad2bbc58057dc729340dfb5c569ff6f0e3450a2c"
+    },
+    "crates/heptabao-server/src/http_ocsp.rs": {
+      "bytes": 32358,
+      "scope": "read_only_source_evidence",
+      "sha256": "138157f061568873df7bb737717b7a06089007f3060a7c75681766c03c09be69"
+    },
+    "crates/heptabao-server/src/service_request_normalization.rs": {
+      "bytes": 6613,
+      "scope": "read_only_source_evidence",
+      "sha256": "4cc50f378d301d766a48d2971ff9aa6d7a6dfa8abb308c6b0c76ca81d0da0656"
+    },
+    "qa/openbao-acceptance/ha_multihost_live.py": {
+      "bytes": 77360,
+      "scope": "read_only_source_evidence",
+      "sha256": "7857f62b1e9e46b7d718eb401e6ed75bb48dc9db385327a5cb86bda30c587858"
+    },
+    "qa/openbao-acceptance/native_v6_ha_multihost_live.py": {
+      "bytes": 70986,
+      "scope": "new_qa_overlay",
+      "sha256": "ca909ec0d8c70954a369ff2d6875094d1e4b8bf0d06d1bb589114b5c56203727"
+    },
+    "qa/openbao-acceptance/tests/test_native_v6_ha_multihost_live.py": {
+      "bytes": 21167,
+      "scope": "dedicated_local_test",
+      "sha256": "adfaad3c846274069ffc720be4a9979bda9306f71c310f8a264418bced9de654"
+    }
+  },
+  "limitations": [
+    "The original physical89 attempt remains failed and unqualified.",
+    "Local tests prove request construction and failure predicates; a new actual three-host run is required.",
+    "No Runtime, SSH, Cargo or Git operation was performed by this subagent."
+  ],
+  "localValidation": {
+    "attempts": [
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 qa/openbao-acceptance/tests/test_native_v6_ha_multihost_live.py -v",
+        "exitCode": 1,
+        "failed": 2,
+        "failures": [
+          {
+            "name": "NativePhysicalOwnershipTests.test_actual_native_argv_and_wrong_identity_never_signal_another_child",
+            "observed": "started.returncode 75; sandbox denied process enumeration"
+          },
+          {
+            "name": "NativePhysicalOwnershipTests.test_real_quarantine_preserves_manifest_and_accepts_only_exact_rebuilt_subset",
+            "observed": "ps -axo args= exited 1 in sandbox"
+          }
+        ],
+        "newHistoryTestsPassed": 6,
+        "passed": 10,
+        "testsRun": 12
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 qa/openbao-acceptance/tests/test_native_v6_ha_multihost_live.py -v NativePhysicalOwnershipTests.test_actual_native_argv_and_wrong_identity_never_signal_another_child NativePhysicalOwnershipTests.test_real_quarantine_preserves_manifest_and_accepts_only_exact_rebuilt_subset",
+        "elapsedSeconds": 1.153,
+        "exitCode": 0,
+        "failed": 0,
+        "localProcessReadApproval": true,
+        "passed": 2,
+        "testsRun": 2
+      }
+    ],
+    "python39AstParsingPassed": true,
+    "remoteHaOrTlsQualificationClaimed": false,
+    "singleCompleteSuitePassClaimed": false,
+    "uniqueTestsPassed": 12
+  },
+  "originalAttempt": {
+    "failure_code": "native_exact_read_failed_node_1",
+    "failure_stage": "fresh_standalone_v5_seed",
+    "jobId": "1a14bd2c0c7-1b6abb-28d",
+    "observed_check_count": 18,
+    "passed_check_count": 18,
+    "preserved": true,
+    "qualification": false,
+    "required_check_count": 89,
+    "runner_sha256": "2f0e3ecf3641262d6fac97166e3b41bdaacd3eebc61fe006c560faa7440cb254",
+    "status": "failed",
+    "summaryPath": "/workspace/scratch/d090566e965e/local-r8-evidence/r8j-native-physical89-01-summary.json",
+    "summarySha256": "4471bf5f5a839b64f62671da362b39d1dac0627edacd475f1d9b0fcda3667556"
+  },
+  "originalHarnessSha256": "2f0e3ecf3641262d6fac97166e3b41bdaacd3eebc61fe006c560faa7440cb254",
+  "physicalQualification": false,
+  "qaOnly": true,
+  "reviewedChanges": {
+    "changes": [
+      "import urllib.parse",
+      "add read_data URL-query helper and route exact_read through it",
+      "route retired history reads through read_data",
+      "route quorum-loss historical read through read_data"
+    ],
+    "exactlyFourReplacements": true,
+    "requestRetryBehaviorUnchanged": true,
+    "responsePredicatesUnchanged": true
+  },
+  "rootCause": {
+    "affectedCallSites": [
+      "exact_read",
+      "history_reads retired-version reads",
+      "quorum-loss historical read"
+    ],
+    "correctedRequest": "GET /v1/secret/data/<path>?version=<positive_integer> with no body",
+    "oldRequest": "GET /v1/secret/data/<path> with JSON body containing version",
+    "serverBehavior": "GET fields come from URL query; framed JSON body is consumed and ignored. Missing query version selects current version."
+  },
+  "schema": "heptabao.native-v6-physical-ha-query-regression.v1",
+  "unchangedGates": {
+    "httpRequestBudgetSeconds": 15,
+    "nativeAdmissionBudgetSeconds": 8,
+    "requiredCheckCount": 89,
+    "requiredChecks": [
+      "all_voters_cold_unsealed",
+      "all_voters_local_raft_persistent",
+      "all_voters_stopped_for_cold_restart",
+      "candidate_binary_digest",
+      "cold_leader_retained_history_exact",
+      "cold_restart_all_hosts_readindex",
+      "cold_restart_new_write_once",
+      "complete_loopback_mesh",
+      "denied_quorum_write_absent",
+      "different_leader_after_sigkill",
+      "failover_survivors_readindex",
+      "failover_write_once",
+      "leader_sigkill_identity_verified",
+      "missing_cipher_actual_leaves_rebuilt",
+      "missing_cipher_all_hosts_readindex",
+      "missing_cipher_leader_empty_before_unseal",
+      "missing_cipher_leader_exact_history",
+      "missing_cipher_leader_unsealed",
+      "missing_cipher_remaining_nodes_unsealed",
+      "missing_cipher_sealed_pair_elected",
+      "missing_cipher_source_rejoined",
+      "missing_cipher_targets_stopped",
+      "missing_cipher_two_targets_quarantined",
+      "native.complete",
+      "native_activate_once",
+      "native_delete_missing_accepted",
+      "native_history_34mib_capacity",
+      "native_history_all_retained_exact",
+      "native_history_destroy_once",
+      "native_history_retention_states",
+      "native_history_soft_delete_once",
+      "native_history_write_01",
+      "native_history_write_02",
+      "native_history_write_03",
+      "native_history_write_04",
+      "native_history_write_05",
+      "native_history_write_06",
+      "native_history_write_07",
+      "native_history_write_08",
+      "native_history_write_09",
+      "native_history_write_10",
+      "native_history_write_11",
+      "native_history_write_12",
+      "native_history_write_13",
+      "native_history_write_14",
+      "native_history_write_15",
+      "native_history_write_16",
+      "native_history_write_17",
+      "native_noop_config_accepted",
+      "native_standby_small_readindex",
+      "native_standby_small_write_once",
+      "native_v5_history_preserved",
+      "new_leader_retained_history_exact",
+      "node_1_binary_digest",
+      "node_1_build_receipt",
+      "node_1_initial_unseal",
+      "node_1_new_private_root",
+      "node_2_binary_digest",
+      "node_2_build_receipt",
+      "node_2_cold_clone",
+      "node_2_initial_unseal",
+      "node_2_new_private_root",
+      "node_3_binary_digest",
+      "node_3_build_receipt",
+      "node_3_cold_clone",
+      "node_3_initial_unseal",
+      "node_3_new_private_root",
+      "old_leader_cold_restart",
+      "old_leader_forwarded_readindex",
+      "old_leader_local_raft_caught_up",
+      "owned_mesh_stopped",
+      "owned_processes_stopped",
+      "quorum_loss_read_denied_no_payload",
+      "quorum_loss_write_denied_no_ack",
+      "quorum_recovery_write_once",
+      "quorum_restored",
+      "report_excludes_runtime_secrets",
+      "same_source_native_abis",
+      "seed_fresh_uninitialized",
+      "seed_initialized_once",
+      "seed_stopped_cold_archive",
+      "seed_unsealed",
+      "seed_v5_and_kv2_history",
+      "single_survivor_loses_authority",
+      "source_and_binaries_unchanged",
+      "synthetic_metadata_absent",
+      "synthetic_metadata_cleanup_once",
+      "three_distinct_physical_hosts",
+      "three_raft_elected_before_unseal"
+    ],
+    "requiredChecksSha256": "b8d323c25c8f9f17eb86be2527778b5ac774eb4495d5b6f98ce61c5c8017d670",
+    "targetBytes": 35651584
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "artifacts": {
+    "base_manifest": {
+      "bytes": 513599,
+      "path": "/workspace/scratch/d090566e965e/r8n-shared-source-freeze-01/r8m-base-manifest.json",
+      "sha256": "22024b1e8a4bebd0fb70943aa18aa21534503131fe106343e75a588bd5cd58be"
+    },
+    "manifest": {
+      "bytes": 514043,
+      "path": "/workspace/scratch/d090566e965e/r8n-shared-source-freeze-01/r8n-shared-source-manifest.json",
+      "sha256": "22a6cd21a6f01ecd5c9ffc49cb5b6457587fc3366395efe2422557c1d0b588bc"
+    },
+    "overlay": {
+      "bytes": 309512,
+      "path": "/workspace/scratch/d090566e965e/r8n-shared-source-freeze-01/r8n-shared-source-overlay.json.gz",
+      "sha256": "05cdde442d3f7cc958edc1c3e0ad71801176d291299ca369d7caa5abf9369810"
+    }
+  },
+  "base_commit": "090da802ce1d26c890f7c4100623f05bf488002f",
+  "base_tree": "f8413d46654dde2425260d044f0000ad3a2fda87",
+  "head_unchanged": true,
+  "included_paths": {
+    "crates/heptabao-raft-runtime/src/v6_replica_blobs_checked.rs": "1f59352b187f37f8fd40de0d897ca791726333d9df4989be660bc996daf8d644",
+    "crates/heptabao-raft-runtime/src/v6_replica_blobs_existing.rs": "bb2066810579acc397ce7ba2ea5358bcab6218d6a83aa11d2f7194222f4253e7",
+    "crates/heptabao-raft-runtime/src/v6_replica_blobs_existing_tests.rs": "2a698f68e432f5f8d8387f0d429f8d5c3ca695245f19610310e25ee31a823b8d"
+  },
+  "ordinary_index_unchanged": true,
+  "production_cutover": false,
+  "schema": "heptabao.shared-reuse-source-freeze.v1",
+  "source_commit": "a6b8990d40bac15b1d9a066dc2303658d73372cb",
+  "source_file_count": 2590,
+  "source_tree": "9277b345ca1f9c1117b03332958b51b7c25ed772",
+  "tests_executed": false
+}

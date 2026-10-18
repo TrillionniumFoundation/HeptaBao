@@ -1,0 +1,11 @@
+{
+  "actual_shared_source_commit": "a6b8990d40bac15b1d9a066dc2303658d73372cb",
+  "evidence_checkpoint": "9f6b140b919ae83b4c8b4ffac332b5988514b3f9",
+  "evidence_tree": "a29003fe5df820da540420d048991a165e0d6afb",
+  "legacy_cleanup": false,
+  "production_cutover": false,
+  "ref_update_confirmed": true,
+  "schema": "heptabao.git-source-checkpoint-provenance.v1",
+  "shared_checkpoint": "70ee76774ecdb5ce24a2620f5813c4c596c3fe78",
+  "shared_tree": "9277b345ca1f9c1117b03332958b51b7c25ed772"
+}

@@ -19,6 +19,10 @@ use zeroize::{Zeroize, Zeroizing};
 mod records;
 pub(crate) use records::{CommittedRecordRoot, runtime_reference};
 
+#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "ha_v6_native_codec.rs"]
+pub(crate) mod native_v6;
+
 const MAGIC: &[u8; 5] = b"HBSR1";
 const MANIFEST_MAGIC_V2: &[u8; 5] = b"HBSM2";
 const MANIFEST_MAGIC: &[u8; 5] = b"HBSM3";
