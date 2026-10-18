@@ -28,6 +28,11 @@ pub use v6_closure_admission::NativeV6ClosureAdmission;
 mod v6_committed_root_read;
 #[cfg(feature = "experimental-v6-raft-objects")]
 pub use v6_committed_root_read::NativeV6CommittedRootRead;
+#[cfg(feature = "experimental-v6-raft-objects")]
+#[path = "v6_epoch_restore.rs"]
+mod v6_epoch_restore;
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_epoch_restore::NativeV6EpochRestoreRead;
 
 const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
 const PRODUCTION_CHUNK_CLIENT_PREFIX: &str = "heptabao-production-ha-chunk";

@@ -1386,7 +1386,7 @@ impl PersistentStateBundle {
     }
 
     fn validate_header(&self) -> io::Result<()> {
-        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3 | 4)
+        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3 | 4 | 5)
             || self.journal_format > 1
             || self.generation == 0
         {
@@ -1704,6 +1704,30 @@ impl DurableStateMachine {
         Ok(state.v6_intent_log_id(intent_id))
     }
 
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn durable_snapshot_v6_epoch_restore_begin(
+        &self,
+        command: &crate::v6_epoch_restore::NativeV6EpochRestoreCommand,
+        begin_log: LogIdOf<TypeConfig>,
+    ) -> io::Result<bool> {
+        let bundle = self.bundle.lock().await;
+        let Some(snapshot) = &bundle.current_snapshot else { return Ok(false); };
+        if snapshot.meta.last_log_id.is_none_or(|log| log.index < begin_log.index) {
+            return Ok(false);
+        }
+        let state = MemStoreStateMachine::from_snapshot(&snapshot.data)?;
+        if state.last_applied_log != snapshot.meta.last_log_id {
+            return Err(invalid("V6 epoch restore snapshot log identity changed"));
+        }
+        let same = |pending: &crate::v6_epoch_restore::NativeV6PendingEpochRestore| {
+            &pending.command == command && pending.begin_log == begin_log
+        };
+        Ok(state.v6_pending_epoch_restore.as_ref().is_some_and(same)
+            || state.v6_root.as_ref().is_some_and(|root| {
+                root.restore_lineage.iter().any(|record| same(&record.pending))
+            }))
+    }
+
     pub(crate) async fn last_applied_log_index(&self) -> Option<u64> {
         self.bundle
             .lock()
@@ -1861,6 +1885,13 @@ impl DurableStateMachine {
                 .clone()
                 .map(crate::NativeV6PublishedRoot),
         )
+    }
+
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    pub(crate) async fn native_v6_pending_epoch_restore(
+        &self,
+    ) -> Option<crate::v6_epoch_restore::NativeV6PendingEpochRestore> {
+        self.bundle.lock().await.state.v6_pending_epoch_restore.clone()
     }
 
     #[cfg(feature = "experimental-v6-raft-objects")]

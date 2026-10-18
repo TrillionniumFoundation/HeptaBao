@@ -32,7 +32,7 @@ pub struct NativeV6CommittedRootSource {
     storage: Arc<LocalV6BlobStage>,
     pinned: PinnedClientCertificateMap,
     voters: BTreeMap<[u8; 32], u64>,
-    enrollment_digest: [u8; 32],
+    initial_enrollment: NativeV6PeerEnrollment,
     // One bounded immutable-reference cache, not a read or fsync capability.
     manifest: Mutex<Option<SourceManifest>>,
 }
@@ -71,7 +71,7 @@ impl NativeV6CommittedRootSource {
             storage,
             pinned: PinnedClientCertificateMap::new(pins)?,
             voters,
-            enrollment_digest: enrollment.digest(),
+            initial_enrollment: enrollment.clone(),
             manifest: Mutex::new(None),
         })
     }
@@ -111,7 +111,6 @@ impl NativeV6CommittedRootSource {
         let request = pull_wire::parse(frame.payload())?;
         if request.requester != actual_voter
             || request.target != self.raft.id()
-            || request.binding.enrollment != self.enrollment_digest
         {
             return Err(HaError::PeerAuthenticationFailed);
         }
@@ -120,7 +119,7 @@ impl NativeV6CommittedRootSource {
             .block_on(self.raft.native_v6_committed_root_read(frame.deadline()))
             .map_err(|_| unknown())?
             .ok_or_else(unknown)?;
-        if read.enrollment().digest() != self.enrollment_digest
+        if !read.enrollment().same_peer_configuration(&self.initial_enrollment)
             || RootBinding::observed(&read) != request.binding
             || read.enrollment().pins().get(&actual_voter) != Some(&frame.actual_leaf_sha256())
         {

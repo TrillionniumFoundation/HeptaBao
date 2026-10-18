@@ -73,6 +73,27 @@ impl ProcessRaftNode {
                 .await
                 .map_err(|_| unavailable())?;
             let enrollment = enrollment.ok_or_else(unavailable)?;
+            // A next-epoch transfer has ONE distinct admission path. It must
+            // consume an actual fresh pending restore read whose exact Stage
+            // is already sealed in Raft. A numeric epoch or configured pins
+            // cannot widen ordinary current-epoch admission. This replaces
+            // the initial lookup witness with the actual pending witness;
+            // neither handle is revived after an intervening apply.
+            let (witness, enrollment, root, restore_intent_log) =
+                if expected.epoch == enrollment.epoch() {
+                    (witness, enrollment, root, None)
+                } else {
+                    let pending = self
+                        .native_v6_epoch_restore_read(expected.operation_digest, deadline)
+                        .await
+                        .map_err(|_| unavailable())?;
+                    if pending.intent() != Some(*expected) {
+                        return Err(unavailable());
+                    }
+                    let log = pending.intent_log_id().ok_or_else(unavailable)?;
+                    let (witness, enrollment, source) = pending.into_closure_selection();
+                    (witness, enrollment, Some(source), Some(log))
+                };
             let bound = witness.deadline;
             if !enrollment.pins().contains_key(&self.id)
                 || expected.cluster_digest != enrollment.cluster_digest()
@@ -98,6 +119,7 @@ impl ProcessRaftNode {
                 || intent_log.index <= expected.expected_previous_commit_index
                 || intent_log > witness.read_log
                 || intent_log > witness.applied_log
+                || restore_intent_log.is_some_and(|exact| exact != intent_log)
             {
                 return Err(unavailable());
             }

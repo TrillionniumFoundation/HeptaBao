@@ -457,6 +457,18 @@ pub(crate) enum RecordCommand {
     PublishNativeV6 {
         root: crate::v6_root_publication::NativeV6RootCommand,
     },
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    BeginNativeV6EpochRestore {
+        pending: crate::v6_epoch_restore::NativeV6EpochRestoreCommand,
+    },
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    CancelNativeV6EpochRestore {
+        pending: crate::v6_epoch_restore::NativeV6PendingEpochRestore,
+    },
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    PublishNativeV6EpochRestore {
+        publication: crate::v6_epoch_restore::NativeV6EpochRestorePublication,
+    },
     RetainLegacyChunks {
         expected_manifest: LegacyStatusIdentity,
         active: Vec<LegacyChunkRef>,
@@ -479,6 +491,12 @@ impl fmt::Debug for RecordCommand {
             Self::EnrollNativeV6 { .. } => "EnrollNativeV6([REDACTED])",
             #[cfg(feature = "experimental-v6-raft-objects")]
             Self::PublishNativeV6 { .. } => "PublishNativeV6([REDACTED])",
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            Self::BeginNativeV6EpochRestore { .. } => "BeginNativeV6EpochRestore([REDACTED])",
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            Self::CancelNativeV6EpochRestore { .. } => "CancelNativeV6EpochRestore([REDACTED])",
+            #[cfg(feature = "experimental-v6-raft-objects")]
+            Self::PublishNativeV6EpochRestore { .. } => "PublishNativeV6EpochRestore([REDACTED])",
             Self::RetainLegacyChunks { .. } => "RetainLegacyChunks([REDACTED])",
             Self::Stage { .. } => "Stage([REDACTED])",
             Self::Publish { .. } => "Publish([REDACTED])",
@@ -920,7 +938,10 @@ impl RecordState {
         }
         match command {
             #[cfg(feature = "experimental-v6-raft-objects")]
-            RecordCommand::EnrollNativeV6 { .. } | RecordCommand::PublishNativeV6 { .. } => {
+            RecordCommand::EnrollNativeV6 { .. } | RecordCommand::PublishNativeV6 { .. }
+            | RecordCommand::BeginNativeV6EpochRestore { .. }
+            | RecordCommand::CancelNativeV6EpochRestore { .. }
+            | RecordCommand::PublishNativeV6EpochRestore { .. } => {
                 // Requires the actual applied LogId and membership. The outer
                 // state machine handles it before the V5 object machinery.
                 Err(RecordRejection::Invalid)

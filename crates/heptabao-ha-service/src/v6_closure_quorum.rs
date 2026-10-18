@@ -167,7 +167,9 @@ pub struct NativeV6ClosureReceiver {
     storage: Arc<LocalV6BlobStage>,
     pinned: PinnedClientCertificateMap,
     voter_by_peer: BTreeMap<NodeId, u64>,
-    enrollment_digest: [u8; 32],
+    // The initial opaque enrollment fixes static trust, not a perpetual epoch.
+    // Every accepted scope comes from the exact fresh runtime admission below.
+    initial_enrollment: NativeV6PeerEnrollment,
     // One bounded manifest, at most MAX_OBJECTS, per receiver. It is merely a
     // transfer cache; a restart or a different admitted operation discards it.
     incoming: Mutex<Option<IncomingClosure>>,
@@ -207,7 +209,7 @@ impl NativeV6ClosureReceiver {
             storage,
             pinned: PinnedClientCertificateMap::new(pins)?,
             voter_by_peer,
-            enrollment_digest: enrollment.digest(),
+            initial_enrollment: enrollment.clone(),
             incoming: Mutex::new(None),
         })
     }
@@ -262,7 +264,6 @@ impl NativeV6ClosureReceiver {
             .ok_or(HaError::UnknownPeer)?;
         if request.target != self.raft.id()
             || sender != request.binding.leader
-            || request.binding.enrollment_digest != self.enrollment_digest
         {
             return Err(HaError::PeerAuthenticationFailed);
         }
@@ -275,7 +276,7 @@ impl NativeV6ClosureReceiver {
             .map_err(|_| unknown())?;
         if Binding::observed(&admission) != request.binding
             || admission.leader_id() != sender
-            || admission.enrollment().digest() != self.enrollment_digest
+            || !admission.enrollment().same_peer_configuration(&self.initial_enrollment)
         {
             return Err(HaError::PeerAuthenticationFailed);
         }

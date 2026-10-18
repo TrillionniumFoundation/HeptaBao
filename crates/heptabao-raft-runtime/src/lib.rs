@@ -22,6 +22,10 @@ mod v6_commit_intent;
 mod v6_replica_blobs;
 #[cfg(feature = "experimental-v6-raft-objects")]
 mod v6_root_publication;
+#[cfg(feature = "experimental-v6-raft-objects")]
+mod v6_epoch_restore;
+#[cfg(feature = "experimental-v6-raft-objects")]
+pub use v6_epoch_restore::NativeV6EpochTransition;
 
 pub use records::{
     LegacyChunkRef, LegacyEnvelopeObservation, LegacyStatusIdentity, PublishedRecordRoot,
@@ -57,7 +61,7 @@ pub use process::{
     RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,
 };
 #[cfg(feature = "experimental-v6-raft-objects")]
-pub use process::{NativeV6ClosureAdmission, NativeV6CommittedRootRead};
+pub use process::{NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead};
 
 const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_SEALED_ENVELOPE_BYTES: usize = 1024 * 1024;

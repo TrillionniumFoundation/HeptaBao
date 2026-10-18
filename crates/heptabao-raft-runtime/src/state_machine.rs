@@ -36,9 +36,11 @@ mod native_format_refusal_tests {
             "ordinary V5 snapshots remain readable"
         );
         let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
-        bytes["format_version"] = serde_json::json!(4);
-        assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
-        for field in ["v6_root", "v6_enrollment"] {
+        for version in [4, 5] {
+            bytes["format_version"] = serde_json::json!(version);
+            assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
+        }
+        for field in ["v6_root", "v6_enrollment", "v6_epoch_protocol", "v6_pending_epoch_restore"] {
             let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
             bytes["state"][field] = serde_json::json!({"must_not_be_ignored":true});
             assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
@@ -153,6 +155,12 @@ pub struct StateMachine {
     #[cfg(feature = "experimental-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) v6_root: Option<crate::v6_root_publication::NativeV6RootState>,
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v6_epoch_protocol: Option<u8>,
+    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v6_pending_epoch_restore: Option<crate::v6_epoch_restore::NativeV6PendingEpochRestore>,
     // Old/default builds must not silently discard an enrolled or published
     // V6 state even if an input falsely labels its enclosing format as V3.
     #[cfg(not(feature = "experimental-v6-raft-objects"))]
@@ -161,6 +169,12 @@ pub struct StateMachine {
     #[cfg(not(feature = "experimental-v6-raft-objects"))]
     #[serde(default, skip_serializing, rename = "v6_root")]
     unsupported_v6_root: Option<serde::de::IgnoredAny>,
+    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[serde(default, skip_serializing, rename = "v6_epoch_protocol")]
+    unsupported_v6_epoch_protocol: Option<serde::de::IgnoredAny>,
+    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[serde(default, skip_serializing, rename = "v6_pending_epoch_restore")]
+    unsupported_v6_pending_epoch_restore: Option<serde::de::IgnoredAny>,
     #[serde(skip)]
     legacy_json_bytes: Option<usize>,
 }
@@ -250,7 +264,10 @@ impl StateMachine {
     }
     pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
         #[cfg(not(feature = "experimental-v6-raft-objects"))]
-        if self.unsupported_v6_enrollment.is_some() || self.unsupported_v6_root.is_some() {
+        if self.unsupported_v6_enrollment.is_some() || self.unsupported_v6_root.is_some()
+            || self.unsupported_v6_epoch_protocol.is_some()
+            || self.unsupported_v6_pending_epoch_restore.is_some()
+        {
             return Err(RecordRejection::Invalid);
         }
         #[cfg(feature = "experimental-v6-raft-objects")]
@@ -411,6 +428,9 @@ impl StateMachine {
                     let Ok(intent) = crate::NativeV6CommitIntent::decode(object.sealed()) else {
                         return ApplicationResponse::rejected(RecordRejection::Invalid);
                     };
+                    if let Err(error) = self.validate_native_v6_epoch_intent_stage(&intent) {
+                        return ApplicationResponse::rejected(error);
+                    }
                     if intent.expected_previous_commit_index >= log.index {
                         return ApplicationResponse::rejected(RecordRejection::Invalid);
                     }
@@ -421,7 +441,7 @@ impl StateMachine {
                     {
                         return ApplicationResponse::rejected(RecordRejection::Budget);
                     }
-                    Some((key, log))
+                    Some((key, log, intent))
                 }
                 RecordCommand::Prune { ids, .. } => {
                     for id in ids {
@@ -563,9 +583,10 @@ impl StateMachine {
                     self.v5_root_log = self.last_applied_log;
                 }
                 #[cfg(feature = "experimental-v6-raft-objects")]
-                if let Some((key, log)) = v6_applied_provenance {
+                if let Some((key, log, intent)) = v6_applied_provenance {
                     // Immutable first-apply identity survives duplicate Stage.
-                    self.v6_intent_log_provenance.entry(key).or_insert(log);
+                    let first = *self.v6_intent_log_provenance.entry(key).or_insert(log);
+                    self.record_native_v6_epoch_intent_stage(intent, first);
                 }
                 ApplicationResponse::Records(RecordResponse {
                     accepted: true,
@@ -576,6 +597,10 @@ impl StateMachine {
         }
     }
     pub(crate) fn records_format_version(&self) -> Option<u16> {
+        #[cfg(feature = "experimental-v6-raft-objects")]
+        if self.v6_epoch_protocol.is_some() {
+            return Some(5);
+        }
         #[cfg(feature = "experimental-v6-raft-objects")]
         if self.v6_enrollment.is_some() || self.v6_root.is_some() {
             return Some(4);
