@@ -33,6 +33,9 @@ mod h2_transport;
 mod logical;
 #[path = "http_sanitized_config.rs"]
 mod sanitized_config;
+#[cfg(all(test, feature = "fixture-native-v6-service"))]
+#[path = "http_snapshot_accept_tests.rs"]
+mod snapshot_accept_tests;
 use zeroize::{Zeroize, Zeroizing};
 
 #[path = "http_approle_form.rs"]
@@ -42,15 +45,15 @@ mod approle_form;
 mod approle_mount_tests;
 #[path = "http_help.rs"]
 pub(crate) mod help;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "http_native_kv2_large.rs"]
+mod native_kv2_large;
 #[path = "http_ocsp.rs"]
 pub(crate) mod ocsp;
 #[path = "http_pki_role_fields.rs"]
 pub(crate) mod pki_role_fields;
 #[path = "http_snapshot.rs"]
 mod snapshot;
-#[cfg(feature = "fixture-native-v6-service")]
-#[path = "http_native_kv2_large.rs"]
-mod native_kv2_large;
 #[path = "http_token_fields.rs"]
 pub(crate) mod token_fields;
 #[path = "http_ui.rs"]
@@ -1080,10 +1083,22 @@ pub(crate) fn native_large_upload_wire_fixture(
     source: &mut impl Read,
     deadline: Instant,
 ) -> Result<Response, &'static str> {
-    let parsed = read_request_with_ui(source, deadline.saturating_duration_since(Instant::now()), true, false);
+    let parsed = read_request_with_ui(
+        source,
+        deadline.saturating_duration_since(Instant::now()),
+        true,
+        false,
+    );
     let (reply, _, _) = process_parsed_request(
-        service, None, parsed, source, None, IpAddr::V4(std::net::Ipv4Addr::LOCALHOST),
-        &[73; 16], consistency::Settings::default(), deadline,
+        service,
+        None,
+        parsed,
+        source,
+        None,
+        IpAddr::V4(std::net::Ipv4Addr::LOCALHOST),
+        &[73; 16],
+        consistency::Settings::default(),
+        deadline,
     );
     match reply {
         snapshot::NativeReply::Json(response) => Ok(response),
@@ -1750,8 +1765,12 @@ fn read_request_with_ui(
             let native_upload = native_wire
                 && matches!(
                     api_target.split('?').next(),
-                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
-                        | "sys/storage/raft/snapshot-repair" | "sys/migration/openbao/kv2/native-large")
+                    Some(
+                        "sys/storage/raft/snapshot"
+                            | "sys/storage/raft/snapshot-force"
+                            | "sys/storage/raft/snapshot-repair"
+                            | "sys/migration/openbao/kv2/native-large"
+                    )
                 );
             if !native_upload {
                 discard_rejected_ordinary_body(
@@ -1837,7 +1856,8 @@ fn read_request_with_ui(
     };
     let snapshot_route = matches!(
         route,
-        "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        "sys/storage/raft/snapshot"
+            | "sys/storage/raft/snapshot-force"
             | "sys/storage/raft/snapshot-repair"
     );
     let download =
@@ -1846,19 +1866,23 @@ fn read_request_with_ui(
         map.get("content-type").map(|value| value.as_str()),
         "application/json",
     );
+    // The HTTP snapshot download is binary even when an ordinary client
+    // sends Accept: application/json. That header must not select the legacy
+    // bounded JSON snapshot path and skip typed transfer admission.
+    // Upload representation still follows Content-Type, independently.
     let native_snapshot = native_wire
         && !help_selected
         && snapshot_route
-        && ((download
-            && !map
-                .get("accept")
-                .is_some_and(|value| value.as_str() == "application/json"))
-            || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
+        && (download || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
     #[cfg(feature = "fixture-native-v6-service")]
-    let native_large = native_wire && !help_selected && method == "POST"
+    let native_large = native_wire
+        && !help_selected
+        && method == "POST"
         && route == crate::engines::kv2_native_large::PATH
-        && media_type_is(map.get("content-type").map(|value| value.as_str()),
-            crate::engines::kv2_native_large::MEDIA_TYPE);
+        && media_type_is(
+            map.get("content-type").map(|value| value.as_str()),
+            crate::engines::kv2_native_large::MEDIA_TYPE,
+        );
     #[cfg(not(feature = "fixture-native-v6-service"))]
     let native_large = false;
     let deferred_body = native_snapshot || native_large;
@@ -1888,7 +1912,9 @@ fn read_request_with_ui(
         _ => return Err(bad("invalid content length")),
     };
     if native_large && length == 0 {
-        return Err(bad("native-large KV2 requires a nonempty length-framed body"));
+        return Err(bad(
+            "native-large KV2 requires a nonempty length-framed body",
+        ));
     }
     let ocsp_get = ocsp::get_carrier(&method, route)?;
     let ocsp_post = ocsp::raw_post(
@@ -1932,8 +1958,7 @@ fn read_request_with_ui(
         )
     };
     if length > maximum_body {
-        if !deferred_body && !map.contains_key("transfer-encoding") && !map.contains_key("expect")
-        {
+        if !deferred_body && !map.contains_key("transfer-encoding") && !map.contains_key("expect") {
             drain_bounded_413_body(
                 reader,
                 length,
@@ -2426,7 +2451,10 @@ fn merge_query_fields(
         #[cfg(feature = "experimental-native-v6-ha")]
         if path == "sys/storage/raft/snapshot"
             && matches!(method, "POST" | "PUT")
-            && matches!(key.as_str(), "cancel_pending_restore" | "inspect_pending_restore")
+            && matches!(
+                key.as_str(),
+                "cancel_pending_restore" | "inspect_pending_restore"
+            )
         {
             // Preserve only this explicit native reconciliation selector.
             // Service still checks the live native owner, original root Actor,

@@ -1,0 +1,181 @@
+{
+  "schema": "heptabao.authbus.openai-r3.sdk-inputs.v1",
+  "expectedSdkName": "openclaw",
+  "expectedSdkVersion": "2026.7.1-2",
+  "expectedActualMainNodeVersion": "v22.23.3",
+  "nodeVersionIsObservedAtRun": true,
+  "moduleBindingCount": 35,
+  "modules": [
+    {
+      "relative": "dist/order-CeBlX0NH.js",
+      "originalSha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732"
+    },
+    {
+      "relative": "dist/model-auth-CJEm9SNp.js",
+      "originalSha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7"
+    },
+    {
+      "relative": "dist/oauth-B4aOCsid.js",
+      "originalSha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e"
+    },
+    {
+      "relative": "dist/stream-BcRkg2P0.js",
+      "originalSha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e"
+    },
+    {
+      "relative": "dist/fetch-guard-6VNcgVVc.js",
+      "originalSha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc"
+    },
+    {
+      "relative": "dist/store-DH33UrUj.js",
+      "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    {
+      "relative": "dist/source-check-ZSz5NzGW.js",
+      "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9"
+    },
+    {
+      "relative": "dist/profiles-DyU-YCq2.js",
+      "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5"
+    },
+    {
+      "relative": "dist/credential-state-BY-oz-QV.js",
+      "originalSha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4"
+    },
+    {
+      "relative": "dist/sqlite-B1ze-fre.js",
+      "originalSha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50"
+    },
+    {
+      "relative": "dist/runtime-snapshots-D6VA-VN8.js",
+      "originalSha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f"
+    },
+    {
+      "relative": "dist/bundled-dir-DKbeVv7V.js",
+      "originalSha256": "cf0976b5d6cf61faf8ceb10a43035a44dcd4f4c20557febc2428bde3fcb61b6d"
+    },
+    {
+      "relative": "dist/openclaw-root-_Kkan8Lf.js",
+      "originalSha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9"
+    },
+    {
+      "relative": "dist/oauth-BcZS_BvC.js",
+      "originalSha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4"
+    },
+    {
+      "relative": "dist/chutes-oauth-YFvuN1-a.js",
+      "originalSha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55"
+    },
+    {
+      "relative": "dist/provider-runtime.runtime--yRUs3av.js",
+      "originalSha256": "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab"
+    },
+    {
+      "relative": "dist/provider-runtime-CLQOjLJ6.js",
+      "originalSha256": "6daf266a90294162eb45ce8c9402ce15743df0ee1cc951e4e95602a3c6122338"
+    },
+    {
+      "relative": "dist/extensions/openai/api.js",
+      "originalSha256": "5490ab62c857124e421570502596f5189a228e44513d8ee18b11b6f3b47198f5"
+    },
+    {
+      "relative": "dist/openai-chatgpt-provider.runtime-DGoPIR1g.js",
+      "originalSha256": "c9248524ab3c9bf1226096ddd76d31a755518de1ff763e3c24245912b7aed92f"
+    },
+    {
+      "relative": "dist/openai-chatgpt-oauth-flow.runtime.js",
+      "originalSha256": "183d0ad3b17da4acae91ede7add0c3293eed186d0c0b29741fcab891c5743d3b"
+    },
+    {
+      "relative": "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js",
+      "originalSha256": "e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d"
+    },
+    {
+      "relative": "dist/openai-chatgpt-auth-identity-DrQLjrg2.js",
+      "originalSha256": "94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765"
+    },
+    {
+      "relative": "dist/undici-global-dispatcher-DeobtFo9.js",
+      "originalSha256": "a8e81ea3c77cee197800a4ff9006dd0de56127e3103a85449685e928745b1e23"
+    },
+    {
+      "relative": "dist/runtime-fetch-k5Zth7kk.js",
+      "originalSha256": "9bf76247c5901725af5db78bbab2830a5e0fd7caf19953b095be74d4382db611"
+    },
+    {
+      "relative": "dist/facade-runtime-Dce8fe3v.js",
+      "originalSha256": "febd9b83ff5a398545f4ce350e49d2084b1704bdd01d467dbec889f4bfbe77f4"
+    },
+    {
+      "relative": "dist/facade-loader-ClPyIgA5.js",
+      "originalSha256": "5062ff2347de145c1f1253acd60c45c66cddb92825519c2dec277d93fe7d44d7"
+    },
+    {
+      "relative": "dist/facade-activation-check.runtime.js",
+      "originalSha256": "289f0f2efe2eaa482289692f8f58513ca0c1c9198ca4db11f32b95a6c107df9a"
+    },
+    {
+      "relative": "dist/plugin-module-loader-cache-uqaaAPup.js",
+      "originalSha256": "af5dc41aba74bb7eab264d1544d16a86906401bfe1c24a0ad53ae25bb8f1d2ac"
+    },
+    {
+      "relative": "dist/config-state-CtMlHVRM.js",
+      "originalSha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5"
+    },
+    {
+      "relative": "dist/sdk-alias-BJSUcD8n.js",
+      "originalSha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32"
+    },
+    {
+      "relative": "dist/undici-runtime-BL8ZN-Ey.js",
+      "originalSha256": "3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978"
+    },
+    {
+      "relative": "dist/ssrf-BayeDjCv.js",
+      "originalSha256": "dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295"
+    },
+    {
+      "relative": "dist/proxy-env-Bf6oQCTF.js",
+      "originalSha256": "5167b8055ce85f341e3df69a8d3c1e7877430fbcba63bcc052ad21abebb52bca"
+    },
+    {
+      "relative": "dist/managed-proxy-undici-RiF2s48t.js",
+      "originalSha256": "74b9478c30f20653068c1fc7f62b62ae805c1810d097150d5f8caeb08834a989"
+    },
+    {
+      "relative": "dist/active-proxy-state-DJLhrP_Z.js",
+      "originalSha256": "6723ab658f0df2dd3b833a1e8c9d35ee76001864ca93097f9919cf62ac3fa185"
+    }
+  ],
+  "metadataBindingCount": 1,
+  "metadata": [
+    {
+      "relative": "dist/extensions/openai/openclaw.plugin.json",
+      "originalSha256": "0db880f0e5a77ad809ec4cf57767416364db021d617569c48fdb2703c8c9485f"
+    }
+  ],
+  "discoveryBindings": [
+    {
+      "relative": "package.json",
+      "originalSha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db"
+    },
+    {
+      "relative": "openclaw.mjs",
+      "originalSha256": "f643b005d6db233a0b45204e8d8e943256874ccc6897b8a6e0cf42a9b376a188"
+    }
+  ],
+  "discoveryEvidenceSha256": "067961e9851cee9e09deb2beaee5a63a02c38f98e9086eae7344f0a8b15289b9",
+  "discoveryEntrypointExecuted": false,
+  "undiciBinding": {
+    "resolver": "createRequire(actual SDK dist/undici-runtime-BL8ZN-Ey.js)",
+    "requiredRuntimeFetchIdentity": "loadUndiciRuntimeDeps().fetch === require('undici').fetch",
+    "requireTestRuntimeOverrideAbsent": true,
+    "requireRealResolvedFilesWithinSdkRoot": true,
+    "packageMetadataMaximumBytes": 65536,
+    "entrypointMaximumBytes": 262144,
+    "packageMetadataAndEntrypointHashes": "record and compare before/after actual run",
+    "recursiveLibrarySourceAttestation": false
+  },
+  "isCompleteSdkDependencyTree": false,
+  "scope": "All 35 exact SDK overlay inputs, one unchanged activation metadata input, and two exact package discovery inputs. Actual SDK resolves its normal dependencies; this is not a recursively pinned copy of the installed SDK or Undici library."
+}

@@ -585,16 +585,19 @@ class NativeRun:
                        elapsed_ms=round(elapsed * 1000, 3))
         return status, response
 
+    def owned_process_action(self, node, action, *, native=True):
+        return process_action(node, self.run_id, action, native=native)
+
     def start(self, node, *, native=True):
         # An uncertain SSH return is not authority to repeat this startup.
         # Cleanup will inspect only this newly owned root's identity files.
         self.started.add(node)
-        pid = process_action(node, self.run_id, "start", native=native)
+        pid = self.owned_process_action(node, "start", native=native)
         self.event("owned_server_started", node=node.node_id, pid=pid, native=native)
         return pid
 
     def stop(self, node):
-        pid = process_action(node, self.run_id, "stop")
+        pid = self.owned_process_action(node, "stop")
         assert_stopped(node)
         self.started.discard(node)
         self.event("owned_server_stopped", node=node.node_id, pid=pid)
@@ -1181,7 +1184,7 @@ class NativeRun:
             if node not in self.started:
                 continue
             try:
-                pid = process_action(node, self.run_id, "stop")
+                pid = self.owned_process_action(node, "stop")
                 assert_stopped(node)
                 self.started.discard(node)
                 self.events.append({"event": "final_owned_server_stopped", "at": time.time(),

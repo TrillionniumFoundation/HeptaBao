@@ -9,16 +9,20 @@ cold-recovery and owned-cleanup checks remain mandatory.
 """
 from __future__ import annotations
 
+import argparse
 from dataclasses import replace
 import hashlib
 import ipaddress
 import json
 from pathlib import Path
+import re
+import shlex
 import socket
 import ssl
 import sys
 
 import native_v6_ha_multihost_live as native
+import native_ha_foreground_watchdog as foreground
 
 base = native.base
 PEER_PREFLIGHT = Path(__file__).resolve().parents[2] / "tools/physical_ha_peer_preflight.py"
@@ -63,7 +67,10 @@ class DirectLanRun(native.NativeRun):
 
     def __init__(self, *args):
         super().__init__(*args)
-        for path in (Path(__file__).resolve(), PEER_PREFLIGHT):
+        self.foreground_sessions = {}
+        self.foreground_helper = Path(foreground.__file__).resolve()
+        self.foreground_nodes = []
+        for path in (Path(__file__).resolve(), PEER_PREFLIGHT, self.foreground_helper):
             self.source_files[str(path)] = base.sha256_file(path)
         self.report.update({
             "schema": "heptabao.native-v6-direct-lan-ha.v1",
@@ -73,7 +80,83 @@ class DirectLanRun(native.NativeRun):
             "tunnel_children": 0,
             "direct_peer_probe_scope": "six_real_mtls_handshakes_with_raft_alpn_and_leaf_pins",
             "scope": "synthetic-native-v6-direct-lan-original-budgets",
+            "foreground_sessions": [],
+            "foreground_scope": "actual-Darwin-native-only; Linux and standalone-V5 unchanged",
+            "foreground_changes_product": False,
+            "foreground_proves_original_network_cause": False,
         })
+
+    def prepare(self):
+        super().prepare()
+        self.foreground_nodes = [node for node in self.nodes
+                                 if self.hosts[node.alias]["system"] == "Darwin"]
+        if len(self.foreground_nodes) != 1:
+            raise base.FixtureError("foreground_requires_one_actual_darwin_node")
+        for node in self.foreground_nodes:
+            base.upload(node, self.foreground_helper,
+                        node.root + "/native_ha_foreground_watchdog.py", 0o600)
+            self.verify_foreground_helper(node)
+
+    def verify_foreground_helper(self, node):
+        # This is read-only source/interpreter inventory; no child or service is
+        # started and no existing config, endpoint, permission or trust changes.
+        script = (
+            "import hashlib,json,os,pathlib,platform,sys\n"
+            f"p=pathlib.Path({self.args.darwin_watchdog_python!r}).resolve(strict=True)\n"
+            "assert p==pathlib.Path(sys.executable).resolve(strict=True)\n"
+            "info=p.stat();assert info.st_size<=16*1024*1024\n"
+            f"assert hashlib.sha256(p.read_bytes()).hexdigest()=={self.args.darwin_watchdog_python_sha256!r}\n"
+            f"helper=pathlib.Path({node.root + '/native_ha_foreground_watchdog.py'!r})\n"
+            "assert helper.is_file() and not helper.is_symlink() and helper.stat().st_size<=1024*1024\n"
+            f"assert hashlib.sha256(helper.read_bytes()).hexdigest()=={self.source_files[str(self.foreground_helper)]!r}\n"
+            "assert all(hasattr(os,k) for k in ('waitid','P_PID','WEXITED','WNOHANG','WNOWAIT',"
+            "'CLD_EXITED','CLD_KILLED','CLD_DUMPED'))\n"
+            "print(json.dumps({'executable':sys.executable,'realpath':str(p),'bytes':info.st_size,"
+            "'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'version':platform.python_version(),"
+            "'scope':'interpreter-binary-only-not-recursive-stdlib'}))\n"
+        )
+        result = json.loads(base.ssh(node, shlex.quote(self.args.darwin_watchdog_python)
+                            + " -B - <<'PY2'\n" + script + "PY2\n", timeout=15))
+        self.report["foreground_python_identity"] = result
+
+    def owned_process_action(self, node, action, *, native=True):
+        if action == "start" and native and node in self.foreground_nodes:
+            if node.alias in self.foreground_sessions:
+                raise base.FixtureError("foreground_unknown_start_must_not_repeat")
+            session = foreground.ForegroundSession(
+                node, self.run_id, self.work, self.expected[str(node.node_id)],
+                self.foreground_helper, source_commit=self.args.source_commit,
+                source_tree=self.args.source_tree, actual_host=self.hosts[node.alias],
+                python_path=self.args.darwin_watchdog_python,
+                python_sha256=self.args.darwin_watchdog_python_sha256)
+            self.foreground_sessions[node.alias] = session
+            self.report["foreground_sessions"].append(session.receipt)
+            try:
+                return session.start()
+            except foreground.Refusal as error:
+                raise base.FixtureError(str(error)) from error
+        if action == "stop" and node.alias in self.foreground_sessions:
+            session = self.foreground_sessions[node.alias]
+            try:
+                pid = session.stop()
+            except foreground.Refusal as error:
+                raise base.FixtureError(str(error)) from error
+            del self.foreground_sessions[node.alias]
+            return pid
+        return super().owned_process_action(node, action, native=native)
+
+    def request(self, *args, **kwargs):
+        for session in self.foreground_sessions.values():
+            try:
+                session.assert_running()
+            except foreground.Refusal as error:
+                raise base.FixtureError(str(error)) from error
+        return super().request(*args, **kwargs)
+
+    def finish_application(self, leader):
+        for node in self.foreground_nodes:
+            self.verify_foreground_helper(node)
+        return super().finish_application(leader)
 
     def transport_ready(self):
         self.check("direct_lan_endpoints_configured", all(
@@ -151,7 +234,16 @@ class DirectLanRun(native.NativeRun):
 
 
 def parsed_arguments(argv=None):
-    args, nodes, _, sources, receipts, expected = native.parsed_arguments(argv)
+    owner = argparse.ArgumentParser(add_help=False)
+    owner.add_argument("--darwin-watchdog-python", required=True)
+    owner.add_argument("--darwin-watchdog-python-sha256", required=True)
+    owner_args, rest = owner.parse_known_args(argv)
+    if (not Path(owner_args.darwin_watchdog_python).is_absolute()
+            or re.fullmatch(r"[0-9a-f]{64}", owner_args.darwin_watchdog_python_sha256) is None):
+        raise SystemExit("foreground owner requires the actual Darwin interpreter path and SHA256")
+    args, nodes, _, sources, receipts, expected = native.parsed_arguments(rest)
+    args.darwin_watchdog_python = owner_args.darwin_watchdog_python
+    args.darwin_watchdog_python_sha256 = owner_args.darwin_watchdog_python_sha256
     if not args.allow_private_lan or args.allow_private_tailnet:
         raise SystemExit("direct native HA requires --allow-private-lan")
     ranges = tuple(ipaddress.ip_network(value) for value in

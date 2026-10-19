@@ -1,0 +1,33 @@
+test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup (__main__.ActualMacCustodyChecks.test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup) ... ERROR
+test_actual_mac_normal_exit_is_reaped_without_a_signal (__main__.ActualMacCustodyChecks.test_actual_mac_normal_exit_is_reaped_without_a_signal) ... ERROR
+
+======================================================================
+ERROR: test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup (__main__.ActualMacCustodyChecks.test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_darwin_checks.py", line 176, in test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup
+    result = self.run_owned(program)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_darwin_checks.py", line 157, in run_owned
+    result = CONTROLLER.run_logged("synthetic-python", [sys.executable, "-c", program],
+                                   path, os.environ.copy(), path, records, save, budget=10)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_compile.py", line 373, in run_logged
+    raise RuntimeError("owned compiler group cleanup is unresolved; later commands were not started")
+RuntimeError: owned compiler group cleanup is unresolved; later commands were not started
+
+======================================================================
+ERROR: test_actual_mac_normal_exit_is_reaped_without_a_signal (__main__.ActualMacCustodyChecks.test_actual_mac_normal_exit_is_reaped_without_a_signal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_darwin_checks.py", line 168, in test_actual_mac_normal_exit_is_reaped_without_a_signal
+    result = self.run_owned("print('owned Darwin normal exit',flush=True)")
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_darwin_checks.py", line 157, in run_owned
+    result = CONTROLLER.run_logged("synthetic-python", [sys.executable, "-c", program],
+                                   path, os.environ.copy(), path, records, save, budget=10)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_compile.py", line 373, in run_logged
+    raise RuntimeError("owned compiler group cleanup is unresolved; later commands were not started")
+RuntimeError: owned compiler group cleanup is unresolved; later commands were not started
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.553s
+
+FAILED (errors=2)

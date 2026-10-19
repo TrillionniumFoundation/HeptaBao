@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.actual-mac-isolated-rustfmt.v1",
+  "status": "passed",
+  "argv": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config",
+    "skip_children=true",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-http-r1-rustfmt-20261019/crates/heptabao-server/src/http.rs",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-http-r1-rustfmt-20261019/crates/heptabao-server/src/http_api_alpn_tests.rs",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-http-r1-rustfmt-20261019/crates/heptabao-server/src/http_snapshot.rs",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-http-r1-rustfmt-20261019/crates/heptabao-server/src/http_snapshot_accept_tests.rs"
+  ],
+  "rustfmt_version": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)",
+  "started_utc": "2026-10-19T07:34:38.491379+00:00",
+  "finished_utc": "2026-10-19T07:34:38.598668+00:00",
+  "format_exit": 0,
+  "check_exit": 0,
+  "before": [
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 219670,
+      "sha256": "1abb8c8541838c5a257f26b0ac560338fd4fb267a56a555ea59fe40635d8c1a4"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_api_alpn_tests.rs",
+      "bytes": 9276,
+      "sha256": "a69638571064e583690e7f33ca7f58e9e832e58993a07d5b455687aeddae3d8e"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "bytes": 21823,
+      "sha256": "0e075a8affabe5eeca3b70228cb9702b6e7e801d343d339916908bb9898c92ce"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "bytes": 21472,
+      "sha256": "65c9c7bbb8fcb4df7c7041252aa5345efde5383975d95ac69bce5d3743ca1540"
+    }
+  ],
+  "after": [
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 219983,
+      "sha256": "ac794b4c0042be1fbdfe9bca3718b8465dadc3293b85e6ca473ac7cb8fb7c541",
+      "git_blob": "166d593cdaddf518c65326a8ad902b0b28e0e636"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_api_alpn_tests.rs",
+      "bytes": 9276,
+      "sha256": "a69638571064e583690e7f33ca7f58e9e832e58993a07d5b455687aeddae3d8e",
+      "git_blob": "693e2c26895eef457ec3518cba81fb601e7b8423"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "bytes": 23074,
+      "sha256": "b0cf3ca75b48f24f45ce216b8a7d86fbffd177ba570ae5c321ac0d9a7568cde9",
+      "git_blob": "b0a798433e0787991fa2a4f118041f31b10bfc6f"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "bytes": 24172,
+      "sha256": "c6595bd1453a06bd2bb5bd46a4254177098358077d2d4a7601aa817e37add142",
+      "git_blob": "60e85159a376834e0e0bc0c90c54262b206ec5e8"
+    }
+  ],
+  "production_source_modified": false
+}

@@ -1,0 +1,9 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-9770-main-capsule-20261019-r1/server", "kv2_api_271_", "--nocapture", "--test-threads=1", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-9770/crates/heptabao-server"}
+
+running 3 tests
+test engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact ... ok
+test engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens ... ok
+test engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2923 filtered out; finished in 0.00s
+

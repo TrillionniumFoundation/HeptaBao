@@ -1,0 +1,50 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+
+Caught error:
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'unvalidated'
+- 'unit-token'
+     ^
+
+    at async withinUnitContext (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:83:5)
+    at async asyncCheck (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:91:46)
+    at async file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:93:1 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'unvalidated'
+  - 'unit-token'
+       ^
+  
+      at file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:99:12
+      at file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_registry_candidate.mjs:315:16
+      at Object.dispatch (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:72:90)
+      at SdkOAuthRefreshAdmissionRegistry.dispatchManagedOAuthTransport (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_registry_candidate.mjs:311:22)
+      at file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:97:9
+      at Object.refreshCredential (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:85:46)
+      at file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_registry_candidate.mjs:167:47
+      at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:63:14)
+      at Object.refreshCredential (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_registry_candidate.mjs:166:41)
+      at Object.refreshOnce (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r3-20261019/analysis/old-getter-reproduction/authbus_refresh_sdk_ticket_boundary_test.mjs:71:21) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'unvalidated',
+    expected: 'unit-token',
+    operator: 'strictEqual',
+    diff: 'simple'
+  },
+  expected: [Function (anonymous)],
+  operator: 'rejects',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

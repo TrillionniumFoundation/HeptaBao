@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "name": "native_service_only_compile.py",
+      "bytes": 24473,
+      "sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+      "git_blob": "530ac880fa01c77f81c8d89f7013d48c5e2b8f75"
+    },
+    {
+      "name": "native_service_only_darwin_checks.py",
+      "bytes": 11328,
+      "sha256": "ddd2299be113a0ab2c5a70fc0337ef5787356d8fe833201eb7a974e821a6a225",
+      "git_blob": "e15a5a2c9c847c267626c0055a6a2d24edf198a7"
+    }
+  ],
+  "changed_functions": [
+    "darwin_owned_group",
+    "process_rows"
+  ],
+  "main_ast_unchanged": true,
+  "linux_owned_group_unchanged": true,
+  "original_55_selected_tests_unchanged": true,
+  "original_1800_command_budget_unchanged": true
+}

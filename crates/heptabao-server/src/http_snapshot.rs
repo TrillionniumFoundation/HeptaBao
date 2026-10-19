@@ -10,9 +10,14 @@ pub(super) struct NativeTarget(Zeroizing<String>);
 impl NativeTarget {
     pub(super) fn checked(target: &str) -> Result<Self, ParseError> {
         let path = target.split('?').next();
-        let accepted = matches!(path,
-            Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force"
-                | "/v1/sys/storage/raft/snapshot-repair"));
+        let accepted = matches!(
+            path,
+            Some(
+                "/v1/sys/storage/raft/snapshot"
+                    | "/v1/sys/storage/raft/snapshot-force"
+                    | "/v1/sys/storage/raft/snapshot-repair"
+            )
+        );
         #[cfg(feature = "fixture-native-v6-service")]
         let accepted = accepted || path == Some("/v1/sys/migration/openbao/kv2/native-large");
         if target.len() > 8192
@@ -446,7 +451,7 @@ mod tests {
         Ok(())
     }
     #[test]
-    fn binary_route_only_supports_chunking_and_explicit_json_accept_preserves_old_download() {
+    fn binary_route_only_supports_chunking_and_snapshot_accept_remains_binary() {
         for text in [
             "POST /v1/secret/data/key HTTP/1.1\r\nHost: local\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n",
             "POST /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n",
@@ -454,14 +459,35 @@ mod tests {
         ] {
             assert!(read_request_mode(&mut text.as_bytes(), Duration::from_secs(1), true).is_err());
         }
-        let raw = "GET /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\n\r\n";
+        for method in ["GET", "HEAD"] {
+            for accept in [
+                "",
+                "Accept: application/json\r\n",
+                "Accept: application/octet-stream\r\n",
+            ] {
+                let raw = format!(
+                    "{method} /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\n{accept}\r\n"
+                );
+                assert!(
+                    read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                        .is_ok_and(|r| r.native_snapshot.is_some())
+                );
+                // The explicitly non-wire parser used by internal JSON
+                // fixtures retains its separate, bounded representation.
+                assert!(
+                    read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), false)
+                        .is_ok_and(|r| r.native_snapshot.is_none())
+                );
+            }
+        }
+        let help = "GET /v1/sys/storage/raft/snapshot?help=1 HTTP/1.1\r\nHost: local\r\nAccept: application/json\r\n\r\n";
         assert!(
-            read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
-                .is_ok_and(|r| r.native_snapshot.is_some())
+            read_request_mode(&mut help.as_bytes(), Duration::from_secs(1), true)
+                .is_ok_and(|r| r.native_snapshot.is_none())
         );
-        let json = "GET /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nAccept: application/json\r\n\r\n";
+        let upload = "POST /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nAccept: application/json\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{}";
         assert!(
-            read_request_mode(&mut json.as_bytes(), Duration::from_secs(1), true)
+            read_request_mode(&mut upload.as_bytes(), Duration::from_secs(1), true)
                 .is_ok_and(|r| r.native_snapshot.is_none())
         );
     }
@@ -479,34 +505,61 @@ mod tests {
     #[test]
     fn current_root_repair_retains_binary_header_admission_and_bounded_json_lane() {
         let raw = "POST /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\nContent-Length: 25000000\r\n\r\n";
-        assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
-            .is_ok_and(|request| request.native_snapshot.is_some()));
+        assert!(
+            read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                .is_ok_and(|request| request.native_snapshot.is_some())
+        );
         let json = "POST /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nContent-Length: 25000000\r\n\r\n";
         assert!(read_request_mode(&mut json.as_bytes(), Duration::from_secs(1), true).is_err());
         let get = "GET /v1/sys/storage/raft/snapshot-repair HTTP/1.1\r\nHost: local\r\n\r\n";
-        assert!(read_request_mode(&mut get.as_bytes(), Duration::from_secs(1), true)
-            .is_ok_and(|request| request.native_snapshot.is_none()));
+        assert!(
+            read_request_mode(&mut get.as_bytes(), Duration::from_secs(1), true)
+                .is_ok_and(|request| request.native_snapshot.is_none())
+        );
     }
 
     #[cfg(feature = "experimental-native-v6-ha")]
     #[test]
-    fn native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes() -> io::Result<()> {
+    fn native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes()
+    -> io::Result<()> {
         let reference = format!("native-v6-restore-{}", "1".repeat(64));
         let cancel = format!("cancel_pending_restore={reference}");
         for (query, field, expected) in [
-            (cancel.as_str(), "cancel_pending_restore", Value::String(reference)),
-            ("inspect_pending_restore=true", "inspect_pending_restore", Value::Bool(true)),
+            (
+                cancel.as_str(),
+                "cancel_pending_restore",
+                Value::String(reference),
+            ),
+            (
+                "inspect_pending_restore=true",
+                "inspect_pending_restore",
+                Value::Bool(true),
+            ),
         ] {
             for method in ["POST", "PUT"] {
-                for framing in ["Content-Length: 0\r\n\r\n", "Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n"] {
-                    let raw = format!("{method} /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\n{framing}");
-                    let mut request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
-                        .unwrap_or_else(|_| panic!("explicit pending selector must reach native admission"));
+                for framing in [
+                    "Content-Length: 0\r\n\r\n",
+                    "Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n",
+                ] {
+                    let raw = format!(
+                        "{method} /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\n{framing}"
+                    );
+                    let mut request =
+                        read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                            .unwrap_or_else(|_| {
+                                panic!("explicit pending selector must reach native admission")
+                            });
                     assert_eq!(request.body.0[field], expected);
-                    let native = request.native_snapshot.take().expect("empty native binary request");
+                    let native = request
+                        .native_snapshot
+                        .take()
+                        .expect("empty native binary request");
                     let mut source = io::empty();
-                    let mut body = BodyReader::new(&mut source, native.body,
-                        Instant::now() + Duration::from_secs(1))?;
+                    let mut body = BodyReader::new(
+                        &mut source,
+                        native.body,
+                        Instant::now() + Duration::from_secs(1),
+                    )?;
                     assert_eq!(body.read(&mut [0; 1])?, 0);
                 }
             }
@@ -516,23 +569,48 @@ mod tests {
                 ("POST", "sys/storage/raft/snapshot-force", query.to_owned()),
                 ("POST", "sys/storage/raft/snapshot-repair", query.to_owned()),
                 ("POST", "secret/data/example", query.to_owned()),
-                ("POST", "sys/storage/raft/snapshot", format!("{query}&{query}")),
-                ("POST", "sys/storage/raft/snapshot", format!("{query}&force=true")),
+                (
+                    "POST",
+                    "sys/storage/raft/snapshot",
+                    format!("{query}&{query}"),
+                ),
+                (
+                    "POST",
+                    "sys/storage/raft/snapshot",
+                    format!("{query}&force=true"),
+                ),
             ] {
-                let raw = format!("{method} /v1/{path}?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n");
-                assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
+                let raw = format!(
+                    "{method} /v1/{path}?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n"
+                );
+                assert!(
+                    read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err()
+                );
             }
         }
         for query in [
-            "inspect_pending_restore", "inspect_pending_restore=", "inspect_pending_restore=false",
-            "inspect_pending_restore=1", "inspect_pending_restore=TRUE", "inspect_pending_restore=null",
+            "inspect_pending_restore",
+            "inspect_pending_restore=",
+            "inspect_pending_restore=false",
+            "inspect_pending_restore=1",
+            "inspect_pending_restore=TRUE",
+            "inspect_pending_restore=null",
         ] {
-            let raw = format!("POST /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n");
+            let raw = format!(
+                "POST /v1/sys/storage/raft/snapshot?{query} HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n"
+            );
             assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
         }
         let mut duplicate = serde_json::json!({"inspect_pending_restore":true});
-        assert!(merge_query_fields("POST", "sys/storage/raft/snapshot", "inspect_pending_restore=true",
-            &mut duplicate).is_err());
+        assert!(
+            merge_query_fields(
+                "POST",
+                "sys/storage/raft/snapshot",
+                "inspect_pending_restore=true",
+                &mut duplicate
+            )
+            .is_err()
+        );
         Ok(())
     }
 }

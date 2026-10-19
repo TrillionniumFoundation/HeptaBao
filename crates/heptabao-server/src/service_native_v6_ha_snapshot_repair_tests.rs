@@ -9,20 +9,35 @@ const REPAIR: &str = "sys/storage/raft/snapshot-repair";
 type LocalAnchor = (u64, u64, Vec<Option<Vec<u8>>>);
 
 fn activate(pipeline: &Pipeline, leader: usize) -> TestResult {
-    expect(pipeline.call(leader, "POST", "sys/internal/native-v6/activate",
-        pipeline.admin(), json!({}))?, 204, "repair-native-activation")?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "sys/internal/native-v6/activate",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        204,
+        "repair-native-activation",
+    )?;
     Ok(())
 }
 
 fn local_anchor(service: &Service) -> TestResult<LocalAnchor> {
     let durable = service.durable.as_ref().ok_or("repair durable absent")?;
     let resources = [
-        "state", native_v6_reader::ACTIVE_CURSOR_RESOURCE,
+        "state",
+        native_v6_reader::ACTIVE_CURSOR_RESOURCE,
         native_v6_reader::ACTIVE_SOURCE_ROOT_RESOURCE,
         native_v6_ha_install::HA_CURSOR_RESOURCE,
-    ].into_iter().map(|resource| {
-        durable.get("system", resource).map(|secret| secret.map(|value| value.expose().to_vec()))
-    }).collect::<Result<Vec<_>, _>>()?;
+    ]
+    .into_iter()
+    .map(|resource| {
+        durable
+            .get("system", resource)
+            .map(|secret| secret.map(|value| value.expose().to_vec()))
+    })
+    .collect::<Result<Vec<_>, _>>()?;
     Ok((durable.generation(), durable.replay_epoch(), resources))
 }
 
@@ -34,7 +49,8 @@ fn admitted(
     until: Instant,
 ) -> TestResult<Box<PendingExternalRequest>> {
     match service.begin_native_snapshot_before(
-        ServiceRequest::new(method, path, "", token, json!({})), until,
+        ServiceRequest::new(method, path, "", token, json!({})),
+        until,
     ) {
         NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),
         NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
@@ -48,11 +64,23 @@ fn admitted(
 fn export(pipeline: &Pipeline, leader: usize) -> TestResult<Vec<u8>> {
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
-    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
+    let service = pipeline.services[leader]
+        .as_ref()
+        .ok_or("repair Service absent")?;
     let mut writer = lock_until(service, until).map_err(|_| "export writer")?;
-    let mut pending = admitted(&mut writer, "GET", "sys/storage/raft/snapshot", pipeline.admin(), until)?;
+    let mut pending = admitted(
+        &mut writer,
+        "GET",
+        "sys/storage/raft/snapshot",
+        pipeline.admin(),
+        until,
+    )?;
     let (result, file) = pending.execute_snapshot_transfer(&mut io::empty());
-    expect(writer.finish_external_request(*pending, result), 200, "repair-source-export")?;
+    expect(
+        writer.finish_external_request(*pending, result),
+        200,
+        "repair-source-export",
+    )?;
     drop(writer);
     let mut file = file.ok_or("repair-source archive absent")?;
     let mut bytes = Vec::new();
@@ -60,25 +88,36 @@ fn export(pipeline: &Pipeline, leader: usize) -> TestResult<Vec<u8>> {
     Ok(bytes)
 }
 
-fn selected_shared(pipeline: &Pipeline, leader: usize) -> TestResult<Vec<(RecordObjectRef, Vec<u8>)>> {
+fn selected_shared(
+    pipeline: &Pipeline,
+    leader: usize,
+) -> TestResult<Vec<(RecordObjectRef, Vec<u8>)>> {
     let _scope = scope();
-    let process = pipeline.processes[leader].as_ref().ok_or("repair process absent")?
-        .lock_for_request().map_err(|_| "repair selection lock")?;
-    let read = process.native_v6_committed_read(OriginalDeadline::capture()?)?
+    let process = pipeline.processes[leader]
+        .as_ref()
+        .ok_or("repair process absent")?
+        .lock_for_request()
+        .map_err(|_| "repair selection lock")?;
+    let read = process
+        .native_v6_committed_read(OriginalDeadline::capture()?)?
         .ok_or("repair selected root absent")?;
     let files = process.with_native_v6_source(&read, |_, store| {
         let (_, refs) = store.reopen_root_closure_archive(read.published(), &mut || Ok(()))?;
-        refs.into_iter().map(|reference| {
-            let bytes = store.read_local_checked(&reference, &mut || Ok(()))?;
-            Ok((reference, bytes))
-        }).collect::<Result<Vec<_>, LocalV6BlobError>>()
+        refs.into_iter()
+            .map(|reference| {
+                let bytes = store.read_local_checked(&reference, &mut || Ok(()))?;
+                Ok((reference, bytes))
+            })
+            .collect::<Result<Vec<_>, LocalV6BlobError>>()
     })??;
     assert!(!files.is_empty());
     Ok(files)
 }
 
 fn leaf(pipeline: &Pipeline, voter: usize, reference: &RecordObjectRef) -> PathBuf {
-    pipeline.configs[voter].raft_dir.join("native-v6-ciphertext")
+    pipeline.configs[voter]
+        .raft_dir
+        .join("native-v6-ciphertext")
         .join(format!("v6-{}.blob", hex(&reference.id)))
 }
 
@@ -94,7 +133,12 @@ fn lose_all_shared(pipeline: &Pipeline, files: &[(RecordObjectRef, Vec<u8>)]) ->
                 Err(error) => return Err(error.into()),
             }
         }
-        File::open(pipeline.configs[voter].raft_dir.join("native-v6-ciphertext"))?.sync_all()?;
+        File::open(
+            pipeline.configs[voter]
+                .raft_dir
+                .join("native-v6-ciphertext"),
+        )?
+        .sync_all()?;
     }
     assert_missing(pipeline, files);
     Ok(())
@@ -111,7 +155,9 @@ fn assert_missing(pipeline: &Pipeline, files: &[(RecordObjectRef, Vec<u8>)]) {
 fn repair(pipeline: &Pipeline, leader: usize, archive: &[u8]) -> TestResult<Response> {
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
-    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
+    let service = pipeline.services[leader]
+        .as_ref()
+        .ok_or("repair Service absent")?;
     let mut writer = lock_until(service, until).map_err(|_| "repair writer")?;
     let mut pending = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;
     assert!(writer.native_request_binding.is_none());
@@ -124,6 +170,78 @@ fn repair(pipeline: &Pipeline, leader: usize, archive: &[u8]) -> TestResult<Resp
     Ok(response)
 }
 
+// The survivor leader's readiness does not prove that a newly reopened old
+// leader has received the new term and obtained its own applied ReadIndex.
+// This is a read-only setup gate inside the SAME eight-second failover budget;
+// the real cold unseal below still happens once with its original 15 seconds.
+fn cold_readindex_ready(
+    pipeline: &Pipeline,
+    index: usize,
+    expected: (u64, [u8; 32], u64),
+    until: Instant,
+) -> TestResult {
+    let _scope = RequestDeadlineScope::enter(until);
+    loop {
+        if Instant::now() >= until {
+            return Err("repair cold ReadIndex readiness exceeded original failover budget".into());
+        }
+        let ready = {
+            let process = pipeline.processes[index]
+                .as_ref()
+                .ok_or("repair cold process")?
+                .lock_for_request()
+                .map_err(|_| "repair cold ReadIndex lock")?;
+            match process.observe_native_v6_root_without_materialization_for_test(
+                OriginalDeadline::capture()?,
+            ) {
+                Ok(Some((epoch, published))) => {
+                    // No shared ciphertext is fetched or installed by this
+                    // gate. The actual unseal must still open the repaired
+                    // graph and original local barrier from the cold store.
+                    assert_eq!(epoch, 0);
+                    assert_eq!(
+                        published.migration_source().0,
+                        pipeline.seed_identity.digest()
+                    );
+                    assert_eq!(
+                        (
+                            published.generation(),
+                            published.root_digest(),
+                            published.publication_log_id().index
+                        ),
+                        expected
+                    );
+                    true
+                }
+                Ok(None) | Err(_) => false,
+            }
+        };
+        // A completed observation arriving late cannot become setup success.
+        if Instant::now() >= until {
+            return Err("repair cold ReadIndex completed after original failover budget".into());
+        }
+        if ready {
+            let service = pipeline.services[index]
+                .as_ref()
+                .ok_or("repair cold Service")?;
+            let cold = lock_until(service, until).map_err(|_| "repair cold Service observation")?;
+            assert!(
+                cold.state.is_none() && cold.native_root.is_none() && cold.ha_activation.is_none(),
+                "ReadIndex readiness cannot materialize or unseal the cold Service"
+            );
+            if Instant::now() >= until {
+                return Err(
+                    "repair cold Service observation exceeded original failover budget".into(),
+                );
+            }
+            return Ok(());
+        }
+        thread::sleep(
+            Duration::from_millis(20).min(until.saturating_duration_since(Instant::now())),
+        );
+    }
+}
+
 fn inflate_transport(archive: &[u8]) -> io::Result<Vec<u8>> {
     let mut plain = Vec::new();
     flate2::read::GzDecoder::new(archive).read_to_end(&mut plain)?;
@@ -131,7 +249,8 @@ fn inflate_transport(archive: &[u8]) -> io::Result<Vec<u8>> {
 }
 
 fn entry_extent(tar: &[u8], at: usize, name: &[u8]) -> TestResult<(usize, usize)> {
-    let header = tar.get(at..at.checked_add(512).ok_or("tar header overflow")?)
+    let header = tar
+        .get(at..at.checked_add(512).ok_or("tar header overflow")?)
         .ok_or("tar header missing")?;
     if header.get(..name.len()) != Some(name) || header.get(name.len()) != Some(&0) {
         return Err("unexpected synthetic tar entry".into());
@@ -143,11 +262,18 @@ fn entry_extent(tar: &[u8], at: usize, name: &[u8]) -> TestResult<(usize, usize)
     Ok((start, end))
 }
 
-fn corrupt_authenticated_transport_state(archive: &[u8], rehash_unkeyed: bool)
--> TestResult<Vec<u8>> {
+fn corrupt_authenticated_transport_state(
+    archive: &[u8],
+    rehash_unkeyed: bool,
+) -> TestResult<Vec<u8>> {
     let mut tar = inflate_transport(archive)?;
     let metadata = entry_extent(&tar, 0, b"meta.json")?;
-    let state_header = metadata.1.checked_add(511).ok_or("tar alignment overflow")? / 512 * 512;
+    let state_header = metadata
+        .1
+        .checked_add(511)
+        .ok_or("tar alignment overflow")?
+        / 512
+        * 512;
     let state = entry_extent(&tar, state_header, b"state.bin")?;
     if state.1 - state.0 < 32 {
         return Err("synthetic native state too short".into());
@@ -176,13 +302,23 @@ fn corrupt_authenticated_transport_state(archive: &[u8], rehash_unkeyed: bool)
 }
 
 #[test]
-fn native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens() -> TestResult {
+fn native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens()
+-> TestResult {
     let mut pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
     activate(&pipeline, leader)?;
     let value = "archive-repair-retained-history".repeat(4096);
-    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
-        json!({"options":{"cas":1},"data":{"value":value}}))?, 200, "repair-history-write")?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"options":{"cas":1},"data":{"value":value}}),
+        )?,
+        200,
+        "repair-history-write",
+    )?;
     let before = pipeline.native_selection(leader)?;
     let local = pipeline.with_service(leader, local_anchor)?;
     let archive = export(&pipeline, leader)?;
@@ -195,15 +331,61 @@ fn native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_co
         let service = pipeline.services[leader].as_ref().ok_or("repair Service")?;
         let mut writer = lock_until(service, until).map_err(|_| "anonymous repair writer")?;
         let denied = writer.begin_native_snapshot_before(
-            ServiceRequest::new("POST", REPAIR, "", "", json!({})), until,
+            ServiceRequest::new("POST", REPAIR, "", "", json!({})),
+            until,
         );
-        assert!(matches!(denied, NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref response))
-            if response.status == 403));
-        assert!(writer.snapshot_spool.as_ref().ok_or("export spool")?.lease().is_ok());
+        assert!(
+            matches!(denied, NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref response))
+            if response.status == 403)
+        );
+        assert!(
+            writer
+                .snapshot_spool
+                .as_ref()
+                .ok_or("export spool")?
+                .lease()
+                .is_ok()
+        );
+        drop(writer);
+        // Exercise the same readiness primitive while EVERY selected shared
+        // blob is missing. A normal materializing native read would fetch or
+        // fail here; the Raft-only observation must leave all donors missing.
+        let process = pipeline.processes[leader]
+            .as_ref()
+            .ok_or("repair observer process")?
+            .lock_for_request()
+            .map_err(|_| "repair observer lock")?;
+        let (epoch, observed) = process
+            .observe_native_v6_root_without_materialization_for_test(OriginalDeadline::capture()?)?
+            .ok_or("repair observer committed root")?;
+        assert_eq!(epoch, 0);
+        assert_eq!(
+            observed.migration_source().0,
+            pipeline.seed_identity.digest()
+        );
+        assert_eq!(
+            (
+                observed.generation(),
+                observed.root_digest(),
+                observed.publication_log_id().index
+            ),
+            before
+        );
+        assert!(
+            Instant::now() < until,
+            "read-only observer retains original admission budget"
+        );
     }
     assert_missing(&pipeline, &files);
-    let response = expect(repair(&pipeline, leader, &archive)?, 200, "actual-warm-archive-repair")?;
-    assert_eq!(response.body["data"]["shared_object_count"], files.len() as u64);
+    let response = expect(
+        repair(&pipeline, leader, &archive)?,
+        200,
+        "actual-warm-archive-repair",
+    )?;
+    assert_eq!(
+        response.body["data"]["shared_object_count"],
+        files.len() as u64
+    );
     for (reference, bytes) in &files {
         assert!(fs::read(leaf(&pipeline, leader, reference))? == *bytes);
     }
@@ -213,9 +395,14 @@ fn native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_co
         pipeline.assert_history(voter, &[(1, "seed-v5"), (2, &value)])?;
     }
     pipeline.stop_process(leader)?;
+    let rejoin_until = Instant::now() + Duration::from_secs(8);
     let next = pipeline.ready_leader()?;
     assert_ne!(next, leader);
+    if Instant::now() >= rejoin_until {
+        return Err("repair successor readiness exceeded original failover budget".into());
+    }
     pipeline.start_process(leader)?;
+    cold_readindex_ready(&pipeline, leader, before, rejoin_until)?;
     pipeline.unseal(leader)?;
     assert_eq!(pipeline.native_selection(leader)?, before);
     pipeline.assert_history(leader, &[(1, "seed-v5"), (2, &value)])?;
@@ -223,14 +410,23 @@ fn native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_co
 }
 
 #[test]
-fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf() -> TestResult {
+fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf()
+-> TestResult {
     let pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
     activate(&pipeline, leader)?;
     let old = export(&pipeline, leader)?;
-    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
-        json!({"options":{"cas":1},"data":{"value":"later-current-root"}}))?,
-        200, "repair-later-current-root")?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"options":{"cas":1},"data":{"value":"later-current-root"}}),
+        )?,
+        200,
+        "repair-later-current-root",
+    )?;
     let current = export(&pipeline, leader)?;
     let local = pipeline.with_service(leader, local_anchor)?;
     let before = pipeline.native_selection(leader)?;
@@ -247,13 +443,21 @@ fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_re
     middle_flip[middle] ^= 1;
     let original_tar = inflate_transport(&current)?;
     let changed_tar = inflate_transport(&middle_flip);
-    let same_payload = changed_tar.as_ref().is_ok_and(|bytes| bytes == &original_tar);
-    eprintln!("HBV6-ARCHIVE-MIDDLE-FLIP same_decoded_payload={same_payload} compressed_bytes={} decoded_bytes={}",
-        current.len(), original_tar.len());
+    let same_payload = changed_tar
+        .as_ref()
+        .is_ok_and(|bytes| bytes == &original_tar);
+    eprintln!(
+        "HBV6-ARCHIVE-MIDDLE-FLIP same_decoded_payload={same_payload} compressed_bytes={} decoded_bytes={}",
+        current.len(),
+        original_tar.len()
+    );
     if !same_payload {
         let rejected = repair(&pipeline, leader, &middle_flip)?;
-        assert!(rejected.status >= 400 && rejected.body.get("data").is_none(),
-            "changed/invalid decoded transport accepted: HTTP {}", rejected.status);
+        assert!(
+            rejected.status >= 400 && rejected.body.get("data").is_none(),
+            "changed/invalid decoded transport accepted: HTTP {}",
+            rejected.status
+        );
         assert_missing(&pipeline, &files);
     }
     // Deterministically altered authenticated content, including a forged
@@ -261,8 +465,11 @@ fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_re
     for rehash_unkeyed in [false, true] {
         let damaged = corrupt_authenticated_transport_state(&current, rehash_unkeyed)?;
         let rejected = repair(&pipeline, leader, &damaged)?;
-        assert!(rejected.status >= 400 && rejected.body.get("data").is_none(),
-            "changed authenticated pack accepted: rehash={rehash_unkeyed} HTTP {}", rejected.status);
+        assert!(
+            rejected.status >= 400 && rejected.body.get("data").is_none(),
+            "changed authenticated pack accepted: rehash={rehash_unkeyed} HTTP {}",
+            rejected.status
+        );
         assert_missing(&pipeline, &files);
     }
     let mut bad_crc = current.clone();
@@ -270,8 +477,11 @@ fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_re
     bad_crc[crc_at] ^= 1;
     assert!(inflate_transport(&bad_crc).is_err());
     let rejected = repair(&pipeline, leader, &bad_crc)?;
-    assert!(rejected.status >= 400 && rejected.body.get("data").is_none(),
-        "corrupt gzip CRC accepted: HTTP {}", rejected.status);
+    assert!(
+        rejected.status >= 400 && rejected.body.get("data").is_none(),
+        "corrupt gzip CRC accepted: HTTP {}",
+        rejected.status
+    );
     assert_missing(&pipeline, &files);
     let (reference, bytes) = files.first().ok_or("repair selected leaf")?;
     let path = leaf(&pipeline, leader, reference);
@@ -294,20 +504,27 @@ fn native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_re
     assert!(pipeline.with_service(leader, local_anchor)? == local);
     // Explicit fixture quarantine, never an automatic repair overwrite.
     fs::rename(&path, path.with_extension("corrupt-repair-fixture"))?;
-    expect(repair(&pipeline, leader, &current)?, 200, "repair-after-explicit-fixture-quarantine")?;
+    expect(
+        repair(&pipeline, leader, &current)?,
+        200,
+        "repair-after-explicit-fixture-quarantine",
+    )?;
     assert_eq!(pipeline.native_selection(leader)?, before);
     Ok(())
 }
 
 #[test]
-fn native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody() -> TestResult {
+fn native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody()
+-> TestResult {
     let pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
     activate(&pipeline, leader)?;
     let archive = export(&pipeline, leader)?;
     let until = Instant::now() + REQUEST_BUDGET;
     let scope = RequestDeadlineScope::enter(until);
-    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
+    let service = pipeline.services[leader]
+        .as_ref()
+        .ok_or("repair Service absent")?;
     let mut writer = lock_until(service, until).map_err(|_| "repair original writer")?;
     let cancelled = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;
     drop(cancelled);
@@ -317,9 +534,17 @@ fn native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drop
     let (result, _) = pending.execute_snapshot_transfer(&mut archive.as_slice());
     // Publish through the actual Service and actual TLS majority while the
     // original archive owner is outside the writer receiving its body.
-    expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
-        json!({"options":{"cas":1},"data":{"value":"changed-during-upload"}}))?,
-        200, "repair-concurrent-root")?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"options":{"cas":1},"data":{"value":"changed-during-upload"}}),
+        )?,
+        200,
+        "repair-concurrent-root",
+    )?;
     let changed = pipeline.native_selection(leader)?;
     let files = selected_shared(&pipeline, leader)?;
     lose_all_shared(&pipeline, &files)?;
@@ -327,14 +552,21 @@ fn native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drop
     let response = writer.finish_external_request(*pending, result);
     assert!(response.status >= 400 && response.body.get("data").is_none());
     assert!(writer.native_request_binding.is_none());
-    assert_eq!(writer.current_state_identity().map_err(|_| "repair current identity")?.digest(), changed.1);
+    assert_eq!(
+        writer
+            .current_state_identity()
+            .map_err(|_| "repair current identity")?
+            .digest(),
+        changed.1
+    );
     drop((writer, scope));
     assert_missing(&pipeline, &files);
     Ok(())
 }
 
 #[test]
-fn native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair() -> TestResult {
+fn native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair()
+-> TestResult {
     let pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
     activate(&pipeline, leader)?;
@@ -343,7 +575,9 @@ fn native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_p
     lose_all_shared(&pipeline, &files)?;
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
-    let service = pipeline.services[leader].as_ref().ok_or("repair Service absent")?;
+    let service = pipeline.services[leader]
+        .as_ref()
+        .ok_or("repair Service absent")?;
     let mut writer = lock_until(service, until).map_err(|_| "repair audit writer")?;
     let before = local_anchor(&writer)?;
     let mut pending = admitted(&mut writer, "POST", REPAIR, pipeline.admin(), until)?;

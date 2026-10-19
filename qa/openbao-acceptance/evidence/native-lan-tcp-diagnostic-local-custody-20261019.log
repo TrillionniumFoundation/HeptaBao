@@ -1,0 +1,9 @@
+test_exited_leader_keeps_group_owned_until_term_resistant_child_stops (__main__.OwnedCleanupTests.test_exited_leader_keeps_group_owned_until_term_resistant_child_stops) ... ok
+test_reaped_leader_refuses_numeric_group_signal (__main__.OwnedCleanupTests.test_reaped_leader_refuses_numeric_group_signal) ... ok
+test_running_owned_session_is_stopped_then_reaped (__main__.OwnedCleanupTests.test_running_owned_session_is_stopped_then_reaped) ... ok
+test_wrong_owner_identity_refuses_signal (__main__.OwnedCleanupTests.test_wrong_owner_identity_refuses_signal) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.853s
+
+OK

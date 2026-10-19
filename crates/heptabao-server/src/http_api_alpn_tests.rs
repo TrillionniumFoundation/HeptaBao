@@ -18,7 +18,7 @@ use rustls::{
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
-fn tls_identity() -> TestResult<(
+pub(super) fn tls_identity() -> TestResult<(
     CertificateDer<'static>,
     Vec<CertificateDer<'static>>,
     rustls::pki_types::PrivateKeyDer<'static>,

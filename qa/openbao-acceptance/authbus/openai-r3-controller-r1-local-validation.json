@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.authbus-openai-r3-controller-local-validation.v1",
+  "ok": true,
+  "unitTestsPassed": 8,
+  "actualSdkExecution": false,
+  "actualNativeHeptaBao": false,
+  "realExternalProvider": false,
+  "remoteHostCalls": 0,
+  "runtime": "local Python 3 synthetic processes",
+  "elapsedSeconds": 5.630510261995369,
+  "unittestReportedSeconds": 5.542,
+  "controller": {
+    "path": "qa/openbao-acceptance/authbus_openai_sdk_once.py",
+    "bytes": 32590,
+    "sha256": "6f5bc0e4ae9e6e59e34b263b32bc55b052fba94c85697631e7e8c587046ec9ad",
+    "git_blob": "0930f316bc59b855f5f9f41a919038774a40747d",
+    "mode": "100644"
+  },
+  "test": {
+    "path": "qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py",
+    "bytes": 7579,
+    "sha256": "923b7bb99351f95fe74948280191078a29e959725223b58f0e58dc7f0a672398",
+    "git_blob": "bb496b8e10ea0ed4334cf09d678bbacd002fc33a",
+    "mode": "100644"
+  },
+  "successLogSha256": "1c129bef7202a89e10e12357f202512454aaaa8a611b8fbc54c7a268170539b6",
+  "initialFailureLogSha256": "fb2cf8a7f1e4f7008fd65dfe4e6d509d99a3d9fd985801eebd9dd10bc076173f",
+  "initialFailureRetained": true,
+  "fixes": [
+    "explicit intermediate source directory mode0700",
+    "retain exact process identity assertions; local sandbox metadata mismatch tested with real kernel via automatically approved executor escalation"
+  ],
+  "checks": [
+    "exact16 archive members and15 source hashes/Git blobs",
+    "changed packet refused before staging",
+    "extra source file rejected",
+    "symlink and empty nonlog input rejected",
+    "38 SDK input classes and metadata change rejected",
+    "same original Popen handle waited exactly once",
+    "exited leader does not hide live descendant",
+    "timeout kills owned different-PGID descendant through pidfd without extending success deadline"
+  ],
+  "originalOuterBudgetSeconds": 180,
+  "timeoutCleanupMayQualifySuccess": false,
+  "nativeFourCaseSourceFilesChanged": false,
+  "frozenOpenaiR3SourceFilesChanged": false
+}

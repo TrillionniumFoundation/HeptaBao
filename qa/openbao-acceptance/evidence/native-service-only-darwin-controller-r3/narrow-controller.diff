@@ -1,0 +1,57 @@
+--- r2/native_service_only_compile.py
++++ r3/native_service_only_compile.py
+@@ -120,7 +120,7 @@
+     command = ["/bin/ps", "-A" if pid is None else "-p"]
+     if pid is not None:
+         command.append(str(pid))
+-    command += ["-o", "pid=,ppid=,pgid=,stat=" + (",lstart=" if with_start else "")]
++    command += ["-o", "pid=,ppid=,pgid=,stat=" + (",uid=,lstart=" if with_start else "")]
+     # lstart is an opaque, stable identity component. Keep ps's rendering
+     # independent of the controller account's locale (the actual Mac uses zh).
+     observation_env = os.environ.copy()
+@@ -133,13 +133,14 @@
+                            + " stderr=" + result.stderr[:1024].decode(errors="replace"))
+     rows = []
+     for line in result.stdout.decode("ascii", errors="strict").splitlines():
+-        fields = line.split(None, 4) if with_start else line.split()
+-        if len(fields) != (5 if with_start else 4):
++        fields = line.split(None, 5) if with_start else line.split()
++        if len(fields) != (6 if with_start else 4):
+             raise RuntimeError("owned process observation framing differs")
+         rows.append({"pid": int(fields[0]), "ppid": int(fields[1]),
+                      "pgid": int(fields[2]), "state": fields[3]})
+         if with_start:
+-            stamp = " ".join(fields[4].split())
++            rows[-1]["uid"] = int(fields[4])
++            stamp = " ".join(fields[5].split())
+             if not re.fullmatch(r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) "
+                                 r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) "
+                                 r"\d{1,2} \d{2}:\d{2}:\d{2} \d{4}", stamp):
+@@ -173,10 +174,10 @@
+         if len(leaders) != 1:
+             raise RuntimeError("owned Darwin leader disappeared before reaping")
+         leader = leaders[0]
+-        identity = {key: leader[key] for key in ("pid", "ppid", "pgid", "lstart")}
+-        if (identity["pid"], identity["ppid"], identity["pgid"]) != (
+-                process.pid, os.getpid(), process.pid):
+-            raise RuntimeError("owned Darwin leader parent or group identity differs")
++        identity = {key: leader[key] for key in ("pid", "ppid", "pgid", "uid", "lstart")}
++        if (identity["pid"], identity["ppid"], identity["pgid"], identity["uid"]) != (
++                process.pid, os.getpid(), process.pid, os.geteuid()):
++            raise RuntimeError("owned Darwin leader parent, group or uid identity differs")
+         if original is not None and original != identity:
+             raise RuntimeError("owned Darwin leader start identity differs")
+         return rows, leader, identity
+@@ -185,8 +186,11 @@
+         if not all(hasattr(os, key) for key in (
+                 "waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT")):
+             raise RuntimeError("owned Darwin zombie requires WNOWAIT custody")
++        # Actual Darwin 3.14 WNOWAIT reports si_uid=0 for our uid501 child.
++        # The fresh ps uid is bound above; the exit event proves child custody,
++        # never the owner UID. Keep every other event field stable below.
+         event = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+-        if (event is None or event.si_pid != process.pid or event.si_uid != os.getuid()
++        if (event is None or event.si_pid != process.pid
+                 or event.si_signo != signal.SIGCHLD
+                 or event.si_code not in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED)):
+             raise RuntimeError("owned Darwin zombie has no matching child exit event")

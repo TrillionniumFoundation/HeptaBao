@@ -1,0 +1,36 @@
+{
+  "command": "python3 -B qa/openbao-acceptance/tests/native_lan_tcp_diagnostic_local_test.py",
+  "consistent_namespace_preflight": {
+    "observed_os_getpid": 182851,
+    "observed_proc_self_pid": 182851,
+    "ps_exit_code": 0,
+    "ps_row_count": 13
+  },
+  "elapsed_seconds": 0.931591,
+  "execution_environment": "tool-approved local environment with consistent PID/procfs namespace",
+  "exit_code": 0,
+  "finished_utc": "2026-10-19T06:37:30.670785+00:00",
+  "first_sandbox_attempt": {
+    "cause": "Inconsistent tool sandbox PID namespace/procfs; Python os.getpid()=5 while /proc/self/stat PID=182824, ps -axo returned fatal library error, lookup self.",
+    "exit_code": 1,
+    "not_a_candidate_failure": true,
+    "observed_errors": 1,
+    "observed_failures": 3,
+    "preserved": true
+  },
+  "native_or_lan_performed": false,
+  "observed_failed_count": 0,
+  "observed_passed_count": 4,
+  "observed_test_count": 4,
+  "original_lan_passed": 36,
+  "original_lan_required": 98,
+  "raw_log": "native-lan-tcp-diagnostic-local-custody-20261019.log",
+  "raw_log_sha256": "b0a55a9156e87a25b4edc357fb032020735684254e6d2d04e90145a29bd77a62",
+  "schema": "heptabao.native-lan-tcp-diagnostic-local-custody.v1",
+  "scope": "local synthetic process ownership only; no SSH, LAN sockets, HeptaBao process, or HA acceptance",
+  "source_sha256": {
+    "native_lan_tcp_diagnostic.py": "b68444472ab460c0fe6e5fafaa5536931619e3f22a116e34de1e9ce31fad947c",
+    "native_lan_tcp_diagnostic_agent.py": "196d4437811c6dc0798165e319e76fd2da4e26dd487171c1c02feb6f34ede5cd",
+    "tests/native_lan_tcp_diagnostic_local_test.py": "be3f3dc4b25fcb7e703f631b95627ed5e6e545d1da18b5dd9c9bdfec6e5f0cb4"
+  }
+}

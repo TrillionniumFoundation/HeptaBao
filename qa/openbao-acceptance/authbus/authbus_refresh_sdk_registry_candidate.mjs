@@ -12,6 +12,19 @@ const fail = code => { throw Object.assign(new Error(code), { diagnosticCode: co
 const check = (condition, code) => { if (!condition) fail(code); };
 const MAX_TOKEN_BODY_BYTES = 65536;
 
+function isOpenAiTokenTarget(value) {
+  const input = typeof Request !== "undefined" && value instanceof Request ? value.url : value;
+  let target;
+  try { target = new URL(input); } catch { return false; }
+  // Classify the destination before enforcing its stricter canonical form.
+  // Explicit :443, host case, a query, or URL/Request wrappers cannot make a
+  // direct call to the managed token endpoint look like unrelated traffic.
+  const hostname = target.hostname.toLowerCase().replace(/\.$/, "");
+  let pathname;
+  try { pathname = decodeURIComponent(target.pathname); } catch { return hostname === "auth.openai.com"; }
+  return hostname === "auth.openai.com" && pathname === "/oauth/token";
+}
+
 function formFields(body) {
   check(body instanceof URLSearchParams || typeof body === "string", "trusted_refresh_transport_form_invalid");
   const text = String(body);
@@ -39,16 +52,19 @@ export class SdkOAuthRefreshAdmissionRegistry extends TrustedRefreshAdmissionReg
   #contexts = new AsyncLocalStorage();
   #fingerprintKey = crypto.randomBytes(32);
   #qualification;
+  #guardedRequests = new WeakMap();
   constructor({ sdkRefreshQualification, ...options }) {
     super(options);
     check(sdkRefreshQualification && typeof sdkRefreshQualification.providerOf === "function" &&
       typeof sdkRefreshQualification.supportedProviders === "function" &&
-      typeof sdkRefreshQualification.readOwnedStore === "function" && options.readStore === sdkRefreshQualification.readOwnedStore,
+      typeof sdkRefreshQualification.readOwnedStore === "function" &&
+      options.readStore === sdkRefreshQualification.readOwnedStore,
       "trusted_refresh_sdk_qualification_required");
     this.#qualification = sdkRefreshQualification;
     this.oauthSdkObservations = { managedResolutions: 0, usableResolutions: 0,
       refreshContexts: 0, entryChecks: 0, dispatchAttempts: 0, allowedDispatches: 0,
-      deniedDispatches: 0, unmanagedDispatches: 0 };
+      deniedDispatches: 0, unmanagedDispatches: 0, guardedRequests: 0,
+      guardedRuntimeEntries: 0 };
   }
   #installed() {
     check(globalThis[ADMISSION_SYMBOL] === this, "trusted_refresh_sdk_registry_unavailable");
@@ -132,6 +148,9 @@ export class SdkOAuthRefreshAdmissionRegistry extends TrustedRefreshAdmissionReg
       credential = structuredClone(original);
       this.oauthSdkObservations.usableResolutions++;
     } else {
+      // A noncanonical stored provider needs a separate trusted migration.
+      // Reject before UNKNOWN/provider I/O rather than consuming a token that
+      // the coordinator's exact provider binding could not publish.
       check(original.provider === authority.scope.provider, "trusted_refresh_sdk_provider_normalization_required");
       check(this.#qualification.supportedProviders().some(provider => this.#canonical(provider, params.cfg) === authority.scope.provider),
         "trusted_refresh_sdk_provider_not_qualified");
@@ -160,6 +179,127 @@ export class SdkOAuthRefreshAdmissionRegistry extends TrustedRefreshAdmissionReg
     this.advanceAfterRefresh(scopeParams, permit, params.profileId, apiKey);
     return { managed: true, value: { apiKey, credential } };
   }
+  /** Capture this precise request before the SDK guard can await DNS or load
+   * a dispatcher. The ticket is process-local and tied to the private owner
+   * context; a plain label or a caller-created object cannot replace it. */
+  prepareGuardedOAuthTransport({ url, init } = {}) {
+    this.#installed();
+    const context = this.#contexts.getStore();
+    const provider = this.#canonical("openai", context?.cfg);
+    const tokenUrl = isOpenAiTokenTarget(url);
+    if (!context && (!this.providers.has(provider) || !tokenUrl)) return null;
+    if (!context) {
+      const body = formFields(init?.body);
+      // The SDK's separate, explicit authorization-code login flow remains
+      // outside the owned refresh protocol. It cannot mint a refresh ticket.
+      if (body.grant_type === "authorization_code") return null;
+    }
+    check(context && context.provider === provider, "trusted_refresh_guarded_request_context_required");
+    this.#validateTransport({ provider: "openai", operation: "openai-token-refresh", url, init });
+    const ticket = Object.freeze({});
+    this.#guardedRequests.set(ticket, { context, runtimeEntered: false, consumed: false });
+    this.oauthSdkObservations.guardedRequests++;
+    return ticket;
+  }
+  /** Runtime-fetch loads its own Undici runtime after the SSRF guard's awaited
+   * DNS/dispatcher work. Enter with the ticket and recheck after that runtime
+   * load and normalization, immediately before its real fetch. A direct
+   * managed refresh call to generic runtime-fetch has no such provenance. */
+  enterGuardedOAuthRuntimeTransport(ticket, { url, init } = {}) {
+    this.#installed();
+    const context = this.#contexts.getStore();
+    if (!ticket) {
+      if (isOpenAiTokenTarget(url) && this.providers.has(this.#canonical("openai", context?.cfg))) {
+        const fields = formFields(init?.body);
+        if (fields.grant_type !== "authorization_code") fail("trusted_refresh_guarded_runtime_ticket_required");
+      }
+      check(!context, "trusted_refresh_guarded_runtime_context_unbound");
+      return null;
+    }
+    const record = this.#guardedRequests.get(ticket);
+    check(record && !record.consumed && !record.runtimeEntered && record.context === context && context.open,
+      "trusted_refresh_guarded_runtime_ticket_invalid");
+    this.#validateTransport({ provider: "openai", operation: "openai-token-refresh", url, init });
+    record.runtimeEntered = true;
+    this.oauthSdkObservations.guardedRuntimeEntries++;
+    return ticket;
+  }
+  dispatchGuardedOAuthTransport(ticket, { url, init } = {}, send) {
+    this.#installed();
+    const record = this.#guardedRequests.get(ticket), context = this.#contexts.getStore();
+    check(record && !record.consumed && record.context === context && context.open,
+      "trusted_refresh_guarded_dispatch_ticket_invalid");
+    // This precise SDK request can reach a final boundary only once, even if
+    // the SDK transport throws synchronously. UNKNOWN remains authoritative.
+    record.consumed = true;
+    return this.dispatchManagedOAuthTransport({ provider: "openai", operation: "openai-token-refresh", url, init }, send);
+  }
+  #validateTransport({ provider, url, init, operation }) {
+    this.#installed();
+    const context = this.#contexts.getStore();
+    const canonical = this.#canonical(provider, context?.cfg);
+    check(context && context.open && context.registry === this && context.provider === canonical,
+      "trusted_refresh_sdk_context_required");
+    const parsed = new URL(url);
+    check(parsed.protocol === "https:" && !parsed.username && !parsed.password && !parsed.search && !parsed.hash &&
+      (!parsed.port || parsed.port === "443"), "trusted_refresh_transport_origin_invalid");
+    // Own the request properties before interpreting any of them. Reading a
+    // caller's body getter once for validation and again during a later spread
+    // would send different, unvalidated bytes. URLSearchParams is mutable too;
+    // only its private string snapshot crosses the final transport boundary.
+    const materialized = { ...init };
+    const method = String(materialized.method ?? "GET").toUpperCase();
+    const headers = new Headers(materialized.headers);
+    const body = materialized.body instanceof URLSearchParams ? String(materialized.body) : materialized.body;
+    const constrained = { ...materialized, method, headers, body, redirect: "error" };
+    let fields, token;
+    if (operation === "anthropic-token-refresh") {
+      check(canonical === this.#canonical("anthropic", context.cfg) &&
+        parsed.href === "https://platform.claude.com/v1/oauth/token" && method === "POST" &&
+        headers.get("content-type") === "application/json", "trusted_refresh_transport_route_mismatch");
+      fields = jsonFields(body); token = fields.refresh_token;
+      check(Object.keys(fields).every(key => ["grant_type", "client_id", "refresh_token"].includes(key)) &&
+        typeof fields.client_id === "string" && fields.client_id.length > 0,
+        "trusted_refresh_transport_fields_invalid");
+    } else if (operation === "chutes-token-refresh") {
+      check(canonical === this.#canonical("chutes", context.cfg) &&
+        parsed.href === "https://api.chutes.ai/idp/token" && method === "POST" &&
+        headers.get("content-type") === "application/x-www-form-urlencoded", "trusted_refresh_transport_route_mismatch");
+      fields = formFields(body); token = fields.refresh_token;
+      check(Object.keys(fields).every(key => ["grant_type", "client_id", "client_secret", "refresh_token"].includes(key)) &&
+        typeof context.credential.clientId === "string" && fields.client_id === context.credential.clientId.trim(),
+        "trusted_refresh_transport_client_unbound");
+      check(fields.client_secret === undefined || typeof context.credential.clientSecret === "string" &&
+        fields.client_secret === context.credential.clientSecret,
+        "trusted_refresh_transport_client_secret_unbound");
+    } else if (operation === "openai-token-refresh") {
+      check(canonical === this.#canonical("openai", context.cfg) &&
+        parsed.href === "https://auth.openai.com/oauth/token" && method === "POST" &&
+        headers.get("content-type") === "application/x-www-form-urlencoded", "trusted_refresh_transport_route_mismatch");
+      fields = formFields(body); token = fields.refresh_token;
+      check(Object.keys(fields).length === 3 &&
+        Object.keys(fields).every(key => ["grant_type", "client_id", "refresh_token"].includes(key)) &&
+        fields.client_id === "app_EMoamEEZ73f0CkXaXp7hrann",
+        "trusted_refresh_transport_client_unbound");
+    } else if (operation === "github-copilot-token-refresh") {
+      const domain = context.credential.enterpriseUrl || "github.com";
+      check(typeof domain === "string" && /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/i.test(domain) &&
+        canonical === this.#canonical("github-copilot", context.cfg) &&
+        parsed.href === `https://api.${domain}/copilot_internal/v2/token` && method === "GET" && !body,
+        "trusted_refresh_transport_route_mismatch");
+      const match = /^Bearer (.+)$/.exec(headers.get("authorization") ?? "");
+      check(match, "trusted_refresh_transport_authorization_missing"); token = match[1];
+    } else fail("trusted_refresh_sdk_transport_not_qualified");
+    if (fields) check(fields.grant_type === "refresh_token", "trusted_refresh_transport_grant_invalid");
+    check(this.#fingerprint(token) === context.refreshFingerprint, "trusted_refresh_transport_credential_mismatch");
+    // No caller getter or await remains between these custody reads, the
+    // coordinator's original deadline gate, and the one-shot transport call.
+    check(digest(this.readStore(context.authority.scope.agentDir).profiles?.[context.profileId]) === context.credentialDigest,
+      "trusted_refresh_sdk_changed_before_final_send");
+    check(digest(context.authority._read()) === context.closedRecordDigest,
+      "trusted_refresh_local_fence_changed_before_final_send");
+    return { context, parsed, constrained };
+  }
   /** The exact SDK fetch call invokes this synchronously immediately before
    * its transport. No await is allowed between dispatch() and send(). */
   dispatchManagedOAuthTransport({ provider, url, init, operation } = {}, send) {
@@ -174,51 +314,7 @@ export class SdkOAuthRefreshAdmissionRegistry extends TrustedRefreshAdmissionReg
         this.oauthSdkObservations.unmanagedDispatches++;
         return send(url, init);
       }
-      const context = current;
-      check(context && context.open && context.registry === this && context.provider === canonical,
-        "trusted_refresh_sdk_context_required");
-      const parsed = new URL(url);
-      check(parsed.protocol === "https:" && !parsed.username && !parsed.password && !parsed.search && !parsed.hash &&
-        (!parsed.port || parsed.port === "443"), "trusted_refresh_transport_origin_invalid");
-      const method = String(init?.method ?? "GET").toUpperCase(), headers = new Headers(init?.headers);
-      let fields, token;
-      if (operation === "anthropic-token-refresh") {
-        check(canonical === this.#canonical("anthropic", context.cfg) &&
-          parsed.href === "https://platform.claude.com/v1/oauth/token" && method === "POST" &&
-          headers.get("content-type") === "application/json", "trusted_refresh_transport_route_mismatch");
-        fields = jsonFields(init?.body); token = fields.refresh_token;
-        check(Object.keys(fields).every(key => ["grant_type", "client_id", "refresh_token"].includes(key)) &&
-          typeof fields.client_id === "string" && fields.client_id.length > 0,
-          "trusted_refresh_transport_fields_invalid");
-      } else if (operation === "chutes-token-refresh") {
-        check(canonical === this.#canonical("chutes", context.cfg) &&
-          parsed.href === "https://api.chutes.ai/idp/token" && method === "POST" &&
-          headers.get("content-type") === "application/x-www-form-urlencoded", "trusted_refresh_transport_route_mismatch");
-        fields = formFields(init?.body); token = fields.refresh_token;
-        check(Object.keys(fields).every(key => ["grant_type", "client_id", "client_secret", "refresh_token"].includes(key)) &&
-          typeof context.credential.clientId === "string" && fields.client_id === context.credential.clientId.trim(),
-          "trusted_refresh_transport_client_unbound");
-        check(fields.client_secret === undefined || typeof context.credential.clientSecret === "string" &&
-          fields.client_secret === context.credential.clientSecret,
-          "trusted_refresh_transport_client_secret_unbound");
-      } else if (operation === "github-copilot-token-refresh") {
-        const domain = context.credential.enterpriseUrl || "github.com";
-        check(typeof domain === "string" && /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/i.test(domain) &&
-          canonical === this.#canonical("github-copilot", context.cfg) &&
-          parsed.href === `https://api.${domain}/copilot_internal/v2/token` && method === "GET" && !init?.body,
-          "trusted_refresh_transport_route_mismatch");
-        const match = /^Bearer (.+)$/.exec(headers.get("authorization") ?? "");
-        check(match, "trusted_refresh_transport_authorization_missing"); token = match[1];
-      } else fail("trusted_refresh_sdk_transport_not_qualified");
-      if (fields) check(fields.grant_type === "refresh_token", "trusted_refresh_transport_grant_invalid");
-      check(this.#fingerprint(token) === context.refreshFingerprint, "trusted_refresh_transport_credential_mismatch");
-      // Redirects could otherwise replay the refresh secret without another
-      // one-shot boundary. All managed token endpoints must answer directly.
-      const constrained = { ...init, headers, redirect: "error" };
-      check(digest(this.readStore(context.authority.scope.agentDir).profiles?.[context.profileId]) === context.credentialDigest,
-        "trusted_refresh_sdk_changed_before_final_send");
-      check(digest(context.authority._read()) === context.closedRecordDigest,
-        "trusted_refresh_local_fence_changed_before_final_send");
+      const { context, parsed, constrained } = this.#validateTransport({ provider, url, init, operation });
       return context.dispatch(() => {
         check(context.open, "trusted_refresh_sdk_context_closed");
         this.#installed();

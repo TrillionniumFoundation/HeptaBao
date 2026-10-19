@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.native-only-darwin-r3-actual-once.v1",
+  "status": "completed",
+  "automatic_retry": false,
+  "submissions": [
+    {
+      "label": "mac-smoke",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r3-controller/native_service_only_darwin_checks.py",
+        "--controller",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r3-controller/native_service_only_compile.py",
+        "--expected-controller-sha256",
+        "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+        "--output",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-only-darwin-r3-mac-smoke-20261019-r1",
+        "--mac-smoke"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "pid": 44800,
+      "started_utc": "2026-10-19T07:30:10.634866+00:00",
+      "exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-19T07:30:11.378195+00:00"
+    },
+    {
+      "label": "native-only-compile",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r3-controller/native_service_only_compile.py",
+        "--source",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-9770",
+        "--manifest",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-9770-manifest.json",
+        "--output",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-mac-r3",
+        "--cargo",
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--rustc",
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--cargo-home",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo",
+        "--target-dir",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+        "--build-jobs",
+        "2"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "pid": 44824,
+      "started_utc": "2026-10-19T07:30:11.379626+00:00",
+      "exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-19T07:35:50.314210+00:00"
+    }
+  ],
+  "controller_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "checks_sha256": "ddd2299be113a0ab2c5a70fc0337ef5787356d8fe833201eb7a974e821a6a225",
+  "completed55_sha256": "31a540e5208c5059be63f6975e5fc9d174517cd6d5afbc2687913f1748bcf800",
+  "exit_code": 0
+}

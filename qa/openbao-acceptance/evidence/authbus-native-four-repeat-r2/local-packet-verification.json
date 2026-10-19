@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.native-cold-r2-local-packet-verification.v1",
+  "runtime_files": 21,
+  "unchanged_runtime_files": 19,
+  "changed_runtime_files": [
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs"
+  ],
+  "original_controller_bytes_unchanged": true,
+  "original_worker_bytes_unchanged": true,
+  "original_fixture_bytes_unchanged": true,
+  "positive_runtime_manifest_verified": true,
+  "changed_source_pin_refused": true,
+  "exact_tar_members": 22,
+  "all_tar_bytes_match_manifest": true,
+  "python_syntax_files": 6,
+  "node_syntax_files": 15,
+  "original_controller_denominator": 120,
+  "worker_denominators": {
+    "warm": 59,
+    "cold-before-server": 57,
+    "cold-after-server": 57
+  },
+  "historical_120_pass_receipt_refused_for_new_binary_and_adapters": true,
+  "actual_sdk_executed": false,
+  "actual_native_executed": false,
+  "remote_calls": 0,
+  "actual_new_run_pending": true
+}

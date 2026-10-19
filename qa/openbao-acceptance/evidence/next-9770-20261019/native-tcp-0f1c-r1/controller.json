@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.native-tcp-diagnostic-main-controller.v1",
+  "started_utc": "2026-10-19T06:42:24.871454+00:00",
+  "frozen_overlay_sha256": "6d79d67f489390674acd86e8507b2cbf92343bd6616b9c16c938be14f4bd4369",
+  "automatic_retry": false,
+  "production_mutation": false,
+  "stages": [
+    {
+      "label": "owned-process-unit",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-tcp-diagnostic-r1-source/qa/openbao-acceptance/tests/native_lan_tcp_diagnostic_local_test.py"
+      ],
+      "submission_count": 1,
+      "pid": 1878298,
+      "pgid": 1878298,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2036b13a6d7c9d6e760f781c5a70af65938dd7569570ec2ae475c9a1095141de"
+    },
+    {
+      "label": "actual-native-python-tcp",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-tcp-diagnostic-r1-source/qa/openbao-acceptance/native_lan_tcp_diagnostic.py",
+        "--input",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-tcp-diagnostic-r1-source/qa/openbao-acceptance/NATIVE_LAN_TCP_DIAGNOSTIC_20261019.template.json",
+        "--output",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-tcp-0f1c-20261019-r1-actual"
+      ],
+      "submission_count": 1,
+      "pid": 1878350,
+      "pgid": 1878350,
+      "exit_code": 0,
+      "stdout_sha256": "ad6aabbac3d9a2463cb60cd608081028db82920ffd38288bc0edcb62d41b9a0a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "status": "completed",
+  "exit_code": 0,
+  "finished_utc": "2026-10-19T06:42:53.657519+00:00"
+}

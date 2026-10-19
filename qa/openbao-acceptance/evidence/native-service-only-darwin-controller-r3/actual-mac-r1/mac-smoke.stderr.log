@@ -1,0 +1,7 @@
+test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup (__main__.ActualMacCustodyChecks.test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup) ... ok
+test_actual_mac_normal_exit_is_reaped_without_a_signal (__main__.ActualMacCustodyChecks.test_actual_mac_normal_exit_is_reaped_without_a_signal) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.696s
+
+OK

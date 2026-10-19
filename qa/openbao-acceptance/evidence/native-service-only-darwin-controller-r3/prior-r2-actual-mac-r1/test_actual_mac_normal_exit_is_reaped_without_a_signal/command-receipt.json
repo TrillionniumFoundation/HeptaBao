@@ -1,0 +1,32 @@
+{
+  "commands": [
+    {
+      "label": "synthetic-python",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "print('owned Darwin normal exit',flush=True)"
+      ],
+      "started_utc": "2026-10-19T07:25:30.214711+00:00",
+      "status": "failed",
+      "budget_seconds": 10,
+      "log": "synthetic-python.log",
+      "pid": 44250,
+      "pgid": 44250,
+      "sid": 44250,
+      "darwin_leader_identity": {
+        "pid": 44250,
+        "ppid": 44245,
+        "pgid": 44250,
+        "lstart": "Mon Oct 19 15:25:30 2026"
+      },
+      "cleanup_error": "owned Darwin zombie has no matching child exit event",
+      "finished_utc": "2026-10-19T07:25:30.494826+00:00",
+      "elapsed_seconds": 0.28,
+      "log_sha256": "9fa64afa1c676f2d724d734a544cee681b37238ad195e79b0c1da35bae27c4a6",
+      "log_bytes": 25,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    }
+  ]
+}

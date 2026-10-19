@@ -1,0 +1,11 @@
+{
+  "status": "failed_or_blocked",
+  "source_commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+  "source_tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+  "source_unchanged": true,
+  "scope": "Synthetic fixtures on this CI host; actual local TLS/Raft where the selected Service tests exercise it.",
+  "full_openbao_271_replacement_proven": false,
+  "physical_lan_validation_performed": false,
+  "mac_external_disk_validation_performed": false,
+  "production_cutover_performed": false
+}

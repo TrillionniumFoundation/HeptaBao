@@ -302,6 +302,43 @@ impl HaProcess {
                 .is_some_and(|runtime| runtime.enabled())
     }
 
+    /// Fixture-only readiness observation, without fetching or repairing any
+    /// shared ciphertext. Returned data grants no Service/local-install/Actor
+    /// authority; the actual cold unseal still owes complete graph validation.
+    #[cfg(test)]
+    pub(crate) fn observe_native_v6_root_without_materialization_for_test(
+        &self,
+        deadline: OriginalDeadline,
+    ) -> Result<Option<(u64, NativeV6PublishedRoot)>, String> {
+        deadline.check().map_err(|error| error.to_string())?;
+        let native = self
+            .native_v6
+            .as_ref()
+            .filter(|native| native.enabled())
+            .ok_or("native HA was not explicitly enabled")?;
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
+        let selected = self
+            .runtime
+            .block_on(node.native_v6_committed_root_read(deadline.instant()))
+            .map_err(|error| error.to_string())?;
+        let Some(selected) = selected else {
+            deadline.check().map_err(|error| error.to_string())?;
+            return Ok(None);
+        };
+        native.validate_enrollment(&self.codec, selected.enrollment())?;
+        self.runtime
+            .block_on(heptabao_raft_runtime::with_read_index_deadline(
+                deadline.instant(),
+                node.verify_native_v6_committed_root_read(&selected),
+            ))
+            .map_err(|error| error.to_string())?;
+        deadline.check().map_err(|error| error.to_string())?;
+        Ok(Some((
+            selected.enrollment().epoch(),
+            selected.root().clone(),
+        )))
+    }
+
     pub(crate) fn native_v6_committed_read(
         &self,
         deadline: OriginalDeadline,

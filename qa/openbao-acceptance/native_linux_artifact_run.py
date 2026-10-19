@@ -437,21 +437,115 @@ def verify_capsule(root, expected_digest, commit, tree, runner, groups):
     return value, expected
 
 
-def stop_owned(process):
-    if process.poll() is None:
+def proc_identity(pid):
+    """Read only kernel identity fields; no command/environment inventory."""
+    root = Path("/proc") / str(pid)
+    try:
+        raw = (root / "stat").read_bytes()
+        uid = root.stat().st_uid
+    except FileNotFoundError:
+        return None
+    need(len(raw) <= 8192, "bounded_process_identity_required")
+    prefix, separator, remaining = raw.rpartition(b") ")
+    fields = remaining.split()
+    need(separator and len(fields) >= 20 and prefix.split(b" ", 1)[0] == str(pid).encode(),
+         "kernel_process_identity_malformed")
+    return {"pid": pid, "ppid": int(fields[1]), "pgid": int(fields[2]), "sid": int(fields[3]),
+            "start_ticks": int(fields[19]), "uid": uid, "state": fields[0].decode("ascii")}
+
+
+def session_identity(row):
+    return {key: row[key] for key in ("pid", "ppid", "pgid", "sid", "start_ticks", "uid")}
+
+
+def retain_owned_session(process):
+    owner = proc_identity(process.pid)
+    need(process.returncode is None and owner is not None and owner["ppid"] == os.getpid()
+         and owner["pgid"] == owner["sid"] == process.pid and owner["uid"] == os.geteuid(),
+         "new_owned_unreaped_session_required")
+    return session_identity(owner)
+
+
+def observed_owned_exit(process):
+    need(process.returncode is None, "owner_was_reaped_before_group_cleanup")
+    # WNOWAIT keeps the child leader's PID reserved until final group cleanup.
+    return os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+
+
+def wait_owned_exit(process, deadline):
+    while time.monotonic() < deadline:
+        event = observed_owned_exit(process)
+        if event is not None:
+            need(time.monotonic() < deadline, "response_after_original_command_deadline")
+            return event.si_status if event.si_code == os.CLD_EXITED else -event.si_status
+        time.sleep(min(0.05, max(0, deadline - time.monotonic())))
+    raise subprocess.TimeoutExpired(process.args, COMMAND_SECONDS)
+
+
+def live_owned_group(owner, deadline):
+    current = proc_identity(owner["pid"])
+    need(current is not None and session_identity(current) == owner, "owned_leader_identity_changed_no_signal")
+    members = []
+    with os.scandir("/proc") as entries:
+        for entry in entries:
+            need(time.monotonic() < deadline, "original_cleanup_observation_deadline_expired")
+            if not entry.name.isdecimal():
+                continue
+            row = proc_identity(int(entry.name))
+            if row is not None and row["pgid"] == owner["pgid"]:
+                need(row["sid"] == owner["sid"] and row["uid"] == owner["uid"]
+                     and row["start_ticks"] >= owner["start_ticks"], "owned_group_member_identity_mismatch")
+                if row["state"] != "Z":
+                    members.append(row["pid"])
+    return sorted(members)
+
+
+def stop_owned(process, owner):
+    receipt = {"leader_pid": process.pid, "owned_session_identity": owner, "leader_reaped": False,
+               "owned_live_group_empty": False, "term_seconds": 5, "kill_seconds": 5, "signals": []}
+    need(process.returncode is None, "reaped_leader_refuses_numeric_group_signal")
+    current = retain_owned_session(process)
+    need(current == owner, "owned_leader_identity_changed_no_signal")
+    # The unreaped leader pins PID/SID/PGID even after normal completion. No
+    # signal is sent after that leader is reaped or to a group found by name.
+    started = time.monotonic()
+    term_until, kill_until = started + 5, started + 10
+    observation_error = None
+    try:
+        remaining = live_owned_group(owner, term_until)
+        receipt["live_group_before"] = remaining
+    except (OSError, Refusal) as error:
+        remaining = [process.pid]
+        observation_error = str(error) if isinstance(error, Refusal) else type(error).__name__
+    os.killpg(process.pid, signal.SIGTERM)
+    receipt["signals"].append("SIGTERM")
+    while remaining and time.monotonic() < term_until:
         try:
-            os.killpg(process.pid, signal.SIGTERM)
-        except ProcessLookupError:
-            pass
-        try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
+            remaining = live_owned_group(owner, term_until)
+        except (OSError, Refusal) as error:
+            observation_error = str(error) if isinstance(error, Refusal) else type(error).__name__
+            break
+        if remaining:
+            time.sleep(min(0.05, max(0, term_until - time.monotonic())))
+    if remaining:
+        os.killpg(process.pid, signal.SIGKILL)
+        receipt["signals"].append("SIGKILL")
+        while remaining and time.monotonic() < kill_until:
             try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            process.wait(timeout=5)
-    return process.returncode
+                remaining = live_owned_group(owner, kill_until)
+            except (OSError, Refusal) as error:
+                observation_error = str(error) if isinstance(error, Refusal) else type(error).__name__
+                break
+            if remaining:
+                time.sleep(min(0.03, max(0, kill_until - time.monotonic())))
+    receipt["live_group_before_leader_reap"] = remaining
+    receipt["owned_live_group_empty"] = not remaining and observation_error is None and time.monotonic() < kill_until
+    if observation_error is not None:
+        receipt["group_observation_error"] = observation_error
+    receipt["leader_exit_code"] = process.wait(timeout=max(0, kill_until - time.monotonic()))
+    receipt["leader_reaped"] = True
+    receipt["elapsed_seconds"] = round(time.monotonic() - started, 6)
+    return receipt
 
 
 def execute_command(output, label, argv, cwd, environment, summary, save):
@@ -460,7 +554,7 @@ def execute_command(output, label, argv, cwd, environment, summary, save):
            "submission_count": 1, "automatic_retry": False, "log": label + ".log"}
     summary["commands"].append(row)
     save()
-    process = None
+    process, owner = None, None
     started = time.monotonic()
     try:
         descriptor = os.open(output / row["log"], os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -469,13 +563,13 @@ def execute_command(output, label, argv, cwd, environment, summary, save):
             stream.flush()
             process = subprocess.Popen(argv, cwd=cwd, env=environment, stdin=subprocess.DEVNULL,
                                        stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+            owner = retain_owned_session(process)
             row.update(pid=process.pid, status="running")
             save()
             try:
-                code = process.wait(timeout=COMMAND_SECONDS)
+                code = wait_owned_exit(process, started + COMMAND_SECONDS)
             except subprocess.TimeoutExpired:
                 row["timed_out"] = True
-                stop_owned(process)
                 code = 124
             row.update(exit_code=code, status="passed" if code == 0 else "failed")
     except BaseException:
@@ -483,8 +577,15 @@ def execute_command(output, label, argv, cwd, environment, summary, save):
         raise
     finally:
         if process is not None:
-            row["owned_child_exit_code"] = stop_owned(process)
-            row["owned_child_reaped"] = process.poll() is not None
+            try:
+                cleanup = stop_owned(process, owner or retain_owned_session(process))
+                row["owned_session_cleanup"] = cleanup
+                row["owned_child_exit_code"] = cleanup["leader_exit_code"]
+                row["owned_child_reaped"] = cleanup["leader_reaped"]
+                if cleanup["owned_live_group_empty"] is not True:
+                    row["status"] = "failed_or_unknown"
+            except BaseException as error:
+                row.update(status="failed_or_unknown", owned_cleanup_error=str(error) if isinstance(error, Refusal) else type(error).__name__)
         elapsed = time.monotonic() - started
         row.update(finished_utc=utc(), elapsed_seconds=round(elapsed, 6))
         if elapsed >= COMMAND_SECONDS and row.get("status") == "passed":
@@ -493,6 +594,8 @@ def execute_command(output, label, argv, cwd, environment, summary, save):
             observed = inspect_file(output / row["log"], limit=LOG_LIMIT)
             row.update(log_sha256=observed["sha256"], log_bytes=observed["bytes"])
         save()
+    need(row.get("owned_session_cleanup", {}).get("owned_live_group_empty") is True
+         and row.get("owned_child_reaped") is True, "owned_session_cleanup_not_proven_stop_executor")
     return row, read_owned(output / row["log"], LOG_LIMIT).decode("utf-8", errors="strict")
 
 
@@ -540,17 +643,18 @@ def probe_actual_server(source, manifest, binary, output, summary, save):
               "listener_deadline_seconds": 45, "http_deadline_seconds": 15, "production_authority": False}
     summary["actual_server_probe"] = record
     save()
-    process = None
+    process, owner = None, None
     try:
         with (root / "process.log").open("xb") as stream:
             process = subprocess.Popen(record["argv"], cwd=root, env=RUNTIME_ENV, stdin=subprocess.DEVNULL,
                                        stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+        owner = retain_owned_session(process)
         record.update(pid=process.pid, status="running")
         save()
         deadline = time.monotonic() + 45
         ready = False
         while time.monotonic() < deadline:
-            need(process.poll() is None, "owned_server_exited_before_listener")
+            need(observed_owned_exit(process) is None, "owned_server_exited_before_listener")
             text = (root / "process.log").read_bytes()
             need(len(text) <= 1024 ** 2, "bounded_new_server_start_log_required")
             if b"TLS listener ready" in text:
@@ -567,8 +671,15 @@ def probe_actual_server(source, manifest, binary, output, summary, save):
         record["status"] = "passed"
     finally:
         if process is not None:
-            record["owned_exit_code"] = stop_owned(process)
-            record["owned_process_stopped"] = process.poll() is not None
+            try:
+                cleanup = stop_owned(process, owner or retain_owned_session(process))
+                record["owned_session_cleanup"] = cleanup
+                record["owned_exit_code"] = cleanup["leader_exit_code"]
+                record["owned_process_stopped"] = cleanup["leader_reaped"] and cleanup["owned_live_group_empty"]
+                if not record["owned_process_stopped"]:
+                    record["status"] = "failed_or_unknown"
+            except BaseException as error:
+                record.update(status="failed_or_unknown", owned_cleanup_error=str(error) if isinstance(error, Refusal) else type(error).__name__)
         save()
 
 

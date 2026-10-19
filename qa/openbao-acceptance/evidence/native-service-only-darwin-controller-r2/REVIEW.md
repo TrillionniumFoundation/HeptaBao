@@ -1,0 +1,13 @@
+# Native-only Darwin controller R2
+
+The actual Mac R1 stopped after `cargo --version` because Darwin rejected `getpgid` / `getsid` for the original unreaped zombie. The source verifier still proved all 2,979 candidate files unchanged. The independent actual Mac microprobe retained the same `WNOWAIT` event twice and stable PID, PPID, PGID, Z state and start time.
+
+This revision changes only process observation and the immediate post-Popen identity capture. A live leader still needs its original SID and PGID. A zombie needs the original unreaped Popen, its bound PID/PPID/PGID/start identity, and two identical child-exit WNOWAIT events surrounding a fresh `ps` observation. A live-to-zombie syscall race enters that branch only after a fresh Z observation; ESRCH never authorizes an empty-group result. The original same-group live descendants remain visible until TERM/KILL cleanup, then the original Popen is waited once. `ps` start-time output uses a fixed C locale so the actual Mac account locale cannot alter the identity rendering.
+
+All source pins, 2,979-file verifier, Rust 1.98 checks, feature selection, compiler argv, independent 1,800-second command budgets, original 55-test cohort claim (zero tests executed by this controller), target lock, later-command refusal and original TERM/KILL budgets are unchanged. The main function and all top-level constants are AST-identical.
+
+## Validation and limits
+
+The six original local controller tests passed on actual owned Linux Python children, including normal nonzero exit, live descendant after leader exit, TERM-ignoring timeout/KILL, busy-target rejection, changed manifest rejection and feature-catalog parsing. The exact original test file is reused without edits. A process-local test subreaper collected the one orphaned synthetic descendant after the suite; no remote process or credential was touched. Ten new mocked Darwin identity cases passed, covering missing/mismatched exit events, reaped Popen, changed parent/group/start, observation-race failure and retained live SID checking. These simulated Darwin checks are not an actual Mac result.
+
+The new checker has an explicit `--mac-smoke` mode that refuses non-Darwin. It executes exactly two real owned-child cases (clean zero exit; exited leader with a live same-group descendant). The parent must retain their raw command receipts and execute the compiler in a new output directory after those cases pass. This revision does not claim Rust compilation, server execution, LAN validation or replacement qualification. Original R1 failure and microprobe receipts remain frozen at their original paths and hashes in the validation record.

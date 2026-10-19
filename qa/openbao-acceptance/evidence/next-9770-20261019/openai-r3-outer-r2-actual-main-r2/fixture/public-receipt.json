@@ -1,0 +1,3037 @@
+{
+  "schema": "authbus-refresh-r5-actual-openai-sdk",
+  "ok": false,
+  "nodeVersion": "v22.23.3",
+  "pid": 1976573,
+  "parentPid": 1976552,
+  "syntheticCredentials": true,
+  "syntheticProvider": true,
+  "tlsControlEmulator": true,
+  "actualSdk": true,
+  "actualSqlite": true,
+  "actualSdkOAuthManager": true,
+  "actualProviderHttps": true,
+  "actualOpenAiSdkOAuthManager": true,
+  "actualOpenAiSdkGuard": true,
+  "actualOpenAiFacade": true,
+  "sdkGuardUsesOwnedMockedFetchBranch": true,
+  "actualUndiciRefreshTransport": false,
+  "actualNativeHeptaBao": false,
+  "actualColdSdkProcess": false,
+  "productionMutation": false,
+  "bundledPluginDiscovery": "sdk-production-validated-override-and-package-bin-argv-cwd",
+  "ownedCertificateGenerationProcesses": 1,
+  "externalNetworkAttempts": 0,
+  "externalProcessAttempts": 0,
+  "outsideFixtureWriteAttempts": 0,
+  "outsideFixtureHomeReadAttempts": 0,
+  "blockedHomeReads": [],
+  "ownerReader": "exact-sdk-persisted-local",
+  "checks": [
+    {
+      "case": "sdk_discovery_matches_actual_owner_r5_input",
+      "phase": "sdk-import",
+      "passed": true
+    },
+    {
+      "case": "undici:no_injected_runtime_or_existing_managed_proxy",
+      "phase": "sdk-import",
+      "passed": true
+    },
+    {
+      "case": "undici:owned_actual_package",
+      "phase": "sdk-import",
+      "passed": true
+    },
+    {
+      "case": "undici:actual_fetch_function_identity",
+      "phase": "sdk-import",
+      "passed": true
+    },
+    {
+      "case": "actual_sdk_required_interfaces",
+      "phase": "sdk-import",
+      "passed": true
+    },
+    {
+      "case": "actual_exact_scenario_inventory",
+      "phase": "sdk-import",
+      "passed": true
+    },
+    {
+      "case": "usable-own-store:actual_sdk_canonical_provider",
+      "phase": "usable-own-store:fixture",
+      "passed": true
+    },
+    {
+      "case": "usable-own-store:actual_sdk_fixture_expiry_classification",
+      "phase": "usable-own-store:fixture",
+      "passed": true
+    },
+    {
+      "case": "usable-own-store:actual_sqlite_seed",
+      "phase": "usable-own-store:owner-read",
+      "passed": true
+    },
+    {
+      "case": "usable-own-store:trusted_initial_admission",
+      "phase": "usable-own-store:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "usable:actual_sdk_uses_scoped_credential",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "usable:no_provider_or_main_store_adoption",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:runtime_without_private_context_denied",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:provider_library_without_private_context_denied",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:raw_builtin_without_private_context_denied",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:plugin_facade_without_private_context_denied",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:no_unowned_refresh_side_effect",
+      "phase": "usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager-success:actual_sdk_canonical_provider",
+      "phase": "manager-success:fixture",
+      "passed": true
+    },
+    {
+      "case": "manager-success:actual_sdk_fixture_expiry_classification",
+      "phase": "manager-success:fixture",
+      "passed": true
+    },
+    {
+      "case": "manager-success:actual_sqlite_seed",
+      "phase": "manager-success:owner-read",
+      "passed": true
+    },
+    {
+      "case": "manager-success:trusted_initial_admission",
+      "phase": "manager-success:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "manager:actual_sdk_returns_new_credential",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:actual_https_once_after_durable_unknown",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:actual_sdk_write_precedes_published_grant",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:old_wire_cannot_use_successor",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:successor_without_scope_denied",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:successor_cannot_claim_unmanaged_provider",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:old_wire_cannot_bind_auth_result",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:cold_authority_cannot_reuse_positive_record",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:cold_old_credential_issuer_denied",
+      "phase": "manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:actual_sdk_canonical_provider",
+      "phase": "intent-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:actual_sdk_fixture_expiry_classification",
+      "phase": "intent-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:actual_sqlite_seed",
+      "phase": "intent-ack-lost:owner-read",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:trusted_initial_admission",
+      "phase": "intent-ack-lost:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:refresh_refused",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:exact_provider_count",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:admission_remains_closed",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:durable_unknown_retained",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:actual_sqlite_old_credential_retained",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:same_sdk_retry_denied",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:new_coordinator_unknown_owner_denied",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "intent-ack-lost:no_second_provider_request",
+      "phase": "intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:actual_sdk_canonical_provider",
+      "phase": "provider-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:actual_sdk_fixture_expiry_classification",
+      "phase": "provider-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:actual_sqlite_seed",
+      "phase": "provider-ack-lost:owner-read",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:trusted_initial_admission",
+      "phase": "provider-ack-lost:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:refresh_refused",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:exact_provider_count",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:admission_remains_closed",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:durable_unknown_retained",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:actual_sqlite_old_credential_retained",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:same_sdk_retry_denied",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:new_coordinator_unknown_owner_denied",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "provider-ack-lost:no_second_provider_request",
+      "phase": "provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:actual_sdk_canonical_provider",
+      "phase": "sqlite-abort:fixture",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:actual_sdk_fixture_expiry_classification",
+      "phase": "sqlite-abort:fixture",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:actual_sqlite_seed",
+      "phase": "sqlite-abort:owner-read",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:trusted_initial_admission",
+      "phase": "sqlite-abort:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:refresh_refused",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:exact_provider_count",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:admission_remains_closed",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:durable_unknown_retained",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:actual_sqlite_old_credential_retained",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:same_sdk_retry_denied",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:new_coordinator_unknown_owner_denied",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sqlite-abort:no_second_provider_request",
+      "phase": "sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:actual_sdk_canonical_provider",
+      "phase": "sdk-change-before-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:actual_sdk_fixture_expiry_classification",
+      "phase": "sdk-change-before-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:actual_sqlite_seed",
+      "phase": "sdk-change-before-send:owner-read",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:trusted_initial_admission",
+      "phase": "sdk-change-before-send:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "final-send:actual_sdk_concurrent_change_committed",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:refresh_refused",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:exact_provider_count",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:admission_remains_closed",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:durable_unknown_retained",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:same_sdk_retry_denied",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:new_coordinator_unknown_owner_denied",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "sdk-change-before-send:no_second_provider_request",
+      "phase": "sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:actual_sdk_canonical_provider",
+      "phase": "local-fence-change:fixture",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:actual_sdk_fixture_expiry_classification",
+      "phase": "local-fence-change:fixture",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:actual_sqlite_seed",
+      "phase": "local-fence-change:owner-read",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:trusted_initial_admission",
+      "phase": "local-fence-change:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:refresh_refused",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:exact_provider_count",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:admission_remains_closed",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:durable_unknown_retained",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:actual_sqlite_old_credential_retained",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:same_sdk_retry_denied",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:new_coordinator_unknown_owner_denied",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "local-fence-change:no_second_provider_request",
+      "phase": "local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:actual_sdk_canonical_provider",
+      "phase": "duplicate-final-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:actual_sdk_fixture_expiry_classification",
+      "phase": "duplicate-final-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:actual_sqlite_seed",
+      "phase": "duplicate-final-send:owner-read",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:trusted_initial_admission",
+      "phase": "duplicate-final-send:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:refresh_refused",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:exact_provider_count",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:admission_remains_closed",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:durable_unknown_retained",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:actual_sqlite_old_credential_retained",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:same_sdk_retry_denied",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:new_coordinator_unknown_owner_denied",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "duplicate-final-send:no_second_provider_request",
+      "phase": "duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:actual_sdk_canonical_provider",
+      "phase": "late-after-rejection:fixture",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:actual_sdk_fixture_expiry_classification",
+      "phase": "late-after-rejection:fixture",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:actual_sqlite_seed",
+      "phase": "late-after-rejection:owner-read",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:trusted_initial_admission",
+      "phase": "late-after-rejection:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:refresh_refused",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late:actual_sdk_continuation_after_rejection_denied",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:exact_provider_count",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:admission_remains_closed",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:durable_unknown_retained",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:actual_sqlite_old_credential_retained",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:same_sdk_retry_denied",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:new_coordinator_unknown_owner_denied",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late-after-rejection:no_second_provider_request",
+      "phase": "late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:actual_sdk_canonical_provider",
+      "phase": "original-deadline:fixture",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:actual_sdk_fixture_expiry_classification",
+      "phase": "original-deadline:fixture",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:actual_sqlite_seed",
+      "phase": "original-deadline:owner-read",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:trusted_initial_admission",
+      "phase": "original-deadline:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:refresh_refused",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:exact_provider_count",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:admission_remains_closed",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:durable_unknown_retained",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:actual_sqlite_old_credential_retained",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:same_sdk_retry_denied",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:new_coordinator_unknown_owner_denied",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "original-deadline:no_second_provider_request",
+      "phase": "original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:actual_sdk_canonical_provider",
+      "phase": "cross-provider-entry:fixture",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:actual_sdk_fixture_expiry_classification",
+      "phase": "cross-provider-entry:fixture",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:actual_sqlite_seed",
+      "phase": "cross-provider-entry:owner-read",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:trusted_initial_admission",
+      "phase": "cross-provider-entry:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:refresh_refused",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:exact_provider_count",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:admission_remains_closed",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:durable_unknown_retained",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:actual_sqlite_old_credential_retained",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:same_sdk_retry_denied",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:new_coordinator_unknown_owner_denied",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "cross-provider-entry:no_second_provider_request",
+      "phase": "cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-usable-own-store:actual_sdk_canonical_provider",
+      "phase": "openai-usable-own-store:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-usable-own-store:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-usable-own-store:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-usable-own-store:actual_sqlite_seed",
+      "phase": "openai-usable-own-store:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-usable-own-store:trusted_initial_admission",
+      "phase": "openai-usable-own-store:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "usable:actual_sdk_uses_scoped_credential",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "usable:no_provider_or_main_store_adoption",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:runtime_without_private_context_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:provider_library_without_private_context_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:raw_builtin_without_private_context_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:plugin_facade_without_private_context_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_refresh_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_get_api_key_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:flow_direct_refresh_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:flow_testing_refresh_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_fetch_direct_refresh_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_mock_direct_refresh_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_default-port_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_default-port_denied_before_runtime",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_query_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_query_denied_before_runtime",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_encoded-path_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_encoded-path_denied_before_runtime",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_url-object_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_url-object_denied_before_runtime",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_request-object_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:runtime_direct_request-object_denied_before_runtime",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:guard_direct_default_port_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:guard_direct_denied_before_dns",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:provider_registry_replacement_denied",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "entry:no_unowned_refresh_side_effect",
+      "phase": "openai-usable-own-store:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-manager-success:actual_sdk_canonical_provider",
+      "phase": "openai-manager-success:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-manager-success:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-manager-success:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-manager-success:actual_sqlite_seed",
+      "phase": "openai-manager-success:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-manager-success:trusted_initial_admission",
+      "phase": "openai-manager-success:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "manager:actual_sdk_returns_new_credential",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:actual_https_once_after_durable_unknown",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:actual_sdk_write_precedes_published_grant",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:old_wire_cannot_use_successor",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:successor_without_scope_denied",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:successor_cannot_claim_unmanaged_provider",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:old_wire_cannot_bind_auth_result",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:actual_guard_request_and_final_dispatch",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:actual_activated_facade_loaded",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:cold_authority_cannot_reuse_positive_record",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "manager:cold_old_credential_issuer_denied",
+      "phase": "openai-manager-success:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:actual_sdk_canonical_provider",
+      "phase": "openai-intent-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-intent-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:actual_sqlite_seed",
+      "phase": "openai-intent-ack-lost:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:trusted_initial_admission",
+      "phase": "openai-intent-ack-lost:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:refresh_refused",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:exact_provider_count",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:admission_remains_closed",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:durable_unknown_retained",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:actual_sqlite_old_credential_retained",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:same_sdk_retry_denied",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:new_coordinator_unknown_owner_denied",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-intent-ack-lost:no_second_provider_request",
+      "phase": "openai-intent-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:actual_sdk_canonical_provider",
+      "phase": "openai-provider-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-provider-ack-lost:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:actual_sqlite_seed",
+      "phase": "openai-provider-ack-lost:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:trusted_initial_admission",
+      "phase": "openai-provider-ack-lost:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:refresh_refused",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:exact_provider_count",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:admission_remains_closed",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:durable_unknown_retained",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:actual_sqlite_old_credential_retained",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:same_sdk_retry_denied",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:new_coordinator_unknown_owner_denied",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-provider-ack-lost:no_second_provider_request",
+      "phase": "openai-provider-ack-lost:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:actual_sdk_canonical_provider",
+      "phase": "openai-sqlite-abort:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-sqlite-abort:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:actual_sqlite_seed",
+      "phase": "openai-sqlite-abort:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:trusted_initial_admission",
+      "phase": "openai-sqlite-abort:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:refresh_refused",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:exact_provider_count",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:admission_remains_closed",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:durable_unknown_retained",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:actual_sqlite_old_credential_retained",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:same_sdk_retry_denied",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:new_coordinator_unknown_owner_denied",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sqlite-abort:no_second_provider_request",
+      "phase": "openai-sqlite-abort:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:actual_sdk_canonical_provider",
+      "phase": "openai-sdk-change-before-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-sdk-change-before-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:actual_sqlite_seed",
+      "phase": "openai-sdk-change-before-send:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:trusted_initial_admission",
+      "phase": "openai-sdk-change-before-send:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "final-send:actual_sdk_concurrent_change_committed",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:refresh_refused",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:exact_provider_count",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:admission_remains_closed",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:durable_unknown_retained",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:same_sdk_retry_denied",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:new_coordinator_unknown_owner_denied",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-sdk-change-before-send:no_second_provider_request",
+      "phase": "openai-sdk-change-before-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:actual_sdk_canonical_provider",
+      "phase": "openai-local-fence-change:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-local-fence-change:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:actual_sqlite_seed",
+      "phase": "openai-local-fence-change:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:trusted_initial_admission",
+      "phase": "openai-local-fence-change:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:refresh_refused",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:exact_provider_count",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:admission_remains_closed",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:durable_unknown_retained",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:actual_sqlite_old_credential_retained",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:same_sdk_retry_denied",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:new_coordinator_unknown_owner_denied",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-local-fence-change:no_second_provider_request",
+      "phase": "openai-local-fence-change:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:actual_sdk_canonical_provider",
+      "phase": "openai-duplicate-final-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-duplicate-final-send:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:actual_sqlite_seed",
+      "phase": "openai-duplicate-final-send:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:trusted_initial_admission",
+      "phase": "openai-duplicate-final-send:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:refresh_refused",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:exact_provider_count",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:admission_remains_closed",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:durable_unknown_retained",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:actual_sqlite_old_credential_retained",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:same_sdk_retry_denied",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:new_coordinator_unknown_owner_denied",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-duplicate-final-send:no_second_provider_request",
+      "phase": "openai-duplicate-final-send:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:actual_sdk_canonical_provider",
+      "phase": "openai-late-after-rejection:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-late-after-rejection:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:actual_sqlite_seed",
+      "phase": "openai-late-after-rejection:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:trusted_initial_admission",
+      "phase": "openai-late-after-rejection:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:refresh_refused",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "late:actual_sdk_continuation_after_rejection_denied",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:exact_provider_count",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:admission_remains_closed",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:durable_unknown_retained",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:actual_sqlite_old_credential_retained",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:same_sdk_retry_denied",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:new_coordinator_unknown_owner_denied",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-late-after-rejection:no_second_provider_request",
+      "phase": "openai-late-after-rejection:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:actual_sdk_canonical_provider",
+      "phase": "openai-original-deadline:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-original-deadline:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:actual_sqlite_seed",
+      "phase": "openai-original-deadline:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:trusted_initial_admission",
+      "phase": "openai-original-deadline:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:refresh_refused",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:exact_provider_count",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:admission_remains_closed",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:durable_unknown_retained",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:actual_sqlite_old_credential_retained",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:same_sdk_retry_denied",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:new_coordinator_unknown_owner_denied",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-original-deadline:no_second_provider_request",
+      "phase": "openai-original-deadline:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:actual_sdk_canonical_provider",
+      "phase": "openai-cross-provider-entry:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-cross-provider-entry:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:actual_sqlite_seed",
+      "phase": "openai-cross-provider-entry:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:trusted_initial_admission",
+      "phase": "openai-cross-provider-entry:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:refresh_refused",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:exact_provider_count",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:admission_remains_closed",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:durable_unknown_retained",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:actual_sqlite_old_credential_retained",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:same_sdk_retry_denied",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:new_coordinator_unknown_owner_denied",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-cross-provider-entry:no_second_provider_request",
+      "phase": "openai-cross-provider-entry:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:actual_sdk_canonical_provider",
+      "phase": "openai-guard-after-await:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-guard-after-await:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:actual_sqlite_seed",
+      "phase": "openai-guard-after-await:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:trusted_initial_admission",
+      "phase": "openai-guard-after-await:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:refresh_refused",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:exact_provider_count",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:admission_remains_closed",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:durable_unknown_retained",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:actual_sqlite_old_credential_retained",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:actual_guard_await_fence_veto",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:same_sdk_retry_denied",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:new_coordinator_unknown_owner_denied",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-guard-after-await:no_second_provider_request",
+      "phase": "openai-guard-after-await:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:actual_sdk_canonical_provider",
+      "phase": "openai-runtime-without-ticket:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-runtime-without-ticket:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:actual_sqlite_seed",
+      "phase": "openai-runtime-without-ticket:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:trusted_initial_admission",
+      "phase": "openai-runtime-without-ticket:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:refresh_refused",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:exact_provider_count",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:admission_remains_closed",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:durable_unknown_retained",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:actual_sqlite_old_credential_retained",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:same_sdk_retry_denied",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:new_coordinator_unknown_owner_denied",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-without-ticket:no_second_provider_request",
+      "phase": "openai-runtime-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:actual_sdk_canonical_provider",
+      "phase": "openai-runtime-or-mock-without-ticket:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-runtime-or-mock-without-ticket:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:actual_sqlite_seed",
+      "phase": "openai-runtime-or-mock-without-ticket:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:trusted_initial_admission",
+      "phase": "openai-runtime-or-mock-without-ticket:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:refresh_refused",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:exact_provider_count",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:admission_remains_closed",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:durable_unknown_retained",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:actual_sqlite_old_credential_retained",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:same_sdk_retry_denied",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:new_coordinator_unknown_owner_denied",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-or-mock-without-ticket:no_second_provider_request",
+      "phase": "openai-runtime-or-mock-without-ticket:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:actual_sdk_canonical_provider",
+      "phase": "openai-runtime-factory-replacement:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-runtime-factory-replacement:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:actual_sqlite_seed",
+      "phase": "openai-runtime-factory-replacement:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:trusted_initial_admission",
+      "phase": "openai-runtime-factory-replacement:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:refresh_refused",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:exact_provider_count",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:admission_remains_closed",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:durable_unknown_retained",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:actual_sqlite_old_credential_retained",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai:unqualified_runtime_never_invoked",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:same_sdk_retry_denied",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:new_coordinator_unknown_owner_denied",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-runtime-factory-replacement:no_second_provider_request",
+      "phase": "openai-runtime-factory-replacement:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:actual_sdk_canonical_provider",
+      "phase": "openai-redirect:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-redirect:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:actual_sqlite_seed",
+      "phase": "openai-redirect:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:trusted_initial_admission",
+      "phase": "openai-redirect:trusted-bootstrap",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:refresh_refused",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:exact_provider_count",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:admission_remains_closed",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:durable_unknown_retained",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:actual_sqlite_old_credential_retained",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:same_sdk_retry_denied",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:new_coordinator_unknown_owner_denied",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-redirect:no_second_provider_request",
+      "phase": "openai-redirect:actual-caller",
+      "passed": true
+    },
+    {
+      "case": "openai-undici-manager-success:actual_sdk_canonical_provider",
+      "phase": "openai-undici-manager-success:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-undici-manager-success:actual_sdk_fixture_expiry_classification",
+      "phase": "openai-undici-manager-success:fixture",
+      "passed": true
+    },
+    {
+      "case": "openai-undici-manager-success:actual_sqlite_seed",
+      "phase": "openai-undici-manager-success:owner-read",
+      "passed": true
+    },
+    {
+      "case": "openai-undici-manager-success:trusted_initial_admission",
+      "phase": "openai-undici-manager-success:trusted-bootstrap",
+      "passed": true
+    }
+  ],
+  "cases": [
+    {
+      "scenario": "usable-own-store",
+      "kind": "usable-own-store",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 1,
+        "refreshContexts": 0,
+        "entryChecks": 4,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 0,
+        "published": 0,
+        "failed": 0,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "manager-success",
+      "kind": "manager-success",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 4,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 1,
+        "failed": 0,
+        "successorResolutions": 3
+      }
+    },
+    {
+      "scenario": "intent-ack-lost",
+      "kind": "intent-ack-lost",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 0,
+        "entryChecks": 0,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "provider-ack-lost",
+      "kind": "provider-ack-lost",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 4,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "sqlite-abort",
+      "kind": "sqlite-abort",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "abortTriggerCount": 18,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 4,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "sdk-change-before-send",
+      "kind": "sdk-change-before-send",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 0,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "local-fence-change",
+      "kind": "local-fence-change",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 0,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "duplicate-final-send",
+      "kind": "duplicate-final-send",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 2,
+        "dispatchAttempts": 2,
+        "allowedDispatches": 1,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "late-after-rejection",
+      "kind": "late-after-rejection",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "synthetic_provider_promise_timeout",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "original-deadline",
+      "kind": "original-deadline",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 0,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "cross-provider-entry",
+      "kind": "cross-provider-entry",
+      "providerId": "anthropic",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "trusted_refresh_cross_provider_entry_denied",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-usable-own-store",
+      "kind": "usable-own-store",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 1,
+        "refreshContexts": 0,
+        "entryChecks": 8,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 0,
+        "published": 0,
+        "failed": 0,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-manager-success",
+      "kind": "manager-success",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 8,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 1,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 1,
+        "failed": 0,
+        "successorResolutions": 3
+      }
+    },
+    {
+      "scenario": "openai-intent-ack-lost",
+      "kind": "intent-ack-lost",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 0,
+        "entryChecks": 0,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-provider-ack-lost",
+      "kind": "provider-ack-lost",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 8,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 1,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-sqlite-abort",
+      "kind": "sqlite-abort",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "abortTriggerCount": 18,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 8,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 1,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-sdk-change-before-send",
+      "kind": "sdk-change-before-send",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 5,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-local-fence-change",
+      "kind": "local-fence-change",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 5,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-duplicate-final-send",
+      "kind": "duplicate-final-send",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 10,
+        "dispatchAttempts": 2,
+        "allowedDispatches": 1,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 2,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-late-after-rejection",
+      "kind": "late-after-rejection",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "synthetic_provider_promise_timeout",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-original-deadline",
+      "kind": "original-deadline",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 5,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 0,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 1,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-cross-provider-entry",
+      "kind": "cross-provider-entry",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "trusted_refresh_cross_provider_entry_denied",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-guard-after-await",
+      "kind": "guard-after-await",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "sdk_refused",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 5,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 0,
+        "deniedDispatches": 1,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 1,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-runtime-without-ticket",
+      "kind": "runtime-without-ticket",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "trusted_refresh_guarded_runtime_ticket_required",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 0,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-runtime-or-mock-without-ticket",
+      "kind": "runtime-or-mock-without-ticket",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "trusted_refresh_guarded_runtime_ticket_required",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 0,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-runtime-factory-replacement",
+      "kind": "runtime-factory-replacement",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 0,
+      "unknownObservedAtProvider": 0,
+      "mappedFetchCalls": 0,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "trusted_refresh_openai_runtime_dependencies_unqualified",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 1,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-redirect",
+      "kind": "redirect",
+      "providerId": "openai",
+      "transport": "mapped-https",
+      "providerCount": 1,
+      "unknownObservedAtProvider": 1,
+      "mappedFetchCalls": 1,
+      "undiciConnects": 0,
+      "undiciProviderTlsRequests": 0,
+      "failureCode": "authbus_managed_oauth_resolution_failed",
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 0,
+        "refreshContexts": 1,
+        "entryChecks": 8,
+        "dispatchAttempts": 1,
+        "allowedDispatches": 1,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 1,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 1,
+        "published": 0,
+        "failed": 1,
+        "successorResolutions": 0
+      }
+    }
+  ],
+  "sourceManifest": [
+    {
+      "name": "authbus_refresh_sdk_openai_live.mjs",
+      "sha256": "ed93a34eb74d5c673469dee18f76fd3a4816018e0c94b2d8c54fad5e079fc749"
+    },
+    {
+      "name": "authbus_refresh_sdk_openai_fixture.mjs",
+      "sha256": "c249a014bd837d3af5e13844ddb12f201afa87f63fb0a6de7320c53503e97084"
+    },
+    {
+      "name": "authbus_refresh_sdk_caller_live.mjs",
+      "sha256": "10064164f06df7685cd90694d459a9233c2b40c307ac692d176044157be5e77e"
+    },
+    {
+      "name": "authbus_refresh_sdk_candidate.mjs",
+      "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3"
+    },
+    {
+      "name": "authbus_refresh_sdk_registry_candidate.mjs",
+      "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d"
+    },
+    {
+      "name": "authbus_refresh_store_sdk_candidate.mjs",
+      "sha256": "dc007135540ec0241bc114dee87732716eea9bd1f6d85125cfb54f339a64591a"
+    },
+    {
+      "name": "authbus_refresh_registry_candidate.mjs",
+      "sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d"
+    },
+    {
+      "name": "authbus_trusted_control_candidate.mjs",
+      "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637"
+    },
+    {
+      "name": "authbus_trusted_admission_candidate.mjs",
+      "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad"
+    },
+    {
+      "name": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    },
+    {
+      "name": "authbus_admission_registry_candidate.mjs",
+      "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e"
+    },
+    {
+      "name": "authbus_dispatch_registry_candidate.mjs",
+      "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0"
+    },
+    {
+      "name": "authbus_dispatch_sdk_candidate.mjs",
+      "sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674"
+    },
+    {
+      "name": "authbus_sdk_admission_candidate.mjs",
+      "sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33"
+    },
+    {
+      "name": "authbus_sdk_explicit_deny_candidate.mjs",
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2"
+    }
+  ],
+  "ownedUndiciProxy": {
+    "connections": 0,
+    "denials": 1,
+    "upstreamFailures": 0
+  },
+  "realExternalProvider": false,
+  "configSha256": "aa5b96745a349898639b4966910dd564ad959c312e744666e5d5bf9b772ef310",
+  "processLocalTlsTrust": {
+    "certificateSha256": "b7959fec5ccbeabc372a80b8929e3cb8aad6bb542b33610def1dcd2d157a1ba7",
+    "restorationComparison": "exact-DER-certificate-set",
+    "rejectUnauthorizedDisabled": false,
+    "persistentTrustChange": false
+  },
+  "sdkDiscoveryContext": {
+    "relative": "openclaw.mjs",
+    "packageSha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+    "entrypointSha256": "f643b005d6db233a0b45204e8d8e943256874ccc6897b8a6e0cf42a9b376a188",
+    "fixtureArgvAndCwdOnly": true,
+    "cwdIsSelectedSdkRoot": true,
+    "entrypointExecuted": false
+  },
+  "oauthRefreshSdkModules": [
+    {
+      "relative": "dist/order-CeBlX0NH.js",
+      "originalSha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+      "candidateSha256": "b59280059dbcda0c658cd3aba96207d425ca683ff3b06be866b6e21f14bdce4e",
+      "loaded": true
+    },
+    {
+      "relative": "dist/model-auth-CJEm9SNp.js",
+      "originalSha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+      "candidateSha256": "01a42eb673bc1182bca83d6839974b4f992b8fca81d73f2796d27b372a06a4ab",
+      "loaded": true
+    },
+    {
+      "relative": "dist/oauth-B4aOCsid.js",
+      "originalSha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+      "candidateSha256": "3e7e9a17ef6c3d3e434b0f7106bd4fce855118d0027273683cb445758eb9dbfd",
+      "loaded": true
+    },
+    {
+      "relative": "dist/stream-BcRkg2P0.js",
+      "originalSha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e",
+      "candidateSha256": "2809d57f6ecffc9c1ae8c3dba1450812a41ef3691be34ca8246fa2981877d887",
+      "loaded": true
+    },
+    {
+      "relative": "dist/fetch-guard-6VNcgVVc.js",
+      "originalSha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc",
+      "candidateSha256": "2d76c708526f22cfd031375633aa4bd9aa0d02120494327d4f80693c6cb55f6e",
+      "loaded": true
+    },
+    {
+      "relative": "dist/store-DH33UrUj.js",
+      "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+      "loaded": true
+    },
+    {
+      "relative": "dist/source-check-ZSz5NzGW.js",
+      "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+      "loaded": true
+    },
+    {
+      "relative": "dist/profiles-DyU-YCq2.js",
+      "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "candidateSha256": "f45efcec22eceba0f1534fc434337280c6918704403d4badc454151436f98938",
+      "loaded": true
+    },
+    {
+      "relative": "dist/credential-state-BY-oz-QV.js",
+      "originalSha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4",
+      "candidateSha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4",
+      "loaded": true
+    },
+    {
+      "relative": "dist/sqlite-B1ze-fre.js",
+      "originalSha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50",
+      "candidateSha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50",
+      "loaded": true
+    },
+    {
+      "relative": "dist/runtime-snapshots-D6VA-VN8.js",
+      "originalSha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+      "candidateSha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+      "loaded": true
+    },
+    {
+      "relative": "dist/bundled-dir-DKbeVv7V.js",
+      "originalSha256": "cf0976b5d6cf61faf8ceb10a43035a44dcd4f4c20557febc2428bde3fcb61b6d",
+      "candidateSha256": "fcc3f78904fa1c8ccd993c25ca90148541bb012e36b5f34d239fc222e0e1e59e",
+      "loaded": true
+    },
+    {
+      "relative": "dist/openclaw-root-_Kkan8Lf.js",
+      "originalSha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9",
+      "candidateSha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9",
+      "loaded": true
+    },
+    {
+      "relative": "dist/oauth-BcZS_BvC.js",
+      "originalSha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4",
+      "candidateSha256": "9be61028824862b65a6178744bf4f4dfbdb128cd646646741860e798f0d1e00c",
+      "loaded": true
+    },
+    {
+      "relative": "dist/chutes-oauth-YFvuN1-a.js",
+      "originalSha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55",
+      "candidateSha256": "aafa2cdc9583251c304ffe5692a32a8da0216305f052196c8e961872c6defc0d",
+      "loaded": true
+    },
+    {
+      "relative": "dist/provider-runtime.runtime--yRUs3av.js",
+      "originalSha256": "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab",
+      "candidateSha256": "d677073703eaa9a9199679f576f2c68cc02c71ff0d3d1c4029983072324b2382",
+      "loaded": true
+    },
+    {
+      "relative": "dist/provider-runtime-CLQOjLJ6.js",
+      "originalSha256": "6daf266a90294162eb45ce8c9402ce15743df0ee1cc951e4e95602a3c6122338",
+      "candidateSha256": "3f38e06cf4b98937cc61c495add26f3b1e0f97fe3fa6ec8b4eb7b45ad7257d9b",
+      "loaded": true
+    },
+    {
+      "relative": "dist/extensions/openai/api.js",
+      "originalSha256": "5490ab62c857124e421570502596f5189a228e44513d8ee18b11b6f3b47198f5",
+      "candidateSha256": "5490ab62c857124e421570502596f5189a228e44513d8ee18b11b6f3b47198f5",
+      "loaded": true
+    },
+    {
+      "relative": "dist/openai-chatgpt-provider.runtime-DGoPIR1g.js",
+      "originalSha256": "c9248524ab3c9bf1226096ddd76d31a755518de1ff763e3c24245912b7aed92f",
+      "candidateSha256": "d708ec8cf28d40582d582a4b0563f066901a9458cfb44e0dbb963fca24f62e76",
+      "loaded": true
+    },
+    {
+      "relative": "dist/openai-chatgpt-oauth-flow.runtime.js",
+      "originalSha256": "183d0ad3b17da4acae91ede7add0c3293eed186d0c0b29741fcab891c5743d3b",
+      "candidateSha256": "183d0ad3b17da4acae91ede7add0c3293eed186d0c0b29741fcab891c5743d3b",
+      "loaded": true
+    },
+    {
+      "relative": "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js",
+      "originalSha256": "e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d",
+      "candidateSha256": "c7cb8ca273135a4ce331681991f2b42f55d2e7f4d9ef4771ddc2076832ec2e18",
+      "loaded": true
+    },
+    {
+      "relative": "dist/openai-chatgpt-auth-identity-DrQLjrg2.js",
+      "originalSha256": "94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765",
+      "candidateSha256": "94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765",
+      "loaded": true
+    },
+    {
+      "relative": "dist/undici-global-dispatcher-DeobtFo9.js",
+      "originalSha256": "a8e81ea3c77cee197800a4ff9006dd0de56127e3103a85449685e928745b1e23",
+      "candidateSha256": "a8e81ea3c77cee197800a4ff9006dd0de56127e3103a85449685e928745b1e23",
+      "loaded": true
+    },
+    {
+      "relative": "dist/runtime-fetch-k5Zth7kk.js",
+      "originalSha256": "9bf76247c5901725af5db78bbab2830a5e0fd7caf19953b095be74d4382db611",
+      "candidateSha256": "2b3eaaeb97c8d4aa868f0e5ccc04e83f8e86f0ff6069a9567e0b7d47c2f48c89",
+      "loaded": true
+    },
+    {
+      "relative": "dist/facade-runtime-Dce8fe3v.js",
+      "originalSha256": "febd9b83ff5a398545f4ce350e49d2084b1704bdd01d467dbec889f4bfbe77f4",
+      "candidateSha256": "febd9b83ff5a398545f4ce350e49d2084b1704bdd01d467dbec889f4bfbe77f4",
+      "loaded": true
+    },
+    {
+      "relative": "dist/facade-loader-ClPyIgA5.js",
+      "originalSha256": "5062ff2347de145c1f1253acd60c45c66cddb92825519c2dec277d93fe7d44d7",
+      "candidateSha256": "5062ff2347de145c1f1253acd60c45c66cddb92825519c2dec277d93fe7d44d7",
+      "loaded": true
+    },
+    {
+      "relative": "dist/facade-activation-check.runtime.js",
+      "originalSha256": "289f0f2efe2eaa482289692f8f58513ca0c1c9198ca4db11f32b95a6c107df9a",
+      "candidateSha256": "289f0f2efe2eaa482289692f8f58513ca0c1c9198ca4db11f32b95a6c107df9a",
+      "loaded": true
+    },
+    {
+      "relative": "dist/plugin-module-loader-cache-uqaaAPup.js",
+      "originalSha256": "af5dc41aba74bb7eab264d1544d16a86906401bfe1c24a0ad53ae25bb8f1d2ac",
+      "candidateSha256": "af5dc41aba74bb7eab264d1544d16a86906401bfe1c24a0ad53ae25bb8f1d2ac",
+      "loaded": true
+    },
+    {
+      "relative": "dist/config-state-CtMlHVRM.js",
+      "originalSha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5",
+      "candidateSha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5",
+      "loaded": true
+    },
+    {
+      "relative": "dist/sdk-alias-BJSUcD8n.js",
+      "originalSha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32",
+      "candidateSha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32",
+      "loaded": true
+    },
+    {
+      "relative": "dist/undici-runtime-BL8ZN-Ey.js",
+      "originalSha256": "3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978",
+      "candidateSha256": "3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978",
+      "loaded": true
+    },
+    {
+      "relative": "dist/ssrf-BayeDjCv.js",
+      "originalSha256": "dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295",
+      "candidateSha256": "dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295",
+      "loaded": true
+    },
+    {
+      "relative": "dist/proxy-env-Bf6oQCTF.js",
+      "originalSha256": "5167b8055ce85f341e3df69a8d3c1e7877430fbcba63bcc052ad21abebb52bca",
+      "candidateSha256": "5167b8055ce85f341e3df69a8d3c1e7877430fbcba63bcc052ad21abebb52bca",
+      "loaded": true
+    },
+    {
+      "relative": "dist/managed-proxy-undici-RiF2s48t.js",
+      "originalSha256": "74b9478c30f20653068c1fc7f62b62ae805c1810d097150d5f8caeb08834a989",
+      "candidateSha256": "74b9478c30f20653068c1fc7f62b62ae805c1810d097150d5f8caeb08834a989",
+      "loaded": true
+    },
+    {
+      "relative": "dist/active-proxy-state-DJLhrP_Z.js",
+      "originalSha256": "6723ab658f0df2dd3b833a1e8c9d35ee76001864ca93097f9919cf62ac3fa185",
+      "candidateSha256": "6723ab658f0df2dd3b833a1e8c9d35ee76001864ca93097f9919cf62ac3fa185",
+      "loaded": true
+    }
+  ],
+  "oauthRefreshSdkMetadata": [
+    {
+      "relative": "dist/extensions/openai/openclaw.plugin.json",
+      "originalSha256": "0db880f0e5a77ad809ec4cf57767416364db021d617569c48fdb2703c8c9485f",
+      "bytes": 16632,
+      "usedAsCodeOverlay": false
+    }
+  ],
+  "qualification": {
+    "builtinProviderFunctions": 3,
+    "openaiRefreshFunctionBindings": 3,
+    "openaiFacadeQualified": false,
+    "openaiTransportQualified": false,
+    "actualExecutionQualifiedByRunnerOnly": true
+  },
+  "undiciRuntimeBinding": {
+    "packageVersion": "8.5.0",
+    "packageRelative": "node_modules/undici/package.json",
+    "packageSha256": "4eed584bdf6a1545381c24674dfe8938421f7c66313c8960fb40f28f3a55c306",
+    "entryRelative": "node_modules/undici/index.js",
+    "entrySha256": "93fc85c00a59b58f410c901e5477d56770de3816bfbe183e751624aeb4a5e6a5",
+    "libraryPinScope": "package-metadata-and-entrypoint",
+    "actualPackageFetchIdentity": true,
+    "testRuntimeOverride": false,
+    "dnsOverride": false,
+    "route": "actual-sdk-managed-env-proxy",
+    "actualExecutionQualifiedByScenarioOnly": true
+  },
+  "sdkOAuthRefreshMarginMs": 300000,
+  "sdkVersion": "2026.7.1-2",
+  "actualProviderAliases": {
+    "openai": "openai",
+    "openai-codex": "openai-codex",
+    "anthropic": "anthropic"
+  },
+  "expectedScenarioCount": 32,
+  "usableOwnerObservations": [
+    {
+      "scenario": "usable-own-store",
+      "resultPresent": true,
+      "apiKeyType": "string",
+      "apiKeyMatchesScoped": true,
+      "apiKeyMatchesMain": false,
+      "resultCredentialMatchesScoped": true,
+      "storedCredentialMatchesScoped": true,
+      "storeUnchanged": true,
+      "providerCount": 0,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 1,
+        "refreshContexts": 0,
+        "entryChecks": 0,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 0,
+        "published": 0,
+        "failed": 0,
+        "successorResolutions": 0
+      }
+    },
+    {
+      "scenario": "openai-usable-own-store",
+      "resultPresent": true,
+      "apiKeyType": "string",
+      "apiKeyMatchesScoped": true,
+      "apiKeyMatchesMain": false,
+      "resultCredentialMatchesScoped": true,
+      "storedCredentialMatchesScoped": true,
+      "storeUnchanged": true,
+      "providerCount": 0,
+      "oauthSdkObservations": {
+        "managedResolutions": 1,
+        "usableResolutions": 1,
+        "refreshContexts": 0,
+        "entryChecks": 0,
+        "dispatchAttempts": 0,
+        "allowedDispatches": 0,
+        "deniedDispatches": 0,
+        "unmanagedDispatches": 0,
+        "guardedRequests": 0,
+        "guardedRuntimeEntries": 0
+      },
+      "refreshObservations": {
+        "attempts": 0,
+        "published": 0,
+        "failed": 0,
+        "successorResolutions": 0
+      }
+    }
+  ],
+  "error": {
+    "code": "authbus_managed_oauth_resolution_failed",
+    "messageSha256": "8e98732c0c29db02990c005b12d2b44c32047c1f795179359c6a0ab5639c1a05"
+  },
+  "fixtureProcessContextRestored": true,
+  "installedSdkUnchanged": true,
+  "sourceFilesUnchanged": true,
+  "configUnchanged": true,
+  "checksPassed": 359
+}

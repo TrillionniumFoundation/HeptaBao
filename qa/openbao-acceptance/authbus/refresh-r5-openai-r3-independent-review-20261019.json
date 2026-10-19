@@ -1,0 +1,194 @@
+{
+  "schema": "heptabao.openai-r3-independent-static-review.v1",
+  "created_utc": "2026-10-19T06:59:32.279090+00:00",
+  "status": "static_review_complete_no_new_runtime_claim",
+  "frozen_overlay_sha256": "bc348a4e5c509b3c9512f4be4467e70ef9e508f87aed7ef99aac67f19a075aa0",
+  "source_files": [
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+      "bytes": 25621,
+      "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+      "bytes": 19227,
+      "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_live.mjs",
+      "bytes": 53313,
+      "sha256": "ed93a34eb74d5c673469dee18f76fd3a4816018e0c94b2d8c54fad5e079fc749",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture.mjs",
+      "bytes": 6400,
+      "sha256": "c249a014bd837d3af5e13844ddb12f201afa87f63fb0a6de7320c53503e97084",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_ticket_boundary_test.mjs",
+      "bytes": 11707,
+      "sha256": "1f0a4bade6ed79713e31b92da7ba32065683bc2f57e36d35124393c8dcac8fa8",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture_test.mjs",
+      "bytes": 5868,
+      "sha256": "9365b942983b9057e642cf07c34708c655d4bb32de4cb0a1f2798e902b6f0a9b",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-sdk-inputs-20261019.json",
+      "bytes": 7238,
+      "sha256": "b4aad3e15807db250900505d3cf5ab0e1d319d762c08cdb5a839edf214fb3a65",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-ticket-unit-20261019.json",
+      "bytes": 1525,
+      "sha256": "41b311dbe3f093be274bd9196028fa501be91373773f1a42ae683f4d6364790c",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-proxy-unit-20261019.json",
+      "bytes": 891,
+      "sha256": "27a1b1dda06483a3ac2ce1cc15d5cac3a0ddf01b3509f6cfb2ae30d702f1a4c9",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-source-preflight-20261019.json",
+      "bytes": 10035,
+      "sha256": "2183c73261e8f61d4ce217fc21d15f239a9a31ff1bd9877109a8cce5dc8fff0c",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-old-draft-getter-20261019.json",
+      "bytes": 550,
+      "sha256": "6f4841c4df0a0aaad169b46c68522b3cd0d978e8871f72df50da8bca923a452c",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-old-draft-getter.stderr.log",
+      "bytes": 3018,
+      "sha256": "f189dc9abf24346f9f1899cdc9584637b69b399831da643fe041fd2d2a52e6bf",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-local-validation-20261019.json",
+      "bytes": 8546,
+      "sha256": "fe1a2ee116a6b57fc3d2530138398da92079e0625d1692348bfc598b6d976276",
+      "frozen_work_equal": true
+    },
+    {
+      "path": "docs/authbus-r5-openai-sdk-candidate-r3-20261019.md",
+      "bytes": 9639,
+      "sha256": "5213ba833adcd821eb1611a9dc671ce29c4d1329da75a71f0e9053d8fb5ae53d",
+      "frozen_work_equal": true
+    }
+  ],
+  "base_files": [
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_caller_live.mjs",
+      "base_sha256": "10064164f06df7685cd90694d459a9233c2b40c307ac692d176044157be5e77e",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+      "base_sha256": "fcbfb6689091e76177b0d37316032a7978343388c18e14ac26c04b8db8b7998b",
+      "work_unchanged": false
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+      "base_sha256": "6d15c95ce1ddc4589c6ea522fb3256bf0490133eed81f4f747d454903ca90cf6",
+      "work_unchanged": false
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_store_sdk_candidate.mjs",
+      "base_sha256": "dc007135540ec0241bc114dee87732716eea9bd1f6d85125cfb54f339a64591a",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_registry_candidate.mjs",
+      "base_sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_trusted_control_candidate.mjs",
+      "base_sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_trusted_admission_candidate.mjs",
+      "base_sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_admission_authority_candidate.mjs",
+      "base_sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_admission_registry_candidate.mjs",
+      "base_sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_dispatch_registry_candidate.mjs",
+      "base_sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_dispatch_sdk_candidate.mjs",
+      "base_sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_sdk_admission_candidate.mjs",
+      "base_sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33",
+      "work_unchanged": true
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_sdk_explicit_deny_candidate.mjs",
+      "base_sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2",
+      "work_unchanged": true
+    }
+  ],
+  "runtime_tests_executed_by_reviewer": false,
+  "remote_calls_by_reviewer": false,
+  "frozen_files_modified": false,
+  "scenario_inventory": {
+    "core": 11,
+    "openai_core": 11,
+    "openai_guard_negative": 5,
+    "openai_actual_undici": 5,
+    "total": 32,
+    "actual_undici_expected_connect_counts": [
+      1,
+      0,
+      1,
+      1,
+      0
+    ]
+  },
+  "confirmed_source_invariants": [
+    "UNKNOWN CAS acknowledgement precedes private refresh context and provider dispatch",
+    "single-use ticket is private WeakMap state bound to open AsyncLocalStorage context",
+    "runtime entry and final dispatch revalidate owned credential and closed local fence after async guard work",
+    "original coordinator deadline is checked immediately before the once-only send closure",
+    "actual Undici lane checks runtime dependency fetch identity and zero mapped-fetch calls",
+    "CONNECT target cannot choose an upstream outside the construction-time owned loopback provider port",
+    "TLS verification stays enabled and temporary trust is process-local",
+    "final success requires exact32, exact5Undici, zero forbidden operations and restored process trust/env/dispatcher/socket custody"
+  ],
+  "remaining_evidence_limits": [
+    "Node caller has no overall180-second timer; exact parent controller is a separate unfinished implementation at review time",
+    "three inherited SDK source pins missing locally; actual runtime must verify all35 before and after",
+    "Undici attestation covers package metadata and entrypoint, not every transitive dependency",
+    "two shared adapter changes require a same-pinned rerun before extending prior native4 evidence",
+    "static review and local synthetic tests do not prove actual SDK run, native OpenAI refresh, live credential migration or cutover"
+  ],
+  "concrete_blocking_code_defect_found": false
+}
