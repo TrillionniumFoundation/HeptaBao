@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.continuation-checkpoint.v2",
-  "recorded_utc": "2026-10-19T02:13:13Z",
+  "recorded_utc": "2026-10-19T02:26:04Z",
   "user_goal": "Prove complete replacement of OpenBao 2.7.1 on the Mac external disk and required LAN hosts before traffic cutover and removal.",
   "full_openbao_271_replacement_proven": false,
   "production_cutover_performed": false,
@@ -78,5 +78,43 @@
     "Original failed receipts are retained",
     "No production Raft data, credential custody or backups deleted",
     "Pocket4 heptatrader not modified"
-  ]
+  ],
+  "mac_native_import_followup": {
+    "source_commit": "741082dbc8dcdcb3d6dee3e584f0842f311ae86b",
+    "source_tree": "f1a18a441c5dadaaea566ced41ee59918d05ae4f",
+    "verified_files": 2795,
+    "tests_passed": 8,
+    "tests_failed": 0,
+    "test_elapsed_seconds": 10.18,
+    "runner_completed": true,
+    "source_unchanged": true,
+    "summary_sha256": "a382273bb2ed4fe355d8d96a9199dfd94fec465362bcb17de91687ee4afd81ab",
+    "test_log_sha256": "dd88d1744d94edfa8217fbbe2425cf23c263d80a828a484f57e9ba05dc391445",
+    "actual_openbao_271_migration": false,
+    "full34_qualified": false
+  },
+  "ci_f43_linux": {
+    "run_id": 39186921646,
+    "job_id": 117851181413,
+    "native_import_passed": 7,
+    "native_import_failed": 1,
+    "historical_restore_passed": 0,
+    "historical_restore_failed": 6,
+    "snapshot_passed": 7,
+    "snapshot_failed": 0,
+    "status": "failed",
+    "raw_log": "qa/openbao-acceptance/evidence/resumed-20261019/ci-f43-linux-job-117851181413.log",
+    "remaining_failures": [
+      "old codec fixture replaced in 741",
+      "actual Service cold-unseal HTTP 503",
+      "source-identity and expiry fixture issues",
+      "historical forwarded delivery unseal_nonce veto"
+    ]
+  },
+  "kv2_migration_controller": {
+    "source_sha256": "335120b48a26707f378e1d6d51480e9d08f7c490b5d5595d97746a50f1939c8d",
+    "regressions_passed": 7,
+    "actual_two_server_run": false,
+    "full34_qualified": false
+  }
 }

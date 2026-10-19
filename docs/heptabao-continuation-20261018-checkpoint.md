@@ -6,7 +6,13 @@ Full replacement of OpenBao 2.7.1 remains **unproven**. The runtime connection h
 
 This checkpoint supersedes the disconnected-host status in the earlier revision of this file. The old Mac R2 launch was reconciled against the filesystem and process inventory: its source/output directories were absent and no corresponding build was running. The new runs below have distinct owned directories and receipts.
 
-## Actual Mac native KV2 import result
+## Latest Mac native KV2 import result: 8/8 passed
+
+The exact `741082dbc8dcdcb3d6dee3e584f0842f311ae86b` source (tree `f1a18a441c5dadaaea566ced41ee59918d05ae4f`, 2,795 files) completed on the physical Mac external disk at **2026-10-19 02:24:18 UTC**. All **8/8** native graph-import cases passed in **10.18 seconds**. Test compilation also passed and complete source identity remained unchanged. The raw log SHA256 is `dd88d1744d94edfa8217fbbe2425cf23c263d80a828a484f57e9ba05dc391445`; the complete summary SHA256 is `a382273bb2ed4fe355d8d96a9199dfd94fec465362bcb17de91687ee4afd81ab`. Both are stored under `qa/openbao-acceptance/evidence/resumed-20261019/`.
+
+This run verifies the bounded native importer and its actual FileBackend cold/lost-ack fixtures. It does not execute the official OpenBao process, qualify the 34 MiB migration, demonstrate physical LAN leader loss, or authorize production cutover.
+
+## Preserved first Mac native KV2 import result
 
 Source commit `f43a015b69e3b9cc1fad88ea4e4efdda7250417c`, tree `367adee67df1f4fda8875012e5b50564aab4d213`, was materialized under:
 
@@ -16,7 +22,7 @@ All **2,790** source blobs, executable modes, path closure and the recursive Git
 
 All five Service cases passed: legacy/native history comparison and cold CAS; unauthorized, malformed and replay rejection; actual durable locator append/fsync followed by a lost acknowledgement and cold recovery; root-commit lost acknowledgement followed by cold selection of the complete new root; and snapshot restore followed by cold recovery with exact history.
 
-The failing codec case selected an arbitrary object of kind `Block`. That kind also stores metadata values, which the live view can already cache. It therefore did not reliably remove a payload object. The revised case records the exact payload references read by actual version 4 and version 5 point reads, removes each reference, and requires both cached/cold transition validation and the real point read to reject it. Missing metadata-root cold open is checked separately. The revised case retains the original name and the group count of 8; **its execution is still pending at this checkpoint**.
+The failing codec case selected an arbitrary object of kind `Block`. That kind also stores metadata values, which the live view can already cache. It therefore did not reliably remove a payload object. The revised case records the exact payload references read by actual version 4 and version 5 point reads, removes each reference, and requires both cached/cold transition validation and the real point read to reject it. Missing metadata-root cold open is checked separately. The revised case retains the original name and the group count of 8; its subsequent exact Mac execution passed in the 8/8 group above.
 
 The server binary also built successfully in **183.662 seconds**, with 71,133,472 bytes and SHA256 `6c056d15e54b9790de4d6c0c329dd12a85a34165c88248f464b508869a3cebaf`. The overall run remains failed because one required test failed.
 
@@ -64,3 +70,9 @@ This run did not exercise the actual shared OAuth refresh caller, a real provide
 | Cleanup | Inventory every client and backup migration, then remove old services, binaries and regenerable intermediate assets |
 
 The prior physical 98-case run stopped during listener readiness; it did not kill a leader. Neither the 34 MiB archive fixture nor the native import Service cases prove a complete 34 MiB OpenBao migration. Original failed evidence, Raft roots and recovery custody remain preserved. Pocket4 heptatrader has not been modified.
+
+## New migration controller and current Linux evidence
+
+The reconstructed two-process KV2 controller is now preserved with its exact source hashes and 7/7 controller regression receipt. It requires the pinned official OpenBao 2.7.1 archive/executable, a real complete source checkout and fresh private roots. Its actual native-small and full34 service runs remain pending. The former lost e07a7c source is not represented as recovered bytes.
+
+The later f43 Linux CI job `117851181413` produced **0/6 historical recovery**, **7/7 snapshot**, and **7/8 native import**. Its complete raw log is retained as `ci-f43-linux-job-117851181413.log`. The failed old codec fixture is resolved by the actual Mac 741 follow-up; the Linux cold-unseal 503 and historical forwarded-delivery failures remain open. No failed observation is overwritten or counted as success.
