@@ -21,6 +21,44 @@ import { installOAuthRefreshSdkCandidate, verifyOAuthRefreshSdkUnchanged } from 
 
 const fail = code => { throw Object.assign(new Error(code), { diagnosticCode: code }); };
 const hash = value => crypto.createHash("sha256").update(value).digest("hex");
+function selectOwnedSdkEntrypoint(sdkRoot) {
+  const readSource = file => {
+    const fd = fs.openSync(file, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+    try {
+      const before = fs.fstatSync(fd);
+      if (!before.isFile() || before.size < 1 || before.size > 262144)
+        fail("trusted_refresh_caller_sdk_discovery_file_invalid");
+      const bytes = Buffer.alloc(before.size + 1);
+      let length = 0;
+      while (length < bytes.length) {
+        const count = fs.readSync(fd, bytes, length, bytes.length - length, length);
+        if (!count) break;
+        length += count;
+      }
+      const after = fs.fstatSync(fd);
+      if (length !== before.size || before.dev !== after.dev || before.ino !== after.ino ||
+          before.size !== after.size || before.mtimeMs !== after.mtimeMs || before.ctimeMs !== after.ctimeMs)
+        fail("trusted_refresh_caller_sdk_discovery_file_changed");
+      return bytes.subarray(0, length);
+    } finally { fs.closeSync(fd); }
+  };
+  const packageBytes = readSource(path.join(sdkRoot, "package.json"));
+  const pkg = JSON.parse(packageBytes.toString("utf8"));
+  const bin = pkg.bin?.openclaw;
+  if (pkg.name !== "openclaw" || pkg.version !== "2026.7.1-2" || typeof bin !== "string" ||
+      !bin || path.isAbsolute(bin) || bin.includes("\\") || bin.split("/").includes(".."))
+    fail("trusted_refresh_caller_sdk_discovery_package_invalid");
+  const entrypoint = path.resolve(sdkRoot, bin);
+  if (!entrypoint.startsWith(sdkRoot + path.sep)) fail("trusted_refresh_caller_sdk_discovery_entrypoint_outside");
+  let component = sdkRoot;
+  for (const part of path.relative(sdkRoot, entrypoint).split(path.sep)) {
+    component = path.join(component, part);
+    if (fs.lstatSync(component).isSymbolicLink()) fail("trusted_refresh_caller_sdk_discovery_symlink_forbidden");
+  }
+  const entryBytes = readSource(entrypoint);
+  return Object.freeze({ entrypoint, relative: path.relative(sdkRoot, entrypoint),
+    packageSha256: hash(packageBytes), entrypointSha256: hash(entryBytes) });
+}
 const args = {};
 for (let i = 2; i < process.argv.length; i += 2) {
   if (!["--openclaw-root", "--work-dir"].includes(process.argv[i]) || !path.isAbsolute(process.argv[i + 1] ?? "") || args[process.argv[i]])
@@ -45,9 +83,9 @@ process.env.OPENCLAW_OAUTH_DIR = path.join(state, "credentials");
 for (const key of ["GOOGLE_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "OPENCLAW_GATEWAY_TOKEN",
   "CHUTES_CLIENT_ID", "CHUTES_CLIENT_SECRET", "OPENCLAW_BUNDLED_PLUGINS_DIR", "OPENCLAW_TEST_TRUST_BUNDLED_PLUGINS_DIR"])
   delete process.env[key];
-// Use the SDK's production-validated package-local discovery override. This
-// avoids probing this external QA entrypoint's parent directories for package
-// metadata; the SDK still verifies the override belongs to its own package.
+// The SDK still validates this package-local plugin override itself. Its other
+// package discovery paths also inspect argv[1] and cwd; below, the isolated
+// process supplies the package and its verified bin as discovery context.
 // The test-only trust override remains absent and the home guard stays closed.
 process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = path.join(sdkRoot, "dist/extensions");
 if (process.env.OPENCLAW_AUTH_STORE_READONLY === "1") fail("trusted_refresh_caller_inherited_readonly_store");
@@ -59,7 +97,7 @@ const report = { schema: "authbus-refresh-r5-actual-sdk-caller", ok: false,
   syntheticCredentials: true, syntheticProvider: true, tlsControlEmulator: true,
   actualSdk: false, actualSqlite: false, actualSdkOAuthManager: false, actualProviderHttps: false,
   actualNativeHeptaBao: false, actualColdSdkProcess: false, productionMutation: false,
-  bundledPluginDiscovery: "sdk-production-validated-package-local-override",
+  bundledPluginDiscovery: "sdk-production-validated-override-and-package-bin-argv-cwd",
   ownedCertificateGenerationProcesses: 1, externalNetworkAttempts: 0, externalProcessAttempts: 0,
   outsideFixtureWriteAttempts: 0, outsideFixtureHomeReadAttempts: 0, blockedHomeReads: [], ownerReader: "exact-sdk-persisted-local", checks: [], cases: [],
   sourceManifest: ["authbus_refresh_sdk_caller_live.mjs", "authbus_refresh_sdk_candidate.mjs", "authbus_refresh_sdk_registry_candidate.mjs",
@@ -127,6 +165,9 @@ let hook, control, provider, active, sdk, bridge, oauth, oauthLib, chutes, runti
 let activeUninstall, currentSource, currentCoordinator;
 const allowedPorts = new Set();
 const previousFetch = globalThis.fetch;
+const previousArgvEntrypoint = process.argv[1];
+const previousWorkingDirectory = process.cwd();
+let sdkDiscovery;
 async function boundedBody(request, max = 65536) {
   const chunks = []; let size = 0;
   for await (const chunk of request) { size += chunk.length; if (size > max) fail("fixture_http_body_excessive"); chunks.push(chunk); }
@@ -230,6 +271,15 @@ try {
     });
   };
   diagnosticPhase = "sdk-import";
+  sdkDiscovery = selectOwnedSdkEntrypoint(sdkRoot);
+  // This does not execute the SDK CLI or change the QA module being imported.
+  // It makes SDK package-root discovery use the actual declared package bin,
+  // instead of treating this external fixture script as the SDK entrypoint.
+  process.argv[1] = sdkDiscovery.entrypoint;
+  process.chdir(sdkRoot);
+  report.sdkDiscoveryContext = { relative: sdkDiscovery.relative,
+    packageSha256: sdkDiscovery.packageSha256, entrypointSha256: sdkDiscovery.entrypointSha256,
+    fixtureArgvAndCwdOnly: true, cwdIsSelectedSdkRoot: process.cwd() === sdkRoot, entrypointExecuted: false };
   hook = installOAuthRefreshSdkCandidate(sdkRoot, report);
   report.qualification = await hook.loadOwnedRefreshFunctions();
   sdk = await import(pathToFileURL(path.join(sdkRoot, "dist/plugin-sdk/agent-runtime.js")).href);
@@ -335,6 +385,9 @@ try {
         attempt.publishedDigest === digest(stored) && authority.inspect().epoch > attempt.publishedEpoch && attempt.publishedEpoch > oldPermit.epoch);
       registry.advanceAfterRefresh(params, oldPermit, profileId, resolved.apiKey);
       await expectFailure("manager:old_wire_cannot_use_successor", () => registry.advanceAfterRefresh(params, oldPermit, profileId, original.access));
+      await expectFailure("manager:successor_without_scope_denied", () => registry.advanceAfterRefresh({ cfg, agentDir }, oldPermit, profileId, resolved.apiKey));
+      await expectFailure("manager:successor_cannot_claim_unmanaged_provider", () => registry.advanceAfterRefresh({ ...params, provider: "unmanaged-fixture-provider" }, oldPermit, profileId, resolved.apiKey));
+      await expectFailure("manager:old_wire_cannot_bind_auth_result", () => registry.bindCredentialResult(params, oldPermit, profileId, { apiKey: original.access }, original.access));
       report.actualSdkOAuthManager = true; report.actualProviderHttps = true;
       const coldSource = new TrustedBaoControlSource(config), coldCoordinator = new TrustedBaoCoordinator(config, { bindings: [binding] });
       try {
@@ -410,6 +463,9 @@ try {
   }
   check("no_external_network_or_process_attempt", report.externalNetworkAttempts === 0 && report.externalProcessAttempts === 0);
   check("no_outside_fixture_write_or_home_read_attempt", report.outsideFixtureWriteAttempts === 0 && report.outsideFixtureHomeReadAttempts === 0);
+  const discoveryAfter = selectOwnedSdkEntrypoint(sdkRoot);
+  check("sdk_discovery_context_unchanged", process.argv[1] === sdkDiscovery.entrypoint &&
+    process.cwd() === sdkRoot && digest(discoveryAfter) === digest(sdkDiscovery));
   check("actual_required_hook_modules_loaded", ["dist/oauth-B4aOCsid.js", "dist/oauth-BcZS_BvC.js", "dist/profiles-DyU-YCq2.js",
     "dist/store-DH33UrUj.js", "dist/source-check-ZSz5NzGW.js", "dist/chutes-oauth-YFvuN1-a.js", "dist/provider-runtime.runtime--yRUs3av.js"]
     .every(relative => report.oauthRefreshSdkModules.find(item => item.relative === relative)?.loaded));
@@ -422,6 +478,8 @@ try {
   activeUninstall?.();
   globalThis.fetch = previousFetch;
   hook?.deregister();
+  process.argv[1] = previousArgvEntrypoint;
+  process.chdir(previousWorkingDirectory);
   for (const restore of restores.reverse()) restore();
   syncBuiltinESMExports();
   control?.closeAllConnections(); provider?.closeAllConnections();

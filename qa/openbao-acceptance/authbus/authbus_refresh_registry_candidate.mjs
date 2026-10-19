@@ -12,6 +12,10 @@ const fail = code => { throw Object.assign(new Error(code), { diagnosticCode: co
 const check = (condition, code) => { if (!condition) fail(code); };
 const scopeKey = value => path.resolve(value.agentDir) + "\u0000" + value.provider;
 const permitKey = permit => digest({ epoch: permit.epoch, leaseId: permit.leaseId, profileId: permit.profileId, digest: permit.credentialDigest });
+const ownedRefreshParams = params => {
+  check(params && typeof params === "object", "trusted_refresh_scope_required");
+  return { ...params, provider: params.provider ?? params.credential?.provider };
+};
 export class TrustedRefreshAdmissionRegistry extends DispatchAdmissionRegistry {
   #refreshBindings = new Map(); #successors = new Map(); #fingerprintKey = crypto.randomBytes(32);
   constructor({ refreshBindings, ...options }) {
@@ -31,6 +35,7 @@ export class TrustedRefreshAdmissionRegistry extends DispatchAdmissionRegistry {
   }
   /** Called only at the exact SDK OAuth refresh boundary. */
   async refreshManagedOAuth(params, runProviderRefresh) {
+    params = ownedRefreshParams(params);
     const authority = this.owner(params);
     if (!authority) return { managed: false };
     const binding = this.#refreshBindings.get(scopeKey(authority.scope));
@@ -86,9 +91,13 @@ export class TrustedRefreshAdmissionRegistry extends DispatchAdmissionRegistry {
   /** A resolver may cross an epoch only through this registry's own successful
    * refresh and only while returning its exact newly published wire secret. */
   advanceAfterRefresh(params, previousPermit, profileId, rawApiKey) {
+    params = ownedRefreshParams(params);
+    // AdmissionRegistry.assertCurrent intentionally permits unrelated providers.
+    // A successor operation must establish custody before calling it, otherwise
+    // a missing top-level provider could skip every epoch and wire check.
+    const authority = this.requireOwner(params);
     try { super.assertCurrent(params, previousPermit, profileId); return previousPermit; }
     catch (error) { if (error.diagnosticCode !== "authbus_request_admission_denied") throw error; }
-    const authority = this.requireOwner(params);
     const successor = this.#successors.get(scopeKey(authority.scope) + "\u0000" + permitKey(previousPermit));
     check(successor && successor.permit.profileId === profileId &&
       successor.wireFingerprint === this.#fingerprint(rawApiKey), "trusted_refresh_successor_result_unbound");
@@ -97,6 +106,7 @@ export class TrustedRefreshAdmissionRegistry extends DispatchAdmissionRegistry {
     return successor.permit;
   }
   bindCredentialResult(params, previousPermit, profileId, result, rawApiKey) {
+    params = ownedRefreshParams(params);
     const permit = this.advanceAfterRefresh(params, previousPermit, profileId, rawApiKey);
     return super.bindCredentialResult(params, permit, profileId, result, rawApiKey);
   }

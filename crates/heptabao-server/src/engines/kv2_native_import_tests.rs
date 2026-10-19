@@ -110,11 +110,38 @@ fn native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner() -> T
     let metadata = cold.read("GET", "metadata/item", &json!({}), at)?;
     assert_eq!(metadata.body["data"]["current_metadata_version"],7);
     assert_eq!(metadata.body["data"]["oldest_version"],3);
+    // The public OpenBao 2.7.1 response projects numbers through binary64.
+    // Verify the authenticated cold payload separately before asserting that
+    // API projection. These hashes name independently encoded exact fixture
+    // JSON, including the retained soft-deleted version, not projected data.
+    let recorder = RecordingReader { source: &source, reads: RefCell::new(BTreeSet::new()) };
+    for (version, bytes, hash) in [
+        (4, 12, "dd5bd9926ee66fb517ac5a2617d13c198732f640705f5edc0438c9fe0b257d3e"),
+        (5, 118, "1ef3f1a33b5788e17f23411505d7ee82f1767b5c80ab154ff87f669bbd0c9235"),
+    ] {
+        recorder.reads.borrow_mut().clear();
+        let witness = cold.storage_version_witness("item", version, &recorder, &|| Ok(()))?;
+        assert_eq!(witness["payload_canonical_bytes"], bytes);
+        assert_eq!(witness["payload_canonical_sha256"], hash);
+        assert_eq!(witness["payload_present"], true);
+        assert!(!recorder.reads.borrow().is_empty(), "cold exact payload must be read");
+    }
+    let destroyed = cold.storage_version_witness("item", 3, &source, &|| Ok(()))?;
+    assert_eq!(destroyed["destroyed"], true);
+    assert_eq!(destroyed["payload_present"], false);
+    assert_eq!(destroyed["payload_canonical_bytes"], 0);
+    assert!(destroyed["payload_canonical_sha256"].is_null());
+    let exact = expected.entries.get("item").and_then(|entry| entry.versions.get(&5))
+        .and_then(|version| version.data.as_ref()).ok_or("exact fixture payload")?.expose();
+    assert_eq!(exact["big"].as_number().ok_or("exact big")?.to_string(),
+        "184467440737095516160001");
+    assert_eq!(exact["decimal"].as_number().ok_or("exact decimal")?.to_string(),
+        "0.12345678901234567890123456789");
     let data = cold.read_with_source("GET", "data/item", &json!({"version":5}), at, &source)?;
     assert_eq!(data.body["data"]["data"]["big"].as_number().ok_or("big")?.to_string(),
-        "184467440737095516160001");
+        "1.844674407370955e+23");
     assert_eq!(data.body["data"]["data"]["decimal"].as_number().ok_or("decimal")?.to_string(),
-        "0.12345678901234567890123456789");
+        "0.12345678901234568");
     assert!(data.body["data"]["data"]["fake"].is_object());
     Ok(())
 }

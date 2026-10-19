@@ -169,7 +169,8 @@ fn native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloa
     let mut restore=snapshot(&mut service,&root,"POST")?;
     let (result,file)=restore.execute_snapshot_transfer(&mut &archive[..]);
     assert!(file.is_none());
-    assert_eq!(service.finish_external_request(*restore,result).status,200);
+    let restored=service.finish_external_request(*restore,result);
+    assert_eq!(restored.status,200,"synthetic native witness snapshot restore: {}",restored.body);
     drop(service);
     let mut service=reopen(&files,&key)?;
     check_history(&mut service,&actor,&root)?;

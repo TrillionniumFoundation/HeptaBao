@@ -33,6 +33,7 @@ const helper = `function heptaBaoRefreshRegistry() {
 
 const refreshOnlyBindings = [
   { relative: "dist/credential-state-BY-oz-QV.js", originalSha256: "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4" },
+  { relative: "dist/bundled-dir-DKbeVv7V.js", originalSha256: "cf0976b5d6cf61faf8ceb10a43035a44dcd4f4c20557febc2428bde3fcb61b6d" },
   { relative: "dist/oauth-BcZS_BvC.js", originalSha256: "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4" },
   { relative: "dist/chutes-oauth-YFvuN1-a.js", originalSha256: "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55" },
   { relative: "dist/provider-runtime.runtime--yRUs3av.js", originalSha256: "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab" },
@@ -53,6 +54,14 @@ export function patchOAuthRefreshSdkSource(relative, original) {
     ? patchDispatchSdkSource(relative, original)
     : REFRESH_STORE_SDK_BINDINGS.some(item => item.relative === relative)
       ? patchRefreshStoreSdkSource(relative, original) : original;
+  if (relative === "dist/bundled-dir-DKbeVv7V.js") {
+    // The owned adapter loads this exact SDK package. Its auxiliary source
+    // checkout diagnostic must not probe an external QA entrypoint's parents.
+    // Package discovery and all plugin activation checks remain SDK-owned.
+    return once(candidate,
+      'return uniqueStrings([resolveOpenClawPackageRootSync({ argv1: process.argv[1] }), resolveOpenClawPackageRootSync({ moduleUrl: import.meta.url })].filter((entry) => Boolean(entry)));',
+      'return uniqueStrings([resolveOpenClawPackageRootSync({ moduleUrl: import.meta.url })].filter((entry) => Boolean(entry)));');
+  }
   if (relative === "dist/oauth-B4aOCsid.js") {
     candidate = once(candidate, "\tasync function resolveOAuthAccess(params) {\n",
       `\tasync function resolveOAuthAccess(params) {
