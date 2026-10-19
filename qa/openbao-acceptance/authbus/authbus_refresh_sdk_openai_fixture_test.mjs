@@ -20,7 +20,7 @@ const checks = []; let trust, proxy, server;
 const environment = ownOpenAiFixtureEnvironment();
 const check = (name, condition) => { assert.ok(condition, name); checks.push(name); };
 
-async function tunnel(target = "auth.openai.com:443") {
+async function tunnel(target = "auth.openai.com:443", host = target, extraHeaders = "") {
   const socket = net.createConnection({ host: "127.0.0.1", port: proxy.port });
   socket.setTimeout(3000, () => socket.destroy(new Error("unit tunnel timeout")));
   return await new Promise((resolve, reject) => {
@@ -33,11 +33,12 @@ async function tunnel(target = "auth.openai.com:443") {
       resolve({ socket, status: Number(header.split(" ")[1]) });
     };
     socket.on("data", onData); socket.once("error", reject);
-    socket.once("connect", () => socket.write("CONNECT " + target + " HTTP/1.1\r\nHost: " + target + "\r\n\r\n"));
+    socket.once("connect", () => socket.write("CONNECT " + target + " HTTP/1.1\r\n" +
+      (host === null ? "" : "Host: " + host + "\r\n") + extraHeaders + "\r\n"));
   });
 }
-async function roundTrip() {
-  const { socket, status } = await tunnel(); assert.equal(status, 200);
+async function roundTrip(host = "auth.openai.com:443") {
+  const { socket, status } = await tunnel("auth.openai.com:443", host); assert.equal(status, 200);
   return await new Promise((resolve, reject) => {
     const secured = tls.connect({ socket, servername: "auth.openai.com" });
     let result = "";
@@ -71,13 +72,35 @@ try {
   cell.transport = "mapped-https";
   const wrongPhase = await tunnel(); wrongPhase.socket.destroy();
   check("connect_requires_an_active_undici_case", wrongPhase.status === 403 && observations.connections === before && observations.denials === 2);
+  cell.transport = "undici";
+  check("actual_undici_default_port_host_spelling_keeps_verified_tls", (await roundTrip("auth.openai.com")).startsWith("HTTP/1.1 204") &&
+    providerRequests === 2 && lastServername === "auth.openai.com" && observations.connections === before + 1);
+  const deniedForms = [
+    ["connect_rejects_owned_proxy_as_target_host", "auth.openai.com:443", "127.0.0.1:" + proxy.port, ""],
+    ["connect_rejects_different_host", "auth.openai.com:443", "unowned.invalid", ""],
+    ["connect_rejects_nondefault_host_port", "auth.openai.com:443", "auth.openai.com:444", ""],
+    ["connect_rejects_hostname_suffix", "auth.openai.com:443", "auth.openai.com.unowned.invalid", ""],
+    ["connect_rejects_trailing_dot_alias", "auth.openai.com:443", "auth.openai.com.", ""],
+    ["connect_rejects_missing_host", "auth.openai.com:443", null, ""],
+    ["connect_rejects_duplicate_equal_host", "auth.openai.com:443", "auth.openai.com", "hOsT: auth.openai.com\r\n"],
+    ["connect_rejects_duplicate_conflicting_host", "auth.openai.com:443", "auth.openai.com", "Host: unowned.invalid\r\n"],
+    ["connect_rejects_content_length_including_zero", "auth.openai.com:443", "auth.openai.com", "Content-Length: 0\r\n"],
+    ["connect_rejects_transfer_encoding", "auth.openai.com:443", "auth.openai.com", "Transfer-Encoding: chunked\r\n"],
+    ["connect_rejects_noncanonical_request_target", "auth.openai.com", "auth.openai.com", ""],
+  ];
+  for (const [name, target, host, headers] of deniedForms) {
+    const deniedBefore = observations.denials, connectionsBefore = observations.connections;
+    const response = await tunnel(target, host, headers); response.socket.destroy();
+    check(name, [400, 403].includes(response.status) && observations.connections === connectionsBefore &&
+      observations.denials >= deniedBefore && providerRequests === 2);
+  }
   environment.useProxy(proxy.origin);
   check("proxy_environment_is_exact_loopback", process.env.HTTPS_PROXY === proxy.origin && process.env.OPENCLAW_PROXY_ACTIVE === "1" && process.env.HTTP_PROXY === undefined);
   environment.clearProxy();
   check("mock_lane_clears_owned_proxy_environment", process.env.HTTPS_PROXY === undefined && process.env.OPENCLAW_PROXY_ACTIVE === undefined);
   assert.throws(() => environment.useProxy("http://unowned.invalid:8080"), error => error.diagnosticCode === "openai_fixture_proxy_origin_invalid");
   check("nonlocal_proxy_configuration_rejected", process.env.HTTPS_PROXY === undefined);
-  check("upstream_transports_have_no_unclassified_failure", observations.upstreamFailures === 0 && observations.connections === 2);
+  check("upstream_transports_have_no_unclassified_failure", observations.upstreamFailures === 0 && observations.connections === 3);
 } finally {
   await proxy?.close();
   trust?.restore(); environment.restore();

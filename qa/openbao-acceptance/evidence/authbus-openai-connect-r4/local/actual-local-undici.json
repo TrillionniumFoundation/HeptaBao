@@ -1,0 +1,8 @@
+{
+  "label": "actual-local-undici",
+  "exitCode": 1,
+  "elapsedSeconds": 0.8153362879966153,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "61eea4a62fe4b22c44c5699500dc1272aea5be6bd37a4345f19f96c933307459",
+  "failureDiagnosticTail": "(node:196663) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnode:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: owned_proxy_sockets_and_process_ca_closed_restored\n    at check (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r4-20261019/work/qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_undici_fixture_test.mjs:28:45)\n    at file:///workspace/scratch/915e5e680008/authbus-r5-openai-r4-20261019/work/qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_undici_fixture_test.mjs:63:1\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.19.0\n"
+}

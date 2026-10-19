@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "bytes": 1931,
+      "local_name": "pack-controller.json",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-linux-artifact-tool-b24c6de-main-r1/pack-controller.json",
+      "sha256": "9dcd1cecb1e445fcc2d0999fd85b5560f06c87bcfb167a6a6121d01d053a21db",
+      "tool_eof": true,
+      "tool_version": "2050:53907976:1931:1792399316388820608:1792399316392451389"
+    }
+  ],
+  "normalization_performed": false,
+  "retrieval_bytes": 2491,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/main-pack-controller-retrieval.json",
+  "retrieval_sha256": "74a4c7e17c2432b89922785e558fd1af1cb3d51179ef480d068d2ea132642ae2",
+  "schema": "heptabao.exact-returned-public-evidence-extraction.v1"
+}

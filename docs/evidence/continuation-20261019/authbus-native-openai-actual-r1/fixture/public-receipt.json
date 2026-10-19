@@ -1,0 +1,1937 @@
+{
+  "actualColdSdkProcess": true,
+  "actualNativeHeptaBao": true,
+  "actualNativeSigkillRecovery": true,
+  "actualOpenAiFacade": true,
+  "actualOpenAiSdkGuard": true,
+  "actualOpenAiSdkOAuthManager": true,
+  "actualProviderHttps": true,
+  "actualSdk": true,
+  "actualSdkOAuthManager": true,
+  "actualSqlite": true,
+  "actualUndiciRefreshTransport": true,
+  "binarySha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+  "checks": [
+    {
+      "case": "node_and_parent_share_original_monotonic_clock",
+      "passed": true
+    },
+    {
+      "case": "native.initialize_once",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.authbus_kv2_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.activate_once",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.graph_reader_format_two",
+      "passed": true
+    },
+    {
+      "case": "native.approle_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.reader_policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.reader_role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.reader_role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.reader_secret_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.issuer_policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.issuer_role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.issuer_role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.issuer_secret_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "warm.redacted_process_diagnostics",
+      "passed": true
+    },
+    {
+      "case": "warm.actual_distinct_original_sdk_process",
+      "passed": true
+    },
+    {
+      "case": "warm.all_worker_checks",
+      "passed": true
+    },
+    {
+      "case": "warm.bound_sources_and_installed_sdk_unchanged",
+      "passed": true
+    },
+    {
+      "case": "warm.no_outside_sdk_attempts",
+      "passed": true
+    },
+    {
+      "case": "warm.actual_openai_undici_profile",
+      "passed": true
+    },
+    {
+      "case": "after-warm.manager-success.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-warm.manager.native_published_after_actual_sqlite",
+      "passed": true
+    },
+    {
+      "case": "after-warm.intent-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-warm.intent-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-warm.provider-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-warm.provider-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-warm.sqlite-abort.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-warm.sqlite-abort.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-warm.guard-after-await.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-warm.guard-after-await.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "warm.exact_actual_provider_counts",
+      "passed": true
+    },
+    {
+      "case": "warm.native_unknown_cas_ack_lost_once",
+      "passed": true
+    },
+    {
+      "case": "cold-before-server.redacted_process_diagnostics",
+      "passed": true
+    },
+    {
+      "case": "cold-before-server.actual_distinct_original_sdk_process",
+      "passed": true
+    },
+    {
+      "case": "cold-before-server.all_worker_checks",
+      "passed": true
+    },
+    {
+      "case": "cold-before-server.bound_sources_and_installed_sdk_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-before-server.no_outside_sdk_attempts",
+      "passed": true
+    },
+    {
+      "case": "cold-before-server.actual_openai_undici_profile",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.manager-success.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.manager.native_published_after_actual_sqlite",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.manager-success.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.intent-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.intent-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.intent-ack-lost.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.intent-ack-lost.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.provider-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.provider-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.provider-ack-lost.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.provider-ack-lost.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.sqlite-abort.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.sqlite-abort.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.sqlite-abort.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.sqlite-abort.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.guard-after-await.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.guard-after-await.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.guard-after-await.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-before-native-restart.guard-after-await.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "native.original_sigkill_completed",
+      "passed": true
+    },
+    {
+      "case": "native.binary_unchanged_before_reopen",
+      "passed": true
+    },
+    {
+      "case": "native.reopen_starts_sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "native.reopen_unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.reopen_capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native.reopen_preserves_graph_format",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.manager-success.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.manager.native_published_after_actual_sqlite",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.manager-success.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.manager-success.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.intent-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.intent-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.intent-ack-lost.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.intent-ack-lost.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.provider-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.provider-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.provider-ack-lost.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.provider-ack-lost.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.sqlite-abort.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.sqlite-abort.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.sqlite-abort.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.sqlite-abort.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.guard-after-await.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.guard-after-await.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.guard-after-await.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "after-native-sigkill-reopen.guard-after-await.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "native.revoked_bearer_0_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_1_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_2_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_3_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_4_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_5_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_6_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_7_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_8_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_9_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_10_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_11_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_12_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_13_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_14_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_15_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_16_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_17_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_18_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_19_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "native.revoked_bearer_20_still_denied_after_reopen",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "cold-after-server.redacted_process_diagnostics",
+      "passed": true
+    },
+    {
+      "case": "cold-after-server.actual_distinct_original_sdk_process",
+      "passed": true
+    },
+    {
+      "case": "cold-after-server.all_worker_checks",
+      "passed": true
+    },
+    {
+      "case": "cold-after-server.bound_sources_and_installed_sdk_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-after-server.no_outside_sdk_attempts",
+      "passed": true
+    },
+    {
+      "case": "cold-after-server.actual_openai_undici_profile",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.manager-success.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.manager.native_published_after_actual_sqlite",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.manager-success.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.intent-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.intent-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.intent-ack-lost.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.intent-ack-lost.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.provider-ack-lost.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.provider-ack-lost.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.provider-ack-lost.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.provider-ack-lost.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.sqlite-abort.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.sqlite-abort.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.sqlite-abort.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.sqlite-abort.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.guard-after-await.exact_native_provenance",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.guard-after-await.native_unknown_and_old_owner_retained",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.guard-after-await.same_durable_attempt",
+      "passed": true
+    },
+    {
+      "case": "cold-sdk-after-native-restart.guard-after-await.unknown_document_and_version_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold.no_second_provider_request",
+      "passed": true
+    },
+    {
+      "case": "native.no_proxy_local_denial_or_unclassified_failure",
+      "passed": true
+    },
+    {
+      "case": "native.reader_secret_id_destroyed",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.reader_reenrollment_closed",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "native.issuer_secret_id_destroyed",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native.issuer_reenrollment_closed",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "all_original_processes_closed_within_original_budget",
+      "passed": true
+    },
+    {
+      "case": "exact_bound_sources_unchanged",
+      "passed": true
+    },
+    {
+      "case": "exact_native_binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "all_required_native_and_cold_qualifications",
+      "passed": true
+    }
+  ],
+  "checksPassed": 141,
+  "elapsedSeconds": 60.312541857,
+  "finishedNs": "508588503712734",
+  "leaseExpiryWaits": [
+    {
+      "leaseRenewed": false,
+      "nativeDateMs": 1792401043000,
+      "oldLeaseExpiresAt": 1792401043000,
+      "originalDeadlineReset": false,
+      "reads": 10
+    },
+    {
+      "leaseRenewed": false,
+      "nativeDateMs": 1792401060000,
+      "oldLeaseExpiresAt": 1792401059000,
+      "originalDeadlineReset": false,
+      "reads": 1
+    }
+  ],
+  "listenerOrigins": {
+    "controlProxy": "https://127.0.0.1:43827",
+    "native": "https://127.0.0.1:60283",
+    "syntheticProvider": "https://127.0.0.1:44383"
+  },
+  "nativeObservations": [
+    {
+      "cases": {
+        "guard-after-await": {
+          "attemptSha256": "58f178f6ddefe3499b78219cfb8d72452057b6188681d6dbe0361be7d8651923",
+          "documentSha256": "441fe6644494a8fcdd5da2a591fea28c0d64c148c2cafe7e63a7547baef683a2",
+          "nativeDateMs": 1792401038000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401047000
+        },
+        "intent-ack-lost": {
+          "attemptSha256": "8285c352c4498c2568ebd0c6f59678eb6e661df07ab3182651eb3c7f5a6954ae",
+          "documentSha256": "d35a1a2d04a3e8ac403550344cd21e90502ae2d992315ce706abdaba2a1dd2f2",
+          "nativeDateMs": 1792401038000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401044000
+        },
+        "manager-success": {
+          "attemptSha256": "f6c574a1a6343bec0bddd7e872d403df981e17307248b1307d167e26579c9ee3",
+          "documentSha256": "4623b6da7cb6210944d37ab7170b533f650d2db988d8c4ec963ddc2d2f105b52",
+          "nativeDateMs": 1792401038000,
+          "nativeVersion": 4,
+          "refreshOwnerExpiresAt": 1792401043000
+        },
+        "provider-ack-lost": {
+          "attemptSha256": "817f61f9cf673a58a72b64bfdfde4d0c72a8aa590df120ab3065d33c953692d7",
+          "documentSha256": "6f802e603a61fd5a857f264f84bbeec98baaaa4a2be52271f1d2b224c94dab16",
+          "nativeDateMs": 1792401038000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401045000
+        },
+        "sqlite-abort": {
+          "attemptSha256": "b84cfa9c51395b7efc1cdaf711fc8219a802ebdb4b41c4f8f7b4156bd30825d6",
+          "documentSha256": "1cbcf782d416f867b4e40265db1c918b3b5b4e859f36f0d6633a7440fcc2b8f2",
+          "nativeDateMs": 1792401038000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401046000
+        }
+      },
+      "stage": "after-warm"
+    },
+    {
+      "cases": {
+        "guard-after-await": {
+          "attemptSha256": "58f178f6ddefe3499b78219cfb8d72452057b6188681d6dbe0361be7d8651923",
+          "documentSha256": "441fe6644494a8fcdd5da2a591fea28c0d64c148c2cafe7e63a7547baef683a2",
+          "nativeDateMs": 1792401052000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401047000
+        },
+        "intent-ack-lost": {
+          "attemptSha256": "8285c352c4498c2568ebd0c6f59678eb6e661df07ab3182651eb3c7f5a6954ae",
+          "documentSha256": "d35a1a2d04a3e8ac403550344cd21e90502ae2d992315ce706abdaba2a1dd2f2",
+          "nativeDateMs": 1792401052000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401044000
+        },
+        "manager-success": {
+          "attemptSha256": "f6c574a1a6343bec0bddd7e872d403df981e17307248b1307d167e26579c9ee3",
+          "documentSha256": "6e06543ace57addfa2d674fa35f96072d56851231121bac9ad8c256f099a118d",
+          "nativeDateMs": 1792401052000,
+          "nativeVersion": 5,
+          "refreshOwnerExpiresAt": 1792401059000
+        },
+        "provider-ack-lost": {
+          "attemptSha256": "817f61f9cf673a58a72b64bfdfde4d0c72a8aa590df120ab3065d33c953692d7",
+          "documentSha256": "6f802e603a61fd5a857f264f84bbeec98baaaa4a2be52271f1d2b224c94dab16",
+          "nativeDateMs": 1792401052000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401045000
+        },
+        "sqlite-abort": {
+          "attemptSha256": "b84cfa9c51395b7efc1cdaf711fc8219a802ebdb4b41c4f8f7b4156bd30825d6",
+          "documentSha256": "1cbcf782d416f867b4e40265db1c918b3b5b4e859f36f0d6633a7440fcc2b8f2",
+          "nativeDateMs": 1792401052000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401046000
+        }
+      },
+      "stage": "cold-sdk-before-native-restart"
+    },
+    {
+      "cases": {
+        "guard-after-await": {
+          "attemptSha256": "58f178f6ddefe3499b78219cfb8d72452057b6188681d6dbe0361be7d8651923",
+          "documentSha256": "441fe6644494a8fcdd5da2a591fea28c0d64c148c2cafe7e63a7547baef683a2",
+          "nativeDateMs": 1792401060000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401047000
+        },
+        "intent-ack-lost": {
+          "attemptSha256": "8285c352c4498c2568ebd0c6f59678eb6e661df07ab3182651eb3c7f5a6954ae",
+          "documentSha256": "d35a1a2d04a3e8ac403550344cd21e90502ae2d992315ce706abdaba2a1dd2f2",
+          "nativeDateMs": 1792401060000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401044000
+        },
+        "manager-success": {
+          "attemptSha256": "f6c574a1a6343bec0bddd7e872d403df981e17307248b1307d167e26579c9ee3",
+          "documentSha256": "6e06543ace57addfa2d674fa35f96072d56851231121bac9ad8c256f099a118d",
+          "nativeDateMs": 1792401060000,
+          "nativeVersion": 5,
+          "refreshOwnerExpiresAt": 1792401059000
+        },
+        "provider-ack-lost": {
+          "attemptSha256": "817f61f9cf673a58a72b64bfdfde4d0c72a8aa590df120ab3065d33c953692d7",
+          "documentSha256": "6f802e603a61fd5a857f264f84bbeec98baaaa4a2be52271f1d2b224c94dab16",
+          "nativeDateMs": 1792401060000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401045000
+        },
+        "sqlite-abort": {
+          "attemptSha256": "b84cfa9c51395b7efc1cdaf711fc8219a802ebdb4b41c4f8f7b4156bd30825d6",
+          "documentSha256": "1cbcf782d416f867b4e40265db1c918b3b5b4e859f36f0d6633a7440fcc2b8f2",
+          "nativeDateMs": 1792401060000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401046000
+        }
+      },
+      "stage": "after-native-sigkill-reopen"
+    },
+    {
+      "cases": {
+        "guard-after-await": {
+          "attemptSha256": "58f178f6ddefe3499b78219cfb8d72452057b6188681d6dbe0361be7d8651923",
+          "documentSha256": "441fe6644494a8fcdd5da2a591fea28c0d64c148c2cafe7e63a7547baef683a2",
+          "nativeDateMs": 1792401070000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401047000
+        },
+        "intent-ack-lost": {
+          "attemptSha256": "8285c352c4498c2568ebd0c6f59678eb6e661df07ab3182651eb3c7f5a6954ae",
+          "documentSha256": "d35a1a2d04a3e8ac403550344cd21e90502ae2d992315ce706abdaba2a1dd2f2",
+          "nativeDateMs": 1792401070000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401044000
+        },
+        "manager-success": {
+          "attemptSha256": "f6c574a1a6343bec0bddd7e872d403df981e17307248b1307d167e26579c9ee3",
+          "documentSha256": "e47a21ce46066e4a3e20fd81643c8e6fa70e1a3fb75591404971f8d50b888a40",
+          "nativeDateMs": 1792401070000,
+          "nativeVersion": 6,
+          "refreshOwnerExpiresAt": 1792401077000
+        },
+        "provider-ack-lost": {
+          "attemptSha256": "817f61f9cf673a58a72b64bfdfde4d0c72a8aa590df120ab3065d33c953692d7",
+          "documentSha256": "6f802e603a61fd5a857f264f84bbeec98baaaa4a2be52271f1d2b224c94dab16",
+          "nativeDateMs": 1792401070000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401045000
+        },
+        "sqlite-abort": {
+          "attemptSha256": "b84cfa9c51395b7efc1cdaf711fc8219a802ebdb4b41c4f8f7b4156bd30825d6",
+          "documentSha256": "1cbcf782d416f867b4e40265db1c918b3b5b4e859f36f0d6633a7440fcc2b8f2",
+          "nativeDateMs": 1792401070000,
+          "nativeVersion": 2,
+          "refreshOwnerExpiresAt": 1792401046000
+        }
+      },
+      "stage": "cold-sdk-after-native-restart"
+    }
+  ],
+  "nativeProcessCycles": [
+    {
+      "exitCode": -9,
+      "newPid": 2116178,
+      "oldPid": 2113822,
+      "stop": "SIGKILL"
+    }
+  ],
+  "nodeVersion": "v22.23.3",
+  "ok": true,
+  "originalDeadlineNs": "508704993698536",
+  "originalNativeFourCaseDenominator": 120,
+  "originalNativeFourCaseResultInherited": false,
+  "originalProfileSeconds": 180,
+  "ownedProcesses": {
+    "business_finished_ns": 508585308159551,
+    "business_scenarios_not_qualified_by_this_receipt": true,
+    "children": [
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508531195274309,
+        "argv_SHA256": "be9e1e54efcf98926e26a4da954adf7e7c6c464d970899d1b2846aba31a078cf",
+        "birth": {
+          "PGID": 2113210,
+          "PID": 2113210,
+          "PPID": 2113153,
+          "SID": 2113210,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853113
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "native-refresh.node-clock",
+        "original_PID": 2113210,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508531693554695,
+            "returncode": 0,
+            "returned_ns": 508531693666426,
+            "timeout": 9.944242138997652
+          }
+        ],
+        "registered_ns": 508531136959782,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+          "path": "/usr/bin/node",
+          "stat8": {
+            "ctime_ns": 1790390025643809291,
+            "dev": 2050,
+            "ino": 36443506,
+            "mode": 33261,
+            "mtime_ns": 1790150208000000000,
+            "nlink": 1,
+            "size": 124827920,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508531751509390,
+        "argv_SHA256": "ca5f6176ae0f5470be25cdcd046db725442127fd7cee6959badc4c7c16e0b7be",
+        "birth": {
+          "PGID": 2113225,
+          "PID": 2113225,
+          "PPID": 2113153,
+          "SID": 2113225,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853169
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "smoke.57",
+        "original_PID": 2113225,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508531768965743,
+            "returncode": 0,
+            "returned_ns": 508532133536013,
+            "timeout": 173.22473546
+          }
+        ],
+        "registered_ns": 508531698570295,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790808084612429583,
+            "dev": 2050,
+            "ino": 36447500,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508532229167530,
+        "argv_SHA256": "368d90b62ea9b884a1aad70509bd69bd96f3699696432a29a1d2d732eb3c0b6a",
+        "birth": {
+          "PGID": 2113231,
+          "PID": 2113231,
+          "PPID": 2113153,
+          "SID": 2113231,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853214
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "smoke.65",
+        "original_PID": 2113231,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508532236666539,
+            "returncode": 0,
+            "returned_ns": 508532551155123,
+            "timeout": 172.757034271
+          }
+        ],
+        "registered_ns": 508532142947724,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790808084612429583,
+            "dev": 2050,
+            "ino": 36447500,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508532645774212,
+        "argv_SHA256": "40f6d2407ca0c70f907ff9b72014b1e55d5529233fda6d768ebf4e6d5be4e3aa",
+        "birth": {
+          "PGID": 2113249,
+          "PID": 2113249,
+          "PPID": 2113153,
+          "SID": 2113249,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853255
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "smoke.71",
+        "original_PID": 2113249,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508532652221931,
+            "returncode": 0,
+            "returned_ns": 508532716052610,
+            "timeout": 172.341479099
+          }
+        ],
+        "registered_ns": 508532560663462,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790808084612429583,
+            "dev": 2050,
+            "ino": 36447500,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508535327759688,
+        "argv_SHA256": "388fbd5a7680631975f2d024b2769bddcaf32ca06ae68cdaed03e16b99034e88",
+        "birth": {
+          "PGID": 2113822,
+          "PID": 2113822,
+          "PPID": 2113153,
+          "SID": 2113822,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853527
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": -9,
+        "fallback": false,
+        "gaps": [],
+        "kind": "server",
+        "label": "native-authbus.server",
+        "original_PID": 2113822,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508567201690702,
+            "returncode": -9,
+            "returned_ns": 508567204984540,
+            "timeout": 5
+          }
+        ],
+        "registered_ns": 508535275429486,
+        "same_original_Popen_wait": true,
+        "signals": [
+          {
+            "authority": "original_kernel_pidfd",
+            "fallback": false,
+            "requested_ns": 508567201666604,
+            "sent": true,
+            "signal": 9
+          }
+        ],
+        "target_exec_input": {
+          "SHA256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+          "path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+          "stat8": {
+            "ctime_ns": 1792399123090524024,
+            "dev": 2050,
+            "ino": 53907971,
+            "mode": 33216,
+            "mtime_ns": 1792399121712559404,
+            "nlink": 1,
+            "size": 779962728,
+            "uid": 1000
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508538582648057,
+        "argv_SHA256": "8d3c8d967feb391818b11f5bbd38a23a9805ca3bc3a23fb30911932c2734a949",
+        "birth": {
+          "PGID": 2113942,
+          "PID": 2113942,
+          "PPID": 2113153,
+          "SID": 2113942,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853849
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "native-openai.provider-key",
+        "original_PID": 2113942,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508538589411226,
+            "returncode": 0,
+            "returned_ns": 508538853922409,
+            "timeout": 166.404289277
+          }
+        ],
+        "registered_ns": 508538499660274,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790808084612429583,
+            "dev": 2050,
+            "ino": 36447500,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508538941968887,
+        "argv_SHA256": "e518dd9364df7baf801408092dfefd39fec0b4abe8c4beeb6cbc90dd94a288a4",
+        "birth": {
+          "PGID": 2113961,
+          "PID": 2113961,
+          "PPID": 2113153,
+          "SID": 2113961,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853886
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "native-openai.provider-certificate",
+        "original_PID": 2113961,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508538948952720,
+            "returncode": 0,
+            "returned_ns": 508539012645486,
+            "timeout": 166.04474665
+          }
+        ],
+        "registered_ns": 508538865352996,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790808084612429583,
+            "dev": 2050,
+            "ino": 36447500,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508539545819213,
+        "argv_SHA256": "77650f46ee7a4eef4466623c42f3903446e4907f35e2e8b472076db987268e41",
+        "birth": {
+          "PGID": 2113979,
+          "PID": 2113979,
+          "PPID": 2113153,
+          "SID": 2113979,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50853948
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "native-refresh.sdk-warm",
+        "original_PID": 2113979,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508539978877184,
+            "returncode": 0,
+            "returned_ns": 508552879377152,
+            "timeout": 165.014824673
+          }
+        ],
+        "registered_ns": 508539487636249,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+          "path": "/usr/bin/node",
+          "stat8": {
+            "ctime_ns": 1790390025643809291,
+            "dev": 2050,
+            "ino": 36443506,
+            "mode": 33261,
+            "mtime_ns": 1790150208000000000,
+            "nlink": 1,
+            "size": 124827920,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508558070554634,
+        "argv_SHA256": "c7a788a0ad2141f01c6aabe40e8bc4c3999c5f2befc7adb9435bb43632a19bfe",
+        "birth": {
+          "PGID": 2114677,
+          "PID": 2114677,
+          "PPID": 2113153,
+          "SID": 2114677,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50855801
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "native-refresh.sdk-cold-before-server",
+        "original_PID": 2114677,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508558513119939,
+            "returncode": 0,
+            "returned_ns": 508567152689617,
+            "timeout": 146.480580512
+          }
+        ],
+        "registered_ns": 508558013072764,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+          "path": "/usr/bin/node",
+          "stat8": {
+            "ctime_ns": 1790390025643809291,
+            "dev": 2050,
+            "ino": 36443506,
+            "mode": 33261,
+            "mtime_ns": 1790150208000000000,
+            "nlink": 1,
+            "size": 124827920,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508572266720905,
+        "argv_SHA256": "388fbd5a7680631975f2d024b2769bddcaf32ca06ae68cdaed03e16b99034e88",
+        "birth": {
+          "PGID": 2116178,
+          "PID": 2116178,
+          "PPID": 2113153,
+          "SID": 2116178,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50857221
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": -9,
+        "fallback": false,
+        "gaps": [],
+        "kind": "server",
+        "label": "native-authbus.server",
+        "original_PID": 2116178,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508585304798232,
+            "returncode": -9,
+            "returned_ns": 508585308115217,
+            "timeout": 5
+          }
+        ],
+        "registered_ns": 508572214722230,
+        "same_original_Popen_wait": true,
+        "signals": [
+          {
+            "authority": "original_kernel_pidfd",
+            "fallback": false,
+            "requested_ns": 508585304775092,
+            "sent": true,
+            "signal": 9
+          }
+        ],
+        "target_exec_input": {
+          "SHA256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+          "path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+          "stat8": {
+            "ctime_ns": 1792399123090524024,
+            "dev": 2050,
+            "ino": 53907971,
+            "mode": 33216,
+            "mtime_ns": 1792399121712559404,
+            "nlink": 1,
+            "size": 779962728,
+            "uid": 1000
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 508575845336120,
+        "argv_SHA256": "2c1466f9f1acbea997385696805a6c22ac7129498042ef646ca5aa11d15f6650",
+        "birth": {
+          "PGID": 2116317,
+          "PID": 2116317,
+          "PPID": 2113153,
+          "SID": 2116317,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789164879262713172,
+              "dev": 2050,
+              "ino": 36451609,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 50857577
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "native-refresh.sdk-cold-after-server",
+        "original_PID": 2116317,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 508576270042605,
+            "returncode": 0,
+            "returned_ns": 508585057642805,
+            "timeout": 128.723659596
+          }
+        ],
+        "registered_ns": 508575779368269,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+          "path": "/usr/bin/node",
+          "stat8": {
+            "ctime_ns": 1790390025643809291,
+            "dev": 2050,
+            "ino": 36443506,
+            "mode": 33261,
+            "mtime_ns": 1790150208000000000,
+            "nlink": 1,
+            "size": 124827920,
+            "uid": 0
+          }
+        }
+      }
+    ],
+    "controls": [],
+    "external_original_deadline": true,
+    "finished_ns": 508586048268248,
+    "original_deadline_ns": 508704993698536,
+    "passed_process_method": true,
+    "profile": "authbus_refresh_native_openai_cold_r1",
+    "profile_seconds": 360,
+    "same_originals_closed": true,
+    "schema": "heptabao.qa.original-process.v1",
+    "started_ns": 508530718671542
+  },
+  "ownedWorkDirectoryCreated": true,
+  "parentPid": 2113053,
+  "pid": 2113153,
+  "productionMutation": false,
+  "realCredentialMigration": false,
+  "realExternalProvider": false,
+  "scenarioInventory": [
+    "manager-success",
+    "intent-ack-lost",
+    "provider-ack-lost",
+    "sqlite-abort",
+    "guard-after-await"
+  ],
+  "schema": "authbus-refresh-r5-native-openai-cold-live",
+  "scope": "five_actual_native_openai_undici_cases_and_two_distinct_cold_sdk_processes",
+  "sdk32ScenarioResultInherited": false,
+  "sourceManifest": {
+    "files": [
+      {
+        "bytes": 16525,
+        "git_blob": "9068784db2f7aa881e25450f06c0e5a0d1ca2d4e",
+        "path": "qa/openbao-acceptance/authbus/authbus_admission_authority_candidate.mjs",
+        "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+      },
+      {
+        "bytes": 4294,
+        "git_blob": "4a4e02b7537629564d55787022df64eedcc82a46",
+        "path": "qa/openbao-acceptance/authbus/authbus_admission_registry_candidate.mjs",
+        "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e"
+      },
+      {
+        "bytes": 7113,
+        "git_blob": "4b0c95b0da0df7996221a5e5faa2fd1b688ca53a",
+        "path": "qa/openbao-acceptance/authbus/authbus_dispatch_registry_candidate.mjs",
+        "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0"
+      },
+      {
+        "bytes": 5556,
+        "git_blob": "4cf6ea5812b22079f5f6ef0831cdc389ec3b8ea1",
+        "path": "qa/openbao-acceptance/authbus/authbus_dispatch_sdk_candidate.mjs",
+        "sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674"
+      },
+      {
+        "bytes": 7300,
+        "git_blob": "197f711516c69ab98966b0d5a76738d27af9c46f",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_registry_candidate.mjs",
+        "sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d"
+      },
+      {
+        "bytes": 37376,
+        "git_blob": "d097ac593f1ab31f1242a579aa236bc295cb7d8a",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_caller_live.mjs",
+        "sha256": "10064164f06df7685cd90694d459a9233c2b40c307ac692d176044157be5e77e"
+      },
+      {
+        "bytes": 25621,
+        "git_blob": "6f22bb58b3252b9b82f20c4b0c4e751ef17cf67f",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+        "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3"
+      },
+      {
+        "bytes": 11262,
+        "git_blob": "46969fe82d85ea5671007547eff671d56dacdcdc",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_fixture.mjs",
+        "sha256": "16c02e365b916d80748eec58c44e960c7610118c471090df0de1291732f7300f"
+      },
+      {
+        "bytes": 35844,
+        "git_blob": "f7c5ddb21a14242a56672426193f1cf092a48a85",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_worker.mjs",
+        "sha256": "3b4fc4f2b1fbffe018c9bb1fd9906b4af1e778f50dc2683499078d37111b1855"
+      },
+      {
+        "bytes": 7179,
+        "git_blob": "630378f787117aad53fd0ef361b40d6d5fdfef30",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture.mjs",
+        "sha256": "6a2298f27e366a2225182b5982bddf10589a1a530533fb3cfb14d4cc2c394539"
+      },
+      {
+        "bytes": 19227,
+        "git_blob": "a72e64c812782713b671a35227de92ef86dad039",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+        "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d"
+      },
+      {
+        "bytes": 5017,
+        "git_blob": "78f61bf771d6376410d07f3ceef28d3726dae223",
+        "path": "qa/openbao-acceptance/authbus/authbus_refresh_store_sdk_candidate.mjs",
+        "sha256": "dc007135540ec0241bc114dee87732716eea9bd1f6d85125cfb54f339a64591a"
+      },
+      {
+        "bytes": 12203,
+        "git_blob": "e58a7a4d3dd2662956c1fc9d53cbceed9c6c8b68",
+        "path": "qa/openbao-acceptance/authbus/authbus_sdk_admission_candidate.mjs",
+        "sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33"
+      },
+      {
+        "bytes": 8358,
+        "git_blob": "189f156ebdaef750ccf2fe5c2447918b3202d263",
+        "path": "qa/openbao-acceptance/authbus/authbus_sdk_explicit_deny_candidate.mjs",
+        "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2"
+      },
+      {
+        "bytes": 4929,
+        "git_blob": "d2911c5d940b94b76c516bd968156a7cd1c72c5a",
+        "path": "qa/openbao-acceptance/authbus/authbus_trusted_admission_candidate.mjs",
+        "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad"
+      },
+      {
+        "bytes": 30107,
+        "git_blob": "ff11df13ade8462b70a6cbe40c7c6a7c813236c6",
+        "path": "qa/openbao-acceptance/authbus/authbus_trusted_control_candidate.mjs",
+        "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637"
+      },
+      {
+        "bytes": 19737,
+        "git_blob": "1933898e17f423d1572375e34725d46ebba358eb",
+        "path": "qa/openbao-acceptance/cert_auth_live.py",
+        "sha256": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9"
+      },
+      {
+        "bytes": 1560,
+        "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd",
+        "path": "qa/openbao-acceptance/fixture_mounts.py",
+        "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5"
+      },
+      {
+        "bytes": 23329,
+        "git_blob": "f96eeaa2a9dd9145a5da565dac1f455829d6e164",
+        "path": "qa/openbao-acceptance/native_v6_authbus_client_live.py",
+        "sha256": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e"
+      },
+      {
+        "bytes": 50304,
+        "git_blob": "4c3cda4cfeb43e0a70a2b7f3776c4537ef193c93",
+        "path": "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py",
+        "sha256": "db58cf971b3d7bbdba76a8a81d1cb53477a22d8a58b0b688a70f306b68188fa8"
+      },
+      {
+        "bytes": 28442,
+        "git_blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+        "path": "qa/openbao-acceptance/owned_process.py",
+        "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+      },
+      {
+        "bytes": 16470,
+        "git_blob": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8",
+        "path": "qa/single-node/smoke.py",
+        "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+      }
+    ],
+    "sha256": "fec7c304c098f36da547a664173900415d1330f5cbe37a1cdcc0c098ac1b7139"
+  },
+  "startedNs": "508528191173083",
+  "syntheticCredentials": true,
+  "syntheticProvider": true,
+  "tlsControlEmulator": false,
+  "transport": {
+    "backendResponses": 171,
+    "counts": {
+      "guard-after-await": {
+        "providerRequests": 0,
+        "unknownAckDrops": 0,
+        "unknownAtProvider": 0
+      },
+      "intent-ack-lost": {
+        "providerRequests": 0,
+        "unknownAckDrops": 1,
+        "unknownAtProvider": 0
+      },
+      "manager-success": {
+        "providerRequests": 1,
+        "unknownAckDrops": 0,
+        "unknownAtProvider": 1
+      },
+      "provider-ack-lost": {
+        "providerRequests": 1,
+        "unknownAckDrops": 0,
+        "unknownAtProvider": 1
+      },
+      "sqlite-abort": {
+        "providerRequests": 1,
+        "unknownAckDrops": 0,
+        "unknownAtProvider": 1
+      }
+    },
+    "events": [
+      {
+        "case": "manager-success",
+        "documentSha256": "a121f9937c6792ac3467819ffa04c8737232d99da3bf2f4519665c8512814d2c",
+        "event": "actual_sdk_https_after_native_unknown",
+        "nativeDateMs": 1792401033000,
+        "nativeVersion": 2,
+        "phase": "warm"
+      },
+      {
+        "case": "intent-ack-lost",
+        "documentSha256": "d35a1a2d04a3e8ac403550344cd21e90502ae2d992315ce706abdaba2a1dd2f2",
+        "event": "drop_after_native_cas_ack_and_readback",
+        "nativeDateMs": 1792401034000,
+        "nativeVersion": 2,
+        "phase": "warm"
+      },
+      {
+        "case": "provider-ack-lost",
+        "documentSha256": "6f802e603a61fd5a857f264f84bbeec98baaaa4a2be52271f1d2b224c94dab16",
+        "event": "actual_sdk_https_after_native_unknown",
+        "nativeDateMs": 1792401035000,
+        "nativeVersion": 2,
+        "phase": "warm"
+      },
+      {
+        "case": "sqlite-abort",
+        "documentSha256": "1cbcf782d416f867b4e40265db1c918b3b5b4e859f36f0d6633a7440fcc2b8f2",
+        "event": "actual_sdk_https_after_native_unknown",
+        "nativeDateMs": 1792401036000,
+        "nativeVersion": 2,
+        "phase": "warm"
+      }
+    ],
+    "failures": [],
+    "localDenials": 0,
+    "nativeDateForwarded": true,
+    "rootBearerGivenToSdk": false
+  },
+  "workerReceipts": [
+    {
+      "bytes": 24678,
+      "checksPassed": 87,
+      "checksTotal": 87,
+      "exitCode": 0,
+      "phase": "warm",
+      "pid": 2113979,
+      "sha256": "53d8faaa7c0b0d14901347ed6f7d2fad3d8ec87d11de78657b13bcbade50a694",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "0aacc02d1c1b291603e7021fcde95672077616247cf3c77588b191d20c42e82b"
+    },
+    {
+      "bytes": 24398,
+      "checksPassed": 80,
+      "checksTotal": 80,
+      "exitCode": 0,
+      "phase": "cold-before-server",
+      "pid": 2114677,
+      "sha256": "823051707e4f5d93ccbaaeb619412e07b322b9d75ac5d0e2526709d021f79cee",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "d395d5a2aa8f4a0e193b1eb123fd3ff68e2ed3d41173b3fc08c5cc28cfddf094"
+    },
+    {
+      "bytes": 24397,
+      "checksPassed": 80,
+      "checksTotal": 80,
+      "exitCode": 0,
+      "phase": "cold-after-server",
+      "pid": 2116317,
+      "sha256": "11e8c2aa085286f4b1ee9e8e3b84ea6947a6e67c257622eedc58090733e1aba6",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "a4ef32572f989749739a3cf71b6a953e4c0fb7030f47394e30e2180b01772a3a"
+    }
+  ]
+}

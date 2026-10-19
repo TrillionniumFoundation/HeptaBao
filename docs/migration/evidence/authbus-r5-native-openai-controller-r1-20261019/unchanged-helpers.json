@@ -1,0 +1,36 @@
+{
+  "schema": "authbus.native-openai.outer-reuse-static.v1",
+  "baseOuterSha256": "faee8f81f5ed4441284804579b1fe261aaf304a409078683a27beebc97eb20ec",
+  "unchangedFunctionAstNames": [
+    "safe_directory",
+    "read_regular",
+    "sync_directory",
+    "write_new",
+    "canonical_relative",
+    "stage_source",
+    "read_pinned_sdk_input",
+    "verify_sdk",
+    "proc_identity",
+    "stable_identity",
+    "retain_owned_session",
+    "observe_unreaped_exit",
+    "live_owned_session",
+    "signal_owned_session",
+    "stop_owned",
+    "run_owned_once"
+  ],
+  "originalProfileSeconds": 180,
+  "actualNativeRunPerformed": false,
+  "newProfileControllerChecks": 141,
+  "newWorkerChecks": [
+    87,
+    80,
+    80
+  ],
+  "runtimeCommonDependenciesUnchanged": 19,
+  "newRuntimeFiles": [
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_fixture.mjs",
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_worker.mjs",
+    "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py"
+  ]
+}

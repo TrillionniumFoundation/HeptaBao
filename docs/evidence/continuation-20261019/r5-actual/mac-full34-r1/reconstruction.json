@@ -1,0 +1,53 @@
+{
+  "base64_transfer_chunks_included_as_git_evidence": false,
+  "chunks": [
+    {
+      "chunk_bytes": 30000,
+      "chunk_sha256": "ebbb8a783ecba698544175b33b69373065b7239f003c8803c64aea96b99c8fec",
+      "offset": 0,
+      "returned_bytes": 40354,
+      "returned_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1-controller/summary-retrieval-r1/chunk-0.json",
+      "returned_sha256": "5ec1ee2f490b76a336969c500f10610b8e186a3f5ef67cd87d4712b71265960a",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1/summary.json"
+    },
+    {
+      "chunk_bytes": 30000,
+      "chunk_sha256": "3e68a5c042d7719ff5b0483c8a38d31ddf42c439f7c0952b5ab7ff11f08592b4",
+      "offset": 30000,
+      "returned_bytes": 40358,
+      "returned_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1-controller/summary-retrieval-r1/chunk-1.json",
+      "returned_sha256": "95396770b6a8307387bce4ae43f6e978fa1b57bfa7b0ae428f58f240116a0db8",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1/summary.json"
+    },
+    {
+      "chunk_bytes": 30000,
+      "chunk_sha256": "582733252cb9e57b671e615835c2217ff5e9934f367339dd317983a53fff6ea4",
+      "offset": 60000,
+      "returned_bytes": 40358,
+      "returned_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1-controller/summary-retrieval-r1/chunk-2.json",
+      "returned_sha256": "afd398d36f92f13b9fcf9f7706a1f0b3081de87bae5e50b9b8648e002ce732ee",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1/summary.json"
+    },
+    {
+      "chunk_bytes": 333,
+      "chunk_sha256": "6b56042a0d44a87de659f51a645088326c01e0b6003a20c4ebb72005c27a219b",
+      "offset": 90000,
+      "returned_bytes": 800,
+      "returned_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1-controller/summary-retrieval-r1/chunk-3.json",
+      "returned_sha256": "188c53c8d7b26e2cfbf7253fa617ff5d4e835b9fbd23a48ed3b5d405976841fb",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1/summary.json"
+    }
+  ],
+  "controller_bytes": 2295,
+  "controller_retrieval_sha256": "f9f04576b08461138030cc7b76082c1369375042f390d1be4ea61b2eb3daee19",
+  "controller_sha256": "fca367526e041bdafdb65b5c849c5b20875e6b1ab2864cf8efdd599b93132a12",
+  "controller_source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1-controller/controller.json",
+  "offsets_contiguous": true,
+  "original_json_reserialized": false,
+  "retrieval_sha256": "ed9d0644c7b503185a7c9d51d3e2a0898448a4b9bc5ea0008e404fa2961e4825",
+  "retrieval_source": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/full34-summary-chunks-retrieval.json",
+  "schema": "heptabao.exact-full34-public-evidence-reconstruction.v1",
+  "summary_bytes": 90333,
+  "summary_sha256": "c50a35ee55f6ae42ed2eca2167c287466c6d94175f7449a7b481cbc7abafc770",
+  "summary_source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-b24c6de-mac-r1/summary.json"
+}

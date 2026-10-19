@@ -1,0 +1,714 @@
+{"argv": ["cargo", "+1.98.0", "test", "--locked", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "--no-run"]}
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded murmur3 v0.4.1
+  Downloaded adler2 v2.0.1
+  Downloaded openssl-macros v0.1.1
+  Downloaded parse-size v1.1.0
+  Downloaded openraft-rt-tokio v0.10.0-alpha.34
+  Downloaded module-lattice v0.2.3
+  Downloaded openraft-memstore v0.10.0-alpha.34
+  Downloaded ml-dsa v0.1.1
+  Downloaded openssl-probe v0.1.6
+  Downloaded num-conv v0.2.2
+  Downloaded rustc-hash v2.1.1
+  Downloaded chrono-tz-build v0.2.1
+  Downloaded openraft-macros v0.10.0-alpha.34
+  Downloaded pastey v0.2.3
+  Downloaded oid-registry v0.8.1
+  Downloaded openraft-rt v0.10.0-alpha.34
+  Downloaded parking_lot_core v0.9.11
+  Downloaded phf_shared v0.11.3
+  Downloaded rand_chacha v0.3.1
+  Downloaded rustls-pemfile v2.2.0
+  Downloaded sponge-cursor v0.1.0
+  Downloaded cipher v0.4.4
+  Downloaded cipher v0.5.2
+  Downloaded opaque-debug v0.3.1
+  Downloaded p256 v0.13.2
+  Downloaded parking_lot v0.12.4
+  Downloaded pkcs8 v0.11.0
+  Downloaded scopeguard v1.2.0
+  Downloaded signature v3.0.0
+  Downloaded clang-sys v1.9.1
+  Downloaded clap v4.6.6
+  Downloaded phf_codegen v0.11.3
+  Downloaded signature v2.2.0
+  Downloaded ssh-cipher v0.2.0
+  Downloaded block-buffer v0.10.4
+  Downloaded peel-off v0.1.1
+  Downloaded ecdsa v0.16.9
+  Downloaded num-iter v0.1.46
+  Downloaded rfc6979 v0.4.0
+  Downloaded rustc_version v0.4.1
+  Downloaded siphasher v1.0.3
+  Downloaded rusticata-macros v4.1.0
+  Downloaded smallvec v1.16.0
+  Downloaded num-bigint v0.4.8
+  Downloaded phf_generator v0.11.3
+  Downloaded powerfmt v0.2.0
+  Downloaded ppv-lite86 v0.2.21
+  Downloaded prost-derive v0.14.4
+  Downloaded rand_core v0.6.4
+  Downloaded sec1 v0.7.3
+  Downloaded simd-adler32 v0.3.10
+  Downloaded phf v0.11.3
+  Downloaded serde_derive v1.0.229
+  Downloaded num-integer v0.1.47
+  Downloaded percent-encoding v2.3.2
+  Downloaded pin-project-internal v1.1.10
+  Downloaded poly1305 v0.8.0
+  Downloaded quote v1.0.47
+  Downloaded rustls-native-certs v0.8.2
+  Downloaded sha2 v0.10.9
+  Downloaded shlex v1.3.0
+  Downloaded shlex v2.0.1
+  Downloaded spki v0.7.3
+  Downloaded spki v0.8.0
+  Downloaded once_cell v1.21.4
+  Downloaded openraft-legacy v0.10.0-alpha.34
+  Downloaded pem-rfc7468 v0.7.0
+  Downloaded pin-project-lite v0.2.17
+  Downloaded pkcs1 v0.7.5
+  Downloaded pkcs8 v0.10.2
+  Downloaded primeorder v0.13.6
+  Downloaded prost v0.14.4
+  Downloaded slab v0.4.12
+  Downloaded smol_str v0.3.6
+  Downloaded spin v0.9.9
+  Downloaded strsim v0.11.1
+  Downloaded time-core v0.1.9
+  Downloaded http-body v1.1.0
+  Downloaded itoa v1.0.18
+  Downloaded libgssapi v0.11.0
+  Downloaded maplit v1.0.2
+  Downloaded mio v1.2.3
+  Downloaded nom v7.1.3
+  Downloaded num-traits v0.2.19
+  Downloaded openssl-sys v0.9.117
+  Downloaded parse-zoneinfo v0.3.1
+  Downloaded pin-project v1.1.10
+  Downloaded pkg-config v0.3.34
+  Downloaded prettyplease v0.2.37
+  Downloaded proc-macro2 v1.0.107
+  Downloaded rand_core v0.10.1
+  Downloaded rsa v0.9.10
+  Downloaded rustls-pki-types v1.15.1
+  Downloaded rustls-webpki v0.103.15
+  Downloaded semver v1.0.28
+  Downloaded serde_core v1.0.229
+  Downloaded socket2 v0.5.10
+  Downloaded socket2 v0.6.5
+  Downloaded stable_deref_trait v1.2.1
+  Downloaded time-macros v0.2.32
+  Downloaded tokio-rustls v0.26.6
+  Downloaded tokio-stream v0.1.19
+  Downloaded tower-layer v0.3.3
+  Downloaded bytes v1.12.1
+  Downloaded cc v1.4.5
+  Downloaded digest v0.10.7
+  Downloaded futures-task v0.3.34
+  Downloaded keccak v0.1.6
+  Downloaded log v0.4.34
+  Downloaded num-bigint-dig v0.8.6
+  Downloaded p384 v0.13.1
+  Downloaded p521 v0.13.3
+  Downloaded rand v0.8.8
+  Downloaded rand v0.10.2
+  Downloaded regex v1.13.1
+  Downloaded serde v1.0.229
+  Downloaded serde_json v1.0.151
+  Downloaded tokio-util v0.7.11
+  Downloaded tonic v0.14.6
+  Downloaded tower v0.5.3
+  Downloaded yoke-derive v0.7.5
+  Downloaded zerofrom v0.1.4
+  Downloaded zerofrom-derive v0.1.6
+  Downloaded zeroize v1.8.1
+  Downloaded byteorder v1.5.0
+  Downloaded cexpr v0.6.0
+  Downloaded cfg-if v1.0.4
+  Downloaded chrono v0.4.45
+  Downloaded cpufeatures v0.2.17
+  Downloaded cpufeatures v0.3.1
+  Downloaded crypto-common v0.1.7
+  Downloaded curve25519-dalek-derive v0.1.1
+  Downloaded find-msvc-tools v0.1.12
+  Downloaded fnv v1.0.7
+  Downloaded futures-io v0.3.34
+  Downloaded futures-sink v0.3.34
+  Downloaded heck v0.5.0
+  Downloaded http-body-util v0.1.5
+  Downloaded openssl v0.10.81
+  Downloaded shake v0.1.0
+  Downloaded zerovec v0.10.4
+  Downloaded cel v0.13.0
+  Downloaded clap_lex v1.1.0
+  Downloaded hmac v0.12.1
+  Downloaded inout v0.1.4
+  Downloaded libm v0.2.16
+  Downloaded openraft v0.10.0-alpha.34
+  Downloaded regex-syntax v0.8.11
+  Downloaded rustix v1.1.4
+  Downloaded rustls v0.23.44
+  Downloaded ssh-encoding v0.2.0
+  Downloaded thiserror-impl v1.0.69
+  Downloaded thiserror-impl v2.0.20
+  Downloaded zerocopy v0.8.62
+  Downloaded equivalent v1.0.2
+  Downloaded errno v0.3.14
+  Downloaded foreign-types v0.3.2
+  Downloaded futures-macro v0.3.34
+  Downloaded inout v0.2.2
+  Downloaded is_terminal_polyfill v1.70.2
+  Downloaded regex-automata v0.4.18
+  Downloaded tracing-core v0.1.36
+  Downloaded fs_extra v1.3.0
+  Downloaded futures-executor v0.3.34
+  Downloaded group v0.13.0
+  Downloaded httparse v1.10.1
+  Downloaded hyper-timeout v0.5.2
+  Downloaded icu_provider_macros v1.5.0
+  Downloaded idna v1.1.0
+  Downloaded idna_adapter v1.2.0
+  Downloaded jobserver v0.1.34
+  Downloaded ring v0.17.14
+  Downloaded sha3 v0.10.9
+  Downloaded thiserror v1.0.69
+  Downloaded tracing-attributes v0.1.31
+  Downloaded utf8parse v0.2.2
+  Downloaded validit v0.2.6
+  Downloaded want v0.3.1
+  Downloaded cmov v0.5.4
+  Downloaded colorchoice v1.0.5
+  Downloaded const-oid v0.9.6
+  Downloaded convert_case v0.10.0
+  Downloaded crypto-common v0.2.2
+  Downloaded ctutils v0.4.2
+  Downloaded dunce v1.0.5
+  Downloaded futures-channel v0.3.34
+  Downloaded futures-core v0.3.34
+  Downloaded generic-array v0.14.7
+  Downloaded keccak v0.2.2
+  Downloaded untrusted v0.9.0
+  Downloaded utf16_iter v1.0.5
+  Downloaded utf8_iter v1.0.4
+  Downloaded uuid v1.20.0
+  Downloaded vcpkg v0.2.15
+  Downloaded version_check v0.9.5
+  Downloaded aws-lc-rs v1.18.1
+  Downloaded chacha20 v0.10.2
+  Downloaded chacha20poly1305 v0.10.1
+  Downloaded cmake v0.1.58
+  Downloaded cross-krb5 v0.5.0
+  Downloaded data-encoding v2.11.1
+  Downloaded deranged v0.5.8
+  Downloaded ed25519 v2.2.3
+  Downloaded either v1.18.0
+  Downloaded ff v0.13.1
+  Downloaded foreign-types-shared v0.1.1
+  Downloaded futures v0.3.34
+  Downloaded iana-time-zone v0.1.65
+  Downloaded icu_locid v1.5.0
+  Downloaded icu_locid_transform v1.5.0
+  Downloaded icu_normalizer v1.5.0
+  Downloaded lazy_static v1.5.0
+  Downloaded libloading v0.8.8
+  Downloaded mime v0.3.17
+  Downloaded zerovec-derive v0.10.4
+  Downloaded autocfg v1.5.1
+  Downloaded base16ct v0.2.0
+  Downloaded block-buffer v0.12.1
+  Downloaded chacha20 v0.9.1
+  Downloaded clap_builder v4.6.6
+  Downloaded display-more v0.2.6
+  Downloaded displaydoc v0.2.7
+  Downloaded getrandom v0.2.17
+  Downloaded glob v0.3.4
+  Downloaded hybrid-array v0.4.15
+  Downloaded icu_properties v1.5.1
+  Downloaded libgssapi-sys v0.3.4
+  Downloaded linux-raw-sys v0.12.1
+  Downloaded litemap v0.7.3
+  Downloaded sync_wrapper v1.0.2
+  Downloaded tower-service v0.3.3
+  Downloaded zmij v1.0.23
+  Downloaded backoff-series v0.1.1
+  Downloaded crc32fast v1.5.2
+  Downloaded digest v0.11.3
+  Downloaded getrandom v0.4.3
+  Downloaded icu_locid_transform_data v1.5.1
+  Downloaded thiserror v2.0.20
+  Downloaded tokio v1.53.1
+  Downloaded tokio-macros v2.7.2
+  Downloaded blowfish v0.10.0
+  Downloaded elliptic-curve v0.13.8
+  Downloaded icu_normalizer_data v1.5.1
+  Downloaded icu_provider v1.5.0
+  Downloaded ssh-key v0.6.7
+  Downloaded syn v3.0.6
+  Downloaded tokio-openssl v0.6.5
+  Downloaded tracing v0.1.44
+  Downloaded clap_derive v4.6.4
+  Downloaded const-oid v0.10.2
+  Downloaded der-parser v10.0.0
+  Downloaded flate2 v1.1.8
+  Downloaded icu_collections v1.5.0
+  Downloaded lock_api v0.4.13
+  Downloaded miniz_oxide v0.8.9
+  Downloaded subtle v2.6.1
+  Downloaded syn v2.0.119
+  Downloaded time v0.3.55
+  Downloaded unicode-ident v1.0.24
+  Downloaded yoke v0.7.4
+  Downloaded asn1-rs-derive v0.6.0
+  Downloaded crypto-bigint v0.5.5
+  Downloaded der v0.7.10
+  Downloaded ed25519-dalek v2.1.1
+  Downloaded hyper-util v0.1.20
+  Downloaded libc v0.2.189
+  Downloaded md5 v0.8.0
+  Downloaded minimal-lexical v0.2.1
+  Downloaded tinystr v0.7.6
+  Downloaded typed-arena v2.0.2
+  Downloaded unicode-segmentation v1.13.3
+  Downloaded unicode-xid v0.2.6
+  Downloaded universal-hash v0.5.1
+  Downloaded x509-parser v0.18.1
+  Downloaded aead v0.5.2
+  Downloaded anstream v1.0.0
+  Downloaded anstyle-parse v1.0.0
+  Downloaded anstyle-query v1.1.5
+  Downloaded atomic-waker v1.1.2
+  Downloaded bindgen v0.72.1
+  Downloaded derive_more v2.1.1
+  Downloaded derive_more-impl v2.1.1
+  Downloaded hashbrown v0.16.1
+  Downloaded http v1.5.0
+  Downloaded indexmap v2.11.4
+  Downloaded itertools v0.13.0
+  Downloaded memchr v2.8.3
+  Downloaded synstructure v0.13.2
+  Downloaded try-lock v0.2.5
+  Downloaded write16 v1.0.0
+  Downloaded anstyle v1.0.14
+  Downloaded anyhow v1.0.100
+  Downloaded asn1-rs v0.7.2
+  Downloaded async-trait v0.1.89
+  Downloaded bit-set v0.8.0
+  Downloaded bitflags v2.13.2
+  Downloaded der v0.8.2
+  Downloaded writeable v0.5.5
+  Downloaded asn1-rs-impl v0.2.0
+  Downloaded base64ct v1.6.0
+  Downloaded bit-vec v0.8.0
+  Downloaded hyper v1.11.1
+  Downloaded anyerror v0.1.13
+  Downloaded base2histogram v0.2.3
+  Downloaded better_any v0.2.1
+  Downloaded h2 v0.4.19
+  Downloaded itertools v0.15.0
+  Downloaded base64 v0.22.1
+  Downloaded futures-util v0.3.34
+  Downloaded base64 v0.23.1
+  Downloaded typenum v1.20.1
+  Downloaded icu_properties_data v1.5.1
+  Downloaded aho-corasick v1.1.5
+  Downloaded curve25519-dalek v4.1.3
+  Downloaded antlr4rust v0.5.2
+  Downloaded bindgen v0.71.1
+  Downloaded chrono-tz v0.8.6
+  Downloaded aws-lc-sys v0.45.0
+  Downloaded aws-lc-sys v0.41.0
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling libc v0.2.189
+   Compiling zeroize v1.8.1
+   Compiling syn v2.0.119
+   Compiling syn v3.0.6
+   Compiling cfg-if v1.0.4
+   Compiling typenum v1.20.1
+   Compiling version_check v0.9.5
+   Compiling generic-array v0.14.7
+   Compiling autocfg v1.5.1
+   Compiling subtle v2.6.1
+   Compiling regex-syntax v0.8.11
+   Compiling crypto-common v0.1.7
+   Compiling jobserver v0.1.34
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.12
+   Compiling cc v1.4.5
+   Compiling regex-automata v0.4.18
+   Compiling const-oid v0.9.6
+   Compiling memchr v2.8.3
+   Compiling regex v1.13.1
+   Compiling getrandom v0.2.17
+   Compiling pkg-config v0.3.34
+   Compiling pin-project-lite v0.2.17
+   Compiling bytes v1.12.1
+   Compiling cmake v0.1.58
+   Compiling block-buffer v0.10.4
+   Compiling dunce v1.0.5
+   Compiling fs_extra v1.3.0
+   Compiling libm v0.2.16
+   Compiling digest v0.10.7
+   Compiling num-traits v0.2.19
+   Compiling glob v0.3.4
+   Compiling clang-sys v1.9.1
+   Compiling prettyplease v0.2.37
+   Compiling futures-core v0.3.34
+   Compiling either v1.18.0
+   Compiling smallvec v1.16.0
+   Compiling itertools v0.13.0
+   Compiling synstructure v0.13.2
+   Compiling futures-sink v0.3.34
+   Compiling minimal-lexical v0.2.1
+   Compiling serde_core v1.0.229
+   Compiling libloading v0.8.8
+   Compiling tokio-macros v2.7.2
+   Compiling nom v7.1.3
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling once_cell v1.21.4
+   Compiling rand_core v0.10.1
+   Compiling tokio v1.53.1
+   Compiling cexpr v0.6.0
+   Compiling rand_core v0.6.4
+   Compiling serde v1.0.229
+   Compiling slab v0.4.12
+   Compiling cpufeatures v0.2.17
+   Compiling rustc-hash v2.1.1
+   Compiling itoa v1.0.18
+   Compiling log v0.4.34
+   Compiling shlex v1.3.0
+   Compiling bitflags v2.13.2
+   Compiling futures-channel v0.3.34
+   Compiling serde_derive v1.0.229
+   Compiling futures-macro v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling siphasher v1.0.3
+   Compiling semver v1.0.28
+   Compiling phf_shared v0.11.3
+   Compiling tracing-core v0.1.36
+   Compiling aws-lc-sys v0.45.0
+   Compiling displaydoc v0.2.7
+   Compiling tracing-attributes v0.1.31
+   Compiling rand v0.8.8
+   Compiling tracing v0.1.44
+   Compiling sha2 v0.10.9
+   Compiling zerofrom-derive v0.1.6
+   Compiling der v0.7.10
+   Compiling cmov v0.5.4
+   Compiling thiserror v2.0.20
+   Compiling bindgen v0.72.1
+   Compiling ctutils v0.4.2
+   Compiling zerofrom v0.1.4
+   Compiling phf_generator v0.11.3
+   Compiling yoke-derive v0.7.5
+   Compiling thiserror-impl v2.0.20
+   Compiling getrandom v0.4.3
+   Compiling stable_deref_trait v1.2.1
+   Compiling aws-lc-rs v1.18.1
+   Compiling yoke v0.7.4
+   Compiling phf_codegen v0.11.3
+   Compiling hybrid-array v0.4.15
+   Compiling phf v0.11.3
+   Compiling parse-zoneinfo v0.3.1
+   Compiling ring v0.17.14
+   Compiling zerovec-derive v0.10.4
+   Compiling zmij v1.0.23
+   Compiling zerovec v0.10.4
+   Compiling chrono-tz-build v0.2.1
+   Compiling aws-lc-sys v0.41.0
+   Compiling cpufeatures v0.3.1
+   Compiling utf8parse v0.2.2
+   Compiling serde_json v1.0.151
+   Compiling iana-time-zone v0.1.65
+   Compiling rustix v1.1.4
+   Compiling chrono v0.4.45
+   Compiling anstyle-parse v1.0.0
+   Compiling chacha20 v0.10.2
+   Compiling chrono-tz v0.8.6
+   Compiling spki v0.7.3
+   Compiling http v1.5.0
+   Compiling signature v2.2.0
+   Compiling ff v0.13.1
+   Compiling rustls-pki-types v1.15.1
+   Compiling equivalent v1.0.2
+   Compiling vcpkg v0.2.15
+   Compiling anyhow v1.0.100
+   Compiling zerocopy v0.8.62
+   Compiling unicode-segmentation v1.13.3
+   Compiling colorchoice v1.0.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling base16ct v0.2.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling untrusted v0.9.0
+   Compiling anstyle v1.0.14
+   Compiling anstyle-query v1.1.5
+   Compiling hashbrown v0.16.1
+   Compiling anstream v1.0.0
+   Compiling indexmap v2.11.4
+   Compiling convert_case v0.10.0
+   Compiling sec1 v0.7.3
+   Compiling openssl-sys v0.9.117
+   Compiling group v0.13.0
+   Compiling rand v0.10.2
+   Compiling openraft-macros v0.10.0-alpha.34
+   Compiling tinystr v0.7.6
+   Compiling crypto-common v0.2.2
+   Compiling crypto-bigint v0.5.5
+   Compiling tokio-util v0.7.11
+   Compiling num-integer v0.1.47
+   Compiling heck v0.5.0
+   Compiling httparse v1.10.1
+   Compiling icu_locid_transform_data v1.5.1
+   Compiling spin v0.9.9
+   Compiling writeable v0.5.5
+   Compiling unicode-xid v0.2.6
+   Compiling clap_lex v1.1.0
+   Compiling strsim v0.11.1
+   Compiling litemap v0.7.3
+   Compiling bindgen v0.71.1
+   Compiling icu_locid v1.5.0
+   Compiling clap_builder v4.6.6
+   Compiling derive_more-impl v2.1.1
+   Compiling lazy_static v1.5.0
+   Compiling clap_derive v4.6.4
+   Compiling elliptic-curve v0.13.8
+   Compiling openraft-rt v0.10.0-alpha.34
+   Compiling http-body v1.1.0
+   Compiling anyerror v0.1.13
+   Compiling hmac v0.12.1
+   Compiling icu_provider_macros v1.5.0
+   Compiling time-core v0.1.9
+   Compiling icu_properties_data v1.5.1
+   Compiling num-conv v0.2.2
+   Compiling try-lock v0.2.5
+   Compiling rustls v0.23.44
+   Compiling fnv v1.0.7
+   Compiling atomic-waker v1.1.2
+   Compiling itertools v0.15.0
+   Compiling h2 v0.4.19
+   Compiling want v0.3.1
+   Compiling time-macros v0.2.32
+   Compiling icu_provider v1.5.0
+   Compiling rfc6979 v0.4.0
+   Compiling validit v0.2.6
+   Compiling ppv-lite86 v0.2.21
+   Compiling display-more v0.2.6
+   Compiling openraft-rt-tokio v0.10.0-alpha.34
+   Compiling clap v4.6.6
+   Compiling derive_more v2.1.1
+   Compiling rustls-webpki v0.103.15
+   Compiling futures-executor v0.3.34
+   Compiling rustc_version v0.4.1
+   Compiling inout v0.1.4
+   Compiling lock_api v0.4.13
+   Compiling icu_normalizer_data v1.5.1
+   Compiling parking_lot_core v0.9.11
+   Compiling maplit v1.0.2
+   Compiling tower-service v0.3.3
+   Compiling byteorder v1.5.0
+   Compiling backoff-series v0.1.1
+   Compiling powerfmt v0.2.0
+   Compiling base2histogram v0.2.3
+   Compiling parse-size v1.1.0
+   Compiling peel-off v0.1.1
+   Compiling crc32fast v1.5.2
+   Compiling deranged v0.5.8
+   Compiling openraft v0.10.0-alpha.34
+   Compiling time v0.3.55
+   Compiling cipher v0.4.4
+   Compiling curve25519-dalek v4.1.3
+   Compiling futures v0.3.34
+   Compiling libgssapi-sys v0.3.4
+   Compiling hyper v1.11.1
+   Compiling icu_locid_transform v1.5.0
+   Compiling rand_chacha v0.3.1
+   Compiling ecdsa v0.16.9
+   Compiling primeorder v0.13.6
+   Compiling rusticata-macros v4.1.0
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-filesystem-guard)
+   Compiling icu_collections v1.5.0
+   Compiling asn1-rs-derive v0.6.0
+   Compiling asn1-rs-impl v0.2.0
+   Compiling socket2 v0.5.10
+   Compiling scopeguard v1.2.0
+   Compiling const-oid v0.10.2
+   Compiling foreign-types-shared v0.1.1
+   Compiling base64 v0.22.1
+   Compiling base64ct v1.6.0
+   Compiling openssl v0.10.81
+   Compiling num-bigint-dig v0.8.6
+   Compiling pem-rfc7468 v0.7.0
+   Compiling foreign-types v0.3.2
+   Compiling der v0.8.2
+   Compiling hyper-util v0.1.20
+   Compiling asn1-rs v0.7.2
+   Compiling icu_properties v1.5.1
+   Compiling openraft-legacy v0.10.0-alpha.34
+   Compiling num-iter v0.1.46
+   Compiling digest v0.11.3
+   Compiling heptabao-domain v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-domain)
+   Compiling pkcs8 v0.10.2
+   Compiling inout v0.2.2
+   Compiling openssl-macros v0.1.1
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling pin-project-internal v1.1.10
+   Compiling utf16_iter v1.0.5
+   Compiling bit-vec v0.8.0
+   Compiling tokio-openssl v0.6.5
+   Compiling sync_wrapper v1.0.2
+   Compiling thiserror v1.0.69
+   Compiling tower-layer v0.3.3
+   Compiling oid-registry v0.8.1
+   Compiling utf8_iter v1.0.4
+   Compiling write16 v1.0.0
+   Compiling pin-project v1.1.10
+   Compiling icu_normalizer v1.5.0
+   Compiling tower v0.5.3
+   Compiling bit-set v0.8.0
+   Compiling cipher v0.5.2
+   Compiling pkcs1 v0.7.5
+   Compiling parking_lot v0.12.4
+   Compiling openraft-memstore v0.10.0-alpha.34
+   Compiling prost-derive v0.14.4
+   Compiling hyper-timeout v0.5.2
+   Compiling spki v0.8.0
+   Compiling ssh-encoding v0.2.0
+   Compiling tokio-rustls v0.26.6
+   Compiling murmur3 v0.4.1
+   Compiling http-body-util v0.1.5
+   Compiling num-bigint v0.4.8
+   Compiling ed25519 v2.2.3
+   Compiling tokio-stream v0.1.19
+   Compiling universal-hash v0.5.1
+   Compiling keccak v0.2.2
+   Compiling thiserror-impl v1.0.69
+   Compiling async-trait v0.1.89
+   Compiling opaque-debug v0.3.1
+   Compiling typed-arena v2.0.2
+   Compiling percent-encoding v2.3.2
+   Compiling adler2 v2.0.1
+   Compiling uuid v1.20.0
+   Compiling sponge-cursor v0.1.0
+   Compiling better_any v0.2.1
+   Compiling simd-adler32 v0.3.10
+   Compiling miniz_oxide v0.8.9
+   Compiling antlr4rust v0.5.2
+   Compiling shake v0.1.0
+   Compiling tonic v0.14.6
+   Compiling poly1305 v0.8.0
+   Compiling der-parser v10.0.0
+   Compiling ed25519-dalek v2.1.1
+   Compiling ssh-cipher v0.2.0
+   Compiling prost v0.14.4
+   Compiling pkcs8 v0.11.0
+   Compiling libgssapi v0.11.0
+   Compiling heptabao-raft-runtime v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-raft-runtime)
+   Compiling rsa v0.9.10
+   Compiling blowfish v0.10.0
+   Compiling idna_adapter v1.2.0
+   Compiling heptabao-plugin-contracts v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-plugin-contracts)
+   Compiling signature v3.0.0
+   Compiling heptabao-durable-service v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-durable-service)
+   Compiling p384 v0.13.1
+   Compiling p521 v0.13.3
+   Compiling p256 v0.13.2
+   Compiling chacha20 v0.9.1
+   Compiling heptabao-linux-parent-death v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-linux-parent-death)
+   Compiling module-lattice v0.2.3
+   Compiling aead v0.5.2
+   Compiling smol_str v0.3.6
+   Compiling data-encoding v2.11.1
+   Compiling pastey v0.2.3
+   Compiling base64 v0.23.1
+   Compiling keccak v0.1.6
+   Compiling openssl-probe v0.1.6
+   Compiling sha3 v0.10.9
+   Compiling rustls-native-certs v0.8.2
+   Compiling cel v0.13.0
+   Compiling bcrypt v0.19.3 (/home/runner/work/HeptaBao/HeptaBao/vendor/bcrypt-0.19.3)
+   Compiling x509-parser v0.18.1
+   Compiling heptabao-workflow-template v0.6.1 (/home/runner/work/HeptaBao/HeptaBao/third_party/workflow-gotmpl)
+   Compiling chacha20poly1305 v0.10.1
+   Compiling ml-dsa v0.1.1
+   Compiling heptabao-plugin-host v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-plugin-host)
+   Compiling ssh-key v0.6.7
+   Compiling heptabao-ha-service v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-ha-service)
+   Compiling idna v1.1.0
+   Compiling heptabao-openbao-grpc v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-openbao-grpc)
+   Compiling cross-krb5 v0.5.0
+   Compiling flate2 v1.1.8
+   Compiling heptabao-kms-contracts v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-kms-contracts)
+   Compiling rustls-pemfile v2.2.0
+   Compiling mime v0.3.17
+   Compiling qrcode v0.14.1 (/home/runner/work/HeptaBao/HeptaBao/vendor/qrcode-0.14.1)
+   Compiling md5 v0.8.0
+   Compiling heptabao-server v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-server)
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+  --> crates/heptabao-server/src/ha_native_v6_publication.rs:73:19
+   |
+72 | impl NativeHaPublicationError {
+   | ----------------------------- method in this implementation
+73 |     pub(crate) fn root_attempted(&self) -> bool {
+   |                   ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: method `root` is never used
+   --> crates/heptabao-server/src/service_native_v6_ha_objects.rs:295:19
+    |
+282 | impl NativeV6HaProposal {
+    | ----------------------- method in this implementation
+...
+295 |     pub(crate) fn root(&self) -> &RecordStateRootV6 {
+    |                   ^^^^
+
+warning: `heptabao-server` (lib test) generated 6 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+    Finished `test` profile [optimized + debuginfo] target(s) in 15m 47s
+  Executable unittests src/lib.rs (/home/runner/work/_temp/heptabao-native-recovery-target/debug/deps/heptabao_server-c2b13f8f8869a962)

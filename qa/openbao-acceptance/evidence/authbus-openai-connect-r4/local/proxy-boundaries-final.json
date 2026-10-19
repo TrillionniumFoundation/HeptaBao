@@ -1,0 +1,47 @@
+{
+  "label": "proxy-boundaries-final",
+  "exitCode": 0,
+  "elapsedSeconds": 0.6033638839944615,
+  "stdoutSha256": "1fc80001e86ba51446ada494da759ebf436bd45e489779f0bd0683a0f5111183",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "public": {
+    "schema": "authbus-openai-owned-proxy-unit",
+    "nodeVersion": "v24.19.0",
+    "actualSdkExecution": false,
+    "actualUndiciRefreshTransport": false,
+    "actualNativeHeptaBao": false,
+    "realExternalProvider": false,
+    "actualOwnedConnectAndTls": true,
+    "checksPassed": 23,
+    "checks": [
+      "untrusted_provider_certificate_is_rejected",
+      "actual_tls_through_exact_loopback_connect",
+      "noncanonical_connect_target_rejected_without_upstream",
+      "connect_requires_an_active_undici_case",
+      "actual_undici_default_port_host_spelling_keeps_verified_tls",
+      "connect_rejects_owned_proxy_as_target_host",
+      "connect_rejects_different_host",
+      "connect_rejects_nondefault_host_port",
+      "connect_rejects_hostname_suffix",
+      "connect_rejects_trailing_dot_alias",
+      "connect_rejects_missing_host",
+      "connect_rejects_duplicate_equal_host",
+      "connect_rejects_duplicate_conflicting_host",
+      "connect_rejects_content_length_including_zero",
+      "connect_rejects_transfer_encoding",
+      "connect_rejects_noncanonical_request_target",
+      "proxy_environment_is_exact_loopback",
+      "mock_lane_clears_owned_proxy_environment",
+      "nonlocal_proxy_configuration_rejected",
+      "upstream_transports_have_no_unclassified_failure",
+      "proxy_closes_all_owned_sockets",
+      "process_default_ca_restored",
+      "process_environment_restored"
+    ],
+    "observations": {
+      "connections": 3,
+      "denials": 13,
+      "upstreamFailures": 0
+    }
+  }
+}

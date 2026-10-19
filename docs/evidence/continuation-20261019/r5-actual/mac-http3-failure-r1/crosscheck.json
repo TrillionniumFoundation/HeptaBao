@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.http3-original-exact-failure-crosscheck.v1",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "required": 3,
+  "actual_passed": 1,
+  "raw_logs_complete": 6,
+  "original55_independent": true,
+  "all_exact_selectors_single_case": true,
+  "all_owned_child_cleanup_complete": true,
+  "source_unchanged": true,
+  "libtest_unchanged": true,
+  "results": [
+    {
+      "label": "snapshot-json-accept-history",
+      "test": "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+      "exit_code": 101,
+      "status": "failed",
+      "raw_terminal": [
+        "FAILED",
+        "0",
+        "1",
+        "0"
+      ],
+      "bytes": 911,
+      "sha256": "516711e6ef2d07a080c21cb820543aab2645210aeb69adbd4cd7bc695819820c"
+    },
+    {
+      "label": "snapshot-json-accept-refusals",
+      "test": "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+      "exit_code": 101,
+      "status": "failed",
+      "raw_terminal": [
+        "FAILED",
+        "0",
+        "1",
+        "0"
+      ],
+      "bytes": 920,
+      "sha256": "76857f7b451e63ddb858fe1e30826e3805c2a8e45c170d729ed956a04e04d301"
+    },
+    {
+      "label": "snapshot-json-accept-framing",
+      "test": "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary",
+      "exit_code": 0,
+      "status": "passed",
+      "raw_terminal": [
+        "ok",
+        "1",
+        "0",
+        "0"
+      ],
+      "bytes": 221,
+      "sha256": "7eb9c1820e2d262df12137cb40fe01a93ff9b2519c8dee27d16c52d4c31fc82c"
+    }
+  ],
+  "summary_sha256": "38b5ff9949b53bc2c21755ea71f3d5378e0a5956115e0f8a11df4f517e041026",
+  "status": "actual_failure_preserved"
+}

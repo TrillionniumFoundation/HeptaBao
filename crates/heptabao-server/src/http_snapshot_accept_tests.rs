@@ -545,10 +545,20 @@ fn exact_history(fixture: &HttpsFixture, root: &str) -> TestResult {
     }
     let zero = fixture.call("GET", "secret/data/negative-zero", root, Value::Null)?;
     assert_eq!(zero.status, 200);
-    assert!(
-        zero.body
-            .windows(b"\"n\":-0".len())
-            .any(|value| value == b"\"n\":-0")
+    // Inspect the actual JSON token without reparsing it into serde's integer
+    // category. The complete payload must contain exactly the public -0 token,
+    // not positive zero or merely a prefix match on the stored -0.0 spelling.
+    #[derive(serde::Deserialize)]
+    struct RawData<'a> {
+        #[serde(borrow)]
+        data: &'a serde_json::value::RawValue,
+    }
+    let envelope: RawData<'_> = serde_json::from_slice(&zero.body)?;
+    let payload: RawData<'_> = serde_json::from_str(envelope.data.get())?;
+    assert_eq!(
+        payload.data.get(),
+        r#"{"n":-0}"#,
+        "actual HTTPS signed-zero payload"
     );
     assert!(zero.json()?["data"]["data"]["n"].is_number());
     let witness = fixture.call(
@@ -558,9 +568,15 @@ fn exact_history(fixture: &HttpsFixture, root: &str) -> TestResult {
         json!({"mount":"secret","path":"negative-zero","version":1}),
     )?;
     assert_eq!(witness.status, 200);
+    let witness = witness.json()?;
+    // The existing lossless token decoder represents the admitted -0 token as
+    // finite -0.0 to retain its sign. The storage witness hashes that typed
+    // canonical representation, while the public API above emits OpenBao's -0.
+    // Both bytes and this independently fixed hash reject positive zero.
+    assert_eq!(witness["data"]["payload_canonical_bytes"], 10);
     assert_eq!(
-        witness.json()?["data"]["payload_canonical_sha256"],
-        format!("{:x}", Sha256::digest(br#"{"n":-0}"#))
+        witness["data"]["payload_canonical_sha256"],
+        "a8a313cade05001e69f7ddb5db01e1e2d06fb8f6913ab492cc4506d4e65d465a"
     );
     let metadata = fixture.call("GET", "secret/metadata/history", root, Value::Null)?;
     assert_eq!(metadata.status, 200);

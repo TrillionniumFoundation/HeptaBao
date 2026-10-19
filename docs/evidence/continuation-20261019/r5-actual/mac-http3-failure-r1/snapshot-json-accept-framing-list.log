@@ -1,0 +1,3 @@
+http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary: test
+
+1 test, 0 benchmarks

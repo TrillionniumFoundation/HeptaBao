@@ -483,7 +483,7 @@ if action == 'start':
     if not all(Path(item).is_file() and not Path(item).is_symlink()
                for item in (exe, config, *([argv[-1]] if has_ha == '1' else []))):
         raise SystemExit(74)
-    with (root / 'process.log').open('ab') as output:
+    with os.fdopen(os.open(root / 'process.log', os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600), 'ab') as output:
         child = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=output, stderr=output,
                                  start_new_session=True, close_fds=True)
     time.sleep(0.4)
@@ -494,7 +494,7 @@ if action == 'start':
         raise SystemExit(75)
     write_owned(identity_path, json.dumps(observed, sort_keys=True) + '\n')
     write_owned(pid_path, str(child.pid) + '\n')
-    with (root / 'pids.log').open('a') as output:
+    with os.fdopen(os.open(root / 'pids.log', os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600), 'a') as output:
         output.write(str(time.time()) + ' ' + str(child.pid) + ' started\n')
     print(child.pid)
 elif action == 'stop':
@@ -544,7 +544,7 @@ elif action == 'stop':
         if observe(pid) == prior:
             raise SystemExit(80)
     pid_path.unlink(); identity_path.unlink()
-    with (root / 'pids.log').open('a') as output:
+    with os.fdopen(os.open(root / 'pids.log', os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600), 'a') as output:
         output.write(str(time.time()) + ' ' + str(pid) + ' stopped\n')
     print(pid)
 else:

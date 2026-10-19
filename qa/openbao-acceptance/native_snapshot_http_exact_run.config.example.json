@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.native-snapshot-http3-config.v1",
+  "source": "/absolute/path/to/the/exact/completed/cohort/source",
+  "source_commit": "REPLACE_WITH_EXPLICIT_40_HEX_COMMIT",
+  "source_tree": "REPLACE_WITH_EXPLICIT_40_HEX_TREE",
+  "manifest": "/absolute/path/to/the/cohort/target-manifest.json",
+  "manifest_sha256": "REPLACE_WITH_EXPLICIT_MANIFEST_SHA256",
+  "target_dir": "/absolute/path/to/the/existing/owned/warm/target",
+  "output": "/absolute/path/to/a/new/additional-http3-output",
+  "source_runner_sha256": "REPLACE_WITH_MANIFEST_BOUND_ORIGINAL_55_RUNNER_SHA256",
+  "owned_runner": "/absolute/path/to/the/verified/R3/native_service_only_compile.py",
+  "owned_runner_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "producer_summary": "/absolute/path/to/the/completed/original55/summary.json",
+  "producer_summary_sha256": "REPLACE_WITH_ACTUAL_COMPLETED_SUMMARY_SHA256",
+  "libtest": "/absolute/path/to/the/existing/owned/warm/target/debug/deps/heptabao_server-REPLACE_WITH_ACTUAL_ARTIFACT_SUFFIX",
+  "libtest_sha256": "REPLACE_WITH_EXPLICIT_COMPILED_LIBTEST_SHA256",
+  "build_profile": {
+    "cargo": "/absolute/path/from/producer/cargo-version/argv0",
+    "rustc": "/absolute/path/from/producer/rustc-version/argv0",
+    "rust_release": "1.98.0",
+    "server_features": "experimental-native-v6-ha,private-ha-forward-diagnostic",
+    "compiler_resource_profile": {}
+  }
+}

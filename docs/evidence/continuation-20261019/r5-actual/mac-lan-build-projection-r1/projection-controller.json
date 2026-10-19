@@ -1,0 +1,19 @@
+{
+  "actual_binary_sha256": "648698fdab9eedf33f0056a8d844ecfc34e9b401e0435ccd4dbca66f4b4b2ea4",
+  "actual_summary_sha256": "2aabd021e20e5de6e640e4a88e1496dafb7e0a25d0a14de10a8efad9e322c79a",
+  "binary_executions": 0,
+  "compiler_invocations": 0,
+  "controller_sha256": "ab1c8e1a9f66eabaf92f58063b11d4e6a01ea90b35cadeec4522afd71095a95c",
+  "lan98_executed": false,
+  "original_scoped_host_status": "passed_scoped_host_recovery",
+  "profile": "mac",
+  "projector_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json",
+  "receipt_sha256": "a7136fc65a829aee509afb9b199e20736b253237f3120ae5603aa7d8d34a3bb1",
+  "runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "schema": "heptabao.r5-native-build-projection-controller.v1",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "status": "actual_build_receipt_projected"
+}

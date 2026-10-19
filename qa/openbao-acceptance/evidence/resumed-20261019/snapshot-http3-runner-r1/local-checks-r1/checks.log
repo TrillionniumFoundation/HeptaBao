@@ -1,0 +1,26 @@
+test_busy_target_preserves_receipt_and_starts_no_commands (__main__.AdapterChecks.test_busy_target_preserves_receipt_and_starts_no_commands) ... {"status": "failed_or_blocked", "summary": "/tmp/heptabao-http3-adapter-e3dlsaaj/output/summary.json", "actual_passed_test_count": 0, "required_additional_test_count": 3}
+ok
+test_changed_input_pin_and_multiple_artifact_paths_are_refused (__main__.AdapterChecks.test_changed_input_pin_and_multiple_artifact_paths_are_refused) ... ok
+test_changed_native_artifact_blocks_before_any_command (__main__.AdapterChecks.test_changed_native_artifact_blocks_before_any_command) ... {"status": "failed_or_blocked", "summary": "/tmp/heptabao-http3-adapter-_57ubmvk/output/summary.json", "actual_passed_test_count": 0, "required_additional_test_count": 3}
+ok
+test_exact_discovery_rejects_empty_wrong_duplicate_and_benchmark (__main__.AdapterChecks.test_exact_discovery_rejects_empty_wrong_duplicate_and_benchmark) ... ok
+test_execution_requires_exact_name_and_actual_single_terminal_result (__main__.AdapterChecks.test_execution_requires_exact_name_and_actual_single_terminal_result) ... ok
+test_producer_source_profile_and_completed_cohort_are_required (__main__.AdapterChecks.test_producer_source_profile_and_completed_cohort_are_required) ... ok
+test_reused_helper_reaps_one_actual_synthetic_python_child (__main__.AdapterChecks.test_reused_helper_reaps_one_actual_synthetic_python_child) ... {"label": "synthetic-python-child", "status": "failed", "exit_code": null}
+ERROR
+
+======================================================================
+ERROR: test_reused_helper_reaps_one_actual_synthetic_python_child (__main__.AdapterChecks.test_reused_helper_reaps_one_actual_synthetic_python_child)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/compatibility-review-20261019/snapshot-http3-runner-r1/work/qa/openbao-acceptance/native_snapshot_http_exact_run_checks.py", line 188, in test_reused_helper_reaps_one_actual_synthetic_python_child
+    row = helper.run_logged("synthetic-python-child", [sys.executable, "-I", "-c", "print('synthetic owned child; no Rust test executed')"], self.root,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/native-only-darwin-controller-r3-20261019/work/qa/openbao-acceptance/native_service_only_compile.py", line 377, in run_logged
+    raise RuntimeError("owned compiler group cleanup is unresolved; later commands were not started")
+RuntimeError: owned compiler group cleanup is unresolved; later commands were not started
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.363s
+
+FAILED (errors=1)

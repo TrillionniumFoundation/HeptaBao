@@ -1,0 +1,26 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "native_kv2_storage_witness_", "--nocapture", "--test-threads=1", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+
+running 5 tests
+test engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector ... ok
+test engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload ... ok
+test service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBV6-SNAPSHOT-PHASE phase=authenticate-pack elapsed_ms=69
+HBV6-SNAPSHOT-PHASE phase=validate-typed-graph elapsed_ms=10
+HBV6-SNAPSHOT-PHASE phase=derive-clock-bound-graph elapsed_ms=8
+HBV6-RESTORE-STAGE objects=0 elapsed_ms=0
+HBV6-SNAPSHOT-PHASE phase=stage-objects-and-commit elapsed_ms=127
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBV6-SNAPSHOT-PHASE phase=authenticate-pack elapsed_ms=9
+HBV6-SNAPSHOT-PHASE phase=validate-typed-graph elapsed_ms=6
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 2923 filtered out; finished in 14.24s
+

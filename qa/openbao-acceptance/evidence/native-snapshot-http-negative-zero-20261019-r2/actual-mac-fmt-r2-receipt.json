@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.actual-negativezero-r2-rustfmt.v1",
+  "status": "formatted_and_check_passed",
+  "host": "MacBook-Pro.local",
+  "rust_release": "1.98.0",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "packet_sha256": "fc058b0e5f5ee9e8fb7b9e97f192ecc922e9e37378a5e82c95c920b4401ba30c",
+  "created_utc": "2026-10-19T09:03:18.903913+00:00",
+  "files": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs",
+      "source_path": "crates/heptabao-server/src/auth_wrapped_reply110.rs",
+      "before_sha256": "5412eb636f2b63d6fdeee50ce6e8cd0e223b400d9d550fe9b702943f35b59dca",
+      "after_bytes": 108487,
+      "after_sha256": "d9ed62153f3e08939981d58a0e9ae8cbaeecd3c7332dcbd4bfed025e525f10fd",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-0.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-1.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-2.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-3.json"
+      ]
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/http_snapshot_accept_tests.rs",
+      "source_path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "before_sha256": "64ff7aa31b6575a232ee50ce4a6b32593b1358775954154499067819a6a9d627",
+      "after_bytes": 25103,
+      "after_sha256": "acc6d70d514daa2e7b41073ae08e918c1c57a433210cb3a1063132c6dc83d758",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/http_snapshot_accept_tests.rs.chunk-0.json"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "label": "version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "format",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/http_snapshot_accept_tests.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "check",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "--check",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/http_snapshot_accept_tests.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "Rust_tests_executed": 0
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.exact-chunk-reconstruction.v1",
+  "source_path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/summary.json",
+  "source_bytes": 91852,
+  "source_sha256": "793ca49c067cea84c45c540efe2c09652877c77f5f0a4b15542069534e2012b7",
+  "retrieval_packet_sha256": "834d0aa821f1da2a92249bb7a35211d7cade78063f7831bd144765b11d391ac3",
+  "chunks": [
+    {
+      "tool_path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1-summary-retrieval/chunk-0.json",
+      "tool_bytes": 40348,
+      "tool_sha256": "83af6dfe77de142968633714eb819405556b6c54200d83b43d3e082d02e74beb",
+      "tool_version": "2053:1651648:40348:1792400374772125399:1792400374772125399",
+      "offset": 0,
+      "chunk_bytes": 30000,
+      "chunk_sha256": "e50e01f496fecc5ecd2e0e8783cdf0cc267271bad9f0f0272cd535cf806c732c"
+    },
+    {
+      "tool_path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1-summary-retrieval/chunk-1.json",
+      "tool_bytes": 40352,
+      "tool_sha256": "42ac78b4e9577f486cae2e49ff61743b0d7ca248806c79b54698da219b83f977",
+      "tool_version": "2053:1651649:40352:1792400374773125401:1792400374773125401",
+      "offset": 30000,
+      "chunk_bytes": 30000,
+      "chunk_sha256": "140445b989d9d2d78cc6507104c4d188c3e1bbe3ae6ac3e7270602cc000a4193"
+    },
+    {
+      "tool_path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1-summary-retrieval/chunk-2.json",
+      "tool_bytes": 40352,
+      "tool_sha256": "5abdbc92bfb6788ceeda7e3cb76fb0640bf00c327529bdc61adf9fee502d413b",
+      "tool_version": "2053:1651650:40352:1792400374774125403:1792400374774125403",
+      "offset": 60000,
+      "chunk_bytes": 30000,
+      "chunk_sha256": "40e5abdf576aeda5bb06ba7036fcc3568ab8bd0865bbd3e185dcb79ffc8cba10"
+    },
+    {
+      "tool_path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1-summary-retrieval/chunk-3.json",
+      "tool_bytes": 2823,
+      "tool_sha256": "2a88e26a073d449dfabdb70dbb882d9c4913d60c7cf9ee4fc7100bccfcc4cc86",
+      "tool_version": "2053:1651651:2823:1792400374774125403:1792400374774125403",
+      "offset": 90000,
+      "chunk_bytes": 1852,
+      "chunk_sha256": "82ea4c68edbe0f2d1ff56d10850cdffd0eb5bb6922cab383ccf407511bcad8ec"
+    }
+  ],
+  "contiguous_offsets": true,
+  "whole_file_verified": true
+}

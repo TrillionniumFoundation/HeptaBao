@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-exact-evidence-extraction.v1",
+  "files": [
+    {
+      "local_file": "summary.json",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/work/summary.json",
+      "bytes": 12920,
+      "sha256": "46fb401ba632f80415ad7ae90c1b38a70e613407a1724f2385260396e7fec475",
+      "version": "2050:53908140:12920:1792399745856919737:1792399745856919737",
+      "eof": true,
+      "retrieval_packet_sha256": "52ea3d5c5ade3a1710b2a1278868ed47fd336f2fda2a9f8baeff43509f701eac"
+    },
+    {
+      "local_file": "controller.json",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/controller.json",
+      "bytes": 7811,
+      "sha256": "6f87ef32fbf1094f51aa4e4f50a93cebeaddbc1b660059abf7943433a7093e5d",
+      "version": "2050:53903904:7811:1792399746507913560:1792399746511630109",
+      "eof": true,
+      "retrieval_packet_sha256": "52ea3d5c5ade3a1710b2a1278868ed47fd336f2fda2a9f8baeff43509f701eac"
+    },
+    {
+      "local_file": "stdout.log",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/stdout.log",
+      "bytes": 69,
+      "sha256": "928251df8d653605a3bb9cc1bbce214713ebae9bb74b9704817b0c563af1910c",
+      "version": "2050:53903915:69:1792399745860648368:1792399745860648368",
+      "eof": true,
+      "retrieval_packet_sha256": "52ea3d5c5ade3a1710b2a1278868ed47fd336f2fda2a9f8baeff43509f701eac"
+    },
+    {
+      "local_file": "mac-watchdog-terminal.json",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-b24c6de-20261019-r1/foreground-watchdog/29db961c5a4120195e5fb4b0b0a9ea4e/terminal.json",
+      "bytes": 1274,
+      "sha256": "c2431e40414f5859c0e53c359b2b67ca59841b740f0c5b541cf99bef88bdc03f",
+      "version": "16777244:66385987:1274:1792399743756822415:1792399743756822415",
+      "eof": true,
+      "retrieval_packet_sha256": "c468c9703bccfa34c0abfdbccfb00833e0edd6c84c2999fc8a6b9b22981b1a3a"
+    },
+    {
+      "local_file": "main-wire-terminal.json",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/work/foreground-node-1-29db961c5a4120195e5fb4b0b0a9ea4e/terminal.json",
+      "bytes": 1277,
+      "sha256": "3e787898c4f42f691ec00300e1293b68b81734abeb973dbb2f6623448e27e0ff",
+      "version": "2050:53908137:1277:1792399744162110242:1792399744162110242",
+      "eof": true,
+      "retrieval_packet_sha256": "c468c9703bccfa34c0abfdbccfb00833e0edd6c84c2999fc8a6b9b22981b1a3a"
+    }
+  ],
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "preserves_failed_result": true
+}

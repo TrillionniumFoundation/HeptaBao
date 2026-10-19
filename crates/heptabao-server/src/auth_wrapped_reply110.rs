@@ -352,14 +352,26 @@ fn logical_envelope_for_projection(
         crate::service::erase_json(&mut auth);
         return Err(bad("invalid stored logical Auth projection"));
     }
-    let mut projection = json!({
-        "request_id":request_id, "lease_id":field(response,"lease_id",json!("")),
-        "renewable":field(response,"renewable",json!(false)),
-        "lease_duration":field(response,"lease_duration",json!(0)),
-        "data":field(response,"data",Value::Null),
-        "wrap_info":Value::Null,
-        "warnings":field(response,"warnings",Value::Null), "auth":auth
-    });
+    // These are already admitted Values. Serializing them through json! again
+    // reparses the KV API's valid Number("-0") as integer zero before the final
+    // HTTP encoder can apply its existing signed-zero representation. Move the
+    // closed envelope fields directly; keep all type and route checks below.
+    let mut projection = Value::Object(serde_json::Map::from_iter([
+        ("request_id".into(), Value::String(request_id.to_owned())),
+        ("lease_id".into(), field(response, "lease_id", json!(""))),
+        (
+            "renewable".into(),
+            field(response, "renewable", json!(false)),
+        ),
+        (
+            "lease_duration".into(),
+            field(response, "lease_duration", json!(0)),
+        ),
+        ("data".into(), field(response, "data", Value::Null)),
+        ("wrap_info".into(), Value::Null),
+        ("warnings".into(), field(response, "warnings", Value::Null)),
+        ("auth".into(), auth),
+    ]));
     if projection["lease_id"].as_str().is_none()
         || projection["renewable"].as_bool().is_none()
         || projection["lease_duration"].as_u64().is_none()
@@ -1978,6 +1990,28 @@ mod tests {
             )?;
             assert!(stored.validate(&logical).is_ok());
         }
+        // Ordinary KV has already projected finite -0.0 to the exact public
+        // token -0 before HTTP constructs its envelope. A fresh json! wrapper
+        // must not silently turn that admitted number into positive zero.
+        let mut logical =
+            json!({"data":{"number":null,"private":{"$serde_json::private::Number":"-0"}}});
+        logical["data"]["number"] =
+            Value::Number(serde_json::Number::from_string_unchecked("-0".to_owned()));
+        let projection = logical_envelope(
+            &logical,
+            &crate::crypto::uuid_from_bytes(&[0x88; 16]),
+            "secret/data/negative-zero",
+        )?;
+        assert_eq!(projection["data"]["number"].to_string(), "-0");
+        assert_eq!(logical["data"]["number"].to_string(), "-0");
+        assert!(projection["data"]["private"].is_object());
+        assert_eq!(projection["data"]["private"], logical["data"]["private"]);
+        let wire = encode_http_envelope(&projection, MAX_WRAPPED_RESPONSE_BYTES)?;
+        assert!(
+            wire.windows(b"\"number\":-0,".len())
+                .any(|part| part == b"\"number\":-0,")
+        );
+        assert!(encode_http_envelope(&projection, wire.len() - 1).is_err());
         Ok(())
     }
     #[test]

@@ -1,0 +1,489 @@
+{
+  "schema": "heptabao.transferred-artifact-raw-log-crosscheck.v1",
+  "producer": "main",
+  "executor": "x230",
+  "compiled_on_executor": false,
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "source_summary_sha256": "793ca49c067cea84c45c540efe2c09652877c77f5f0a4b15542069534e2012b7",
+  "retrieval_packet_sha256": "e01b4a8e9d5737c954791a66d990b8d8fad130a92fae7f3dae0517682546ff97",
+  "raw_logs_verified": 34,
+  "raw_log_bytes": 86209,
+  "actual_passed": 55,
+  "required": 55,
+  "original_group_names_match_physical_mac": true,
+  "source_unchanged": true,
+  "capsule_unchanged": true,
+  "executor_system_dependencies_unchanged": true,
+  "all_34_owned_child_and_live_group_cleanup_complete": true,
+  "files": [
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-kv2-import-list.log",
+      "local_file": "native-kv2-import-list.log",
+      "bytes": 1256,
+      "sha256": "967a97c19bbf863ccc28e5aeab6fb20ad6c4a8a6db3809e841be0511fab79f02",
+      "version": "2053:1651600:1256:1792399823681934080:1792399823681934080",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-kv2-import.log",
+      "local_file": "native-kv2-import.log",
+      "bytes": 3691,
+      "sha256": "00bf90480213d2d20b75d13ba2b9cd4bbd98aedc7263ed2f38f4b31ba137963d",
+      "version": "2053:1651590:3691:1792399830799949741:1792399830799949741",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-kv2-large-list.log",
+      "local_file": "native-kv2-large-list.log",
+      "bytes": 2070,
+      "sha256": "12d87dfd7a78951d118e0bcf37dd9566e777648e31df9275d5e69e92c0490d42",
+      "version": "2053:1651602:2070:1792399830877949912:1792399830877949912",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-kv2-large.log",
+      "local_file": "native-kv2-large.log",
+      "bytes": 5087,
+      "sha256": "e36ac6ffc0482526d39412342d353c218aa884a0d470529b7c01995f2eda7dd8",
+      "version": "2053:1651601:5087:1792399859922013713:1792399859922013713",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/forward-original-unseal-veto-list.log",
+      "local_file": "forward-original-unseal-veto-list.log",
+      "bytes": 426,
+      "sha256": "05ed5427f650a4a8c53113e9709e8c0254909a0c267a26694b28819ee17dde15",
+      "version": "2053:1651604:426:1792399860011013909:1792399860011013909",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/forward-original-unseal-veto.log",
+      "local_file": "forward-original-unseal-veto.log",
+      "bytes": 841,
+      "sha256": "a83b4e7b572baa6b3c5aed914bad1bda181909cfabe495f352d3e9b17bd1bdf5",
+      "version": "2053:1651603:841:1792399860390014740:1792399860390014740",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/forward-no-second-floor-list.log",
+      "local_file": "forward-no-second-floor-list.log",
+      "bytes": 436,
+      "sha256": "5dedb91e5875a8ae2a72bf5ce55184d97ff6f714de3b286b6736a701afeecac3",
+      "version": "2053:1651606:436:1792399860498014977:1792399860498014977",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/forward-no-second-floor.log",
+      "local_file": "forward-no-second-floor.log",
+      "bytes": 786,
+      "sha256": "dcd057c48f99dff8f8726514d7cfa1d3ca8b7ee823f7d93c4ceebe42c4f791b2",
+      "version": "2053:1651605:786:1792399860861015773:1792399860861015773",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/historical-service-list.log",
+      "local_file": "historical-service-list.log",
+      "bytes": 1237,
+      "sha256": "c24c2635ac52182b7fe25f9456470b9a4d269ecdd73f09e5d65cdf67e5777548",
+      "version": "2053:1651608:1237:1792399860928015920:1792399860928015920",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/historical-service.log",
+      "local_file": "historical-service.log",
+      "bytes": 44874,
+      "sha256": "6403419948e52a8918a49d44578be3a99e55f614f7f34157514f49af99239dc3",
+      "version": "2053:1651607:44874:1792399958369228869:1792399958369228869",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/snapshot-service-list.log",
+      "local_file": "snapshot-service-list.log",
+      "bytes": 1309,
+      "sha256": "2ed46efe01a3864b4de427aa82044c4900f72b8eacec975a7842d254319a4ad3",
+      "version": "2053:1651610:1309:1792399958445229034:1792399958445229034",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/snapshot-service.log",
+      "local_file": "snapshot-service.log",
+      "bytes": 8800,
+      "sha256": "25384565519c6163e70c69f1a4328e392b91fd8d68d70430565f38b04bed6924",
+      "version": "2053:1651609:8800:1792399995798310268:1792399995798310268",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/archive-34mib-list.log",
+      "local_file": "archive-34mib-list.log",
+      "bytes": 450,
+      "sha256": "04572c92ededca473747f64ef6772266bfec947bf968f93979c618a87625312d",
+      "version": "2053:1651612:450:1792399995905310500:1792399995905310500",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/archive-34mib.log",
+      "local_file": "archive-34mib.log",
+      "bytes": 737,
+      "sha256": "61e1620f32f2fb79545a191763ecbc78c7c6b7e397ba0e629106846e3426d9dc",
+      "version": "2053:1651611:737:1792400025849375478:1792400025849375478",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/http-repair-admission-list.log",
+      "local_file": "http-repair-admission-list.log",
+      "bytes": 433,
+      "sha256": "b097408fbd2dea702eca051f6be9313c3001bb91173a1e8313131470924256f3",
+      "version": "2053:1651614:433:1792400025957375712:1792400025957375712",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/http-repair-admission.log",
+      "local_file": "http-repair-admission.log",
+      "bytes": 557,
+      "sha256": "0b8688b7b940528418b3d932ac77317cf88d01f08406c1d1e454386dbd3cbdd8",
+      "version": "2053:1651613:557:1792400026071375959:1792400026071375959",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/http-pending-admission-list.log",
+      "local_file": "http-pending-admission-list.log",
+      "bytes": 451,
+      "sha256": "b49af18d0621ee499dfc419f2fb3468ca3317a4a3b477bf849f7472932169e32",
+      "version": "2053:1651616:451:1792400026191376219:1792400026191376219",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/http-pending-admission.log",
+      "local_file": "http-pending-admission.log",
+      "bytes": 575,
+      "sha256": "8d935cecfbffb365efcd72f85c66571ba148acde43439daf8e7bcbbd31636b05",
+      "version": "2053:1651615:575:1792400026308376473:1792400026308376473",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/private-transport-diagnostic-list.log",
+      "local_file": "private-transport-diagnostic-list.log",
+      "bytes": 411,
+      "sha256": "afdc4abffe21956f349bd39ad33d0e170d272679f6fe88fcf65c4fce511af39f",
+      "version": "2053:1651618:411:1792400026435376748:1792400026435376748",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/private-transport-diagnostic.log",
+      "local_file": "private-transport-diagnostic.log",
+      "bytes": 1005,
+      "sha256": "28ed382f004710699498014392bb31de766672d76bd5cf400e82628e9364b417",
+      "version": "2053:1651617:1005:1792400026545376987:1792400026545376987",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/private-frame-diagnostic-list.log",
+      "local_file": "private-frame-diagnostic-list.log",
+      "bytes": 403,
+      "sha256": "1a4fefa834de136b719c0553a42bd993accc9640effb366b82fbd93cb1700593",
+      "version": "2053:1651620:403:1792400026594377093:1792400026594377093",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/private-frame-diagnostic.log",
+      "local_file": "private-frame-diagnostic.log",
+      "bytes": 1005,
+      "sha256": "94d84b2aba0c95f2646f704725a08e82417a5910b3dd3442950c4e3cd352647b",
+      "version": "2053:1651619:1005:1792400026636377184:1792400026636377184",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/kv2-api-271-numbers-list.log",
+      "local_file": "kv2-api-271-numbers-list.log",
+      "bytes": 595,
+      "sha256": "b595cb1c55304cd683bd5be53a59216501ff060c54ea2ca533a6b2ad05bfa63e",
+      "version": "2053:1651622:595:1792400026679377277:1792400026679377277",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/kv2-api-271-numbers.log",
+      "local_file": "kv2-api-271-numbers.log",
+      "bytes": 731,
+      "sha256": "0841ebaac4853edf74ea5f289cac2027df37cd88b39864e5491630fd6fb19877",
+      "version": "2053:1651621:731:1792400026774377483:1792400026774377483",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-kv2-storage-witness-list.log",
+      "local_file": "native-kv2-storage-witness-list.log",
+      "bytes": 975,
+      "sha256": "f197071b55f6a798d031811605f11228e7d309b927e55c63b2b8f8ae3c9c0911",
+      "version": "2053:1651624:975:1792400026873377698:1792400026873377698",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-kv2-storage-witness.log",
+      "local_file": "native-kv2-storage-witness.log",
+      "bytes": 2828,
+      "sha256": "7ed42f5aeae5613d97c33108ab1e5b3f8b9dad52c73577c930ed2fe9cd57d743",
+      "version": "2053:1651623:2828:1792400041210408764:1792400041210408764",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/lossless-json-private-tags-list.log",
+      "local_file": "lossless-json-private-tags-list.log",
+      "bytes": 474,
+      "sha256": "933b9c3086105ab2c8f6cf2d01cf48855858810d90555110ef36ea752d5dbeda",
+      "version": "2053:1651626:474:1792400041300408959:1792400041300408959",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/lossless-json-private-tags.log",
+      "local_file": "lossless-json-private-tags.log",
+      "bytes": 598,
+      "sha256": "e5ed20272a7cef26ab0e23f85e7e776cd46822551c6e6d7020b8945e07a41cf4",
+      "version": "2053:1651625:598:1792400041391409156:1792400041391409156",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/lossless-kv1-conversion-list.log",
+      "local_file": "lossless-kv1-conversion-list.log",
+      "bytes": 450,
+      "sha256": "c90e50e8f484d26fc775c521620d5caa954577b6b36dc015736d28699638cda9",
+      "version": "2053:1651628:450:1792400041495409381:1792400041495409381",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/lossless-kv1-conversion.log",
+      "local_file": "lossless-kv1-conversion.log",
+      "bytes": 574,
+      "sha256": "37b7272d01ca18f373c542e304b959903bc8899ed7d60bfa6fadfef56b5702eb",
+      "version": "2053:1651627:574:1792400041595409598:1792400041595409598",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/lossless-token-equivalence-list.log",
+      "local_file": "lossless-token-equivalence-list.log",
+      "bytes": 470,
+      "sha256": "8689ba13cdb6fa92fedeb92b769fe1f6a9f91a63608ed12705f0c8345f88a3d8",
+      "version": "2053:1651630:470:1792400041686409795:1792400041686409795",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/lossless-token-equivalence.log",
+      "local_file": "lossless-token-equivalence.log",
+      "bytes": 594,
+      "sha256": "14452aaabc0609a703c5411afbf41ef033c420952cf529383d4e91320df80604",
+      "version": "2053:1651629:594:1792400041743409918:1792400041743409918",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-raw-private-tags-list.log",
+      "local_file": "native-raw-private-tags-list.log",
+      "bytes": 478,
+      "sha256": "f5d7bd0d10967b8db6eb965bd749fa4fd3d006b042a7b8879152d4dab2e658d1",
+      "version": "2053:1651632:478:1792400041841410131:1792400041841410131",
+      "eof": true
+    },
+    {
+      "path": "/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-x230-actual-20261019-r1/native-raw-private-tags.log",
+      "local_file": "native-raw-private-tags.log",
+      "bytes": 602,
+      "sha256": "fddeb7268c6a85e7c0a5740742df8ff083f6e756a8bfd894154bf5e4c2dde9a4",
+      "version": "2053:1651631:602:1792400041941410347:1792400041941410347",
+      "eof": true
+    }
+  ],
+  "groups": [
+    {
+      "label": "native-kv2-import",
+      "raw_selected_and_actual_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "native-kv2-large",
+      "raw_selected_and_actual_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "passed": 15,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "raw_selected_and_actual_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "forward-no-second-floor",
+      "raw_selected_and_actual_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "historical-service",
+      "raw_selected_and_actual_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "snapshot-service",
+      "raw_selected_and_actual_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "archive-34mib",
+      "raw_selected_and_actual_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "http-repair-admission",
+      "raw_selected_and_actual_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "http-pending-admission",
+      "raw_selected_and_actual_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "raw_selected_and_actual_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "raw_selected_and_actual_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "raw_selected_and_actual_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "raw_selected_and_actual_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "raw_selected_and_actual_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "raw_selected_and_actual_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "raw_selected_and_actual_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "native-raw-private-tags",
+      "raw_selected_and_actual_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "physical_lan_validation_performed": false,
+  "real_credential_validation_performed": false,
+  "full_openbao_271_replacement_proven": false
+}

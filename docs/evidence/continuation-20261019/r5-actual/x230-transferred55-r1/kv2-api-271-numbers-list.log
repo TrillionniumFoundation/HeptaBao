@@ -1,0 +1,6 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "kv2_api_271_", "--list", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact: test
+engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens: test
+engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact: test
+
+3 tests, 0 benchmarks

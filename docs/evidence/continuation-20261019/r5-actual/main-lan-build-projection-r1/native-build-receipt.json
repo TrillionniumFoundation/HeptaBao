@@ -1,0 +1,37 @@
+{
+  "binary_sha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+  "build_exit_code": 0,
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "provenance": {
+    "actual_binary_bytes": 779962728,
+    "actual_binary_format_log_sha256": "e7040a6ac64cd882f6b3dc32e820d86fde8a37009c007c46d27aadef0ad307cb",
+    "actual_build_argv": [
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--bin",
+      "heptabao-server",
+      "--features",
+      "experimental-native-v6-ha,private-ha-forward-diagnostic"
+    ],
+    "actual_build_log_sha256": "2bce076ce2b4a794071c88be430377edf6f14a07e77f9223cbe155c5b669e3e5",
+    "actual_compiler_log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8",
+    "actual_host_summary_sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+    "actual_manifest_sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+    "actual_runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+    "lan98_executed_by_projection": false,
+    "original_scoped_host_passed": true,
+    "original_scoped_host_status": "passed_scoped_host_recovery",
+    "production_cutover": false,
+    "schema": "heptabao.physical-host-build-receipt-projection.v1",
+    "source_files_verified_before_and_after": 3142,
+    "source_freeze_basis": "pinned_completed_host_run_full_tree_verifications"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_freeze_verified": true,
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577"
+}

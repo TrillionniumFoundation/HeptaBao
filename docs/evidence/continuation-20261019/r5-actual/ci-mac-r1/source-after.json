@@ -1,0 +1,28 @@
+{
+  "recorded_utc": "2026-10-19T08:42:03.222460+00:00",
+  "commit": {
+    "exit_code": 0,
+    "stdout": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "stderr": ""
+  },
+  "tree": {
+    "exit_code": 0,
+    "stdout": "3356f0a94616e9e1804f497239f33546e16db577",
+    "stderr": ""
+  },
+  "status": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "diff_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "diff_stat": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

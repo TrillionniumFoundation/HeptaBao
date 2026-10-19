@@ -1,0 +1,37 @@
+{
+  "actual_capsule_sha256": null,
+  "actual_host_execution": "not_run",
+  "actual_producer_summary_sha256": null,
+  "artifact_runner_sha256": "45a898ca7f902b4f179ea7035bd17b77fa41e34a9844470597d84bdcd63cf634",
+  "automatic_retry": false,
+  "executor": "qian-ThinkPad-X230",
+  "files": [
+    {
+      "bytes": 2896,
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r5-source-orchestration-r1/artifact-x230/launch_main_pack_b24c6de_r1.py",
+      "sha256": "98ebfa9b225cb6589c7f10bd44d908b27f21380c353d7da391af82c1d4eeba32"
+    },
+    {
+      "bytes": 6222,
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r5-source-orchestration-r1/artifact-x230/launch_x230_handoff_b24c6de_r1.py",
+      "sha256": "0441f1fd0cbf9397702129e8d502fa8dfd391ca61cbb9d9a196e35921c666f2b"
+    },
+    {
+      "bytes": 4707,
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r5-source-orchestration-r1/artifact-x230/materialize_x230_b24c6de_r1.py",
+      "sha256": "d301dee5b115e18b97324dcaa89bb51a796d1aab23f98bb211ee2ceb529ab4a7"
+    }
+  ],
+  "local_validation": "Python AST; narrow source diff only",
+  "original_command_seconds": 1800,
+  "original_groups": 17,
+  "original_test_threads": 1,
+  "original_tests": 55,
+  "packet_sha256": "b691e3aa512e5382f1b514b837ef0bd24acccfe94ecb58b277ab417dbd9ad630",
+  "producer": "qian-qi",
+  "producer_runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "schema": "heptabao.r5-x230-handoff-source.v1",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "stager_sha256": "5a9f18122a7ba1a093302f05e0336a23d2d59be13b2822124634d56ee510e878"
+}

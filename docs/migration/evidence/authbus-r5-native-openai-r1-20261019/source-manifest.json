@@ -1,0 +1,793 @@
+{
+  "schema": "authbus-r5-native-openai-cold-runtime-v1",
+  "scopeAtFreeze": "new_profile_not_yet_executed_on_actual_sdk_or_native_backend",
+  "entrypoint": "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py",
+  "runtimeFiles": 22,
+  "newRuntimeFiles": [
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_fixture.mjs",
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_worker.mjs",
+    "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py"
+  ],
+  "unchangedDependencyFiles": 19,
+  "originalOuterBudgetSeconds": 180,
+  "expectedScenarios": [
+    "manager-success",
+    "intent-ack-lost",
+    "provider-ack-lost",
+    "sqlite-abort",
+    "guard-after-await"
+  ],
+  "expectedControllerCheckCount": 141,
+  "orderedControllerCheckNames": [
+    "node_and_parent_share_original_monotonic_clock",
+    "native.initialize_once",
+    "native.unseal",
+    "native.authbus_kv2_mount",
+    "native.activate_once",
+    "native.capacity",
+    "native.graph_reader_format_two",
+    "native.approle_mount",
+    "native.reader_policy",
+    "native.reader_role",
+    "native.reader_role_id",
+    "native.reader_secret_id",
+    "native.issuer_policy",
+    "native.issuer_role",
+    "native.issuer_role_id",
+    "native.issuer_secret_id",
+    "warm.redacted_process_diagnostics",
+    "warm.actual_distinct_original_sdk_process",
+    "warm.all_worker_checks",
+    "warm.bound_sources_and_installed_sdk_unchanged",
+    "warm.no_outside_sdk_attempts",
+    "warm.actual_openai_undici_profile",
+    "after-warm.manager-success.exact_native_provenance",
+    "after-warm.manager.native_published_after_actual_sqlite",
+    "after-warm.intent-ack-lost.exact_native_provenance",
+    "after-warm.intent-ack-lost.native_unknown_and_old_owner_retained",
+    "after-warm.provider-ack-lost.exact_native_provenance",
+    "after-warm.provider-ack-lost.native_unknown_and_old_owner_retained",
+    "after-warm.sqlite-abort.exact_native_provenance",
+    "after-warm.sqlite-abort.native_unknown_and_old_owner_retained",
+    "after-warm.guard-after-await.exact_native_provenance",
+    "after-warm.guard-after-await.native_unknown_and_old_owner_retained",
+    "warm.exact_actual_provider_counts",
+    "warm.native_unknown_cas_ack_lost_once",
+    "cold-before-server.redacted_process_diagnostics",
+    "cold-before-server.actual_distinct_original_sdk_process",
+    "cold-before-server.all_worker_checks",
+    "cold-before-server.bound_sources_and_installed_sdk_unchanged",
+    "cold-before-server.no_outside_sdk_attempts",
+    "cold-before-server.actual_openai_undici_profile",
+    "cold-sdk-before-native-restart.manager-success.exact_native_provenance",
+    "cold-sdk-before-native-restart.manager.native_published_after_actual_sqlite",
+    "cold-sdk-before-native-restart.manager-success.same_durable_attempt",
+    "cold-sdk-before-native-restart.intent-ack-lost.exact_native_provenance",
+    "cold-sdk-before-native-restart.intent-ack-lost.native_unknown_and_old_owner_retained",
+    "cold-sdk-before-native-restart.intent-ack-lost.same_durable_attempt",
+    "cold-sdk-before-native-restart.intent-ack-lost.unknown_document_and_version_unchanged",
+    "cold-sdk-before-native-restart.provider-ack-lost.exact_native_provenance",
+    "cold-sdk-before-native-restart.provider-ack-lost.native_unknown_and_old_owner_retained",
+    "cold-sdk-before-native-restart.provider-ack-lost.same_durable_attempt",
+    "cold-sdk-before-native-restart.provider-ack-lost.unknown_document_and_version_unchanged",
+    "cold-sdk-before-native-restart.sqlite-abort.exact_native_provenance",
+    "cold-sdk-before-native-restart.sqlite-abort.native_unknown_and_old_owner_retained",
+    "cold-sdk-before-native-restart.sqlite-abort.same_durable_attempt",
+    "cold-sdk-before-native-restart.sqlite-abort.unknown_document_and_version_unchanged",
+    "cold-sdk-before-native-restart.guard-after-await.exact_native_provenance",
+    "cold-sdk-before-native-restart.guard-after-await.native_unknown_and_old_owner_retained",
+    "cold-sdk-before-native-restart.guard-after-await.same_durable_attempt",
+    "cold-sdk-before-native-restart.guard-after-await.unknown_document_and_version_unchanged",
+    "native.original_sigkill_completed",
+    "native.binary_unchanged_before_reopen",
+    "native.reopen_starts_sealed",
+    "native.reopen_unseal",
+    "native.reopen_capacity",
+    "native.reopen_preserves_graph_format",
+    "after-native-sigkill-reopen.manager-success.exact_native_provenance",
+    "after-native-sigkill-reopen.manager.native_published_after_actual_sqlite",
+    "after-native-sigkill-reopen.manager-success.same_durable_attempt",
+    "after-native-sigkill-reopen.manager-success.unknown_document_and_version_unchanged",
+    "after-native-sigkill-reopen.intent-ack-lost.exact_native_provenance",
+    "after-native-sigkill-reopen.intent-ack-lost.native_unknown_and_old_owner_retained",
+    "after-native-sigkill-reopen.intent-ack-lost.same_durable_attempt",
+    "after-native-sigkill-reopen.intent-ack-lost.unknown_document_and_version_unchanged",
+    "after-native-sigkill-reopen.provider-ack-lost.exact_native_provenance",
+    "after-native-sigkill-reopen.provider-ack-lost.native_unknown_and_old_owner_retained",
+    "after-native-sigkill-reopen.provider-ack-lost.same_durable_attempt",
+    "after-native-sigkill-reopen.provider-ack-lost.unknown_document_and_version_unchanged",
+    "after-native-sigkill-reopen.sqlite-abort.exact_native_provenance",
+    "after-native-sigkill-reopen.sqlite-abort.native_unknown_and_old_owner_retained",
+    "after-native-sigkill-reopen.sqlite-abort.same_durable_attempt",
+    "after-native-sigkill-reopen.sqlite-abort.unknown_document_and_version_unchanged",
+    "after-native-sigkill-reopen.guard-after-await.exact_native_provenance",
+    "after-native-sigkill-reopen.guard-after-await.native_unknown_and_old_owner_retained",
+    "after-native-sigkill-reopen.guard-after-await.same_durable_attempt",
+    "after-native-sigkill-reopen.guard-after-await.unknown_document_and_version_unchanged",
+    "native.revoked_bearer_0_still_denied_after_reopen",
+    "native.revoked_bearer_1_still_denied_after_reopen",
+    "native.revoked_bearer_2_still_denied_after_reopen",
+    "native.revoked_bearer_3_still_denied_after_reopen",
+    "native.revoked_bearer_4_still_denied_after_reopen",
+    "native.revoked_bearer_5_still_denied_after_reopen",
+    "native.revoked_bearer_6_still_denied_after_reopen",
+    "native.revoked_bearer_7_still_denied_after_reopen",
+    "native.revoked_bearer_8_still_denied_after_reopen",
+    "native.revoked_bearer_9_still_denied_after_reopen",
+    "native.revoked_bearer_10_still_denied_after_reopen",
+    "native.revoked_bearer_11_still_denied_after_reopen",
+    "native.revoked_bearer_12_still_denied_after_reopen",
+    "native.revoked_bearer_13_still_denied_after_reopen",
+    "native.revoked_bearer_14_still_denied_after_reopen",
+    "native.revoked_bearer_15_still_denied_after_reopen",
+    "native.revoked_bearer_16_still_denied_after_reopen",
+    "native.revoked_bearer_17_still_denied_after_reopen",
+    "native.revoked_bearer_18_still_denied_after_reopen",
+    "native.revoked_bearer_19_still_denied_after_reopen",
+    "native.revoked_bearer_20_still_denied_after_reopen",
+    "cold-after-server.redacted_process_diagnostics",
+    "cold-after-server.actual_distinct_original_sdk_process",
+    "cold-after-server.all_worker_checks",
+    "cold-after-server.bound_sources_and_installed_sdk_unchanged",
+    "cold-after-server.no_outside_sdk_attempts",
+    "cold-after-server.actual_openai_undici_profile",
+    "cold-sdk-after-native-restart.manager-success.exact_native_provenance",
+    "cold-sdk-after-native-restart.manager.native_published_after_actual_sqlite",
+    "cold-sdk-after-native-restart.manager-success.same_durable_attempt",
+    "cold-sdk-after-native-restart.intent-ack-lost.exact_native_provenance",
+    "cold-sdk-after-native-restart.intent-ack-lost.native_unknown_and_old_owner_retained",
+    "cold-sdk-after-native-restart.intent-ack-lost.same_durable_attempt",
+    "cold-sdk-after-native-restart.intent-ack-lost.unknown_document_and_version_unchanged",
+    "cold-sdk-after-native-restart.provider-ack-lost.exact_native_provenance",
+    "cold-sdk-after-native-restart.provider-ack-lost.native_unknown_and_old_owner_retained",
+    "cold-sdk-after-native-restart.provider-ack-lost.same_durable_attempt",
+    "cold-sdk-after-native-restart.provider-ack-lost.unknown_document_and_version_unchanged",
+    "cold-sdk-after-native-restart.sqlite-abort.exact_native_provenance",
+    "cold-sdk-after-native-restart.sqlite-abort.native_unknown_and_old_owner_retained",
+    "cold-sdk-after-native-restart.sqlite-abort.same_durable_attempt",
+    "cold-sdk-after-native-restart.sqlite-abort.unknown_document_and_version_unchanged",
+    "cold-sdk-after-native-restart.guard-after-await.exact_native_provenance",
+    "cold-sdk-after-native-restart.guard-after-await.native_unknown_and_old_owner_retained",
+    "cold-sdk-after-native-restart.guard-after-await.same_durable_attempt",
+    "cold-sdk-after-native-restart.guard-after-await.unknown_document_and_version_unchanged",
+    "cold.no_second_provider_request",
+    "native.no_proxy_local_denial_or_unclassified_failure",
+    "native.reader_secret_id_destroyed",
+    "native.reader_reenrollment_closed",
+    "native.issuer_secret_id_destroyed",
+    "native.issuer_reenrollment_closed",
+    "all_original_processes_closed_within_original_budget",
+    "exact_bound_sources_unchanged",
+    "exact_native_binary_unchanged",
+    "all_required_native_and_cold_qualifications"
+  ],
+  "workerExpectations": {
+    "warm": {
+      "expectedChecks": 87,
+      "orderedCheckNames": [
+        "sdk_discovery_matches_exact_owner",
+        "undici:no_injected_runtime_or_existing_managed_proxy",
+        "undici:owned_actual_package",
+        "undici:actual_qualified_fetch_function_identity",
+        "actual_sdk_required_interfaces",
+        "manager-success:actual_provider_binding",
+        "manager-success:actual_sqlite_seed",
+        "manager-success:native_trusted_initial_admission",
+        "manager-success:actual_native_reader_write_denied",
+        "manager-success:actual_native_reader_renewed",
+        "manager-success:actual_native_issuer_renewed",
+        "manager:actual_sdk_refresh_committed",
+        "manager:strict_successor_epoch",
+        "manager:old_wire_cannot_use_successor",
+        "manager:successor_without_scope_denied",
+        "manager:successor_cannot_claim_unmanaged",
+        "manager:actual_one_shot_dispatch",
+        "openai:actual_guard_request_and_runtime_dispatch",
+        "openai:actual_activated_facade_loaded",
+        "manager-success:actual_undici_route_exact_without_mapped_fetch",
+        "manager-success:actual_native_bearer_revocations",
+        "intent-ack-lost:actual_provider_binding",
+        "intent-ack-lost:actual_sqlite_seed",
+        "intent-ack-lost:native_trusted_initial_admission",
+        "intent-ack-lost:actual_native_reader_write_denied",
+        "intent-ack-lost:actual_native_reader_renewed",
+        "intent-ack-lost:actual_native_issuer_renewed",
+        "intent-ack-lost:actual_refresh_path_refuses_unknown_outcome",
+        "intent-ack-lost:admission_remains_closed",
+        "intent-ack-lost:actual_sqlite_original_retained",
+        "intent-ack-lost:same_sdk_retry_denied",
+        "intent-ack-lost:native_unknown_issue_denied",
+        "intent-ack-lost:bounded_final_dispatches",
+        "intent-ack-lost:actual_undici_route_exact_without_mapped_fetch",
+        "intent-ack-lost:actual_native_bearer_revocations",
+        "provider-ack-lost:actual_provider_binding",
+        "provider-ack-lost:actual_sqlite_seed",
+        "provider-ack-lost:native_trusted_initial_admission",
+        "provider-ack-lost:actual_native_reader_write_denied",
+        "provider-ack-lost:actual_native_reader_renewed",
+        "provider-ack-lost:actual_native_issuer_renewed",
+        "provider-ack-lost:actual_refresh_path_refuses_unknown_outcome",
+        "provider-ack-lost:admission_remains_closed",
+        "provider-ack-lost:actual_sqlite_original_retained",
+        "provider-ack-lost:same_sdk_retry_denied",
+        "provider-ack-lost:native_unknown_issue_denied",
+        "provider-ack-lost:bounded_final_dispatches",
+        "provider-ack-lost:actual_undici_route_exact_without_mapped_fetch",
+        "provider-ack-lost:actual_native_bearer_revocations",
+        "sqlite-abort:actual_provider_binding",
+        "sqlite-abort:actual_sqlite_seed",
+        "sqlite-abort:native_trusted_initial_admission",
+        "sqlite-abort:actual_native_reader_write_denied",
+        "sqlite-abort:actual_native_reader_renewed",
+        "sqlite-abort:actual_native_issuer_renewed",
+        "sqlite-abort:actual_18_abort_triggers",
+        "sqlite-abort:actual_refresh_path_refuses_unknown_outcome",
+        "sqlite-abort:admission_remains_closed",
+        "sqlite-abort:actual_sqlite_original_retained",
+        "sqlite-abort:same_sdk_retry_denied",
+        "sqlite-abort:native_unknown_issue_denied",
+        "sqlite-abort:bounded_final_dispatches",
+        "sqlite-abort:actual_undici_route_exact_without_mapped_fetch",
+        "sqlite-abort:actual_native_bearer_revocations",
+        "guard-after-await:actual_provider_binding",
+        "guard-after-await:actual_sqlite_seed",
+        "guard-after-await:native_trusted_initial_admission",
+        "guard-after-await:actual_native_reader_write_denied",
+        "guard-after-await:actual_native_reader_renewed",
+        "guard-after-await:actual_native_issuer_renewed",
+        "guard-after-await:actual_refresh_path_refuses_unknown_outcome",
+        "guard-after-await:admission_remains_closed",
+        "guard-after-await:actual_sqlite_original_retained",
+        "openai:actual_guard_await_fence_veto",
+        "guard-after-await:same_sdk_retry_denied",
+        "guard-after-await:native_unknown_issue_denied",
+        "guard-after-await:bounded_final_dispatches",
+        "guard-after-await:actual_undici_route_exact_without_mapped_fetch",
+        "guard-after-await:actual_native_bearer_revocations",
+        "all_five_native_openai_transport_cases_completed",
+        "no_external_network_or_process_attempt",
+        "no_outside_fixture_write_or_private_read_attempt",
+        "sdk_discovery_context_unchanged",
+        "actual_required_hook_modules_loaded",
+        "actual_required_openai_hook_modules_loaded",
+        "undici:actual_package_entrypoint_and_runtime_override_unchanged",
+        "undici:exact_five_case_transport_total"
+      ]
+    },
+    "cold-before-server": {
+      "expectedChecks": 80,
+      "orderedCheckNames": [
+        "cold:owned_config_unchanged",
+        "sdk_discovery_matches_exact_owner",
+        "undici:no_injected_runtime_or_existing_managed_proxy",
+        "undici:owned_actual_package",
+        "undici:actual_qualified_fetch_function_identity",
+        "actual_sdk_required_interfaces",
+        "manager-success:actual_provider_binding",
+        "manager-success:cold_distinct_process_and_same_scope",
+        "manager-success:cold_actual_sqlite_exact_readback",
+        "manager-success:cold_source_new_boot_same_provenance",
+        "manager-success:cold_authority_starts_closed",
+        "manager-success:cold_sdk_cannot_use_cached_positive",
+        "manager-success:cold_old_native_grant_not_boot_proof",
+        "cold:published_original_digest_is_fenced",
+        "cold:old_issuer_bearer_revoked",
+        "cold:fresh_native_higher_epoch",
+        "cold:actual_sdk_uses_published_credential_after_fresh_grant",
+        "cold:actual_sdk_stale_original_cannot_use_fresh_grant",
+        "cold:usable_resolution_without_provider",
+        "manager-success:actual_undici_route_exact_without_mapped_fetch",
+        "manager-success:actual_native_bearer_revocations",
+        "intent-ack-lost:actual_provider_binding",
+        "intent-ack-lost:cold_distinct_process_and_same_scope",
+        "intent-ack-lost:cold_actual_sqlite_exact_readback",
+        "intent-ack-lost:cold_source_new_boot_same_provenance",
+        "intent-ack-lost:cold_authority_starts_closed",
+        "intent-ack-lost:cold_sdk_cannot_use_cached_positive",
+        "intent-ack-lost:cold_old_native_grant_not_boot_proof",
+        "intent-ack-lost:cold_native_unknown_still_denied",
+        "intent-ack-lost:cold_sdk_retry_still_denied",
+        "intent-ack-lost:cold_unknown_keeps_old_store_closed",
+        "intent-ack-lost:cold_zero_provider_dispatch",
+        "intent-ack-lost:actual_undici_route_exact_without_mapped_fetch",
+        "intent-ack-lost:actual_native_bearer_revocations",
+        "provider-ack-lost:actual_provider_binding",
+        "provider-ack-lost:cold_distinct_process_and_same_scope",
+        "provider-ack-lost:cold_actual_sqlite_exact_readback",
+        "provider-ack-lost:cold_source_new_boot_same_provenance",
+        "provider-ack-lost:cold_authority_starts_closed",
+        "provider-ack-lost:cold_sdk_cannot_use_cached_positive",
+        "provider-ack-lost:cold_old_native_grant_not_boot_proof",
+        "provider-ack-lost:cold_native_unknown_still_denied",
+        "provider-ack-lost:cold_sdk_retry_still_denied",
+        "provider-ack-lost:cold_unknown_keeps_old_store_closed",
+        "provider-ack-lost:cold_zero_provider_dispatch",
+        "provider-ack-lost:actual_undici_route_exact_without_mapped_fetch",
+        "provider-ack-lost:actual_native_bearer_revocations",
+        "sqlite-abort:actual_provider_binding",
+        "sqlite-abort:cold_distinct_process_and_same_scope",
+        "sqlite-abort:cold_actual_sqlite_exact_readback",
+        "sqlite-abort:cold_source_new_boot_same_provenance",
+        "sqlite-abort:cold_authority_starts_closed",
+        "sqlite-abort:cold_sdk_cannot_use_cached_positive",
+        "sqlite-abort:cold_old_native_grant_not_boot_proof",
+        "sqlite-abort:cold_native_unknown_still_denied",
+        "sqlite-abort:cold_sdk_retry_still_denied",
+        "sqlite-abort:cold_unknown_keeps_old_store_closed",
+        "sqlite-abort:cold_zero_provider_dispatch",
+        "sqlite-abort:actual_undici_route_exact_without_mapped_fetch",
+        "sqlite-abort:actual_native_bearer_revocations",
+        "guard-after-await:actual_provider_binding",
+        "guard-after-await:cold_distinct_process_and_same_scope",
+        "guard-after-await:cold_actual_sqlite_exact_readback",
+        "guard-after-await:cold_source_new_boot_same_provenance",
+        "guard-after-await:cold_authority_starts_closed",
+        "guard-after-await:cold_sdk_cannot_use_cached_positive",
+        "guard-after-await:cold_old_native_grant_not_boot_proof",
+        "guard-after-await:cold_native_unknown_still_denied",
+        "guard-after-await:cold_sdk_retry_still_denied",
+        "guard-after-await:cold_unknown_keeps_old_store_closed",
+        "guard-after-await:cold_zero_provider_dispatch",
+        "guard-after-await:actual_undici_route_exact_without_mapped_fetch",
+        "guard-after-await:actual_native_bearer_revocations",
+        "all_five_native_openai_transport_cases_completed",
+        "no_external_network_or_process_attempt",
+        "no_outside_fixture_write_or_private_read_attempt",
+        "sdk_discovery_context_unchanged",
+        "actual_required_hook_modules_loaded",
+        "undici:actual_package_entrypoint_and_runtime_override_unchanged",
+        "undici:exact_five_case_transport_total"
+      ]
+    },
+    "cold-after-server": {
+      "expectedChecks": 80,
+      "orderedCheckNames": [
+        "cold:owned_config_unchanged",
+        "sdk_discovery_matches_exact_owner",
+        "undici:no_injected_runtime_or_existing_managed_proxy",
+        "undici:owned_actual_package",
+        "undici:actual_qualified_fetch_function_identity",
+        "actual_sdk_required_interfaces",
+        "manager-success:actual_provider_binding",
+        "manager-success:cold_distinct_process_and_same_scope",
+        "manager-success:cold_actual_sqlite_exact_readback",
+        "manager-success:cold_source_new_boot_same_provenance",
+        "manager-success:cold_authority_starts_closed",
+        "manager-success:cold_sdk_cannot_use_cached_positive",
+        "manager-success:cold_old_native_grant_not_boot_proof",
+        "cold:published_original_digest_is_fenced",
+        "cold:old_issuer_bearer_revoked",
+        "cold:fresh_native_higher_epoch",
+        "cold:actual_sdk_uses_published_credential_after_fresh_grant",
+        "cold:actual_sdk_stale_original_cannot_use_fresh_grant",
+        "cold:usable_resolution_without_provider",
+        "manager-success:actual_undici_route_exact_without_mapped_fetch",
+        "manager-success:actual_native_bearer_revocations",
+        "intent-ack-lost:actual_provider_binding",
+        "intent-ack-lost:cold_distinct_process_and_same_scope",
+        "intent-ack-lost:cold_actual_sqlite_exact_readback",
+        "intent-ack-lost:cold_source_new_boot_same_provenance",
+        "intent-ack-lost:cold_authority_starts_closed",
+        "intent-ack-lost:cold_sdk_cannot_use_cached_positive",
+        "intent-ack-lost:cold_old_native_grant_not_boot_proof",
+        "intent-ack-lost:cold_native_unknown_still_denied",
+        "intent-ack-lost:cold_sdk_retry_still_denied",
+        "intent-ack-lost:cold_unknown_keeps_old_store_closed",
+        "intent-ack-lost:cold_zero_provider_dispatch",
+        "intent-ack-lost:actual_undici_route_exact_without_mapped_fetch",
+        "intent-ack-lost:actual_native_bearer_revocations",
+        "provider-ack-lost:actual_provider_binding",
+        "provider-ack-lost:cold_distinct_process_and_same_scope",
+        "provider-ack-lost:cold_actual_sqlite_exact_readback",
+        "provider-ack-lost:cold_source_new_boot_same_provenance",
+        "provider-ack-lost:cold_authority_starts_closed",
+        "provider-ack-lost:cold_sdk_cannot_use_cached_positive",
+        "provider-ack-lost:cold_old_native_grant_not_boot_proof",
+        "provider-ack-lost:cold_native_unknown_still_denied",
+        "provider-ack-lost:cold_sdk_retry_still_denied",
+        "provider-ack-lost:cold_unknown_keeps_old_store_closed",
+        "provider-ack-lost:cold_zero_provider_dispatch",
+        "provider-ack-lost:actual_undici_route_exact_without_mapped_fetch",
+        "provider-ack-lost:actual_native_bearer_revocations",
+        "sqlite-abort:actual_provider_binding",
+        "sqlite-abort:cold_distinct_process_and_same_scope",
+        "sqlite-abort:cold_actual_sqlite_exact_readback",
+        "sqlite-abort:cold_source_new_boot_same_provenance",
+        "sqlite-abort:cold_authority_starts_closed",
+        "sqlite-abort:cold_sdk_cannot_use_cached_positive",
+        "sqlite-abort:cold_old_native_grant_not_boot_proof",
+        "sqlite-abort:cold_native_unknown_still_denied",
+        "sqlite-abort:cold_sdk_retry_still_denied",
+        "sqlite-abort:cold_unknown_keeps_old_store_closed",
+        "sqlite-abort:cold_zero_provider_dispatch",
+        "sqlite-abort:actual_undici_route_exact_without_mapped_fetch",
+        "sqlite-abort:actual_native_bearer_revocations",
+        "guard-after-await:actual_provider_binding",
+        "guard-after-await:cold_distinct_process_and_same_scope",
+        "guard-after-await:cold_actual_sqlite_exact_readback",
+        "guard-after-await:cold_source_new_boot_same_provenance",
+        "guard-after-await:cold_authority_starts_closed",
+        "guard-after-await:cold_sdk_cannot_use_cached_positive",
+        "guard-after-await:cold_old_native_grant_not_boot_proof",
+        "guard-after-await:cold_native_unknown_still_denied",
+        "guard-after-await:cold_sdk_retry_still_denied",
+        "guard-after-await:cold_unknown_keeps_old_store_closed",
+        "guard-after-await:cold_zero_provider_dispatch",
+        "guard-after-await:actual_undici_route_exact_without_mapped_fetch",
+        "guard-after-await:actual_native_bearer_revocations",
+        "all_five_native_openai_transport_cases_completed",
+        "no_external_network_or_process_attempt",
+        "no_outside_fixture_write_or_private_read_attempt",
+        "sdk_discovery_context_unchanged",
+        "actual_required_hook_modules_loaded",
+        "undici:actual_package_entrypoint_and_runtime_override_unchanged",
+        "undici:exact_five_case_transport_total"
+      ]
+    }
+  },
+  "originalNativeFourCaseDenominator": 120,
+  "originalNativeFourCaseResultInherited": false,
+  "sdk32ScenarioResultInherited": false,
+  "expectedWarmProviderCounts": {
+    "manager-success": 1,
+    "intent-ack-lost": 0,
+    "provider-ack-lost": 1,
+    "sqlite-abort": 1,
+    "guard-after-await": 0
+  },
+  "expectedColdAdditionalProviderCounts": 0,
+  "productBuild": {
+    "sourceCommit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "sourceTree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "sourceFiles": 3142,
+    "sourceManifestPath": "/home/qian-qi/heptabao-next-gates-20261017/source-b24c6de-manifest.json",
+    "sourceManifestBytes": 663186,
+    "sourceManifestSha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+    "buildReceiptPath": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/summary.json",
+    "buildReceiptBytes": 54396,
+    "buildReceiptSha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+    "buildScopedTestsPassed": 55,
+    "buildScopedTestsTotal": 55,
+    "binaryPath": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+    "binarySha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+    "binaryBytes": 779962728,
+    "priorNativeR4RunInherited": false
+  },
+  "sdkInputs": {
+    "schema": "heptabao.authbus.openai-r3.sdk-inputs.v1",
+    "expectedSdkName": "openclaw",
+    "expectedSdkVersion": "2026.7.1-2",
+    "expectedActualMainNodeVersion": "v22.23.3",
+    "nodeVersionIsObservedAtRun": true,
+    "moduleBindingCount": 35,
+    "modules": [
+      {
+        "relative": "dist/order-CeBlX0NH.js",
+        "originalSha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732"
+      },
+      {
+        "relative": "dist/model-auth-CJEm9SNp.js",
+        "originalSha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7"
+      },
+      {
+        "relative": "dist/oauth-B4aOCsid.js",
+        "originalSha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e"
+      },
+      {
+        "relative": "dist/stream-BcRkg2P0.js",
+        "originalSha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e"
+      },
+      {
+        "relative": "dist/fetch-guard-6VNcgVVc.js",
+        "originalSha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc"
+      },
+      {
+        "relative": "dist/store-DH33UrUj.js",
+        "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+      },
+      {
+        "relative": "dist/source-check-ZSz5NzGW.js",
+        "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9"
+      },
+      {
+        "relative": "dist/profiles-DyU-YCq2.js",
+        "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5"
+      },
+      {
+        "relative": "dist/credential-state-BY-oz-QV.js",
+        "originalSha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4"
+      },
+      {
+        "relative": "dist/sqlite-B1ze-fre.js",
+        "originalSha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50"
+      },
+      {
+        "relative": "dist/runtime-snapshots-D6VA-VN8.js",
+        "originalSha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f"
+      },
+      {
+        "relative": "dist/bundled-dir-DKbeVv7V.js",
+        "originalSha256": "cf0976b5d6cf61faf8ceb10a43035a44dcd4f4c20557febc2428bde3fcb61b6d"
+      },
+      {
+        "relative": "dist/openclaw-root-_Kkan8Lf.js",
+        "originalSha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9"
+      },
+      {
+        "relative": "dist/oauth-BcZS_BvC.js",
+        "originalSha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4"
+      },
+      {
+        "relative": "dist/chutes-oauth-YFvuN1-a.js",
+        "originalSha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55"
+      },
+      {
+        "relative": "dist/provider-runtime.runtime--yRUs3av.js",
+        "originalSha256": "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab"
+      },
+      {
+        "relative": "dist/provider-runtime-CLQOjLJ6.js",
+        "originalSha256": "6daf266a90294162eb45ce8c9402ce15743df0ee1cc951e4e95602a3c6122338"
+      },
+      {
+        "relative": "dist/extensions/openai/api.js",
+        "originalSha256": "5490ab62c857124e421570502596f5189a228e44513d8ee18b11b6f3b47198f5"
+      },
+      {
+        "relative": "dist/openai-chatgpt-provider.runtime-DGoPIR1g.js",
+        "originalSha256": "c9248524ab3c9bf1226096ddd76d31a755518de1ff763e3c24245912b7aed92f"
+      },
+      {
+        "relative": "dist/openai-chatgpt-oauth-flow.runtime.js",
+        "originalSha256": "183d0ad3b17da4acae91ede7add0c3293eed186d0c0b29741fcab891c5743d3b"
+      },
+      {
+        "relative": "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js",
+        "originalSha256": "e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d"
+      },
+      {
+        "relative": "dist/openai-chatgpt-auth-identity-DrQLjrg2.js",
+        "originalSha256": "94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765"
+      },
+      {
+        "relative": "dist/undici-global-dispatcher-DeobtFo9.js",
+        "originalSha256": "a8e81ea3c77cee197800a4ff9006dd0de56127e3103a85449685e928745b1e23"
+      },
+      {
+        "relative": "dist/runtime-fetch-k5Zth7kk.js",
+        "originalSha256": "9bf76247c5901725af5db78bbab2830a5e0fd7caf19953b095be74d4382db611"
+      },
+      {
+        "relative": "dist/facade-runtime-Dce8fe3v.js",
+        "originalSha256": "febd9b83ff5a398545f4ce350e49d2084b1704bdd01d467dbec889f4bfbe77f4"
+      },
+      {
+        "relative": "dist/facade-loader-ClPyIgA5.js",
+        "originalSha256": "5062ff2347de145c1f1253acd60c45c66cddb92825519c2dec277d93fe7d44d7"
+      },
+      {
+        "relative": "dist/facade-activation-check.runtime.js",
+        "originalSha256": "289f0f2efe2eaa482289692f8f58513ca0c1c9198ca4db11f32b95a6c107df9a"
+      },
+      {
+        "relative": "dist/plugin-module-loader-cache-uqaaAPup.js",
+        "originalSha256": "af5dc41aba74bb7eab264d1544d16a86906401bfe1c24a0ad53ae25bb8f1d2ac"
+      },
+      {
+        "relative": "dist/config-state-CtMlHVRM.js",
+        "originalSha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5"
+      },
+      {
+        "relative": "dist/sdk-alias-BJSUcD8n.js",
+        "originalSha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32"
+      },
+      {
+        "relative": "dist/undici-runtime-BL8ZN-Ey.js",
+        "originalSha256": "3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978"
+      },
+      {
+        "relative": "dist/ssrf-BayeDjCv.js",
+        "originalSha256": "dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295"
+      },
+      {
+        "relative": "dist/proxy-env-Bf6oQCTF.js",
+        "originalSha256": "5167b8055ce85f341e3df69a8d3c1e7877430fbcba63bcc052ad21abebb52bca"
+      },
+      {
+        "relative": "dist/managed-proxy-undici-RiF2s48t.js",
+        "originalSha256": "74b9478c30f20653068c1fc7f62b62ae805c1810d097150d5f8caeb08834a989"
+      },
+      {
+        "relative": "dist/active-proxy-state-DJLhrP_Z.js",
+        "originalSha256": "6723ab658f0df2dd3b833a1e8c9d35ee76001864ca93097f9919cf62ac3fa185"
+      }
+    ],
+    "metadataBindingCount": 1,
+    "metadata": [
+      {
+        "relative": "dist/extensions/openai/openclaw.plugin.json",
+        "originalSha256": "0db880f0e5a77ad809ec4cf57767416364db021d617569c48fdb2703c8c9485f"
+      }
+    ],
+    "discoveryBindings": [
+      {
+        "relative": "package.json",
+        "originalSha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db"
+      },
+      {
+        "relative": "openclaw.mjs",
+        "originalSha256": "f643b005d6db233a0b45204e8d8e943256874ccc6897b8a6e0cf42a9b376a188"
+      }
+    ],
+    "discoveryEvidenceSha256": "067961e9851cee9e09deb2beaee5a63a02c38f98e9086eae7344f0a8b15289b9",
+    "discoveryEntrypointExecuted": false,
+    "undiciBinding": {
+      "resolver": "createRequire(actual SDK dist/undici-runtime-BL8ZN-Ey.js)",
+      "requiredRuntimeFetchIdentity": "loadUndiciRuntimeDeps().fetch === require('undici').fetch",
+      "requireTestRuntimeOverrideAbsent": true,
+      "requireRealResolvedFilesWithinSdkRoot": true,
+      "packageMetadataMaximumBytes": 65536,
+      "entrypointMaximumBytes": 262144,
+      "packageMetadataAndEntrypointHashes": "record and compare before/after actual run",
+      "recursiveLibrarySourceAttestation": false
+    },
+    "isCompleteSdkDependencyTree": false,
+    "scope": "All 35 exact SDK overlay inputs, one unchanged activation metadata input, and two exact package discovery inputs. Actual SDK resolves its normal dependencies; this is not a recursively pinned copy of the installed SDK or Undici library."
+  },
+  "files": [
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_admission_authority_candidate.mjs",
+      "mode": "100644",
+      "bytes": 16525,
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b",
+      "git_blob": "9068784db2f7aa881e25450f06c0e5a0d1ca2d4e"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_admission_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 4294,
+      "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e",
+      "git_blob": "4a4e02b7537629564d55787022df64eedcc82a46"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_dispatch_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 7113,
+      "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0",
+      "git_blob": "4b0c95b0da0df7996221a5e5faa2fd1b688ca53a"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_dispatch_sdk_candidate.mjs",
+      "mode": "100644",
+      "bytes": 5556,
+      "sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674",
+      "git_blob": "4cf6ea5812b22079f5f6ef0831cdc389ec3b8ea1"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 7300,
+      "sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d",
+      "git_blob": "197f711516c69ab98966b0d5a76738d27af9c46f"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_caller_live.mjs",
+      "mode": "100644",
+      "bytes": 37376,
+      "sha256": "10064164f06df7685cd90694d459a9233c2b40c307ac692d176044157be5e77e",
+      "git_blob": "d097ac593f1ab31f1242a579aa236bc295cb7d8a"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+      "mode": "100644",
+      "bytes": 25621,
+      "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3",
+      "git_blob": "6f22bb58b3252b9b82f20c4b0c4e751ef17cf67f"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_fixture.mjs",
+      "mode": "100644",
+      "bytes": 11262,
+      "sha256": "16c02e365b916d80748eec58c44e960c7610118c471090df0de1291732f7300f",
+      "git_blob": "46969fe82d85ea5671007547eff671d56dacdcdc"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_worker.mjs",
+      "mode": "100644",
+      "bytes": 35844,
+      "sha256": "3b4fc4f2b1fbffe018c9bb1fd9906b4af1e778f50dc2683499078d37111b1855",
+      "git_blob": "f7c5ddb21a14242a56672426193f1cf092a48a85"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture.mjs",
+      "mode": "100644",
+      "bytes": 7179,
+      "sha256": "6a2298f27e366a2225182b5982bddf10589a1a530533fb3cfb14d4cc2c394539",
+      "git_blob": "630378f787117aad53fd0ef361b40d6d5fdfef30"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 19227,
+      "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d",
+      "git_blob": "a72e64c812782713b671a35227de92ef86dad039"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_store_sdk_candidate.mjs",
+      "mode": "100644",
+      "bytes": 5017,
+      "sha256": "dc007135540ec0241bc114dee87732716eea9bd1f6d85125cfb54f339a64591a",
+      "git_blob": "78f61bf771d6376410d07f3ceef28d3726dae223"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_sdk_admission_candidate.mjs",
+      "mode": "100644",
+      "bytes": 12203,
+      "sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33",
+      "git_blob": "e58a7a4d3dd2662956c1fc9d53cbceed9c6c8b68"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_sdk_explicit_deny_candidate.mjs",
+      "mode": "100644",
+      "bytes": 8358,
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2",
+      "git_blob": "189f156ebdaef750ccf2fe5c2447918b3202d263"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_trusted_admission_candidate.mjs",
+      "mode": "100644",
+      "bytes": 4929,
+      "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad",
+      "git_blob": "d2911c5d940b94b76c516bd968156a7cd1c72c5a"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_trusted_control_candidate.mjs",
+      "mode": "100644",
+      "bytes": 30107,
+      "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637",
+      "git_blob": "ff11df13ade8462b70a6cbe40c7c6a7c813236c6"
+    },
+    {
+      "path": "qa/openbao-acceptance/cert_auth_live.py",
+      "mode": "100644",
+      "bytes": 19737,
+      "sha256": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9",
+      "git_blob": "1933898e17f423d1572375e34725d46ebba358eb"
+    },
+    {
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "mode": "100644",
+      "bytes": 1560,
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "mode": "100644",
+      "bytes": 23329,
+      "sha256": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e",
+      "git_blob": "f96eeaa2a9dd9145a5da565dac1f455829d6e164"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py",
+      "mode": "100644",
+      "bytes": 50304,
+      "sha256": "db58cf971b3d7bbdba76a8a81d1cb53477a22d8a58b0b688a70f306b68188fa8",
+      "git_blob": "4c3cda4cfeb43e0a70a2b7f3776c4537ef193c93"
+    },
+    {
+      "path": "qa/openbao-acceptance/owned_process.py",
+      "mode": "100644",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "git_blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889"
+    },
+    {
+      "path": "qa/single-node/smoke.py",
+      "mode": "100644",
+      "bytes": 16470,
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "git_blob": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8"
+    }
+  ]
+}

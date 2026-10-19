@@ -76,8 +76,16 @@ export async function createOwnedOpenAiConnectProxy({ providerPort, activeCell, 
   server.on("clientError", (_error, socket) => { observations.denials++; socket.destroy(); });
   server.on("connect", (request, socket, head) => {
     const cell = activeCell();
+    // Actual Undici 8.5 sends the default :443 in the CONNECT request target
+    // while retaining the URL's portless host in the Host field. Accept only
+    // those two spellings of the same fixed TLS authority. Count raw fields
+    // because Node otherwise discards duplicate Host fields before this check.
+    let hostFields = 0;
+    for (let index = 0; index < request.rawHeaders.length; index += 2)
+      if (request.rawHeaders[index].toLowerCase() === "host") hostFields++;
+    const exactHost = request.headers.host === "auth.openai.com" || request.headers.host === "auth.openai.com:443";
     if (!cell || cell.transport !== "undici" || request.method !== "CONNECT" || request.url !== "auth.openai.com:443" ||
-        request.headers.host !== "auth.openai.com:443" || request.headers["transfer-encoding"] !== undefined ||
+        !exactHost || hostFields !== 1 || request.headers["transfer-encoding"] !== undefined ||
         request.headers["content-length"] !== undefined || head.length > 65536)
       return reject(socket);
     observations.connections++;
@@ -111,7 +119,10 @@ export async function createOwnedOpenAiConnectProxy({ providerPort, activeCell, 
     async close() {
       if (closed) return;
       closed = true;
-      const retired = [...connections].map(socket => socket.closed ? Promise.resolve() : new Promise(resolve => socket.once("close", resolve)));
+      // Membership lasts until our close listener runs. Node may already set
+      // socket.closed before emitting that event, so it cannot qualify the
+      // tracked socket as retired; await the actual event for every member.
+      const retired = [...connections].map(socket => new Promise(resolve => socket.once("close", resolve)));
       for (const socket of connections) socket.destroy();
       await Promise.all([...retired, new Promise((resolve, rejectClose) => server.close(error => error ? rejectClose(error) : resolve()))]);
     },

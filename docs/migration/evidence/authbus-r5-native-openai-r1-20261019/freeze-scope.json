@@ -1,0 +1,66 @@
+{
+  "schema": "authbus.native-openai-r1.freeze-scope.v1",
+  "status": "ready_for_actual_main_execution",
+  "actualCombinedNativeOpenaiExecution": false,
+  "runtimeFiles": 22,
+  "newRuntimeFiles": [
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_fixture.mjs",
+    "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_worker.mjs",
+    "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py"
+  ],
+  "unchangedDependencyFiles": 19,
+  "originalDeadlineSeconds": 180,
+  "expectedControllerChecks": 141,
+  "expectedWorkerChecks": {
+    "warm": 87,
+    "cold-before-server": 80,
+    "cold-after-server": 80
+  },
+  "expectedWarmProviderCounts": {
+    "manager-success": 1,
+    "intent-ack-lost": 0,
+    "provider-ack-lost": 1,
+    "sqlite-abort": 1,
+    "guard-after-await": 0
+  },
+  "expectedColdAdditionalProviderCounts": 0,
+  "localPythonGatewayTests": 12,
+  "localNodeGuardTests": 11,
+  "originalNative120ResultInherited": false,
+  "sdk32ScenarioResultInherited": false,
+  "nativeProductBuild": {
+    "sourceCommit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "sourceTree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "sourceFiles": 3142,
+    "sourceManifestPath": "/home/qian-qi/heptabao-next-gates-20261017/source-b24c6de-manifest.json",
+    "sourceManifestBytes": 663186,
+    "sourceManifestSha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+    "buildReceiptPath": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/summary.json",
+    "buildReceiptBytes": 54396,
+    "buildReceiptSha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+    "buildScopedTestsPassed": 55,
+    "buildScopedTestsTotal": 55,
+    "binaryPath": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+    "binarySha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+    "binaryBytes": 779962728,
+    "priorNativeR4RunInherited": false
+  },
+  "sharedAdapterSourceFilesChanged": 0,
+  "productionMutation": false,
+  "realCredentialsRead": false,
+  "realExternalProvider": false,
+  "sourcePacket": {
+    "bytes": 103129,
+    "sha256": "8d28e749fa6eae979092387cdb65c8b5c31d5a1f9d794f889c614914556243b6",
+    "members": 23,
+    "runtimeFiles": 22
+  },
+  "sourceManifest": {
+    "bytes": 39415,
+    "sha256": "fec7c304c098f36da547a664173900415d1330f5cbe37a1cdcc0c098ac1b7139"
+  },
+  "sdkManifest": {
+    "bytes": 7238,
+    "sha256": "b4aad3e15807db250900505d3cf5ab0e1d319d762c08cdb5a839edf214fb3a65"
+  }
+}

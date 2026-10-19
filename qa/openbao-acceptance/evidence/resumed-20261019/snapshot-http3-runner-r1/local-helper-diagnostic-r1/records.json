@@ -1,0 +1,25 @@
+[
+  {
+    "label": "synthetic-owned-python",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-I",
+      "-c",
+      "print('synthetic owned child; no Rust test executed')"
+    ],
+    "started_utc": "2026-10-19T07:54:09.665486+00:00",
+    "status": "failed",
+    "budget_seconds": 15,
+    "log": "synthetic-owned-python.log",
+    "pid": 6,
+    "pgid": 6,
+    "sid": 6,
+    "cleanup_error": "owned process observation failed: exit=1 stderr=fatal library error, lookup self\n",
+    "finished_utc": "2026-10-19T07:54:09.882140+00:00",
+    "elapsed_seconds": 0.215,
+    "log_sha256": "9d1a17870b656559ea56ba7500ecab6584dc510bff833c76c5670f720f1d668e",
+    "log_bytes": 45,
+    "root_rustc_cfg_observations": [],
+    "root_rustc_cfg_observed": false
+  }
+]

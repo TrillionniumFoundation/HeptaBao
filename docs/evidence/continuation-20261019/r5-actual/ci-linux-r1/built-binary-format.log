@@ -1,0 +1,2 @@
+{"argv": ["file", "/home/runner/work/_temp/heptabao-native-recovery-target/debug/heptabao-server"]}
+/home/runner/work/_temp/heptabao-native-recovery-target/debug/heptabao-server: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=babebafe92637486e4a20c62b0e877e375b5fbad, with debug_info, not stripped

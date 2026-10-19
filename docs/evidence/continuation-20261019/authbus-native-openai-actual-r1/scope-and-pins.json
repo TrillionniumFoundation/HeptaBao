@@ -1,0 +1,79 @@
+{
+  "actual_cold_sdk_processes": 2,
+  "actual_native_sigkill_recovery": true,
+  "actual_undici_cases": 5,
+  "controller_checks": 141,
+  "elapsed_seconds": 66.299383085,
+  "files": [
+    {
+      "bytes": 44602,
+      "path": "controller.json",
+      "sha256": "9167c8006ed0c6f4ea05b6ea5c945cc3dca4d512c109be08808bbcca9e741259"
+    },
+    {
+      "bytes": 0,
+      "path": "driver.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 125,
+      "path": "driver.stdout.log",
+      "sha256": "a71bd5fbf250f050a1ac65a49d54f49b846bf90031fa279bd67bb846e1d8d7b1"
+    },
+    {
+      "bytes": 61139,
+      "path": "fixture/public-receipt.json",
+      "sha256": "58885c70d7bfb068f8e8197a1d80c3adca9c53b4ad9431b8b6754c650a2e06dc"
+    },
+    {
+      "bytes": 24398,
+      "path": "fixture/sdk/reports/cold-before-server.json",
+      "sha256": "823051707e4f5d93ccbaaeb619412e07b322b9d75ac5d0e2526709d021f79cee"
+    },
+    {
+      "bytes": 24397,
+      "path": "fixture/sdk/reports/cold-after-server.json",
+      "sha256": "11e8c2aa085286f4b1ee9e8e3b84ea6947a6e67c257622eedc58090733e1aba6"
+    },
+    {
+      "bytes": 24678,
+      "path": "fixture/sdk/reports/warm.json",
+      "sha256": "53d8faaa7c0b0d14901347ed6f7d2fad3d8ec87d11de78657b13bcbade50a694"
+    }
+  ],
+  "original_budget_seconds": 180,
+  "original_native120_inherited": false,
+  "original_source_layers": [
+    "236bc6d9d93263077b0d550f2fb3be8c3864c9db2c51f6366e1609482cd237b5",
+    "7adb8f78b0fe18013ccb0f03e52f80ac457b447bcb609f6e9c097d7de7fcbcab"
+  ],
+  "owned_session_cleanup_complete": true,
+  "production_mutation": false,
+  "real_credential_migration": false,
+  "real_external_provider": false,
+  "schema": "heptabao.native-openai-actual-public-scope-pins.v1",
+  "sdk32_inherited": false,
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_product_sdk_unchanged": true,
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "status": "actual_passed_scoped_synthetic_native_openai",
+  "synthetic_credentials": true,
+  "synthetic_provider": true,
+  "worker_checks": [
+    {
+      "checks": 87,
+      "phase": "warm",
+      "pid": 2113979
+    },
+    {
+      "checks": 80,
+      "phase": "cold-before-server",
+      "pid": 2114677
+    },
+    {
+      "checks": 80,
+      "phase": "cold-after-server",
+      "pid": 2116317
+    }
+  ]
+}

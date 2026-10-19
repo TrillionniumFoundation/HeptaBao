@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "bytes": 1734,
+      "local_name": "native-build-receipt.json",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json",
+      "sha256": "aa254b8b5af43887757c41cbe25662aa4f00fd96f50fbfb028ce3a5b5251e119",
+      "tool_eof": true,
+      "tool_version": "2050:53908042:1734:1792399499996469292:1792399499996469292"
+    },
+    {
+      "bytes": 1151,
+      "local_name": "projection-controller.json",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-b24c6de-20261019-r1/projection-controller.json",
+      "sha256": "64c731462adc93a72e0505a13369fba0719f901db9b4732da5705ce626ef649e",
+      "tool_eof": true,
+      "tool_version": "2050:53908043:1151:1792399500002085919:1792399500002085919"
+    }
+  ],
+  "normalization_performed": false,
+  "retrieval_bytes": 3813,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/main-projection-actual-retrieval.json",
+  "retrieval_sha256": "7de1cc9daa721d093e0dd8ea55a9b43370bf78c0c488563a5d23bce508f97eb0",
+  "schema": "heptabao.exact-returned-public-evidence-extraction.v1"
+}

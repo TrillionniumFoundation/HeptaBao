@@ -1,0 +1,19 @@
+{
+  "actual_binary_sha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+  "actual_summary_sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+  "binary_executions": 0,
+  "compiler_invocations": 0,
+  "controller_sha256": "ab1c8e1a9f66eabaf92f58063b11d4e6a01ea90b35cadeec4522afd71095a95c",
+  "lan98_executed": false,
+  "original_scoped_host_status": "passed_scoped_host_recovery",
+  "profile": "main",
+  "projector_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "receipt": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json",
+  "receipt_sha256": "aa254b8b5af43887757c41cbe25662aa4f00fd96f50fbfb028ce3a5b5251e119",
+  "runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "schema": "heptabao.r5-native-build-projection-controller.v1",
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-b24c6de",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "status": "actual_build_receipt_projected"
+}

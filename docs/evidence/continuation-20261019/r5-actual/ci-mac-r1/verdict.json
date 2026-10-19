@@ -1,0 +1,11 @@
+{
+  "status": "passed_scoped_ci_recovery",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "source_unchanged": true,
+  "scope": "Synthetic fixtures on this CI host; actual local TLS/Raft where the selected Service tests exercise it.",
+  "full_openbao_271_replacement_proven": false,
+  "physical_lan_validation_performed": false,
+  "mac_external_disk_validation_performed": false,
+  "production_cutover_performed": false
+}
