@@ -18,7 +18,10 @@ fn fixture() -> Value {
     })
 }
 fn encoded(value: &Value) -> Zeroizing<Vec<u8>> {
-    crate::secret_serde::to_vec(value, MAX_BUNDLE_BYTES).expect("synthetic bounded fixture")
+    match crate::secret_serde::to_vec(value, MAX_BUNDLE_BYTES) {
+        Ok(bytes) => bytes,
+        Err(_) => panic!("synthetic bounded fixture encoding failed"),
+    }
 }
 
 #[test]
