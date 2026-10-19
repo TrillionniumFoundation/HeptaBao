@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.openbao271-numeric-boundary-preflight.v1",
+  "checked_utc": "2026-10-19T03:45:34.430588+00:00",
+  "script_sha256": "cf1f7a475801b9d39072e8ba9878c912bf86f77d276395a43b8dc0c86e143305",
+  "ast_parse": true,
+  "cli_help_passed": true,
+  "checks": [
+    {
+      "input_lexeme": "1.0",
+      "preserved": true
+    },
+    {
+      "input_lexeme": "-0",
+      "preserved": true
+    },
+    {
+      "input_lexeme": "1e-6",
+      "preserved": true
+    },
+    {
+      "input_lexeme": "1e-7",
+      "preserved": true
+    },
+    {
+      "input_lexeme": "1e20",
+      "preserved": true
+    },
+    {
+      "input_lexeme": "1e21",
+      "preserved": true
+    },
+    {
+      "input_lexeme": "1e400",
+      "preserved": true
+    }
+  ],
+  "actual_openbao": false,
+  "actual_heptabao": false,
+  "physical_host_qualified": false,
+  "migration_qualified": false
+}

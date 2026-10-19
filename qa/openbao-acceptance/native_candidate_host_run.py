@@ -36,6 +36,12 @@ GROUPS = [
     ("http-pending-admission", "server", "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes", 1),
     ("private-transport-diagnostic", "peer", "private_forward_stage_observation_preserves_existing_transport_errors", 1),
     ("private-frame-diagnostic", "peer", "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes", 1),
+    ("kv2-api-271-numbers", "server", "kv2_api_271_", 3),
+    ("native-kv2-storage-witness", "server", "native_kv2_storage_witness_", 5),
+    ("lossless-json-private-tags", "server", "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion", 1),
+    ("lossless-kv1-conversion", "server", "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads", 1),
+    ("lossless-token-equivalence", "server", "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent", 1),
+    ("native-raw-private-tags", "server", "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects", 1),
 ]
 SERVER_FEATURES = "experimental-native-v6-ha,private-ha-forward-diagnostic"
 PEER_FEATURES = "experimental-v6-peer-ingress,private-forward-stage-diagnostic"

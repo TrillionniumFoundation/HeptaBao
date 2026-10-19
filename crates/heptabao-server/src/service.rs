@@ -152,6 +152,9 @@ mod native_kv2_import;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_kv2_large.rs"]
 mod native_kv2_large;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_kv2_storage_witness.rs"]
+mod native_kv2_storage_witness;
 #[cfg(test)]
 #[path = "service_kv2_import_tests.rs"]
 mod kv2_import_tests;
@@ -1427,6 +1430,8 @@ pub struct Service {
     #[cfg(feature = "fixture-native-v6-service")]
     pending_native_kv2_large: Option<native_kv2_large::TransferPlan>,
     #[cfg(feature = "fixture-native-v6-service")]
+    pending_native_kv2_witness: Option<native_kv2_storage_witness::WitnessDelivery>,
+    #[cfg(feature = "fixture-native-v6-service")]
     native_kv2_large_transport: bool,
     #[cfg(feature = "fixture-native-v6-service")]
     native_kv2_large_flight: Arc<std::sync::atomic::AtomicBool>,
@@ -1878,6 +1883,8 @@ impl Service {
             pending_snapshot_transfer: None,
             #[cfg(feature = "fixture-native-v6-service")]
             pending_native_kv2_large: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            pending_native_kv2_witness: None,
             #[cfg(feature = "fixture-native-v6-service")]
             native_kv2_large_transport: false,
             #[cfg(feature = "fixture-native-v6-service")]
@@ -2775,7 +2782,8 @@ impl Service {
         let sdk_pending = false;
         #[cfg(feature = "fixture-native-v6-service")]
         let native_auth_pending = self.pending_native_auth_delivery.is_some()
-            || self.pending_native_kv2_large.is_some();
+            || self.pending_native_kv2_large.is_some()
+            || self.pending_native_kv2_witness.is_some();
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let native_auth_pending = false;
         if sdk_pending
@@ -3101,6 +3109,12 @@ impl Service {
         let native_kv2_large_staged = usize::from(native_kv2_large.is_some());
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let native_kv2_large_staged = 0;
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_kv2_witness = self.pending_native_kv2_witness.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_kv2_witness_expected = native_kv2_witness.is_some();
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_kv2_witness_expected = false;
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
         #[cfg(feature = "fixture-native-v6-service")]
@@ -3135,6 +3149,7 @@ impl Service {
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
             + usize::from(native_auth_expected)
+            + usize::from(native_kv2_witness_expected)
             + usize::from(external_pki_no_effect.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
@@ -3201,6 +3216,12 @@ impl Service {
                 response,
                 &fingerprint,
                 now,
+            ));
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if let Some(plan) = native_kv2_witness {
+            return RequestExecution::Complete(self.complete_native_kv2_storage_witness(
+                plan, response, &fingerprint, (now, token_clock),
             ));
         }
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
@@ -3344,6 +3365,12 @@ impl Service {
                 && !crate::http::help::opaque_request(method, path, body))
         {
             return Response::error(400, "invalid canonical namespace or path");
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if path == native_kv2_storage_witness::PATH && self.ha.is_some() {
+            // This read-only profile has no forwarding contract. The normal
+            // request/terminal audit chain still records this local refusal.
+            return Response::error(501, "storage witness requires single-node native custody");
         }
         // Early control routes resolve the namespace against admitted state.
         // GET/HEAD health resolves it below, after authenticated HA catch-up.
@@ -4120,6 +4147,7 @@ impl Service {
                 && !native_local_auth
                 && path != "sys/migration/openbao/kv2"
                 && path != crate::engines::kv2_native_large::PATH
+                && path != native_kv2_storage_witness::PATH
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -4191,6 +4219,10 @@ impl Service {
         #[cfg(feature = "fixture-native-v6-service")]
         if path == crate::engines::kv2_native_large::PATH {
             return self.stage_native_kv2_large(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if path == native_kv2_storage_witness::PATH {
+            return self.stage_native_kv2_storage_witness(admitted, principal.take(), &request);
         }
         #[cfg(feature = "fixture-native-v6-service")]
         if self.native_root.is_some() && path == "sys/migration/openbao/kv2" {

@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.numeric-raw-actual-independent-review.v1",
+  "reviewed_utc": "2026-10-19T04:33:23.976047+00:00",
+  "actual_summary_sha256": "4102fe44bfefb5901f0ae3221955ef50630a39bd9680f4f23b9730988640e36b",
+  "actual_controller_receipt_sha256": "a5be87a9305ce05f5b62017dd8560512734950d4af3bf0c412914c73474c17cc",
+  "prior_incomplete_summary_sha256": "1281990796a3be2fc0064f0ffcb7fd2696b6bb7bf800e886e2534120e087481d",
+  "receipt_bytes_preserved_exactly": true,
+  "actual_official_version": "2.7.1",
+  "script_sha256": "d8de2d02d902c525b715e8e9491d39df1114b280f738e33b78b9b2840e23a524",
+  "all_85_outcomes_known_and_owned_leaves_waited": true,
+  "request_counts": {
+    "GET": 53,
+    "LIST": 32
+  },
+  "response_status_counts": {
+    "200": 84,
+    "404": 1
+  },
+  "mutations_or_retries_in_followup": 0,
+  "raw_records": 21,
+  "independent_raw_acquisitions_identical": true,
+  "closed_raw_decoder_completed": true,
+  "raw_root_assumption_failure_confirmed": true,
+  "raw_root_projection": {
+    "config_root_sha256": "aed1c61fa8b5c6370236b1d72dfee3697e3e1939e3cf76b5b46980b50991ad08",
+    "config_root_relative_depth": 1,
+    "legacy_assumed_root_equal": false,
+    "legacy_assumed_salt_present": false,
+    "actual_config_root_salt_present": true,
+    "salt_bytes": 36
+  },
+  "accepted_numeric_input_lexemes_retained_exactly": [
+    "1.0",
+    "-0",
+    "1e-6",
+    "1e-7",
+    "1e20",
+    "1e21"
+  ],
+  "accepted_api_numeric_lexemes": [
+    "1",
+    "-0",
+    "0.000001",
+    "1e-7",
+    "100000000000000000000",
+    "1e+21"
+  ],
+  "overflow_1e400_write_rejected_and_absent_in_raw_data_and_metadata": true,
+  "clone_lifecycle_owner_receipt": {
+    "clone_stopped": true,
+    "original_fixture_unchanged": true,
+    "original_file_count": 19
+  },
+  "qualification": {
+    "official_source_numeric_boundary_raw_phase_complete": true,
+    "failed_prior_report_preserved": true,
+    "source_clone_uses_synthetic_fixture_data": true,
+    "heptabao_api_projection_verified_by_this_receipt": false,
+    "heptabao_native_storage_migration_verified_by_this_receipt": false,
+    "full34_lossless_migration_qualified": false,
+    "physical_lan_ha_qualified": false,
+    "production_credential_cutover_qualified": false
+  },
+  "precision_limit": "Original OpenBao raw record numeric lexemes are observed exact. Decimal decoding can canonicalize exponent spelling without reducing numeric precision. This evidence does not claim byte-for-byte preservation of complete JSON formatting through migration."
+}

@@ -67,10 +67,10 @@ fn rejoin_for_unseal(pipeline: &mut Pipeline, index: usize, migration_source: St
                 Ok(None) | Err(_) => false,
             }
         };
-        if ready { break; }
         if Instant::now() >= until {
             return Err("cold rejoin actual ReadIndex readiness exceeded original setup budget".into());
         }
+        if ready { break; }
         thread::sleep(Duration::from_millis(20));
     }
     drop(_scope);
@@ -301,14 +301,77 @@ fn native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_afte
             AuthorityTime::Precise(crate::auth::Timestamp::whole(0)?)).exact())
     })?;
     let before = selection(&pipeline, leader, migration_source)?;
-    let response = expect(restore(&pipeline, leader, &actor, &archive)?, 200,
+    let (response, admitted_source) = {
+        // Ordinary admission of this precise Actor may publish its actual
+        // clock floor. Observe that source independently, before any archive
+        // transfer, under the SAME original request deadline. The later
+        // transition is not an oracle for its own source checksum.
+        let until = Instant::now() + REQUEST_BUDGET;
+        let _scope = RequestDeadlineScope::enter(until);
+        let service = pipeline.services[leader].as_ref().ok_or("clock restore Service")?;
+        let mut writer = lock_until(service, until).map_err(|_| "clock restore writer")?;
+        assert_eq!(writer.current_state_identity().map_err(|_| "before admission identity")?.digest(),
+            before.1.root_digest());
+        let before_root = writer.native_root.as_ref().ok_or("before admission native root")?.clone();
+        let before_auth = (*writer.state.as_ref().ok_or("before admission State")?.auth).clone();
+        let mut pending = admit(&mut writer, "POST", &actor, until)?;
+        let admitted_identity = writer.current_state_identity().map_err(|_| "admitted source identity")?;
+        let mut projected_root = writer.native_root.as_ref().ok_or("admitted native root")?.clone();
+        assert_eq!(before_root.owners.len(), projected_root.owners.len());
+        let mut auth_owners = 0;
+        for (prior, current) in before_root.owners.iter().zip(projected_root.owners.iter_mut()) {
+            if prior.domain == crate::state_record_root_v6::OwnerDomain::Auth
+                && current.domain == crate::state_record_root_v6::OwnerDomain::Auth
+            {
+                auth_owners += 1;
+                *current = prior.clone();
+            }
+        }
+        assert_eq!(auth_owners, 1, "admission must retain exactly one Auth owner");
+        assert_eq!(before_root.encode().map_err(|_| "before root encoding")?.as_slice(),
+            projected_root.encode().map_err(|_| "admitted root encoding")?.as_slice(),
+            "admission may not change any non-Auth owner, native resource or root field");
+        let admitted_auth = &writer.state.as_ref().ok_or("admitted State")?.auth;
+        let before_time = before_auth.terminal_token_clock_floor().ok_or("before admission clock floor")?;
+        let admitted_time = admitted_auth.terminal_token_clock_floor().ok_or("admitted clock floor")?;
+        assert!(admitted_time >= before_time);
+        let mut expected_auth = before_auth;
+        expected_auth.observe_token_api_time(AuthorityTime::Precise(admitted_time))
+            .map_err(|_| "detached admission clock projection")?;
+        assert_eq!(owner_store::serialize_owner(&expected_auth).map_err(|_| "expected Auth encoding")?.as_slice(),
+            owner_store::serialize_owner(admitted_auth).map_err(|_| "admitted Auth encoding")?.as_slice(),
+            "ordinary admission must change only the independently observed Auth clock floor");
+        let admitted_source = {
+            let process = pipeline.processes[leader].as_ref().ok_or("admitted source process")?
+                .lock_for_request().map_err(|_| "admitted source ReadIndex lock")?;
+            let read = process.native_v6_committed_read(OriginalDeadline::capture()?)?
+                .ok_or("admitted source committed root")?;
+            process.verify_native_v6_committed_read(&read)?;
+            assert_eq!(read.enrollment().epoch(), before.0);
+            assert_eq!(read.published().migration_source().0, migration_source.digest());
+            assert_eq!(read.published().root_digest(), admitted_identity.digest(),
+                "the actual Service source must match an independent fresh ReadIndex");
+            read.published().clone()
+        };
+        assert!(Instant::now() < until, "source observation retains the original request deadline");
+        drop(writer);
+        let (observed, output) = pending.execute_snapshot_transfer(&mut &archive[..]);
+        assert!(output.is_none());
+        let mut writer = lock_until(service, until).map_err(|_| "clock restore completion writer")?;
+        let response = writer.finish_external_request(*pending, observed);
+        errors_only("historical-restore-complete", &response);
+        assert!(writer.native_request_binding.is_none());
+        assert!(Instant::now() < until, "restore cannot extend the original 15-second contract");
+        (response, admitted_source)
+    };
+    let response = expect(response, 200,
         "historical-restore-original-Actor-delivery")?;
     assert_eq!(response.body["data"]["replay_epoch"], 1);
     let after = selection(&pipeline, leader, migration_source)?;
     assert_eq!(after.0, 1);
     assert_eq!(after.1.epoch_transitions().len(), 1);
     assert_eq!(after.1.epoch_transitions().next().ok_or("restore transition")?.source_root_digest(),
-        before.1.root_digest());
+        admitted_source.root_digest());
     pipeline.with_service(leader, |service| {
         let state = service.state.as_ref().ok_or("restored clock state")?;
         assert!(state.auth.token_api_observed_time(

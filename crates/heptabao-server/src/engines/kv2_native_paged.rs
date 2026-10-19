@@ -3,6 +3,10 @@
 use super::*;
 use crate::state_records::{BLOCK_BYTES, ObjectKind};
 
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[path = "kv2_native_storage_witness.rs"]
+mod storage_witness;
+
 pub(crate) const PAGED_NATIVE_FORMAT: &str = "heptabao-kv2-native-paged-v2";
 pub(crate) const MAX_PAGED_LOGICAL_BYTES: u64 = 1024 * 1024 * 1024;
 const PAYLOAD_FORMAT: &str = "heptabao-kv2-native-payload-v2";

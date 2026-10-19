@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.openbao271-numeric-raw-followup-clone-controller.v1",
+  "clone_from_stopped_failed_fixture": true,
+  "prior_numeric_raw_diagnostic_complete": false,
+  "source_writes": 0,
+  "allowed_network_methods": [
+    "GET",
+    "LIST"
+  ],
+  "migration_invoked": false,
+  "configuration_rebound": true,
+  "script_sha256": "d8de2d02d902c525b715e8e9491d39df1114b280f738e33b78b9b2840e23a524",
+  "started_unix": 1792382881.3626308,
+  "source_writes_retried": false,
+  "synthetic_only": true,
+  "clone_pid": 18251,
+  "diagnostic_return_code": 0,
+  "diagnostic_stdout": "{\"diagnostic_complete\": true, \"summary\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-numeric-raw-readback-official-mac-20261019-r1/observations/summary.json\", \"source_writes\": 0}\n",
+  "diagnostic_stderr": "",
+  "clone_stopped": true,
+  "original_fixture_unchanged": true,
+  "original_file_count": 19,
+  "finished_unix": 1792382886.659609,
+  "summary_sha256": "4102fe44bfefb5901f0ae3221955ef50630a39bd9680f4f23b9730988640e36b"
+}

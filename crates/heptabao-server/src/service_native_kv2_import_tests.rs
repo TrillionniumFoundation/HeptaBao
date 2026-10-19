@@ -152,6 +152,48 @@ fn observed(service: &mut Service, token: &str) -> TestResult<Vec<(u16,Value)>> 
     Ok(output)
 }
 
+// A separate root-authorized request proves the actual retained target
+// payload, including soft deletion. Expected bytes come from the unchanged
+// exact input fixture; no production API projector computes this oracle.
+fn assert_storage_version(
+    service: &mut Service, token: &str, path: &str, version: u64, original: &Value,
+) -> TestResult {
+    let before=service.native_payload_observations.snapshot();
+    let witness=call(service,"POST","sys/internal/storage/kv2-version-witness",token,
+        json!({"mount":"secret","path":path,"version":version}));
+    assert_eq!(witness.status,200,"actual storage witness {path} version {version}");
+    let after=service.native_payload_observations.snapshot();
+    let data=&witness.body["data"];
+    assert_eq!(data["schema"],"heptabao-native-kv2-storage-witness-v1");
+    assert_eq!(data["canonical_profile"],"heptabao-lossless-json-v1");
+    assert_eq!(data["mount"],"secret"); assert_eq!(data["path"],path);
+    assert_eq!(data["version"],version);
+    for field in ["created_time","deletion_time","destroyed"] {
+        assert_eq!(data[field],original[field]);
+    }
+    let destroyed=original["destroyed"].as_bool().ok_or("destroyed")?;
+    assert_eq!(data["payload_present"],!destroyed);
+    if destroyed {
+        assert!(original["data"].is_null());
+        assert!(data["payload_canonical_sha256"].is_null());
+        assert_eq!(data["payload_canonical_bytes"],0);
+        assert_eq!(after[1],before[1],"destroyed history cannot open a substituted payload");
+    } else {
+        // These fixtures' serde maps use their existing canonical key order.
+        // The independently supplied 134-byte cross-language vector separately
+        // fixes the profile; this comparison binds each full retained value.
+        let expected=crate::secret_serde::to_vec(&original["data"],
+            crate::MAX_APPLICATION_STATE_BYTES).map_err(|_| "exact fixture encoding")?;
+        let hash=crate::crypto::digest(&expected).iter()
+            .map(|byte| format!("{byte:02x}")).collect::<String>();
+        assert_eq!(data["payload_canonical_sha256"],hash);
+        assert_eq!(data["payload_canonical_bytes"],expected.len());
+        assert!(after[1]>before[1],"actual encrypted retained payload read is required");
+    }
+    assert!(data.get("data").is_none() && data.get("payload").is_none());
+    Ok(())
+}
+
 fn assert_imported(service: &mut Service, token: &str, bulk: bool) -> TestResult {
     sentinel(service,token);
     let metadata=call(service,"GET","secret/metadata/item",token,json!({}));
@@ -168,7 +210,19 @@ fn assert_imported(service: &mut Service, token: &str, bulk: bool) -> TestResult
     }
     let current=call(service,"GET","secret/data/item",token,json!({"version":5}));
     assert_eq!(current.status,200);
-    assert_eq!(current.body["data"]["data"],fixture_bundle(false)?["entries"]["item"]["versions"]["5"]["data"]);
+    let expected_api=crate::engines::decode_lossless_json(
+        br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"},"payload":"kept"}"#,
+    )?;
+    assert_eq!(current.body["data"]["data"],expected_api);
+    let exact=fixture_bundle(false)?;
+    assert_eq!(exact["entries"]["item"]["versions"]["5"]["data"]["big"]
+        .as_number().ok_or("exact fixture integer")?.to_string(),"184467440737095516160001");
+    assert_eq!(exact["entries"]["item"]["versions"]["5"]["data"]["decimal"]
+        .as_number().ok_or("exact fixture decimal")?.to_string(),"0.12345678901234567890123456789");
+    for version in [3_u64,4,5] {
+        assert_storage_version(service,token,"item",version,
+            &exact["entries"]["item"]["versions"][version.to_string()])?;
+    }
     let scope=selected_graph(service)?.scope;
     assert_eq!(service.state.as_ref().ok_or("state")?.engines.native_paged_view(&scope)
         .ok_or("native view")?.counts(),(if bulk {BULK+3} else {3},if bulk {BULK+4} else {4},if bulk {BULK+3} else {3}));

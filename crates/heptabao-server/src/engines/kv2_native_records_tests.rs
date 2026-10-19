@@ -722,7 +722,14 @@ fn native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects() -> 
         assert_eq!(receipt.payload_records,1);
         let (_,restored)=reopened(&actual)?;
         let response=restored.handle_read("GET","data/tags",&json!({}),11)?;
-        assert_eq!(response.body["data"]["data"],payload);
+        assert_eq!(restored.entries.get("tags").ok_or("tags")?
+            .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(), &payload);
+        let mut expected_api = payload.clone();
+        if payload.get("number").is_some() {
+            expected_api["number"] = lossless::decode_lossless_json(b"1.844674407370955e+23")?;
+            expected_api["decimal"] = lossless::decode_lossless_json(b"0.12345678901234568")?;
+        }
+        assert_eq!(response.body["data"]["data"], expected_api);
         assert!(response.body["data"]["data"].is_object());
         if let Some(fake)=payload.get("fake") {
             assert!(fake.is_object());

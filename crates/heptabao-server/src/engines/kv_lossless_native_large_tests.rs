@@ -39,9 +39,18 @@ fn native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_object
     }
     let checked = NativeLargeBundle::checked(bytes, &|| Ok(()))?;
     let owner = Kv2::from_native_large_import(&checked, &|| Ok(()))?;
+    let original = fixture();
+    let stored = owner.entries.get("item").ok_or("item")?
+        .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?;
+    assert_eq!(stored.expose(), &original["entries"]["item"]["versions"]["1"]["data"]);
+    assert_eq!(stored.expose()["wide"].as_number().ok_or("stored number")?.to_string(),
+        "9007199254740993");
     let value = owner.handle_read_precise("GET", "data/item", &json!({}), Timestamp::whole(100)?)?;
-    assert_eq!(value.body["data"]["data"]["wide"], json!(9007199254740993_u64));
+    // Public OpenBao 2.7.1 GET is a float64 projection. Its observed API
+    // integer is distinct from the exact imported owner asserted above.
+    assert_eq!(value.body["data"]["data"]["wide"], json!(9007199254740992_u64));
     assert!(value.body["data"]["data"]["fake"].is_object());
+    assert_eq!(stored.expose(), &original["entries"]["item"]["versions"]["1"]["data"]);
     Ok(())
 }
 

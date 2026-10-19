@@ -84,6 +84,18 @@ fn full34_bundle() -> TestResult<Value> {
     });
     Ok(bundle)
 }
+fn full34_api_data(exact: &Value) -> TestResult<Value> {
+    assert_eq!(exact["wide_integer"].as_number().ok_or("exact integer")?.to_string(),
+        "9007199254740993");
+    assert_eq!(exact["decimal"].as_number().ok_or("exact decimal")?.to_string(),
+        "0.123456789012345678901234567890");
+    let mut api=exact.clone();
+    // Independent observed 2.7.1 API constants, not a call to the product
+    // projection under test. The original input continues to bind storage.
+    api["wide_integer"]=json!(9007199254740992_u64);
+    api["decimal"]=crate::engines::decode_lossless_json(b"0.12345678901234568")?;
+    Ok(api)
+}
 fn assert_full34(native: &mut Service, token: &str, source: &Value) -> TestResult {
     sentinel(native, token);
     let metadata = call(native, "GET", "secret/metadata/history", token, json!({}));
@@ -101,7 +113,10 @@ fn assert_full34(native: &mut Service, token: &str, source: &Value) -> TestResul
         }
         let response = call(native, "GET", "secret/data/history", token, json!({"version":version}));
         assert_eq!(response.status, if version <= 2 { 404 } else { 200 });
-        if version > 2 { assert_eq!(response.body["data"]["data"], original["data"]); }
+        if version > 2 {
+            assert_eq!(response.body["data"]["data"], full34_api_data(&original["data"])?);
+        }
+        assert_storage_version(native,token,"history",version,original)?;
     }
     let graph = selected_graph(native)?;
     // The deleted payload must also be stored, even though normal reads hide it.
@@ -144,7 +159,13 @@ fn native_large_kv2_service_full34_history_snapshot_and_cold_recovery() -> TestR
     assert_eq!(call(&mut native, "POST", "secret/undelete/history", &token, json!({"versions":[1,2]})).status, 204);
     let recovered = call(&mut native, "GET", "secret/data/history", &token, json!({"version":1}));
     assert_eq!(recovered.status, 200);
-    assert_eq!(recovered.body["data"]["data"], source["entries"]["history"]["versions"]["1"]["data"]);
+    assert_eq!(recovered.body["data"]["data"],
+        full34_api_data(&source["entries"]["history"]["versions"]["1"]["data"])?);
+    let mut undeleted=source["entries"]["history"]["versions"]["1"].clone();
+    undeleted["deletion_time"]=json!("");
+    assert_storage_version(&mut native,&token,"history",1,&undeleted)?;
+    assert_storage_version(&mut native,&token,"history",2,
+        &source["entries"]["history"]["versions"]["2"])?;
     assert_eq!(call(&mut native, "GET", "secret/data/history", &token, json!({"version":2})).status, 404);
     Ok(())
 }

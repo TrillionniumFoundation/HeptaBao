@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.native-numeric-55-static-selection.v1",
+  "base_commit": "22cdbc19679cceffe082c6ced8b8e8bb7567058e",
+  "baseline_group_count": 11,
+  "baseline_case_count": 43,
+  "all_baseline_groups_preserved_exactly": true,
+  "new_test_case_count": 8,
+  "affected_existing_case_count": 4,
+  "expected_case_count": 55,
+  "host_ci_groups_equal": true,
+  "all_other_host_ci_bytes_unchanged": true,
+  "added_groups": [
+    [
+      "kv2-api-271-numbers",
+      "server",
+      "kv2_api_271_",
+      3
+    ],
+    [
+      "native-kv2-storage-witness",
+      "server",
+      "native_kv2_storage_witness_",
+      5
+    ],
+    [
+      "lossless-json-private-tags",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+      1
+    ],
+    [
+      "lossless-kv1-conversion",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+      1
+    ],
+    [
+      "lossless-token-equivalence",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+      1
+    ],
+    [
+      "native-raw-private-tags",
+      "server",
+      "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+      1
+    ]
+  ],
+  "new_and_affected_source_test_inventory": [
+    {
+      "name": "native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+      "path": "engines/kv2_native_records_tests.rs"
+    },
+    {
+      "name": "native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+      "path": "engines/kv2_native_storage_witness.rs"
+    },
+    {
+      "name": "native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+      "path": "engines/kv2_native_storage_witness.rs"
+    },
+    {
+      "name": "kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+      "path": "engines/kv_api_numbers.rs"
+    },
+    {
+      "name": "kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact",
+      "path": "engines/kv_api_numbers.rs"
+    },
+    {
+      "name": "kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+      "path": "engines/kv_api_numbers.rs"
+    },
+    {
+      "name": "kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+      "path": "engines/kv_lossless_tests.rs"
+    },
+    {
+      "name": "kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+      "path": "engines/kv_lossless_tests.rs"
+    },
+    {
+      "name": "kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+      "path": "engines/kv_lossless_tests.rs"
+    },
+    {
+      "name": "native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+      "path": "service_native_kv2_storage_witness_tests.rs"
+    },
+    {
+      "name": "native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change",
+      "path": "service_native_kv2_storage_witness_tests.rs"
+    },
+    {
+      "name": "native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+      "path": "service_native_kv2_storage_witness_tests.rs"
+    }
+  ],
+  "actual_rust_discovery_performed": false,
+  "actual_rust_tests_executed": false,
+  "source_sha256": {
+    "qa/openbao-acceptance/native_candidate_host_run.py": "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+    ".github/workflows/native-historical-restore-recovery.yml": "2ce18742f31a83c91eaee3d3f226fc419f837623deabf7b163a443e29fbeecec"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.historical-admission-r2-independent-source-review.v1",
+  "reviewed_at_utc": "2026-10-19T04:11:28.903069+00:00",
+  "reviewer_scope": "Read-only local source comparison; no remote commands, source modifications, compilations or pass claim.",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_activation_source_observation.rs",
+      "sha256": "30fc43c847d86273a530d8cf6c892c851f4749b8443dd3dc44bdbc0e11968847"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_writer.rs",
+      "sha256": "c2a1b6e149cc551b29a5470a30a757f311dd3381597d1def365889244f933e49"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+      "sha256": "b1a629088fcbd9c9b602342e16363b17d9a618638e5c57688ef9ed8192e614ec"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_candidate_host_run.py",
+      "sha256": "d7380e91363b9e28f6aea10ad6715942546404e6fd58f442952029f328e56bb4"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "fixture_deadline_evidence",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+      "function": "rejoin_for_unseal",
+      "finding": "The successful `if ready { break; }` branch precedes the helper's explicit Instant::now() >= until rejection. A final success-side check would independently enforce the same original 8-second setup budget even if scheduling or post-read verification crosses the deadline.",
+      "recommendation": "Check the same captured until before success/break. Do not mint a new deadline, repeat sys/unseal or change the original 15-second request budget.",
+      "qualification": "The reviewed four files do not include native_v6_committed_read/verify internals; this identifies the helper's missing explicit terminal check, not a proven live overrun.",
+      "root_disposition": "Root acknowledged and will add only to a subsequent candidate; current22cd source/running receipts are preserved."
+    }
+  ],
+  "preserved_boundaries": [
+    "Observer module and call are both cfg(test); release product has no observer.",
+    "Observation follows actual root Actor admission, current/admitted Auth equality and OriginalDeadline check; it reads current_state_identity before planning/publication, without replacing Clock/Auth/nonce.",
+    "ObservationGuard is thread-bound via Rc phantom, rejects nested arming and duplicate recording, and clears its slot on drop.",
+    "Cold rejoin captures one 8-second scope; repeated operations are fresh ReadIndex observations plus witness verification, never archive/unseal mutation retries.",
+    "pipeline.unseal still sends one ordinary sys/unseal request through the existing15-second call path.",
+    "low-memory build changes only build parallelism, compiler debug information and incremental cache; selectors/features/1800-second command budget and original request checks are unchanged."
+  ],
+  "actual_tests_run_by_review": false
+}

@@ -13,11 +13,16 @@ records a new execution against the exact files in this commit.
 
 ## Evidence scope
 
-The seven controller regressions cover exact Decimal, large integer and
+The original seven controller regressions cover exact Decimal, large integer and
 Unicode serialization; profile sizes; cleartext rejection; one real 2 MiB TLS
 exchange with a generated pinned certificate; termination of one real
 timed-out child without retry; cleanup of a second owner after the first
-cleanup fails; and redaction of a failed report.
+cleanup fails; and redaction of a failed report. The oracle-split revision adds
+six regressions for the observed API/storage distinction, raw precision,
+canonical cross-language hashes, native witness semantics and qualification
+requiring all three storage stages. Its real TLS regression also captures and
+rehashes the same GET response bytes that it decodes. All 13 tests passed in
+the separately retained local regression receipt.
 
 Those tests do not execute OpenBao or HeptaBao. They do not qualify Mac,
 X230, HA, production or a migration. The real command below must produce its
@@ -127,38 +132,127 @@ The pinned official fixture is stopped and restarted with
 The candidate starts with `--config <private/server.json>` and
 `--fixture-native-v6-service`. Existing service roots are not admitted.
 
-The controller requires all 26 fixed named checks in its source:
+The controller requires all 31 fixed named checks in its source:
 
 1. Official 2.7.1 artifact and live identity.
 2. Two distinct owned server processes.
-3. Exact live, soft-deleted and destroyed source history.
-4. Required metadata CAS and a real incremented metadata counter.
-5. The same source after a real restart.
-6. A pristine target mount.
-7. One completed source raw export.
-8. Soft-deleted payload retained; destroyed payload absent in the bundle.
-9. Source unchanged after export.
-10. One completed native import.
-11. Actual V6 storage/reader format and logical payload bytes.
-12. Exact target history and metadata compared with the official source.
-13. Exact target history after SIGKILL, restart and original-key unseal.
-14. A downloaded native snapshot.
-15. One actual post-snapshot version append.
-16. One actual snapshot restore with the native route's HTTP 200.
-17. Exact restored history after another cold restart.
-18. Original payload recovered by undeleting version 1.
-19. Destroyed version 2 remains absent after undelete.
-20. Stale data CAS rejected without effect.
-21. Stale metadata CAS rejected without effect.
-22. Correct metadata CAS increments the original counter exactly once.
-23. The official source remains unchanged after target mutations.
-24. Source files and candidate binary retain their exact identities.
-25. Both owned servers stop, even if one cleanup fails.
-26. The public report excludes captured runtime credentials.
+3. Each live official API response captured before deletion or destruction.
+4. Exact live, soft-deleted and destroyed source API history.
+5. Required metadata CAS and a real incremented metadata counter.
+6. The same source after a real restart.
+7. A pristine target mount.
+8. One completed source raw export.
+9. All source raw historical payloads retain the original precise numeric tokens.
+10. Soft-deleted payload retained; destroyed payload absent in the bundle.
+11. Source unchanged after export.
+12. One completed native import.
+13. Actual V6 storage/reader format and logical payload bytes.
+14. Exact target API history and metadata compared with the official source API.
+15. Independent precise native storage witnesses for every historical version.
+16. Exact target API history after SIGKILL, restart and original-key unseal.
+17. Independent precise storage witnesses after that cold restart.
+18. A downloaded native snapshot.
+19. One actual post-snapshot version append.
+20. One actual snapshot restore with the native route's HTTP 200.
+21. Exact restored API history after another cold restart.
+22. Independent precise storage witnesses after snapshot restore and cold restart.
+23. The observed source API payload recovered by undeleting version 1.
+24. Destroyed version 2 remains absent after undelete.
+25. Stale data CAS rejected without effect.
+26. Stale metadata CAS rejected without effect.
+27. Correct metadata CAS increments the original counter exactly once.
+28. The official source remains unchanged after target mutations.
+29. Source files and candidate binary retain their exact identities.
+30. Both owned servers stop, even if one cleanup fails.
+31. The public report excludes captured runtime credentials.
 
 Exact comparisons include timestamps, custom metadata, indices, flags,
 payloads and counters. A loop of ordinary KV writes does not establish a
 historical import.
+
+## The observed API and raw-storage oracles
+
+The first actual Mac native-small run reached all twelve planned seed mutations
+and then failed its source payload assertion before export/import. A read-only
+diagnosis of a separately rebound clone established that deletion, destruction
+and version predicates passed. The two live API payload comparisons failed
+only on the numeric fields:
+
+| Layer actually observed on official OpenBao 2.7.1 | Wide integer | Decimal |
+| --- | --- | --- |
+| Public `GET secret/data/history?version=3` and version 4 | `9007199254740992` | `0.12345678901234568` |
+| Raw/protobuf historical payload | `9007199254740993` | `0.123456789012345678901234567890` |
+
+The retained projection receipt has SHA-256
+`9d46e5113eff82506ab1bc410ca86290410317b9786cdf76c5aec5a5c3e4d825`.
+Its original decoder read nine records and produced a 10,794-byte bundle with
+SHA-256 `deb90c25de15fabc2203b0cf329c6dd7cf6ab84e07c64149196366589c43d89c`.
+The companion controller receipt records zero source writes, a stopped clone,
+and nineteen original fixture files unchanged. The original failed controller
+had not captured its source history baseline; repository/binary identity
+success alone did not establish a source history comparison.
+
+This revision does not change or round the generated fixture. Each source write
+is followed by an actual GET whose original response bytes are saved under
+`source-api-oracle/` with their SHA-256 and decoded identity in the receipt.
+This includes version 1 before soft deletion. Non-numeric fixture fields must
+still match exactly. Subsequent source and target API comparisons use the
+same observed source API values. Canonical comparisons retain decimal token
+representation rather than equating a differently serialized decimal with an
+integer solely through Python numeric equality.
+
+The raw bundle is independently compared with the original exact fixture,
+including retained deleted history. Target storage must then prove the same
+precise data through the dedicated witness, not through its public KV2 API,
+logical byte count or an opaque encrypted archive hash.
+
+### Native per-version storage witness
+
+At each of import, cold restart, and snapshot restore plus cold restart, the
+controller sends one actual request per version:
+
+```json
+{"mount":"secret","path":"history","version":3}
+```
+
+The route is `POST /v1/sys/internal/storage/kv2-version-witness`. It is a
+root-namespace sudo-authorized precise native read. A POST transport failure is
+never retried by the controller. An absent route, HTTP 501, a malformed witness,
+wrong metadata, or a rounded payload hash fails the stage.
+
+HTTP 200 must contain `data.schema=heptabao-native-kv2-storage-witness-v1`,
+`canonical_profile=heptabao-lossless-json-v1`, the exact mount/path/explicit
+version, creation and deletion times, destroyed flag, payload-present flag,
+canonical payload byte count, and canonical SHA-256. A soft-deleted version
+retains its precise payload witness. A destroyed version requires no payload,
+zero bytes and a null hash. Additional source-binding fields do not replace
+these comparisons.
+
+Canonical payloads use compact UTF-8 JSON, recursively sorted object keys,
+original array order, standard JSON string escaping, and stored lossless
+numeric tokens without a float conversion. The shared cross-language vector
+is 134 bytes with SHA-256
+`8f55c32f8c1f2f2a8d0e5cc14f08b7007ae6ca496782cdc2ae84143879b40395`:
+
+```json
+{"a":0.123456789012345678901234567890,"nested":[null,true,{"zero":"\\u0000"}],"unicode":"凭证迁移试验🧪","z":9007199254740993}
+```
+
+The receipt separates `api_history_qualified` from
+`target_storage_precision_qualified`. All three named target storage stages
+are required for complete controller success and `full34_qualified`.
+
+### Independent numeric boundary diagnosis
+
+`kv2_271_numeric_boundaries.py` is a separate diagnostic for an operator-started
+new official clone. It writes each of `1.0`, `-0`, `1e-6`, `1e-7`, `1e20`,
+`1e21`, and `1e400` once to its own new key with CAS 0, captures the exact GET
+response or error status, and performs two identical read-only raw acquisitions.
+It extracts the original numeric lexeme directly from protobuf payload JSON,
+so the observer does not itself normalize negative zero or exponent notation.
+The fixed overall budget is 120 seconds; mutations are not retried. The
+operator owns clone startup, cleanup, and proof that the original fixture
+remained unchanged. A completed diagnostic is not a migration qualification.
 
 Each controller HTTP operation has a private one-shot child, literal
 `https://127.0.0.1`, generated CA verification, no proxy or redirect, an

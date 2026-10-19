@@ -5,6 +5,9 @@ use crate::auth::Timestamp;
 pub(super) mod lossless;
 use lossless::{EntryPrecision, VersionPrecision};
 
+#[path = "kv_api_numbers.rs"]
+mod api_numbers;
+
 #[path = "kv2_native_records.rs"]
 pub mod native_records;
 
@@ -587,7 +590,13 @@ impl Kv2 {
                 false,
             ))
         } else {
-            Ok(ok(json!({"data":data,"metadata":metadata}), false))
+            let mut projected = api_numbers::project(data)?;
+            let mut body = json!({"data":{"data":null,"metadata":metadata}});
+            // Move the completed API Value directly. Serializing through an
+            // intermediate json! value would parse the valid -0 token again
+            // and turn it into integer zero in serde's value serializer.
+            body["data"]["data"] = std::mem::take(&mut projected.0);
+            Ok(EngineResponse { status:200, body, mutated:false })
         }
     }
 
@@ -621,6 +630,7 @@ impl Kv2 {
                 "check-and-set parameter did not match the current version",
             ));
         }
+        api_numbers::validate_write(new_data)?;
         let data = if patch {
             let current_value = current
                 .and_then(|entry| entry.versions.get(&current_version))

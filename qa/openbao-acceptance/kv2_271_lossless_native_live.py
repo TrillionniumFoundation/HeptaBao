@@ -39,24 +39,34 @@ PROFILES = {
     "legacy-small": (2, 4096, False),
     "native-small": (2, 4096, True),
 }
+STORAGE_CHECKS = (
+    "target_storage_full_history_exact",
+    "target_storage_cold_history_exact",
+    "restored_storage_history_exact",
+)
 CHECKS = (
     "official_271_pins_and_live_identity",
     "two_distinct_owned_processes",
+    "source_api_oracle_captured",
     "source_retained_deleted_destroyed_seeded",
     "source_metadata_cas_seeded",
     "source_cold_restart_exact",
     "target_pristine_before_import",
     "source_export_once",
+    "source_raw_history_exact",
     "exported_soft_deleted_payload_preserved",
     "source_unchanged_after_export",
     "target_import_once",
     "target_active_native_v6",
     "target_full_history_exact",
+    "target_storage_full_history_exact",
     "target_cold_restart_exact",
+    "target_storage_cold_history_exact",
     "snapshot_download",
     "post_snapshot_mutation_once",
     "snapshot_restore_once",
     "restored_cold_history_exact",
+    "restored_storage_history_exact",
     "soft_deleted_payload_undelete_exact",
     "destroyed_payload_remains_absent",
     "data_cas_denied_without_effect",
@@ -126,6 +136,11 @@ def canonical(value):
                                   for key in sorted(item)) + "}"
         raise Failure("unsupported_json_type")
     return emit(value).encode("utf-8")
+
+
+def same_json_tokens(left, right):
+    """Ignore object order, while retaining integer/decimal token precision."""
+    return canonical(left) == canonical(right)
 
 
 def private_write(path, raw, *, replace=False):
@@ -235,8 +250,10 @@ class Endpoint:
         self.run, self.label = run, label
 
     def call(self, method, path, body=None, *, archive_in=None, archive_out=None,
-             budget=HTTP_SECONDS):
+             budget=HTTP_SECONDS, response_evidence=None):
         need(0 < budget <= HTTP_SECONDS, "original_http_budget")
+        need(response_evidence is None or (method == "GET" and not archive_in and not archive_out),
+             "api_oracle_capture_read_only")
         deadline = time.monotonic() + budget
         packet = {"address": self.address, "ca_file": str(self.ca_file), "token": self.token,
                   "method": method, "path": path,
@@ -278,6 +295,13 @@ class Endpoint:
             raw = base64.b64decode(result["body"], validate=True)
             need(len(raw) <= JSON_BYTES, "http_json_response_bound")
             decoded = decode(raw) if raw else {}
+            if response_evidence is not None:
+                private_write(response_evidence, raw)
+                self.run.report.setdefault("source_api_wire_observations", []).append({
+                    "endpoint": self.label, "method": method, "path": path, "status": status,
+                    "body_bytes": len(raw), "body_sha256": hashlib.sha256(raw).hexdigest(),
+                    "private_body_path": str(response_evidence), "same_response_decoded": True,
+                })
             need(time.monotonic() < deadline, "http_original_absolute_deadline")
             return status, decoded
         finally:
@@ -302,17 +326,58 @@ def observations(endpoint, live_count):
     return {"config": config["data"], "metadata": metadata["data"], "versions": versions}
 
 
+def verify_storage_witness(response, version, source_metadata, expected_payload):
+    """Verify a precise native read independently of the public KV2 projection."""
+    need(isinstance(response, dict) and isinstance(response.get("data"), dict), "storage_witness_envelope")
+    value = response["data"]
+    need("data" not in value and "payload" not in value, "storage_witness_no_plaintext")
+    need(value.get("schema") == "heptabao-native-kv2-storage-witness-v1"
+         and value.get("canonical_profile") == "heptabao-lossless-json-v1"
+         and value.get("mount") == "secret" and value.get("path") == "history"
+         and type(value.get("version")) is int and value["version"] == version,
+         "storage_witness_exact_identity")
+    need(value.get("created_time") == source_metadata["created_time"]
+         and value.get("deletion_time") == source_metadata["deletion_time"]
+         and value.get("destroyed") is source_metadata["destroyed"],
+         "storage_witness_exact_metadata")
+    need(type(value.get("mount_incarnation")) is int
+         and 0 < value["mount_incarnation"] < (1 << 64)
+         and isinstance(value.get("source_root_sha256"), str)
+         and re.fullmatch(r"[0-9a-f]{64}", value["source_root_sha256"]) is not None
+         and type(value.get("source_publication_generation")) is int
+         and 0 <= value["source_publication_generation"] < (1 << 64),
+         "storage_witness_actual_source")
+    present = expected_payload is not None
+    raw = canonical(expected_payload) if present else b""
+    expected_hash = hashlib.sha256(raw).hexdigest() if present else None
+    need(value.get("payload_present") is present
+         and type(value.get("payload_canonical_bytes")) is int
+         and value["payload_canonical_bytes"] == len(raw)
+         and value.get("payload_canonical_sha256") == expected_hash,
+         "storage_witness_lossless_payload")
+    keys = ("schema", "canonical_profile", "mount", "path", "version", "created_time", "deletion_time",
+            "destroyed", "payload_present", "payload_canonical_bytes", "payload_canonical_sha256",
+            "mount_incarnation", "source_root_sha256", "source_publication_generation")
+    return {key: value[key] for key in keys}
+
+
 class Run:
     def __init__(self, args):
         self.args, self.root = args, args.private_work_root
         self.candidate = self.oracle = self.source = self.target = None
         self.original = self.before = None
+        self.source_api_payloads = {}
         self.secrets = []
         self.phase_number = 0
         self.report = {
             "schema": "heptabao.openbao271-kv2-lossless-native-live.v1",
             "profile": args.profile, "official_version": "2.7.1",
             "migration_lane": getattr(args, "migration_lane", "legacy"),
+            "oracle_layers": {
+                "api": "actual official OpenBao 2.7.1 GET response from each seeded version",
+                "storage": "lossless source raw/protobuf decoded bundle with original numeric tokens",
+                "target_storage_witness": "required; an API read or capacity count is insufficient",
+            },
             "checks": [], "mutations": [], "migration_invocations": [],
             "synthetic_only": True, "tls_verified": True,
             "full34_qualified": False, "full_compatibility_claim": False,
@@ -398,6 +463,8 @@ class Run:
 
     def seed_source(self, live_count, size):
         source = self.source
+        oracle_dir = self.root / "source-api-oracle"
+        oracle_dir.mkdir(mode=0o700)
         need(source.call("POST", "sys/mounts/secret",
                          {"type": "kv", "options": {"version": "2"}})[0] == 204, "source_mount")
         need(source.call("POST", "secret/config", {
@@ -409,9 +476,33 @@ class Run:
             "custom_metadata": {"purpose": "synthetic-native-migration", "revision": "first"},
         })[0] == 204, "source_initial_metadata")
         for version in range(1, live_count + 3):
+            generated = payload(version, live_count, size)
             need(source.call("POST", "secret/data/history", {
-                "data": payload(version, live_count, size), "options": {"cas": version - 1},
+                "data": generated, "options": {"cas": version - 1},
             })[0] == 200, "source_write_" + str(version))
+            # Preserve this same API response before any soft delete/destroy.
+            # OpenBao's public GET numeric projection is independently observed;
+            # its precise raw record is checked later against `generated`.
+            status, observed = source.call("GET", "secret/data/history?version=" + str(version),
+                response_evidence=oracle_dir / ("version-" + str(version).zfill(4) + ".json"))
+            need(status == 200 and isinstance(observed.get("data"), dict), "source_seeded_api_read")
+            metadata, actual = observed["data"].get("metadata"), observed["data"].get("data")
+            need(isinstance(metadata, dict) and metadata.get("version") == version
+                 and isinstance(actual, dict) and set(actual) == set(generated), "source_seeded_api_shape")
+            numeric = ("wide_integer", "exact_decimal")
+            need(all(same_json_tokens(actual[name], expected) for name, expected in generated.items() if name not in numeric)
+                 and all(type(actual[name]) is int or isinstance(actual[name], Decimal) for name in numeric),
+                 "source_seeded_non_numeric_payload_exact")
+            self.source_api_payloads[str(version)] = actual
+            self.report.setdefault("source_api_numeric_observations", []).append({
+                "version": version,
+                **{name: {"actual_token": str(actual[name]), "generated_token": str(generated[name]),
+                          "numerically_equal": actual[name] == generated[name]}
+                   for name in numeric},
+                "private_body_path": str(oracle_dir / ("version-" + str(version).zfill(4) + ".json")),
+            })
+        self.check("source_api_oracle_captured", len(self.source_api_payloads) == live_count + 2
+                   and len(self.report.get("source_api_wire_observations", [])) == live_count + 2)
         status, meta = source.call("GET", "secret/metadata/history")
         need(status == 200, "source_metadata_before_cas")
         current = meta["data"]["current_metadata_version"]
@@ -424,6 +515,10 @@ class Run:
         need(source.call("POST", "secret/destroy/history", {"versions": [2]})[0] == 204,
              "source_destroy")
         original = observations(source, live_count)
+        # Retain the actual read baseline even if a later seed predicate fails;
+        # cleanup can then reconcile this fixture's history independently of
+        # the repository/binary identity check.
+        self.original = original
         versions, metadata = original["versions"], original["metadata"]
         valid = (
             metadata["current_version"] == live_count + 2
@@ -435,7 +530,7 @@ class Run:
             and versions["2"]["data"]["data"] is None
             and versions["2"]["data"]["metadata"]["destroyed"] is True
             and all(versions[str(v)]["status"] == 200
-                    and versions[str(v)]["data"]["data"] == payload(v, live_count, size)
+                    and same_json_tokens(versions[str(v)]["data"]["data"], self.source_api_payloads[str(v)])
                     for v in range(3, live_count + 3)))
         self.check("source_retained_deleted_destroyed_seeded", valid)
         self.check("source_metadata_cas_seeded",
@@ -457,10 +552,27 @@ class Run:
             item = entry["versions"][str(version)]
             source = self.original["metadata"]["versions"][str(version)]
             need(all(item.get(key) == val for key, val in source.items()), "bundle_version_metadata")
-            need(item["data"] == (None if version == 2 else payload(version, live_count, size)),
+            need(canonical(item["data"]) == canonical(None if version == 2 else payload(version, live_count, size)),
                  "bundle_retained_payload")
-        self.check("exported_soft_deleted_payload_preserved", entry["versions"]["1"]["data"]
-                   == payload(1, live_count, size) and entry["versions"]["2"]["data"] is None)
+        self.check("source_raw_history_exact", True)
+        self.check("exported_soft_deleted_payload_preserved", canonical(entry["versions"]["1"]["data"])
+                   == canonical(payload(1, live_count, size)) and entry["versions"]["2"]["data"] is None)
+
+    def verify_target_storage(self, name, live_count, size):
+        need(name in STORAGE_CHECKS and any(row["case"] == "source_raw_history_exact" and row["passed"] is True
+                                           for row in self.report["checks"]), "storage_oracle_source_raw_required")
+        stage = {"stage": name, "source_raw_bound": True, "versions": []}
+        self.report.setdefault("target_storage_witnesses", []).append(stage)
+        self.phase("storage_witness_begin", {"stage": name})
+        for version in range(1, live_count + 3):
+            status, response = self.target.call("POST", "sys/internal/storage/kv2-version-witness", {
+                "mount": "secret", "path": "history", "version": version,
+            })
+            need(status == 200, "storage_witness_http_" + str(status))
+            expected = None if version == 2 else payload(version, live_count, size)
+            stage["versions"].append(verify_storage_witness(response, version,
+                self.original["metadata"]["versions"][str(version)], expected))
+        self.check(name, len(stage["versions"]) == live_count + 2)
 
     def cold_candidate(self):
         self.candidate.stop()
@@ -558,7 +670,7 @@ class Run:
         self.report["source_history_sha256"] = hashlib.sha256(canonical(self.original)).hexdigest()
         launcher.stop_oracle(self.oracle)
         launcher.restart_oracle(self.oracle)
-        self.check("source_cold_restart_exact", observations(self.source, live_count) == self.original)
+        self.check("source_cold_restart_exact", same_json_tokens(observations(self.source, live_count), self.original))
         need(self.target.call("POST", "sys/mounts/secret",
                               {"type": "kv", "options": {"version": "2"}})[0] == 204, "target_mount")
         if native_first:
@@ -571,7 +683,7 @@ class Run:
         self.migration("export", self.source, self.oracle["token_file"], bundle)
         self.check("source_export_once", True)
         self.verify_bundle(bundle, live_count, size)
-        self.check("source_unchanged_after_export", observations(self.source, live_count) == self.original)
+        self.check("source_unchanged_after_export", same_json_tokens(observations(self.source, live_count), self.original))
         self.migration("import", self.target, self.candidate.root / "root.token", bundle)
         self.check("target_import_once", True)
         if not native_first:
@@ -584,9 +696,11 @@ class Run:
                    and capacity.get("state_storage_format") == "heptabao-state-records-v6"
                    and capacity.get("native_kv2_reader_format") == 2
                    and capacity.get("native_kv2_logical_payload_bytes", 0) >= live_count * size)
-        self.check("target_full_history_exact", observations(self.target, live_count) == self.original)
+        self.check("target_full_history_exact", same_json_tokens(observations(self.target, live_count), self.original))
+        self.verify_target_storage("target_storage_full_history_exact", live_count, size)
         self.cold_candidate()
-        self.check("target_cold_restart_exact", observations(self.target, live_count) == self.original)
+        self.check("target_cold_restart_exact", same_json_tokens(observations(self.target, live_count), self.original))
+        self.verify_target_storage("target_storage_cold_history_exact", live_count, size)
         snapshot = self.root / "native-snapshot.tar.gz"
         status, receipt = self.target.call("GET", "sys/storage/raft/snapshot", archive_out=snapshot)
         self.report["snapshot"] = receipt
@@ -596,12 +710,13 @@ class Run:
         self.check("snapshot_restore_once", self.target.call(
             "POST", "sys/storage/raft/snapshot", archive_in=snapshot)[0] == 200)
         self.cold_candidate()
-        self.check("restored_cold_history_exact", observations(self.target, live_count) == self.original)
+        self.check("restored_cold_history_exact", same_json_tokens(observations(self.target, live_count), self.original))
+        self.verify_target_storage("restored_storage_history_exact", live_count, size)
         need(self.target.call("POST", "secret/undelete/history", {"versions": [1]})[0] == 204,
              "target_soft_undelete")
         status, restored = self.target.call("GET", "secret/data/history?version=1")
         self.check("soft_deleted_payload_undelete_exact",
-                   status == 200 and restored["data"]["data"] == payload(1, live_count, size)
+                   status == 200 and same_json_tokens(restored["data"]["data"], self.source_api_payloads["1"])
                    and restored["data"]["metadata"]["deletion_time"] == "")
         need(self.target.call("POST", "secret/undelete/history", {"versions": [2]})[0] == 204,
              "target_destroyed_undelete")
@@ -613,11 +728,11 @@ class Run:
         status, _ = self.target.call("POST", "secret/data/history",
                                     {"data": {"must_not_commit": True}, "options": {"cas": 0}})
         self.check("data_cas_denied_without_effect", status == 400
-                   and observations(self.target, live_count) == before)
+                   and same_json_tokens(observations(self.target, live_count), before))
         status, _ = self.target.call("POST", "secret/metadata/history",
                                     {"custom_metadata": {"must_not_commit": "true"}, "metadata_cas": 0})
         self.check("metadata_cas_denied_without_effect", status == 400
-                   and observations(self.target, live_count) == before)
+                   and same_json_tokens(observations(self.target, live_count), before))
         counter = before["metadata"]["current_metadata_version"]
         status, _ = self.target.call("POST", "secret/metadata/history",
                                     {"custom_metadata": {"revision": "target"},
@@ -627,13 +742,13 @@ class Run:
                    and after["metadata"]["current_metadata_version"] == counter + 1
                    and after["metadata"]["custom_metadata"] == {"revision": "target"})
         self.check("source_unchanged_after_target_mutations",
-                   observations(self.source, live_count) == self.original)
+                   same_json_tokens(observations(self.source, live_count), self.original))
 
     def finish(self):
         if self.source is not None and self.original is not None:
             try:
                 count = PROFILES[self.args.profile][0]
-                unchanged = observations(self.source, count) == self.original
+                unchanged = same_json_tokens(observations(self.source, count), self.original)
                 self.report["source_unchanged_at_cleanup"] = unchanged
                 if unchanged is not True:
                     self.report.setdefault("failure", "source_changed_at_cleanup")
@@ -690,8 +805,15 @@ class Run:
         if self.report["missing_checks"]:
             self.report.setdefault("failure", "incomplete_required_checks")
         self.report["status"] = "failed" if self.report.get("failure") else "passed"
+        self.report["target_storage_precision_qualified"] = set(STORAGE_CHECKS) <= passed
+        self.report["api_history_qualified"] = {
+            "source_api_oracle_captured", "source_retained_deleted_destroyed_seeded",
+            "source_cold_restart_exact", "target_full_history_exact", "target_cold_restart_exact",
+            "restored_cold_history_exact", "soft_deleted_payload_undelete_exact",
+        } <= passed
         self.report["full34_qualified"] = (self.report["status"] == "passed"
-                                            and self.args.profile == "full34")
+                                            and self.args.profile == "full34"
+                                            and self.report["target_storage_precision_qualified"])
         private_write(self.root / "summary.json", json.dumps(
             self.report, ensure_ascii=False, indent=2, sort_keys=True).encode())
         return 0 if self.report["status"] == "passed" else 1

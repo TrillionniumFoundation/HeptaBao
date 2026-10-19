@@ -411,11 +411,18 @@ fn kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion(
     reopened.validate_lossless_state()?;
     assert_eq!(serde_json::to_vec(&reopened)?, stored);
     assert_eq!(
+        reopened.entries.get("scheduled").ok_or("scheduled")?
+            .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),
+        &payload
+    );
+    let expected_api = lossless::decode_lossless_json(br#"{"big":1.8446744073709552e+31,"decimal":0.12345678901234568,"exponent":1.2345678901234569e+100,"fake":{"$serde_json::private::Number":"123","x":"keep"},"rawfake":{"$serde_json::private::RawValue":"null"}}"#)?;
+    assert_eq!(
         reopened
             .handle_read("GET", "data/scheduled", &json!({}), 110)?
             .body["data"]["data"],
-        payload
+        expected_api
     );
+    assert_eq!(serde_json::to_vec(&reopened)?, stored);
     let mut ordinary = Kv2::default();
     ordinary.handle(
         "POST",
@@ -493,10 +500,18 @@ fn kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads() -> TestRes
     assert!(converted.has_lossless_import_state());
     converted.validate_lossless_state()?;
     assert_eq!(
+        converted.entries.get("item").ok_or("item")?
+            .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),
+        &payload
+    );
+    let expected_api = lossless::decode_lossless_json(
+        br#"{"big":1.844674407370955e+23,"fake":{"$serde_json::private::Number":"7"}}"#,
+    )?;
+    assert_eq!(
         converted
             .handle_read("GET", "data/item", &json!({}), 100)?
             .body["data"]["data"],
-        payload
+        expected_api
     );
     let bytes = serde_json::to_vec(&converted)?;
     let reopened: Kv2 = serde_json::from_slice(&bytes)?;
@@ -600,10 +615,16 @@ fn kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent() 
     let reopened: Kv2 = serde_json::from_value(trusted_wire)?;
     reopened.validate_lossless_state()?;
     assert_eq!(
+        reopened.entries.get("item").ok_or("item")?
+            .versions.get(&5).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),
+        &payload
+    );
+    let expected_api = lossless::decode_lossless_json(br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"},"raw":{"$serde_json::private::RawValue":"[1]"}}"#)?;
+    assert_eq!(
         reopened
             .handle_read("GET", "data/item", &json!({}), 107)?
             .body["data"]["data"],
-        payload
+        expected_api
     );
     assert_eq!(serde_json::to_vec(&reopened)?, serde_json::to_vec(&engine)?);
     Ok(())
