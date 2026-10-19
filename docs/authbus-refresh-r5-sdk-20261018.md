@@ -131,3 +131,23 @@ SDK source bindings and external synchronization restrictions remain in place.
 This repair still requires a new actual-SDK fixture execution; the first failed
 attempt must not be reclassified as passed. No real provider refresh or native
 HeptaBao backend was used in this first attempt.
+
+## Actual SDK follow-up: repaired bridge passed 21 checks
+
+On 2026-10-19 at 01:26 UTC a new isolated main-host fixture executed the repaired
+bridge from commit `5ea86e1e0499a4b21e3216a350c12e81f848f86e`. All 21 checks passed
+on SDK 2026.7.1-2 and Node v22.23.3. The actual SQLite run preserved unrelated
+profiles and selection metadata, rejected stale-digest and cross-provider writes,
+and used 18 real SQLite abort triggers to prove that a failed transaction returns
+false and retains the original credential. Removing those fixture triggers then
+allowed a successful new commit and reread.
+
+The installed SDK source bytes were unchanged. Observed external network,
+subprocess, outside-fixture write and outside-fixture home-read attempts were
+all zero. The unmodified public receipt is
+`qa/openbao-acceptance/authbus/refresh-r5-sdk-actual-passed-20261019.json`
+(SHA256 `4ae5e5f5eef31845f2ab74e31e8fad4ffc466f540740531f426fc08979c05441`), with the exact command and
+source commit in the adjacent command receipt. The first failed attempt remains
+preserved separately. This qualifies the actual SDK/SQLite credential commit
+path with synthetic credentials. Shared SDK OAuth refresh caller, actual
+provider dispatch and native HeptaBao backend remain unqualified by this run.

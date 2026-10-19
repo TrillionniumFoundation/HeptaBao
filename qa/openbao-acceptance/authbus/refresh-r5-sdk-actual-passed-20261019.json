@@ -1,0 +1,149 @@
+{
+  "schema": "authbus-refresh-r5-actual-sdk-store",
+  "ok": true,
+  "syntheticCredentials": true,
+  "actualSdk": true,
+  "actualSqlite": true,
+  "actualSdkOAuthRefreshCaller": false,
+  "actualProviderRefresh": false,
+  "actualNativeHeptaBao": false,
+  "productionMutation": false,
+  "externalNetworkAttempts": 0,
+  "externalProcessAttempts": 0,
+  "outsideFixtureWriteAttempts": 0,
+  "outsideFixtureHomeReadAttempts": 0,
+  "checks": [
+    {
+      "case": "all_exact_store_modules_loaded",
+      "passed": true
+    },
+    {
+      "case": "managed_commit_bridge_loaded",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_initially_absent",
+      "passed": true
+    },
+    {
+      "case": "actual_oauth_seed_readback",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_created",
+      "passed": true
+    },
+    {
+      "case": "actual_locked_sdk_commit_success",
+      "passed": true
+    },
+    {
+      "case": "actual_new_oauth_readback",
+      "passed": true
+    },
+    {
+      "case": "unrelated_profile_preserved",
+      "passed": true
+    },
+    {
+      "case": "selection_metadata_preserved",
+      "passed": true
+    },
+    {
+      "case": "stale_sdk_credential_digest_rejected",
+      "passed": true
+    },
+    {
+      "case": "stale_commit_no_store_change",
+      "passed": true
+    },
+    {
+      "case": "cross_provider_commit_rejected",
+      "passed": true
+    },
+    {
+      "case": "cross_provider_no_store_change",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_tables_found",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_abort_not_reported_success",
+      "passed": true
+    },
+    {
+      "case": "actual_sqlite_abort_keeps_credential",
+      "passed": true
+    },
+    {
+      "case": "actual_sdk_commit_recovers_after_abort",
+      "passed": true
+    },
+    {
+      "case": "recovery_actual_readback",
+      "passed": true
+    },
+    {
+      "case": "no_external_cli_or_home_write_attempt",
+      "passed": true
+    },
+    {
+      "case": "no_external_home_credential_read",
+      "passed": true
+    },
+    {
+      "case": "no_external_network_or_process",
+      "passed": true
+    }
+  ],
+  "sourceManifest": [
+    {
+      "name": "authbus_refresh_sdk_store_live.mjs",
+      "sha256": "0f074404b73a5687982bba3f3c9b7f6f3012505c06a63a1ae9cfe4c3f5c4134d"
+    },
+    {
+      "name": "authbus_refresh_store_sdk_candidate.mjs",
+      "sha256": "dc007135540ec0241bc114dee87732716eea9bd1f6d85125cfb54f339a64591a"
+    },
+    {
+      "name": "authbus_sdk_explicit_deny_candidate.mjs",
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2"
+    },
+    {
+      "name": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    }
+  ],
+  "refreshStoreSdkModules": [
+    {
+      "relative": "dist/store-DH33UrUj.js",
+      "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+      "loaded": true
+    },
+    {
+      "relative": "dist/source-check-ZSz5NzGW.js",
+      "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+      "loaded": true
+    },
+    {
+      "relative": "dist/profiles-DyU-YCq2.js",
+      "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "candidateSha256": "f45efcec22eceba0f1534fc434337280c6918704403d4badc454151436f98938",
+      "loaded": true
+    }
+  ],
+  "sdkVersion": "2026.7.1-2",
+  "abortEvidence": {
+    "triggerCount": 18,
+    "sdkSaved": false,
+    "threw": false,
+    "beforeStoreDigest": "8e6da1d569250604a095a4cbe5b16b4e212ee8bcdf88338106108431fdaf26fc",
+    "afterStoreDigest": "8e6da1d569250604a095a4cbe5b16b4e212ee8bcdf88338106108431fdaf26fc"
+  },
+  "installedSdkUnchanged": true,
+  "checksPassed": 21
+}
