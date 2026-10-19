@@ -366,6 +366,12 @@ struct NativeGraph {
 }
 
 #[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[path = "kv2_native_import.rs"]
+mod import;
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
+pub(crate) use import::NativeKv2GraphImport;
+
+#[cfg(any(test, feature = "fixture-native-v6-service"))]
 #[path = "kv2_native_install.rs"]
 mod install;
 #[path = "kv2_native_mutation.rs"]

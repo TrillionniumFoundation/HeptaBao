@@ -1213,6 +1213,24 @@ impl Service {
         candidate: &State,
         original_gate: &mut impl FnMut(&AuthState) -> Result<(), Response>,
     ) -> Result<NativeRootMigrationPlan, Response> {
+        self.prepare_native_live_root_with_import_checked(candidate, None, original_gate)
+    }
+
+    pub(super) fn prepare_native_kv2_import_root_checked(
+        &mut self,
+        candidate: &State,
+        import: crate::engines::kv2_native_records::NativeKv2GraphImport,
+        original_gate: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+    ) -> Result<NativeRootMigrationPlan, Response> {
+        self.prepare_native_live_root_with_import_checked(candidate, Some(import), original_gate)
+    }
+
+    fn prepare_native_live_root_with_import_checked(
+        &mut self,
+        candidate: &State,
+        import: Option<crate::engines::kv2_native_records::NativeKv2GraphImport>,
+        original_gate: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+    ) -> Result<NativeRootMigrationPlan, Response> {
         let rejected = || Response::error(503, "native live candidate custody rejected");
         let deadline =
             crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| rejected())?;
@@ -1300,6 +1318,17 @@ impl Service {
         }
         .map_err(|_| rejected())?;
         root.kv2 = graphs;
+        if let Some(import) = import {
+            if root.reader_floor.native_kv2_format != 2 {
+                return Err(rejected());
+            }
+            // The imported view contains metadata only. Its payload closure
+            // is admitted solely by this opaque, exact scope/root witness.
+            // The ordinary planner never receives an arbitrary object map.
+            import.visit_for(&root.kv2, &check, |scope, object| {
+                stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
+            }).map_err(|_| rejected())?;
+        }
         let metadata = EngineMetadata {
             format: ENGINE_FORMAT.into(),
             opaque,

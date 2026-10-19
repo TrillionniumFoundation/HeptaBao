@@ -146,6 +146,9 @@ const KV2_LOSSLESS_STATE_SCHEMA: u32 = 120;
 pub(crate) const GLOBAL_LOSSLESS_JSON_STATE_SCHEMA: u32 = 120;
 #[path = "service_kv2_import.rs"]
 mod kv2_import;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_kv2_import.rs"]
+mod native_kv2_import;
 #[cfg(test)]
 #[path = "service_kv2_import_tests.rs"]
 mod kv2_import_tests;
@@ -4071,6 +4074,7 @@ impl Service {
             if self.native_root.is_some()
                 && !native_snapshot_route
                 && !native_local_auth
+                && path != "sys/migration/openbao/kv2"
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -4138,6 +4142,10 @@ impl Service {
             resumed_control_group,
         ) {
             return response;
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if self.native_root.is_some() && path == "sys/migration/openbao/kv2" {
+            return self.dispatch_native_kv2_import(admitted, principal.take(), &request);
         }
         #[cfg(feature = "fixture-native-v6-service")]
         if native_local_auth {

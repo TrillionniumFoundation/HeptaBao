@@ -210,6 +210,7 @@ jobs:
               'peer': run('compile-peer-tests', peer + ['--no-run'])['exit_code'] == 0,
           }
           groups = [
+              ('native-kv2-import', 'server', 'native_kv2_graph_import_', 8),
               ('historical-service', 'server', 'native_ha_historical_restore_', 6),
               ('snapshot-service', 'server', 'native_ha_snapshot_', 7),
               ('archive-34mib', 'server', 'native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs', 1),

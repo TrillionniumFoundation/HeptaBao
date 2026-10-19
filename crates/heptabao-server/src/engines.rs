@@ -37,6 +37,9 @@ mod kv;
 pub use kv::native_records as kv2_native_records;
 #[path = "engine_kv2_import.rs"]
 mod kv2_import;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "engine_kv2_native_import.rs"]
+mod kv2_native_import;
 #[cfg(test)]
 pub(crate) use kv::lossless::decode_lossless_json;
 pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
