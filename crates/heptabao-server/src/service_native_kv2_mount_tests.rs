@@ -359,8 +359,8 @@ fn native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_h
     mounted(&mut service, &root, "runtime", 1, 1)?;
     let mut unrelated = graphs(&service)?;
     unrelated.retain(|graph| graph.scope.mount != "runtime/");
-    assert_eq!(
-        unrelated, original_graphs,
+    assert!(
+        unrelated == original_graphs,
         "creating one mount cannot rewrite other payload graphs"
     );
     let value = crate::engines::decode_lossless_json(PAYLOAD)?;
@@ -400,9 +400,8 @@ fn native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_h
         204
     );
     mounted(&mut service, &root, "runtime", 1, 2)?;
-    assert_eq!(
-        graphs(&service)?,
-        before_tune,
+    assert!(
+        graphs(&service)? == before_tune,
         "tuning metadata cannot replace secret history"
     );
     exact_history(&mut service, &root)?;
@@ -591,7 +590,10 @@ fn native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs() -> T
             501
         );
     }
-    assert_eq!(graphs(&service)?, before);
+    assert!(
+        graphs(&service)? == before,
+        "permission and backend refusals cannot rewrite payload graphs"
+    );
     assert_eq!(
         call(
             &mut service,
@@ -674,7 +676,10 @@ fn native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs() -> T
         .status,
         400
     );
-    assert_eq!(graphs(&service)?, guarded);
+    assert!(
+        graphs(&service)? == guarded,
+        "ACL, CAS, and schema refusals cannot rewrite payload graphs"
+    );
     mounted(&mut service, &root, "guarded", 1, 1)?;
     assert!(!service.recovery_required && !service.audit_failed);
     Ok(())

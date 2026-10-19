@@ -71,7 +71,7 @@ impl MountScope {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Kv2GraphRef {
     pub scope: MountScope,
