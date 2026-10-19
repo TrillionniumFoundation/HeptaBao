@@ -312,6 +312,7 @@ class Run:
         self.report = {
             "schema": "heptabao.openbao271-kv2-lossless-native-live.v1",
             "profile": args.profile, "official_version": "2.7.1",
+            "migration_lane": getattr(args, "migration_lane", "legacy"),
             "checks": [], "mutations": [], "migration_invocations": [],
             "synthetic_only": True, "tls_verified": True,
             "full34_qualified": False, "full_compatibility_claim": False,
@@ -336,8 +337,12 @@ class Run:
     def migration(self, operation, endpoint, token_file, bundle):
         need(operation not in [row["operation"] for row in self.report["migration_invocations"]],
              "migration_must_not_retry")
+        lane = getattr(self.args, "migration_lane", "legacy")
+        script = {"legacy": "openbao270_kv2_migrate.py",
+                  "native-large": "openbao271_kv2_native_large_migrate.py"}.get(lane)
+        need(script is not None, "explicit_migration_lane")
         end = time.monotonic() + MIGRATION_SECONDS
-        row = {"operation": operation, "status": "unknown", "retried": False,
+        row = {"operation": operation, "lane": lane, "status": "unknown", "retried": False,
                "original_budget_seconds": MIGRATION_SECONDS}
         self.report["migration_invocations"].append(row)
         self.phase("migration_begin", row)
@@ -348,7 +353,7 @@ class Run:
         # supervisor would allow its separate session to outlive our deadline.
         process = subprocess.Popen(
             [sys.executable, "-I", "-S", "-B",
-             str(ROOT / "tools/migration/openbao270_kv2_migrate.py"), "--_owned-worker"],
+             str(ROOT / "tools/migration" / script), "--_owned-worker"],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             start_new_session=True)
         row.update(pid=process.pid, pgid=process.pid, original_popen=True)
@@ -372,6 +377,7 @@ class Run:
             need(process.returncode == 0 and not errors, operation + "_worker_failed")
             receipt = json.loads(stdout)
             need(receipt.get("operation") == operation, "migration_receipt_operation")
+            need(lane != "native-large" or receipt.get("lane") == lane, "migration_receipt_lane")
             if operation == "import":
                 need(receipt.get("status") == 204, "migration_import_receipt_status")
             row.update(status="completed", receipt=receipt)
@@ -696,8 +702,11 @@ def main(argv=None):
     parser.add_argument("--binary", required=True, type=Path)
     parser.add_argument("--private-work-root", required=True, type=Path)
     parser.add_argument("--profile", choices=tuple(PROFILES), default="full34")
+    parser.add_argument("--migration-lane", choices=("legacy", "native-large"), default="legacy")
     args = parser.parse_args(argv)
     need(os.name == "posix", "owned_posix_process_groups_required")
+    need(args.migration_lane != "native-large" or PROFILES[args.profile][2],
+         "native_large_requires_native_before_import")
     need(args.binary.is_absolute() and args.private_work_root.is_absolute(), "absolute_paths_required")
     args.binary = args.binary.resolve(strict=True)
     parent = args.private_work_root.parent

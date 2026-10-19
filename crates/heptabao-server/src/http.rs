@@ -2392,6 +2392,17 @@ fn merge_query_fields(
         let value = Zeroizing::new(
             decode_query(value).map_err(|error| error.with_health_context(method, path))?,
         );
+        #[cfg(feature = "fixture-native-v6-service")]
+        if method == "POST" && path == crate::engines::kv2_native_large::PATH {
+            // This private upload selector is not a global query capability.
+            // Keep even numeric/boolean-looking mount names as exact strings;
+            // the admitted native engine separately checks canonical ownership.
+            if key != "mount" || !object.is_empty() || value.is_empty() || value.len() > 1024 {
+                return Err(invalid_query("native-large KV2 requires one mount query"));
+            }
+            object.insert(key, Value::String(value.to_string()));
+            continue;
+        }
         // OpenBao's health handler consumes these five query fields. Its Go
         // client also sends compatibility fields (including "haunhealhty")
         // which that handler ignores; they do not select an unimplemented mode.

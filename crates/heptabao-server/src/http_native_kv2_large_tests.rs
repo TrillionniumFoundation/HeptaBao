@@ -16,8 +16,11 @@ impl Read for HeaderOnly {
     }
 }
 fn header(route: &str, media: &str, framing: &str) -> HeaderOnly {
+    header_query(route, "mount=secret", media, framing)
+}
+fn header_query(route: &str, query: &str, media: &str, framing: &str) -> HeaderOnly {
     HeaderOnly { header: io::Cursor::new(format!(
-        "POST /v1/{route}?mount=secret HTTP/1.1\r\nHost: local\r\nContent-Type: {media}\r\n{framing}\r\n",
+        "POST /v1/{route}?{query} HTTP/1.1\r\nHost: local\r\nContent-Type: {media}\r\n{framing}\r\n",
     ).into_bytes()), body_reads: 0 }
 }
 
@@ -37,6 +40,14 @@ fn native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits() -> Tes
         .ok_or("legacy limit must reject")?;
     assert_eq!(rejected.status, 413);
     assert_eq!(legacy.body_reads, 0);
+    for (query, mount) in [("mount=123", "123"), ("mount=true", "true"),
+        ("mount=parent%2Fchild", "parent/child")] {
+        let mut input = header_query(PATH, query, MEDIA_TYPE, "Content-Length: 35660000\r\n");
+        let request = read_request_mode(&mut input, Duration::from_secs(5), true)
+            .map_err(|_| "native-large mount query rejected")?;
+        assert_eq!(request.body.0, json!({"mount":mount}));
+        assert_eq!(input.body_reads, 0);
+    }
     Ok(())
 }
 
@@ -58,6 +69,16 @@ fn native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body() -
         let mut input = header(route, MEDIA_TYPE, "Content-Length: 35660000\r\n");
         assert!(read_request_mode(&mut input, Duration::from_secs(5), true).is_err());
         assert_eq!(input.body_reads, 0);
+    }
+    for query in ["mount=secret&mount=secret", "mount=secret&%6dount=other",
+        "mount=secret&version=1", "version=1&mount=secret", "other=secret", "mount="] {
+        let mut input = header_query(PATH, query, MEDIA_TYPE, "Content-Length: 35660000\r\n");
+        assert!(read_request_mode(&mut input, Duration::from_secs(5), true).is_err());
+        assert_eq!(input.body_reads, 0);
+    }
+    for (method, path) in [("GET", PATH), ("POST", "sys/migration/openbao/kv2"),
+        ("POST", "secret/data/item")] {
+        assert!(merge_query_fields(method, path, "mount=secret", &mut json!({})).is_err());
     }
     Ok(())
 }

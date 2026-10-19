@@ -1,5 +1,6 @@
 """Strict OpenBao 2.7 KV2 raw projection, established from compiled black-box records."""
 import datetime
+from dataclasses import dataclass
 import decimal
 import hashlib
 import json
@@ -17,6 +18,23 @@ def need(ok, label):
     if not ok:
         raise DecodeError(label)
 
+@dataclass(frozen=True)
+class Bounds:
+    """Immutable decoder policy; legacy callers retain their exact old limits."""
+    record_bytes: int = MAX_RECORD
+    total_bytes: int = MAX_TOTAL
+
+    def __post_init__(self):
+        need(type(self.record_bytes) is int and type(self.total_bytes) is int
+             and 0 < self.record_bytes <= 4 * 1024 * 1024
+             and self.record_bytes <= self.total_bytes <= MAX_TOTAL,
+             "invalid decoder bounds")
+
+
+LEGACY_BOUNDS = Bounds()
+NATIVE_LARGE_BOUNDS = Bounds(record_bytes=4 * 1024 * 1024)
+
+
 def varint(raw, pos):
     value = 0
     start = pos
@@ -31,8 +49,8 @@ def varint(raw, pos):
             return value, pos
     raise DecodeError("varint overflow")
 
-def message(raw, allowed, repeated=()):
-    need(isinstance(raw, bytes) and len(raw) <= MAX_RECORD, "record bound")
+def message(raw, allowed, repeated=(), *, bounds=LEGACY_BOUNDS):
+    need(isinstance(raw, bytes) and len(raw) <= bounds.record_bytes, "record bound")
     out = {}
     pos = count = 0
     while pos < len(raw):
@@ -65,41 +83,41 @@ def boolean(value):
     need(value in (0, 1), "invalid protobuf bool")
     return value == 1
 
-def timestamp(raw):
-    parts = message(raw, {1: 0, 2: 0})
+def timestamp(raw, *, bounds=LEGACY_BOUNDS):
+    parts = message(raw, {1: 0, 2: 0}, bounds=bounds)
     seconds, nanos = parts.get(1, 0), parts.get(2, 0)
     need(seconds <= 253402300799 and 0 <= nanos < 1000000000, "timestamp range")
     value = datetime.datetime.fromtimestamp(seconds, datetime.timezone.utc)
     fraction = ("." + str(nanos).zfill(9).rstrip("0")) if nanos else ""
     return value.strftime("%Y-%m-%dT%H:%M:%S") + fraction + "Z"
 
-def duration(raw):
-    parts = message(raw, {1: 0, 2: 0})
+def duration(raw, *, bounds=LEGACY_BOUNDS):
+    parts = message(raw, {1: 0, 2: 0}, bounds=bounds)
     seconds, nanos = parts.get(1, 0), parts.get(2, 0)
     need(seconds * 1000000000 + nanos <= 315360000 * 1000000000
          and 0 <= nanos < 1000000000, "duration exceeds current native import bound")
     fraction = ("." + str(nanos).zfill(9).rstrip("0")) if nanos else ""
     return str(seconds) + fraction + "s"
 
-def config(raw):
-    fields = message(raw, {1: 0, 2: 0, 3: 2, 400: 0})
+def config(raw, *, bounds=LEGACY_BOUNDS):
+    fields = message(raw, {1: 0, 2: 0, 3: 2, 400: 0}, bounds=bounds)
     return {"max_versions": fields.get(1, 0),
             "cas_required": boolean(fields.get(2, 0)),
             "metadata_cas_required": boolean(fields.get(400, 0)),
-            "delete_version_after": duration(fields.get(3, b""))}
+            "delete_version_after": duration(fields.get(3, b""), bounds=bounds)}
 
-def pairs(values):
+def pairs(values, *, bounds=LEGACY_BOUNDS):
     out = {}
     for raw in values:
-        entry = message(raw, {1: 2, 2: 2})
+        entry = message(raw, {1: 2, 2: 2}, bounds=bounds)
         key = utf8(entry.get(1, b""))
         need(key not in out, "duplicate protobuf map key")
         out[key] = utf8(entry.get(2, b""))
     return out
 
-def key_metadata(raw):
+def key_metadata(raw, *, bounds=LEGACY_BOUNDS):
     fields = message(raw, {1: 2, 2: 2, 3: 0, 4: 0, 5: 2, 6: 2,
-                           7: 0, 8: 0, 9: 2, 10: 2, 400: 0, 401: 0}, (2, 10))
+                           7: 0, 8: 0, 9: 2, 10: 2, 400: 0, 401: 0}, (2, 10), bounds=bounds)
     name = utf8(fields.get(1, b""))
     need(name and len(name.encode()) <= 1024 and not name.startswith("/")
          and all(x not in ("", ".", "..") for x in name.split("/"))
@@ -107,13 +125,13 @@ def key_metadata(raw):
                      for c in name), "logical key exceeds current native canonical bound")
     versions = {}
     for raw_map in fields.get(2, []):
-        item = message(raw_map, {1: 0, 2: 2})
+        item = message(raw_map, {1: 0, 2: 2}, bounds=bounds)
         index = item.get(1, 0)
         need(index > 0 and str(index) not in versions, "duplicate or zero version")
-        vm = message(item.get(2, b""), {1: 2, 2: 2, 3: 0})
+        vm = message(item.get(2, b""), {1: 2, 2: 2, 3: 0}, bounds=bounds)
         need(1 in vm, "version creation timestamp missing")
-        versions[str(index)] = {"created_time": timestamp(vm[1]),
-                               "deletion_time": timestamp(vm[2]) if 2 in vm else "",
+        versions[str(index)] = {"created_time": timestamp(vm[1], bounds=bounds),
+                               "deletion_time": timestamp(vm[2], bounds=bounds) if 2 in vm else "",
                                "destroyed": boolean(vm.get(3, 0)),
                                "source_deletion_time": "",
                                "data": None}
@@ -124,15 +142,15 @@ def key_metadata(raw):
     need(current <= (1 << 63) - 1 and len(versions) == expected
          and (current != 0 or floor == 0), "incomplete current native retained history")
     need(current == 0 or str(current) in versions, "current version record missing")
-    metadata = {"created_time": timestamp(fields[5]) if 5 in fields else "",
-                "updated_time": timestamp(fields[6]) if 6 in fields else "",
+    metadata = {"created_time": timestamp(fields[5], bounds=bounds) if 5 in fields else "",
+                "updated_time": timestamp(fields[6], bounds=bounds) if 6 in fields else "",
                 "current_version": current, "oldest_version": floor,
                 "current_metadata_version": fields.get(401, 0),
                 "max_versions": fields.get(7, 0),
                 "cas_required": boolean(fields.get(8, 0)),
                 "metadata_cas_required": boolean(fields.get(400, 0)),
-                "delete_version_after": duration(fields.get(9, b"")),
-                "custom_metadata": pairs(fields[10]) if 10 in fields else None,
+                "delete_version_after": duration(fields.get(9, b""), bounds=bounds),
+                "custom_metadata": pairs(fields[10], bounds=bounds) if 10 in fields else None,
                 "versions": versions}
     return name, metadata
 
@@ -150,10 +168,10 @@ def unique_object(items):
         out[key] = value
     return out
 
-def lossless_json(raw):
+def lossless_json(raw, *, bounds=LEGACY_BOUNDS):
     def invalid_constant(_):
         raise DecodeError("invalid JSON constant")
-    need(isinstance(raw, bytes) and len(raw) <= MAX_RECORD, "JSON UTF8 byte bound")
+    need(isinstance(raw, bytes) and len(raw) <= bounds.record_bytes, "JSON UTF8 byte bound")
     try:
         value = json.loads(utf8(raw), object_pairs_hook=unique_object,
                            parse_int=decimal.Decimal, parse_float=decimal.Decimal,
@@ -187,16 +205,16 @@ def dumps_lossless(value):
                               for k, v in value.items()) + "}"
     raise DecodeError("unexpected JSON value type")
 
-def decode_records(records):
+def decode_records(records, *, bounds=LEGACY_BOUNDS):
     need(isinstance(records, list) and 0 < len(records) <= MAX_RECORDS, "record count")
     by_path = {}
     total = 0
     for path, raw in records:
         need(isinstance(path, str) and isinstance(raw, bytes) and path not in by_path,
              "duplicate or invalid raw record")
-        need(len(raw) <= MAX_RECORD, "record bound")
+        need(len(raw) <= bounds.record_bytes, "record bound")
         total += len(raw)
-        need(total <= MAX_TOTAL, "aggregate record bound")
+        need(total <= bounds.total_bytes, "aggregate record bound")
         by_path[path] = raw
     roots = [p[:-6] for p in by_path if p.endswith("/config")]
     need(len(roots) == 1, "unique mount config required")
@@ -216,7 +234,7 @@ def decode_records(records):
                  "version storage locator shape")
             version_records[path] = raw
         elif relative.startswith("metadata/"):
-            name, meta = key_metadata(raw)
+            name, meta = key_metadata(raw, bounds=bounds)
             need(name not in entries, "duplicate logical metadata")
             entries[name] = meta
         else:
@@ -230,14 +248,15 @@ def decode_records(records):
                 need(path not in version_records, "destroyed version retains payload")
                 continue
             need(path in version_records and path not in consumed, "version payload missing or aliased")
-            fields = message(version_records[path], {1: 2, 2: 2, 3: 2})
-            vm["source_deletion_time"] = timestamp(fields[3]) if 3 in fields else ""
+            fields = message(version_records[path], {1: 2, 2: 2, 3: 2}, bounds=bounds)
+            vm["source_deletion_time"] = timestamp(fields[3], bounds=bounds) if 3 in fields else ""
             need(1 in fields and 2 in fields, "version payload fields missing")
-            need(timestamp(fields[2]) == vm["created_time"], "version creation mismatch")
-            data = lossless_json(fields[1])
+            need(timestamp(fields[2], bounds=bounds) == vm["created_time"], "version creation mismatch")
+            data = lossless_json(fields[1], bounds=bounds)
             need(isinstance(data, dict), "version data must be object")
             vm["data"] = data
             consumed.add(path)
     need(consumed == set(version_records), "orphan raw version payload")
     return {"schema": "openbao270-kv2-lossless-v1",
-            "config": config(by_path[root + "config"]), "entries": entries}
+            "config": config(by_path[root + "config"], bounds=bounds), "entries": entries}
+

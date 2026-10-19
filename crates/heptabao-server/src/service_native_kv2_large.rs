@@ -14,6 +14,17 @@ fn rejected() -> Response {
     Response::error(503, "native-large KV2 original custody rejected")
 }
 
+type DeliveryCheckpoint = (StateIdentity, plugin::PublicationGeneration);
+
+fn committed_delivery_rejected() -> Response {
+    Response {
+        status: 503,
+        body: json!({"errors":["native-large KV2 import committed but delivery custody rejected; reopen authoritative storage"],
+            "recovery_required":true,"retry_allowed":false}),
+        unwrapped_json: None, response_headers: Default::default(), consistency_index: None,
+    }
+}
+
 pub(super) struct TransferPlan {
     actor: Principal,
     clock: RequestClock,
@@ -49,7 +60,7 @@ impl Drop for ImportLease {
 impl TransferPlan {
     pub(super) fn original_deadline(&self) -> Instant { self.deadline.instant() }
 
-    fn authorize(&self, auth: &AuthState) -> Result<(), Response> {
+    fn authorize_actor(&self, auth: &AuthState) -> Result<(), Response> {
         self.deadline.check().map_err(|_| rejected())?;
         let time = self.clock.with_seconds_floor(self.now)
             .and_then(RequestClock::observed_at)
@@ -61,6 +72,11 @@ impl TransferPlan {
         auth.authorize_sudo_request_observed(
             &self.actor, "", PATH, "update", time,
         ).map_err(|error| Response::error(error.status, &error.message))?;
+        self.deadline.check().map_err(|_| rejected())
+    }
+
+    fn authorize(&self, auth: &AuthState) -> Result<(), Response> {
+        self.authorize_actor(auth)?;
         if owner_store::serialize_owner(auth).map_err(|_| rejected())?.as_slice()
             != self.source_auth.as_slice()
         {
@@ -121,6 +137,16 @@ impl Service {
             let mount = fields.get("mount").and_then(Value::as_str)
                 .filter(|mount| !mount.is_empty() && mount.len() <= 1024)
                 .ok_or_else(|| Response::error(400, "native-large KV2 mount is required"))?;
+            // Refuse an update-only actor before disclosing whether a named
+            // mount is pristine/native or touching its durable custody. This is
+            // the same original clock/actor later retained by the affine plan.
+            let time = clock.with_seconds_floor(request.now)
+                .and_then(RequestClock::observed_at).map(AuthorityTime::Precise)
+                .map_err(|_| rejected())?;
+            admitted.auth.authorize_sudo_request_observed(
+                &actor, "", PATH, "update", time,
+            ).map_err(|error| Response::error(error.status, &error.message))?;
+            deadline.check().map_err(|_| rejected())?;
             self.require_native_root_candidate(&admitted)?;
             let root = self.native_root.as_ref().ok_or_else(|| Response::error(501,
                 "native-large KV2 requires activated paged V6 storage"))?;
@@ -164,10 +190,24 @@ impl Service {
 
     pub(super) fn complete_native_kv2_large(
         &mut self,
+        plan: TransferPlan,
+        result: Result<NativeKv2GraphImport, Response>,
+        fingerprint: &str,
+        clock: (u64, Option<RequestClock>),
+    ) -> Response {
+        self.complete_native_kv2_large_with_receipt(plan, result, fingerprint, clock, || {})
+    }
+
+    // Keep the actual existing mandatory audit hook in the implementation;
+    // tests can expire the original actor after a successful real audit without
+    // replacing the actor, clock, publication, or audit with a synthetic result.
+    pub(super) fn complete_native_kv2_large_with_receipt(
+        &mut self,
         mut plan: TransferPlan,
         result: Result<NativeKv2GraphImport, Response>,
         fingerprint: &str,
         clock: (u64, Option<RequestClock>),
+        after_audit: impl FnOnce(),
     ) -> Response {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline.instant());
         if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
@@ -177,20 +217,75 @@ impl Service {
         self.native_request_binding = plan.native_request_binding.take();
         let response = self.finalize_native_kv2_large(&mut plan, result);
         let committed = response.status == 204;
-        let mut response = self.audit_completed_response(fingerprint, clock.0, clock.1, response);
-        // A terminal deadline/audit failure cannot deliver success or retain a
-        // stale live cache after publication. Existing native failure custody
-        // keeps uncertain append results tied to this original request.
-        if plan.deadline.check().is_err() || committed && response.status != 204 {
+        // A terminal observation may legitimately publish one Auth clock floor.
+        // Capture the imported root/frontier now, then accept only the affine
+        // receipt for that exact self-write. A newer unrelated root is no grant.
+        let checkpoint = if committed { self.native_kv2_large_checkpoint().ok() } else { None };
+        let (mut response, receipt) = self.audit_completed_response_with_clock_receipt(
+            fingerprint, clock, response, after_audit, committed,
+        );
+        let delivery = if committed && response.status == 204 {
+            self.check_native_kv2_large_delivery(&plan, checkpoint, receipt)
+        } else if committed {
+            Err(rejected())
+        } else {
+            plan.deadline.check().map_err(|_| rejected())
+        };
+        if delivery.is_err() {
             if committed {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                // The already committed import is never mislabeled as a safe
+                // retry. Audit this negative delivery decision after withholding
+                // all success metadata, even when the ordinary audit succeeded.
+                erase_json(&mut response.body);
+                let _negative_audit = self.audit_event(
+                    "native-large-kv2-delivery-veto", fingerprint, clock.0, Some(503),
+                );
+                response = committed_delivery_rejected();
+            } else {
+                response = rejected();
             }
-            response = rejected();
         }
         self.retire_native_external_binding(fingerprint, clock.1);
         response
+    }
+
+    fn native_kv2_large_checkpoint(&self) -> Result<DeliveryCheckpoint, Response> {
+        let identity = self.current_state_identity()?;
+        if !matches!(identity, StateIdentity::RecordsV6(_)) { return Err(rejected()); }
+        Ok((identity, self.external_effect_generation()?))
+    }
+
+    fn check_native_kv2_large_delivery(
+        &mut self,
+        plan: &TransferPlan,
+        mut checkpoint: Option<DeliveryCheckpoint>,
+        receipt: Option<token_precision::TerminalClockReceipt>,
+    ) -> Result<(), Response> {
+        plan.deadline.check().map_err(|_| rejected())?;
+        if checkpoint.is_none() { return Err(rejected()); }
+        if let Some(receipt) = receipt {
+            let before = checkpoint;
+            receipt.advance(&mut checkpoint);
+            // advance is an exact-before match; a mismatched receipt remains
+            // unchanged. Refuse it rather than accepting the current integer.
+            if checkpoint == before { return Err(rejected()); }
+        }
+        if self.recovery_required || self.audit_failed || self.barrier_key.is_none()
+            || self.ha.is_some() || self.unseal_nonce.as_str() != plan.activation.as_str()
+            || plan.lease.as_ref().is_none_or(|lease| !lease.matches(&self.native_kv2_large_flight))
+            || checkpoint != Some(self.native_kv2_large_checkpoint()?)
+        { return Err(rejected()); }
+        self.durable.as_mut().ok_or_else(rejected)?.verify_live_ownership()
+            .map_err(|_| rejected())?;
+        // Neither a terminal floor nor another token owner can renew the
+        // original actor. Observe it against the immutable admitted Auth first,
+        // then the exact receipt-bound current Auth, without authenticating anew.
+        plan.authorize(&plan.admitted.auth)?;
+        plan.authorize_actor(&self.state.as_ref().ok_or_else(rejected)?.auth)?;
+        plan.deadline.check().map_err(|_| rejected())
     }
 
     fn finalize_native_kv2_large(

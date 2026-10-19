@@ -162,10 +162,12 @@ fn native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_b
     let bytes = encode(&fixture_bundle(false)?)?;
     let old = selected_graph(&native)?;
     for actor in ["", denied.as_str()] {
-        let (next, response, reads) = upload_http(native, actor, "secret", &bytes)?;
-        native = next;
-        assert_eq!(response.status, 403); assert_eq!(reads, 0);
-        assert!(same_graph(&selected_graph(&native)?, &old));
+        for mount in ["secret", "keep"] {
+            let (next, response, reads) = upload_http(native, actor, mount, &bytes)?;
+            native = next;
+            assert_eq!(response.status, 403); assert_eq!(reads, 0);
+            assert!(same_graph(&selected_graph(&native)?, &old));
+        }
     }
     assert_eq!(call(&mut native, "POST", PATH, &token, json!({"mount":"secret"})).status, 501);
     let (next, response, reads) = upload_http(native, &token, "keep", &bytes)?;
@@ -277,5 +279,107 @@ fn native_large_kv2_service_root_lost_ack_reopens_complete_once() -> TestResult 
     let (mut native, response, reads) = upload_http(native, &token, "secret", &bytes)?;
     assert_eq!(response.status, 409); assert_eq!(reads, 0);
     assert_imported(&mut native, &token, true)?;
+    Ok(())
+}
+
+fn large_actor_policy(native: &mut Service, admin: &str) {
+    assert_eq!(call(native, "PUT", "sys/policies/acl/large-terminal-sudo", admin,
+        json!({"policy":format!("path \"{PATH}\" {{ capabilities=[\"update\",\"sudo\"] }}")})).status, 204);
+}
+
+fn finish_after_audit(
+    native: &mut Service,
+    pending: PendingExternalRequest,
+    result: ExternalEffectResult,
+    after_audit: impl FnOnce(),
+) -> TestResult<Response> {
+    let _raw_reply_ingress = crate::auth::IngressReplyScope::restore(pending.raw_reply_ingress.clone());
+    match (pending.effect, result) {
+        (ExternalEffectPlan::NativeKv2Large(plan), ExternalEffectResult::NativeKv2Large(result)) =>
+            Ok(native.complete_native_kv2_large_with_receipt(
+                *plan, result, &pending.fingerprint, (pending.now, pending.token_clock), after_audit,
+            )),
+        _ => Err("actual native-large transfer was not prepared".into()),
+    }
+}
+
+#[test]
+fn native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor() -> TestResult {
+    let (files, mut native, key, admin) = initialized()?;
+    large_actor_policy(&mut native, &admin);
+    activate(&mut native, &admin);
+    let bytes = encode(&fixture_bundle(false)?)?;
+    let mut issued = call(&mut native, "POST", "auth/token/create", &admin,
+        json!({"policies":["large-terminal-sudo"],"no_default_policy":true,"ttl":"1h","num_uses":2}));
+    assert_eq!(issued.status, 200);
+    let actor = Zeroizing::new(issued.body["auth"]["client_token"].as_str().ok_or("actual actor")?.to_owned());
+    erase_json(&mut issued.body);
+    let mut pending = begin(&mut native, &actor, Instant::now() + Duration::from_secs(30))?;
+    // Finite-use admission has already published its one use. The import does
+    // not change Auth; a subsequent Auth change here is the real terminal floor.
+    let admitted_auth = owner_store::serialize_owner(&native.state.as_ref().ok_or("state")?.auth)?;
+    let result = pending.execute_native_kv2_large_transfer(&mut &bytes[..]);
+    let audit_seen = std::cell::Cell::new(false);
+    let response = finish_after_audit(&mut native, *pending, result, || audit_seen.set(true))?;
+    assert!(audit_seen.get()); assert_eq!(response.status, 204);
+    assert!(!native.recovery_required); assert!(!native.audit_failed);
+    let completed_auth = owner_store::serialize_owner(&native.state.as_ref().ok_or("state")?.auth)?;
+    assert!(admitted_auth.as_slice() != completed_auth.as_slice());
+    let mut lookup = call(&mut native, "POST", "auth/token/lookup", &admin, json!({"token":actor.as_str()}));
+    assert_eq!(lookup.status, 200); assert_eq!(lookup.body["data"]["num_uses"], 1);
+    erase_json(&mut lookup.body);
+    assert_imported(&mut native, &admin, false)?;
+    drop(native);
+    let mut native = reopen(&files, &key)?;
+    assert_imported(&mut native, &admin, false)?;
+    let mut lookup = call(&mut native, "POST", "auth/token/lookup", &admin, json!({"token":actor.as_str()}));
+    assert_eq!(lookup.status, 200); assert_eq!(lookup.body["data"]["num_uses"], 1);
+    erase_json(&mut lookup.body);
+    Ok(())
+}
+
+#[test]
+fn native_large_kv2_service_original_actor_expires_after_real_audit() -> TestResult {
+    let (files, mut native, key, admin) = initialized()?;
+    large_actor_policy(&mut native, &admin);
+    activate(&mut native, &admin);
+    let bytes = encode(&fixture_bundle(false)?)?;
+    let mut issued = call(&mut native, "POST", "auth/token/create", &admin,
+        json!({"policies":["large-terminal-sudo"],"no_default_policy":true,"ttl":"2s","explicit_max_ttl":"2s"}));
+    assert_eq!(issued.status, 200);
+    let actor = Zeroizing::new(issued.body["auth"]["client_token"].as_str().ok_or("actual actor")?.to_owned());
+    erase_json(&mut issued.body);
+    let original_deadline = Instant::now() + Duration::from_secs(30);
+    let mut pending = begin(&mut native, &actor, original_deadline)?;
+    let result = pending.execute_native_kv2_large_transfer(&mut &bytes[..]);
+    let audit_seen = std::cell::Cell::new(false);
+    let response = finish_after_audit(&mut native, *pending, result, || {
+        audit_seen.set(true);
+        std::thread::sleep(Duration::from_millis(2100));
+    })?;
+    assert!(audit_seen.get()); assert!(Instant::now() < original_deadline);
+    assert_eq!(response.status, 503);
+    assert_eq!(response.body["retry_allowed"], false);
+    assert_eq!(response.body["recovery_required"], true);
+    assert!(response.body.get("auth").is_none()); assert!(response.body.get("data").is_none());
+    assert!(response.unwrapped_json.is_none()); assert!(response.consistency_index.is_none());
+    assert!(native.recovery_required); assert!(!native.audit_failed);
+    let audit = std::fs::read_to_string(files.path.join("audit.jsonl"))?;
+    let records = audit.lines().map(serde_json::from_str::<Value>).collect::<Result<Vec<_>, _>>()?;
+    let veto = records.last().ok_or("actual delivery veto audit")?;
+    let approved = records.iter().rev().nth(1).ok_or("actual response audit")?;
+    assert_eq!(approved["event"]["kind"], "response"); assert_eq!(approved["event"]["status"], 204);
+    assert_eq!(veto["event"]["kind"], "native-large-kv2-delivery-veto");
+    assert_eq!(veto["event"]["status"], 503);
+    assert_eq!(approved["event"]["path_digest"], veto["event"]["path_digest"]);
+    drop(native);
+    let mut native = reopen(&files, &key)?;
+    assert_imported(&mut native, &admin, false)?;
+    // A late negative response does not undo a committed root or permit a
+    // second import. The expired actor also remains unusable after cold reopen.
+    let (next, rejected, reads) = upload_http(native, &actor, "secret", &bytes)?;
+    native = next; assert_eq!(rejected.status, 403); assert_eq!(reads, 0);
+    let (_native, rejected, reads) = upload_http(native, &admin, "secret", &bytes)?;
+    assert_eq!(rejected.status, 409); assert_eq!(reads, 0);
     Ok(())
 }

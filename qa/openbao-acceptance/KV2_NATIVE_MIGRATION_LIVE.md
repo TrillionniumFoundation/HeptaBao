@@ -61,7 +61,8 @@ full profile under a different new root:
 python3 -B qa/openbao-acceptance/kv2_271_lossless_native_live.py \
   --binary "$HB_CANDIDATE_BINARY" \
   --private-work-root "$HB_MIGRATION_WORK_PARENT/kv2-full34-r1" \
-  --profile full34
+  --profile full34 \
+  --migration-lane native-large
 ```
 
 The script prints only status, profile, summary path and full34 qualification.
@@ -181,3 +182,62 @@ same publication protocol. Increasing global JSON or legacy aggregate
 owner limits is not that implementation. Controller readiness, small
 native import and full34 migration require separate evidence; none alone
 grants HA, production cutover or old-service cleanup authority.
+
+
+## Dedicated native-large lane (2026-10-19)
+
+`--migration-lane native-large` explicitly selects
+`tools/migration/openbao271_kv2_native_large_migrate.py` for both raw export
+and import. The default remains `legacy`, preserving the original boundary
+profiles and their exact limits. The new lane requires V6 activation before
+import; combining it with either legacy activation profile is rejected
+before fixture allocation.
+
+The new client retains the original worker argument contract, 360-second
+original worker deadline and 5-second original per-request deadline. No
+failure resets either budget. The controller still supervises the actual
+worker process group and never retries an uncertain mutation.
+
+| Boundary | Legacy default | Native-large explicit lane |
+| --- | ---: | ---: |
+| Raw record | 1 MiB | 4 MiB |
+| Aggregate raw records | 64 MiB | 64 MiB |
+| Closed bundle | 16 MiB | 64 MiB |
+| Raw HTTP response | 2 MiB | 8 MiB |
+| Private HTTP child input | 32 MiB | 96 MiB |
+
+The shared decoder now accepts an immutable `Bounds` argument. Every nested
+protobuf and lossless JSON decode receives that same selected object;
+legacy callers retain the original default. The old CLI and old HTTP leaf
+are untouched. The new transport uses its separate fixed `Limits` object
+and separate `kv2_native_large_http_once.py`; it never monkeypatches old
+module constants.
+
+The import request is exactly:
+
+- `POST /v1/sys/migration/openbao/kv2/native-large?mount=secret`
+- HTTP/1.1 with one positive exact `Content-Length`.
+- `Content-Type: application/vnd.heptabao.kv2-lossless+json`.
+- Root namespace; one canonical mount query.
+- Raw `openbao270-kv2-lossless-v1` closed bundle, without a mount/bundle envelope.
+
+The fixed leaf cannot add `Expect`, `Transfer-Encoding`, duplicated lengths,
+redirects or proxy behavior. Its input, body and response are bounded. The
+Rust route must separately admit the authenticated actor, original clock,
+root namespace, single-node active V6 state and pristine target before body
+consumption, and carry that admission to final graph publication. The
+transport tests cannot substitute for the Rust route's admission or native
+persistence tests.
+
+The new regression file is `tests/test_kv2_native_large_migration.py`. Its
+synthetic raw fixture contains one soft-deleted payload, one destroyed
+version, seventeen 2 MiB live payloads, exact wide integer and decimal
+values, custom metadata, and an actual metadata counter. Tests exercise
+both consistent source acquisitions, changed-source refusal, retained and
+destroyed payload invariants, raw/bundle limits, root/TLS admission,
+expired deadlines, one unknown child timeout, a real HTTP 503 without
+provider body leakage, a real TLS raw response above the old 2 MiB bound,
+and the complete greater-than-34-MiB bundle over actual TLS to a synthetic
+acknowledgement server. That server does not implement Bao. Accordingly,
+the receipt reports no official OpenBao execution, native graph import,
+physical-host qualification or full replacement authority.
