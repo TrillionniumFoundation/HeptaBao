@@ -41,6 +41,11 @@ mod kv2_import;
 #[path = "engine_kv2_native_import.rs"]
 mod kv2_native_import;
 #[cfg(feature = "fixture-native-v6-service")]
+#[path = "engine_native_kv2_mount.rs"]
+mod native_kv2_mount;
+#[cfg(feature = "fixture-native-v6-service")]
+pub(crate) use native_kv2_mount::NativeKv2MountOwner;
+#[cfg(feature = "fixture-native-v6-service")]
 #[path = "engine_native_kv2_storage_witness.rs"]
 mod native_kv2_storage_witness;
 #[cfg(test)]

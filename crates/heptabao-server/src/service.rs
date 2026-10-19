@@ -146,6 +146,9 @@ const KV2_LOSSLESS_STATE_SCHEMA: u32 = 120;
 pub(crate) const GLOBAL_LOSSLESS_JSON_STATE_SCHEMA: u32 = 120;
 #[path = "service_kv2_import.rs"]
 mod kv2_import;
+#[cfg(test)]
+#[path = "service_kv2_import_tests.rs"]
+mod kv2_import_tests;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_kv2_import.rs"]
 mod native_kv2_import;
@@ -155,9 +158,6 @@ mod native_kv2_large;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_kv2_storage_witness.rs"]
 mod native_kv2_storage_witness;
-#[cfg(test)]
-#[path = "service_kv2_import_tests.rs"]
-mod kv2_import_tests;
 const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
 const WORKFLOW_DYNAMIC_STATE_SCHEMA: u32 = 123;
 const TRANSIT_ROTATION_PRECISION_STATE_SCHEMA: u32 = 124;
@@ -1345,9 +1345,12 @@ impl PendingExternalRequest {
                 Response::error(501, "native snapshot requires typed HTTP transport"),
             )),
             #[cfg(feature = "fixture-native-v6-service")]
-            ExternalEffectPlan::NativeKv2Large(_) => ExternalEffectResult::NativeKv2Large(Err(
-                Response::error(501, "native-large KV2 requires admitted typed HTTP transport"),
-            )),
+            ExternalEffectPlan::NativeKv2Large(_) => {
+                ExternalEffectResult::NativeKv2Large(Err(Response::error(
+                    501,
+                    "native-large KV2 requires admitted typed HTTP transport",
+                )))
+            }
         }
     }
 }
@@ -2541,9 +2544,15 @@ impl Service {
                 );
             }
             #[cfg(feature = "fixture-native-v6-service")]
-            (ExternalEffectPlan::NativeKv2Large(plan), ExternalEffectResult::NativeKv2Large(result)) => {
+            (
+                ExternalEffectPlan::NativeKv2Large(plan),
+                ExternalEffectResult::NativeKv2Large(result),
+            ) => {
                 return self.complete_native_kv2_large(
-                    *plan, result, &pending.fingerprint, (pending.now, pending.token_clock),
+                    *plan,
+                    result,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
                 );
             }
             _ => {
@@ -3131,7 +3140,8 @@ impl Service {
         let transit_cache_reload = self.pending_transit_cache_reload.take();
         let acme_authority = self.pending_acme_authority.take();
         let local_unseal_completion = self.pending_local_unseal_completion.take();
-        let staged = sdk_staged + native_kv2_large_staged
+        let staged = sdk_staged
+            + native_kv2_large_staged
             + usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
@@ -3198,9 +3208,9 @@ impl Service {
             .or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend))
             .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
         #[cfg(feature = "fixture-native-v6-service")]
-        let effect = effect.or_else(|| native_kv2_large.map(|plan| {
-            ExternalEffectPlan::NativeKv2Large(Box::new(plan))
-        }));
+        let effect = effect.or_else(|| {
+            native_kv2_large.map(|plan| ExternalEffectPlan::NativeKv2Large(Box::new(plan)))
+        });
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 raw_reply_ingress: crate::auth::current_ingress(),
@@ -3221,7 +3231,10 @@ impl Service {
         #[cfg(feature = "fixture-native-v6-service")]
         if let Some(plan) = native_kv2_witness {
             return RequestExecution::Complete(self.complete_native_kv2_storage_witness(
-                plan, response, &fingerprint, (now, token_clock),
+                plan,
+                response,
+                &fingerprint,
+                (now, token_clock),
             ));
         }
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
@@ -4123,6 +4136,9 @@ impl Service {
             return Response::error(error.status, &error.message);
         }
         #[cfg(feature = "fixture-native-v6-service")]
+        let native_kv2_mount =
+            self.native_root.is_some() && namespace.is_empty() && path.starts_with("sys/mounts/");
+        #[cfg(feature = "fixture-native-v6-service")]
         let native_local_auth = self.native_root.is_some()
             && admitted
                 .auth
@@ -4145,6 +4161,7 @@ impl Service {
             if self.native_root.is_some()
                 && !native_snapshot_route
                 && !native_local_auth
+                && !native_kv2_mount
                 && path != "sys/migration/openbao/kv2"
                 && path != crate::engines::kv2_native_large::PATH
                 && path != native_kv2_storage_witness::PATH
@@ -4227,6 +4244,10 @@ impl Service {
         #[cfg(feature = "fixture-native-v6-service")]
         if self.native_root.is_some() && path == "sys/migration/openbao/kv2" {
             return self.dispatch_native_kv2_import(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if native_kv2_mount {
+            return self.dispatch_native_kv2_mount_request(admitted, principal.take(), &request);
         }
         #[cfg(feature = "fixture-native-v6-service")]
         if native_local_auth {

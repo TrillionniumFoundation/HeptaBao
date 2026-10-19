@@ -1,0 +1,26 @@
+{
+  "files": 3507,
+  "manifest_sha256": "84c27124f6dc213d2199c7cab5797d5cb22dabf4ad8b2947650ae8fa7928f8a8",
+  "network_fetches": 0,
+  "nonconstant_ast_skeleton_unchanged": true,
+  "original_git_command_deadline_seconds": 90,
+  "parent": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "raw_commit_bytes": 868,
+  "raw_commit_git_sha": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "raw_commit_sha256": "c097b4e52a49cb8e732696ff1c5440fa4327ba2973ec83f784b81acec7f8e58f",
+  "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-07a3dda-object-git-materialization.json",
+  "remote_execution_performed": false,
+  "schema": "heptabao.r6-mac-git-materializer-preparation.v1",
+  "script": {
+    "bytes": 5179,
+    "original_script_sha256": "e2ea90824fe91cae80823d410ed55dbad22a507149d85e606590ef9b58a87544",
+    "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/materialize_mac_git_07a3dda_r1.py",
+    "sha256": "15936c5b0e288edf72fac301ae1a595ea4da1192fad3b2c67f18b627b04ba52e"
+  },
+  "source_changes": false,
+  "source_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "source_git": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-07a3dda-object-git",
+  "source_plain": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-07a3dda",
+  "source_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "syntax_compiles": true
+}

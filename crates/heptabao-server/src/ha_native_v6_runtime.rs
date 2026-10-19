@@ -401,7 +401,23 @@ impl HaProcess {
                 read.deadline.instant(),
                 node.verify_native_v6_committed_root_read(&read.selected),
             ))
-            .map_err(|error| error.to_string())?;
+            .map_err(|error| {
+                // Failure observation only. Keep the same opaque witness,
+                // original operation/read bounds and original error result.
+                #[cfg(feature = "private-ha-forward-diagnostic")]
+                {
+                    use std::io::Write as _;
+                    let observed = std::time::Instant::now();
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "HBHA-PRIVATE-READ-WITNESS-FAIL operation_expired={} read_index_expired={} generation={}",
+                        observed >= read.deadline.instant(),
+                        observed >= read.selected.read_index_deadline(),
+                        read.selected.application_generation(),
+                    );
+                }
+                error.to_string()
+            })?;
         read.deadline.check().map_err(|error| error.to_string())
     }
 

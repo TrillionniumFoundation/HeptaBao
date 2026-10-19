@@ -22,6 +22,9 @@ pub(super) struct NativeAuthDelivery {
     // Preserve pre-operation actor and target lifetimes. A committed renewal
     // cannot extend the authority of the request that produced that renewal.
     source_auth: CowOwner<AuthState>,
+    // Independent engine/graph constraint for the root KV2 registry route.
+    // Authentication routes retain their original identity-only constraint.
+    mount_owner: Option<crate::engines::NativeKv2MountOwner>,
     cert_lifetime: Option<crate::auth::NativeV6CertLifetime>,
     cluster_id: String,
     activation: String,
@@ -50,6 +53,10 @@ impl Drop for NativeAuthDelivery {
 }
 
 impl NativeAuthDelivery {
+    fn tracks_terminal_checkpoint(&self) -> bool {
+        self.ha.is_some() || self.mount_owner.is_some()
+    }
+
     fn time(&self, auth: &AuthState) -> Result<AuthorityTime, Response> {
         self.deadline.check().map_err(|_| rejected())?;
         let at = self.clock.observed_at().map_err(|_| rejected())?;
@@ -88,6 +95,9 @@ impl NativeAuthDelivery {
                 time,
             )
             .map_err(|error| Response::error(error.status, &error.message))?;
+            if self.mount_owner.is_some() {
+                self.check_mount_acl(auth, principal, time)?;
+            }
             if self.path.starts_with("auth/token/")
                 && !self
                     .path
@@ -107,6 +117,26 @@ impl NativeAuthDelivery {
                 )
                 .map_err(|error| Response::error(error.status, &error.message))?;
             }
+        }
+        self.deadline.check().map_err(|_| rejected())
+    }
+
+    fn check_mount_acl(
+        &self,
+        auth: &AuthState,
+        actor: &Principal,
+        time: AuthorityTime,
+    ) -> Result<(), Response> {
+        let capability = match self.method.as_str() {
+            "GET" => "read",
+            "DELETE" => "delete",
+            _ => "update",
+        };
+        auth.authorize_request_observed(actor, "", &self.path, capability, time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        if self.method != "GET" {
+            auth.authorize_request_observed(actor, "", &self.path, "sudo", time)
+                .map_err(|error| Response::error(error.status, &error.message))?;
         }
         self.deadline.check().map_err(|_| rejected())
     }
@@ -131,13 +161,25 @@ impl NativeAuthDelivery {
             (Some(original), Some(current)) if Arc::ptr_eq(original, current) => {}
             _ => return Err(rejected()),
         }
+        if let Some(owner) = self.mount_owner.as_ref() {
+            if service.ha.is_some() {
+                return Err(rejected());
+            }
+            owner
+                .check_installed(
+                    &service.state.as_ref().ok_or_else(rejected)?.engines,
+                    service.native_root.as_ref().ok_or_else(rejected)?,
+                    &|| self.deadline.check().is_ok(),
+                )
+                .map_err(Response::from_engine_error)?;
+        }
         let durable = service.durable.as_mut().ok_or_else(rejected)?;
         durable.verify_live_ownership().map_err(|_| rejected())?;
         let generation = durable.generation();
-        if self.ha.is_some() && generation != self.publication_generation
+        if self.tracks_terminal_checkpoint() && generation != self.publication_generation
             // Keep the existing standalone delivery contract; it has no HA
             // proof and independently validates current Auth at final delivery.
-            || self.ha.is_none() && generation < self.publication_generation
+            || !self.tracks_terminal_checkpoint() && generation < self.publication_generation
         {
             return Err(rejected());
         }
@@ -146,6 +188,11 @@ impl NativeAuthDelivery {
 
     fn check_owner(&self, service: &mut Service) -> Result<(), Response> {
         self.check_environment(service)?;
+        if self.mount_owner.is_some()
+            && self.delivery_checkpoint.as_ref() != Some(&Self::current_checkpoint(service)?)
+        {
+            return Err(rejected());
+        }
         match (&self.ha, &self.proof) {
             (None, None) => Ok(()),
             #[cfg(feature = "experimental-native-v6-ha")]
@@ -176,7 +223,10 @@ impl NativeAuthDelivery {
     }
 
     fn stage_publication(&mut self, service: &mut Service) -> Result<(), Response> {
-        if self.ha.is_none() || self.delivery_checkpoint.is_some() || self.proof.is_some() {
+        if !self.tracks_terminal_checkpoint()
+            || self.delivery_checkpoint.is_some()
+            || self.proof.is_some()
+        {
             return Err(rejected());
         }
         self.check_environment(service)?;
@@ -188,7 +238,7 @@ impl NativeAuthDelivery {
     fn check_checkpoint(&self, service: &mut Service) -> Result<(), Response> {
         self.check_environment(service)?;
         self.check_source(&self.source_auth)?;
-        if self.ha.is_none()
+        if !self.tracks_terminal_checkpoint()
             || self.delivery_checkpoint.as_ref() != Some(&Self::current_checkpoint(service)?)
         {
             return Err(rejected());
@@ -201,10 +251,14 @@ impl NativeAuthDelivery {
         service: &mut Service,
         receipt: Option<token_precision::TerminalClockReceipt>,
     ) -> Result<(), Response> {
-        if self.ha.is_none() || self.proof.is_some() || self.delivery_checkpoint.is_none() {
+        if !self.tracks_terminal_checkpoint()
+            || self.proof.is_some()
+            || self.delivery_checkpoint.is_none()
+        {
             return Err(rejected());
         }
         self.check_source(&self.source_auth)?;
+        let terminal_write = receipt.is_some();
         if let Some(receipt) = receipt {
             receipt.advance_native_auth(&mut self.delivery_checkpoint)?;
             // Current local state must be exactly the receipt's resulting
@@ -215,6 +269,24 @@ impl NativeAuthDelivery {
             }
             self.publication_generation =
                 service.durable.as_ref().ok_or_else(rejected)?.generation();
+        }
+        if self.delivery_checkpoint.as_ref() != Some(&Self::current_checkpoint(service)?) {
+            return Err(rejected());
+        }
+        if let Some(owner) = self.mount_owner.as_mut() {
+            let engines = &service.state.as_ref().ok_or_else(rejected)?.engines;
+            let root = service.native_root.as_ref().ok_or_else(rejected)?;
+            if terminal_write {
+                owner
+                    .admit_terminal_clock_successor(engines, root, &|| {
+                        self.deadline.check().is_ok()
+                    })
+                    .map_err(Response::from_engine_error)?;
+            } else {
+                owner
+                    .finish_terminal_unchanged(engines, root, &|| self.deadline.check().is_ok())
+                    .map_err(Response::from_engine_error)?;
+            }
         }
         self.check_checkpoint(service)?;
         self.bind_publication(service)?;
@@ -250,7 +322,7 @@ impl NativeAuthDelivery {
         let time = self.time(auth)?;
         // A successful empty revoke/policy response may intentionally have
         // removed its own actor. It carries no credential or private payload.
-        if status != 204
+        if (status != 204 || self.mount_owner.is_some())
             && let Some(principal) = self.principal.as_ref()
         {
             auth.authorize_request_parameters_observed(
@@ -262,6 +334,9 @@ impl NativeAuthDelivery {
                 time,
             )
             .map_err(|error| Response::error(error.status, &error.message))?;
+            if self.mount_owner.is_some() {
+                self.check_mount_acl(auth, principal, time)?;
+            }
             if self.path.starts_with("auth/token/") {
                 auth.authorize_request_observed(
                     principal,
@@ -322,10 +397,86 @@ fn auth_only_root_change(
 impl Service {
     pub(super) fn dispatch_native_auth_request(
         &mut self,
+        candidate: State,
+        principal: Option<Principal>,
+        request: &RequestView<'_>,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+    ) -> Response {
+        self.dispatch_native_owner_request(candidate, principal, request, token_fields, None)
+    }
+
+    pub(super) fn dispatch_native_kv2_mount_request(
+        &mut self,
+        candidate: State,
+        principal: Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        if self.ha.is_some() {
+            return Response::error(
+                501,
+                "native KV2 mount management requires single-node custody",
+            );
+        }
+        let Some(actor) = principal.as_ref() else {
+            return Response::error(403, "missing client token");
+        };
+        let time = match request.token_time() {
+            Ok(time) => time,
+            Err(error) => return error,
+        };
+        let capability = match request.method {
+            "GET" => "read",
+            "DELETE" => "delete",
+            "POST" | "PUT" => "update",
+            _ => return Response::error(405, "native KV2 mount method unsupported"),
+        };
+        // Check original ACLs before inspecting the actual mount/type/revision.
+        // Domain dispatch repeats its ordinary operation checks below.
+        let authorized = candidate
+            .auth
+            .authorize_request_parameters_observed(
+                actor,
+                "",
+                request.method,
+                request.path,
+                request.body,
+                time,
+            )
+            .and_then(|()| {
+                candidate
+                    .auth
+                    .authorize_request_observed(actor, "", request.path, capability, time)
+            })
+            .and_then(|()| {
+                if request.method == "GET" {
+                    Ok(())
+                } else {
+                    candidate
+                        .auth
+                        .authorize_request_observed(actor, "", request.path, "sudo", time)
+                }
+            });
+        if let Err(error) = authorized {
+            return Response::error(error.status, &error.message);
+        }
+        let owner = match candidate.engines.capture_native_kv2_mount_owner(
+            request.method,
+            request.path,
+            request.body,
+        ) {
+            Ok(owner) => owner,
+            Err(error) => return Response::from_engine_error(error),
+        };
+        self.dispatch_native_owner_request(candidate, principal, request, None, Some(owner))
+    }
+
+    fn dispatch_native_owner_request(
+        &mut self,
         mut candidate: State,
         principal: Option<Principal>,
         request: &RequestView<'_>,
         token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        mount_owner: Option<crate::engines::NativeKv2MountOwner>,
     ) -> Response {
         if self.pending_native_auth_delivery.is_some()
             || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
@@ -365,6 +516,7 @@ impl Service {
             deadline,
             source_auth_digest: crypto::digest(&source_auth),
             source_auth: source.auth.clone(),
+            mount_owner,
             cert_lifetime: None,
             cluster_id: source.cluster_id.clone(),
             activation: self.unseal_nonce.clone(),
@@ -381,6 +533,11 @@ impl Service {
         };
         if let Err(error) = delivery.check_source(&source.auth) {
             return error;
+        }
+        if let Some(owner) = delivery.mount_owner.as_ref() {
+            if let Err(error) = owner.check_source(&source.engines, &|| deadline.check().is_ok()) {
+                return Response::from_engine_error(error);
+            }
         }
         // This is the real domain dispatcher: AppRole/cert authentication,
         // identity bindings, SecretID consumption and ACLs are unchanged.
@@ -464,7 +621,13 @@ impl Service {
         }
         candidate.schema = candidate.writer_schema();
         let result = (|| -> Result<(), Response> {
-            if !self
+            if let Some(owner) = delivery.mount_owner.as_mut() {
+                owner
+                    .admit_candidate(&candidate.engines, response.status, &|| {
+                        deadline.check().is_ok()
+                    })
+                    .map_err(Response::from_engine_error)?;
+            } else if !self
                 .state
                 .as_ref()
                 .ok_or_else(rejected)?
@@ -482,12 +645,23 @@ impl Service {
                 delivery.check_source(auth)
             })?;
             let prior = self.native_root.as_ref().ok_or_else(rejected)?;
-            auth_only_root_change(prior, &plan.root)?;
+            if let Some(owner) = delivery.mount_owner.as_mut() {
+                owner
+                    .admit_root(prior, &plan.root, &|| deadline.check().is_ok())
+                    .map_err(Response::from_engine_error)?;
+            } else {
+                auth_only_root_change(prior, &plan.root)?;
+            }
             if plan.root.identity().map_err(|_| rejected())?
                 != prior.identity().map_err(|_| rejected())?
             {
+                let purpose = if delivery.mount_owner.is_some() {
+                    "kv2-mount"
+                } else {
+                    "auth"
+                };
                 candidate =
-                    self.commit_native_root_plan(&candidate, plan, false, "auth", &mut |auth| {
+                    self.commit_native_root_plan(&candidate, plan, false, purpose, &mut |auth| {
                         delivery.check_source(auth)
                     })?;
                 self.state = Some(candidate);
@@ -547,10 +721,11 @@ impl Service {
                     .map(|token| Zeroizing::new(token.to_owned()));
             }
         }
-        let staged = if delivery.ha.is_some() {
+        let staged = if delivery.tracks_terminal_checkpoint() {
             // Retain exact post-operation provenance before the terminal
-            // observation. The sole HA proof is captured after that write and
-            // before mandatory audit, never in the final response handler.
+            // observation. A local mount consumes that same affine write
+            // receipt; only HA captures an additional ReadIndex proof. Neither
+            // path rebinds its checkpoint in the final response handler.
             delivery.stage_publication(self)
         } else {
             delivery.bind_publication(self)
@@ -567,7 +742,7 @@ impl Service {
     pub(super) fn native_auth_terminal_deadline(&self) -> Option<Instant> {
         self.pending_native_auth_delivery
             .as_ref()
-            .filter(|delivery| delivery.ha.is_some())
+            .filter(|delivery| delivery.tracks_terminal_checkpoint())
             .map(|delivery| delivery.deadline.instant())
     }
 
@@ -575,7 +750,7 @@ impl Service {
         let Some(delivery) = self.pending_native_auth_delivery.take() else {
             return Ok(());
         };
-        let result = if delivery.ha.is_some() {
+        let result = if delivery.tracks_terminal_checkpoint() {
             if delivery.proof.is_some() || self.pending_forward_delivery.is_some() {
                 Err(rejected())
             } else {
@@ -620,6 +795,10 @@ impl Service {
         };
         if response.status >= 300 {
             return response;
+        }
+        #[cfg(test)]
+        if delivery.mount_owner.is_some() {
+            mount_tests::after_actual_mount_audit(self);
         }
         let checked = (|| -> Result<(), Response> {
             delivery.check_owner(self)?;
@@ -667,6 +846,9 @@ impl Service {
     }
 }
 
+#[cfg(test)]
+#[path = "service_native_kv2_mount_tests.rs"]
+mod mount_tests;
 #[cfg(test)]
 #[path = "service_native_auth_tests.rs"]
 mod tests;

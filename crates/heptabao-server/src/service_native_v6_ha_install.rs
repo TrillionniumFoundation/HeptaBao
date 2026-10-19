@@ -40,10 +40,16 @@ pub(in crate::service) fn validate_historical_archive_cursor(
 ) -> Result<(), Response> {
     NativeActiveCursor::decode(active)?.validate(retained, root, archive_generation)?;
     let cursor = NativeHaCursor::decode(ha)?;
-    let exact = |log: [u64; 3]| ExactLog { term: log[0], node: log[1], index: log[2] };
-    if root.cluster_id != retained.cluster_id || root.replay_epoch != facts.replay_epoch()
+    let exact = |log: [u64; 3]| ExactLog {
+        term: log[0],
+        node: log[1],
+        index: log[2],
+    };
+    if root.cluster_id != retained.cluster_id
+        || root.replay_epoch != facts.replay_epoch()
         || cursor.cluster_digest != facts.cluster_digest()
-        || retained.replay_epoch != origin_epoch || cursor.replay_epoch != facts.replay_epoch()
+        || retained.replay_epoch != origin_epoch
+        || cursor.replay_epoch != facts.replay_epoch()
         || cursor.enrollment_digest != facts.enrollment_digest()
         || cursor.root_digest != facts.root_digest()
         || cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
@@ -55,8 +61,65 @@ pub(in crate::service) fn validate_historical_archive_cursor(
         || cursor.migration_log != exact(facts.migration_log())
         || cursor.local_publication_generation > archive_generation
         || cursor.local_publication_generation != active_generation(active)?
-    { return Err(unavailable()); }
+    {
+        return Err(unavailable());
+    }
     Ok(())
+}
+
+// Opt-in phase observations only: no payload, credential, source admission or
+// new deadline is created. Drop also records the phase that returned an error.
+// Diagnostic I/O failure never changes the original result or its custody.
+#[cfg(feature = "private-ha-forward-diagnostic")]
+struct NativeHaPhaseTimer {
+    phase: &'static str,
+    started: std::time::Instant,
+    original_until: std::time::Instant,
+    generation: u64,
+    objects: u64,
+    bytes: u64,
+    completed: bool,
+}
+#[cfg(feature = "private-ha-forward-diagnostic")]
+impl NativeHaPhaseTimer {
+    fn start(
+        phase: &'static str,
+        original_until: std::time::Instant,
+        generation: u64,
+        objects: u64,
+        bytes: u64,
+    ) -> Self {
+        Self {
+            phase,
+            started: std::time::Instant::now(),
+            original_until,
+            generation,
+            objects,
+            bytes,
+            completed: false,
+        }
+    }
+    fn finish(mut self, completed: bool) {
+        self.completed = completed;
+    }
+}
+#[cfg(feature = "private-ha-forward-diagnostic")]
+impl Drop for NativeHaPhaseTimer {
+    fn drop(&mut self) {
+        use std::io::Write as _;
+        let observed = std::time::Instant::now();
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
+            self.phase,
+            observed.duration_since(self.started).as_micros(),
+            self.completed,
+            observed >= self.original_until,
+            self.generation,
+            self.objects,
+            self.bytes,
+        );
+    }
 }
 
 fn unavailable() -> Response {
@@ -264,7 +327,8 @@ impl NativeHaCursor {
         {
             return Err(unavailable());
         }
-        let step = published.epoch_transitions()
+        let step = published
+            .epoch_transitions()
             .find(|step| step.source_enrollment().epoch() == self.replay_epoch)
             .ok_or_else(unavailable)?;
         let enrollment = step.source_enrollment();
@@ -480,7 +544,8 @@ impl LocalSelection {
             let cursor =
                 NativeHaCursor::decode(ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?;
             cursor.covered_by(read)?;
-            if root.replay_epoch != local_epoch || cursor.replay_epoch != local_epoch
+            if root.replay_epoch != local_epoch
+                || cursor.replay_epoch != local_epoch
                 || cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
                 || cursor.migration_digest != source.identity().map_err(|_| unavailable())?.digest()
                 || cursor.local_publication_generation > initial_generation
@@ -533,8 +598,7 @@ impl LocalSelection {
         generation: u64,
     ) -> Result<(), ServiceError> {
         durable.verify_live_ownership()?;
-        if durable.generation() != generation || durable.replay_epoch() != self.local_epoch
-        {
+        if durable.generation() != generation || durable.replay_epoch() != self.local_epoch {
             return Err(ServiceError::PublicationConditionConflict);
         }
         for condition in self.conditions() {
@@ -563,20 +627,29 @@ impl EpochInstallScope<'_> {
         session: &ImmutableSourceSession,
         object: &crate::service::native_v6_ha_objects::VerifiedNativeV6Object<'_>,
     ) -> Result<(), ServiceError> {
-        self.committed.deadline().check().map_err(|_| ServiceError::BarrierFailure)?;
+        self.committed
+            .deadline()
+            .check()
+            .map_err(|_| ServiceError::BarrierFailure)?;
         let target = self.committed.enrollment().epoch();
         if self.selected.local_epoch >= target
             || session.replay_epoch() != self.selected.local_epoch
             || object.root().replay_epoch != target
             || object.root().cluster_id != self.selected.source.cluster_id
-            || object.root().identity().map_err(|_| ServiceError::CorruptState)?.digest()
+            || object
+                .root()
+                .identity()
+                .map_err(|_| ServiceError::CorruptState)?
+                .digest()
                 != self.committed.published().root_digest()
         {
             return Err(ServiceError::PublicationConditionConflict);
         }
         // Its typed borrow retains the same original full closure/Actor gate,
         // including the actual consensus witness. No archived object can mint it.
-        object.check_original().map_err(|_| ServiceError::BarrierFailure)
+        object
+            .check_original()
+            .map_err(|_| ServiceError::BarrierFailure)
     }
 }
 
@@ -739,7 +812,8 @@ impl Service {
             .map_err(|_| unavailable())?;
         // Raft already committed any higher epoch. Allocate the new activation
         // before local publication; an entropy failure fences that authority.
-        let next_activation = self.prepare_epoch_activation(committed.enrollment().epoch(), true)?;
+        let next_activation =
+            self.prepare_epoch_activation(committed.enrollment().epoch(), true)?;
         let mut durable = self.durable.take().ok_or_else(unavailable)?;
         let root_committed = Cell::new(false);
         let denial = RefCell::new(None);
@@ -922,6 +996,14 @@ impl Service {
             (shared_gate.borrow_mut())()
                 .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)
         };
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_received_graph",
+            deadline.instant(),
+            selected.initial_generation,
+            read.published().intent().object_count,
+            read.published().intent().ciphertext_bytes,
+        );
         // The codec obtains the canonical root from the committed small seal.
         // Its closure/full typed reader rejects missing, extra and wrong-domain data.
         let received = open_native_v6_ha_objects(
@@ -941,6 +1023,8 @@ impl Service {
             &mut || codec_gate(),
         )
         .map_err(|_| unavailable())?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         let root = received.root().clone();
         let root_bytes = Zeroizing::new(received.root_bytes().to_vec());
         if root.reader_floor.native_kv2_format != 2
@@ -960,8 +1044,18 @@ impl Service {
             ));
         }
         let identity = root.identity().map_err(|_| unavailable())?;
-        let epoch_scope = (selected.local_epoch < root.replay_epoch)
-            .then_some(EpochInstallScope { selected, committed: read });
+        let epoch_scope = (selected.local_epoch < root.replay_epoch).then_some(EpochInstallScope {
+            selected,
+            committed: read,
+        });
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_local_objects",
+            deadline.instant(),
+            selected.initial_generation,
+            read.published().intent().object_count,
+            read.published().intent().ciphertext_bytes,
+        );
         let mut locators = Vec::new();
         let session = native_blob_source::session(durable, selected.root_bytes.expose())
             .map_err(storage_rejected)?;
@@ -969,11 +1063,18 @@ impl Service {
             .visit_verified_objects(codec, store, &mut || codec_gate(), &mut |object| {
                 let marker = if let Some(scope) = &epoch_scope {
                     native_blob_source::ha_local_stage::stage_verified_epoch_received(
-                        durable, &session, object, scope, &mut || (shared_gate.borrow_mut())(),
+                        durable,
+                        &session,
+                        object,
+                        scope,
+                        &mut || (shared_gate.borrow_mut())(),
                     )
                 } else {
                     native_blob_source::stage_verified_received(
-                        durable, &session, object, &mut || (shared_gate.borrow_mut())(),
+                        durable,
+                        &session,
+                        object,
+                        &mut || (shared_gate.borrow_mut())(),
                     )
                 }
                 .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?;
@@ -992,6 +1093,8 @@ impl Service {
                 codec_gate()
             })
             .map_err(|_| unavailable())?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         drop(session);
         let (mut installed, native, _) = received
             .into_detached_parts(&mut || codec_gate())
@@ -1010,13 +1113,21 @@ impl Service {
             // obsolete KV payloads need not be read, and no archived/new Auth
             // substitutes for that original protected source.
             if let Some(previous) = selected.native.as_ref() {
-                let source = native_blob_source::NativeSource::new_checked(
-                    durable, deadline, || (shared_gate.borrow_mut())(),
-                ).map_err(|_| unavailable())?;
+                let source =
+                    native_blob_source::NativeSource::new_checked(durable, deadline, || {
+                        (shared_gate.borrow_mut())()
+                    })
+                    .map_err(|_| unavailable())?;
                 let (mut metadata, native) = v6_records::materialize_metadata_for_service(
-                    previous, context(previous)?, &source,
-                ).map_err(|_| unavailable())?;
-                metadata.engines.install_native_views(native).map_err(Response::from_engine_error)?;
+                    previous,
+                    context(previous)?,
+                    &source,
+                )
+                .map_err(|_| unavailable())?;
+                metadata
+                    .engines
+                    .install_native_views(native)
+                    .map_err(Response::from_engine_error)?;
                 root_namespace_only(&metadata)?;
                 Self::validate_snapshot_protected_floor(&metadata, &installed)?;
             } else if self.state.is_none() {
@@ -1027,6 +1138,14 @@ impl Service {
         let operation = format!(
             "native6-ha-install-{}",
             hex(&crypto::random::<16>().map_err(|_| unavailable())?)
+        );
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_locator_batches",
+            deadline.instant(),
+            selected.initial_generation,
+            read.published().intent().object_count,
+            read.published().intent().ciphertext_bytes,
         );
         let mut expected_generation = selected.initial_generation;
         for (batch_index, batch) in locators
@@ -1057,10 +1176,22 @@ impl Service {
                 .map_err(storage_rejected)?;
             (shared_gate.borrow_mut())().map_err(storage_rejected)?;
         }
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_pre_cas_local_graph",
+            deadline.instant(),
+            selected.initial_generation,
+            read.published().intent().object_count,
+            read.published().intent().ciphertext_bytes,
+        );
         let (metadata, native) = materialize_local(durable, &root, deadline, &mut || {
             (shared_gate.borrow_mut())()
         })?;
         Self::check_native_installed(&installed, &metadata, &native, &root, deadline)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         selected
             .check(durable, expected_generation)
             .map_err(storage_rejected)?;
@@ -1097,28 +1228,46 @@ impl Service {
             ));
         }
         (shared_gate.borrow_mut())().map_err(storage_rejected)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_local_root_cas",
+            deadline.instant(),
+            selected.initial_generation,
+            read.published().intent().object_count,
+            read.published().intent().ciphertext_bytes,
+        );
         let publication = BatchPublication {
-                    replay_epoch: root.replay_epoch,
-                    principal: "heptabao-server".into(),
-                    namespace: "system".into(),
-                    request_id: format!("{operation}-root"),
-                    authorization_digest: identity.digest(),
-                    mutations,
-                };
+            replay_epoch: root.replay_epoch,
+            principal: "heptabao-server".into(),
+            namespace: "system".into(),
+            request_id: format!("{operation}-root"),
+            authorization_digest: identity.digest(),
+            mutations,
+        };
         if epoch_scope.is_some() {
             durable.publish_epoch_batch_conditionally_before_publish(
-                expected_generation, selected.local_epoch, publication,
-                selected.conditions(), &mut || (shared_gate.borrow_mut())(),
+                expected_generation,
+                selected.local_epoch,
+                publication,
+                selected.conditions(),
+                &mut || (shared_gate.borrow_mut())(),
             )
         } else {
             durable.apply_batch_conditionally_before_publish(
-                publication, selected.conditions(), &mut || (shared_gate.borrow_mut())(),
+                publication,
+                selected.conditions(),
+                &mut || (shared_gate.borrow_mut())(),
             )
-        }.map_err(storage_rejected)?;
+        }
+        .map_err(storage_rejected)?;
         root_committed.set(true);
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         (shared_gate.borrow_mut())().map_err(storage_rejected)?;
         durable.verify_live_ownership().map_err(storage_rejected)?;
-        if durable.generation() != publication_generation || durable.replay_epoch() != root.replay_epoch {
+        if durable.generation() != publication_generation
+            || durable.replay_epoch() != root.replay_epoch
+        {
             return Err(unavailable());
         }
         for (resource, expected) in [
@@ -1153,10 +1302,20 @@ impl Service {
         cursor.validate(&selected.source, &root, durable.generation())?;
         let observed = NativeHaCursor::decode(ha_bytes.as_slice())?;
         observed.matches_current(read)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_post_cas_local_graph",
+            deadline.instant(),
+            selected.initial_generation,
+            read.published().intent().object_count,
+            read.published().intent().ciphertext_bytes,
+        );
         let (metadata, native) = materialize_local(durable, &root, deadline, &mut || {
             (shared_gate.borrow_mut())()
         })?;
         Self::check_native_installed(&installed, &metadata, &native, &root, deadline)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         (shared_gate.borrow_mut())().map_err(storage_rejected)?;
         Ok(installed)
     }

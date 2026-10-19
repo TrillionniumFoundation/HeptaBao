@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.actual-read-witness-failure-rustfmt.v1",
+  "source_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "host": "MacBook-Pro.local",
+  "status": "formatted_and_check_passed",
+  "source_path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+  "expected_base_git_blob": "f569738ce12a67a0bc9bf539148ca39b7791e7c7",
+  "before_bytes": 17407,
+  "before_sha256": "fde9e8fc9050f8396e6b0db1ec18e8fd770daa95ab8e01642f49db3e577d0198",
+  "after_bytes": 17407,
+  "after_sha256": "fde9e8fc9050f8396e6b0db1ec18e8fd770daa95ab8e01642f49db3e577d0198",
+  "commands": [
+    {
+      "label": "version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "format",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r6-followthrough-scripts-r1/ha_native_v6_runtime.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "check",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "--check",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r6-followthrough-scripts-r1/ha_native_v6_runtime.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "Rust_tests_executed": 0
+}

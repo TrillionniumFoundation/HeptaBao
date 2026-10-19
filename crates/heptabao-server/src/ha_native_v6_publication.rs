@@ -9,6 +9,61 @@ use heptabao_ha_service::replicate_native_v6_closure_to_quorum;
 use heptabao_raft_runtime::{NativeV6CommitIntent, SealedRecordObject, with_read_index_deadline};
 use ring::rand::{SecureRandom, SystemRandom};
 
+// Opt-in phase observations only: no payload, credential, source admission or
+// new deadline is created. Drop also records the phase that returned an error.
+// Diagnostic I/O failure never changes the original result or its custody.
+#[cfg(feature = "private-ha-forward-diagnostic")]
+struct NativeHaPhaseTimer {
+    phase: &'static str,
+    started: std::time::Instant,
+    original_until: std::time::Instant,
+    generation: u64,
+    objects: u64,
+    bytes: u64,
+    completed: bool,
+}
+#[cfg(feature = "private-ha-forward-diagnostic")]
+impl NativeHaPhaseTimer {
+    fn start(
+        phase: &'static str,
+        original_until: std::time::Instant,
+        generation: u64,
+        objects: u64,
+        bytes: u64,
+    ) -> Self {
+        Self {
+            phase,
+            started: std::time::Instant::now(),
+            original_until,
+            generation,
+            objects,
+            bytes,
+            completed: false,
+        }
+    }
+    fn finish(mut self, completed: bool) {
+        self.completed = completed;
+    }
+}
+#[cfg(feature = "private-ha-forward-diagnostic")]
+impl Drop for NativeHaPhaseTimer {
+    fn drop(&mut self) {
+        use std::io::Write as _;
+        let observed = std::time::Instant::now();
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
+            self.phase,
+            observed.duration_since(self.started).as_micros(),
+            self.completed,
+            observed >= self.original_until,
+            self.generation,
+            self.objects,
+            self.bytes,
+        );
+    }
+}
+
 /// Data for reconciling this exact operation, not a publication or reply grant.
 /// The constructor is private and no decoder can manufacture its provenance.
 pub(crate) struct NativeHaRecoveryReference {
@@ -297,6 +352,9 @@ impl HaProcess {
             .storage
             .get()
             .ok_or_else(|| before("native ciphertext store absent"))?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase =
+            NativeHaPhaseTimer::start("publication_source_enrollment", deadline.instant(), 0, 0, 0);
         let initial = self
             .observe_native_publication_source(expected, epoch, deadline)
             .map_err(before)?;
@@ -337,8 +395,18 @@ impl HaProcess {
             .map_err(before)?;
         original(deadline, original_gate).map_err(before)?;
 
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         // A previous native root is reopened through its actual opaque read;
         // missing ciphertext is repaired from pinned committed voters first.
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "publication_previous_closure",
+            deadline.instant(),
+            source.prior_generation(),
+            0,
+            0,
+        );
         let previous = if let PublicationSource::V6(previous) = &source {
             let selected = self
                 .native_v6_committed_read(deadline)
@@ -359,7 +427,17 @@ impl HaProcess {
         } else {
             None
         };
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         original(deadline, original_gate).map_err(before)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "publication_typed_prepare",
+            deadline.instant(),
+            source.prior_generation(),
+            0,
+            0,
+        );
         let prepared = prepare(
             &self.codec,
             &enrollment,
@@ -369,6 +447,8 @@ impl HaProcess {
         )
         .map_err(before)?;
         original(deadline, original_gate).map_err(before)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         if prepared.original_deadline().instant() != deadline.instant() {
             return Err(before(
                 "native HA preparation changed the original operation deadline",
@@ -376,6 +456,14 @@ impl HaProcess {
         }
         self.check_native_publication_source(expected, epoch, deadline, &source, &enrollment, term)
             .map_err(before)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "publication_intent_admission",
+            deadline.instant(),
+            source.prior_generation(),
+            0,
+            0,
+        );
         let local = prepared.local_closure();
         let mut operation_digest = [0u8; 32];
         SystemRandom::new()
@@ -459,6 +547,16 @@ impl HaProcess {
             original_log.index,
         ];
         original(deadline, original_gate).map_err(before)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "publication_fsync_quorum",
+            deadline.instant(),
+            source.prior_generation(),
+            intent.object_count,
+            intent.ciphertext_bytes,
+        );
         let quorum = replicate_native_v6_closure_to_quorum(
             node,
             self.runtime.handle(),
@@ -471,6 +569,8 @@ impl HaProcess {
         )
         .map_err(before)?;
         original(deadline, original_gate).map_err(before)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         if quorum.intent() != &intent || quorum.enrollment() != &enrollment {
             return Err(before("native HA fsync quorum selected a different intent"));
         }
@@ -500,6 +600,14 @@ impl HaProcess {
         // From this call onward, every error preserves the exact recovery
         // reference. Engine rejection, timeout and lost reconciliation do not
         // authorize another root invocation or a changed operation identity.
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "publication_root_cas",
+            deadline.instant(),
+            source.prior_generation(),
+            intent.object_count,
+            intent.ciphertext_bytes,
+        );
         let published = match self.runtime.block_on(node.publish_native_v6_root(
             root_serial,
             recovery.intent(),
@@ -516,8 +624,18 @@ impl HaProcess {
                 });
             }
         };
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         recovery.published = Some(published.clone());
         let mut after_commit = || -> Result<CommittedNativeV6Read, String> {
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let phase = NativeHaPhaseTimer::start(
+                "publication_committed_readback",
+                deadline.instant(),
+                source.prior_generation(),
+                intent.object_count,
+                intent.ciphertext_bytes,
+            );
             original(deadline, original_gate).map_err(|error| error.to_string())?;
             let read = self
                 .native_v6_committed_read(deadline)?
@@ -530,6 +648,8 @@ impl HaProcess {
             }
             self.verify_native_v6_committed_read(&read)?;
             original(deadline, original_gate).map_err(|error| error.to_string())?;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            phase.finish(true);
             Ok(read)
         };
         after_commit()

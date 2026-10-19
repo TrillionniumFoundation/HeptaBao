@@ -1,0 +1,160 @@
+{
+  "base_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "base_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "build_jobs": {
+    "mac": 2,
+    "main": 8
+  },
+  "command_template": [
+    "python3",
+    "-B",
+    "<uploaded source_stager path>",
+    "--profile",
+    "<main|mac>",
+    "--packet",
+    "<uploaded packet path under owned task root>",
+    "--packet-sha256",
+    "eed541a75491bfeeb4024bcaa32e271c02303ee02797e4d37e3fb97e8712bdca"
+  ],
+  "command_timeout_seconds": 1800,
+  "delta_files": 371,
+  "local_validation": {
+    "actual_371_delta_content_before_and_target_blob_validation_passed": true,
+    "actual_new_packet_load_passed": true,
+    "host_execution_performed": false,
+    "nonconstant_ast_skeleton_unchanged": true,
+    "original_runner_sha_and_group_contract_passed": true,
+    "syntax_compiles": true,
+    "whole_manifest_identity_passed": true
+  },
+  "manifest": {
+    "bytes": 750864,
+    "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/transfer/target-manifest-07a3dda.json",
+    "sha256": "84c27124f6dc213d2199c7cab5797d5cb22dabf4ad8b2947650ae8fa7928f8a8"
+  },
+  "original_case_count": 55,
+  "original_group_count": 17,
+  "original_groups": [
+    [
+      "native-kv2-import",
+      "server",
+      "native_kv2_graph_import_",
+      8
+    ],
+    [
+      "native-kv2-large",
+      "server",
+      "native_large_kv2_",
+      15
+    ],
+    [
+      "forward-original-unseal-veto",
+      "server",
+      "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+      1
+    ],
+    [
+      "forward-no-second-floor",
+      "server",
+      "completed_forward_precise_follower_audits_without_second_floor_or_use",
+      1
+    ],
+    [
+      "historical-service",
+      "server",
+      "native_ha_historical_restore_",
+      6
+    ],
+    [
+      "snapshot-service",
+      "server",
+      "native_ha_snapshot_",
+      7
+    ],
+    [
+      "archive-34mib",
+      "server",
+      "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+      1
+    ],
+    [
+      "http-repair-admission",
+      "server",
+      "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+      1
+    ],
+    [
+      "http-pending-admission",
+      "server",
+      "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+      1
+    ],
+    [
+      "private-transport-diagnostic",
+      "peer",
+      "private_forward_stage_observation_preserves_existing_transport_errors",
+      1
+    ],
+    [
+      "private-frame-diagnostic",
+      "peer",
+      "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+      1
+    ],
+    [
+      "kv2-api-271-numbers",
+      "server",
+      "kv2_api_271_",
+      3
+    ],
+    [
+      "native-kv2-storage-witness",
+      "server",
+      "native_kv2_storage_witness_",
+      5
+    ],
+    [
+      "lossless-json-private-tags",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+      1
+    ],
+    [
+      "lossless-kv1-conversion",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+      1
+    ],
+    [
+      "lossless-token-equivalence",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+      1
+    ],
+    [
+      "native-raw-private-tags",
+      "server",
+      "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+      1
+    ]
+  ],
+  "packet": {
+    "compressed_bytes": 724530,
+    "compressed_sha256": "eed541a75491bfeeb4024bcaa32e271c02303ee02797e4d37e3fb97e8712bdca",
+    "packet_bytes": 5109883,
+    "packet_sha256": "bcc0b79b26d8b406b01b825ec4967c8918a1751da7e65a1fab8608779cc51130",
+    "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/transfer/source-materialize-packet.json.gz"
+  },
+  "schema": "heptabao.r6-exact-source-transfer.v1",
+  "source_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "source_stager": {
+    "bytes": 18756,
+    "original_sha256": "5a9f18122a7ba1a093302f05e0336a23d2d59be13b2822124634d56ee510e878",
+    "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/work/qa/openbao-acceptance/materialize_launch_07a3dda.py",
+    "sha256": "18428fa9c0bbab511559002ce88895263a8b45415b2a10ff1fedcf4e51122f4e"
+  },
+  "source_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "staging_timeout_seconds": 120,
+  "target_files": 3507,
+  "transfer_packet_for_runtime_only_not_Git_source": true
+}
