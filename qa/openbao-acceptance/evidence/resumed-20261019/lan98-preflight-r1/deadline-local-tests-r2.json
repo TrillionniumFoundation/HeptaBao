@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.native-lan-original-deadline-local-checks.v1",
+  "supersedes_primary_test_receipt": "deadline-local-tests.json",
+  "prior_receipt_retained": true,
+  "r2_change": "quorum baseline regression now refuses at the late-success check itself, before a stub signature error or any hypothetical write",
+  "rows": [
+    {
+      "source_side": "base",
+      "started_utc": "2026-10-19T05:07:45.661842+00:00",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "elapsed_seconds": 3.280358,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests",
+        "-p",
+        "test_native_lan_original_deadlines.py",
+        "-v"
+      ],
+      "source_root": "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/base/qa/openbao-acceptance",
+      "log": "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/analysis/deadline-base-local-tests-r2.log",
+      "log_sha256": "72861020e83fa34ca796416023958c59b75ef9cd31d4ac3a2395970b2441f02e"
+    },
+    {
+      "source_side": "work",
+      "started_utc": "2026-10-19T05:07:48.942478+00:00",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 3.212371,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests",
+        "-p",
+        "test_native_lan_original_deadlines.py",
+        "-v"
+      ],
+      "source_root": "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance",
+      "log": "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/analysis/deadline-work-local-tests-r2.log",
+      "log_sha256": "c4f438939eca68dafe1b7a56ee1391abf9f82a23b91adb5fe467c0181cfbfb12"
+    }
+  ],
+  "actual_loopback_https": true,
+  "requests_are_read_only": true,
+  "fixed_sixty_and_thirtyfive_second_tests_use_explicit_scripted_clock": true,
+  "new_declared_deadlines_or_retries": false,
+  "remote_host_operations": 0,
+  "actual_bao_processes": 0,
+  "actual_physical_ha_proved": false,
+  "source_sha256": {
+    "qa/openbao-acceptance/ha_multihost_live.py": "e0c26f9858713303f3f57fab08057f535c893090b21c8eb6648711a164803e6b",
+    "qa/openbao-acceptance/native_v6_ha_multihost_live.py": "b9253d5fcfcd7bf527c3efa9f4c9de116e3d81e75a676596d8cf112e0e31a4fc",
+    "qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py": "7a7cdcb91d0bb116cdbae07df76b523e6924eeaa161d5475bb3023c4b695f382"
+  }
+}

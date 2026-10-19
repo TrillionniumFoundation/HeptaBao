@@ -17,6 +17,9 @@ mod ha;
 pub(super) use ha::NativeHaHistoricalReceipt;
 #[path = "service_native_v6_staging_repair.rs"]
 mod staging_repair;
+#[cfg(test)]
+#[path = "service_snapshot_v6_test_observer.rs"]
+mod test_observer;
 
 // Redacted phase duration only: never request paths, identities or object bytes.
 struct SnapshotPhaseObservation {
@@ -120,6 +123,8 @@ struct IncomingNative {
     state: State,
     root: RecordStateRootV6,
     digest: [u8; 32],
+    source_generation: u64,
+    source_replay_epoch: u64,
 }
 
 impl Service {
@@ -283,6 +288,7 @@ impl Service {
         plan: &SnapshotTransferPlan,
     ) -> Result<IncomingNative, Response> {
         self.check_v6_snapshot_owner(plan)?;
+        let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
         let length = file.len();
         let durable = self.durable.as_ref().ok_or_else(unavailable)?;
         let mut gate = || {
@@ -350,11 +356,8 @@ impl Service {
             .get("system", native_v6_reader::ACTIVE_CURSOR_RESOURCE)
             .map_err(|error| self.v6_storage_failure(plan, error))?
             .ok_or_else(invalid)?;
-        native_v6_reader::NativeActiveCursor::decode(cursor)?.validate(
-            &retained,
-            &root,
-            archive.state().metadata().generation,
-        )?;
+        let cursor = native_v6_reader::NativeActiveCursor::decode(cursor)?;
+        cursor.validate(&retained, &root, archive.state().metadata().generation)?;
         let digest = root.identity().map_err(|_| invalid())?.digest();
         let context = ReadContext {
             expected_identity: ReadIdentity::RecordsV6(digest),
@@ -402,6 +405,18 @@ impl Service {
             .map_err(Response::from_engine_error)?;
         self.require_native_root_candidate(&state)?;
         state.validate_format()?;
+        // A real admitted request can advance the live monotone clock after
+        // the snapshot was exported. Inherit ONLY the existing clock facts;
+        // formats, token/credential catalogs, retirement, revocation and every
+        // protected owner still have to pass their original successor checks.
+        state
+            .auth
+            .inherit_native_snapshot_clocks(&current.auth)
+            .map_err(|error| Response::error(400, &error.message))?;
+        state
+            .engines
+            .inherit_native_snapshot_clocks(&current.engines)
+            .map_err(Response::from_engine_error)?;
         Self::validate_snapshot_protected_floor(current, &state)?;
         if !state.database.is_empty() || state.engines.has_openldap_mount() {
             return Err(Response::error(
@@ -421,11 +436,81 @@ impl Service {
             ));
         }
         self.check_v6_snapshot_owner(plan)?;
+        let source_generation = archive.size().generation;
+        let source_replay_epoch = archive.state().metadata().replay_epoch;
+        let target = durable
+            .v6_restore_projection_target(&archive)
+            .map_err(|error| self.v6_storage_failure(plan, error))?;
+        // The archived label was checked above. A new checkpoint, strictly
+        // after both frontiers, retires archived replay identities rather than
+        // attaching a changed root to an old generation or request ledger.
+        state.replay_epoch = target.1;
+        let projected = {
+            let _phase = SnapshotPhaseObservation::enter("derive-clock-bound-graph");
+            let objects = IncomingObjects {
+                durable,
+                archive: RefCell::new(&mut archive),
+                root_bytes: &root_bytes,
+                gate: RefCell::new(&mut gate),
+                io_gate: RefCell::new(&mut bounded_archive_io_gate),
+            };
+            v6_records::project_snapshot_native_root(
+                &root,
+                state,
+                target.1,
+                deadline,
+                &objects,
+                &mut || self.check_v6_snapshot_owner(plan),
+            )
+            .map_err(|error| self.check_v6_snapshot_owner(plan).err().unwrap_or(error))?
+        };
+        let owner_bytes = projected
+            .root
+            .owners
+            .iter()
+            .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+            .ok_or_else(invalid)?;
+        if owner_bytes > self.opaque_owner_limit() as u64 {
+            return Err(Response::error(
+                507,
+                "native opaque owner capacity exhausted",
+            ));
+        }
+        let next_cursor = cursor.advance(&projected.root, target.0)?;
+        next_cursor.validate(&retained, &projected.root, target.0)?;
+        let objects = projected
+            .objects
+            .iter()
+            .map(|((domain, _), object)| {
+                Ok((
+                    v6_records::native_resource(domain, object.reference()),
+                    Secret::new(object.bytes().to_vec())?,
+                ))
+            })
+            .collect::<Result<Vec<_>, ServiceError>>()
+            .map_err(|error| self.v6_storage_failure(plan, error))?;
+        durable
+            .project_v6_restore_before_install(
+                &mut archive,
+                target,
+                &root_bytes,
+                Secret::new(projected.bytes.to_vec())
+                    .map_err(|error| self.v6_storage_failure(plan, error))?,
+                Secret::new(next_cursor.encode()?.to_vec())
+                    .map_err(|error| self.v6_storage_failure(plan, error))?,
+                objects,
+                &mut gate,
+            )
+            .map_err(|error| self.v6_storage_failure(plan, error))?;
+        let digest = projected.root.identity().map_err(|_| invalid())?.digest();
+        self.check_v6_snapshot_owner(plan)?;
         Ok(IncomingNative {
             archive,
-            state,
-            root,
+            state: projected.candidate,
+            root: projected.root,
             digest,
+            source_generation,
+            source_replay_epoch,
         })
     }
 
@@ -453,7 +538,9 @@ impl Service {
             }
             let expected_generation = imported.metadata.generation();
             let prepared = self.prepare_incoming_v6(imported.state, plan)?;
-            if prepared.archive.state().metadata().generation != expected_generation {
+            if prepared.archive.size().generation != expected_generation
+                || prepared.source_generation != expected_generation
+            {
                 return Err(invalid());
             }
             Ok(prepared)
@@ -522,6 +609,7 @@ impl Service {
         };
         // Only infallible moves follow canonical publication. The validated
         // native view is installed rather than re-decoding under a new budget.
+        let replay_epoch = prepared.state.replay_epoch;
         self.state = Some(prepared.state);
         self.record_root = None;
         self.native_root = Some(prepared.root);
@@ -530,10 +618,14 @@ impl Service {
         self.record_writes_since_gc = 64;
         self.ha_read_cache = None;
         self.recovery_required = false;
+        #[cfg(test)]
+        test_observer::committed(self);
         Response::ok(
             json!({"data":{"previous_generation":outcome.previous_generation,
             "restored_generation":outcome.restored_generation,"retained_requests":outcome.retained_requests,
-            "rollback":outcome.restored_generation<outcome.previous_generation}}),
+            "source_generation":prepared.source_generation,
+            "source_replay_epoch":prepared.source_replay_epoch,"replay_epoch":replay_epoch,
+            "rollback":prepared.source_generation<outcome.previous_generation}}),
         )
     }
 }

@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.native-lan98-launch-input-template.v1",
+  "status": "template_requires_actual_build_and_driver_receipts",
+  "production_authority": false,
+  "product_source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "product_source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "driver_source_commit": null,
+  "driver_source_tree": null,
+  "driver_checkout": null,
+  "driver_python_absolute_path": null,
+  "driver_entry": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+  "driver_helper_sha256": {},
+  "build_receipt_projector_entry": "qa/openbao-acceptance/native_build_receipt_from_host_run.py",
+  "physical55_runner_sha256": "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+  "mac": {
+    "binary_source": null,
+    "binary_sha256": null,
+    "native_build_receipt_source": null,
+    "native_build_receipt_sha256": null,
+    "actual_host_summary_sha256": null,
+    "actual_source_manifest_sha256": null
+  },
+  "linux": {
+    "binary_source": null,
+    "binary_sha256": null,
+    "native_build_receipt_source": null,
+    "native_build_receipt_sha256": null,
+    "actual_host_summary_sha256": null,
+    "actual_source_manifest_sha256": null
+  },
+  "nodes": [
+    {
+      "node_id": 1,
+      "ssh_alias": "macbook-pro",
+      "historical_lan_ipv4": "192.168.0.7",
+      "current_lan_ipv4": null,
+      "server_name": "node-1.heptabao.synthetic",
+      "new_root_suggestion": "/Volumes/T5/hepta-vnext-recovery-20261013/native-lan98-0f1c-20261019-r1-node1",
+      "new_root": null,
+      "build_binding": "mac"
+    },
+    {
+      "node_id": 2,
+      "ssh_alias": "rog",
+      "historical_lan_ipv4": "192.168.0.10",
+      "current_lan_ipv4": null,
+      "server_name": "node-2.heptabao.synthetic",
+      "new_root_suggestion": "/home/qian-qi/heptabao-native-lan98-0f1c-20261019-r1-node2",
+      "new_root": null,
+      "build_binding": "linux"
+    },
+    {
+      "node_id": 3,
+      "ssh_alias": "pocket4",
+      "historical_lan_ipv4": "192.168.0.9",
+      "current_lan_ipv4": null,
+      "server_name": "node-3.heptabao.synthetic",
+      "new_root_suggestion": "/home/alex/heptabao-native-lan98-0f1c-20261019-r1-node3",
+      "new_root": null,
+      "build_binding": "linux"
+    }
+  ],
+  "api_port": 46230,
+  "raft_port": 46231,
+  "work_root_suggestion": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-0f1c-20261019-r1",
+  "work_root": null,
+  "required_check_count": 98,
+  "http_request_budget_seconds": 15,
+  "native_admission_budget_seconds": 8,
+  "listener_budget_seconds": 45,
+  "leader_budget_seconds": 60,
+  "sealed_leader_budget_seconds": 60,
+  "quorum_loss_budget_seconds": 35,
+  "historical_values_are_not_current_host_attestation": true,
+  "null_fields_must_be_filled_from_actual_primary_evidence": true,
+  "no_previous_03_binary_or_receipt_may_be_relabelled": true
+}

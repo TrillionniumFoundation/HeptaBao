@@ -2,11 +2,14 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
-#[path = "auth_rate_limit_quotas.rs"]
-pub(crate) mod rate_limit_quotas;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(any(
+    feature = "fixture-native-v6-service",
+    feature = "experimental-native-v6-ha"
+))]
 #[path = "auth_native_snapshot_clocks.rs"]
 mod native_snapshot_clocks;
+#[path = "auth_rate_limit_quotas.rs"]
+pub(crate) mod rate_limit_quotas;
 use crate::federated_auth::{
     JwtAlgorithm, JwtVerifier, NativeJwtBoundClaims, NativeJwtBoundClaimsType, NativeJwtTimePolicy,
     TrustPolicy, VerificationKey,
@@ -9903,4 +9906,3 @@ impl AuthState {
         Ok(())
     }
 }
-

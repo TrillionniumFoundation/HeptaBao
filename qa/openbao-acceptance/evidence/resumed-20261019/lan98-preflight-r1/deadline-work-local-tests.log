@@ -1,0 +1,10 @@
+test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response) ... ok
+test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation) ... ok
+test_leader_rejects_late_stable_complete_https_observation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_leader_rejects_late_stable_complete_https_observation) ... ok
+test_listener_accepts_complete_https_response_inside_same_deadline (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_listener_accepts_complete_https_response_inside_same_deadline) ... ok
+test_listener_rejects_late_complete_https_response_without_retry (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_listener_rejects_late_complete_https_response_without_retry) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 3.016s
+
+OK

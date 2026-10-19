@@ -14,6 +14,12 @@ mod historical;
 #[cfg(feature = "experimental-native-v6-ha")]
 pub(super) use historical::prepare_historical_native_root;
 
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_records_v6_snapshot.rs"]
+mod snapshot_projection;
+#[cfg(feature = "fixture-native-v6-service")]
+pub(super) use snapshot_projection::project_snapshot_native_root;
+
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct EngineMetadata {
@@ -1325,9 +1331,11 @@ impl Service {
             // The imported view contains metadata only. Its payload closure
             // is admitted solely by this opaque, exact scope/root witness.
             // The ordinary planner never receives an arbitrary object map.
-            import.visit_for(&root.kv2, &check, |scope, object| {
-                stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
-            }).map_err(|_| rejected())?;
+            import
+                .visit_for(&root.kv2, &check, |scope, object| {
+                    stage(&mut objects, ObjectDomain::Kv2(scope.clone()), object)
+                })
+                .map_err(|_| rejected())?;
         }
         let metadata = EngineMetadata {
             format: ENGINE_FORMAT.into(),

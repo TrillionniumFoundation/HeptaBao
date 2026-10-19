@@ -1467,9 +1467,13 @@ impl AuthState {
         }
         Ok(())
     }
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(any(
+        feature = "fixture-native-v6-service",
+        feature = "experimental-native-v6-ha"
+    ))]
     pub(super) fn inherit_native_snapshot_control_group_clock(
-        &mut self, current: &AuthState,
+        &mut self,
+        current: &AuthState,
     ) -> Result<(), AuthError> {
         // The permanent format/owner bit must already be present in incoming
         // authenticated data. A clock merge cannot fabricate erased custody.
@@ -1477,10 +1481,13 @@ impl AuthState {
             return Err(bad("snapshot would discard control group custody"));
         }
         self.control_groups.clock = self.control_groups.clock.max(current.control_groups.clock);
-        self.control_groups.precise_clock = self.control_groups.precise_clock
+        self.control_groups.precise_clock = self
+            .control_groups
+            .precise_clock
             .max(current.control_groups.precise_clock)
             .map(|at| Timestamp::whole(self.control_groups.clock).map(|whole| at.max(whole)))
-            .transpose().map_err(|_| bad("snapshot control group clock overflow"))?;
+            .transpose()
+            .map_err(|_| bad("snapshot control group clock overflow"))?;
         self.control_groups.validate_precise_clock()
     }
     pub(crate) fn validate_control_group_state(&self) -> Result<(), AuthError> {
@@ -1738,4 +1745,3 @@ impl Registry {
         })
     }
 }
-

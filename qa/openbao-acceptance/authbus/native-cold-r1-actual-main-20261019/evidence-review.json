@@ -1,0 +1,211 @@
+{
+  "schema": "heptabao.authbus.native-cold-r1.actual-evidence-review.v1",
+  "ok": true,
+  "reviewMethod": "Local consistency and exact-byte verification of five original main-host execution receipts; no additional native execution.",
+  "originalRuntimeResult": {
+    "controller": "120/120",
+    "warm": "59/59",
+    "coldBeforeServer": "57/57",
+    "coldAfterServer": "57/57",
+    "assertionsTotal": 293,
+    "assertionCountIsCredentialCount": false
+  },
+  "controllerPid": 1760012,
+  "driverPid": 1760018,
+  "startedUtc": "2026-10-19T05:49:31.848326+00:00",
+  "finishedUtc": "2026-10-19T05:50:33.047949+00:00",
+  "originalDeadlineNs": "496666505275011",
+  "originalOuterProfileSeconds": 180,
+  "helperMaximumProfileSeconds": 360,
+  "helperInheritsShorterOriginalDeadline": true,
+  "elapsedSeconds": 61.012099723,
+  "productBinary": {
+    "sha256": "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2",
+    "bytes": 776397280,
+    "commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "upstreamScopedTestResultRetained": "53/55; existing failures retained"
+  },
+  "runtimeSources": {
+    "files": 21,
+    "manifestSha256": "4833b745e511b5f8582b2f842a7cf0a3885153eaeeabfdf09c73236f1265da5c",
+    "packetSha256": "d9c590c128dd5f2c229b68edc20f33e0a2a7041668be27cf04cbc4190584e24e",
+    "frozenOverlaySha256": "8072cf7b3e59d35baffbe67f1abad8277b4dee9539b534301a2994e42d0bc77b",
+    "localFrozenSourcesStillExact": true
+  },
+  "workers": [
+    {
+      "phase": "warm",
+      "pid": 1760446,
+      "checksPassed": 59,
+      "sha256": "80a4141cd158bad0293b4de02af1fdce543ad5d974e661c0fd2c7d94d7dce794",
+      "boundQaSources": 15,
+      "boundSdkModulesLoaded": 14
+    },
+    {
+      "phase": "cold-before-server",
+      "pid": 1761730,
+      "checksPassed": 57,
+      "sha256": "ba12a73ccf5142682374a9fad7b06756c3a19d50de45979973b5b1310ba971ee",
+      "boundQaSources": 15,
+      "boundSdkModulesLoaded": 14
+    },
+    {
+      "phase": "cold-after-server",
+      "pid": 1762822,
+      "checksPassed": 57,
+      "sha256": "68780555ffb32a0b07b63746ffb22b1a89fc1c1837b440d8fdf7bde835fc035a",
+      "boundQaSources": 15,
+      "boundSdkModulesLoaded": 14
+    }
+  ],
+  "nativeSigkillRecovery": [
+    {
+      "exitCode": -9,
+      "newPid": 1762381,
+      "oldPid": 1760174,
+      "stop": "SIGKILL"
+    }
+  ],
+  "processCustody": {
+    "children": 9,
+    "allSameOriginalWaits": true,
+    "allSidsRetired": true,
+    "observationGaps": 0,
+    "fallbackSignals": 0,
+    "originalDeadlineResets": 0
+  },
+  "cases": [
+    {
+      "scenario": "manager-success",
+      "providerRequestsWarm": 1,
+      "providerRequestsBothCold": 0,
+      "durableAttemptUnchanged": true,
+      "nativeVersionsAcrossFourObservations": [
+        4,
+        5,
+        5,
+        6
+      ],
+      "scopeBootEpochs": [
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "scenario": "intent-ack-lost",
+      "providerRequestsWarm": 0,
+      "providerRequestsBothCold": 0,
+      "durableAttemptUnchanged": true,
+      "nativeVersionsAcrossFourObservations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "scopeBootEpochs": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "scenario": "provider-ack-lost",
+      "providerRequestsWarm": 1,
+      "providerRequestsBothCold": 0,
+      "durableAttemptUnchanged": true,
+      "nativeVersionsAcrossFourObservations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "scopeBootEpochs": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "scenario": "sqlite-abort",
+      "providerRequestsWarm": 1,
+      "providerRequestsBothCold": 0,
+      "durableAttemptUnchanged": true,
+      "nativeVersionsAcrossFourObservations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "scopeBootEpochs": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "transport": {
+    "nativeResponses": 140,
+    "proxyLocalDenials": 0,
+    "unclassifiedFailures": 0,
+    "rootBearerGivenToSdk": false,
+    "unknownCommitAckDropAfterIndependentNativeReadback": 1,
+    "nativeUnknownObservedBeforeAllThreeProviderRequests": true
+  },
+  "noOutsideFixtureAttempts": {
+    "network": 0,
+    "process": 0,
+    "write": 0,
+    "privateHomeRead": 0
+  },
+  "qualification": {
+    "actualSdk": true,
+    "actualSqlite": true,
+    "actualNativeHeptaBao": true,
+    "actualNativeSigkillRecovery": true,
+    "actualColdSdkProcesses": 2,
+    "actualWarmProviderHttps": true,
+    "syntheticCredentials": true,
+    "syntheticProvider": true,
+    "tlsControlEmulator": false,
+    "realExternalProvider": false,
+    "realCredentialMigration": false,
+    "productionMutation": false,
+    "allOwnerR5ScenariosRerunOnNative": false,
+    "openaiFacadeQualified": false,
+    "fullOpenBaoReplacement": false
+  },
+  "originalReceiptPins": [
+    {
+      "filename": "public-receipt.json",
+      "bytes": 51858,
+      "sha256": "cf3a770ddd9989321567424fe8b12edf014832751f11da70ae4444c249c76e81",
+      "git_blob": "a9201b475caf8ba9938740ec160bae06fb63ac04"
+    },
+    {
+      "filename": "authbus-r5-native-cold-r1-20261019-controller.json",
+      "bytes": 2003,
+      "sha256": "fc4756911ef60185e1e11198555392063d66f6c233a4a939b73ee89322d1dc8c",
+      "git_blob": "3c98f63821bccf2ac3ce1e434637f7e76cc388ff"
+    },
+    {
+      "filename": "warm.json",
+      "bytes": 14692,
+      "sha256": "80a4141cd158bad0293b4de02af1fdce543ad5d974e661c0fd2c7d94d7dce794",
+      "git_blob": "2db55d0091599a92cfb1e45f4a23561f1a441343"
+    },
+    {
+      "filename": "cold-before-server.json",
+      "bytes": 14720,
+      "sha256": "ba12a73ccf5142682374a9fad7b06756c3a19d50de45979973b5b1310ba971ee",
+      "git_blob": "bcd743f2ba27c00a97be4ab8d9ad21f19521dd70"
+    },
+    {
+      "filename": "cold-after-server.json",
+      "bytes": 14719,
+      "sha256": "68780555ffb32a0b07b63746ffb22b1a89fc1c1837b440d8fdf7bde835fc035a",
+      "git_blob": "5d1afc6dfc156074cc94526842e2184ab7fc61b3"
+    }
+  ]
+}

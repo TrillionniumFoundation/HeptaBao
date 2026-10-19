@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.authbus-native-cold-once-controller.v1",
+  "started_utc": "2026-10-19T05:49:31.848326+00:00",
+  "controller_pid": 1760012,
+  "status": "completed",
+  "submission_count": 1,
+  "automatic_retry": false,
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r1-source-20261019/qa/openbao-acceptance/native_v6_authbus_refresh_live.py",
+    "--binary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server",
+    "--binary-sha256",
+    "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2",
+    "--node",
+    "/usr/bin/node",
+    "--openclaw-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+    "--source-manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r1-source-20261019/source-manifest.json",
+    "--work-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r1-actual-20261019-01"
+  ],
+  "source_packet_sha256": "d9c590c128dd5f2c229b68edc20f33e0a2a7041668be27cf04cbc4190584e24e",
+  "source_manifest_sha256": "4833b745e511b5f8582b2f842a7cf0a3885153eaeeabfdf09c73236f1265da5c",
+  "source_files": 21,
+  "frozen_overlay_sha256": "8072cf7b3e59d35baffbe67f1abad8277b4dee9539b534301a2994e42d0bc77b",
+  "product_source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "product_source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "product_build_scoped_tests": "53/55; existing failures retained",
+  "production_mutation": false,
+  "driver_pid": 1760018,
+  "driver_pgid": 1760018,
+  "driver_exit_code": 0,
+  "finished_utc": "2026-10-19T05:50:33.047949+00:00",
+  "source_unchanged": true,
+  "sdk_package_unchanged": true,
+  "stdout": {
+    "bytes": 118,
+    "sha256": "c03bae86c5a1903b7bff3f92e1e395398e8bf6eb942e51af77ffa252ddb11316"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

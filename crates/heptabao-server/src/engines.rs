@@ -43,17 +43,20 @@ mod kv2_native_import;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "engine_native_kv2_storage_witness.rs"]
 mod native_kv2_storage_witness;
-#[cfg(feature = "fixture-native-v6-service")]
-pub(crate) use kv::lossless::native_large as kv2_native_large;
 #[cfg(test)]
 pub(crate) use kv::lossless::decode_lossless_json;
 pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
+#[cfg(feature = "fixture-native-v6-service")]
+pub(crate) use kv::lossless::native_large as kv2_native_large;
 mod kv1_records;
 #[path = "engine_kv_versioning.rs"]
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(any(
+    feature = "fixture-native-v6-service",
+    feature = "experimental-native-v6-ha"
+))]
 #[path = "engine_native_snapshot_clocks.rs"]
 mod native_snapshot_clocks;
 #[path = "engine_pki_revocation.rs"]
@@ -4116,4 +4119,3 @@ mod lossless_json_tests;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "engine_native_paged_dispatch.rs"]
 mod native_paged_dispatch;
-

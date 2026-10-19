@@ -1,0 +1,34 @@
+{
+  "base_commit": "36ee52ace6351dc92bea5accadabee32e5803c17",
+  "base_tree": "ef9a9c4783d39deec49d39c16edee3767823a3ae",
+  "original_evidence": [
+    {
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/mac0f1c-actual-r1/summary.json",
+      "bytes": 53971,
+      "sha256": "85eee45d084862ada27c1afb3e11b0fe58d0f7cb0cba5ca981faa6ad55afbd56"
+    },
+    {
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/mac0f1c-actual-r1/native-kv2-import.log",
+      "bytes": 6768,
+      "sha256": "ed808bc666392c4605dc545e43dddc42f4af31a554e0fa3efc77faa51c89253b"
+    },
+    {
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/mac0f1c-actual-r1/native-kv2-storage-witness.log",
+      "bytes": 5180,
+      "sha256": "9186712dd7648341e167ab881c77aea5600c1c70acc69116cb11739a333240df"
+    },
+    {
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/mac36ee-diagnostic13-actual-r1/summary.json",
+      "bytes": 10864,
+      "sha256": "6c8d2844970203e445d65c294ec4464f74eaf9b0e7f40a2566f34532335aa5d8"
+    },
+    {
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/mac36ee-diagnostic13-actual-r1/native-kv2-storage-witness.log",
+      "bytes": 5291,
+      "sha256": "f69f58a71802ccb19399d1576a2d295f07cd41175a8691883830e1573c92cf81"
+    }
+  ],
+  "status": "r4_not_compiled_or_executed",
+  "new_test_functions": 0,
+  "unchanged_cohort": 55
+}

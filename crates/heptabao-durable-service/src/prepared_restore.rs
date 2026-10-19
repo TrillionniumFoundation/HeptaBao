@@ -5,6 +5,8 @@ use std::sync::Arc;
 
 #[path = "epoch_publication.rs"]
 mod epoch_publication;
+#[path = "prepared_restore_projection.rs"]
+mod projection;
 
 /// Public, non-secret facts about the authenticated incoming backup.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

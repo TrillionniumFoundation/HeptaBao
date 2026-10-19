@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.local-review-of-actual-build-metadata.v1",
+  "observed_utc": "2026-10-19T05:45:40.358488+00:00",
+  "original_summary_sha256": "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+  "original_source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "original_source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "original_status": "failed_or_blocked",
+  "original_scoped_pass_count": 53,
+  "required_scoped_count": 55,
+  "completed_original_build_records": {
+    "build-server": {
+      "label": "build-server",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic"
+      ],
+      "started_utc": "2026-10-19T05:25:14.457311+00:00",
+      "status": "passed",
+      "log": "build-server.log",
+      "pid": 1701486,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T05:36:26.141664+00:00",
+      "elapsed_seconds": 671.669,
+      "log_sha256": "e76d037bd7566ce9da6d0dd91d9788730477777967cdf556093bca027daf993a",
+      "binary": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server",
+      "binary_sha256": "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2",
+      "binary_bytes": 776397280
+    },
+    "rustc-version": {
+      "label": "rustc-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T04:46:10.814817+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 1597338,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T04:46:10.837055+00:00",
+      "elapsed_seconds": 0.019,
+      "log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8"
+    },
+    "built-binary-format": {
+      "label": "built-binary-format",
+      "argv": [
+        "/usr/bin/file",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server"
+      ],
+      "started_utc": "2026-10-19T05:36:34.247422+00:00",
+      "status": "passed",
+      "log": "built-binary-format.log",
+      "pid": 1721834,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T05:36:34.289462+00:00",
+      "elapsed_seconds": 0.019,
+      "log_sha256": "f91a191298c8cb821278333b349fa0d8680620e2d7db018b3b6096bc0619fdc6"
+    }
+  },
+  "log_hashes_and_headers_verified_locally": true,
+  "actual_producer_binary_read_by_this_local_review": false,
+  "receipt_projected_by_this_local_review": false
+}

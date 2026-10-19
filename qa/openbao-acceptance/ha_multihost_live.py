@@ -607,7 +607,11 @@ def wait_listener(context: ssl.SSLContext, node: Node, seconds: float = 45) -> t
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
         try:
-            return api(context, node, "GET", "sys/health", timeout=1.5)
+            observed = api(context, node, "GET", "sys/health", timeout=1.5)
+            # A response begun in time is not evidence received in time.
+            if time.monotonic() < deadline:
+                return observed
+            break
         except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
             time.sleep(0.1)
     raise FixtureError(f"node_{node.node_id}_listener_timeout")
@@ -644,6 +648,8 @@ def wait_leader(context: ssl.SSLContext, nodes: list[Node], token: str,
     while time.monotonic() < deadline:
         observed = leader_once(context, nodes, token)
         now = time.monotonic()
+        if now >= deadline:
+            break
         if observed is not None and (previous is None or observed != previous):
             if observed == candidate:
                 if now - stable_since >= 2.2:

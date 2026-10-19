@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.actual-native-r4-format.v1",
+  "source_files": 12,
+  "formatted_files": 11,
+  "source_unchanged": true,
+  "overlay_bytes": 806915,
+  "overlay_sha256": "b90178be7a20c615bb2c3ed99d32bfc49ff3202e3f9ebdfe18a729e382a2e5c6",
+  "parts": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/format-overlay.part-000.json",
+      "bytes": 36015,
+      "sha256": "20173446ea20efd79098b61d95c66c95f5da4ef4e1e1377b6c299ee97ca8e747"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/format-overlay.part-001.json",
+      "bytes": 36015,
+      "sha256": "812293d50fdfe256004a3fe67f2cb9e8a63bf9953a6e047b057eb328137c4b7f"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/format-overlay.part-002.json",
+      "bytes": 36015,
+      "sha256": "63f0e962b9d48095414aea0b386ef9566e2f8abac0a387ef807d313bb2e1ca7a"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/format-overlay.part-003.json",
+      "bytes": 36015,
+      "sha256": "05947359f4978baea49721ef71158d2ef370bb56d89920888b8302b26a1162c0"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/format-overlay.part-004.json",
+      "bytes": 36015,
+      "sha256": "6b134b823063b426ebc8481d230ec32083f3858ea98d6c6dbfa34f2dcc14cfa1"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/format-overlay.part-005.json",
+      "bytes": 11719,
+      "sha256": "bf0218be7d8f25555776e9205385af163cbf30674c277b4d24f95ddea3c4da1d"
+    }
+  ],
+  "logs": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--check",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/r4.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/r4.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-durable-service/src/prepared_restore.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-durable-service/src/prepared_restore_projection.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-durable-service/src/v6_object_backup.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-durable-service/src/v6_restore_projection.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/auth.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/auth_control_groups.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/engines.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/service_records_v6.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/service_records_v6_snapshot.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/service_snapshot_v6.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/snapshot-r4-format-20261019-r1/work/crates/heptabao-server/src/service_snapshot_v6_test_observer.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "compilation_performed": false
+}

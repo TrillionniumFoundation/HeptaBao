@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.native-build-receipt-projection-local-checks.v1",
+  "started_utc": "2026-10-19T04:57:10.124536+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests",
+    "-p",
+    "test_native_build_receipt_from_host_run.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.083919,
+  "log_sha256": "da73cbca904a3364172b5644d316033c7657db91decc6b92539965e07eef9b8d",
+  "synthetic_metadata_tests_only": true,
+  "actual_native_build_executed": false,
+  "actual_lan98_executed": false,
+  "source_sha256": {
+    "qa/openbao-acceptance/tests/test_native_build_receipt_from_host_run.py": "5607d5fccacaff000869a2b22dcee2be6ac7e17ee934cb5a38b8da66a9c5a0a9",
+    "qa/openbao-acceptance/native_build_receipt_from_host_run.py": "c65459bc7e4998066c2688243ba70242c820a1b431c8f8ac77f2891e21bc54a4"
+  }
+}

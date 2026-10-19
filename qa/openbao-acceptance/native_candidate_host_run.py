@@ -140,8 +140,16 @@ def main():
     parser.add_argument("--build-server", action="store_true")
     parser.add_argument("--low-memory-build", action="store_true",
                         help="one build job, no compiler debug info, and no incremental cache; test contracts are unchanged")
+    parser.add_argument("--build-jobs", type=int,
+                        help="explicit compiler parallelism, 1..min(16, logical CPUs); does not change test threads or deadlines")
     parser.add_argument("--command-timeout", type=int, default=1800)
     args = parser.parse_args()
+    logical_cpus = os.cpu_count() or 1
+    if args.build_jobs is not None and not 1 <= args.build_jobs <= min(16, logical_cpus):
+        parser.error("build-jobs must be between 1 and min(16, logical CPUs)")
+    if args.low_memory_build and args.build_jobs not in (None, 1):
+        parser.error("low-memory-build requires exactly one compiler job")
+    build_jobs = 1 if args.low_memory_build else (args.build_jobs or 2)
     for name in ("source", "manifest", "output", "cargo", "rustc", "cargo_home", "target_dir"):
         path = getattr(args, name)
         if not path.is_absolute():
@@ -177,13 +185,15 @@ def main():
         env.pop(key, None)
     env.update(PATH=str(args.rustc.parent) + ":/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
                CARGO_HOME=str(args.cargo_home), CARGO_TARGET_DIR=str(args.target_dir), RUSTC=str(args.rustc),
-               CARGO_BUILD_JOBS="1" if args.low_memory_build else "2",
-               CMAKE_BUILD_PARALLEL_LEVEL="1" if args.low_memory_build else "2",
+               CARGO_BUILD_JOBS=str(build_jobs),
+               CMAKE_BUILD_PARALLEL_LEVEL=str(build_jobs),
                CARGO_TERM_COLOR="never", CARGO_NET_OFFLINE="true")
     if args.low_memory_build:
         env.update(CARGO_PROFILE_DEV_DEBUG="0", CARGO_PROFILE_TEST_DEBUG="0", CARGO_INCREMENTAL="0")
     summary["compiler_resource_profile"] = {
         "low_memory_requested": args.low_memory_build,
+        "explicit_build_jobs_requested": args.build_jobs,
+        "logical_cpus_observed": logical_cpus,
         "cargo_build_jobs": env["CARGO_BUILD_JOBS"],
         "cmake_build_parallel_level": env["CMAKE_BUILD_PARALLEL_LEVEL"],
         "dev_debug": env.get("CARGO_PROFILE_DEV_DEBUG"),

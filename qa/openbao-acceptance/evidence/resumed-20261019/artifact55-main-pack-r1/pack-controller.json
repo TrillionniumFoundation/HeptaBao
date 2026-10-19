@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.native-linux-producer-once-controller.v1",
+  "status": "completed",
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-linux-artifact-tool-20261019-r1/native_linux_artifact_run.py",
+    "pack",
+    "--source",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-0f1c",
+    "--manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-0f1c-manifest.json",
+    "--source-commit",
+    "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "--source-tree",
+    "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--producer-runner-sha256",
+    "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+    "--summary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/summary.json",
+    "--summary-sha256",
+    "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+    "--target-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019",
+    "--output",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-artifact55-0f1c-main-capsule-20261019-r1"
+  ],
+  "submission_count": 1,
+  "automatic_retry": false,
+  "script_sha256": "d4206c72bded887e807563b85de45568a60b319f035097291d622160d91c3620",
+  "started_utc": "2026-10-19T05:50:31.115022+00:00",
+  "controller_pid": 1764600,
+  "packer_pid": 1764614,
+  "exit_code": 0,
+  "finished_utc": "2026-10-19T05:51:04.081866+00:00",
+  "pack.stdout.log": {
+    "bytes": 299,
+    "sha256": "ebbe3666b01de0197ec3328f61d1cb3a5c2160f7449b78b7e674632821de853e"
+  },
+  "pack.stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "capsule": {
+    "path": "/home/qian-qi/heptabao-next-gates-20261017/native-artifact55-0f1c-main-capsule-20261019-r1/capsule.json",
+    "bytes": 49166,
+    "sha256": "7ba7d276da01fa535ddc1a702bdf643931e439451054c43fa36ec3888c48f766"
+  }
+}

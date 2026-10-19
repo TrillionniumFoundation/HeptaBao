@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-projector-stream-20261019-r1/projector.py",
+    "--summary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/summary.json",
+    "--summary-sha256",
+    "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+    "--manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-0f1c-manifest.json",
+    "--source-commit",
+    "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "--source-tree",
+    "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--runner-sha256",
+    "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+    "--output",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-projector-stream-20261019-r1/native-build-receipt.json"
+  ],
+  "script_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "exit_code": 0,
+  "stdout": "{\"status\": \"receipt_projected\", \"receipt_sha256\": \"a2cefb8d58632b9160d67d25c035aed0078c03ed6c328db7ad7a17e5a7062f23\", \"native_abi\": \"x86_64-unknown-linux-gnu\", \"remote_operations\": 0, \"original_scoped_host_status\": \"failed_or_blocked\"}\n",
+  "stderr": "",
+  "original_binary_stripped": false,
+  "lan98_executed": false
+}

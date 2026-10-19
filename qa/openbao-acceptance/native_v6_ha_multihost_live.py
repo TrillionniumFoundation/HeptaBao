@@ -493,7 +493,8 @@ class NativeRun:
         self.phases = self.work / "phases"
         self.phases.mkdir(mode=0o700)
         paths = (Path(__file__), Path(base.__file__), Path(loopback.__file__),
-                 Path(loopback.mesh_plan.__code__.co_filename), Path(recovery.__file__))
+                 Path(loopback.mesh_plan.__code__.co_filename), Path(recovery.__file__),
+                 Path(base.provision_secret_kv2.__code__.co_filename))
         self.source_files = {str(path.resolve()): base.sha256_file(path) for path in paths}
         self.local_binaries = {}
         self.recovery = recovery.FixtureRecoveryLedger(
@@ -624,6 +625,8 @@ class NativeRun:
                 raise base.FixtureError("sealed_pair_reported_multiple_leaders")
             observed = active[0] if active else None
             now = time.monotonic()
+            if now >= deadline:
+                break
             if observed is not None and (expected is None or observed == expected):
                 if observed == candidate and now - since >= 2.2:
                     return observed
@@ -1020,7 +1023,8 @@ class NativeRun:
             if closed:
                 break
             time.sleep(0.1)
-        self.check("single_survivor_loses_authority", closed, node=survivor.node_id)
+        self.check("single_survivor_loses_authority",
+                   closed and time.monotonic() < deadline, node=survivor.node_id)
         denied_path = "native-ha-" + self.run_id + "/quorum-denied"
         status, body = self.request(survivor, "POST", "secret/data/" + denied_path,
                                     {"options": {"cas": 0}, "data": {"value": "must-not-commit"}})

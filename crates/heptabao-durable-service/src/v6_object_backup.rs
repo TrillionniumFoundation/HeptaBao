@@ -7,7 +7,10 @@
 //! Only registered slots enter the pack; unreferenced filesystem orphans do not.
 //! The existing component bounds are unchanged; external ciphertext is streamed.
 use super::*;
+#[path = "v6_restore_projection.rs"]
+mod projection;
 use aws_lc_rs::digest as hardware_sha256;
+use projection::read_member_ciphertext;
 
 // Standard SHA-256 bytes are unchanged. On x86-64 without Intel SHA-NI,
 // AWS-LC can use its audited AVX2 implementation rather than the software
@@ -21,6 +24,7 @@ fn accelerated_sha256(bytes: &[u8]) -> Result<[u8; 32], ServiceError> {
 use heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS;
 use std::collections::BTreeSet;
 use std::io::{self, Read, Seek, SeekFrom, Write};
+use std::sync::Arc;
 
 const MAGIC: &[u8; 8] = b"HBV6PK01";
 const SLOT_MAGIC: &[u8; 16] = b"HBV6BLOBREF0001\0";
@@ -250,6 +254,7 @@ struct Member {
     slot: Slot,
     offset: u64,
     digest: [u8; 32],
+    projected_ciphertext: Option<Arc<Zeroizing<Vec<u8>>>>,
 }
 
 /// Entire archive authenticated, but not yet staged or published. Owns the
@@ -261,6 +266,7 @@ pub struct PreparedV6Restore<R> {
     reader: R,
     members: Vec<Member>,
     size: V6BackupSize,
+    projected: bool,
 }
 impl<R> fmt::Debug for PreparedV6Restore<R> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -273,6 +279,9 @@ impl<R> PreparedV6Restore<R> {
     pub fn state(&self) -> &PreparedRestore {
         &self.state
     }
+    /// Immutable facts from the authenticated input pack. An admitted clock
+    /// projection creates a newer state checkpoint without relabeling these
+    /// source generation, count or byte facts as a newly received archive.
     pub fn size(&self) -> V6BackupSize {
         self.size
     }
@@ -658,6 +667,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 slot,
                 offset,
                 digest: accelerated_sha256(&ciphertext)?,
+                projected_ciphertext: None,
             });
         }
         let mut encoded = [0; 4];
@@ -700,6 +710,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             reader,
             members,
             size,
+            projected: false,
         })
     }
 
@@ -754,12 +765,12 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 Some(io_gate) => io_gate(),
                 None => gate(),
             };
-            seek_checked(
+            read_member_ciphertext(
                 &mut prepared.reader,
-                SeekFrom::Start(member.offset),
+                member,
+                &mut ciphertext,
                 &mut physical_gate,
             )?;
-            read_exact_checked(&mut prepared.reader, &mut ciphertext, &mut physical_gate)?;
         }
         if !constant_time_eq(&accelerated_sha256(&ciphertext)?, &member.digest) {
             return Err(ServiceError::CorruptState);
@@ -817,7 +828,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         // A backend unable to publish a recoverable restore must reject before
         // staging external files, not after all object I/O has already happened.
         self.backend.restore_profile().map_err(map_backend_error)?;
-        if !allow_rollback && prepared.state.metadata().generation < self.generation() {
+        // A derived checkpoint is newer, but its logical archive can still
+        // roll data back. Authorization follows the immutable SOURCE facts.
+        if !allow_rollback && prepared.size.generation < self.generation() {
             return Err(ServiceError::BackupRollbackRejected);
         }
         let stage_started = std::time::Instant::now();
@@ -850,12 +863,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                         Some(physical_gate) => physical_gate(),
                         None => gate(),
                     };
-                    seek_checked(
-                        &mut prepared.reader,
-                        SeekFrom::Start(member.offset),
-                        &mut io,
-                    )?;
-                    read_exact_checked(&mut prepared.reader, &mut ciphertext, &mut io)?;
+                    read_member_ciphertext(&mut prepared.reader, member, &mut ciphertext, &mut io)?;
                 }
                 // Always revalidate FULL owner immediately after actual input I/O;
                 // no object can proceed to publication on the fast gate alone.

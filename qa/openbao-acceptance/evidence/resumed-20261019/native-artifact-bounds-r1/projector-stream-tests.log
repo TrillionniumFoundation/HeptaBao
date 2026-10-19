@@ -1,0 +1,13 @@
+{"argv": ["python3", "-B", "/workspace/scratch/915e5e680008/continuation-20261019/native-artifact-bounds-r1/work/qa/openbao-acceptance/tests/test_native_build_receipt_from_host_run.py", "-v"]}
+test_actual_artifact_or_compiler_log_change_refuses (__main__.ProjectionRegression.test_actual_artifact_or_compiler_log_change_refuses) ... ok
+test_binary_stream_has_exact_digest_and_rejects_oversize_without_read (__main__.ProjectionRegression.test_binary_stream_has_exact_digest_and_rejects_oversize_without_read) ... ok
+test_duplicate_command_wrong_native_abi_and_manifest_refuse (__main__.ProjectionRegression.test_duplicate_command_wrong_native_abi_and_manifest_refuse) ... ok
+test_exact_retained_records_project_build_but_preserve_failed_scope (__main__.ProjectionRegression.test_exact_retained_records_project_build_but_preserve_failed_scope) ... ok
+test_source_and_build_claims_cannot_be_upgraded (__main__.ProjectionRegression.test_source_and_build_claims_cannot_be_upgraded) ... ok
+test_stream_custody_detects_same_size_replacement_and_hardlink (__main__.ProjectionRegression.test_stream_custody_detects_same_size_replacement_and_hardlink) ... ok
+test_symlink_binary_and_existing_receipt_are_never_replaced (__main__.ProjectionRegression.test_symlink_binary_and_existing_receipt_are_never_replaced) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.046s
+
+OK
