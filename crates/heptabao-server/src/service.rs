@@ -149,6 +149,9 @@ mod kv2_import;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "service_native_kv2_import.rs"]
 mod native_kv2_import;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "service_native_kv2_large.rs"]
+mod native_kv2_large;
 #[cfg(test)]
 #[path = "service_kv2_import_tests.rs"]
 mod kv2_import_tests;
@@ -1203,6 +1206,8 @@ enum ExternalEffectPlan {
     KubernetesToken(Box<kubernetes_secret::KubernetesTokenEffectPlan>),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
+    #[cfg(feature = "fixture-native-v6-service")]
+    NativeKv2Large(Box<native_kv2_large::TransferPlan>),
     #[cfg(target_os = "linux")]
     WrapperBarrierInit(Box<openbao_wrapper::barrier::InitializationPlan>),
 }
@@ -1227,6 +1232,8 @@ pub(crate) enum ExternalEffectResult {
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
+    #[cfg(feature = "fixture-native-v6-service")]
+    NativeKv2Large(Result<crate::engines::kv2_native_records::NativeKv2GraphImport, Response>),
     #[cfg(target_os = "linux")]
     WrapperBarrierInit(
         Result<
@@ -1334,6 +1341,10 @@ impl PendingExternalRequest {
             ExternalEffectPlan::SnapshotTransfer(_) => ExternalEffectResult::SnapshotTransfer(Err(
                 Response::error(501, "native snapshot requires typed HTTP transport"),
             )),
+            #[cfg(feature = "fixture-native-v6-service")]
+            ExternalEffectPlan::NativeKv2Large(_) => ExternalEffectResult::NativeKv2Large(Err(
+                Response::error(501, "native-large KV2 requires admitted typed HTTP transport"),
+            )),
         }
     }
 }
@@ -1413,6 +1424,12 @@ pub struct Service {
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    pending_native_kv2_large: Option<native_kv2_large::TransferPlan>,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_kv2_large_transport: bool,
+    #[cfg(feature = "fixture-native-v6-service")]
+    native_kv2_large_flight: Arc<std::sync::atomic::AtomicBool>,
     pending_workflow_external_hold: Option<Box<PendingExternalRequest>>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
@@ -1859,6 +1876,12 @@ impl Service {
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            pending_native_kv2_large: None,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_kv2_large_transport: false,
+            #[cfg(feature = "fixture-native-v6-service")]
+            native_kv2_large_flight: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             pending_workflow_external_hold: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
@@ -2314,6 +2337,10 @@ impl Service {
             ExternalEffectPlan::SnapshotTransfer(plan) => Some(
                 crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
             ),
+            #[cfg(feature = "fixture-native-v6-service")]
+            ExternalEffectPlan::NativeKv2Large(plan) => Some(
+                crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
+            ),
             _ => None,
         };
         let response = match (pending.effect, result) {
@@ -2504,6 +2531,12 @@ impl Service {
                     result,
                     &pending.fingerprint,
                     (pending.now, pending.token_clock),
+                );
+            }
+            #[cfg(feature = "fixture-native-v6-service")]
+            (ExternalEffectPlan::NativeKv2Large(plan), ExternalEffectResult::NativeKv2Large(result)) => {
+                return self.complete_native_kv2_large(
+                    *plan, result, &pending.fingerprint, (pending.now, pending.token_clock),
                 );
             }
             _ => {
@@ -2741,7 +2774,8 @@ impl Service {
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_pending = false;
         #[cfg(feature = "fixture-native-v6-service")]
-        let native_auth_pending = self.pending_native_auth_delivery.is_some();
+        let native_auth_pending = self.pending_native_auth_delivery.is_some()
+            || self.pending_native_kv2_large.is_some();
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let native_auth_pending = false;
         if sdk_pending
@@ -3061,6 +3095,12 @@ impl Service {
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_kv2_large = self.pending_native_kv2_large.take();
+        #[cfg(feature = "fixture-native-v6-service")]
+        let native_kv2_large_staged = usize::from(native_kv2_large.is_some());
+        #[cfg(not(feature = "fixture-native-v6-service"))]
+        let native_kv2_large_staged = 0;
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
         #[cfg(feature = "fixture-native-v6-service")]
@@ -3077,7 +3117,7 @@ impl Service {
         let transit_cache_reload = self.pending_transit_cache_reload.take();
         let acme_authority = self.pending_acme_authority.take();
         let local_unseal_completion = self.pending_local_unseal_completion.take();
-        let staged = sdk_staged
+        let staged = sdk_staged + native_kv2_large_staged
             + usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
@@ -3142,6 +3182,10 @@ impl Service {
         let effect = effect
             .or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend))
             .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
+        #[cfg(feature = "fixture-native-v6-service")]
+        let effect = effect.or_else(|| native_kv2_large.map(|plan| {
+            ExternalEffectPlan::NativeKv2Large(Box::new(plan))
+        }));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 raw_reply_ingress: crate::auth::current_ingress(),
@@ -4075,6 +4119,7 @@ impl Service {
                 && !native_snapshot_route
                 && !native_local_auth
                 && path != "sys/migration/openbao/kv2"
+                && path != crate::engines::kv2_native_large::PATH
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -4142,6 +4187,10 @@ impl Service {
             resumed_control_group,
         ) {
             return response;
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if path == crate::engines::kv2_native_large::PATH {
+            return self.stage_native_kv2_large(admitted, principal.take(), &request);
         }
         #[cfg(feature = "fixture-native-v6-service")]
         if self.native_root.is_some() && path == "sys/migration/openbao/kv2" {

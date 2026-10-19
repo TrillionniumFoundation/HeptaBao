@@ -33,6 +33,15 @@ fn fingerprints(state: &State, deadline: OriginalDeadline) -> Result<[[u8; 32]; 
     ])
 }
 
+// The opt-in diagnostic build reports fixed recovery stages and runtime
+// errors only. It never prints barrier material, payloads or Auth credentials.
+fn cold_stage_failed(phase: &'static str) {
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    eprintln!("HBHA-PRIVATE-COLD-NATIVE phase={phase} result=refused");
+    #[cfg(not(feature = "private-ha-forward-diagnostic"))]
+    let _ = phase;
+}
+
 // Cold unseal has an actual provided local barrier key, but it intentionally
 // has not installed that key or State into Service yet. This cannot be used by
 // a warm request, and its result must go through the existing HA sync/audit gate.
@@ -57,29 +66,46 @@ pub(crate) fn load_cold_native_ha(
         return Ok(None);
     }
     let ha = service.ha.as_ref().ok_or_else(unavailable)?;
-    let environment = LocalHaEnvironment::capture(service, ha, key, deadline)?;
-    let process = ha.lock_for_request().map_err(|_| unavailable())?;
+    let environment = LocalHaEnvironment::capture(service, ha, key, deadline)
+        .inspect_err(|_| cold_stage_failed("environment"))?;
+    let process = ha.lock_for_request().map_err(|_| {
+        cold_stage_failed("process_lock");
+        unavailable()
+    })?;
     if !process.native_v6_enabled() {
         return Err(unavailable());
     }
     let committed = process
         .native_v6_committed_read(deadline)
-        .map_err(|_| unavailable())?
-        .ok_or_else(unavailable)?;
-    let mut selected = LocalSelection::read(durable, &committed)?;
+        .map_err(|error| {
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            eprintln!("HBHA-PRIVATE-COLD-NATIVE phase=committed_read reason={error:?}");
+            #[cfg(not(feature = "private-ha-forward-diagnostic"))]
+            let _ = error;
+            unavailable()
+        })?
+        .ok_or_else(|| {
+            cold_stage_failed("committed_root_absent");
+            unavailable()
+        })?;
+    let mut selected = LocalSelection::read(durable, &committed)
+        .inspect_err(|_| cold_stage_failed("local_selection"))?;
     let root = selected.native.as_ref().ok_or_else(unavailable)?;
     if root.cluster_id != process.cluster_id()
         || root.replay_epoch != durable.replay_epoch()
         || root.reader_floor.native_kv2_format != 2
     {
+        cold_stage_failed("local_root_binding");
         return Err(unavailable());
     }
     let mut gate = || {
         environment
             .check_cold(service, key)
+            .inspect_err(|_| cold_stage_failed("original_cold_owner"))
             .map_err(|_| ServiceError::BarrierFailure)?;
         process
             .verify_native_v6_committed_read(&committed)
+            .inspect_err(|_| cold_stage_failed("original_read_witness"))
             .map_err(|_| ServiceError::BarrierFailure)?;
         deadline.check().map_err(|_| ServiceError::BarrierFailure)
     };
@@ -94,19 +120,24 @@ pub(crate) fn load_cold_native_ha(
                     durable, &selected, &committed, codec, store, &mut gate, &published,
                 )
             })
-            .map_err(|_| unavailable())?;
+            .map_err(|_| {
+                cold_stage_failed("replica_source");
+                unavailable()
+            })?;
         if result.is_err() && (published.get() || durable.recovery_required()) {
             return Err(Response::error(
                 503,
                 "native V6 HA cold publication requires reconciliation",
             ));
         }
-        result?;
-        selected = LocalSelection::read(durable, &committed)?;
+        result.inspect_err(|_| cold_stage_failed("replica_install"))?;
+        selected = LocalSelection::read(durable, &committed)
+            .inspect_err(|_| cold_stage_failed("installed_local_selection"))?;
     }
     let root = selected.native.as_ref().ok_or_else(unavailable)?;
     NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?
-        .matches_current(&committed)?;
+        .matches_current(&committed)
+        .inspect_err(|_| cold_stage_failed("current_cursor"))?;
     let (metadata, native) = match materialize_local(durable, root, deadline, &mut gate) {
         Ok(local) => local,
         Err(_) => {
@@ -118,11 +149,16 @@ pub(crate) fn load_cold_native_ha(
                         durable, &selected, &committed, codec, store, &mut gate,
                     )
                 })
-                .map_err(|_| unavailable())??;
-            materialize_local(durable, root, deadline, &mut gate)?
+                .map_err(|_| {
+                    cold_stage_failed("repair_source");
+                    unavailable()
+                })?
+                .inspect_err(|_| cold_stage_failed("physical_repair"))?;
+            materialize_local(durable, root, deadline, &mut gate)
+                .inspect_err(|_| cold_stage_failed("materialize_after_repair"))?
         }
     };
-    root_namespace_only(&metadata)?;
+    root_namespace_only(&metadata).inspect_err(|_| cold_stage_failed("root_namespace"))?;
     let owner_bytes = root
         .owners
         .iter()
@@ -136,6 +172,7 @@ pub(crate) fn load_cold_native_ha(
     }
     selected
         .check(durable, selected.initial_generation)
+        .inspect_err(|_| cold_stage_failed("final_local_generation"))
         .map_err(storage_rejected)?;
     gate().map_err(storage_rejected)?;
     // This cold owner has not installed State or a local barrier key into

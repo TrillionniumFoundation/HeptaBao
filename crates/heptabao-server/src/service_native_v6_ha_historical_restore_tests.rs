@@ -2,6 +2,7 @@
 //! Host power loss is separately measured by the physical acceptance runner.
 use super::*;
 use heptabao_raft_runtime::NativeV6PublishedRoot;
+use crate::state_record_root::StateIdentity;
 use std::io::Read;
 
 const SNAPSHOT: &str = "sys/storage/raft/snapshot";
@@ -24,19 +25,32 @@ fn admit_with_query(service: &mut Service, method: &str, token: &str, query: Val
         NativeSnapshotAdmission::Redirect(_) => Err("selected historical restore leader redirected".into()),
     }
 }
-fn activate(pipeline: &Pipeline, leader: usize) -> TestResult {
+fn activate(pipeline: &Pipeline, leader: usize) -> TestResult<StateIdentity> {
+    // The actual V5 source can legitimately change before activation (for
+    // example, issuing the pre-existing precise token below). Capture that
+    // independently observed source, not the fixture's initial seed root.
+    let source = pipeline.with_service(leader, |service| {
+        let source = service.current_state_identity().map_err(|_| "pre-activation source")?;
+        assert!(matches!(source, StateIdentity::RecordsV5(_)));
+        assert!(service.native_root.is_none());
+        Ok(source)
+    })?;
     expect(pipeline.call(leader, "POST", "sys/internal/native-v6/activate",
         pipeline.admin(), json!({}))?, 204, "historical-native-activation")?;
-    Ok(())
+    assert_eq!(selection(pipeline, leader, source)?.0, 0);
+    Ok(source)
 }
-fn selection(pipeline: &Pipeline, leader: usize) -> TestResult<(u64, NativeV6PublishedRoot)> {
+fn selection(pipeline: &Pipeline, leader: usize, migration_source: StateIdentity)
+    -> TestResult<(u64, NativeV6PublishedRoot)>
+{
     let _scope = scope();
     let process = pipeline.processes[leader].as_ref().ok_or("restore process")?
         .lock_for_request().map_err(|_| "restore selection lock")?;
     let read = process.native_v6_committed_read(OriginalDeadline::capture()?)?
         .ok_or("restore committed root")?;
     process.verify_native_v6_committed_read(&read)?;
-    assert_eq!(read.published().migration_source().0, pipeline.seed_identity.digest());
+    assert!(matches!(migration_source, StateIdentity::RecordsV5(_)));
+    assert_eq!(read.published().migration_source().0, migration_source.digest());
     Ok((read.enrollment().epoch(), read.published().clone()))
 }
 fn export(pipeline: &Pipeline, leader: usize, token: &str) -> TestResult<Vec<u8>> {
@@ -157,20 +171,25 @@ fn lose_pending_restore_failure_response(pipeline: &Pipeline, leader: usize, arc
 fn native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage() -> TestResult {
     let mut pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
-    activate(&pipeline, leader)?;
+    let migration_source = activate(&pipeline, leader)?;
     let value = "historical-native-retained-block".repeat(8192);
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":1},"data":{"value":value}}))?, 200, "historical-A-write")?;
-    let a = selection(&pipeline, leader)?;
+    let a = selection(&pipeline, leader, migration_source)?;
     let archive = export(&pipeline, leader, pipeline.admin())?;
     let stale = (leader + 1) % 3;
+    let running_stale = (leader + 2) % 3;
+    let running_nonce = pipeline.with_service(running_stale, |service| {
+        assert_eq!(service.state.as_ref().ok_or("running stale State")?.replay_epoch, 0);
+        Ok(Zeroizing::new(service.unseal_nonce.clone()))
+    })?;
     // This Service and Raft owner miss BOTH committed epoch transitions. Its
     // authenticated old local graph must not be rebadged with an epoch integer.
     pipeline.stop_process(stale)?;
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":2},"data":{"value":"later-B-not-in-archive"}}))?,
         200, "historical-B-write")?;
-    let b = selection(&pipeline, leader)?;
+    let b = selection(&pipeline, leader, migration_source)?;
     assert_eq!(a.0, 0);
     assert_eq!(b.0, 0);
     assert_ne!(a.1.root_digest(), b.1.root_digest());
@@ -178,7 +197,7 @@ fn native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lin
         let response = expect(restore(&pipeline, leader, pipeline.admin(), &archive)?, 200,
             "actual-historical-epoch-restore")?;
         assert_eq!(response.body["data"]["replay_epoch"], epoch);
-        let now = selection(&pipeline, leader)?;
+        let now = selection(&pipeline, leader, migration_source)?;
         assert_eq!(now.0, epoch);
         assert_eq!(now.1.epoch_transitions().len(), epoch as usize);
         assert_eq!(now.1.native_origin_epoch(), 0);
@@ -191,11 +210,26 @@ fn native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lin
         expect(pipeline.call(leader, "GET", "secret/data/pipeline/history", pipeline.admin(),
             json!({"version":3}))?, 404, "historical-future-version-absent")?;
     }
+    // The other follower's Raft stayed live, but no request or maintenance
+    // pre-materialized its Service. Its first real forwarded read must catch
+    // up across both committed epochs and bind the resulting activation.
+    pipeline.with_service(running_stale, |service| {
+        assert_eq!(service.state.as_ref().ok_or("running stale State")?.replay_epoch, 0);
+        assert_eq!(service.unseal_nonce, *running_nonce);
+        Ok(())
+    })?;
+    pipeline.assert_history(running_stale, &[(1, "seed-v5"), (2, &value)])?;
+    pipeline.with_service(running_stale, |service| {
+        assert_eq!(service.state.as_ref().ok_or("caught-up State")?.replay_epoch, 2);
+        assert_ne!(service.unseal_nonce, *running_nonce,
+            "a real historical install must invalidate the earlier local activation");
+        Ok(())
+    })?;
     pipeline.start_process(stale)?;
     pipeline.unseal(stale)?;
     for voter in 0..3 {
         pipeline.assert_history(voter, &[(1, "seed-v5"), (2, &value)])?;
-        assert_eq!(selection(&pipeline, voter)?.0, 2);
+        assert_eq!(selection(&pipeline, voter, migration_source)?.0, 2);
         pipeline.with_service(voter, |service| {
             let durable = service.durable.as_ref().ok_or("recovered Durable")?;
             assert_eq!(durable.replay_epoch(), 2);
@@ -204,13 +238,13 @@ fn native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lin
             Ok(())
         })?;
     }
-    let installed = selection(&pipeline, leader)?;
+    let installed = selection(&pipeline, leader, migration_source)?;
     pipeline.stop_process(leader)?;
     let successor = pipeline.ready_leader()?;
     assert_ne!(successor, leader);
     pipeline.start_process(leader)?;
     pipeline.unseal(leader)?;
-    assert_eq!(selection(&pipeline, leader)?, installed);
+    assert_eq!(selection(&pipeline, leader, migration_source)?, installed);
     pipeline.assert_history(leader, &[(1, "seed-v5"), (2, &value)])?;
     Ok(())
 }
@@ -220,7 +254,9 @@ fn native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_afte
     let pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
     let _existing = root_token(&pipeline, leader, "120s")?;
-    activate(&pipeline, leader)?;
+    let migration_source = activate(&pipeline, leader)?;
+    assert_ne!(migration_source, pipeline.seed_identity,
+        "the migration must include the actual pre-existing token publication");
     let archive = export(&pipeline, leader, pipeline.admin())?;
     // This original live Actor did not exist in archive A. A real authorized
     // restore may remove it; final delivery must retain its admitted Auth
@@ -230,11 +266,11 @@ fn native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_afte
         Ok(service.state.as_ref().ok_or("before clock state")?.auth.token_api_observed_time(
             AuthorityTime::Precise(crate::auth::Timestamp::whole(0)?)).exact())
     })?;
-    let before = selection(&pipeline, leader)?;
+    let before = selection(&pipeline, leader, migration_source)?;
     let response = expect(restore(&pipeline, leader, &actor, &archive)?, 200,
         "historical-restore-original-Actor-delivery")?;
     assert_eq!(response.body["data"]["replay_epoch"], 1);
-    let after = selection(&pipeline, leader)?;
+    let after = selection(&pipeline, leader, migration_source)?;
     assert_eq!(after.0, 1);
     assert_eq!(after.1.epoch_transitions().len(), 1);
     assert_eq!(after.1.epoch_transitions().next().ok_or("restore transition")?.source_root_digest(),
@@ -257,16 +293,21 @@ fn native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_afte
 fn native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch() -> TestResult {
     let pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
-    activate(&pipeline, leader)?;
+    let migration_source = activate(&pipeline, leader)?;
     let archive = export(&pipeline, leader, pipeline.admin())?;
     let mut damaged = archive.clone();
     let index = damaged.len().checked_sub(8).ok_or("archive CRC")?;
     damaged[index] ^= 1;
     let rejected = restore(&pipeline, leader, pipeline.admin(), &damaged)?;
     assert!(rejected.status >= 400 && rejected.body.get("data").is_none());
-    assert_eq!(selection(&pipeline, leader)?.0, 0);
+    assert_eq!(selection(&pipeline, leader, migration_source)?.0, 0);
     for expire in [false, true] {
-        let token = root_token(&pipeline, leader, if expire { "1s" } else { "120s" })?;
+        // A one-second fixture credential can expire during real Raft-backed
+        // admission. The expiry branch must first retain an admitted original
+        // Actor, then expire that Actor before finalization, inside the same
+        // unchanged 15-second request budget.
+        let token = root_token(&pipeline, leader, if expire { "6s" } else { "120s" })?;
+        let issued_response = Instant::now();
         let until = Instant::now() + REQUEST_BUDGET;
         let _scope = RequestDeadlineScope::enter(until);
         let service = pipeline.services[leader].as_ref().ok_or("denial Service")?;
@@ -276,7 +317,12 @@ fn native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch()
         let (observed, output) = pending.execute_snapshot_transfer(&mut &archive[..]);
         assert!(output.is_none());
         if expire {
-            thread::sleep(Duration::from_millis(1100));
+            // Issuance precedes its HTTP response. This real elapsed bound is
+            // therefore beyond the actual TTL without changing any Auth state
+            // or minting another clock/Actor after successful admission.
+            let expired_at = issued_response + Duration::from_millis(6100);
+            assert!(expired_at < until);
+            thread::sleep(expired_at.saturating_duration_since(Instant::now()));
         } else {
             expect(pipeline.call(leader, "POST", "auth/token/revoke", pipeline.admin(),
                 json!({"token":token.as_str()}))?, 204, "historical-revoke-before-finalize")?;
@@ -285,9 +331,10 @@ fn native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch()
         let denied = writer.finish_external_request(*pending, observed);
         assert!(denied.status >= 400 && denied.body.get("data").is_none());
         if expire { assert_eq!(denied.status, 403); }
+        assert!(Instant::now() < until, "denial must not be explained by request expiry");
         assert!(writer.native_request_binding.is_none());
         drop(writer);
-        let current = selection(&pipeline, leader)?;
+        let current = selection(&pipeline, leader, migration_source)?;
         assert_eq!(current.0, 0);
         assert_eq!(current.1.epoch_transitions().len(), 0);
     }
@@ -299,7 +346,7 @@ fn native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch()
 fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen() -> TestResult {
     let mut pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
-    activate(&pipeline, leader)?;
+    let migration_source = activate(&pipeline, leader)?;
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":1},"data":{"value":"archive-A"}}))?,
         200, "audit-fault-archive-A-write")?;
@@ -307,7 +354,7 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":2},"data":{"value":"later-B"}}))?,
         200, "audit-fault-later-B-write")?;
-    let before = selection(&pipeline, leader)?;
+    let before = selection(&pipeline, leader, migration_source)?;
 
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
@@ -347,7 +394,7 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
     // Read the real quorum-selected transition despite failed delivery. Its
     // operation, source root and epoch prove exactly what committed; HTTP 503
     // must not be interpreted as permission to submit the archive again.
-    let committed = selection(&pipeline, leader)?;
+    let committed = selection(&pipeline, leader, migration_source)?;
     assert_eq!(committed.0, 1);
     assert_ne!(committed.1.root_digest(), before.1.root_digest());
     assert_eq!(committed.1.epoch_transitions().len(), 1);
@@ -369,7 +416,7 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
     assert_ne!(successor, leader);
     pipeline.start_process(leader)?;
     pipeline.unseal(leader)?;
-    let reopened = selection(&pipeline, leader)?;
+    let reopened = selection(&pipeline, leader, migration_source)?;
     assert_eq!(reopened, committed);
     let recovered_transition = reopened.1.epoch_transitions().last()
         .ok_or("cold recovered restore transition")?;
@@ -383,7 +430,7 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
     pipeline.assert_history(leader, &[(1, "seed-v5"), (2, "archive-A")])?;
     expect(pipeline.call(leader, "GET", "secret/data/pipeline/history", pipeline.admin(),
         json!({"version":3}))?, 404, "cold-recovered-future-version-absent")?;
-    assert_eq!(selection(&pipeline, leader)?.1.epoch_transitions().len(), 1);
+    assert_eq!(selection(&pipeline, leader, migration_source)?.1.epoch_transitions().len(), 1);
     Ok(())
 }
 
@@ -391,7 +438,7 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
 fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation() -> TestResult {
     let mut pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
-    activate(&pipeline, leader)?;
+    let migration_source = activate(&pipeline, leader)?;
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":1},"data":{"value":"pending-archive-A"}}))?,
         200, "pending-archive-A-write")?;
@@ -399,7 +446,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":2},"data":{"value":"pending-later-B"}}))?,
         200, "pending-later-B-write")?;
-    let before = selection(&pipeline, leader)?;
+    let before = selection(&pipeline, leader, migration_source)?;
     assert_eq!(before.0, 0);
 
     let until = Instant::now() + REQUEST_BUDGET;
@@ -460,7 +507,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     pipeline.unseal(leader)?;
     pipeline.assert_history(successor,
         &[(1, "seed-v5"), (2, "pending-archive-A"), (3, "pending-later-B")])?;
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
     assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
 
     // A syntactically valid selector grants no Actor authority.
@@ -491,7 +538,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     assert_eq!(different.body["data"]["state"], "different_pending");
     assert_eq!(different.body["data"]["cancelled"], false);
     assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
 
     let cancelled = expect(cancel_pending_restore(&pipeline, successor, &reference, &[])?,
         200, "matching-pending-operation-cancelled")?;
@@ -500,7 +547,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     assert_eq!(cancelled.body["restore_performed"], false);
     assert_eq!(cancelled.body["retry_allowed"], false);
     assert_eq!(observed_pending_reference(&pipeline, successor)?, None);
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
 
     // A lost cancellation reply is reconciled by a NEW explicit request after
     // another cold owner reopen. Verified absence never starts a replacement.
@@ -515,13 +562,13 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     assert_eq!(absent.body["data"]["state"], "not_pending");
     assert_eq!(absent.body["restore_performed"], false);
     assert_eq!(observed_pending_reference(&pipeline, active)?, None);
-    assert_eq!(selection(&pipeline, active)?, before);
+    assert_eq!(selection(&pipeline, active, migration_source)?, before);
 
     // Only this separate, explicitly admitted archive request may Begin a NEW
     // operation. Reconciliation of its committed ID cannot replay its epoch.
     expect(restore(&pipeline, active, pipeline.admin(), &archive)?, 200,
         "new-explicit-restore-after-pending-cancellation")?;
-    let installed = selection(&pipeline, active)?;
+    let installed = selection(&pipeline, active, migration_source)?;
     assert_eq!(installed.0, 1);
     assert_eq!(installed.1.epoch_transitions().len(), 1);
     let operation = installed.1.epoch_transitions().last().ok_or("new committed transition")?
@@ -534,7 +581,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     assert_eq!(committed.body["data"]["state"], "committed");
     assert_eq!(committed.body["data"]["cancelled"], false);
     assert_eq!(committed.body["restore_performed"], false);
-    assert_eq!(selection(&pipeline, active)?, installed);
+    assert_eq!(selection(&pipeline, active, migration_source)?, installed);
     pipeline.assert_history(active, &[(1, "seed-v5"), (2, "pending-archive-A")])?;
     expect(pipeline.call(active, "GET", "secret/data/pipeline/history", pipeline.admin(),
         json!({"version":3}))?, 404, "pending-recovery-future-B-version-absent")?;
@@ -545,7 +592,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
 fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel() -> TestResult {
     let mut pipeline = Pipeline::start()?;
     let leader = pipeline.ready_leader()?;
-    activate(&pipeline, leader)?;
+    let migration_source = activate(&pipeline, leader)?;
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":1},"data":{"value":"inspect-archive-A"}}))?,
         200, "inspect-archive-A-write")?;
@@ -553,7 +600,7 @@ fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate
     expect(pipeline.call(leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
         json!({"options":{"cas":2},"data":{"value":"inspect-later-B"}}))?,
         200, "inspect-later-B-write")?;
-    let before = selection(&pipeline, leader)?;
+    let before = selection(&pipeline, leader, migration_source)?;
     lose_pending_restore_failure_response(&pipeline, leader, &archive)?;
 
     pipeline.stop_process(leader)?;
@@ -563,7 +610,7 @@ fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate
     pipeline.unseal(leader)?;
     pipeline.assert_history(successor,
         &[(1, "seed-v5"), (2, "inspect-archive-A"), (3, "inspect-later-B")])?;
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
 
     // Discovery is not an unauthenticated status endpoint. Neither a bad
     // Actor nor extra/ambiguous fields can obtain a pending reference.
@@ -598,7 +645,7 @@ fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate
     let reference = discovered.body["data"]["recovery_reference"].as_str()
         .ok_or("new root inspection must return the actual pending reference")?.to_owned();
     assert_eq!(observed_pending_reference(&pipeline, successor)?, Some(reference.clone()));
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
     let nonempty = expect(inspect_pending_restore(&pipeline, successor, b"x")?,
         400, "inspection-requires-empty-body")?;
     assert!(nonempty.body.get("data").is_none());
@@ -610,24 +657,24 @@ fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate
     let cancelled = expect(cancel_pending_restore(&pipeline, successor, &reference, &[])?,
         200, "discovered-pending-operation-requires-separate-exact-cancel")?;
     assert_eq!(cancelled.body["data"]["state"], "cancelled");
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
     let absent = expect(inspect_pending_restore(&pipeline, successor, &[])?,
         200, "inspection-reports-verified-absence-after-cancel")?;
     assert_eq!(absent.body["data"]["state"], "not_pending");
     assert!(absent.body["data"]["recovery_reference"].is_null());
     assert_eq!(observed_pending_reference(&pipeline, successor)?, None);
-    assert_eq!(selection(&pipeline, successor)?, before);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, before);
 
     expect(restore(&pipeline, successor, pipeline.admin(), &archive)?, 200,
         "inspection-does-not-replay-restore-without-a-new-archive-request")?;
-    let installed = selection(&pipeline, successor)?;
+    let installed = selection(&pipeline, successor, migration_source)?;
     assert_eq!(installed.0, 1);
     let no_pending = expect(inspect_pending_restore(&pipeline, successor, &[])?,
         200, "inspection-does-not-return-a-historical-committed-reference")?;
     assert_eq!(no_pending.body["data"]["state"], "not_pending");
     assert!(no_pending.body["data"]["recovery_reference"].is_null());
     assert_eq!(no_pending.body["restore_performed"], false);
-    assert_eq!(selection(&pipeline, successor)?, installed);
+    assert_eq!(selection(&pipeline, successor, migration_source)?, installed);
     assert_eq!(installed.1.epoch_transitions().len(), 1);
 
     // A real authenticated non-root principal remains ineligible even with

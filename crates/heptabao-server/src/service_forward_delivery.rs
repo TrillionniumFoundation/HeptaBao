@@ -2,6 +2,8 @@
 //! local Actor admission or Raft publication. Local mandatory audit is retained.
 use super::*;
 use crate::ha_forward_completion::{CompletedForwardReceipt, CompletionScope};
+use crate::state_record_root::StateIdentity;
+use heptabao_raft_runtime::ApplicationReadWitness;
 use std::time::Instant;
 
 pub(super) enum PendingForwardDelivery {
@@ -140,6 +142,14 @@ impl Service {
         clock: Option<RequestClock>,
         now: u64,
     ) -> Result<ForwardDelivery, Response> {
+        let _original_deadline =
+            crate::request_deadline::RequestDeadlineScope::enter(receipt.deadline);
+        // Catch-up still runs under the actual local Service/Seal/barrier
+        // owner and its original deadline. A verified historical epoch install
+        // legitimately rotates that owner's nonce. Capture delivery custody
+        // only after that installation, never by rebadging an earlier capsule.
+        // No request, Actor admission or remote effect is executed again.
+        let (identity, witness) = self.sync_completed_forward_receipt(&receipt, &ha, "stage")?;
         let state = self.state.as_ref().ok_or_else(unavailable)?;
         let key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
         let result = ForwardDelivery {
@@ -152,7 +162,7 @@ impl Service {
             clock,
             now,
         };
-        self.check_forward_delivery(&result, "stage")?;
+        self.check_forward_delivery_observed(&result, "stage", identity, witness)?;
         Ok(result)
     }
     // A completed peer response is held while only local materialization
@@ -194,6 +204,52 @@ impl Service {
         }
     }
 
+    fn sync_completed_forward_receipt(
+        &mut self,
+        receipt: &CompletedForwardReceipt,
+        ha: &Arc<Mutex<crate::ha::HaProcess>>,
+        phase: &'static str,
+    ) -> Result<(StateIdentity, ApplicationReadWitness), Response> {
+        let _original_deadline =
+            crate::request_deadline::RequestDeadlineScope::enter(receipt.deadline);
+        if self.ha.as_ref().is_none_or(|actual| !Arc::ptr_eq(actual, ha)) {
+            return Err(diagnostic_unavailable(phase, "ha_owner"));
+        }
+        let original_key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
+        receipt
+            .verify_publication(original_key.as_slice())
+            .map_err(|_| diagnostic_unavailable(phase, "publication_mac"))?;
+        // Wait and synchronize before the final original Actor observation.
+        // A blocking applied-index wait must never follow that observation.
+        ha.lock_for_request()
+            .map_err(|_| diagnostic_unavailable(phase, "ha_lock"))?
+            .wait_forward_applied(receipt)
+            .map_err(|_| diagnostic_unavailable(phase, "wait_applied"))?;
+        // No deadline or Actor is renewed when an unrelated completion raced
+        // the first materialization. The final witness must authenticate this
+        // same actual Service graph before any owner or Actor check follows.
+        loop {
+            self.sync_forward_delivery_before(receipt.deadline)
+                .inspect_err(|error| {
+                    eprintln!(
+                        "heptabao-forward-diagnostic: phase={phase} guard=sync status={}",
+                        error.status
+                    );
+                })?;
+            let (identity, witness) = ha
+                .lock_for_request()
+                .map_err(|_| unavailable())?
+                .application_identity_witness()
+                .map_err(|_| diagnostic_unavailable(phase, "fresh_witness"))?;
+            if self.current_state_identity()? == identity {
+                return Ok((identity, witness));
+            }
+            if Instant::now() >= receipt.deadline {
+                return Err(unavailable());
+            }
+        }
+    }
+
     fn check_forward_delivery(
         &mut self,
         authority: &ForwardDelivery,
@@ -201,43 +257,18 @@ impl Service {
     ) -> Result<(), Response> {
         let _original_deadline =
             crate::request_deadline::RequestDeadlineScope::enter(authority.receipt.deadline);
-        let original_key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
-        authority
-            .receipt
-            .verify_publication(original_key.as_slice())
-            .map_err(|_| diagnostic_unavailable(phase, "publication_mac"))?;
-        // Wait and synchronize before the final original Actor observation.
-        // A blocking applied-index wait must never follow that observation.
-        authority
-            .ha
-            .lock_for_request()
-            .map_err(|_| diagnostic_unavailable(phase, "ha_lock"))?
-            .wait_forward_applied(&authority.receipt)
-            .map_err(|_| diagnostic_unavailable(phase, "wait_applied"))?;
-        // No deadline or Actor is renewed when an unrelated completion raced
-        // the first materialization. The final witness must authenticate this
-        // same actual Service graph before any owner or Actor check follows.
-        let (actual_identity, witness) = loop {
-            self.sync_forward_delivery_before(authority.receipt.deadline)
-                .inspect_err(|error| {
-                    eprintln!(
-                        "heptabao-forward-diagnostic: phase={phase} guard=sync status={}",
-                        error.status
-                    );
-                })?;
-            let (identity, witness) = authority
-                .ha
-                .lock_for_request()
-                .map_err(|_| unavailable())?
-                .application_identity_witness()
-                .map_err(|_| diagnostic_unavailable(phase, "fresh_witness"))?;
-            if self.current_state_identity()? == identity {
-                break (identity, witness);
-            }
-            if Instant::now() >= authority.receipt.deadline {
-                return Err(unavailable());
-            }
-        };
+        let (identity, witness) =
+            self.sync_completed_forward_receipt(&authority.receipt, &authority.ha, phase)?;
+        self.check_forward_delivery_observed(authority, phase, identity, witness)
+    }
+
+    fn check_forward_delivery_observed(
+        &mut self,
+        authority: &ForwardDelivery,
+        phase: &'static str,
+        actual_identity: StateIdentity,
+        witness: ApplicationReadWitness,
+    ) -> Result<(), Response> {
         let prefix_covers = witness.covers_completed_prefix(authority.receipt.prefix());
         let owner_matches = self
             .forward_owner_projection()

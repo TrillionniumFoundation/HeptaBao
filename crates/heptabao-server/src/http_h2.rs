@@ -172,6 +172,17 @@ async fn exchange(
         .await;
     }
     let path = parts.uri.path();
+    // HTTP/2 currently buffers DATA before logical admission. The large lane
+    // requires affine admission first, so refuse this unsupported transport
+    // before reading any DATA rather than expanding that unauthenticated cap.
+    if path == "/v1/sys/migration/openbao/kv2/native-large" {
+        let service = Arc::clone(&context.service);
+        let response = tokio::task::spawn_blocking(move || audited_wire_rejection(
+            &service, &attempt, WireRejection::ParseRejected, 501,
+            "native-large KV2 requires HTTP/1.1 admitted upload", deadline,
+        )).await.map_err(|_| ())?;
+        return send_reply(sender, snapshot::NativeReply::Json(response), false, "", deadline).await;
+    }
     let maximum = if matches!(
         path,
         "/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force"

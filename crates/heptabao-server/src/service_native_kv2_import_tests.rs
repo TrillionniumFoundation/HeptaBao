@@ -10,6 +10,9 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const IMPORT: &str = "sys/migration/openbao/kv2";
 const BULK: usize = 112;
 
+#[path = "service_native_kv2_large_tests.rs"]
+mod large;
+
 fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Value) -> Response {
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(
         Instant::now() + Duration::from_secs(30),

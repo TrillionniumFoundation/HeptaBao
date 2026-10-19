@@ -4,6 +4,11 @@ use crate::engines::kv2_native_records::NativeKv2GraphImport;
 use crate::state_record_root_v6::MountScope;
 use crate::state_records::{AddressKey, RecordError};
 
+enum ImportInput<'a> {
+    Legacy(&'a [u8]),
+    NativeLarge(&'a crate::engines::kv2_native_large::NativeLargeBundle),
+}
+
 impl EngineState {
     /// Replace only a detached native view after the complete import has been
     /// checked. Returned objects still require the actual Service transaction.
@@ -12,6 +17,51 @@ impl EngineState {
         namespace: &str,
         requested: &str,
         bundle: &[u8],
+        parent: &AddressKey,
+        check: &impl Fn() -> std::result::Result<(), RecordError>,
+    ) -> Result<NativeKv2GraphImport> {
+        self.stage_native_import(namespace, requested, ImportInput::Legacy(bundle), parent, check)
+    }
+
+    pub(crate) fn stage_openbao_kv2_native_large_import(
+        &mut self,
+        namespace: &str,
+        requested: &str,
+        bundle: &crate::engines::kv2_native_large::NativeLargeBundle,
+        parent: &AddressKey,
+        check: &impl Fn() -> std::result::Result<(), RecordError>,
+    ) -> Result<NativeKv2GraphImport> {
+        self.stage_native_import(namespace, requested, ImportInput::NativeLarge(bundle), parent, check)
+    }
+
+    // Used before any large body I/O, and repeated by the graph constructor.
+    pub(crate) fn check_native_kv2_import_destination(
+        &self,
+        namespace: &str,
+        requested: &str,
+        parent: &AddressKey,
+        check: &impl Fn() -> std::result::Result<(), RecordError>,
+    ) -> Result<()> {
+        let canonical = canonical_secret_mount(requested.trim_end_matches('/'))?;
+        if requested != canonical && requested != format!("{canonical}/") {
+            return Err(bad("KV2 import mount must be canonical"));
+        }
+        let name = format!("{canonical}/");
+        let mount = self.namespaces.get(namespace)
+            .and_then(|owner| owner.mounts.get(&name)).ok_or_else(not_found)?;
+        let Backend::Kv2Native(current) = &mount.backend else {
+            return Err(bad("native graph import requires an active native KV2 mount"));
+        };
+        current.check_graph_import_destination(parent, crate::engines::kv2_native_records::NativeScope {
+            namespace, mount: &name, incarnation: mount.incarnation,
+        }, check)
+    }
+
+    fn stage_native_import(
+        &mut self,
+        namespace: &str,
+        requested: &str,
+        bundle: ImportInput<'_>,
         parent: &AddressKey,
         check: &impl Fn() -> std::result::Result<(), RecordError>,
     ) -> Result<NativeKv2GraphImport> {
@@ -34,9 +84,14 @@ impl EngineState {
             incarnation: mount.incarnation,
         };
         let revision = next_mount_revision(mount.revision)?;
-        let (view, objects) = current.prepare_lossless_graph_import(
-            bundle, parent, scope.borrowed(), check,
-        )?;
+        let (view, objects) = match bundle {
+            ImportInput::Legacy(bytes) => current.prepare_lossless_graph_import(
+                bytes, parent, scope.borrowed(), check,
+            ),
+            ImportInput::NativeLarge(bytes) => current.prepare_native_large_graph_import(
+                bytes, parent, scope.borrowed(), check,
+            ),
+        }?;
         let mut candidate = self.clone();
         let mount = candidate.namespaces.get_mut(namespace)
             .and_then(|owner| owner.mounts.get_mut(&name))

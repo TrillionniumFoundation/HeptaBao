@@ -48,6 +48,9 @@ pub(crate) mod ocsp;
 pub(crate) mod pki_role_fields;
 #[path = "http_snapshot.rs"]
 mod snapshot;
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "http_native_kv2_large.rs"]
+mod native_kv2_large;
 #[path = "http_token_fields.rs"]
 pub(crate) mod token_fields;
 #[path = "http_ui.rs"]
@@ -1013,7 +1016,7 @@ fn process_parsed_request(
                 crate::service::erase_json(&mut service_request.body);
                 snapshot::NativeReply::Json(rejected)
             } else if let Some(native) = native_snapshot {
-                snapshot::execute(service, service_request, native, source, deadline)
+                execute_deferred_native_body(service, service_request, native, source, deadline)
             } else if matches!(consistency, Ok(true)) {
                 snapshot::NativeReply::Json(consistency::forward(
                     service,
@@ -1054,6 +1057,37 @@ fn process_parsed_request(
             };
             (reply, error.health_head == Some(true), String::new())
         }
+    }
+}
+
+fn execute_deferred_native_body(
+    service: &Arc<Mutex<Service>>,
+    request: ServiceRequest<'_>,
+    native: snapshot::NativeRequest,
+    source: &mut impl Read,
+    deadline: Instant,
+) -> snapshot::NativeReply {
+    #[cfg(feature = "fixture-native-v6-service")]
+    if request.path == crate::engines::kv2_native_large::PATH {
+        return native_kv2_large::execute(service, request, native, source, deadline);
+    }
+    snapshot::execute(service, request, native, source, deadline)
+}
+
+#[cfg(all(test, feature = "fixture-native-v6-service"))]
+pub(crate) fn native_large_upload_wire_fixture(
+    service: &Arc<Mutex<Service>>,
+    source: &mut impl Read,
+    deadline: Instant,
+) -> Result<Response, &'static str> {
+    let parsed = read_request_with_ui(source, deadline.saturating_duration_since(Instant::now()), true, false);
+    let (reply, _, _) = process_parsed_request(
+        service, None, parsed, source, None, IpAddr::V4(std::net::Ipv4Addr::LOCALHOST),
+        &[73; 16], consistency::Settings::default(), deadline,
+    );
+    match reply {
+        snapshot::NativeReply::Json(response) => Ok(response),
+        _ => Err("native-large fixture expected a JSON status"),
     }
 }
 
@@ -1717,7 +1751,7 @@ fn read_request_with_ui(
                 && matches!(
                     api_target.split('?').next(),
                     Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
-                        | "sys/storage/raft/snapshot-repair")
+                        | "sys/storage/raft/snapshot-repair" | "sys/migration/openbao/kv2/native-large")
                 );
             if !native_upload {
                 discard_rejected_ordinary_body(
@@ -1820,6 +1854,17 @@ fn read_request_with_ui(
                 .get("accept")
                 .is_some_and(|value| value.as_str() == "application/json"))
             || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
+    #[cfg(feature = "fixture-native-v6-service")]
+    let native_large = native_wire && !help_selected && method == "POST"
+        && route == crate::engines::kv2_native_large::PATH
+        && media_type_is(map.get("content-type").map(|value| value.as_str()),
+            crate::engines::kv2_native_large::MEDIA_TYPE);
+    #[cfg(not(feature = "fixture-native-v6-service"))]
+    let native_large = false;
+    let deferred_body = native_snapshot || native_large;
+    if native_large && !map.contains_key("content-length") {
+        return Err(bad("native-large KV2 requires Content-Length"));
+    }
     let chunked = match map.get("transfer-encoding") {
         Some(value)
             if native_snapshot
@@ -1842,6 +1887,9 @@ fn read_request_with_ui(
         None => 0,
         _ => return Err(bad("invalid content length")),
     };
+    if native_large && length == 0 {
+        return Err(bad("native-large KV2 requires a nonempty length-framed body"));
+    }
     let ocsp_get = ocsp::get_carrier(&method, route)?;
     let ocsp_post = ocsp::raw_post(
         &method,
@@ -1868,7 +1916,11 @@ fn read_request_with_ui(
         );
         return Err(bad("AppRole form must not combine query credentials"));
     }
-    let maximum_body = if native_snapshot {
+    let maximum_body = if native_large {
+        // This bounds framing only. No upload is read/allocated until the
+        // separate affine Service admission has accepted the original actor.
+        64 * 1024 * 1024
+    } else if native_snapshot {
         crate::snapshot_file::MAX_NATIVE_ARCHIVE as usize
     } else if snapshot_route {
         MAX_SNAPSHOT_BODY
@@ -1880,7 +1932,7 @@ fn read_request_with_ui(
         )
     };
     if length > maximum_body {
-        if !native_snapshot && !map.contains_key("transfer-encoding") && !map.contains_key("expect")
+        if !deferred_body && !map.contains_key("transfer-encoding") && !map.contains_key("expect")
         {
             drain_bounded_413_body(
                 reader,
@@ -1929,7 +1981,7 @@ fn read_request_with_ui(
             .is_some_and(|media| media.split(';').next() == Some("application/jose+json"));
     if length > 0
         && !leader_route
-        && !native_snapshot
+        && !deferred_body
         && !ocsp_post
         && !ocsp_form_media
         && !approle_form
@@ -1951,7 +2003,7 @@ fn read_request_with_ui(
         );
         return Err(bad("JSON content type required"));
     }
-    while !native_snapshot && bytes.len() < header_end + length {
+    while !deferred_body && bytes.len() < header_end + length {
         if start.elapsed() > timeout {
             return Err(bad("request deadline exceeded"));
         }
@@ -1962,7 +2014,7 @@ fn read_request_with_ui(
         }
         bytes.extend_from_slice(&buffer[..count]);
     }
-    if !native_snapshot && bytes.len() != header_end + length {
+    if !deferred_body && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
     // Help ignores logical body bytes after ordinary framing and body bounds.
@@ -2046,7 +2098,7 @@ fn read_request_with_ui(
         query,
     );
     let mut lexical_wrapping_body = if carrier.is_none()
-        && !native_snapshot
+        && !deferred_body
         && length > 0
         && !query_only
         && matches!(method.as_str(), "POST" | "PUT")
@@ -2061,7 +2113,7 @@ fn read_request_with_ui(
     };
     let mut body = SecretJson(if let Some(carrier) = carrier {
         carrier
-    } else if native_snapshot || length == 0 || query_only {
+    } else if deferred_body || length == 0 || query_only {
         json!({})
     } else if approle_form {
         approle_form::parse(&bytes[header_end..]).map_err(bad)?
@@ -2236,7 +2288,9 @@ fn read_request_with_ui(
     }
     pki_role_fields::transport_body(&method, path, &mut body.0, &bytes[header_end..])
         .map_err(bad)?;
-    let native_snapshot = if native_snapshot {
+    // The existing affine native-body carrier also transports the dedicated
+    // large KV2 lane; its executor never routes the bundle as ordinary JSON.
+    let native_snapshot = if deferred_body {
         if download && (length != 0 || bytes.len() != header_end) {
             return Err(bad("snapshot download does not accept a body"));
         }

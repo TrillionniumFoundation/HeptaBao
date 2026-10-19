@@ -51,6 +51,26 @@ impl NativeReadView {
         input: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> Result<(Self, NativeKv2GraphImport)> {
+        self.prepare_graph_import(parent, input, check, || Kv2::from_lossless_import_json(bundle))
+    }
+
+    #[cfg(feature = "fixture-native-v6-service")]
+    pub(in crate::engines) fn prepare_native_large_graph_import(
+        &self,
+        bundle: &crate::engines::kv2_native_large::NativeLargeBundle,
+        parent: &AddressKey,
+        input: NativeScope<'_>,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> Result<(Self, NativeKv2GraphImport)> {
+        self.prepare_graph_import(parent, input, check, || Kv2::from_native_large_import(bundle, check))
+    }
+
+    pub(in crate::engines) fn check_graph_import_destination(
+        &self,
+        parent: &AddressKey,
+        input: NativeScope<'_>,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> Result<()> {
         let rejected = || error(503, "native KV2 import graph custody rejected");
         check().map_err(|_| rejected())?;
         let scope = MountScope {
@@ -75,7 +95,24 @@ impl NativeReadView {
             return Err(rejected());
         }
         check().map_err(|_| rejected())?;
-        let owner = Kv2::from_lossless_import_json(bundle)?;
+        Ok(())
+    }
+
+    fn prepare_graph_import(
+        &self,
+        parent: &AddressKey,
+        input: NativeScope<'_>,
+        check: &impl Fn() -> CodecResult<()>,
+        decode: impl FnOnce() -> Result<Kv2>,
+    ) -> Result<(Self, NativeKv2GraphImport)> {
+        self.check_graph_import_destination(parent, input, check)?;
+        let rejected = || error(503, "native KV2 import graph custody rejected");
+        let scope = MountScope {
+            namespace: input.namespace.into(),
+            mount: input.mount.into(),
+            incarnation: input.incarnation,
+        };
+        let owner = decode()?;
         check().map_err(|_| rejected())?;
         let mut candidate = Self {
             owner: DetachedOwner(owner),

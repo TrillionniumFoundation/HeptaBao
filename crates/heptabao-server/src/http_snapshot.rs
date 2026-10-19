@@ -1,4 +1,5 @@
-//! Binary snapshot transport only. Other routes retain bounded JSON framing.
+//! Binary snapshot transport. The deferred native-body carrier is also used by
+//! the separately admitted native-large KV2 lane; ordinary JSON is unchanged.
 use super::*;
 use crate::service::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 use crate::snapshot_file::{MAX_NATIVE_ARCHIVE, SnapshotFile};
@@ -8,14 +9,16 @@ use crate::snapshot_file::{MAX_NATIVE_ARCHIVE, SnapshotFile};
 pub(super) struct NativeTarget(Zeroizing<String>);
 impl NativeTarget {
     pub(super) fn checked(target: &str) -> Result<Self, ParseError> {
+        let path = target.split('?').next();
+        let accepted = matches!(path,
+            Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force"
+                | "/v1/sys/storage/raft/snapshot-repair"));
+        #[cfg(feature = "fixture-native-v6-service")]
+        let accepted = accepted || path == Some("/v1/sys/migration/openbao/kv2/native-large");
         if target.len() > 8192
             || !target.bytes().all(|byte| (33..=126).contains(&byte))
             || target.contains('#')
-            || !matches!(
-                target.split('?').next(),
-                Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force"
-                    | "/v1/sys/storage/raft/snapshot-repair")
-            )
+            || !accepted
         {
             return Err(bad("invalid native snapshot target"));
         }

@@ -10,6 +10,10 @@ const MAX_IMPORT_ENTRIES: usize = 10_000;
 const MAX_IMPORT_VERSIONS: usize = 100_000;
 const NANOS: u64 = 1_000_000_000;
 
+#[cfg(feature = "fixture-native-v6-service")]
+#[path = "kv_lossless_native_large.rs"]
+pub(crate) mod native_large;
+
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct EntryPrecision {
@@ -347,6 +351,16 @@ impl Kv2 {
         }
         let validated = SecretJson(decode_lossless_json(bytes)?);
         drop(validated);
+        Self::from_validated_lossless_import_json(bytes, &|| Ok(()))
+    }
+
+    // Only the legacy bounded decoder above and the explicit native-large
+    // token-profile proof below may enter this closed-schema projection.
+    fn from_validated_lossless_import_json(
+        bytes: &[u8],
+        check: &impl Fn() -> Result<()>,
+    ) -> Result<Self> {
+        check()?;
         let input: Import<'_> =
             serde_json::from_slice(bytes).map_err(|_| bad("KV2 import closed schema rejected"))?;
         if input.schema != IMPORT_SCHEMA || input.entries.len() > MAX_IMPORT_ENTRIES {
@@ -360,6 +374,7 @@ impl Kv2 {
         };
         let mut total_versions = 0_usize;
         for (name, mut source) in input.entries {
+            check()?;
             valid_path(&name)?;
             total_versions = total_versions
                 .checked_add(source.versions.len())
@@ -405,6 +420,7 @@ impl Kv2 {
             entry.precision.created_at = subsecond(created);
             entry.precision.updated_at = subsecond(updated);
             for (number, imported) in std::mem::take(&mut source.versions) {
+                check()?;
                 let version_number = number
                     .parse::<u64>()
                     .map_err(|_| bad("KV2 import version key rejected"))?;
@@ -427,6 +443,7 @@ impl Kv2 {
                 };
                 let mut imported_data =
                     SecretJson(decode_lossless_json(imported.data.get().as_bytes())?);
+                check()?;
                 if issued < created
                     || issued > updated
                     || deleted.is_some_and(|at| at < issued)
@@ -464,6 +481,7 @@ impl Kv2 {
             candidate.entries.insert(name, entry);
         }
         candidate.validate_lossless_state()?;
+        check()?;
         Ok(candidate)
     }
 

@@ -40,6 +40,8 @@ mod kv2_import;
 #[cfg(feature = "fixture-native-v6-service")]
 #[path = "engine_kv2_native_import.rs"]
 mod kv2_native_import;
+#[cfg(feature = "fixture-native-v6-service")]
+pub(crate) use kv::lossless::native_large as kv2_native_large;
 #[cfg(test)]
 pub(crate) use kv::lossless::decode_lossless_json;
 pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
