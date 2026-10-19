@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao.ee5-physical-and-ci-checkpoint.v1",
+  "source_commit": "ee53a4039c5b60a06e26b4505f29d17bd3d66050",
+  "source_tree": "10584bab7747671aed8346127e5baa3519c6d95a",
+  "files": [
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-ee5-full43-summary.json",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full43-ee5-mac-r1/summary.json",
+      "sha256": "7f65d885a24da9ecb3718dfb7c718eb6133d6c58fb894281ae76ca54fba6d81d",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-ee5-native-large-15.log",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full43-ee5-mac-r1/native-kv2-large.log",
+      "sha256": "f2d47f11bef1ab1eb4a81502d8ceed7aac533ffcaf5453b9de33788bfd39bd3a",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-native-small-22c-f43-seed-failure.json",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-native-small-22c-f43-mac-20261019-r1/summary.json",
+      "sha256": "165c264dffa635ea47d2df348e23bfd6d9e3e12f79359f90e8955c5e4c98a722",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/x230-ee5-r1-missing-dependencies-summary.json",
+      "source": "/home/qian/heptabao-continuation-20261019/native-full43-ee5-x230-r1/summary.json",
+      "sha256": "2641be035321c2e716bdc38342cf5c11b98c80ae9b09210a33bc492075c9cd23",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/x230-ee5-r2-partial-summary.json",
+      "source": "/home/qian/heptabao-continuation-20261019/native-full43-ee5-x230-r2/summary.json",
+      "sha256": "3294f39481db694f57b70ce52082257a682a3def5312a1180841c647aff1b316",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/x230-ee5-r2-server-compile-oom.log",
+      "source": "/home/qian/heptabao-continuation-20261019/native-full43-ee5-x230-r2/compile-server-tests.log",
+      "sha256": "d98b7642d7c2c86b98705b78c5c61c32e9187ed57744461ee8703cb0cefe0a6b",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/x230-ee5-r2-owned-resource-stop.json",
+      "source": "/home/qian/heptabao-continuation-20261019/native-full43-ee5-x230-r2-resource-stop.json",
+      "sha256": "13460f234d992872287997d5c443a9f6f167d08b7da85736b7ca3a9c1806c853",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/x230-ee5-locked-dependency-fetch.json",
+      "source": "/home/qian/heptabao-continuation-20261019/cargo-ee5-dependency-fetch-r1/receipt.json",
+      "sha256": "afbe50185535ea71fd1d124556fa901cbc5f525d8c3f6ad98b0c4cbfeb4365c4",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/ci-ee5-job-117872024405.log",
+      "source": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/39193782563/job/117872024405",
+      "sha256": null,
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/ci-ee5-job-117872024222.log",
+      "source": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/39193782563/job/117872024222",
+      "sha256": null,
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-official-small-numeric-projection.json",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-native-small-source-diagnostic-20261019-r1/projection.json",
+      "sha256": "9d46e5113eff82506ab1bc410ca86290410317b9786cdf76c5aec5a5c3e4d825",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-official-small-numeric-clone-controller.json",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-native-small-source-diagnostic-20261019-r1/controller-receipt.json",
+      "sha256": "044c859dcfa93265ace8a562555c8f2278add1bf2088cc4d5a4a7c12fe7a5556",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-official-seven-boundaries-partial.json",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-numeric-boundaries-official-mac-20261019-r1/observations/summary.json",
+      "sha256": "1281990796a3be2fc0064f0ffcb7fd2696b6bb7bf800e886e2534120e087481d",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-official-seven-boundaries-controller.json",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-numeric-boundaries-official-mac-20261019-r1/controller-receipt.json",
+      "sha256": "6247db22303e34d8c21ec7022ad7d57c47269561e04c06d442b9f3c14fa016aa",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/mac-ee5-historical-service-5-of-6.log",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full43-ee5-mac-r1/historical-service.log",
+      "sha256": "9191c254b34c210959df10d9db8ae90100ff61f254f594d770512e8e87fb7dee",
+      "bytes_utf8_reported": null
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/x230-kernel-oom-runtime-read.json",
+      "source": "Runtime read at 2026-10-19T03:47Z; original output includes kernel OOM record",
+      "sha256": null,
+      "bytes_utf8_reported": null
+    }
+  ],
+  "mac": {
+    "selected_tests": 43,
+    "passed": 42,
+    "failed": 1,
+    "source_unchanged": true,
+    "binary_sha256": "f767cc5804d5ccf2504eb5bf9c64b7501b1f19ae7ca10c92e68f7c7c458165bd",
+    "binary_bytes": 72169184
+  },
+  "ci": {
+    "run": 39193782563,
+    "ubuntu": {
+      "passed": 42,
+      "failed": 1
+    },
+    "macos": {
+      "passed": 41,
+      "failed": 2
+    }
+  },
+  "x230": {
+    "r1": "offline dependencies unavailable; no tests executed",
+    "locked_dependency_fetch": "passed; Cargo.lock unchanged",
+    "r2": "2 peer tests passed; server lib rustc killed by actual kernel global OOM; remaining owned build stopped with original logs retained"
+  },
+  "official_numeric": {
+    "small_source_api_rounding_observed": true,
+    "raw_small_source_precision_observed": true,
+    "seven_api_cases_observed": true,
+    "seven_raw_tail": "KeyError; incomplete diagnostic preserved",
+    "original_fixture_unchanged": true,
+    "clone_processes_stopped": true
+  },
+  "scope": {
+    "full34mib_two_process_migration": false,
+    "physical_lan_failover": false,
+    "real_credentials_in_this_checkpoint": false,
+    "production_cutover": false,
+    "openbao_deleted": false,
+    "full_replacement_proven": false
+  }
+}

@@ -7,6 +7,9 @@ use super::*;
 #[cfg(test)]
 #[path = "service_native_v6_migration_tests.rs"]
 mod migration_tests;
+#[cfg(test)]
+#[path = "service_native_v6_activation_source_observation.rs"]
+pub(super) mod activation_source_observation;
 use crate::state_records::RecordError;
 use crate::v6_native_custody::OriginalDeadline;
 
@@ -279,6 +282,11 @@ impl Service {
         if deadline.check().is_err() {
             return rejected();
         }
+        // Test observation only: after the actual ordinary Auth/clock prelude,
+        // before planning or publishing any native migration. No authority or
+        // clock is replaced, and release builds contain no observer.
+        #[cfg(test)]
+        activation_source_observation::record(self);
         let plan = match self.prepare_native_root_migration_paged(&|| {
             deadline.check().map_err(|_| RecordError::Invalid)
         }) {

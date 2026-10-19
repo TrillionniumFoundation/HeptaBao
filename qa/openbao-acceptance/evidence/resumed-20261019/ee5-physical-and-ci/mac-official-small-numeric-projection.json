@@ -1,0 +1,447 @@
+{
+  "schema": "heptabao.openbao271-source-projection-diagnostic.v1",
+  "read_only": true,
+  "profile": "native-small",
+  "checks": {
+    "current_version_exact": true,
+    "v1_status_404": true,
+    "v1_payload_null": true,
+    "v1_not_destroyed": true,
+    "v1_has_deletion_time": true,
+    "v2_status_404": true,
+    "v2_payload_null": true,
+    "v2_destroyed": true,
+    "v3_status_200": true,
+    "v3_payload_exact": false,
+    "v4_status_200": true,
+    "v4_payload_exact": false
+  },
+  "versions": {
+    "1": {
+      "status": 404,
+      "data_is_null": true,
+      "metadata": {
+        "version": 1,
+        "destroyed": false,
+        "deletion_time": "2026-10-19T03:03:02.330828Z",
+        "created_time": "2026-10-19T03:03:02.083069Z"
+      },
+      "payload_exact": false,
+      "fields": {}
+    },
+    "2": {
+      "status": 404,
+      "data_is_null": true,
+      "metadata": {
+        "version": 2,
+        "destroyed": true,
+        "deletion_time": "",
+        "created_time": "2026-10-19T03:03:02.122758Z"
+      },
+      "payload_exact": false,
+      "fields": {}
+    },
+    "3": {
+      "status": 200,
+      "data_is_null": false,
+      "metadata": {
+        "version": 3,
+        "destroyed": false,
+        "deletion_time": "",
+        "created_time": "2026-10-19T03:03:02.168993Z"
+      },
+      "payload_exact": false,
+      "fields": {
+        "ordinal": {
+          "equal": true,
+          "expected": {
+            "type": "int",
+            "numeric_value": "3"
+          },
+          "actual": {
+            "type": "int",
+            "numeric_value": "3"
+          }
+        },
+        "payload": {
+          "equal": true,
+          "expected": {
+            "type": "str",
+            "characters": 4096,
+            "utf8_bytes": 4096,
+            "sha256": "267e5d2bb42138bdf23ccb5fbdea09385169de4c686f7c12034ccd7bb0c6899d"
+          },
+          "actual": {
+            "type": "str",
+            "characters": 4096,
+            "utf8_bytes": 4096,
+            "sha256": "267e5d2bb42138bdf23ccb5fbdea09385169de4c686f7c12034ccd7bb0c6899d"
+          }
+        },
+        "wide_integer": {
+          "equal": false,
+          "expected": {
+            "type": "int",
+            "numeric_value": "9007199254740993"
+          },
+          "actual": {
+            "type": "int",
+            "numeric_value": "9007199254740992"
+          }
+        },
+        "exact_decimal": {
+          "equal": false,
+          "expected": {
+            "type": "Decimal",
+            "numeric_value": "0.123456789012345678901234567890"
+          },
+          "actual": {
+            "type": "Decimal",
+            "numeric_value": "0.12345678901234568"
+          }
+        },
+        "unicode": {
+          "equal": true,
+          "expected": {
+            "type": "str",
+            "characters": 7,
+            "utf8_bytes": 22,
+            "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+          },
+          "actual": {
+            "type": "str",
+            "characters": 7,
+            "utf8_bytes": 22,
+            "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+          }
+        },
+        "nested": {
+          "equal": true,
+          "expected": {
+            "type": "list",
+            "json_bytes": 30,
+            "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+          },
+          "actual": {
+            "type": "list",
+            "json_bytes": 30,
+            "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+          }
+        }
+      },
+      "unexpected_field_count": 0
+    },
+    "4": {
+      "status": 200,
+      "data_is_null": false,
+      "metadata": {
+        "version": 4,
+        "destroyed": false,
+        "deletion_time": "",
+        "created_time": "2026-10-19T03:03:02.213472Z"
+      },
+      "payload_exact": false,
+      "fields": {
+        "ordinal": {
+          "equal": true,
+          "expected": {
+            "type": "int",
+            "numeric_value": "4"
+          },
+          "actual": {
+            "type": "int",
+            "numeric_value": "4"
+          }
+        },
+        "payload": {
+          "equal": true,
+          "expected": {
+            "type": "str",
+            "characters": 4096,
+            "utf8_bytes": 4096,
+            "sha256": "a3c255caf361412ed2cd90ecff6437ed02630ad54940e9024642e13cfc104c52"
+          },
+          "actual": {
+            "type": "str",
+            "characters": 4096,
+            "utf8_bytes": 4096,
+            "sha256": "a3c255caf361412ed2cd90ecff6437ed02630ad54940e9024642e13cfc104c52"
+          }
+        },
+        "wide_integer": {
+          "equal": false,
+          "expected": {
+            "type": "int",
+            "numeric_value": "9007199254740993"
+          },
+          "actual": {
+            "type": "int",
+            "numeric_value": "9007199254740992"
+          }
+        },
+        "exact_decimal": {
+          "equal": false,
+          "expected": {
+            "type": "Decimal",
+            "numeric_value": "0.123456789012345678901234567890"
+          },
+          "actual": {
+            "type": "Decimal",
+            "numeric_value": "0.12345678901234568"
+          }
+        },
+        "unicode": {
+          "equal": true,
+          "expected": {
+            "type": "str",
+            "characters": 7,
+            "utf8_bytes": 22,
+            "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+          },
+          "actual": {
+            "type": "str",
+            "characters": 7,
+            "utf8_bytes": 22,
+            "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+          }
+        },
+        "nested": {
+          "equal": true,
+          "expected": {
+            "type": "list",
+            "json_bytes": 30,
+            "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+          },
+          "actual": {
+            "type": "list",
+            "json_bytes": 30,
+            "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+          }
+        }
+      },
+      "unexpected_field_count": 0
+    }
+  },
+  "source_writes": 0,
+  "server_started": false,
+  "migration_qualified": false,
+  "controller_sha256": "335120b48a26707f378e1d6d51480e9d08f7c490b5d5595d97746a50f1939c8d",
+  "health": {
+    "status": 200,
+    "version": "2.7.1",
+    "initialized": true,
+    "sealed": false,
+    "cluster_id_matches_fixture": true
+  },
+  "config": {
+    "cas_required": true,
+    "delete_version_after": "0s",
+    "max_versions": 10,
+    "metadata_cas_required": true
+  },
+  "metadata": {
+    "current_version": 4,
+    "oldest_version": 0,
+    "current_metadata_version": 2,
+    "cas_required": true,
+    "metadata_cas_required": true,
+    "created_time": "2026-10-19T03:03:02.034777Z",
+    "updated_time": "2026-10-19T03:03:02.291303Z"
+  },
+  "failed_predicates": [
+    "v3_payload_exact",
+    "v4_payload_exact"
+  ],
+  "raw_projection": {
+    "records": 9,
+    "bundle_bytes": 10794,
+    "bundle_sha256": "deb90c25de15fabc2203b0cf329c6dd7cf6ab84e07c64149196366589c43d89c",
+    "migration_source_sha256": "6480d61fc24cb5f4a662c941e9cc9a3be031554865bbd19d182373f263166650",
+    "versions": {
+      "1": {
+        "raw_equals_generated": true,
+        "raw_equals_api": false,
+        "fields": {
+          "ordinal": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "1"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "payload": {
+            "raw": {
+              "type": "str",
+              "characters": 1024,
+              "utf8_bytes": 1024,
+              "sha256": "9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "wide_integer": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "9007199254740993"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "exact_decimal": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "0.123456789012345678901234567890"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "unicode": {
+            "raw": {
+              "type": "str",
+              "characters": 7,
+              "utf8_bytes": 22,
+              "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "nested": {
+            "raw": {
+              "type": "list",
+              "json_bytes": 30,
+              "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          }
+        }
+      },
+      "2": {
+        "raw_equals_generated": true,
+        "raw_equals_api": true,
+        "fields": {}
+      },
+      "3": {
+        "raw_equals_generated": true,
+        "raw_equals_api": false,
+        "fields": {
+          "ordinal": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "3"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          },
+          "payload": {
+            "raw": {
+              "type": "str",
+              "characters": 4096,
+              "utf8_bytes": 4096,
+              "sha256": "267e5d2bb42138bdf23ccb5fbdea09385169de4c686f7c12034ccd7bb0c6899d"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          },
+          "wide_integer": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "9007199254740993"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "exact_decimal": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "0.123456789012345678901234567890"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "unicode": {
+            "raw": {
+              "type": "str",
+              "characters": 7,
+              "utf8_bytes": 22,
+              "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          },
+          "nested": {
+            "raw": {
+              "type": "list",
+              "json_bytes": 30,
+              "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          }
+        }
+      },
+      "4": {
+        "raw_equals_generated": true,
+        "raw_equals_api": false,
+        "fields": {
+          "ordinal": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "4"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          },
+          "payload": {
+            "raw": {
+              "type": "str",
+              "characters": 4096,
+              "utf8_bytes": 4096,
+              "sha256": "a3c255caf361412ed2cd90ecff6437ed02630ad54940e9024642e13cfc104c52"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          },
+          "wide_integer": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "9007199254740993"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "exact_decimal": {
+            "raw": {
+              "type": "Decimal",
+              "numeric_value": "0.123456789012345678901234567890"
+            },
+            "generated_equal": true,
+            "api_equal": false
+          },
+          "unicode": {
+            "raw": {
+              "type": "str",
+              "characters": 7,
+              "utf8_bytes": 22,
+              "sha256": "def1f220ddeedf965bc60ac10b17b405f65ae7a5fbeb37a9263d0da8655dc3b5"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          },
+          "nested": {
+            "raw": {
+              "type": "list",
+              "json_bytes": 30,
+              "sha256": "7a0d07f2c53ed18ba8966269bf6f4b42d253e08f91a1bffb05be8b8c9f04386f"
+            },
+            "generated_equal": true,
+            "api_equal": true
+          }
+        }
+      }
+    }
+  },
+  "diagnostic_complete": true,
+  "elapsed_seconds": 1.688918
+}

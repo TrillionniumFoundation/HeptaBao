@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.owned-build-resource-stop.v1",
+  "observed_unix": 1792381896.0458322,
+  "source_commit": "ee53a4039c5b60a06e26b4505f29d17bd3d66050",
+  "reason": "actual_kernel_global_oom_killed_rustc_855799_at_20261019T034437Z",
+  "original_summary_sha256": "3294f39481db694f57b70ce52082257a682a3def5312a1180841c647aff1b316",
+  "last_commands": [
+    {
+      "label": "cargo-version",
+      "status": "passed",
+      "pid": 844430,
+      "exit_code": 0,
+      "elapsed_seconds": 0.036
+    },
+    {
+      "label": "rustc-version",
+      "status": "passed",
+      "pid": 844447,
+      "exit_code": 0,
+      "elapsed_seconds": 0.019
+    },
+    {
+      "label": "compile-server-tests",
+      "status": "failed",
+      "pid": 844449,
+      "exit_code": 101,
+      "elapsed_seconds": 794.427
+    },
+    {
+      "label": "compile-peer-tests",
+      "status": "passed",
+      "pid": 856303,
+      "exit_code": 0,
+      "elapsed_seconds": 167.727
+    },
+    {
+      "label": "native-kv2-import",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "native-kv2-large",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "forward-no-second-floor",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "historical-service",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "snapshot-service",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "archive-34mib",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "http-repair-admission",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "http-pending-admission",
+      "status": "blocked",
+      "pid": null,
+      "exit_code": null,
+      "elapsed_seconds": null
+    },
+    {
+      "label": "private-transport-diagnostic-list",
+      "status": "passed",
+      "pid": 858306,
+      "exit_code": 0,
+      "elapsed_seconds": 0.219
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "status": "passed",
+      "pid": 858310,
+      "exit_code": 0,
+      "elapsed_seconds": 0.221
+    },
+    {
+      "label": "private-frame-diagnostic-list",
+      "status": "passed",
+      "pid": 858315,
+      "exit_code": 0,
+      "elapsed_seconds": 0.216
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "status": "passed",
+      "pid": 858319,
+      "exit_code": 0,
+      "elapsed_seconds": 0.218
+    },
+    {
+      "label": "build-server",
+      "status": "running",
+      "pid": 858324,
+      "exit_code": null,
+      "elapsed_seconds": null
+    }
+  ],
+  "runner_pid": 844420,
+  "signal_sent": true,
+  "original_logs_retained": true,
+  "qualification": false,
+  "pgid": 844420,
+  "start_ticks": "108274571",
+  "group_alive_after_term": false
+}

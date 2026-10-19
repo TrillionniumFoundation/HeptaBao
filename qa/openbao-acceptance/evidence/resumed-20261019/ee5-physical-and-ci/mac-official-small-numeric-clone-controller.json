@@ -1,0 +1,18 @@
+{
+  "source_history_baseline_not_reached_in_original": true,
+  "clone_from_stopped_failed_fixture": true,
+  "source_writes": 0,
+  "raw_records_read_only": true,
+  "migration_invoked": false,
+  "configuration_rebound": true,
+  "script_sha256": "acc1b780ca02017b912fd09f7d3011424b5d2c30a2627d1315a8c0be66898f32",
+  "started_unix": 1792380025.341523,
+  "clone_pid": 12622,
+  "diagnostic_return_code": 0,
+  "diagnostic_stdout": "{\"diagnostic_complete\": true, \"failed_predicates\": [\"v3_payload_exact\", \"v4_payload_exact\"], \"output\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-native-small-source-diagnostic-20261019-r1/projection.json\", \"source_writes\": 0}\n",
+  "diagnostic_stderr": "",
+  "clone_stopped": true,
+  "original_fixture_unchanged": true,
+  "original_file_count": 19,
+  "finished_unix": 1792380028.609709
+}

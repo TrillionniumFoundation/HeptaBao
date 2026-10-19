@@ -132,6 +132,8 @@ def main():
         parser.add_argument("--" + name, required=True, type=pathlib.Path)
     parser.add_argument("--groups", default="all", help="all or comma-separated group labels")
     parser.add_argument("--build-server", action="store_true")
+    parser.add_argument("--low-memory-build", action="store_true",
+                        help="one build job, no compiler debug info, and no incremental cache; test contracts are unchanged")
     parser.add_argument("--command-timeout", type=int, default=1800)
     args = parser.parse_args()
     for name in ("source", "manifest", "output", "cargo", "rustc", "cargo_home", "target_dir"):
@@ -169,7 +171,20 @@ def main():
         env.pop(key, None)
     env.update(PATH=str(args.rustc.parent) + ":/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
                CARGO_HOME=str(args.cargo_home), CARGO_TARGET_DIR=str(args.target_dir), RUSTC=str(args.rustc),
-               CARGO_BUILD_JOBS="2", CMAKE_BUILD_PARALLEL_LEVEL="2", CARGO_TERM_COLOR="never", CARGO_NET_OFFLINE="true")
+               CARGO_BUILD_JOBS="1" if args.low_memory_build else "2",
+               CMAKE_BUILD_PARALLEL_LEVEL="1" if args.low_memory_build else "2",
+               CARGO_TERM_COLOR="never", CARGO_NET_OFFLINE="true")
+    if args.low_memory_build:
+        env.update(CARGO_PROFILE_DEV_DEBUG="0", CARGO_PROFILE_TEST_DEBUG="0", CARGO_INCREMENTAL="0")
+    summary["compiler_resource_profile"] = {
+        "low_memory_requested": args.low_memory_build,
+        "cargo_build_jobs": env["CARGO_BUILD_JOBS"],
+        "cmake_build_parallel_level": env["CMAKE_BUILD_PARALLEL_LEVEL"],
+        "dev_debug": env.get("CARGO_PROFILE_DEV_DEBUG"),
+        "test_debug": env.get("CARGO_PROFILE_TEST_DEBUG"),
+        "incremental": env.get("CARGO_INCREMENTAL"),
+        "test_selectors_and_original_deadlines_unchanged": True,
+    }
 
     def run(label, command):
         record = {"label": label, "argv": [str(item) for item in command], "started_utc": utc(),

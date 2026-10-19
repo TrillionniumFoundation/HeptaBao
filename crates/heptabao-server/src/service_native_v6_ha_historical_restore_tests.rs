@@ -26,19 +26,55 @@ fn admit_with_query(service: &mut Service, method: &str, token: &str, query: Val
     }
 }
 fn activate(pipeline: &Pipeline, leader: usize) -> TestResult<StateIdentity> {
-    // The actual V5 source can legitimately change before activation (for
-    // example, issuing the pre-existing precise token below). Capture that
-    // independently observed source, not the fixture's initial seed root.
-    let source = pipeline.with_service(leader, |service| {
-        let source = service.current_state_identity().map_err(|_| "pre-activation source")?;
-        assert!(matches!(source, StateIdentity::RecordsV5(_)));
+    // Real ordinary admission can publish a precise clock floor after the
+    // caller's pre-activation observation. Observe the actual source at the
+    // migration boundary, independently of the later published native root.
+    pipeline.with_service(leader, |service| {
+        assert!(matches!(service.current_state_identity().map_err(|_| "pre-activation source")?,
+            StateIdentity::RecordsV5(_)));
         assert!(service.native_root.is_none());
-        Ok(source)
+        Ok(())
     })?;
+    let observation = crate::service::native_v6_writer::activation_source_observation::arm()?;
     expect(pipeline.call(leader, "POST", "sys/internal/native-v6/activate",
         pipeline.admin(), json!({}))?, 204, "historical-native-activation")?;
+    let source = observation.take()?;
     assert_eq!(selection(pipeline, leader, source)?.0, 0);
     Ok(source)
+}
+
+// Cold Raft readiness is a separate read-only setup observation, before the
+// single real unseal request receives its original 15-second deadline. A newly
+// reopened peer may still carry an obsolete leader hint; that must not cause a
+// transient refused ReadIndex to be mistaken for a failed historical install.
+// No archive, unseal or other mutation is retried by this readiness loop.
+fn rejoin_for_unseal(pipeline: &mut Pipeline, index: usize, migration_source: StateIdentity)
+    -> TestResult
+{
+    pipeline.start_process(index)?;
+    let until = Instant::now() + Duration::from_secs(8);
+    let _scope = RequestDeadlineScope::enter(until);
+    loop {
+        let ready = {
+            let process = pipeline.processes[index].as_ref().ok_or("cold rejoin process")?
+                .lock_for_request().map_err(|_| "cold rejoin observation lock")?;
+            match process.native_v6_committed_read(OriginalDeadline::capture()?) {
+                Ok(Some(read)) => {
+                    process.verify_native_v6_committed_read(&read)?;
+                    assert_eq!(read.published().migration_source().0, migration_source.digest());
+                    true
+                }
+                Ok(None) | Err(_) => false,
+            }
+        };
+        if ready { break; }
+        if Instant::now() >= until {
+            return Err("cold rejoin actual ReadIndex readiness exceeded original setup budget".into());
+        }
+        thread::sleep(Duration::from_millis(20));
+    }
+    drop(_scope);
+    pipeline.unseal(index)
 }
 fn selection(pipeline: &Pipeline, leader: usize, migration_source: StateIdentity)
     -> TestResult<(u64, NativeV6PublishedRoot)>
@@ -225,8 +261,7 @@ fn native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lin
             "a real historical install must invalidate the earlier local activation");
         Ok(())
     })?;
-    pipeline.start_process(stale)?;
-    pipeline.unseal(stale)?;
+    rejoin_for_unseal(&mut pipeline, stale, migration_source)?;
     for voter in 0..3 {
         pipeline.assert_history(voter, &[(1, "seed-v5"), (2, &value)])?;
         assert_eq!(selection(&pipeline, voter, migration_source)?.0, 2);
@@ -242,8 +277,7 @@ fn native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lin
     pipeline.stop_process(leader)?;
     let successor = pipeline.ready_leader()?;
     assert_ne!(successor, leader);
-    pipeline.start_process(leader)?;
-    pipeline.unseal(leader)?;
+    rejoin_for_unseal(&mut pipeline, leader, migration_source)?;
     assert_eq!(selection(&pipeline, leader, migration_source)?, installed);
     pipeline.assert_history(leader, &[(1, "seed-v5"), (2, &value)])?;
     Ok(())
@@ -414,8 +448,7 @@ fn native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold
     pipeline.stop_process(leader)?;
     let successor = pipeline.ready_leader()?;
     assert_ne!(successor, leader);
-    pipeline.start_process(leader)?;
-    pipeline.unseal(leader)?;
+    rejoin_for_unseal(&mut pipeline, leader, migration_source)?;
     let reopened = selection(&pipeline, leader, migration_source)?;
     assert_eq!(reopened, committed);
     let recovered_transition = reopened.1.epoch_transitions().last()
@@ -503,8 +536,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     pipeline.stop_process(leader)?;
     let successor = pipeline.ready_leader()?;
     assert_ne!(successor, leader);
-    pipeline.start_process(leader)?;
-    pipeline.unseal(leader)?;
+    rejoin_for_unseal(&mut pipeline, leader, migration_source)?;
     pipeline.assert_history(successor,
         &[(1, "seed-v5"), (2, "pending-archive-A"), (3, "pending-later-B")])?;
     assert_eq!(selection(&pipeline, successor, migration_source)?, before);
@@ -553,8 +585,7 @@ fn native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_repla
     // another cold owner reopen. Verified absence never starts a replacement.
     pipeline.stop_process(successor)?;
     let active = pipeline.ready_leader()?;
-    pipeline.start_process(successor)?;
-    pipeline.unseal(successor)?;
+    rejoin_for_unseal(&mut pipeline, successor, migration_source)?;
     pipeline.assert_history(active,
         &[(1, "seed-v5"), (2, "pending-archive-A"), (3, "pending-later-B")])?;
     let absent = expect(cancel_pending_restore(&pipeline, active, &reference, &[])?,
@@ -606,8 +637,7 @@ fn native_ha_historical_restore_lost_reference_cold_inspection_requires_separate
     pipeline.stop_process(leader)?;
     let successor = pipeline.ready_leader()?;
     assert_ne!(successor, leader);
-    pipeline.start_process(leader)?;
-    pipeline.unseal(leader)?;
+    rejoin_for_unseal(&mut pipeline, leader, migration_source)?;
     pipeline.assert_history(successor,
         &[(1, "seed-v5"), (2, "inspect-archive-A"), (3, "inspect-later-B")])?;
     assert_eq!(selection(&pipeline, successor, migration_source)?, before);
