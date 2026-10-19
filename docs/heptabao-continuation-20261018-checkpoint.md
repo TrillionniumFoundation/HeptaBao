@@ -1,96 +1,66 @@
-# HeptaBao continuation checkpoint — 2026-10-18
+# HeptaBao continuation checkpoint — 2026-10-19
 
 ## Current decision
 
-Full replacement of OpenBao 2.7.1 remains **unproven**. Production traffic has not been switched and old OpenBao services, binaries, data, backups and original failure receipts have not been deleted in this continuation.
+Full replacement of OpenBao 2.7.1 remains **unproven**. The runtime connection has recovered and execution has resumed on the actual Mac external disk. Production traffic has not been switched and old OpenBao services, binaries, data and backups have not been removed.
 
-The authorized host control tunnel became unavailable. Its authoritative read-only errors are `tunnel_client_not_connected` and later `tunnel_client_not_seen` (the client had not been seen for 300 seconds). This is an access/transport blocker, not a product test result. Do not replay the last Mac operation before reading its actual directory and process state.
+This checkpoint supersedes the disconnected-host status in the earlier revision of this file. The old Mac R2 launch was reconciled against the filesystem and process inventory: its source/output directories were absent and no corresponding build was running. The new runs below have distinct owned directories and receipts.
 
-## Exact source and changes saved
+## Actual Mac native KV2 import result
 
-| Checkpoint | Commit | Meaning |
+Source commit `f43a015b69e3b9cc1fad88ea4e4efdda7250417c`, tree `367adee67df1f4fda8875012e5b50564aab4d213`, was materialized under:
+
+`/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-f43`
+
+All **2,790** source blobs, executable modes, path closure and the recursive Git tree were verified before and after execution. The host was macOS 26.6.2 arm64, using Rust 1.98.0 and the existing offline cache. Test compilation succeeded in **345.214 seconds**. Exact discovery selected **8** native graph-import tests; execution produced **7 passed / 1 failed**.
+
+All five Service cases passed: legacy/native history comparison and cold CAS; unauthorized, malformed and replay rejection; actual durable locator append/fsync followed by a lost acknowledgement and cold recovery; root-commit lost acknowledgement followed by cold selection of the complete new root; and snapshot restore followed by cold recovery with exact history.
+
+The failing codec case selected an arbitrary object of kind `Block`. That kind also stores metadata values, which the live view can already cache. It therefore did not reliably remove a payload object. The revised case records the exact payload references read by actual version 4 and version 5 point reads, removes each reference, and requires both cached/cold transition validation and the real point read to reject it. Missing metadata-root cold open is checked separately. The revised case retains the original name and the group count of 8; **its execution is still pending at this checkpoint**.
+
+The server binary also built successfully in **183.662 seconds**, with 71,133,472 bytes and SHA256 `6c056d15e54b9790de4d6c0c329dd12a85a34165c88248f464b508869a3cebaf`. The overall run remains failed because one required test failed.
+
+Evidence: [complete failed test log](../qa/openbao-acceptance/evidence/resumed-20261019/mac-native-kv2-import-f43-failed.log), [final owned-run summary](../qa/openbao-acceptance/evidence/resumed-20261019/mac-native-kv2-import-f43-summary.json).
+
+## Historical recovery CI remains a real gate
+
+The newer [5ea CI run 39146883387](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/39146883387) is distinct from the earlier 46cf run.
+
+| Actual host | Historical cases | Snapshot cases |
 | --- | --- | --- |
-| Original integrated candidate | `40b183000db486a677fadf9bd2fd34873a28c78e` | Complete Mac reconstruction verified every one of 2,762 Git blobs, modes and the full tree `50c821b2487000cf1d536cbd8d84dce0feedb544`. |
-| Typed restoration and recovery reference + existing diagnostics | `a84c31b3bae4335958048b2e7f8a7db35fffe13d` | Correct the eight compile errors found on the exact original candidate; preserve the real operation after a committed CAS and a failed response audit. Integrate the existing `71063ee` private forwarding diagnostics without changing wire I/O order or budgets. |
-| AuthBus R5 | `09a2e8c38d1565cc8f6a3f1ef48f3b050d6a204e` | Persist UNKNOWN before provider dispatch; prevent lease-expiry retry after a lost result or owner death. Actual-SDK registry remains a candidate. |
-| Explicit pending restoration reconciliation | `3ab3ec01787791b80063586c01ea2897a6bde24e` | Cancel only one precisely identified pending operation under a newly authorized request; never automatically replay restoration. |
+| macOS job 117732420727 | 3 / 6 passed | 7 / 7 passed |
+| Linux job 117732420481 | 1 / 6 passed | 7 / 7 passed |
 
-The new Rust changes are candidates pending real compilation and execution. A successful Git tree, patch application or source review is not a passing Rust test.
+Both host builds compiled; the remaining failures concern activation-source identity in a fixture that creates a token before activation, a forbidden historical admission path, cold unseal, and cold follower forwarding. These are under separate source-level investigation. A fixture correction must capture the actual V5 source at activation and retain strict subsequent comparisons. Product errors must be fixed without changing request budgets or retrying uncertain mutations. The newer f43 run exercises the additional eight native import cases as well.
 
-## Results actually obtained in this continuation
+## Actual LAN TLS and complete HTTP response
 
-### Mac original candidate: compile failed
+A separate owned diagnostic used the previously built **71063e** binary with SHA256 `1546755960a23eb5e27cf5be474e63d63466a79ecb1f69e425cad95f78c9dcb4`, whose Mac firewall entry already existed.
 
-The native Mac run used Rust/Cargo 1.98.0, the existing offline dependency cache and the native HA feature. All 2,762 source blobs/modes were checked immediately before the run.
+The main host reached `192.168.0.7:46230` with TLS 1.3 in 0.023 seconds; the Mac reached its own LAN address with TLS 1.2 in 0.031 seconds. Both verified the CA, server name and exact certificate leaf, then read the complete HTTP 501 response, all 329 body bytes, and `initialized: false`. No credential or initialization request was sent. The owned server was terminated and reaped, and no firewall setting changed.
 
-Compilation failed after 53.884 seconds with eight errors in `service_snapshot_v6_ha_restore.rs`:
+This resolves the earlier diagnostic's premature client close after reading only `HTTP/1.1 `. The old receipt proves only its TLS handshake; it is retained as historical evidence. The complete response diagnostic is **not** a three-voter failover test or evidence for the newer binary.
 
-- Two `RefMut<DurableService>` values needed explicit dereferencing at the existing borrowed-service boundary.
-- The actual immutable authentication owner is `CowOwner<AuthState>`, not an owned `AuthState`.
-- The publication frontier is `plugin::PublicationGeneration`, not a plain integer. It must retain its full type through the checkpoint, terminal proof and equality checks; only the public JSON field uses the actual Durable generation integer.
+Evidence: [complete LAN HTTP receipt](../qa/openbao-acceptance/evidence/resumed-20261019/mac-lan-complete-http-root-r2.json), [bounded probe](../qa/openbao-acceptance/tls_complete_http_probe.py), [owned live diagnostic](../qa/openbao-acceptance/mac_lan_complete_http_live_20261019.py).
 
-No historical Service tests executed in that failed run. Original log SHA256: `d72c776d098ad297e7182d50087d92b570c72d2490ea1cce20ad1bd429bbb5a7`.
+## AuthBus actual SDK storage result
 
-The r2 patch addresses these exact diagnostics. Its successful compilation has not yet been observed.
+The actual installed OpenClaw SDK **2026.7.1-2**, running Node **22.23.3**, passed **21 / 21** isolated SQLite owner checks with synthetic OAuth values. This includes locked commit and readback, stale digest rejection, cross-provider rejection, unrelated profile/selection preservation, an actual SQLite transaction abort, and successful subsequent recovery.
 
-### Mac direct-LAN TLS: transport observed, HTTP health not qualified
+The initial run exposed a real SDK return-contract mismatch: a no-op transaction can return a store object and a failed transaction can return null. The adapter now requires that its own locked updater applied and that the returned store contains the exact new credential digest, followed by an independent readback. It does not accept object truthiness as successful mutation. The first failed receipt remains in the repository.
 
-A fresh, uninitialized fixture ran the exact previous diagnostic binary, SHA256 `1546755960a23eb5e27cf5be474e63d63466a79ecb1f69e425cad95f78c9dcb4`, from the already permitted Mac application path. Global firewall settings and application rules were not changed.
+Evidence: [21-check receipt](../qa/openbao-acceptance/authbus/refresh-r5-sdk-actual-passed-20261019.json), [actual command receipt](../qa/openbao-acceptance/authbus/refresh-r5-sdk-actual-passed-20261019-command.json), [SDK decision history](authbus-refresh-r5-sdk-20261018.md).
 
-- Main → Mac: verified TLS 1.3, exact API leaf pin, 0.062 seconds.
-- Mac → its direct LAN listener: verified TLS 1.2, exact leaf digest, 0.057 seconds.
-- The owned process was stopped and its exit was observed.
+This run did not exercise the actual shared OAuth refresh caller, a real provider refresh, or the native R5 HeptaBao backend. Those gates remain open. It did not use J3160 or mutate production credentials.
 
-The small diagnostic client read only the first response fragment (`HTTP/1.1 `) and closed. Its raw `passed` flag cannot establish a valid HTTP status/body. The server's subsequent write diagnostic is also not sufficient to diagnose a product failure after that early client close. Preserve the raw receipt; the next probe must read a complete bounded HTTP response before declaring health readiness.
+## Required next closures
 
-The earlier physical attempts remain separate: attempt 02 reached native activation and failed on a follower's exact forwarded read; attempt 03 failed earlier during Mac listener readiness. Neither establishes leader-kill, election, ReadIndex or full 34 MiB multi-host qualification.
+| Gate | Required remaining evidence |
+| --- | --- |
+| KV2 | Dedicated bounded native large-import profile; actual OpenBao 2.7.1 source export; complete 34 MiB history import, cold restart, snapshot restore, hostile-input and unknown-ack recovery |
+| HA | Same-source Mac/ROG/Pocket4 leader kill, reelection, ReadIndex, quorum loss, persisted restart and exact history; required X230 checks |
+| AuthBus | Actual shared SDK refresh boundary and final provider dispatch fence; native TLS/AppRole/KV/Policy/renew/revoke; trusted credential custody without J3160 |
+| Per-host cutover | Real credential read/write, restart and rollback for every host before its client traffic switches |
+| Cleanup | Inventory every client and backup migration, then remove old services, binaries and regenerable intermediate assets |
 
-### AuthBus R5: real local processes, fixture backend and owner
-
-[AuthBus R5 evidence and scope](authbus-refresh-r5-20261018.md) records 13 scenarios / 52 assertions and 11 prior trusted-bootstrap regression checks.
-
-The tests use actual HTTPS, actual provider HTTP requests, durable filesystem writes, independent Node processes and a real SIGKILL. They establish that:
-
-- Unacknowledged intent CAS causes zero provider requests.
-- Once the provider may have consumed the request, UNKNOWN survives owner death and lease expiry.
-- Failed or falsely successful owner writes cannot clear the fence.
-- Completion CAS response loss does not authorize another provider refresh.
-- A newly verified credential publication can receive a higher epoch; the old digest remains fenced.
-
-A separate [SDK storage extension](authbus-refresh-r5-sdk-20261018.md) replaces implicit owner upserts with a bootstrap-bound locked compare-and-write and explicit `syncExternalCli:false`. It includes a static source inspector and a real-SDK SQLite runner, but that runner has not executed on the disconnected host.
-
-The control server and credential owner in these new tests are fixtures. These receipts do not prove the actual SDK OAuth hook, native HeptaBao-backed R5, production gateway bootstrap or every caller.
-
-## Confirmed KV2 migration implementation gaps
-
-The original lossless protobuf decoder was executed against a synthetic 2 MiB raw record and rejected it with `DecodeError('record bound')`. The current raw-record bound is 1 MiB, the export bundle bound is 16 MiB, and the HTTP helper has separate 2 MiB response / 16 MiB request-body bounds. More fundamentally, `EngineState::stage_openbao_kv2_import` returns 501 on an already activated `Kv2Native` backend and explicitly requires a dedicated graph import writer. Its older owner-based route also serializes the aggregate under `MAX_APPLICATION_STATE_BYTES`.
-
-Thus the successful 34 MiB native-storage/component tests do not establish lossless OpenBao migration. Increasing Python caps alone would leave the native import implementation absent. The existing large-KV2 live test writes and restarts each server separately; it does not migrate that history between them.
-
-## Pending-restore interface and tests
-
-The explicit new operation is an empty-body POST or PUT on:
-
-```text
-/v1/sys/storage/raft/snapshot?cancel_pending_restore=native-v6-restore-<64 lowercase hex digits>
-```
-
-It requires the current root Actor, native HA activation, current Seal/source custody, actual ReadIndex and the original request deadline. It returns one of `cancelled`, `not_pending`, `committed` or `different_pending`; every result states `restore_performed:false` and `retry_allowed:false`. A separate new request is required for a new restoration.
-
-This first cancellation API requires the client to retain the exact operation reference. A process or HTTP failure before that reference is returned can leave an undiscoverable pending operation; a narrowly authorized read-only discovery extension is being prepared and is not claimed as completed here.
-
-The new Service regression uses a real staging I/O failure after Begin, then cold owner reconstruction and a new leader. The HTTP regression exercises actual parsing/body framing. These tests have been written and source-reviewed; their Rust execution is pending.
-
-## First actions when the host connection is restored
-
-1. Read the Mac r2 materialization receipt, test summary and owned process file listed in the [machine-readable checkpoint](../qa/openbao-acceptance/evidence/continuation-20261018/checkpoint.json). Inspect existing cargo/rustc processes before reusing the shared target cache. The last launch result is unknown.
-2. If the r2 operation completed, retain its exact success or failure logs. Do not label it with a later commit. Materialize the latest saved tree separately and bind all source blobs/modes and the toolchain before the next run.
-3. Execute the historical Service suite (including post-CAS audit failure and pending cancellation), archive regression, real HTTP query/framing tests and native diagnostic tests. Compile both Mac and Linux feature branches. Keep original HTTP 15-second and native 8-second budgets.
-4. Build and freeze matching Mac/Linux server binaries, then use the existing direct-LAN 98-check harness on Mac–ROG–Pocket4 and Mac–ROG–X230. Verify complete TLS/HTTP readiness first. Preserve every once-only mutation intent and ambiguous result; do not relax deadlines or retry a write to make a check pass.
-5. Inspect the actual SDK root, wire the R5 shared OAuth path to the real locked SQLite owner with external CLI synchronization disabled for fixtures, and validate a fresh native R5 control document. Old R4 receipts/documents are not new R5 qualification.
-6. Prove the remaining lossless OpenBao 2.7.1 KV2 migration, Control Groups and HA quota behavior. Complete per-host real-credential read/write, restart and rollback before traffic cutover.
-7. Reconcile every client and backup path before old-service/binary/intermediate cleanup. Preserve unrelated workloads, including heptatrader on Pocket4.
-
-## Limits of the supplemental CI lane
-
-A targeted GitHub Actions lane can provide an independent explicit-feature build/test result on its own runner. Existing default qualification CI does not compile this experimental native HA code. Neither a hosted runner's success nor local loopback component tests replace the requested external-disk Mac, X230 and physical LAN evidence.
+The prior physical 98-case run stopped during listener readiness; it did not kill a leader. Neither the 34 MiB archive fixture nor the native import Service cases prove a complete 34 MiB OpenBao migration. Original failed evidence, Raft roots and recovery custody remain preserved. Pocket4 heptatrader has not been modified.

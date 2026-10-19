@@ -1,6 +1,8 @@
 //! Detached native import proof boundaries. Synthetic closed bundles only.
 use super::*;
 use crate::state_records::ObjectKind;
+use std::cell::RefCell;
+use std::collections::BTreeSet;
 
 type TestResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -66,6 +68,18 @@ fn import_source(import: &NativeKv2GraphImport) -> TestResult<GraphObjects> {
     Ok(source)
 }
 
+struct RecordingReader<'a> {
+    source: &'a GraphObjects,
+    reads: RefCell<BTreeSet<ObjectId>>,
+}
+
+impl RecordReader for RecordingReader<'_> {
+    fn read_object(&self, reference: &ObjectRef) -> CodecResult<Zeroizing<Vec<u8>>> {
+        self.reads.borrow_mut().insert(reference.id);
+        self.source.read_object(reference)
+    }
+}
+
 #[test]
 fn native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner() -> TestResult {
     let parent = AddressKey::from_bytes([41;32]);
@@ -124,14 +138,51 @@ fn native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure()
     assert!(import.visit_for(&[root_reference(&import)], &|| Err(RecordError::Invalid),
         |_,_| { seen += 1; Ok(()) }).is_err());
     assert_eq!(seen,0);
-    let mut source = import_source(&import)?;
-    let missing = source.0.iter()
-        .find(|(_,object)| object.reference().kind == ObjectKind::Block)
-        .map(|(id,_)| *id).ok_or("payload block")?;
-    source.0.remove(&missing);
-    // Metadata alone remains well-formed; it cannot prove the fresh import's
-    // missing payload by borrowing the prior empty destination.
-    assert!(view.verify_paged_transition(Some(&before), &source, &|| Ok(())).is_err());
+    let source = import_source(&import)?;
+    view.verify_paged_transition(Some(&before), &source, &|| Ok(()))?;
+    // Block is also the type of large metadata values. Select payload objects
+    // through the actual point reader, including the soft-deleted version at a
+    // time before its deletion. Hash ordering and object kind cannot identify
+    // payload closure.
+    for (version, now) in [(4, Timestamp::whole(95)?), (5, Timestamp::whole(100)?)] {
+        let recorder = RecordingReader {
+            source: &source,
+            reads: RefCell::new(BTreeSet::new()),
+        };
+        let query = json!({"version":version});
+        let response = view.read_with_source("GET", "data/item", &query, now, &recorder)?;
+        assert_eq!(response.status, 200);
+        let payloads = recorder.reads.into_inner();
+        assert!(!payloads.is_empty());
+        for missing in payloads {
+            let mut incomplete = import_source(&import)?;
+            assert!(incomplete.0.remove(&missing).is_some());
+            // A metadata-only open authenticates the descriptor, not its
+            // payload. The fresh import cannot inherit the missing payload
+            // from the prior empty destination, for either a cached or a cold
+            // view. The same real point read must reject it too.
+            let cold = NativeReadView::open_paged(
+                &parent, scope(), import.root.clone(), &incomplete,
+            )?;
+            assert!(view.verify_paged_transition(
+                Some(&before), &incomplete, &|| Ok(()),
+            ).is_err());
+            assert!(cold.verify_paged_transition(
+                Some(&before), &incomplete, &|| Ok(()),
+            ).is_err());
+            assert!(cold.read_with_source(
+                "GET", "data/item", &query, now, &incomplete,
+            ).is_err());
+        }
+    }
+    // Cold graph opening, rather than the incremental payload verifier, owns
+    // the metadata-root closure check. Remove that exact reference separately.
+    let root_id = import.root.reference.as_ref().ok_or("metadata root")?.id;
+    let mut missing_metadata = import_source(&import)?;
+    assert!(missing_metadata.0.remove(&root_id).is_some());
+    assert!(NativeReadView::open_paged(
+        &parent, scope(), import.root.clone(), &missing_metadata,
+    ).is_err());
     assert!(before.prepare_lossless_graph_import(&bundle()?,
         &AddressKey::from_bytes([43;32]),scope(),&|| Ok(())).is_err());
     Ok(())
