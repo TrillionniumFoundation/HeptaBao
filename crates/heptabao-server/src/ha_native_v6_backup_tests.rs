@@ -17,6 +17,61 @@ fn archive_scope() -> RequestDeadlineScope {
     RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(15))
 }
 
+// Diagnostic-only test observations. This file is cfg(test); the original
+// operations, deadlines, assertions, gates and cleanup are unchanged. Observe
+// the existing thread-local deadline without creating or renewing a scope.
+struct ArchiveDiagnosticPhase {
+    phase: &'static str,
+    started: Instant,
+    original_deadline: Option<Instant>,
+    completed: bool,
+}
+impl ArchiveDiagnosticPhase {
+    fn start(phase: &'static str) -> Self {
+        Self {
+            phase,
+            started: Instant::now(),
+            original_deadline: crate::request_deadline::current(),
+            completed: false,
+        }
+    }
+    fn finish(mut self) {
+        self.completed = true;
+    }
+    fn error<E>(&self, operation: &'static str, _error: &E) {
+        // inspect_err observes the original typed Result before `?` starts
+        // unwinding locals. Neither the error nor the deadline is replaced.
+        let observed = Instant::now();
+        let _ = writeln!(
+            io::stderr().lock(),
+            "HBARCHIVE-TEST-ERROR phase={} operation={} error_type={} elapsed_us={} original_deadline_present={} original_deadline_expired_at_return={}",
+            self.phase,
+            operation,
+            std::any::type_name::<E>(),
+            observed.duration_since(self.started).as_micros(),
+            self.original_deadline.is_some(),
+            self.original_deadline.is_some_and(|deadline| observed >= deadline),
+        );
+    }
+}
+impl Drop for ArchiveDiagnosticPhase {
+    fn drop(&mut self) {
+        let observed = Instant::now();
+        let _ = writeln!(
+            io::stderr().lock(),
+            "HBARCHIVE-TEST-PHASE phase={} elapsed_us={} completed={} original_deadline_present={} original_remaining_at_start_us={} original_deadline_expired={}",
+            self.phase,
+            observed.duration_since(self.started).as_micros(),
+            self.completed,
+            self.original_deadline.is_some(),
+            self.original_deadline
+                .map(|deadline| deadline.saturating_duration_since(self.started).as_micros())
+                .unwrap_or(0),
+            self.original_deadline.is_some_and(|deadline| observed >= deadline),
+        );
+    }
+}
+
 fn private_file(path: &Path) -> io::Result<File> {
     let mut options = OpenOptions::new();
     options.read(true).write(true).create_new(true);
@@ -120,7 +175,9 @@ impl Seek for ArchiveView {
 
 #[test]
 fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> TestResult {
+    let phase = ArchiveDiagnosticPhase::start("initialized");
     let (files, mut service, _key, token) = initialized()?;
+    phase.finish();
     assert_eq!(
         call(
             &mut service,
@@ -134,8 +191,10 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
     );
     let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
     let codec = ClusterStateCodec::new(&cluster_id, [59; 32])?;
+    let phase = ArchiveDiagnosticPhase::start("cluster_anchor");
     let cluster = Cluster::new(files.path.join("archive-raft"))?;
     let (enrollment, prior_digest, prior_index) = enroll_and_anchor(&cluster, &codec, &service)?;
+    phase.finish();
     assert_eq!(
         call(
             &mut service,
@@ -147,6 +206,7 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         .status,
         204
     );
+    let phase = ArchiveDiagnosticPhase::start("seed_17_history_versions");
     for version in 1..=17 {
         assert_eq!(
             call(
@@ -161,10 +221,12 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
             200
         );
     }
+    phase.finish();
     let sender_path = files.path.join("archive-original-ciphertext");
     let sender = stage(&sender_path)?;
     let export_scope = archive_scope();
     let deadline = OriginalDeadline::capture()?;
+    let phase = ArchiveDiagnosticPhase::start("prepare_full_shared_ciphertext");
     let state = service.state.as_ref().ok_or("state")?.clone();
     let plan = service
         .prepare_native_live_root_checked(&state, &mut |_| Ok(()))
@@ -183,11 +245,18 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
             Some(&source),
             None,
             &mut || Ok(()),
-        )?
+        )
+        .inspect_err(|error| phase.error("prepare_native_v6_ha_objects", error))?
     };
+    phase.finish();
     let intent = intent(&prepared, &enrollment, prior_digest, prior_index);
     assert!(intent.ciphertext_bytes >= 34 * 1024 * 1024);
-    let proposal = prepared.into_proposal(&codec, &enrollment, intent, &mut || Ok(()))?;
+    let phase = ArchiveDiagnosticPhase::start("proposal");
+    let proposal = prepared
+        .into_proposal(&codec, &enrollment, intent, &mut || Ok(()))
+        .inspect_err(|error| phase.error("into_proposal", error))?;
+    phase.finish();
+    let phase = ArchiveDiagnosticPhase::start("publish_root");
     let published = cluster.runtime.block_on(async {
         let node = &cluster.nodes[0];
         let staged = node
@@ -206,6 +275,8 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         )
         .await
     })?;
+    phase.finish();
+    let phase = ArchiveDiagnosticPhase::start("selection_and_local_pack");
     let selection = NativeV6ArchiveSelection::from_committed(&enrollment, &published)?;
     let (manifest, expected_refs) =
         sender.reopen_root_closure_archive(&published, &mut || Ok(()))?;
@@ -224,9 +295,12 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         deadline,
         &mut || Ok(()),
         &mut |_, _| Ok(()),
-    )?;
+    )
+    .inspect_err(|error| phase.error("prepare_native_v6_local_pack", error))?;
+    phase.finish();
     let archive_path = files.path.join("native-v6-ha-format.archive");
     let mut archive_file = private_file(&archive_path)?;
+    let phase = ArchiveDiagnosticPhase::start("write_dual_archive");
     let report = write_native_v6_archive(
         &selection,
         local,
@@ -235,7 +309,9 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         &barrier,
         &mut archive_file,
         &mut || Ok(()),
-    )?;
+    )
+    .inspect_err(|error| phase.error("write_native_v6_archive", error))?;
+    phase.finish();
     archive_file.flush()?;
     assert_eq!(
         report.local.generation,
@@ -258,6 +334,7 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
     );
 
     let read_scope = archive_scope();
+    let phase = ArchiveDiagnosticPhase::start("validate_dual_archive");
     let reader = ArchiveView::new(&archive_path)?;
     let largest = Rc::clone(&reader.largest);
     let mut verified = validate_native_v6_archive(
@@ -268,9 +345,11 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         OriginalDeadline::capture()?,
         &mut || Ok(()),
     )?;
+    phase.finish();
     assert_eq!(verified.report(), report);
     assert_eq!(verified.manifest(), manifest);
     assert_eq!(verified.references(), expected_refs);
+    let phase = ArchiveDiagnosticPhase::start("copy_and_prepare_local_restore");
     let local_copy_path = files.path.join("archive-roundtrip-local.pack");
     let mut local_copy = private_file(&local_copy_path)?;
     verified.copy_local_pack_to(&mut local_copy, &mut || Ok(()))?;
@@ -304,15 +383,19 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         service.durable.as_ref().ok_or("durable")?.generation(),
         local_generation
     );
+    phase.finish();
+    let phase = ArchiveDiagnosticPhase::start("restore_shared_ciphertext");
     let target = stage(&files.path.join("archive-roundtrip-ciphertext"))?;
     let mut received_bytes = 0u64;
     verified.visit_shared_ciphertext(&mut || Ok(()), &mut |reference, bytes| {
         target
             .stage_received_replica_checked(reference, bytes, &mut || Ok(()))
+            .inspect_err(|error| phase.error("stage_received_replica_checked", error))
             .map_err(|_| NativeV6ArchiveError::Storage)?;
         received_bytes += bytes.len() as u64;
         Ok(())
-    })?;
+    })
+    .inspect_err(|error| phase.error("visit_shared_ciphertext", error))?;
     assert_eq!(received_bytes, report.shared_ciphertext_bytes);
     assert!(
         largest.get() <= 256 * 1024,
@@ -329,12 +412,14 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
             .0,
         manifest
     );
+    phase.finish();
     drop((verified, read_scope));
 
     // The exact original shared cipher references still decrypt and materialize
     // all retained Service history; no re-encryption reconstructed fake IDs.
     let graph_scope = archive_scope();
     let graph_deadline = OriginalDeadline::capture()?;
+    let phase = ArchiveDiagnosticPhase::start("open_typed_graph_and_exact_history");
     let context = ReadContext {
         expected_identity: ReadIdentity::RecordsV6(published.root_digest()),
         cluster_id: &cluster_id,
@@ -351,7 +436,8 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         context,
         graph_deadline,
         &mut || Ok(()),
-    )?;
+    )
+    .inspect_err(|error| phase.error("open_native_v6_ha_objects", error))?;
     let mut original_actor = || Ok(());
     let original_gate = RefCell::new(OriginalGate {
         deadline: graph_deadline,
@@ -390,6 +476,7 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
     drop(graph_reader);
     drop(source);
     drop(received);
+    phase.finish();
     drop(graph_scope);
 
     // Wire offsets below intentionally test the documented fixed HBV6HA01
