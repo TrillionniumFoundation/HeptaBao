@@ -9,6 +9,8 @@ pub(super) struct Runtime {
     sweep: BTreeMap<(String, u64), (Instant, u64)>,
     owner: Option<RuntimeOwner>,
     active: Option<ha_activation::ActivationKey>,
+    ingress_entry: Option<QuotaIngressEntry>,
+    standby_rejection: Option<StandbyQuotaRejection>,
 }
 // Auth is reloaded during ordinary HA catch-up. Its deserialized runtime Arc
 // is not a new node-local quota session. These fields identify the actual live
@@ -59,7 +61,13 @@ impl Runtime {
         // This is called only at the actual storage teardown/unseal boundary.
         // The Shamir nonce can rotate after nested HA sync, and legacy unseal
         // does not rotate it there, so nonce comparison alone is insufficient.
+        // An in-flight affine refusal must remain visible to the caller's
+        // source checks (or the next-entry stale guard), never disappear here.
+        let ingress_entry = self.ingress_entry.take();
+        let standby_rejection = self.standby_rejection.take();
         *self = Self::default();
+        self.ingress_entry = ingress_entry;
+        self.standby_rejection = standby_rejection;
     }
     fn synchronize_owner(&mut self, owner: RuntimeOwner) {
         if self.owner.as_ref().is_none_or(|current| !current.same(&owner)) {
@@ -237,6 +245,14 @@ impl Service {
         &mut self,
         request: &RequestView<'_>,
     ) -> Option<Response> {
+        self.rate_limit_quota_response_with_ingress(request, None)
+    }
+
+    fn rate_limit_quota_response_with_ingress(
+        &mut self,
+        request: &RequestView<'_>,
+        ingress: Option<QuotaIngressEntry>,
+    ) -> Option<Response> {
         let state = self.state.as_ref()?;
         let registry = state.auth.rate_limit_quota_registry()?;
         let owner = if self.ha.is_some() {
@@ -280,13 +296,16 @@ impl Service {
                     .find(|d| d.role.is_empty() && d.path == mount)
             });
         let definition = selected?;
-        if self.ha.is_some() {
+        let actual_standby = if self.ha.is_some() {
             let role = match self.rate_limit_quota_ha_role() {
                 Ok(role) => role,
                 Err(response) => return Some(response),
             };
             self.rate_limit_quotas.observe_ha_role(role);
-        }
+            matches!(role, HaRole::Standby)
+        } else {
+            false
+        };
         let Some(peer) = request.origin_peer else {
             return Some(Response::error(
                 503,
@@ -305,6 +324,12 @@ impl Service {
                     &["Retry-After".into()],
                 )
                 .unwrap_or_default();
+                if actual_standby && let Some(entry) = ingress {
+                    match StandbyQuotaRejection::capture(self, request, entry, &response) {
+                        Ok(rejection) => self.rate_limit_quotas.standby_rejection = Some(rejection),
+                        Err(error) => return Some(error),
+                    }
+                }
                 Some(response)
             }
             Err(()) => Some(Response::error(
@@ -312,6 +337,275 @@ impl Service {
                 "rate limit quota client capacity exhausted",
             )),
         }
+    }
+}
+
+// A denial from a real standby ingress bucket has not admitted an Actor,
+// observed a credential expiry, consumed a SecretID, or dispatched the route.
+// The sole top-level entry moves through the first handle_inner invocation;
+// nested dispatch, forwarding and control-group resume cannot create it.
+pub(super) struct QuotaIngressEntry {
+    fingerprint: String,
+    clock: RequestClock,
+    now: u64,
+    deadline: Instant,
+    audit_sequence: u64,
+    audit_previous: [u8; 32],
+}
+
+// Not Clone and not serialized. Only take_at's actual rejected branch creates
+// this value. It conveys a local public refusal, never an authenticated read,
+// Actor, Raft publication, completed-forward receipt or fresh time observation.
+pub(super) struct StandbyQuotaRejection {
+    entry: QuotaIngressEntry,
+    owner: RuntimeOwner,
+    identity: crate::state_record_root::StateIdentity,
+    generation: u64,
+    token_floor: Option<Timestamp>,
+    barrier_digest: [u8; 32],
+    response_digest: [u8; 32],
+}
+
+impl Runtime {
+    pub(super) fn has_pending_ingress(&self) -> bool {
+        self.ingress_entry.is_some() || self.standby_rejection.is_some()
+    }
+
+    pub(super) fn take_ingress_entry(&mut self) -> Option<QuotaIngressEntry> {
+        self.ingress_entry.take()
+    }
+
+    pub(super) fn take_standby_rejection(&mut self) -> Option<StandbyQuotaRejection> {
+        self.standby_rejection.take()
+    }
+}
+
+impl QuotaIngressEntry {
+    fn same_request(&self, request: &RequestView<'_>) -> bool {
+        request.allow_forward
+            && request.namespace.is_empty()
+            && request.path.starts_with("auth/")
+            && request.admission_started == self.clock.started()
+            && request.now == self.now
+            && request.token_clock.is_some_and(|clock| {
+                clock.started() == self.clock.started()
+                    && clock.admitted_at() == self.clock.admitted_at()
+            })
+    }
+
+    fn clock_live(&self, now: u64, clock: Option<RequestClock>) -> bool {
+        now == self.now
+            && crate::request_deadline::current() == Some(self.deadline)
+            && Instant::now() < self.deadline
+            && clock.is_some_and(|clock| {
+                clock.started() == self.clock.started()
+                    && clock.admitted_at() == self.clock.admitted_at()
+                    && clock.observed_at().is_ok()
+            })
+    }
+}
+
+fn ingress_unavailable() -> Response {
+    Response::error(503, "standby quota rejection custody changed")
+}
+
+impl StandbyQuotaRejection {
+    fn capture(
+        service: &mut Service,
+        request: &RequestView<'_>,
+        entry: QuotaIngressEntry,
+        response: &Response,
+    ) -> Result<Self, Response> {
+        if !entry.same_request(request)
+            || service.rate_limit_quotas.standby_rejection.is_some()
+            || response.status != 429
+        {
+            return Err(ingress_unavailable());
+        }
+        let state = service.state.as_ref().ok_or_else(ingress_unavailable)?;
+        let rejection = Self {
+            entry,
+            owner: RuntimeOwner::Ha(
+                service.rate_limit_quota_ha_session().ok_or_else(ingress_unavailable)?,
+            ),
+            identity: service.current_state_identity()?,
+            generation: service.durable.as_ref().ok_or_else(ingress_unavailable)?.generation(),
+            token_floor: state.auth.terminal_token_clock_floor(),
+            barrier_digest: crypto::digest(
+                service.barrier_key.as_ref().ok_or_else(ingress_unavailable)?.as_slice(),
+            ),
+            response_digest: crate::ha_forward_completion::response_digest(response)
+                .map_err(|_| ingress_unavailable())?,
+        };
+        rejection.check(
+            service, response, &rejection.entry.fingerprint,
+            request.now, request.token_clock, false,
+        )?;
+        Ok(rejection)
+    }
+
+    fn check(
+        &self,
+        service: &mut Service,
+        response: &Response,
+        fingerprint: &str,
+        now: u64,
+        clock: Option<RequestClock>,
+        after_audit: bool,
+    ) -> Result<(), Response> {
+        if fingerprint != self.entry.fingerprint
+            || !self.entry.clock_live(now, clock)
+            || crate::ha_forward_completion::CompletionScope::active()
+            || service.recovery_required
+            || service.audit_failed
+            || service.pending_forward_delivery.is_some()
+            || service.pending_ordinary_kv_commit_notice.is_some()
+            || service.rate_limit_quotas.has_pending_ingress()
+            || response.status != 429
+            || response.unwrapped_json.is_some()
+            || response.consistency_index.is_some()
+            || crate::ha_forward_completion::response_digest(response)
+                .map_err(|_| ingress_unavailable())? != self.response_digest
+        {
+            return Err(ingress_unavailable());
+        }
+        #[cfg(feature = "fixture-native-v6-service")]
+        if service.native_failure_notice.is_some() {
+            return Err(ingress_unavailable());
+        }
+        let expected_sequence = if after_audit {
+            self.entry.audit_sequence.checked_add(1).ok_or_else(ingress_unavailable)?
+        } else {
+            self.entry.audit_sequence
+        };
+        if service.audit_sequence != expected_sequence
+            || if after_audit {
+                service.audit_previous == self.entry.audit_previous
+            } else {
+                service.audit_previous != self.entry.audit_previous
+            }
+        {
+            return Err(ingress_unavailable());
+        }
+        let owner = RuntimeOwner::Ha(
+            service.rate_limit_quota_ha_session().ok_or_else(ingress_unavailable)?,
+        );
+        if !self.owner.same(&owner)
+            || service.rate_limit_quotas.owner.as_ref().is_none_or(|live| !live.same(&owner))
+            || service.rate_limit_quotas.active.is_some()
+            || !matches!(service.rate_limit_quota_ha_role()?, HaRole::Standby)
+            || service.current_state_identity()? != self.identity
+            || service.state.as_ref().ok_or_else(ingress_unavailable)?
+                .auth.terminal_token_clock_floor() != self.token_floor
+            || crypto::digest(
+                service.barrier_key.as_ref().ok_or_else(ingress_unavailable)?.as_slice(),
+            ) != self.barrier_digest
+        {
+            return Err(ingress_unavailable());
+        }
+        let durable = service.durable.as_mut().ok_or_else(ingress_unavailable)?;
+        durable.verify_live_ownership().map_err(|_| ingress_unavailable())?;
+        if durable.generation() != self.generation
+            || !self.entry.clock_live(now, clock)
+        {
+            return Err(ingress_unavailable());
+        }
+        Ok(())
+    }
+}
+
+impl Service {
+    // Called only after the top-level request audit and immediately before its
+    // first handle_inner. The entry is taken on entry, not left for an inner
+    // route to borrow. There is no new clock, deadline or admission here.
+    pub(super) fn stage_quota_ingress(
+        &mut self,
+        fingerprint: &str,
+        now: u64,
+        admission_started: Instant,
+        clock: Option<RequestClock>,
+        allow_forward: bool,
+    ) {
+        if !allow_forward
+            || crate::ha_forward_completion::CompletionScope::active()
+            || self.rate_limit_quotas.has_pending_ingress()
+        {
+            return;
+        }
+        let (Some(clock), Some(deadline)) = (clock, crate::request_deadline::current()) else {
+            return;
+        };
+        if clock.started() != admission_started || Instant::now() >= deadline {
+            return;
+        }
+        self.rate_limit_quotas.ingress_entry = Some(QuotaIngressEntry {
+            fingerprint: fingerprint.to_owned(),
+            clock,
+            now,
+            deadline,
+            audit_sequence: self.audit_sequence,
+            audit_previous: self.audit_previous,
+        });
+    }
+
+    pub(super) fn standby_rate_limit_quota_response(
+        &mut self,
+        request: &RequestView<'_>,
+        ingress: Option<QuotaIngressEntry>,
+    ) -> Option<Response> {
+        self.rate_limit_quota_response_with_ingress(request, ingress)
+    }
+
+    // Only the exclusive top-level completion branch consumes this private
+    // refusal. Normal requests still enter the unmodified terminal floor path.
+    pub(super) fn complete_standby_quota_rejection(
+        &mut self,
+        rejection: StandbyQuotaRejection,
+        mut response: Response,
+        fingerprint: &str,
+        now: u64,
+        clock: Option<RequestClock>,
+    ) -> Response {
+        // A local refusal must never mint a peer completion from this call.
+        crate::ha_forward_completion::audited(None);
+        let admissible = rejection.check(self, &response, fingerprint, now, clock, false).is_ok();
+        if !admissible {
+            erase_json(&mut response.body);
+            response = ingress_unavailable();
+        }
+        if self.audit_event("response", fingerprint, now, Some(response.status)).is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            erase_json(&mut response.body);
+            #[cfg(target_os = "linux")]
+            if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
+                self.fence_wrapper_barrier_delivery();
+            }
+            return Response::error(
+                503, "quota rejection response audit failed; authoritative recovery required",
+            );
+        }
+        if admissible
+            && rejection.check(self, &response, fingerprint, now, clock, true).is_err()
+        {
+            erase_json(&mut response.body);
+            response = ingress_unavailable();
+            if self.audit_event("quota_rejection_veto", fingerprint, now, Some(503)).is_err() {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                #[cfg(target_os = "linux")]
+                if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
+                    self.fence_wrapper_barrier_delivery();
+                }
+                return Response::error(
+                    503, "quota rejection veto audit failed; authoritative recovery required",
+                );
+            }
+        }
+        response.consistency_index = None;
+        response
     }
 }
 #[cfg(test)]

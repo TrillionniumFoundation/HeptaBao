@@ -1016,7 +1016,7 @@ impl Service {
                 cluster_id: &selected.source.cluster_id,
                 replay_epoch: read.enrollment().epoch(),
                 minimum_state_schema: selected.source.state_schema,
-                maximum_state_schema: RATE_LIMIT_QUOTA_STATE_SCHEMA,
+                maximum_state_schema: APPROLE_NO_DEFAULT_STATE_SCHEMA,
                 reader_format: crate::state_record_root_v6::READER_FORMAT,
             },
             deadline,

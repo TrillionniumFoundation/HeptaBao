@@ -1317,3 +1317,196 @@ fn native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair() -
     // processes and removes its directory. No production mutation is replayed.
     Ok(())
 }
+
+
+// Guard-contract probes use an actual synchronized Service and its real
+// exhausted bucket. The original two quota tests above remain the full-dispatch
+// success gates; these probes do not claim a public HTTP or client restart.
+fn quota_real_rejection_fixture(
+    service: &mut Service,
+    role: &str,
+) -> TestResult<(
+    rate_limit_quotas::StandbyQuotaRejection,
+    Response,
+    String,
+    RequestClock,
+    u64,
+)> {
+    service.sync_from_ha_with_anchor(false).map_err(|_| "quota guard catch-up")?;
+    let started = Instant::now();
+    let wall = SystemTime::now().duration_since(UNIX_EPOCH)?;
+    let clock = RequestClock::anchored(wall, started)?;
+    let now = wall.as_secs();
+    let path = "auth/quota-lifecycle/login";
+    let fingerprint = service.request_fingerprint("POST", path, "", "");
+    service.audit_event("request", &fingerprint, now, None)?;
+    service.stage_quota_ingress(&fingerprint, now, started, Some(clock), true);
+    let ingress = service.rate_limit_quotas.take_ingress_entry().ok_or("quota entry absent")?;
+    let body = json!({"role_id":role,"secret_id":"invalid-synthetic-SID"});
+    let response = service.standby_rate_limit_quota_response(
+        &RequestView {
+            method: "POST",
+            path,
+            namespace: "",
+            token: "",
+            body: &body,
+            now,
+            admission_started: started,
+            token_clock: Some(clock),
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: Some(std::net::IpAddr::V4(
+                std::net::Ipv4Addr::new(192, 0, 2, 40),
+            )),
+            client_certificates: None,
+        },
+        Some(ingress),
+    ).ok_or("actual exhausted quota did not reject")?;
+    assert_eq!(response.status, 429);
+    let rejection = service.rate_limit_quotas.take_standby_rejection()
+        .ok_or("actual standby refusal custody absent")?;
+    Ok((rejection, response, fingerprint, clock, now))
+}
+
+#[test]
+fn ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time() -> TestResult {
+    for native in [false, true] {
+        let pipeline = Pipeline::start()?;
+        let leader = pipeline.ready_leader()?;
+        let standby = (leader + 1) % 3;
+        if native {
+            quota_native_activation(&pipeline, leader)?;
+        }
+        quota_mount(&pipeline, leader)?;
+        let role = quota_role(&pipeline, leader, "guard-client")?;
+        let mut precise = expect(
+            pipeline.call(
+                leader, "POST", "auth/token/create", pipeline.admin(),
+                json!({"policies":["default"],"ttl":"300s"}),
+            )?,
+            200, "quota-guard-actual-precise-owner",
+        )?;
+        erase_json(&mut precise.body);
+        expect(
+            pipeline.call(
+                leader, "POST", "sys/quotas/rate-limit/guard", pipeline.admin(),
+                json!({"path":"auth/quota-lifecycle/login","rate":1,"interval":"1h"}),
+            )?,
+            204, "quota-guard-rule",
+        )?;
+        expect(
+            quota_login(&pipeline, standby, &role, "invalid-synthetic-SID")?,
+            400, "quota-guard-real-hop-charge",
+        )?;
+
+        for variant in ["actual", "response", "clock", "inbound-scope"] {
+            let began = Instant::now();
+            let deadline = began + REQUEST_BUDGET;
+            let _scope = RequestDeadlineScope::enter(deadline);
+            let service = pipeline.services[standby].as_ref().ok_or("quota guard Service")?;
+            let mut service = lock_until(service, deadline).map_err(|_| "quota guard lock")?;
+            let (rejection, response, fingerprint, clock, now) =
+                quota_real_rejection_fixture(&mut service, &role)?;
+            let identity = service.current_state_identity().map_err(|_| "quota guard identity")?;
+            let generation = service.durable.as_ref().ok_or("quota guard durable")?.generation();
+            let floor = service.state.as_ref().ok_or("quota guard state")?
+                .auth.terminal_token_clock_floor().ok_or("quota guard precise floor")?;
+            let sequence = service.audit_sequence;
+            let response = if variant == "response" {
+                Response::ok(json!({"auth":{"client_token":"must-not-release"}}))
+            } else {
+                response
+            };
+            let changed_clock = if variant == "clock" {
+                Some(RequestClock::anchored(
+                    clock.admitted_at().duration_since_epoch(),
+                    clock.started() + Duration::from_nanos(1),
+                )?)
+            } else {
+                Some(clock)
+            };
+            let completion = (variant == "inbound-scope").then(|| {
+                crate::ha_forward_completion::CompletionScope::enter(
+                    Some([77; 32]), b"quota guard synthetic inbound scope", deadline,
+                    &service.state.as_ref().unwrap().cluster_id, standby as u64 + 1, false,
+                )
+            });
+            let completed = service.complete_standby_quota_rejection(
+                rejection, response, &fingerprint, now, changed_clock,
+            );
+            assert_eq!(completed.status, if variant == "actual" { 429 } else { 503 });
+            assert!(completed.body.get("auth").is_none());
+            assert!(completed.unwrapped_json.is_none());
+            assert!(completed.consistency_index.is_none());
+            assert!(!service.rate_limit_quotas.has_pending_ingress());
+            assert_eq!(service.audit_sequence, sequence + 1);
+            assert_eq!(service.current_state_identity().map_err(|_| "quota guard identity")?, identity);
+            assert_eq!(service.durable.as_ref().ok_or("quota guard durable")?.generation(), generation);
+            assert_eq!(service.state.as_ref().ok_or("quota guard state")?
+                .auth.terminal_token_clock_floor(), Some(floor));
+            if let Some(scope) = &completion {
+                assert!(scope.finish().is_none(), "a local rejection must not mint a peer receipt");
+            }
+            drop(completion);
+            assert!(Instant::now() < deadline, "quota guard original deadline");
+        }
+
+        // A real intervening Auth publication and authenticated catch-up make
+        // the earlier source unusable, even with its exact original clock/reply.
+        {
+            let deadline = Instant::now() + REQUEST_BUDGET;
+            let _scope = RequestDeadlineScope::enter(deadline);
+            let standby_service = pipeline.services[standby].as_ref().ok_or("quota source Service")?;
+            let (rejection, response, fingerprint, clock, now, original_identity) = {
+                let mut service = lock_until(standby_service, deadline)
+                    .map_err(|_| "quota source original lock")?;
+                let (proof, reply, fingerprint, clock, now) =
+                    quota_real_rejection_fixture(&mut service, &role)?;
+                let identity = service.current_state_identity().map_err(|_| "quota source identity")?;
+                (proof, reply, fingerprint, clock, now, identity)
+            };
+            expect(
+                pipeline.call(
+                    leader, "PUT", "sys/policies/acl/quota-source-change", pipeline.admin(),
+                    json!({"policy":"path \"secret/data/quota-guard\" { capabilities = [\"read\"] }"}),
+                )?,
+                204, "quota-source-real-Auth-change",
+            )?;
+            let mut service = lock_until(standby_service, deadline)
+                .map_err(|_| "quota source changed lock")?;
+            service.sync_from_ha_with_anchor(false).map_err(|_| "quota source changed catch-up")?;
+            let changed_identity = service.current_state_identity().map_err(|_| "quota changed identity")?;
+            assert_ne!(changed_identity, original_identity);
+            let generation = service.durable.as_ref().ok_or("quota changed durable")?.generation();
+            let floor = service.state.as_ref().ok_or("quota changed state")?.auth.terminal_token_clock_floor();
+            let completed = service.complete_standby_quota_rejection(
+                rejection, response, &fingerprint, now, Some(clock),
+            );
+            assert_eq!(completed.status, 503);
+            assert!(completed.body.get("auth").is_none() && completed.consistency_index.is_none());
+            assert_eq!(service.current_state_identity().map_err(|_| "quota changed identity")?, changed_identity);
+            assert_eq!(service.durable.as_ref().ok_or("quota changed durable")?.generation(), generation);
+            assert_eq!(service.state.as_ref().ok_or("quota changed state")?.auth.terminal_token_clock_floor(), floor);
+            assert!(Instant::now() < deadline, "source change must veto before original deadline");
+        }
+
+        // The ordinary precise-token terminal path still advances its durable
+        // observation; a local preauth refusal cannot weaken that path.
+        let before = pipeline.with_service(leader, |service| {
+            service.state.as_ref().and_then(|state| state.auth.terminal_token_clock_floor())
+                .ok_or_else(|| "ordinary precise floor absent".into())
+        })?;
+        let mut lookup = expect(
+            pipeline.call(leader, "GET", "auth/token/lookup-self", pipeline.admin(), json!({}))?,
+            200, "ordinary-precise-terminal-path-retained",
+        )?;
+        erase_json(&mut lookup.body);
+        let after = pipeline.with_service(leader, |service| {
+            service.state.as_ref().and_then(|state| state.auth.terminal_token_clock_floor())
+                .ok_or_else(|| "ordinary precise floor absent".into())
+        })?;
+        assert!(after > before, "ordinary token observation must still be durably committed");
+    }
+    Ok(())
+}

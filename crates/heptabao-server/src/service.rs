@@ -2798,6 +2798,7 @@ impl Service {
         #[cfg(not(feature = "fixture-native-v6-service"))]
         let native_auth_pending = false;
         if sdk_pending
+            || self.rate_limit_quotas.has_pending_ingress()
             || native_auth_pending
             || self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
@@ -3067,6 +3068,9 @@ impl Service {
             }
             self.bind_native_request_failure(&fingerprint, token_clock, admission_started, path);
         }
+        self.stage_quota_ingress(
+            &fingerprint, now, admission_started, token_clock, allow_forward,
+        );
         let response = self.handle_inner(RequestView {
             method,
             path,
@@ -3084,6 +3088,7 @@ impl Service {
         });
         crate::ha_forward_completion::diagnostic_response("route_complete", &response);
         erase_json(&mut body);
+        let standby_quota_rejection = self.rate_limit_quotas.take_standby_rejection();
         let database = self.pending_database_effect.take();
         let database_config = self.pending_database_config_effect.take();
         let database_rotation = self.pending_database_rotation_effect.take();
@@ -3160,6 +3165,7 @@ impl Service {
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
+            + usize::from(standby_quota_rejection.is_some())
             + usize::from(native_auth_expected)
             + usize::from(native_kv2_witness_expected)
             + usize::from(external_pki_no_effect.is_some())
@@ -3183,6 +3189,16 @@ impl Service {
                 token_clock,
                 Response::error(503, "multiple external effects staged for one request"),
             ));
+        }
+        if let Some(rejection) = standby_quota_rejection {
+            let response = self.complete_standby_quota_rejection(
+                rejection, response, &fingerprint, now, token_clock,
+            );
+            #[cfg(feature = "fixture-native-v6-service")]
+            {
+                self.native_request_binding = None;
+            }
+            return RequestExecution::Complete(response);
         }
         let effect = database
             .map(Box::new)
@@ -3337,6 +3353,7 @@ impl Service {
         request: RequestView<'_>,
         resume: Option<control_groups::ControlGroupResume>,
     ) -> Response {
+        let quota_ingress = self.rate_limit_quotas.take_ingress_entry();
         let logical_data = match crate::request_metadata::current(
             request.method,
             request.path,
@@ -3565,7 +3582,10 @@ impl Service {
                     // OpenBao applies its node-local HTTP bucket before
                     // forwarding, including attempts which forwarding rejects.
                     // The receiving active node independently charges its hop.
-                    if let Some(response) = self.rate_limit_quota_response(&request) {
+                    if let Some(response) = self.standby_rate_limit_quota_response(
+                        &request,
+                        if resumed_control_group { None } else { quota_ingress },
+                    ) {
                         return response;
                     }
                 }
@@ -4989,6 +5009,7 @@ impl Service {
             }
         }
         if admitted.auth.has_rate_limit_quota_state()
+            || admitted.auth.has_approle_no_default_policy()
             || admitted.engines.has_pki_acme_state()
             || admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
