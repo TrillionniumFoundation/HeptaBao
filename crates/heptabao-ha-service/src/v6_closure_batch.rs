@@ -81,7 +81,87 @@ fn parse(bytes: &[u8], transfer: bool) -> Result<Vec<(RecordObjectRef, &[u8])>, 
     Ok(parsed)
 }
 
+/// An empty subset is explicit success for already present leaves. The
+/// bounded payload otherwise carries each exact missing reference in order.
+fn missing_payload(references: &[RecordObjectRef]) -> Result<Vec<u8>, HaError> {
+    if references.is_empty() {
+        Ok(vec![0])
+    } else {
+        expected(references)
+    }
+}
+
+pub(super) fn parse_missing(
+    payload: &[u8],
+    requested: &[u8],
+) -> Result<Vec<RecordObjectRef>, HaError> {
+    let requested = parse(requested, false)?;
+    if payload == [0] {
+        return Ok(Vec::new());
+    }
+    let missing = parse(payload, false)?;
+    if missing.len() > requested.len()
+        || missing
+            .iter()
+            .any(|(reference, _)| !requested.iter().any(|(expected, _)| expected == reference))
+    {
+        return Err(HaError::InvalidFrame);
+    }
+    Ok(missing
+        .into_iter()
+        .map(|(reference, _)| reference)
+        .collect())
+}
+
 impl NativeV6ClosureReceiver {
+    pub(super) fn receive_ensure_batch(
+        &self,
+        state: &mut IncomingClosure,
+        admission: &NativeV6ClosureAdmission,
+        deadline: Instant,
+        payload: &[u8],
+    ) -> Result<Vec<u8>, HaError> {
+        let parsed = parse(payload, false)?;
+        let mut missing = Vec::with_capacity(parsed.len());
+        for (reference, _) in parsed {
+            let index = state.selected(&reference)?;
+            self.verify(admission, deadline)?;
+            let mut gate = || {
+                self.verify(admission, deadline)
+                    .map_err(|_| LocalV6BlobError::CorruptOrChanged)
+            };
+            let existing = self
+                .storage
+                .read_local_if_present_checked(&reference, &mut gate)
+                .map_err(|_| unknown())?;
+            let Some(ciphertext) = existing else {
+                // Only the initial guarded open may report missing. It grants
+                // no fsync bit. If a prior exact page was repeated, an observed
+                // absence also invalidates that transfer cache's old bit.
+                self.verify(admission, deadline)?;
+                if state.fsynced[index] {
+                    state.fsynced_count = state.fsynced_count.checked_sub(1).ok_or_else(unknown)?;
+                    state.fsynced[index] = false;
+                }
+                missing.push(reference);
+                continue;
+            };
+            // Preserve the original actual existing-file path: exact
+            // ciphertext/ref verification, held descriptor and directory
+            // identity, both real fsync barriers and terminal admission.
+            self.storage
+                .stage_received_replica_checked(&reference, &ciphertext, &mut gate)
+                .map_err(|_| unknown())?;
+            self.verify(admission, deadline)?;
+            if !state.fsynced[index] {
+                state.fsynced[index] = true;
+                state.fsynced_count += 1;
+            }
+        }
+        self.verify(admission, deadline)?;
+        missing_payload(&missing)
+    }
+
     pub(super) fn receive_batch(
         &self,
         state: &mut IncomingClosure,

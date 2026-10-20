@@ -1,5 +1,26 @@
 # Execute the original main native artifacts on X230
 
+## Current mount recovery profile
+
+The current host runner selects **18 groups and 58 cases**, including all three
+`service::native_auth::mount_tests::native_kv2_mount_` cases. The artifact
+controller now accepts that source-bound profile and retains support for the
+historical 17-group, 55-case profile. Its capsule, verification and executor
+summary use the denominator of the verified product source. A current profile
+must contain the exact mount selector, server owner and three-case count; a
+matching total with a substitute group is rejected. A 55-case capsule cannot be
+executed as the current 58-case profile or have its denominator relabeled.
+
+Use `NATIVE_LINUX_ARTIFACT58_20261019.template.json` for a new run, filling its
+source commit/tree, actual producer summary and capsule pins from observed
+artifacts. The producer must complete the full selected profile with
+`--build-server` before packaging. The existing pack/execute CLI, one-thread test
+execution and 1800-second command budget remain unchanged. The older template
+below and its recorded 55-case results retain their original cohort and meaning.
+This controller change adds no new physical run receipt by itself.
+
+## Retained original artifact procedure and evidence
+
 `native_linux_artifact_run.py` is an additional controller. It does not edit or invoke `native_candidate_host_run.py`, Cargo or rustc. Its `pack` subcommand runs on the actual Linux producer after the original host runner has completed. Its `execute` subcommand runs the transferred artifacts on the separately identified X230. Source commit/tree and original producer runner SHA remain explicit arguments; the actual transfer controller SHA is separately recorded. A later QA/controller commit must not relabel the product artifact cohort.
 
 ## Producer custody

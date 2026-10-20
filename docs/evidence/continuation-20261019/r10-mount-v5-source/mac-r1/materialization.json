@@ -1,0 +1,17 @@
+{
+  "base_source": {
+    "verified_at_utc": "2026-10-19T13:48:37.951015+00:00",
+    "commit": "e324563628ab3813dd31fde2f04da1279db8a80d",
+    "tree": "37e81cfad6955581622e492052cc17b4803598ce",
+    "verified_files": 3536
+  },
+  "candidate": {
+    "verified_at_utc": "2026-10-19T13:48:38.078083+00:00",
+    "commit": "3aea914b8e055fe40add3d75b489552535bebccd",
+    "tree": "b75d402268697bea133402a63372e5d7813c6ac5",
+    "verified_files": 3536
+  },
+  "changed_paths": [
+    "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+  ]
+}

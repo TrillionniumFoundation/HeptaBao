@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy frozen native artifacts on their producer; run exact55 on another Linux.
+"""Copy frozen native artifacts on their producer; run their exact Linux profile.
 
 Neither subcommand invokes Cargo/rustc or modifies an existing run/source.
 The producer and executor, source cohort, byte identities, native loader and
@@ -34,6 +34,8 @@ COMMAND_SECONDS = 1800
 PROFILE_PATH = "qa/openbao-acceptance/native_candidate_host_run.py"
 ROLES = {"server": ("heptabao-server", "heptabao_server"),
          "peer": ("heptabao-ha-service", "heptabao_ha_service")}
+NATIVE_KV2_MOUNT_GROUP = [
+    "native-kv2-mount", "server", "service::native_auth::mount_tests::native_kv2_mount_", 3]
 RUNTIME_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
                "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"}
 
@@ -133,6 +135,31 @@ def new_root(path):
     sync_directory(path.parent)
 
 
+def profile_test_count(groups):
+    """Keep historical 55 receipts distinct from the current 58-case profile.
+
+    The source manifest and runner digest bind the full selector inventory.
+    The added mount group must be exact; matching a total alone cannot replace
+    its three cases with some other group or relabel an older capsule.
+    """
+    need(isinstance(groups, list) and all(
+        isinstance(row, list) and len(row) == 4
+        and isinstance(row[0], str) and bool(row[0])
+        and isinstance(row[1], str) and row[1] in ROLES
+        and isinstance(row[2], str) and bool(row[2])
+        and type(row[3]) is int and row[3] > 0 for row in groups),
+        "valid_native_artifact_group_profile_required")
+    need(len({row[0] for row in groups}) == len(groups)
+         and len({(row[1], row[2]) for row in groups}) == len(groups),
+         "unique_native_artifact_groups_required")
+    count = sum(row[3] for row in groups)
+    mounts = [row for row in groups if row[0] == NATIVE_KV2_MOUNT_GROUP[0]]
+    legacy = len(groups) == 17 and count == 55 and not mounts
+    current = len(groups) == 18 and count == 58 and mounts == [NATIVE_KV2_MOUNT_GROUP]
+    need(legacy or current, "exact_legacy55_or_mount58_profile_required")
+    return count
+
+
 def load_profile(source, manifest_path, commit, tree, runner_sha256):
     need(exact_hex(commit, 40) and exact_hex(tree, 40) and exact_hex(runner_sha256, 64), "exact_source_pins_required")
     need(source.is_absolute() and source.resolve(strict=True) == source
@@ -158,10 +185,7 @@ def load_profile(source, manifest_path, commit, tree, runner_sha256):
     finally:
         sys.dont_write_bytecode = prior
     groups = [list(row) for row in module.GROUPS]
-    need(len(groups) == 17 and sum(row[3] for row in groups) == 55
-         and len({row[0] for row in groups}) == 17
-         and all(row[1] in ROLES and type(row[3]) is int and row[3] > 0 for row in groups),
-         "exact_seventeen_group_fiftyfive_profile_required")
+    profile_test_count(groups)
     return module, manifest, raw, groups
 
 
@@ -329,6 +353,7 @@ def producer_inventory(summary, directory, target, profile, groups):
 def pack(args):
     profile, manifest, manifest_raw, groups = load_profile(args.source, args.manifest, args.source_commit,
                                                           args.source_tree, args.producer_runner_sha256)
+    required_test_count = profile_test_count(groups)
     raw = read_owned(args.summary, 16 * 1024 ** 2)
     need(sha(raw) == args.summary_sha256, "exact_producer_summary_required")
     summary = json.loads(raw)
@@ -390,7 +415,7 @@ def pack(args):
                    "producer_compiler_resource_profile": summary.get("compiler_resource_profile"),
                    "producer_source_before_pack": before, "producer_source_after_pack": after,
                    "producer_target_shared_lock_held": True, "groups": groups, "selections": selections,
-                   "required_test_count": 55, "original_command_deadline_seconds": COMMAND_SECONDS,
+                   "required_test_count": required_test_count, "original_command_deadline_seconds": COMMAND_SECONDS,
                    "artifacts": actual, "files": inventory, "packer_sha256": sha(Path(__file__).read_bytes()),
                    "compiler_invocations_by_pack": 0, "executor_tests_performed_by_pack": False,
                    "production_authority": False}
@@ -398,13 +423,14 @@ def pack(args):
         sync_directory(args.output)
         print(json.dumps({"status": "actual_artifacts_copied", "capsule": str(args.output / "capsule.json"),
                           "capsule_sha256": sha((args.output / "capsule.json").read_bytes()),
-                          "required_tests": 55, "executor_tests_performed": False}), flush=True)
+                          "required_tests": required_test_count, "executor_tests_performed": False}), flush=True)
         return 0
     finally:
         os.close(descriptor)
 
 
 def verify_capsule(root, expected_digest, commit, tree, runner, groups):
+    required_test_count = profile_test_count(groups)
     need(root.is_absolute() and root.resolve(strict=True) == root and root.stat().st_uid == os.geteuid()
          and not root.stat().st_mode & 0o077, "canonical_private_capsule_required")
     raw = read_owned(root / "capsule.json", 16 * 1024 ** 2)
@@ -413,7 +439,8 @@ def verify_capsule(root, expected_digest, commit, tree, runner, groups):
     need(value.get("schema") == "heptabao.native-linux-artifact-capsule.v1"
          and value.get("source_commit") == commit and value.get("source_tree") == tree
          and value.get("producer_runner_sha256") == runner and value.get("groups") == groups
-         and value.get("required_test_count") == 55 and value.get("original_command_deadline_seconds") == 1800
+         and value.get("required_test_count") == required_test_count
+         and value.get("original_command_deadline_seconds") == COMMAND_SECONDS
          and value.get("producer_role") == "main" and value.get("producer_target_shared_lock_held") is True
          and value.get("production_authority") is False, "transferred_capsule_profile_mismatch")
     expected = {}
@@ -620,7 +647,7 @@ def load_source_helper(source, manifest, filename, label):
 
 def probe_actual_server(source, manifest, binary, output, summary, save):
     # Reuse the cohort's real CA/leaf and complete-health helpers. This small
-    # process check remains distinct from the unchanged 55 libtest cases.
+    # process check remains distinct from the source-bound libtest cases.
     base, base_identity = load_source_helper(source, manifest, "ha_multihost_live.py", "heptabao_artifact_fixture_base")
     probe, probe_identity = load_source_helper(source, manifest, "tls_complete_http_probe.py", "heptabao_artifact_tls_probe")
     root = output / "server-fixture"
@@ -698,6 +725,7 @@ def executor_host():
 def execute(args):
     profile, manifest, manifest_raw, groups = load_profile(args.source, args.manifest, args.source_commit,
                                                           args.source_tree, args.producer_runner_sha256)
+    required_test_count = profile_test_count(groups)
     need(platform.node() == args.expected_executor_hostname, "actual_executor_hostname_mismatch")
     capsule, original_files = verify_capsule(args.capsule, args.capsule_sha256, args.source_commit,
                                               args.source_tree, args.producer_runner_sha256, groups)
@@ -716,7 +744,7 @@ def execute(args):
                "producer_role": "main", "producer_hostname": capsule["producer_hostname"],
                "producer_original_status": capsule["producer_original_status"], "producer_summary_sha256": capsule["producer_summary_sha256"],
                "executor_role": "x230", "executor_host": executor_host(), "compiled_on_executor": False,
-               "compiler_invocations_on_executor": 0, "required_test_count": 55, "selected_groups": groups,
+               "compiler_invocations_on_executor": 0, "required_test_count": required_test_count, "selected_groups": groups,
                "original_command_deadline_seconds": COMMAND_SECONDS, "commands": [], "tests": [],
                "actual_executor_abi": {}, "production_authority": False, "physical_lan_fault_validation_performed": False,
                "real_credential_validation_performed": False, "full_openbao_271_replacement_proven": False}
@@ -781,7 +809,7 @@ def execute(args):
                        actual_passed_test_count=sum((row.get("observed_test_result") or {}).get("passed", 0) for row in summary["tests"]))
         save()
     print(json.dumps({"status": summary["status"], "summary": str(args.output / "summary.json"),
-                      "actual_passed_test_count": summary["actual_passed_test_count"], "required_test_count": 55,
+                      "actual_passed_test_count": summary["actual_passed_test_count"], "required_test_count": required_test_count,
                       "compiled_on_executor": False}), flush=True)
     return 0 if passed else 1
 

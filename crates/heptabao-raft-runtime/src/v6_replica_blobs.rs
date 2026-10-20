@@ -244,6 +244,38 @@ impl LocalV6BlobStage {
         Self::read_checked(&mut file, reference)
     }
 
+    /// Distinguish a genuinely absent initial guarded leaf from a failed read.
+    /// A present leaf is then read through the existing checked reader. Any
+    /// subsequent open, identity, content or gate error remains an error, even
+    /// if it is NotFound. This is no fsync receipt or remote publication grant.
+    pub fn read_local_if_present_checked(
+        &self,
+        reference: &RecordObjectRef,
+        gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+    ) -> Result<Option<Vec<u8>>, LocalV6BlobError> {
+        gate()?;
+        self.directory.verify()?;
+        let destination = Self::leaf(reference)?;
+        gate()?;
+        let observed = self.directory.open_file(&destination, FileAccess::Read);
+        gate()?;
+        match observed {
+            Ok(file) => drop(file),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                self.directory.verify()?;
+                gate()?;
+                return Ok(None);
+            }
+            Err(error) => return Err(error.into()),
+        }
+        // Do not catch NotFound from this second, full checked read. A leaf
+        // disappearing after the initial observation is not a missing reply.
+        let bytes = self.read_local_checked(reference, gate)?;
+        self.directory.verify()?;
+        gate()?;
+        Ok(Some(bytes))
+    }
+
     /// Read one exact local ciphertext under the original caller gate. The
     /// same gate surrounds opening, metadata, seeking and every actual read,
     /// including short reads and the final EOF check. Each read is at most
@@ -432,6 +464,165 @@ mod tests {
         ));
         drop(store);
         fs::remove_dir_all(root)?;
+        Ok(())
+    }
+
+    #[test]
+    fn missing_probe_separates_initial_absence_from_corruption_and_cold_reads()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = new_root()?;
+        let ciphertext = vec![0x2d_u8; 128 * 1024];
+        let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.clone())?;
+        let reference = object.reference().clone();
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        assert!(
+            store
+                .read_local_if_present_checked(&reference, &mut || Ok(()))?
+                .is_none()
+        );
+        assert_eq!(fs::read_dir(&root)?.count(), 0);
+        let receipt = store.stage_local_checked(&ciphertext, &mut || Ok(()))?;
+        assert_eq!(receipt.reference(), &reference);
+        assert!(
+            store
+                .read_local_if_present_checked(&reference, &mut || Ok(()))?
+                .is_some_and(|bytes| bytes == ciphertext)
+        );
+        drop(store);
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        assert!(
+            store
+                .read_local_if_present_checked(&reference, &mut || Ok(()))?
+                .is_some_and(|bytes| bytes == ciphertext)
+        );
+        let leaf = root.join(LocalV6BlobStage::leaf(&reference)?);
+        let corrupted = vec![0x2e_u8; ciphertext.len()];
+        fs::write(&leaf, &corrupted)?;
+        assert!(matches!(
+            store.read_local_if_present_checked(&reference, &mut || Ok(())),
+            Err(LocalV6BlobError::CorruptOrChanged)
+        ));
+        assert!(
+            fs::read(&leaf)? == corrupted,
+            "probe must not repair corrupt ciphertext"
+        );
+        drop(store);
+        fs::remove_dir_all(root)?;
+        Ok(())
+    }
+
+    #[test]
+    fn missing_probe_rejects_late_disappearance_directory_swap_and_original_gate()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = new_root()?;
+        let store = LocalV6BlobStage::open_existing(&root)?;
+        let ciphertext = vec![0x3c_u8; 128 * 1024];
+        let reference = store
+            .stage_local_checked(&ciphertext, &mut || Ok(()))?
+            .reference()
+            .clone();
+        let leaf = root.join(LocalV6BlobStage::leaf(&reference)?);
+        let mut observations = 0usize;
+        // The third original-gate callback follows the successful initial
+        // guarded open. Remove the real owned leaf in exactly that window.
+        let result = store.read_local_if_present_checked(&reference, &mut || {
+            observations += 1;
+            if observations == 3 {
+                fs::remove_file(&leaf)?;
+            }
+            Ok(())
+        });
+        assert!(observations >= 3);
+        assert!(matches!(result, Err(LocalV6BlobError::Io(ref error))
+            if error.kind() == io::ErrorKind::NotFound));
+        assert!(!leaf.exists());
+
+        store.stage_local_checked(&ciphertext, &mut || Ok(()))?;
+        let original = std::time::Instant::now();
+        assert!(
+            store
+                .read_local_if_present_checked(&reference, &mut || {
+                    if std::time::Instant::now() >= original {
+                        Err(LocalV6BlobError::CorruptOrChanged)
+                    } else {
+                        Ok(())
+                    }
+                })
+                .is_err()
+        );
+        assert!(fs::read(&leaf)? == ciphertext);
+
+        let retained = root.with_file_name(format!(
+            "{}-retained",
+            root.file_name()
+                .ok_or("fixture root absent")?
+                .to_string_lossy()
+        ));
+        fs::rename(&root, &retained)?;
+        fs::create_dir(&root)?;
+        fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
+        // ExclusiveDirectory explicitly retains its original descriptor and
+        // writer lock across a rename. The forbidden directory swap is using
+        // the replacement pathname as authority, not retaining the old inode.
+        // Exercise both directions with real, distinct same-name leaves.
+        use std::os::unix::fs::MetadataExt;
+        let held_identity = store.directory.identity();
+        let retained_metadata = fs::metadata(&retained)?;
+        let replacement_metadata = fs::metadata(&root)?;
+        assert_eq!(held_identity.device(), retained_metadata.dev());
+        assert_eq!(held_identity.inode(), retained_metadata.ino());
+        assert_ne!(
+            (held_identity.device(), held_identity.inode()),
+            (replacement_metadata.dev(), replacement_metadata.ino())
+        );
+        assert!(matches!(
+            LocalV6BlobStage::open_existing(&retained),
+            Err(LocalV6BlobError::Guard(DirectoryGuardError::WriterBusy))
+        ));
+        let retained_leaf = retained.join(LocalV6BlobStage::leaf(&reference)?);
+        let replacement_leaf = root.join(LocalV6BlobStage::leaf(&reference)?);
+        let hostile_replacement = vec![0x4d_u8; ciphertext.len()];
+        fs::write(&replacement_leaf, &hostile_replacement)?;
+        fs::set_permissions(&replacement_leaf, fs::Permissions::from_mode(0o600))?;
+        assert!(
+            store
+                .read_local_if_present_checked(&reference, &mut || Ok(()))?
+                .is_some_and(|bytes| bytes == ciphertext),
+            "a renamed owner reads only its retained exact ciphertext"
+        );
+        assert!(fs::read(&replacement_leaf)? == hostile_replacement);
+        assert!(fs::read(&retained_leaf)? == ciphertext);
+
+        // Initial absence is relative to the held directory even if the new
+        // pathname contains a valid copy. Never fall back to that new owner.
+        fs::write(&replacement_leaf, &ciphertext)?;
+        fs::remove_file(&retained_leaf)?;
+        assert!(
+            store
+                .read_local_if_present_checked(&reference, &mut || Ok(()))?
+                .is_none()
+        );
+        assert!(!retained_leaf.exists());
+        assert!(fs::read(&replacement_leaf)? == ciphertext);
+
+        // A real fsynced stage still publishes into the retained directory.
+        // Corruption there remains an error, never a missing reply or a read
+        // from the valid replacement. The probe must not repair either leaf.
+        store.stage_local_checked(&ciphertext, &mut || Ok(()))?;
+        assert!(fs::read(&retained_leaf)? == ciphertext);
+        let corrupt_retained = vec![0x5e_u8; ciphertext.len()];
+        fs::write(&retained_leaf, &corrupt_retained)?;
+        assert!(matches!(
+            store.read_local_if_present_checked(&reference, &mut || Ok(())),
+            Err(LocalV6BlobError::CorruptOrChanged)
+        ));
+        assert!(fs::read(&retained_leaf)? == corrupt_retained);
+        assert!(fs::read(&replacement_leaf)? == ciphertext);
+        assert_eq!(fs::read_dir(&root)?.count(), 1);
+        store.directory.verify()?;
+        drop(store);
+        fs::remove_dir_all(root)?;
+        fs::remove_dir_all(retained)?;
         Ok(())
     }
 

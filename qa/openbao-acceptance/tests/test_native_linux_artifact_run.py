@@ -1,4 +1,6 @@
 """Artifact custody negatives, not an actual HeptaBao build or X230 run."""
+import ast
+import copy
 import hashlib
 import importlib.util
 import json
@@ -20,6 +22,37 @@ def put(path, raw):
     path.write_bytes(raw if isinstance(raw, bytes) else (json.dumps(raw) + "\n").encode())
     path.chmod(0o600)
     return lane.sha(path.read_bytes())
+
+
+def current_groups():
+    path = SCRIPT.with_name("native_candidate_host_run.py")
+    for node in ast.parse(path.read_bytes()).body:
+        if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == "GROUPS"
+                                                for target in node.targets):
+            return [list(row) for row in ast.literal_eval(node.value)]
+    raise AssertionError("current host runner must declare its group inventory")
+
+
+def synthetic_capsule(root, groups):
+    """Small metadata-only capsule; none of these bytes is a native executable."""
+    files, artifacts = [], {}
+    for name in ("server", "peer", "server-bin", "producer-summary.json", "product-source-manifest.json"):
+        path = root / name
+        digest = put(path, ("synthetic capsule parser bytes for " + name).encode())
+        mode = 0o700 if name in ("server", "peer", "server-bin") else 0o600
+        path.chmod(mode)
+        row = {"name": name, "sha256": digest, "bytes": path.stat().st_size, "mode": mode}
+        files.append(row)
+        if mode == 0o700:
+            artifacts[name] = {key: row[key] for key in ("name", "sha256", "bytes")}
+    return {"schema": "heptabao.native-linux-artifact-capsule.v1", "source_commit": "1" * 40,
+            "source_tree": "2" * 40, "producer_runner_sha256": "3" * 64, "groups": groups,
+            "required_test_count": sum(row[3] for row in groups),
+            "original_command_deadline_seconds": 1800, "producer_role": "main",
+            "producer_target_shared_lock_held": True, "production_authority": False,
+            "files": files, "artifacts": artifacts,
+            "producer_summary_sha256": lane.sha((root / "producer-summary.json").read_bytes()),
+            "product_manifest_sha256": lane.sha((root / "product-source-manifest.json").read_bytes())}
 
 
 def original_inventory(root):
@@ -57,6 +90,66 @@ def original_inventory(root):
 
 
 class ArtifactCustodyRegression(unittest.TestCase):
+    def test_current_source_profile_loads_58_and_retained_legacy_source_loads_55(self):
+        groups = current_groups()
+        self.assertEqual((len(groups), sum(row[3] for row in groups)), (18, 58))
+        legacy = [row for row in groups if row[0] != "native-kv2-mount"]
+        for count, profile in ((58, SCRIPT.with_name("native_candidate_host_run.py").read_bytes()),
+                               (55, ("GROUPS = " + repr(legacy) + "\n").encode())):
+            with self.subTest(count=count), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                source = root / "source"
+                source.mkdir(mode=0o700)
+                runner = source / lane.PROFILE_PATH
+                runner.parent.mkdir(parents=True)
+                digest = put(runner, profile)
+                manifest = root / "manifest.json"
+                blob = hashlib.sha1(b"blob " + str(len(profile)).encode() + b"\0" + profile).hexdigest()
+                put(manifest, {"commit": "1" * 40, "tree": "2" * 40,
+                               "files": [{"path": lane.PROFILE_PATH, "sha": blob}]})
+                _, _, _, actual = lane.load_profile(source, manifest, "1" * 40, "2" * 40, digest)
+                self.assertEqual(lane.profile_test_count(actual), count)
+                self.assertFalse(list(source.rglob("__pycache__")))
+
+    def test_58_profile_cannot_replace_mount_cases_with_another_selector_or_count(self):
+        for mode in ("selector", "owner", "count", "label", "duplicate", "malformed"):
+            with self.subTest(mode=mode):
+                groups = copy.deepcopy(current_groups())
+                mount = next(row for row in groups if row[0] == "native-kv2-mount")
+                if mode == "selector":
+                    mount[2] = "unrelated_three_tests_"
+                elif mode == "owner":
+                    mount[1] = "peer"
+                elif mode == "count":
+                    mount[3] = 2
+                    groups[0][3] += 1  # Keep 58 total while dropping one mount case.
+                elif mode == "label":
+                    mount[0] = "unrelated-three-cases"
+                elif mode == "duplicate":
+                    mount[0] = groups[0][0]
+                else:
+                    mount[1] = []
+                with self.assertRaises(lane.Refusal):
+                    lane.profile_test_count(groups)
+
+    def test_capsule_denominator_cannot_relabel_55_as_58_or_omit_current_mount_cases(self):
+        current = current_groups()
+        legacy = [row for row in current if row[0] != "native-kv2-mount"]
+        for groups in (legacy, current):
+            with self.subTest(count=sum(row[3] for row in groups)), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                capsule = synthetic_capsule(root, groups)
+                digest = put(root / "capsule.json", capsule)
+                actual, _ = lane.verify_capsule(root, digest, "1" * 40, "2" * 40, "3" * 64, groups)
+                self.assertEqual(actual["required_test_count"], sum(row[3] for row in groups))
+                other = current if groups == legacy else legacy
+                with self.assertRaisesRegex(lane.Refusal, "transferred_capsule_profile_mismatch"):
+                    lane.verify_capsule(root, digest, "1" * 40, "2" * 40, "3" * 64, other)
+                capsule["required_test_count"] = sum(row[3] for row in other)
+                digest = put(root / "capsule.json", capsule)
+                with self.assertRaisesRegex(lane.Refusal, "transferred_capsule_profile_mismatch"):
+                    lane.verify_capsule(root, digest, "1" * 40, "2" * 40, "3" * 64, groups)
+
     def test_compile_artifact_requires_one_exact_absolute_target_path(self):
         target = Path("/owned-synthetic/target")
         path = target / "debug/deps/heptabao_server-1234567890abcdef"

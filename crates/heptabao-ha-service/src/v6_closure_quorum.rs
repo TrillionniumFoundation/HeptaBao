@@ -262,9 +262,7 @@ impl NativeV6ClosureReceiver {
             .get(actual_peer)
             .copied()
             .ok_or(HaError::UnknownPeer)?;
-        if request.target != self.raft.id()
-            || sender != request.binding.leader
-        {
+        if request.target != self.raft.id() || sender != request.binding.leader {
             return Err(HaError::PeerAuthenticationFailed);
         }
         let admission = self
@@ -276,7 +274,9 @@ impl NativeV6ClosureReceiver {
             .map_err(|_| unknown())?;
         if Binding::observed(&admission) != request.binding
             || admission.leader_id() != sender
-            || !admission.enrollment().same_peer_configuration(&self.initial_enrollment)
+            || !admission
+                .enrollment()
+                .same_peer_configuration(&self.initial_enrollment)
         {
             return Err(HaError::PeerAuthenticationFailed);
         }
@@ -361,6 +361,13 @@ impl NativeV6ClosureReceiver {
                     request.payload,
                     request.kind == Kind::StageBatch,
                 )?
+            }
+            Kind::EnsureBatch => {
+                let state = incoming
+                    .as_mut()
+                    .filter(|state| state.binding == request.binding)
+                    .ok_or(HaError::InvalidFrame)?;
+                self.receive_ensure_batch(state, &admission, deadline, request.payload)?
             }
             Kind::Finalize => {
                 if !request.payload.is_empty() {
@@ -611,7 +618,7 @@ fn collect(
     })
 }
 
-async fn exchange(
+async fn exchange_reply(
     transport: &MutualTlsPeerTransport,
     route: &NodeId,
     target: u64,
@@ -621,7 +628,7 @@ async fn exchange(
     payload: impl FnOnce() -> Result<Vec<u8>, HaError>,
     expected: &[u8],
     deadline: Instant,
-) -> Result<(), HaError> {
+) -> Result<Vec<RecordObjectRef>, HaError> {
     check_deadline(deadline)?;
     let capacity = CLOSURE_FRAME_CAPACITY
         .get_or_init(|| Arc::new(Semaphore::new(MAX_INFLIGHT_CLOSURE_FRAMES)))
@@ -664,7 +671,12 @@ async fn exchange(
                 }
                 // This private response came from the above actual pinned socket,
                 // and must echo its unpredictable nonce and complete binding.
-                wire::verify_reply(&request, &response, &expected)
+                if kind == Kind::EnsureBatch {
+                    wire::verify_missing_reply(&request, &response, &expected)
+                } else {
+                    wire::verify_reply(&request, &response, &expected)?;
+                    Ok(Vec::new())
+                }
             })();
             let _ = send.send(result);
         })
@@ -677,6 +689,29 @@ async fn exchange(
     check_deadline(deadline)?;
     drop(cancel);
     result
+}
+
+// Keep the original exact-payload exchange interface for every existing
+// frame kind, including reconciliation and final whole-closure custody.
+async fn exchange(
+    transport: &MutualTlsPeerTransport,
+    route: &NodeId,
+    target: u64,
+    pin: [u8; 32],
+    binding: &Binding,
+    kind: Kind,
+    payload: impl FnOnce() -> Result<Vec<u8>, HaError>,
+    expected: &[u8],
+    deadline: Instant,
+) -> Result<(), HaError> {
+    if kind == Kind::EnsureBatch {
+        return Err(HaError::InvalidFrame);
+    }
+    exchange_reply(
+        transport, route, target, pin, binding, kind, payload, expected, deadline,
+    )
+    .await
+    .map(|_| ())
 }
 
 async fn transfer_one(
@@ -707,24 +742,57 @@ async fn transfer_one(
     }
     for references in references.chunks(batch::OBJECTS) {
         check_deadline(deadline)?;
-        let expected = batch::expected(references)?;
-        let kind = if transfer {
-            Kind::StageBatch
+        if transfer {
+            let requested = batch::expected(references)?;
+            let missing = exchange_reply(
+                transport,
+                route,
+                target,
+                pin,
+                binding,
+                Kind::EnsureBatch,
+                || Ok(requested.clone()),
+                &requested,
+                deadline,
+            )
+            .await?;
+            check_deadline(deadline)?;
+            if missing.is_empty() {
+                continue;
+            }
+            // This exact authenticated response is the sole permission to
+            // transfer a subset. Lost ACKs, corrupt leaves and stale admission
+            // return above; none is converted into an automatic payload retry.
+            let expected = batch::expected(&missing)?;
+            exchange(
+                transport,
+                route,
+                target,
+                pin,
+                binding,
+                Kind::StageBatch,
+                || batch::payload(source, &missing, true, deadline),
+                &expected,
+                deadline,
+            )
+            .await?;
         } else {
-            Kind::FsyncExistingBatch
-        };
-        exchange(
-            transport,
-            route,
-            target,
-            pin,
-            binding,
-            kind,
-            || batch::payload(source, references, transfer, deadline),
-            &expected,
-            deadline,
-        )
-        .await?;
+            // Reconciliation remains fsync-only and fails if any leaf is
+            // absent. It never borrows the new missing-transfer permission.
+            let expected = batch::expected(references)?;
+            exchange(
+                transport,
+                route,
+                target,
+                pin,
+                binding,
+                Kind::FsyncExistingBatch,
+                || batch::payload(source, references, false, deadline),
+                &expected,
+                deadline,
+            )
+            .await?;
+        }
     }
     exchange(
         transport,

@@ -21,6 +21,7 @@ pub(super) enum Kind {
     Finalize = 4,
     StageBatch = 5,
     FsyncExistingBatch = 6,
+    EnsureBatch = 7,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -143,6 +144,7 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Request<'_>, HaError> {
         4 => Kind::Finalize,
         5 => Kind::StageBatch,
         6 => Kind::FsyncExistingBatch,
+        7 => Kind::EnsureBatch,
         _ => return Err(HaError::InvalidFrame),
     };
     let intent = NativeV6CommitIntent::decode(&take::<INTENT_BYTES>(bytes, &mut at)?)
@@ -203,6 +205,29 @@ pub(super) fn verify_reply(
         return Err(HaError::OutcomeUnknown);
     }
     Ok(())
+}
+
+/// Only a response from the original pinned socket reaches this decoder.
+/// Missing refs are bound to this exact request nonce, target, kind, intent,
+/// full LogIds and requested batch. Unknown/malformed replies never authorize
+/// sending payloads or manufacture a final durability acknowledgement.
+pub(super) fn verify_missing_reply(
+    request: &[u8],
+    received: &[u8],
+    expected_batch: &[u8],
+) -> Result<Vec<RecordObjectRef>, HaError> {
+    let parsed = parse(request).map_err(|_| HaError::OutcomeUnknown)?;
+    if parsed.kind != Kind::EnsureBatch
+        || parsed.payload != expected_batch
+        || received.len() < HEADER_BYTES + 1
+        || received.len() > HEADER_BYTES + batch::MAX_ACK
+        || received.get(..5) != Some(REPLY_MAGIC.as_slice())
+        || received.get(5..HEADER_BYTES) != request.get(5..HEADER_BYTES)
+    {
+        return Err(HaError::OutcomeUnknown);
+    }
+    batch::parse_missing(&received[HEADER_BYTES..], expected_batch)
+        .map_err(|_| HaError::OutcomeUnknown)
 }
 
 pub(super) fn reference_payload(reference: &RecordObjectRef) -> Result<Vec<u8>, HaError> {

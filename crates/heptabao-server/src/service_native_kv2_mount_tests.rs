@@ -21,7 +21,21 @@ pub(super) fn after_actual_mount_audit(service: &mut Service) {
     // publication result, timer, response or audit success to the outer request.
     let hook = AFTER_MOUNT_AUDIT.with(|slot| slot.borrow_mut().take());
     if let Some(hook) = hook {
+        // This test interleaves a second admitted request after the first
+        // request's real publication and audit. Keep the first request's
+        // failure bookkeeping off the dispatch slot during that interleaving;
+        // ordinary entry correctly refuses a recursively active dispatch.
+        // The original delivery capsule, Actor, clock, deadline and checkpoint
+        // stay owned by complete_native_auth_delivery and are never replaced.
+        assert!(service.native_failure_notice.is_none());
+        let original_binding = service.native_request_binding.take();
+        assert!(original_binding.is_some());
+        assert!(service.pending_native_auth_delivery.is_none());
         hook(service);
+        assert!(service.native_request_binding.is_none());
+        assert!(service.native_failure_notice.is_none());
+        assert!(service.pending_native_auth_delivery.is_none());
+        service.native_request_binding = original_binding;
     }
 }
 
@@ -175,6 +189,35 @@ fn activated_empty() -> TestResult<(Root, Service, Zeroizing<String>, Zeroizing<
         .status,
         200
     );
+    // Fresh initialization is deliberately V4 and has no implicit mounts.
+    // Native activation consumes an authenticated V5 source. Establish that
+    // source through two ordinary, durable registry mutations, then retire the
+    // only KV1 mount before activation. No KV2 graph or secret is pre-seeded.
+    assert!(service.record_root.is_none());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/native-source-bootstrap",
+            &root,
+            json!({"type":"kv","options":{"version":"1"},"cas_revision":0})
+        )
+        .status,
+        204
+    );
+    assert!(service.record_root.is_some());
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/mounts/native-source-bootstrap",
+            &root,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert!(service.native_root.is_none());
     assert_eq!(
         call(
             &mut service,

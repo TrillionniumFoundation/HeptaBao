@@ -1,0 +1,30 @@
+{
+  "base_before": {
+    "verified_at_utc": "2026-10-19T14:01:47.761077+00:00",
+    "commit": "e324563628ab3813dd31fde2f04da1279db8a80d",
+    "tree": "37e81cfad6955581622e492052cc17b4803598ce",
+    "verified_files": 3536
+  },
+  "base_after": {
+    "verified_at_utc": "2026-10-19T14:01:48.373640+00:00",
+    "commit": "e324563628ab3813dd31fde2f04da1279db8a80d",
+    "tree": "37e81cfad6955581622e492052cc17b4803598ce",
+    "verified_files": 3536
+  },
+  "candidate": {
+    "verified_at_utc": "2026-10-19T14:01:48.497730+00:00",
+    "commit": "f4603486e77771beeec982610bf1a6f8e4e810b8",
+    "tree": "afce15ab6476fb0c0ad2500d39da98c2e9ea7406",
+    "verified_files": 3536
+  },
+  "changed_paths": [
+    "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+  ],
+  "production_changes": false,
+  "rustfmt": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "test_profile": "original three native KV2 mount cases; original 15-second requests; original 1800-second command deadline"
+}

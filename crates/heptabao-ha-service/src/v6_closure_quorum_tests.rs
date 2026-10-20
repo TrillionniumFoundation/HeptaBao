@@ -1027,3 +1027,422 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
     runtime.block_on(shutdown_nodes(nodes, &router))?;
     cold_result
 }
+
+// These observations are test-owned projections of frames that already passed
+// actual pinned mTLS. They never construct an authenticated frame or a quorum.
+#[derive(Clone)]
+struct MissingFrameObservation {
+    operation: [u8; 32],
+    kind: Kind,
+    payload: Vec<u8>,
+}
+
+struct ObservedMissingReceiver {
+    endpoint: TlsPeerEndpoint,
+    observations: Arc<Mutex<Vec<MissingFrameObservation>>>,
+    fault: Arc<AtomicU64>,
+    stop: Arc<AtomicBool>,
+    worker: Option<thread::JoinHandle<()>>,
+}
+
+impl ObservedMissingReceiver {
+    fn start(
+        node: Arc<ProcessRaftNode>,
+        runtime: Handle,
+        storage: Arc<LocalV6BlobStage>,
+        enrollment: &NativeV6PeerEnrollment,
+        server: Arc<ServerConfig>,
+    ) -> TestResult<Self> {
+        let receiver = NativeV6ClosureReceiver::new(node, runtime, storage, enrollment)?;
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        listener.set_nonblocking(true)?;
+        let endpoint = TlsPeerEndpoint::new(listener.local_addr()?, "localhost")?;
+        let observations = Arc::new(Mutex::new(Vec::new()));
+        let seen = observations.clone();
+        let fault = Arc::new(AtomicU64::new(0));
+        let active_fault = fault.clone();
+        let stop = Arc::new(AtomicBool::new(false));
+        let stopped = stop.clone();
+        let worker = thread::spawn(move || {
+            while !stopped.load(Ordering::Acquire) {
+                let _ = serve_one_mtls_authenticated_peer_frame(
+                    &listener,
+                    server.clone(),
+                    &receiver.pinned,
+                    Duration::from_secs(4),
+                    false,
+                    |frame| {
+                        let observation = {
+                            let parsed = wire::parse(frame.payload())?;
+                            MissingFrameObservation {
+                                operation: parsed.binding.intent.operation_digest,
+                                kind: parsed.kind,
+                                payload: parsed.payload.to_vec(),
+                            }
+                        };
+                        let kind = observation.kind;
+                        seen.lock().map_err(|_| unknown())?.push(observation);
+                        // Execute the actual receiver and all filesystem/intent
+                        // gates BEFORE a test-only lost or malformed reply.
+                        let mut response = receiver.handle_authenticated(frame)?;
+                        if kind == Kind::EnsureBatch {
+                            match active_fault.swap(0, Ordering::AcqRel) {
+                                0 => {}
+                                1 => return Err(unknown()),
+                                2 => {
+                                    *response
+                                        .get_mut(wire::HEADER_BYTES - 1)
+                                        .ok_or_else(unknown)? ^= 1;
+                                }
+                                3 => {
+                                    *response
+                                        .get_mut(wire::HEADER_BYTES + 1)
+                                        .ok_or_else(unknown)? ^= 1;
+                                }
+                                _ => return Err(unknown()),
+                            }
+                        }
+                        Ok(response)
+                    },
+                );
+                thread::sleep(Duration::from_millis(1));
+            }
+        });
+        Ok(Self {
+            endpoint,
+            observations,
+            fault,
+            stop,
+            worker: Some(worker),
+        })
+    }
+
+    fn for_operation(&self, operation: [u8; 32]) -> TestResult<Vec<MissingFrameObservation>> {
+        Ok(self
+            .observations
+            .lock()
+            .map_err(|_| "observation lock poisoned")?
+            .iter()
+            .filter(|row| row.operation == operation)
+            .cloned()
+            .collect())
+    }
+}
+impl Drop for ObservedMissingReceiver {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::Release);
+        if let Some(worker) = self.worker.take() {
+            let _ = worker.join();
+        }
+    }
+}
+
+#[test]
+fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> TestResult {
+    let root = Root::new()?;
+    let tls = tls_fixture(&root.directory("pki")?)?;
+    let raft_root = root.directory("raft")?;
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(4)
+        .enable_all()
+        .build()?;
+    let router = Router::default();
+    let nodes = runtime.block_on(open_nodes(&raft_root, &router, false))?;
+    runtime.block_on(async {
+        nodes[0].initialize_single().await?;
+        select_first_leader(&nodes).await?;
+        nodes[0].add_learner(2).await?;
+        nodes[0].add_learner(3).await?;
+        nodes[0]
+            .change_membership(BTreeSet::from([1, 2, 3]))
+            .await?;
+        nodes[0].ensure_linearizable().await?;
+        Ok::<(), Box<dyn std::error::Error>>(())
+    })?;
+
+    let result = (|| -> TestResult {
+        let local = stores(&root, false)?;
+        let mut references = Vec::new();
+        let mut payloads = BTreeMap::new();
+        for byte in [0x61_u8, 0x62, 0x63] {
+            let bytes = vec![byte; 128 * 1024];
+            let reference = local[0]
+                .stage_local_checked(&bytes, &mut || Ok(()))?
+                .reference()
+                .clone();
+            payloads.insert(reference.id, bytes);
+            references.push(reference);
+        }
+        references.sort_unstable_by_key(|reference| reference.id);
+        let closure = local[0].persist_local_closure(&references, &mut || Ok(()))?;
+        // Voter 2 owns two retained leaves already. Exactly one declared leaf
+        // is missing; this fixture never substitutes a synthetic fsync ACK.
+        for reference in &references[..2] {
+            local[1].stage_received_replica_checked(
+                reference,
+                &payloads[&reference.id],
+                &mut || Ok(()),
+            )?;
+        }
+        let missing = references[2].clone();
+        let (source, enrollment) = runtime.block_on(async {
+            let source = PublishedRecordRoot::new(
+                RecordRootBase::Empty,
+                ReplicatedEnvelope::new("missing-only-real-v5", [0x51; 32], vec![0x52; 64])?,
+                Vec::new(),
+            )?;
+            let committed = nodes[0]
+                .publish_application_root(nodes[0].next_production_client_serial().await?, &source)
+                .await?;
+            let enrollment = nodes[0]
+                .enroll_native_v6_peers(
+                    nodes[0].next_production_client_serial().await?,
+                    [0x53; 32],
+                    0,
+                    tls.pins.clone(),
+                    deadline(),
+                )
+                .await?;
+            Ok::<_, Box<dyn std::error::Error>>((committed, enrollment))
+        })?;
+        let stage_intent = |tag: u8| -> TestResult<_> {
+            let intent = NativeV6CommitIntent {
+                cluster_digest: enrollment.cluster_digest(),
+                epoch: 0,
+                operation_digest: [tag; 32],
+                closure_manifest_sha256: closure.manifest_sha256(),
+                object_count: references.len() as u64,
+                ciphertext_bytes: closure.ciphertext_bytes(),
+                prior_root_digest: [0x51; 32],
+                proposed_root_digest: [0x54; 32],
+                prior_generation: 0,
+                proposed_generation: 1,
+                expected_previous_commit_index: source.log_index,
+            };
+            let staged = runtime.block_on(async {
+                nodes[0]
+                    .stage_application_object(
+                        nodes[0].next_production_client_serial().await?,
+                        &SealedRecordObject::new_native_v6_commit_intent(intent)?,
+                    )
+                    .await
+            })?;
+            Ok((intent, staged))
+        };
+        let live = LiveReceivers::start(&nodes, runtime.handle(), &local, &enrollment, &tls)?;
+        let observed = ObservedMissingReceiver::start(
+            nodes[1].clone(),
+            runtime.handle().clone(),
+            local[1].clone(),
+            &enrollment,
+            tls.servers[&2].clone(),
+        )?;
+        let mut endpoints = live.endpoints.clone();
+        endpoints.insert(live.routes[&2].clone(), observed.endpoint.clone());
+        let transport = MutualTlsPeerTransport::new(
+            endpoints,
+            tls.clients[&1].clone(),
+            Duration::from_secs(4),
+        )?;
+
+        // Each fault belongs to a distinct staged synthetic operation. The
+        // production call may neither resend EnsureBatch nor send ciphertext
+        // after a lost reply, changed nonce, or foreign missing reference.
+        let mut foreign = missing.clone();
+        foreign.id[0] ^= 1;
+        assert!(!references.contains(&foreign));
+        for fault in 1..=3_u64 {
+            let (intent, _) = stage_intent(0x70 + fault as u8)?;
+            observed.fault.store(fault, Ordering::Release);
+            let original = Instant::now() + Duration::from_secs(8);
+            assert!(
+                replicate_native_v6_closure_to_quorum(
+                    &nodes[0],
+                    runtime.handle(),
+                    &transport,
+                    &live.routes,
+                    &local[0],
+                    &references,
+                    &intent,
+                    original
+                )
+                .is_err()
+            );
+            assert!(Instant::now() < original);
+            let frames = observed.for_operation(intent.operation_digest)?;
+            assert_eq!(
+                frames
+                    .iter()
+                    .filter(|row| row.kind == Kind::EnsureBatch)
+                    .count(),
+                1
+            );
+            assert!(
+                !frames
+                    .iter()
+                    .any(|row| matches!(row.kind, Kind::StageBatch | Kind::Stage | Kind::Finalize))
+            );
+            assert!(
+                local[1]
+                    .read_local_if_present_checked(&missing, &mut || Ok(()))?
+                    .is_none()
+            );
+            assert!(
+                runtime
+                    .block_on(nodes[0].native_v6_root_at_generation())
+                    .1
+                    .is_none()
+            );
+        }
+
+        // A corrupt present leaf is an error, never a missing reply or an
+        // invitation to overwrite it from another voter.
+        let mut leaf = String::from("v6-");
+        for byte in references[0].id {
+            use std::fmt::Write as _;
+            write!(&mut leaf, "{byte:02x}")?;
+        }
+        leaf.push_str(".blob");
+        let leaf = root.0.join("cipher-2").join(leaf);
+        let corrupt = vec![0x6f; references[0].encoded_bytes as usize];
+        fs::write(&leaf, &corrupt)?;
+        let (intent, _) = stage_intent(0x74)?;
+        let original = Instant::now() + Duration::from_secs(8);
+        assert!(
+            replicate_native_v6_closure_to_quorum(
+                &nodes[0],
+                runtime.handle(),
+                &transport,
+                &live.routes,
+                &local[0],
+                &references,
+                &intent,
+                original
+            )
+            .is_err()
+        );
+        assert!(Instant::now() < original);
+        assert!(fs::read(&leaf)? == corrupt);
+        let frames = observed.for_operation(intent.operation_digest)?;
+        assert_eq!(
+            frames
+                .iter()
+                .filter(|row| row.kind == Kind::EnsureBatch)
+                .count(),
+            1
+        );
+        assert!(
+            !frames
+                .iter()
+                .any(|row| matches!(row.kind, Kind::StageBatch | Kind::Stage | Kind::Finalize))
+        );
+        // Explicit fixture repair for the NEXT distinct test operation only.
+        fs::write(&leaf, &payloads[&references[0].id])?;
+
+        // The separate lost-final-response reconciliation API stays fsync-only.
+        let (intent, _) = stage_intent(0x75)?;
+        let original = Instant::now() + Duration::from_secs(8);
+        assert!(
+            reconcile_native_v6_closure_quorum(
+                &nodes[0],
+                runtime.handle(),
+                &transport,
+                &live.routes,
+                &local[0],
+                &references,
+                &intent,
+                original
+            )
+            .is_err()
+        );
+        assert!(Instant::now() < original);
+        let frames = observed.for_operation(intent.operation_digest)?;
+        assert!(
+            frames
+                .iter()
+                .any(|row| row.kind == Kind::FsyncExistingBatch)
+        );
+        assert!(!frames.iter().any(|row| matches!(
+            row.kind,
+            Kind::EnsureBatch | Kind::StageBatch | Kind::Stage | Kind::Finalize
+        )));
+
+        let (intent, staged) = stage_intent(0x76)?;
+        let original = Instant::now() + Duration::from_secs(8);
+        let quorum = replicate_native_v6_closure_to_quorum(
+            &nodes[0],
+            runtime.handle(),
+            &transport,
+            &live.routes,
+            &local[0],
+            &references,
+            &intent,
+            original,
+        )?;
+        assert!(Instant::now() < original);
+        assert_eq!(quorum.voter_ids(), &[1, 2]);
+        runtime.block_on(quorum.verify_for_publication(&nodes[0]))?;
+        let frames = observed.for_operation(intent.operation_digest)?;
+        assert_eq!(
+            frames
+                .iter()
+                .filter(|row| row.kind == Kind::EnsureBatch)
+                .count(),
+            1
+        );
+        let staged_frames: Vec<_> = frames
+            .iter()
+            .filter(|row| row.kind == Kind::StageBatch)
+            .collect();
+        assert_eq!(staged_frames.len(), 1);
+        let stage = &staged_frames[0].payload;
+        assert_eq!(stage.len(), 1 + 36 + payloads[&missing.id].len());
+        assert_eq!(stage[0], 1);
+        assert_eq!(wire::parse_reference(&stage[1..37])?, missing);
+        assert!(
+            &stage[37..] == payloads[&missing.id].as_slice(),
+            "only the exact missing ciphertext crosses TLS"
+        );
+        assert_eq!(
+            frames
+                .iter()
+                .filter(|row| row.kind == Kind::Finalize)
+                .count(),
+            1
+        );
+        let published = runtime.block_on(async {
+            nodes[0]
+                .publish_native_v6_root(
+                    nodes[0].next_production_client_serial().await?,
+                    &intent,
+                    &staged,
+                    quorum.enrollment(),
+                    vec![0x55; 64],
+                    original,
+                )
+                .await
+        })?;
+        assert!(Instant::now() < original);
+        assert_eq!(
+            local[1].reopen_root_closure(&published, &mut || Ok(()))?,
+            references
+        );
+        drop(quorum);
+        drop(observed);
+        drop(live);
+        drop(local);
+        // Drop and reopen the real exclusive ciphertext owners. No receiver's
+        // in-memory fsynced bitmap can discharge these physical cold reads.
+        let cold = stores(&root, true)?;
+        assert_eq!(
+            cold[1].reopen_root_closure(&published, &mut || Ok(()))?,
+            references
+        );
+        for reference in &references {
+            assert!(cold[1].read_local(reference)? == payloads[&reference.id]);
+        }
+        Ok(())
+    })();
+    runtime.block_on(shutdown_nodes(nodes, &router))?;
+    result
+}
