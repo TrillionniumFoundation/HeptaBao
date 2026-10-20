@@ -740,10 +740,13 @@ async fn transfer_one(
         )
         .await?;
     }
-    for references in references.chunks(batch::OBJECTS) {
-        check_deadline(deadline)?;
-        if transfer {
-            let requested = batch::expected(references)?;
+    if transfer {
+        // Reference-only inventory must not inherit the much smaller frame
+        // bound for ciphertext. Each exact missing subset is still staged in
+        // the original three-leaf frames under the same operation deadline.
+        for references in references.chunks(batch::ENSURE_OBJECTS) {
+            check_deadline(deadline)?;
+            let requested = batch::ensure_expected(references)?;
             let missing = exchange_reply(
                 transport,
                 route,
@@ -757,26 +760,28 @@ async fn transfer_one(
             )
             .await?;
             check_deadline(deadline)?;
-            if missing.is_empty() {
-                continue;
-            }
             // This exact authenticated response is the sole permission to
             // transfer a subset. Lost ACKs, corrupt leaves and stale admission
             // return above; none is converted into an automatic payload retry.
-            let expected = batch::expected(&missing)?;
-            exchange(
-                transport,
-                route,
-                target,
-                pin,
-                binding,
-                Kind::StageBatch,
-                || batch::payload(source, &missing, true, deadline),
-                &expected,
-                deadline,
-            )
-            .await?;
-        } else {
+            for missing in missing.chunks(batch::OBJECTS) {
+                let expected = batch::expected(missing)?;
+                exchange(
+                    transport,
+                    route,
+                    target,
+                    pin,
+                    binding,
+                    Kind::StageBatch,
+                    || batch::payload(source, missing, true, deadline),
+                    &expected,
+                    deadline,
+                )
+                .await?;
+            }
+        }
+    } else {
+        for references in references.chunks(batch::OBJECTS) {
+            check_deadline(deadline)?;
             // Reconciliation remains fsync-only and fails if any leaf is
             // absent. It never borrows the new missing-transfer permission.
             let expected = batch::expected(references)?;

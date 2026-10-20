@@ -1139,6 +1139,22 @@ impl Drop for ObservedMissingReceiver {
 
 #[test]
 fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> TestResult {
+    missing_only_quorum_fixture(3, 1, 128 * 1024)
+}
+
+#[test]
+fn ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences() -> TestResult {
+    // Two Ensure frames (64 + 1), with six missing in the first and one in the
+    // second. Their actual Stage frames must remain 3 + 3 + 1 leaves, and all
+    // original malformed/lost-ACK, corruption and cold-reopen checks still run.
+    missing_only_quorum_fixture(65, 7, 64)
+}
+
+fn missing_only_quorum_fixture(
+    object_count: u8,
+    missing_count: usize,
+    object_bytes: usize,
+) -> TestResult {
     let root = Root::new()?;
     let tls = tls_fixture(&root.directory("pki")?)?;
     let raft_root = root.directory("raft")?;
@@ -1164,8 +1180,8 @@ fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> T
         let local = stores(&root, false)?;
         let mut references = Vec::new();
         let mut payloads = BTreeMap::new();
-        for byte in [0x61_u8, 0x62, 0x63] {
-            let bytes = vec![byte; 128 * 1024];
+        for byte in 0..object_count {
+            let bytes = vec![0x61 + byte; object_bytes];
             let reference = local[0]
                 .stage_local_checked(&bytes, &mut || Ok(()))?
                 .reference()
@@ -1175,16 +1191,17 @@ fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> T
         }
         references.sort_unstable_by_key(|reference| reference.id);
         let closure = local[0].persist_local_closure(&references, &mut || Ok(()))?;
-        // Voter 2 owns two retained leaves already. Exactly one declared leaf
-        // is missing; this fixture never substitutes a synthetic fsync ACK.
-        for reference in &references[..2] {
+        // Voter 2 owns the retained prefix already. The declared missing tail
+        // can only acquire custody through actual Stage frames and fsync.
+        let retained_count = references.len() - missing_count;
+        for reference in &references[..retained_count] {
             local[1].stage_received_replica_checked(
                 reference,
                 &payloads[&reference.id],
                 &mut || Ok(()),
             )?;
         }
-        let missing = references[2].clone();
+        let missing = &references[retained_count..];
         let (source, enrollment) = runtime.block_on(async {
             let source = PublishedRecordRoot::new(
                 RecordRootBase::Empty,
@@ -1248,7 +1265,7 @@ fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> T
         // Each fault belongs to a distinct staged synthetic operation. The
         // production call may neither resend EnsureBatch nor send ciphertext
         // after a lost reply, changed nonce, or foreign missing reference.
-        let mut foreign = missing.clone();
+        let mut foreign = missing[0].clone();
         foreign.id[0] ^= 1;
         assert!(!references.contains(&foreign));
         for fault in 1..=3_u64 {
@@ -1284,7 +1301,7 @@ fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> T
             );
             assert!(
                 local[1]
-                    .read_local_if_present_checked(&missing, &mut || Ok(()))?
+                    .read_local_if_present_checked(&missing[0], &mut || Ok(()))?
                     .is_none()
             );
             assert!(
@@ -1383,26 +1400,57 @@ fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> T
         assert_eq!(quorum.voter_ids(), &[1, 2]);
         runtime.block_on(quorum.verify_for_publication(&nodes[0]))?;
         let frames = observed.for_operation(intent.operation_digest)?;
+        let ensure_frames: Vec<_> = frames
+            .iter()
+            .filter(|row| row.kind == Kind::EnsureBatch)
+            .collect();
         assert_eq!(
-            frames
-                .iter()
-                .filter(|row| row.kind == Kind::EnsureBatch)
-                .count(),
-            1
+            ensure_frames.len(),
+            references.len().div_ceil(batch::ENSURE_OBJECTS)
         );
+        for (frame, references) in ensure_frames
+            .iter()
+            .zip(references.chunks(batch::ENSURE_OBJECTS))
+        {
+            assert_eq!(frame.payload, batch::ensure_expected(references)?);
+        }
         let staged_frames: Vec<_> = frames
             .iter()
             .filter(|row| row.kind == Kind::StageBatch)
             .collect();
-        assert_eq!(staged_frames.len(), 1);
-        let stage = &staged_frames[0].payload;
-        assert_eq!(stage.len(), 1 + 36 + payloads[&missing.id].len());
-        assert_eq!(stage[0], 1);
-        assert_eq!(wire::parse_reference(&stage[1..37])?, missing);
-        assert!(
-            &stage[37..] == payloads[&missing.id].as_slice(),
-            "only the exact missing ciphertext crosses TLS"
-        );
+        let expected_stage_frames: usize = references
+            .chunks(batch::ENSURE_OBJECTS)
+            .map(|batch| {
+                batch
+                    .iter()
+                    .filter(|reference| missing.contains(reference))
+                    .count()
+            })
+            .map(|count| count.div_ceil(batch::OBJECTS))
+            .sum();
+        assert_eq!(staged_frames.len(), expected_stage_frames);
+        let mut transferred = Vec::new();
+        for frame in staged_frames {
+            let stage = &frame.payload;
+            let count = usize::from(stage[0]);
+            assert!((1..=batch::OBJECTS).contains(&count));
+            assert!(stage.len() <= batch::MAX_PAYLOAD);
+            let mut offset = 1;
+            for _ in 0..count {
+                let reference = wire::parse_reference(&stage[offset..offset + 36])?;
+                offset += 36;
+                let end = offset + reference.encoded_bytes as usize;
+                assert!(missing.contains(&reference));
+                assert!(
+                    &stage[offset..end] == payloads[&reference.id].as_slice(),
+                    "only the exact missing ciphertext crosses TLS"
+                );
+                offset = end;
+                transferred.push(reference);
+            }
+            assert_eq!(offset, stage.len());
+        }
+        assert_eq!(transferred, missing);
         assert_eq!(
             frames
                 .iter()

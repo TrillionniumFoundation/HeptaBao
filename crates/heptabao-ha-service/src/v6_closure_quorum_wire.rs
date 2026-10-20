@@ -93,6 +93,7 @@ pub(super) fn encode(
     if target == 0
         || binding.leader == 0
         || binding.term == 0
+        || (kind == Kind::EnsureBatch && payload.len() > batch::MAX_ENSURE_PAYLOAD)
         || HEADER_BYTES
             .checked_add(payload.len())
             .is_none_or(|len| len > batch::MAX_PAYLOAD + HEADER_BYTES)
@@ -147,6 +148,9 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Request<'_>, HaError> {
         7 => Kind::EnsureBatch,
         _ => return Err(HaError::InvalidFrame),
     };
+    if kind == Kind::EnsureBatch && bytes.len() > HEADER_BYTES + batch::MAX_ENSURE_PAYLOAD {
+        return Err(HaError::InvalidFrame);
+    }
     let intent = NativeV6CommitIntent::decode(&take::<INTENT_BYTES>(bytes, &mut at)?)
         .map_err(|_| HaError::InvalidFrame)?;
     let enrollment_digest = take::<32>(bytes, &mut at)?;
@@ -182,7 +186,12 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Request<'_>, HaError> {
 }
 
 pub(super) fn reply(request: &Request<'_>, payload: &[u8]) -> Result<Vec<u8>, HaError> {
-    if payload.len() > batch::MAX_ACK {
+    let maximum = if request.kind == Kind::EnsureBatch {
+        batch::MAX_ENSURE_PAYLOAD
+    } else {
+        batch::MAX_ACK
+    };
+    if payload.len() > maximum {
         return Err(HaError::InvalidFrame);
     }
     let mut bytes = request.bytes[..HEADER_BYTES].to_vec();
@@ -220,7 +229,7 @@ pub(super) fn verify_missing_reply(
     if parsed.kind != Kind::EnsureBatch
         || parsed.payload != expected_batch
         || received.len() < HEADER_BYTES + 1
-        || received.len() > HEADER_BYTES + batch::MAX_ACK
+        || received.len() > HEADER_BYTES + batch::MAX_ENSURE_PAYLOAD
         || received.get(..5) != Some(REPLY_MAGIC.as_slice())
         || received.get(5..HEADER_BYTES) != request.get(5..HEADER_BYTES)
     {
