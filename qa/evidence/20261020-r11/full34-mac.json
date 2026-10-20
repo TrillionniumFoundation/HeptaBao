@@ -1,0 +1,2518 @@
+{
+  "api_history_qualified": true,
+  "binary_sha256": "26371ee44d64b5b777b3c0235ed818d6b622b625790f20e622eb755d6df264c7",
+  "capacity_after_import": {
+    "admission_reserved": false,
+    "compaction_reclaims_operation_identities": false,
+    "durable_artifact_limit_bytes": 67108864,
+    "durable_payload_bytes": 15931,
+    "full_openbao_compatibility": false,
+    "generation": 4,
+    "journal_bytes": 35993,
+    "journal_compaction": "before-entry-capacity-only",
+    "journal_limit_bytes": 67108864,
+    "kv1_encoded_graph_limit_bytes": 67108864,
+    "kv_read_only_dispatches": 2,
+    "native_kv2_logical_payload_bytes": 35655894,
+    "native_kv2_metadata_bytes": 39963,
+    "native_kv2_payload_blocks_opened": 0,
+    "native_kv2_payload_blocks_pinned": 0,
+    "native_kv2_payload_ciphertext_bytes_read": 0,
+    "native_kv2_payload_plaintext_bytes_opened": 0,
+    "native_kv2_payload_positioned_bytes_returned": 0,
+    "native_kv2_payload_positioned_read_calls": 0,
+    "native_kv2_payload_positioned_read_failures": 0,
+    "native_kv2_reader_format": 2,
+    "native_payload_observation_scope": "actual-typed-payload-ciphertext-read-and-aead-open",
+    "native_payload_opened_proves_response_authorized": false,
+    "native_payload_positioned_read_observation_scope": "actual-read-at-result-before-original-gate-and-lease-rechecks",
+    "native_payload_zero_opened_proves_no_physical_read": false,
+    "opaque_owner_aggregate_bytes": 1917,
+    "opaque_owner_limit_bytes": 16777216,
+    "opaque_owner_remaining_bytes": 16775299,
+    "opaque_owner_remaining_is_admission_budget": false,
+    "operation_limit": 32000,
+    "operations_remaining": 31996,
+    "production_qualified": false,
+    "profile": "bounded-native-record-state-v6-paged-candidate",
+    "retained_operations": 4,
+    "scope": "serving-leader-local",
+    "state_bytes": 35697774,
+    "state_chunk_target_bytes": 262144,
+    "state_limit_bytes": 1224736768,
+    "state_remaining_bytes": 1189038994,
+    "state_remaining_is_admission_budget": false,
+    "state_schema": 120,
+    "state_size_basis": "opaque-owner-json-plus-native-metadata-and-paged-logical-payloads",
+    "state_storage_format": "heptabao-state-records-v6"
+  },
+  "checks": [
+    {
+      "case": "official_271_pins_and_live_identity",
+      "passed": true
+    },
+    {
+      "case": "two_distinct_owned_processes",
+      "passed": true
+    },
+    {
+      "case": "source_api_oracle_captured",
+      "passed": true
+    },
+    {
+      "case": "source_retained_deleted_destroyed_seeded",
+      "passed": true
+    },
+    {
+      "case": "source_metadata_cas_seeded",
+      "passed": true
+    },
+    {
+      "case": "source_cold_restart_exact",
+      "passed": true
+    },
+    {
+      "case": "target_pristine_before_import",
+      "passed": true
+    },
+    {
+      "case": "source_export_once",
+      "passed": true
+    },
+    {
+      "case": "source_raw_history_exact",
+      "passed": true
+    },
+    {
+      "case": "exported_soft_deleted_payload_preserved",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged_after_export",
+      "passed": true
+    },
+    {
+      "case": "target_import_once",
+      "passed": true
+    },
+    {
+      "case": "target_active_native_v6",
+      "passed": true
+    },
+    {
+      "case": "target_full_history_exact",
+      "passed": true
+    },
+    {
+      "case": "target_storage_full_history_exact",
+      "passed": true
+    },
+    {
+      "case": "target_cold_restart_exact",
+      "passed": true
+    },
+    {
+      "case": "target_storage_cold_history_exact",
+      "passed": true
+    },
+    {
+      "case": "snapshot_download",
+      "passed": true
+    },
+    {
+      "case": "post_snapshot_mutation_once",
+      "passed": true
+    },
+    {
+      "case": "snapshot_restore_once",
+      "passed": true
+    },
+    {
+      "case": "restored_cold_history_exact",
+      "passed": true
+    },
+    {
+      "case": "restored_storage_history_exact",
+      "passed": true
+    },
+    {
+      "case": "soft_deleted_payload_undelete_exact",
+      "passed": true
+    },
+    {
+      "case": "destroyed_payload_remains_absent",
+      "passed": true
+    },
+    {
+      "case": "data_cas_denied_without_effect",
+      "passed": true
+    },
+    {
+      "case": "metadata_cas_denied_without_effect",
+      "passed": true
+    },
+    {
+      "case": "metadata_cas_success_counter_exact",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged_after_target_mutations",
+      "passed": true
+    },
+    {
+      "case": "source_and_binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "case": "report_excludes_runtime_credentials",
+      "passed": true
+    }
+  ],
+  "full34_qualified": true,
+  "full_compatibility_claim": false,
+  "live_payload_bytes": 35651584,
+  "migration_invocations": [
+    {
+      "diagnostic": "",
+      "lane": "native-large",
+      "operation": "export",
+      "original_budget_seconds": 360,
+      "original_popen": true,
+      "original_wait_completed": true,
+      "pgid": 87248,
+      "pid": 87248,
+      "receipt": {
+        "bytes": 35658761,
+        "lane": "native-large",
+        "operation": "export",
+        "records": 24,
+        "sha256": "a90c7f0069650dd7aea01f183271e6fa364a52329d631d0ec7e8ba0c2fab5daf"
+      },
+      "retried": false,
+      "returncode": 0,
+      "status": "completed"
+    },
+    {
+      "diagnostic": "",
+      "lane": "native-large",
+      "operation": "import",
+      "original_budget_seconds": 360,
+      "original_popen": true,
+      "original_wait_completed": true,
+      "pgid": 87382,
+      "pid": 87382,
+      "receipt": {
+        "lane": "native-large",
+        "operation": "import",
+        "source_sha256": "a90c7f0069650dd7aea01f183271e6fa364a52329d631d0ec7e8ba0c2fab5daf",
+        "status": 204
+      },
+      "retried": false,
+      "returncode": 0,
+      "status": "completed"
+    }
+  ],
+  "migration_lane": "native-large",
+  "missing_checks": [],
+  "mutations": [
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/init",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/unseal",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/mounts/secret",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/config",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/metadata/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/metadata/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/delete/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/destroy/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/mounts/secret",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/native-v6/activate",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/unseal",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/storage/raft/snapshot",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/unseal",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/internal/storage/kv2-version-witness",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/undelete/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/undelete/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 400
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/metadata/history",
+      "retried": false,
+      "status": 400
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/metadata/history",
+      "retried": false,
+      "status": 204
+    }
+  ],
+  "native_before_import": true,
+  "official_identity": {
+    "archive_member_matches_executable": true,
+    "artifact_sha256": "15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91",
+    "binary_sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+    "cluster_id": "26cdf0aa-1603-a669-c479-2972547c3d6b",
+    "endpoint": "https://127.0.0.1:57053",
+    "launcher_source_sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+    "product": "OpenBao",
+    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+    "server_mode": "server_not_dev",
+    "storage": "pebbledb",
+    "synthetic_only": true,
+    "tls_verified": true,
+    "version": "2.7.1"
+  },
+  "official_version": "2.7.1",
+  "oracle_layers": {
+    "api": "actual official OpenBao 2.7.1 GET response from each seeded version",
+    "storage": "lossless source raw/protobuf decoded bundle with original numeric tokens",
+    "target_storage_witness": "required; an API read or capacity count is insufficient"
+  },
+  "owned_roots": {
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/official-openbao-2.7.1-_efasemq",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/candidate"
+  },
+  "production_authority": false,
+  "profile": "full34",
+  "replacement_authority": false,
+  "retained_live_versions": 17,
+  "schema": "heptabao.openbao271-kv2-lossless-native-live.v1",
+  "snapshot": {
+    "archive_bytes": 9007396,
+    "archive_sha256": "fd5d78da6315042f1a59603324ce9545cb26112f445481cc21f9c4bd594ef82b",
+    "status": 200
+  },
+  "source_api_numeric_observations": [
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0001.json",
+      "version": 1,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0002.json",
+      "version": 2,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0003.json",
+      "version": 3,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0004.json",
+      "version": 4,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0005.json",
+      "version": 5,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0006.json",
+      "version": 6,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0007.json",
+      "version": 7,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0008.json",
+      "version": 8,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0009.json",
+      "version": 9,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0010.json",
+      "version": 10,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0011.json",
+      "version": 11,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0012.json",
+      "version": 12,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0013.json",
+      "version": 13,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0014.json",
+      "version": 14,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0015.json",
+      "version": 15,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0016.json",
+      "version": 16,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0017.json",
+      "version": 17,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0018.json",
+      "version": 18,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    },
+    {
+      "exact_decimal": {
+        "actual_token": "0.12345678901234568",
+        "generated_token": "0.123456789012345678901234567890",
+        "numerically_equal": false
+      },
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0019.json",
+      "version": 19,
+      "wide_integer": {
+        "actual_token": "9007199254740992",
+        "generated_token": "9007199254740993",
+        "numerically_equal": false
+      }
+    }
+  ],
+  "source_api_wire_observations": [
+    {
+      "body_bytes": 1544,
+      "body_sha256": "cad790b10fafca5908157582f8432b5d4a2be755282b44f873f5546399cefd89",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=1",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0001.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 1544,
+      "body_sha256": "d252d63b920f398f576049553c05a210d230c61b16720c1d2e7671812f7c90e8",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=2",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0002.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097673,
+      "body_sha256": "4609ec51db29fc2fc2549b85007eb1d9899fc68f05a6c37819dd1ea965180ef5",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=3",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0003.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097672,
+      "body_sha256": "126e33e9f7f8d2cbd56ed6809a06c355908b50894a34afc4908c32efa3111b3f",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=4",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0004.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097673,
+      "body_sha256": "0d342b88cf9a5411331373f0d168d5674753f7176d52966e561cadd78fa6a586",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=5",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0005.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097673,
+      "body_sha256": "62649db132b5d191fdee75955317f5d3cad96526ae981685633a2f9a8b0a0aec",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=6",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0006.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097673,
+      "body_sha256": "ebfcea966f5b0dc68a952e18c6585d288230c0acd852bb8b719d9a913d1967d9",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=7",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0007.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097673,
+      "body_sha256": "a6673510da446885e70506befa02d2dacb9b4057b2dc15985f0e3ec07d891944",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=8",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0008.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097672,
+      "body_sha256": "b9a59ec8759d4536275f697846234f060857814afbcff87ce293e24d84d233ca",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=9",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0009.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "0aea264c3223e77315300f307110eb90562c0d5abdeb934662acae686c3892ea",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=10",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0010.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "be9948a3f410ca42d31ebea88b87ffc628080a738dd8651c0277d06d23945729",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=11",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0011.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "af38860a1f95f3ae6dd1f2a72e724523de904d20a723383ceb6d3f705a8f28f2",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=12",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0012.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "eba8bc2ebe1d414448a354672d35374484d9dd01e047f5c7b4d80daf3762e67d",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=13",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0013.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "c97052ded18cc1072b3df3a665d30cdb2beddfe8dd772a952604ce7b82dfdd5e",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=14",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0014.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "cd854f4f37dbf35628f03e35e1ff4b3c8a5cbd951cc7a7cc4b846ff47cfb43b9",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=15",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0015.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097674,
+      "body_sha256": "c1310b624894502b5baf9efc298313019a83c7ca05726fb048b6d6def264d136",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=16",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0016.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "2e3857a101b8daa9221fd9c65898f59a1ea2cb923f04b503a46564c4b23a5c0e",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=17",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0017.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097675,
+      "body_sha256": "6bfec62b5f28c83b8f2fab0f144e916db6332f98123d95f37cc9af3f7f6831a6",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=18",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0018.json",
+      "same_response_decoded": true,
+      "status": 200
+    },
+    {
+      "body_bytes": 2097674,
+      "body_sha256": "4d06f7a2218ac968dced635d10fd09e5f877b9db69afb1d811c648a042aa6e8b",
+      "endpoint": "source",
+      "method": "GET",
+      "path": "secret/data/history?version=19",
+      "private_body_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/source-api-oracle/version-0019.json",
+      "same_response_decoded": true,
+      "status": 200
+    }
+  ],
+  "source_commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+  "source_content_sha256": "0b59ea8b60682c99b8a920dbe078089566a9bb128d7fbdb346b02d94e09d8d49",
+  "source_dirty": false,
+  "source_history_sha256": "57751ce98f775064912a26319a8d38bdb80a34d7ed460ad27e30d12be04dce47",
+  "source_tree": "072be70722f3117118683403975a57fba9cfdbb4",
+  "source_unchanged_at_cleanup": true,
+  "status": "passed",
+  "synthetic_only": true,
+  "target_history_status_at_cleanup": 200,
+  "target_storage_precision_qualified": true,
+  "target_storage_witnesses": [
+    {
+      "source_raw_bound": true,
+      "stage": "target_storage_full_history_exact",
+      "versions": [
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.29985Z",
+          "deletion_time": "2026-10-20T04:36:04.177898Z",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 1206,
+          "payload_canonical_sha256": "57849f81a4a072309b25c0d6a9a760e011573edef8330a7104f8d61cb5753da7",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 1
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.37914Z",
+          "deletion_time": "",
+          "destroyed": true,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 0,
+          "payload_canonical_sha256": null,
+          "payload_present": false,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 2
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.490559Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "3ea725d3f52ab18aa55dcc78b41956ac124d4cb28253d8d1cdc7debc6839311f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 3
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.64202Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "7e8e99b595ff59ace22713d83cb5a8481f0412843149f0c7d33c3e1bc9c27c4c",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 4
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.794887Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "a5a613628972be7e27004ef1cfbaff235cb94ad73f740dd157b4925f89899a5f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 5
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.947152Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "9de94c33d80535e13533599742a1c2a55342f3d664f7807c8802278b80436a22",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 6
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.100882Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "f843bb5b5cd222cccea88458347b9c3cfc49c57bed7bd824d59819e7e3df2aed",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 7
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.256404Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "63bc355dafec3c33a4e4f3a790100256b94f9d5b9f99cd4e828d16c0bf740111",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 8
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.40757Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "2c38626c96b7cda3c59eb694b4c985af461ce37ac9bc6433a16c076495840ff9",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 9
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.566078Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "47071642a4c9bba4835bacfb5a039574a8616c96c461f548e1ac6bfdfaee9b20",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 10
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.716332Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "6993130eee2cbc0cd68d4347fd0361bcba08a2c5ae3d8939ebceb0e91bc88982",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 11
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.891459Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "ba8692f105c4710a53b1c13f683f3be4aaa314f9a51eb1063636109b2f9d7d60",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 12
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.045536Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "c39caf6f72b7d087e78617ac33e803ba2af2fd95930f5681094aec43650a19ea",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 13
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.202833Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "6bc683580ac6c083d157259ee5df515bc1b956701552fd2edd0084903f47c7f0",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 14
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.354085Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "054f40e50b6dba0fa8d7d120f68e54a319f69a93443ac70738140b42eaaba41f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 15
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.51249Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "f5049dafc55adab2b521a4351725e06970a7f1ecbba8d13b42ee813703610e83",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 16
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.662912Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "afd27ae73885f33e43a5854b9ff890a42479a680609aedd67b412fff24879cdf",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 17
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.819808Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "931d6939736fae540cd8101bf302cddec5a6a131f2ccb3bb31b2852ab03660e7",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 18
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.97105Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "28533c43b0d1bcc96580a67c71da587a2e4305d9d4efe6a157b3efe88e9ad017",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 19
+        }
+      ]
+    },
+    {
+      "source_raw_bound": true,
+      "stage": "target_storage_cold_history_exact",
+      "versions": [
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.29985Z",
+          "deletion_time": "2026-10-20T04:36:04.177898Z",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 1206,
+          "payload_canonical_sha256": "57849f81a4a072309b25c0d6a9a760e011573edef8330a7104f8d61cb5753da7",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 1
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.37914Z",
+          "deletion_time": "",
+          "destroyed": true,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 0,
+          "payload_canonical_sha256": null,
+          "payload_present": false,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 2
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.490559Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "3ea725d3f52ab18aa55dcc78b41956ac124d4cb28253d8d1cdc7debc6839311f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 3
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.64202Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "7e8e99b595ff59ace22713d83cb5a8481f0412843149f0c7d33c3e1bc9c27c4c",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 4
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.794887Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "a5a613628972be7e27004ef1cfbaff235cb94ad73f740dd157b4925f89899a5f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 5
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.947152Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "9de94c33d80535e13533599742a1c2a55342f3d664f7807c8802278b80436a22",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 6
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.100882Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "f843bb5b5cd222cccea88458347b9c3cfc49c57bed7bd824d59819e7e3df2aed",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 7
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.256404Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "63bc355dafec3c33a4e4f3a790100256b94f9d5b9f99cd4e828d16c0bf740111",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 8
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.40757Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "2c38626c96b7cda3c59eb694b4c985af461ce37ac9bc6433a16c076495840ff9",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 9
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.566078Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "47071642a4c9bba4835bacfb5a039574a8616c96c461f548e1ac6bfdfaee9b20",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 10
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.716332Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "6993130eee2cbc0cd68d4347fd0361bcba08a2c5ae3d8939ebceb0e91bc88982",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 11
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.891459Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "ba8692f105c4710a53b1c13f683f3be4aaa314f9a51eb1063636109b2f9d7d60",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 12
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.045536Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "c39caf6f72b7d087e78617ac33e803ba2af2fd95930f5681094aec43650a19ea",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 13
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.202833Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "6bc683580ac6c083d157259ee5df515bc1b956701552fd2edd0084903f47c7f0",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 14
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.354085Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "054f40e50b6dba0fa8d7d120f68e54a319f69a93443ac70738140b42eaaba41f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 15
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.51249Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "f5049dafc55adab2b521a4351725e06970a7f1ecbba8d13b42ee813703610e83",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 16
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.662912Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "afd27ae73885f33e43a5854b9ff890a42479a680609aedd67b412fff24879cdf",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 17
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.819808Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "931d6939736fae540cd8101bf302cddec5a6a131f2ccb3bb31b2852ab03660e7",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 18
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.97105Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "28533c43b0d1bcc96580a67c71da587a2e4305d9d4efe6a157b3efe88e9ad017",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 4,
+          "source_root_sha256": "227e8122912612f8cabc47594a0033373cf397ea95b35001537f63327fd44ed8",
+          "version": 19
+        }
+      ]
+    },
+    {
+      "source_raw_bound": true,
+      "stage": "restored_storage_history_exact",
+      "versions": [
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.29985Z",
+          "deletion_time": "2026-10-20T04:36:04.177898Z",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 1206,
+          "payload_canonical_sha256": "57849f81a4a072309b25c0d6a9a760e011573edef8330a7104f8d61cb5753da7",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 1
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.37914Z",
+          "deletion_time": "",
+          "destroyed": true,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 0,
+          "payload_canonical_sha256": null,
+          "payload_present": false,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 2
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.490559Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "3ea725d3f52ab18aa55dcc78b41956ac124d4cb28253d8d1cdc7debc6839311f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 3
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.64202Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "7e8e99b595ff59ace22713d83cb5a8481f0412843149f0c7d33c3e1bc9c27c4c",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 4
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.794887Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "a5a613628972be7e27004ef1cfbaff235cb94ad73f740dd157b4925f89899a5f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 5
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:01.947152Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "9de94c33d80535e13533599742a1c2a55342f3d664f7807c8802278b80436a22",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 6
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.100882Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "f843bb5b5cd222cccea88458347b9c3cfc49c57bed7bd824d59819e7e3df2aed",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 7
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.256404Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "63bc355dafec3c33a4e4f3a790100256b94f9d5b9f99cd4e828d16c0bf740111",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 8
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.40757Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097334,
+          "payload_canonical_sha256": "2c38626c96b7cda3c59eb694b4c985af461ce37ac9bc6433a16c076495840ff9",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 9
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.566078Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "47071642a4c9bba4835bacfb5a039574a8616c96c461f548e1ac6bfdfaee9b20",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 10
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.716332Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "6993130eee2cbc0cd68d4347fd0361bcba08a2c5ae3d8939ebceb0e91bc88982",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 11
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:02.891459Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "ba8692f105c4710a53b1c13f683f3be4aaa314f9a51eb1063636109b2f9d7d60",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 12
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.045536Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "c39caf6f72b7d087e78617ac33e803ba2af2fd95930f5681094aec43650a19ea",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 13
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.202833Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "6bc683580ac6c083d157259ee5df515bc1b956701552fd2edd0084903f47c7f0",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 14
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.354085Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "054f40e50b6dba0fa8d7d120f68e54a319f69a93443ac70738140b42eaaba41f",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 15
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.51249Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "f5049dafc55adab2b521a4351725e06970a7f1ecbba8d13b42ee813703610e83",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 16
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.662912Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "afd27ae73885f33e43a5854b9ff890a42479a680609aedd67b412fff24879cdf",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 17
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.819808Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "931d6939736fae540cd8101bf302cddec5a6a131f2ccb3bb31b2852ab03660e7",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 18
+        },
+        {
+          "canonical_profile": "heptabao-lossless-json-v1",
+          "created_time": "2026-10-20T04:36:03.97105Z",
+          "deletion_time": "",
+          "destroyed": false,
+          "mount": "secret",
+          "mount_incarnation": 1,
+          "path": "history",
+          "payload_canonical_bytes": 2097335,
+          "payload_canonical_sha256": "28533c43b0d1bcc96580a67c71da587a2e4305d9d4efe6a157b3efe88e9ad017",
+          "payload_present": true,
+          "schema": "heptabao-native-kv2-storage-witness-v1",
+          "source_publication_generation": 6,
+          "source_root_sha256": "a681179fb3eaadd32d0a5c0f53b65460415c0a43c02aad30a4b7b965f757c7ca",
+          "version": 19
+        }
+      ]
+    }
+  ],
+  "tls_verified": true,
+  "v6_ha_qualified": false
+}

@@ -1,0 +1,3061 @@
+{
+  "schema": "heptabao.native-ha-focused18-r11-mac-run.v1",
+  "status": "passed_focused18",
+  "started_utc": "2026-10-20T04:32:00.016735+00:00",
+  "controller_sha256": "247012d3fe4c6865617ba902015f7eeae89559fa9a81aa3a336aea92fc01e7df",
+  "config_sha256": "d8caf35fb1af74e92fd54554fa4919fcefa72dac10d4dd01b1b956aeec288b43",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11",
+  "source_commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+  "source_tree": "072be70722f3117118683403975a57fba9cfdbb4",
+  "source_identity_basis": "exact_pinned_manifest_and_full_tree",
+  "git_commit_object_inspected": false,
+  "source_base_commit": "e324563628ab3813dd31fde2f04da1279db8a80d",
+  "source_base_tree": "37e81cfad6955581622e492052cc17b4803598ce",
+  "source_files": 3552,
+  "manifest_sha256": "2404b4be35dc281876401cec86b11486b4e9c7b4bd0fb58174b12f9e059e54de",
+  "selection_sha256": "5f468eb73595f8199e742df1f5a506fe9cfdfdd9b57c7b1615d55317fbff39c1",
+  "additional_selection_sha256": "1237adab9e8b8e8439655b863f7872358931e4e2657023beb21a4549793ccf37",
+  "source_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "owned_runner_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "hostname": "MacBook-Pro.local",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "python_executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "python_sha256": "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43",
+  "runner_pid": 86158,
+  "target_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+  "target_lock_acquired": true,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 2,
+    "logical_cpus_observed": 10,
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "compiler_profile_evidence_is_original_r8": true,
+  "required_focused_cases": 18,
+  "original_focused_cases": 16,
+  "additional_focused_cases": 2,
+  "new_test_functions": 5,
+  "existing_regression_cases": 13,
+  "required_commands": 36,
+  "original_command_deadline_seconds": 1800,
+  "original_host_test_count": 55,
+  "current_host_test_count": 58,
+  "original_full34_required_checks": 31,
+  "original_lan_required_checks": 98,
+  "commands": [
+    {
+      "label": "focused-01-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::tests::missing_probe_separates_initial_absence_from_corruption_and_cold_reads",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:00.184897+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-01-list.log",
+      "pid": 86162,
+      "pgid": 86162,
+      "sid": 86162,
+      "darwin_leader_identity": {
+        "pid": 86162,
+        "ppid": 86158,
+        "pgid": 86162,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:00 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86162,
+            "ppid": 86158,
+            "pgid": 86162,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:00 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86162,
+            "ppid": 86158,
+            "pgid": 86162,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:00 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:00.934186+00:00",
+      "elapsed_seconds": 0.749,
+      "log_sha256": "a98fe8823cacff30cf04c01ebc8eadf8b26c69c6445ec7b16afd5d5ad1982d5a",
+      "log_bytes": 353,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.7499861249234527,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-01",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::tests::missing_probe_separates_initial_absence_from_corruption_and_cold_reads",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:00.935348+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-01.log",
+      "pid": 86170,
+      "pgid": 86170,
+      "sid": 86170,
+      "darwin_leader_identity": {
+        "pid": 86170,
+        "ppid": 86158,
+        "pgid": 86170,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:00 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86170,
+            "ppid": 86158,
+            "pgid": 86170,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:00 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86170,
+            "ppid": 86158,
+            "pgid": 86170,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:00 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:01.213305+00:00",
+      "elapsed_seconds": 0.278,
+      "log_sha256": "912036db5793f2e1b37d44474eee8c035f8394bee03629c5a2d809e24fb30a16",
+      "log_bytes": 451,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.2787152910605073,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-02-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::tests::missing_probe_rejects_late_disappearance_directory_swap_and_original_gate",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:01.214978+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-02-list.log",
+      "pid": 86188,
+      "pgid": 86188,
+      "sid": 86188,
+      "darwin_leader_identity": {
+        "pid": 86188,
+        "ppid": 86158,
+        "pgid": 86188,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:01 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86188,
+            "ppid": 86158,
+            "pgid": 86188,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:01 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86188,
+            "ppid": 86158,
+            "pgid": 86188,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:01 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:01.497508+00:00",
+      "elapsed_seconds": 0.282,
+      "log_sha256": "ad584fa41f5b923e9702dd81edc6caba2c2ea03d347b7f098dad85786cae334d",
+      "log_bytes": 356,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.2832753339316696,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-02",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::tests::missing_probe_rejects_late_disappearance_directory_swap_and_original_gate",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:01.498680+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-02.log",
+      "pid": 86195,
+      "pgid": 86195,
+      "sid": 86195,
+      "darwin_leader_identity": {
+        "pid": 86195,
+        "ppid": 86158,
+        "pgid": 86195,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:01 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86195,
+            "ppid": 86158,
+            "pgid": 86195,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:01 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86195,
+            "ppid": 86158,
+            "pgid": 86195,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:01 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:02.039893+00:00",
+      "elapsed_seconds": 0.541,
+      "log_sha256": "e1e28f6f4d60e0f1b86934bdd64ae076a9e190175e0660bd2a7c50f30895272d",
+      "log_bytes": 454,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.5421538329683244,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-03-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:02.041780+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-03-list.log",
+      "pid": 86202,
+      "pgid": 86202,
+      "sid": 86202,
+      "darwin_leader_identity": {
+        "pid": 86202,
+        "ppid": 86158,
+        "pgid": 86202,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:02 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86202,
+            "ppid": 86158,
+            "pgid": 86202,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86202,
+            "ppid": 86158,
+            "pgid": 86202,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:02.345073+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "533a6060f35470962c292cd3f690547e8b4484e82b3f7166b67107c8f92221a7",
+      "log_bytes": 375,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30397329200059175,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-03",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:02.346742+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-03.log",
+      "pid": 86209,
+      "pgid": 86209,
+      "sid": 86209,
+      "darwin_leader_identity": {
+        "pid": 86209,
+        "ppid": 86158,
+        "pgid": 86209,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:02 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86209,
+            "ppid": 86158,
+            "pgid": 86209,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86209,
+            "ppid": 86158,
+            "pgid": 86209,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:02.640528+00:00",
+      "elapsed_seconds": 0.293,
+      "log_sha256": "dd8f836328bd8f88da8288198554ee75c38d92b24adb85bb5de88e8fbe591880",
+      "log_bytes": 473,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.29453287506476045,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-04-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_bad_or_truncated_leaf_is_rejected_without_rewrite",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:02.642247+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-04-list.log",
+      "pid": 86216,
+      "pgid": 86216,
+      "sid": 86216,
+      "darwin_leader_identity": {
+        "pid": 86216,
+        "ppid": 86158,
+        "pgid": 86216,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:02 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86216,
+            "ppid": 86158,
+            "pgid": 86216,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86216,
+            "ppid": 86158,
+            "pgid": 86216,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:02.944812+00:00",
+      "elapsed_seconds": 0.302,
+      "log_sha256": "3c2c604f7cf60eb198751a4d2b01a5cb992e38578ba88b4f906f9b5284ed9107",
+      "log_bytes": 368,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30328691587783396,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-04",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_bad_or_truncated_leaf_is_rejected_without_rewrite",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:02.945964+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-04.log",
+      "pid": 86223,
+      "pgid": 86223,
+      "sid": 86223,
+      "darwin_leader_identity": {
+        "pid": 86223,
+        "ppid": 86158,
+        "pgid": 86223,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:02 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86223,
+            "ppid": 86158,
+            "pgid": 86223,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86223,
+            "ppid": 86158,
+            "pgid": 86223,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:02 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:03.240902+00:00",
+      "elapsed_seconds": 0.295,
+      "log_sha256": "3a8037f232bc17905f296286ae2a9cfdb1c83122d2e8f54f4d200cfe4c890f9e",
+      "log_bytes": 466,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.2958398328628391,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-05-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_symlink_hardlink_and_directory_are_never_missing",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:03.242810+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-05-list.log",
+      "pid": 86230,
+      "pgid": 86230,
+      "sid": 86230,
+      "darwin_leader_identity": {
+        "pid": 86230,
+        "ppid": 86158,
+        "pgid": 86230,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:03 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86230,
+            "ppid": 86158,
+            "pgid": 86230,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:03 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86230,
+            "ppid": 86158,
+            "pgid": 86230,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:03 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:03.547536+00:00",
+      "elapsed_seconds": 0.304,
+      "log_sha256": "e28b71d6dd982edc4cf110adb5a5ecb64ddc7b93022058671214b34934c0921a",
+      "log_bytes": 367,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3054775830823928,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-05",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_symlink_hardlink_and_directory_are_never_missing",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:03.548724+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-05.log",
+      "pid": 86237,
+      "pgid": 86237,
+      "sid": 86237,
+      "darwin_leader_identity": {
+        "pid": 86237,
+        "ppid": 86158,
+        "pgid": 86237,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:03 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86237,
+            "ppid": 86158,
+            "pgid": 86237,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:03 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86237,
+            "ppid": 86158,
+            "pgid": 86237,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:03 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:03.851770+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "5810f1a6f275aa1f50cee47b2398eeb829ad3d38f6d9fe52f1503ff654a75b6f",
+      "log_bytes": 465,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30378612503409386,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-06-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_cancellation_at_actual_boundaries_releases_no_receipt",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:03.853713+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-06-list.log",
+      "pid": 86244,
+      "pgid": 86244,
+      "sid": 86244,
+      "darwin_leader_identity": {
+        "pid": 86244,
+        "ppid": 86158,
+        "pgid": 86244,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:03 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86244,
+            "ppid": 86158,
+            "pgid": 86244,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:03 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86244,
+            "ppid": 86158,
+            "pgid": 86244,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:03 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:04.157039+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "5cea73adef98ab3c5c04bafe8c428a689bcd6eee05717f01bdda087bb26eef31",
+      "log_bytes": 372,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3040952500887215,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-06",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_cancellation_at_actual_boundaries_releases_no_receipt",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:04.158251+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-06.log",
+      "pid": 86251,
+      "pgid": 86251,
+      "sid": 86251,
+      "darwin_leader_identity": {
+        "pid": 86251,
+        "ppid": 86158,
+        "pgid": 86251,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:04 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86251,
+            "ppid": 86158,
+            "pgid": 86251,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:04 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86251,
+            "ppid": 86158,
+            "pgid": 86251,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:04 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:04.449947+00:00",
+      "elapsed_seconds": 0.291,
+      "log_sha256": "8c26680d8d84ea714881e1356ad605c568d89fd5c80ed6386ab251759ea53055",
+      "log_bytes": 470,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.2924214161466807,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-07-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_original_deadline_after_actual_file_sync_is_not_renewed",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:04.451531+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-07-list.log",
+      "pid": 86258,
+      "pgid": 86258,
+      "sid": 86258,
+      "darwin_leader_identity": {
+        "pid": 86258,
+        "ppid": 86158,
+        "pgid": 86258,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:04 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86258,
+            "ppid": 86158,
+            "pgid": 86258,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:04 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86258,
+            "ppid": 86158,
+            "pgid": 86258,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:04 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:04.753373+00:00",
+      "elapsed_seconds": 0.301,
+      "log_sha256": "e61be3213adea430ad2cc0c6e84341d67f74bf3e8ace64e6ebe65c77d49e726a",
+      "log_bytes": 374,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3026180418673903,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-07",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_original_deadline_after_actual_file_sync_is_not_renewed",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:04.754604+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-07.log",
+      "pid": 86265,
+      "pgid": 86265,
+      "sid": 86265,
+      "darwin_leader_identity": {
+        "pid": 86265,
+        "ppid": 86158,
+        "pgid": 86265,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:04 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86265,
+            "ppid": 86158,
+            "pgid": 86265,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:04 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86265,
+            "ppid": 86158,
+            "pgid": 86265,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:04 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:05.473091+00:00",
+      "elapsed_seconds": 0.718,
+      "log_sha256": "9360b9ae99f196502046e1cf1df6b50aba31f561168f0099d07cb03276bffeeb",
+      "log_bytes": 472,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.7195190831553191,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-08-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_same_content_name_replacement_at_each_boundary_is_rejected",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:05.475669+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-08-list.log",
+      "pid": 86276,
+      "pgid": 86276,
+      "sid": 86276,
+      "darwin_leader_identity": {
+        "pid": 86276,
+        "ppid": 86158,
+        "pgid": 86276,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:05 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86276,
+            "ppid": 86158,
+            "pgid": 86276,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:05 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86276,
+            "ppid": 86158,
+            "pgid": 86276,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:05 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:05.778882+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "d8ee7bc698fc5ab4d46392bc2ca41653aab9ba78be227d3597bd5e1a91a94cde",
+      "log_bytes": 377,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30424524983391166,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-08",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_same_content_name_replacement_at_each_boundary_is_rejected",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:05.780401+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-08.log",
+      "pid": 86283,
+      "pgid": 86283,
+      "sid": 86283,
+      "darwin_leader_identity": {
+        "pid": 86283,
+        "ppid": 86158,
+        "pgid": 86283,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:05 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86283,
+            "ppid": 86158,
+            "pgid": 86283,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:05 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86283,
+            "ppid": 86158,
+            "pgid": 86283,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:05 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:06.076949+00:00",
+      "elapsed_seconds": 0.296,
+      "log_sha256": "cb86386a565f71b2dc10abd56b27694de8c631f28a135a007bd04ea766a46ef9",
+      "log_bytes": 475,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.2973444580566138,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-09-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_same_inode_mutation_after_each_real_sync_is_rejected",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:06.078687+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-09-list.log",
+      "pid": 86290,
+      "pgid": 86290,
+      "sid": 86290,
+      "darwin_leader_identity": {
+        "pid": 86290,
+        "ppid": 86158,
+        "pgid": 86290,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:06 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86290,
+            "ppid": 86158,
+            "pgid": 86290,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86290,
+            "ppid": 86158,
+            "pgid": 86290,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:06.381462+00:00",
+      "elapsed_seconds": 0.302,
+      "log_sha256": "ed91cfd462e3669295f91d07778f636149ea5f160bb392e19890d77326121785",
+      "log_bytes": 371,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3036001669242978,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-09",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_same_inode_mutation_after_each_real_sync_is_rejected",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:06.382814+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-09.log",
+      "pid": 86297,
+      "pgid": 86297,
+      "sid": 86297,
+      "darwin_leader_identity": {
+        "pid": 86297,
+        "ppid": 86158,
+        "pgid": 86297,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:06 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86297,
+            "ppid": 86158,
+            "pgid": 86297,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86297,
+            "ppid": 86158,
+            "pgid": 86297,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:06.685830+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "a85ba15d558500c92119a9d19d56048a4c8235cb6f27b744b9815013aec4c3c8",
+      "log_bytes": 469,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30385929183103144,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-10-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_directory_path_replacement_keeps_the_held_directory",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:06.687658+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-10-list.log",
+      "pid": 86304,
+      "pgid": 86304,
+      "sid": 86304,
+      "darwin_leader_identity": {
+        "pid": 86304,
+        "ppid": 86158,
+        "pgid": 86304,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:06 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86304,
+            "ppid": 86158,
+            "pgid": 86304,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86304,
+            "ppid": 86158,
+            "pgid": 86304,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:06.989505+00:00",
+      "elapsed_seconds": 0.301,
+      "log_sha256": "ed8c6296990c4a44e4ae688409042e5a12e95a18bcfb1416f2706637813c6ef9",
+      "log_bytes": 370,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3026854589115828,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-10",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_directory_path_replacement_keeps_the_held_directory",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:06.990901+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-10.log",
+      "pid": 86311,
+      "pgid": 86311,
+      "sid": 86311,
+      "darwin_leader_identity": {
+        "pid": 86311,
+        "ppid": 86158,
+        "pgid": 86311,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:06 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86311,
+            "ppid": 86158,
+            "pgid": 86311,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86311,
+            "ppid": 86158,
+            "pgid": 86311,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:06 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:07.292463+00:00",
+      "elapsed_seconds": 0.301,
+      "log_sha256": "650f6125403e0ba9ed5684f6953eae785c247d5527331dc03831bff04de3c535",
+      "log_bytes": 468,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30245566717348993,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-11-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_short_reads_eintr_and_eof_keep_each_64k_gate",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:07.294363+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-11-list.log",
+      "pid": 86318,
+      "pgid": 86318,
+      "sid": 86318,
+      "darwin_leader_identity": {
+        "pid": 86318,
+        "ppid": 86158,
+        "pgid": 86318,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:07 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86318,
+            "ppid": 86158,
+            "pgid": 86318,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:07 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86318,
+            "ppid": 86158,
+            "pgid": 86318,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:07 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:07.598855+00:00",
+      "elapsed_seconds": 0.304,
+      "log_sha256": "452ccb31fa5b6a6c8b0af9c6d523687358a4ce95be8a5479b720a28ebd0bb0c4",
+      "log_bytes": 363,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30537329195067286,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-11",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_short_reads_eintr_and_eof_keep_each_64k_gate",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:07.600313+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-11.log",
+      "pid": 86326,
+      "pgid": 86326,
+      "sid": 86326,
+      "darwin_leader_identity": {
+        "pid": 86326,
+        "ppid": 86158,
+        "pgid": 86326,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:07 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86326,
+            "ppid": 86158,
+            "pgid": 86326,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:07 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86326,
+            "ppid": 86158,
+            "pgid": 86326,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:07 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:07.905598+00:00",
+      "elapsed_seconds": 0.305,
+      "log_sha256": "b39388d1d7fdc42a1813c9b826b82834f04b1c7306b30020bdf819921c4ed8ca",
+      "log_bytes": 461,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.30619612499140203,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-12-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_trailing_bytes_and_full_reference_mismatch_are_rejected",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:07.907624+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-12-list.log",
+      "pid": 86335,
+      "pgid": 86335,
+      "sid": 86335,
+      "darwin_leader_identity": {
+        "pid": 86335,
+        "ppid": 86158,
+        "pgid": 86335,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:07 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86335,
+            "ppid": 86158,
+            "pgid": 86335,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:07 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86335,
+            "ppid": 86158,
+            "pgid": 86335,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:07 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:08.211602+00:00",
+      "elapsed_seconds": 0.304,
+      "log_sha256": "eeb0c57f964fb4a48cba7fea990718aa5db45e216a56f2fdfd7545c4bda8c52c",
+      "log_bytes": 374,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3048760409001261,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-12",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_trailing_bytes_and_full_reference_mismatch_are_rejected",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:08.213498+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-12.log",
+      "pid": 86342,
+      "pgid": 86342,
+      "sid": 86342,
+      "darwin_leader_identity": {
+        "pid": 86342,
+        "ppid": 86158,
+        "pgid": 86342,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:08 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86342,
+            "ppid": 86158,
+            "pgid": 86342,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:08 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86342,
+            "ppid": 86158,
+            "pgid": 86342,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:08 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:08.518685+00:00",
+      "elapsed_seconds": 0.305,
+      "log_sha256": "7c9799e0f5edd6b73a8f848f5192a619721c0eb7df26212f5016d7f13008e1c1",
+      "log_bytes": 472,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3061107499524951,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-13-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_interrupted_reads_have_a_finite_original_gate_bound",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:08.520984+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-13-list.log",
+      "pid": 86349,
+      "pgid": 86349,
+      "sid": 86349,
+      "darwin_leader_identity": {
+        "pid": 86349,
+        "ppid": 86158,
+        "pgid": 86349,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:08 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86349,
+            "ppid": 86158,
+            "pgid": 86349,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:08 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86349,
+            "ppid": 86158,
+            "pgid": 86349,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:08 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:08.826678+00:00",
+      "elapsed_seconds": 0.305,
+      "log_sha256": "d7878f7a759b3befac6a2a5dc91fb77766fa4383045c5725ade7db41a1d89a5d",
+      "log_bytes": 370,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3066348750144243,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-13",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked::existing::tests::checked_existing_interrupted_reads_have_a_finite_original_gate_bound",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:08.828198+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-13.log",
+      "pid": 86356,
+      "pgid": 86356,
+      "sid": 86356,
+      "darwin_leader_identity": {
+        "pid": 86356,
+        "ppid": 86158,
+        "pgid": 86356,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:08 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86356,
+            "ppid": 86158,
+            "pgid": 86356,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:08 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86356,
+            "ppid": 86158,
+            "pgid": 86356,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:08 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:09.132908+00:00",
+      "elapsed_seconds": 0.304,
+      "log_sha256": "8907b4cc01d0c4318f2e39a250b3fe885f6911d429a9bee845290a5a2d9928e2",
+      "log_bytes": 468,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3056498330552131,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-14-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::tests::missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:09.135036+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-14-list.log",
+      "pid": 86363,
+      "pgid": 86363,
+      "sid": 86363,
+      "darwin_leader_identity": {
+        "pid": 86363,
+        "ppid": 86158,
+        "pgid": 86363,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:09 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86363,
+            "ppid": 86158,
+            "pgid": 86363,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:09 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86363,
+            "ppid": 86158,
+            "pgid": 86363,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:09 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:33.496530+00:00",
+      "elapsed_seconds": 24.361,
+      "log_sha256": "3e192a3be8936657a1247f0cd08b7c3ee85d29a07bc917d73fbdbd45c5ad06e3",
+      "log_bytes": 497,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 24.362526207929477,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-14",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::tests::missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:33.498319+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-14.log",
+      "pid": 86426,
+      "pgid": 86426,
+      "sid": 86426,
+      "darwin_leader_identity": {
+        "pid": 86426,
+        "ppid": 86158,
+        "pgid": 86426,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:33 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86426,
+            "ppid": 86158,
+            "pgid": 86426,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:33 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86426,
+            "ppid": 86158,
+            "pgid": 86426,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:33 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:34.631412+00:00",
+      "elapsed_seconds": 1.133,
+      "log_sha256": "edd3e290ee9a361e829af40e76a471f39a8d3c7a06614889f6b1105594d9d49e",
+      "log_bytes": 449,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 1.1340888750273734,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-15-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::tests::exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_compaction",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:34.633610+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-15-list.log",
+      "pid": 86458,
+      "pgid": 86458,
+      "sid": 86458,
+      "darwin_leader_identity": {
+        "pid": 86458,
+        "ppid": 86158,
+        "pgid": 86458,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:34 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86458,
+            "ppid": 86158,
+            "pgid": 86458,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:34 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86458,
+            "ppid": 86158,
+            "pgid": 86458,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:34 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:34.934320+00:00",
+      "elapsed_seconds": 0.3,
+      "log_sha256": "8d8b4c81ee012c1aa717dfa37711da9f51d0c06190b2c1a83add16921430d87c",
+      "log_bytes": 366,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3017369171138853,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-15",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::tests::exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_compaction",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:34.936018+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-15.log",
+      "pid": 86465,
+      "pgid": 86465,
+      "sid": 86465,
+      "darwin_leader_identity": {
+        "pid": 86465,
+        "ppid": 86158,
+        "pgid": 86465,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:34 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86465,
+            "ppid": 86158,
+            "pgid": 86465,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:34 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86465,
+            "ppid": 86158,
+            "pgid": 86465,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:34 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:36.274735+00:00",
+      "elapsed_seconds": 1.338,
+      "log_sha256": "da3bbe3ec47778aa95dd0b7e58c231927899a12c01f87b2bdb5f8fe4187c9d71",
+      "log_bytes": 671,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 1.339854417135939,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-16-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::batch::tests::bounded_batch_rejects_fourth_leaf_truncation_trailing_and_duplicate_refs",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:36.277309+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-16-list.log",
+      "pid": 86497,
+      "pgid": 86497,
+      "sid": 86497,
+      "darwin_leader_identity": {
+        "pid": 86497,
+        "ppid": 86158,
+        "pgid": 86497,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:36 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86497,
+            "ppid": 86158,
+            "pgid": 86497,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:36 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86497,
+            "ppid": 86158,
+            "pgid": 86497,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:36 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:36.578949+00:00",
+      "elapsed_seconds": 0.301,
+      "log_sha256": "5a474c418421b40d8584dd8afabda72018fd1ebc0a510391695e1e8200986619",
+      "log_bytes": 361,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3026697498280555,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-16",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::batch::tests::bounded_batch_rejects_fourth_leaf_truncation_trailing_and_duplicate_refs",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:36.580711+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-16.log",
+      "pid": 86508,
+      "pgid": 86508,
+      "sid": 86508,
+      "darwin_leader_identity": {
+        "pid": 86508,
+        "ppid": 86158,
+        "pgid": 86508,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:36 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86508,
+            "ppid": 86158,
+            "pgid": 86508,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:36 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86508,
+            "ppid": 86158,
+            "pgid": 86508,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:36 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:36.883128+00:00",
+      "elapsed_seconds": 0.302,
+      "log_sha256": "43a79e3b07143c4231653f385085db99ad14d8fc8704d785e1e4f0a3e2d46c69",
+      "log_bytes": 458,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3034216249361634,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-17-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::batch::tests::ensure_reference_bound_and_missing_subset_do_not_expand_ciphertext_batches",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:36.885515+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-17-list.log",
+      "pid": 86517,
+      "pgid": 86517,
+      "sid": 86517,
+      "darwin_leader_identity": {
+        "pid": 86517,
+        "ppid": 86158,
+        "pgid": 86517,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:36 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86517,
+            "ppid": 86158,
+            "pgid": 86517,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:36 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86517,
+            "ppid": 86158,
+            "pgid": 86517,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:36 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:37.188565+00:00",
+      "elapsed_seconds": 0.302,
+      "log_sha256": "69c2a463223e94b71865b22992dead318e798baa7ad880e33548e1cff034def6",
+      "log_bytes": 363,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3041361249051988,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-17",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::batch::tests::ensure_reference_bound_and_missing_subset_do_not_expand_ciphertext_batches",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:37.190370+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-17.log",
+      "pid": 86524,
+      "pgid": 86524,
+      "sid": 86524,
+      "darwin_leader_identity": {
+        "pid": 86524,
+        "ppid": 86158,
+        "pgid": 86524,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:37 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86524,
+            "ppid": 86158,
+            "pgid": 86524,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:37 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86524,
+            "ppid": 86158,
+            "pgid": 86524,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:37 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:37.493887+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "099f559825dd5dffcab529cec1eb67be71f521409f6b57188ad56719253fad14",
+      "log_bytes": 460,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3046321249566972,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-18-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::tests::ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences",
+        "--",
+        "--list",
+        "--exact"
+      ],
+      "started_utc": "2026-10-20T04:32:37.496382+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-18-list.log",
+      "pid": 86533,
+      "pgid": 86533,
+      "sid": 86533,
+      "darwin_leader_identity": {
+        "pid": 86533,
+        "ppid": 86158,
+        "pgid": 86533,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:37 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86533,
+            "ppid": 86158,
+            "pgid": 86533,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:37 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86533,
+            "ppid": 86158,
+            "pgid": 86533,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:37 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:37.799805+00:00",
+      "elapsed_seconds": 0.303,
+      "log_sha256": "f762fa0426acebf8354f37486d5cccfa15881e762f85cd7c66e7c4039bfe33dd",
+      "log_bytes": 358,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 0.3044644589535892,
+      "returned_within_original_command_deadline": true
+    },
+    {
+      "label": "focused-18",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "experimental-v6-peer-ingress",
+        "v6_closure_quorum::tests::ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "started_utc": "2026-10-20T04:32:37.801555+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "focused-18.log",
+      "pid": 86543,
+      "pgid": 86543,
+      "sid": 86543,
+      "darwin_leader_identity": {
+        "pid": 86543,
+        "ppid": 86158,
+        "pgid": 86543,
+        "uid": 501,
+        "lstart": "Tue Oct 20 12:32:37 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 86543,
+            "ppid": 86158,
+            "pgid": 86543,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:37 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 86543,
+            "ppid": 86158,
+            "pgid": 86543,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Tue Oct 20 12:32:37 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T04:32:40.597481+00:00",
+      "elapsed_seconds": 2.795,
+      "log_sha256": "aedd511acc8b06daf60773a0997c02f5af2aa91927c05cb64bf544b3ca8f2d5e",
+      "log_bytes": 455,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false,
+      "controller_observed_elapsed_seconds": 2.7970112080220133,
+      "returned_within_original_command_deadline": true
+    }
+  ],
+  "tests": [
+    {
+      "label": "focused-01",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::tests::missing_probe_separates_initial_absence_from_corruption_and_cold_reads",
+      "new": true,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::tests::missing_probe_separates_initial_absence_from_corruption_and_cold_reads"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "912036db5793f2e1b37d44474eee8c035f8394bee03629c5a2d809e24fb30a16"
+    },
+    {
+      "label": "focused-02",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::tests::missing_probe_rejects_late_disappearance_directory_swap_and_original_gate",
+      "new": true,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::tests::missing_probe_rejects_late_disappearance_directory_swap_and_original_gate"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "e1e28f6f4d60e0f1b86934bdd64ae076a9e190175e0660bd2a7c50f30895272d"
+    },
+    {
+      "label": "focused-03",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "dd8f836328bd8f88da8288198554ee75c38d92b24adb85bb5de88e8fbe591880"
+    },
+    {
+      "label": "focused-04",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_bad_or_truncated_leaf_is_rejected_without_rewrite",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_bad_or_truncated_leaf_is_rejected_without_rewrite"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "3a8037f232bc17905f296286ae2a9cfdb1c83122d2e8f54f4d200cfe4c890f9e"
+    },
+    {
+      "label": "focused-05",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_symlink_hardlink_and_directory_are_never_missing",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_symlink_hardlink_and_directory_are_never_missing"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "5810f1a6f275aa1f50cee47b2398eeb829ad3d38f6d9fe52f1503ff654a75b6f"
+    },
+    {
+      "label": "focused-06",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_cancellation_at_actual_boundaries_releases_no_receipt",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_cancellation_at_actual_boundaries_releases_no_receipt"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "8c26680d8d84ea714881e1356ad605c568d89fd5c80ed6386ab251759ea53055"
+    },
+    {
+      "label": "focused-07",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_original_deadline_after_actual_file_sync_is_not_renewed",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_original_deadline_after_actual_file_sync_is_not_renewed"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "9360b9ae99f196502046e1cf1df6b50aba31f561168f0099d07cb03276bffeeb"
+    },
+    {
+      "label": "focused-08",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_same_content_name_replacement_at_each_boundary_is_rejected",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_same_content_name_replacement_at_each_boundary_is_rejected"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "cb86386a565f71b2dc10abd56b27694de8c631f28a135a007bd04ea766a46ef9"
+    },
+    {
+      "label": "focused-09",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_same_inode_mutation_after_each_real_sync_is_rejected",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_same_inode_mutation_after_each_real_sync_is_rejected"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "a85ba15d558500c92119a9d19d56048a4c8235cb6f27b744b9815013aec4c3c8"
+    },
+    {
+      "label": "focused-10",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_directory_path_replacement_keeps_the_held_directory",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_directory_path_replacement_keeps_the_held_directory"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "650f6125403e0ba9ed5684f6953eae785c247d5527331dc03831bff04de3c535"
+    },
+    {
+      "label": "focused-11",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_short_reads_eintr_and_eof_keep_each_64k_gate",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_short_reads_eintr_and_eof_keep_each_64k_gate"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "b39388d1d7fdc42a1813c9b826b82834f04b1c7306b30020bdf819921c4ed8ca"
+    },
+    {
+      "label": "focused-12",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_trailing_bytes_and_full_reference_mismatch_are_rejected",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_trailing_bytes_and_full_reference_mismatch_are_rejected"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "7c9799e0f5edd6b73a8f848f5192a619721c0eb7df26212f5016d7f13008e1c1"
+    },
+    {
+      "label": "focused-13",
+      "crate": "heptabao-raft-runtime",
+      "feature": "experimental-v6-raft-objects",
+      "exact_name": "v6_replica_blobs::checked::existing::tests::checked_existing_interrupted_reads_have_a_finite_original_gate_bound",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_replica_blobs::checked::existing::tests::checked_existing_interrupted_reads_have_a_finite_original_gate_bound"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "8907b4cc01d0c4318f2e39a250b3fe885f6911d429a9bee845290a5a2d9928e2"
+    },
+    {
+      "label": "focused-14",
+      "crate": "heptabao-ha-service",
+      "feature": "experimental-v6-peer-ingress",
+      "exact_name": "v6_closure_quorum::tests::missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences",
+      "new": true,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_closure_quorum::tests::missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "edd3e290ee9a361e829af40e76a471f39a8d3c7a06614889f6b1105594d9d49e"
+    },
+    {
+      "label": "focused-15",
+      "crate": "heptabao-ha-service",
+      "feature": "experimental-v6-peer-ingress",
+      "exact_name": "v6_closure_quorum::tests::exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_compaction",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_closure_quorum::tests::exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_compaction"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "da3bbe3ec47778aa95dd0b7e58c231927899a12c01f87b2bdb5f8fe4187c9d71"
+    },
+    {
+      "label": "focused-16",
+      "crate": "heptabao-ha-service",
+      "feature": "experimental-v6-peer-ingress",
+      "exact_name": "v6_closure_quorum::batch::tests::bounded_batch_rejects_fourth_leaf_truncation_trailing_and_duplicate_refs",
+      "new": false,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_closure_quorum::batch::tests::bounded_batch_rejects_fourth_leaf_truncation_trailing_and_duplicate_refs"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "43a79e3b07143c4231653f385085db99ad14d8fc8704d785e1e4f0a3e2d46c69"
+    },
+    {
+      "label": "focused-17",
+      "crate": "heptabao-ha-service",
+      "feature": "experimental-v6-peer-ingress",
+      "exact_name": "v6_closure_quorum::batch::tests::ensure_reference_bound_and_missing_subset_do_not_expand_ciphertext_batches",
+      "new": true,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_closure_quorum::batch::tests::ensure_reference_bound_and_missing_subset_do_not_expand_ciphertext_batches"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "099f559825dd5dffcab529cec1eb67be71f521409f6b57188ad56719253fad14"
+    },
+    {
+      "label": "focused-18",
+      "crate": "heptabao-ha-service",
+      "feature": "experimental-v6-peer-ingress",
+      "exact_name": "v6_closure_quorum::tests::ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences",
+      "new": true,
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "v6_closure_quorum::tests::ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "aedd511acc8b06daf60773a0997c02f5af2aa91927c05cb64bf544b3ca8f2d5e"
+    }
+  ],
+  "runner_completed": true,
+  "source_unchanged": true,
+  "verified_input_pins": [
+    {
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11-manifest.json",
+      "sha256": "2404b4be35dc281876401cec86b11486b4e9c7b4bd0fb58174b12f9e059e54de"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r9-ha-focused16-executor-20261019-r1-stage/focused-test-selection.json",
+      "sha256": "5f468eb73595f8199e742df1f5a506fe9cfdfdd9b57c7b1615d55317fbff39c1"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r11-ha-focused18-executor-20261020-r1-stage/focused18-additional-selection.json",
+      "sha256": "1237adab9e8b8e8439655b863f7872358931e4e2657023beb21a4549793ccf37"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11/qa/openbao-acceptance/native_candidate_host_run.py",
+      "sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11/qa/openbao-acceptance/native_service_only_compile.py",
+      "sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11/crates/heptabao-ha-service/Cargo.toml",
+      "sha256": "23b12086175b7171655f1fe28ad565e2270d7f5b2ca075d7b8300562c1666f72"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11/crates/heptabao-ha-service/src/lib.rs",
+      "sha256": "192a283f1aadbec124608c5e0afae7d0860e2d653c560a5b3054fb6047b64012"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11/crates/heptabao-raft-runtime/Cargo.toml",
+      "sha256": "1fc0c3588c4e6660257c0e80a0998f5e312f7536f29b0b2c7d38b47b20d00819"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r11/crates/heptabao-raft-runtime/src/lib.rs",
+      "sha256": "0e608b8f1350ba02c831ba0fd6c4352f10913930eea90bcd163dfe28cfa95011"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r9-ha-focused16-executor-20261019-r1-stage/original-mac-e324563-summary.json",
+      "sha256": "a8f8c2bf082112b9a19db24e570876891e2b4786f6fb40f0fcb6e24ab0d6c2c3"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r9-ha-focused16-executor-20261019-r1-stage/original-cargo-version.log",
+      "sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r9-ha-focused16-executor-20261019-r1-stage/original-rustc-version.log",
+      "sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r11-ha-focused18-executor-20261020-r1-stage/focused18-config.json",
+      "sha256": "d8caf35fb1af74e92fd54554fa4919fcefa72dac10d4dd01b1b956aeec288b43"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r11-ha-focused18-executor-20261020-r1-stage/native_ha_focused18_r11_mac.py",
+      "sha256": "247012d3fe4c6865617ba902015f7eeae89559fa9a81aa3a336aea92fc01e7df"
+    }
+  ],
+  "physical_lan_fault_validation_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "source_before": {
+    "verified_at_utc": "2026-10-20T04:32:00.161800+00:00",
+    "commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+    "tree": "072be70722f3117118683403975a57fba9cfdbb4",
+    "verified_files": 3552
+  },
+  "toolchain_before": {
+    "cargo": {
+      "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "sha256": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9"
+    },
+    "rustc": {
+      "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+      "sha256": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49"
+    }
+  },
+  "explicit_environment": {
+    "PATH": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "CARGO_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo",
+    "CARGO_TARGET_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+    "RUSTC": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+    "CARGO_BUILD_JOBS": "2",
+    "CMAKE_BUILD_PARALLEL_LEVEL": "2",
+    "CARGO_TERM_COLOR": "never",
+    "CARGO_NET_OFFLINE": "true",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-focused18-r11-mac-20261020-r1/tmp",
+    "CARGO_TARGET_TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-focused18-r11-mac-20261020-r1/tmp",
+    "RUST_TEST_THREADS": "1"
+  },
+  "source_after": {
+    "verified_at_utc": "2026-10-20T04:32:40.739300+00:00",
+    "commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+    "tree": "072be70722f3117118683403975a57fba9cfdbb4",
+    "verified_files": 3552
+  },
+  "stable_identity_fields_compared": [
+    "commit",
+    "tree",
+    "verified_files"
+  ],
+  "toolchain_after": {
+    "cargo": {
+      "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "sha256": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9"
+    },
+    "rustc": {
+      "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+      "sha256": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49"
+    }
+  },
+  "toolchain_unchanged": true,
+  "input_pins_unchanged": true,
+  "finished_utc": "2026-10-20T04:32:40.751137+00:00",
+  "actual_passed_test_count": 18,
+  "qualified_passed_test_count": 18,
+  "actual_commands": 36
+}

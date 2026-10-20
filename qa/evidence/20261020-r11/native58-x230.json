@@ -1,0 +1,2808 @@
+{
+  "schema": "heptabao.native-linux-transferred-artifact-run.v1",
+  "status": "passed_scoped_transferred_artifacts",
+  "started_utc": "2026-10-20T04:53:50.390007+00:00",
+  "source_commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+  "source_tree": "072be70722f3117118683403975a57fba9cfdbb4",
+  "product_manifest_sha256": "2404b4be35dc281876401cec86b11486b4e9c7b4bd0fb58174b12f9e059e54de",
+  "capsule_sha256": "c449394ef9218bf9babb4308e787d1317583962ee6f7765f4b60d45bb68695f3",
+  "driver_sha256": "3ca6b6dfee259436c725f8bff9e6b72d7af363aa5a6e08d50d50ebf74e9f9fe7",
+  "producer_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "producer_role": "main",
+  "producer_hostname": "qian-qi",
+  "producer_original_status": "passed_scoped_host_recovery",
+  "producer_summary_sha256": "6cca7460876a620d40ee11e81310dc5730c46a2b5ab166b40f80641e941f1064",
+  "executor_role": "x230",
+  "executor_host": {
+    "hostname": "qian-ThinkPad-X230",
+    "platform": "Linux-6.8.0-142-generic-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "libc": [
+      "glibc",
+      "2.39"
+    ],
+    "first_cpu": {
+      "cpu family": "6",
+      "model": "58",
+      "model name": "Intel(R) Core(TM) i5-3230M CPU @ 2.60GHz",
+      "stepping": "9",
+      "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm cpuid_fault epb pti ssbd ibrs ibpb stibp tpr_shadow flexpriority ept vpid fsgsbase smep erms xsaveopt dtherm ida arat pln pts vnmi md_clear flush_l1d ibpb_exit_to_user"
+    }
+  },
+  "compiled_on_executor": false,
+  "compiler_invocations_on_executor": 0,
+  "required_test_count": 58,
+  "selected_groups": [
+    [
+      "native-kv2-import",
+      "server",
+      "native_kv2_graph_import_",
+      8
+    ],
+    [
+      "native-kv2-large",
+      "server",
+      "native_large_kv2_",
+      15
+    ],
+    [
+      "native-kv2-mount",
+      "server",
+      "service::native_auth::mount_tests::native_kv2_mount_",
+      3
+    ],
+    [
+      "forward-original-unseal-veto",
+      "server",
+      "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+      1
+    ],
+    [
+      "forward-no-second-floor",
+      "server",
+      "completed_forward_precise_follower_audits_without_second_floor_or_use",
+      1
+    ],
+    [
+      "historical-service",
+      "server",
+      "native_ha_historical_restore_",
+      6
+    ],
+    [
+      "snapshot-service",
+      "server",
+      "native_ha_snapshot_",
+      7
+    ],
+    [
+      "archive-34mib",
+      "server",
+      "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+      1
+    ],
+    [
+      "http-repair-admission",
+      "server",
+      "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+      1
+    ],
+    [
+      "http-pending-admission",
+      "server",
+      "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+      1
+    ],
+    [
+      "private-transport-diagnostic",
+      "peer",
+      "private_forward_stage_observation_preserves_existing_transport_errors",
+      1
+    ],
+    [
+      "private-frame-diagnostic",
+      "peer",
+      "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+      1
+    ],
+    [
+      "kv2-api-271-numbers",
+      "server",
+      "kv2_api_271_",
+      3
+    ],
+    [
+      "native-kv2-storage-witness",
+      "server",
+      "native_kv2_storage_witness_",
+      5
+    ],
+    [
+      "lossless-json-private-tags",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+      1
+    ],
+    [
+      "lossless-kv1-conversion",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+      1
+    ],
+    [
+      "lossless-token-equivalence",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+      1
+    ],
+    [
+      "native-raw-private-tags",
+      "server",
+      "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+      1
+    ]
+  ],
+  "original_command_deadline_seconds": 1800,
+  "commands": [
+    {
+      "label": "native-kv2-import-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_kv2_graph_import_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:53:51.432851+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-import-list.log",
+      "pid": 1664022,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1664022,
+        "owned_session_identity": {
+          "pid": 1664022,
+          "ppid": 1663803,
+          "pgid": 1664022,
+          "sid": 1664022,
+          "start_ticks": 117409226,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.022473
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:53:51.511237+00:00",
+      "elapsed_seconds": 0.076515,
+      "log_sha256": "437b384bb3eb4ef79d89341afad77391bca6e9200e9e02f70acd91f3f155e609",
+      "log_bytes": 1248
+    },
+    {
+      "label": "native-kv2-import",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_kv2_graph_import_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:53:51.514112+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-import.log",
+      "pid": 1664023,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1664023,
+        "owned_session_identity": {
+          "pid": 1664023,
+          "ppid": 1663803,
+          "pgid": 1664023,
+          "sid": 1664023,
+          "start_ticks": 117409234,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.026509
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:53:57.961556+00:00",
+      "elapsed_seconds": 6.445347,
+      "log_sha256": "be37fde045fe4d9795e0c658aa899450080d8a2dc4f30b77984a7cffd97b9312",
+      "log_bytes": 3683
+    },
+    {
+      "label": "native-kv2-large-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_large_kv2_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:53:57.968211+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-large-list.log",
+      "pid": 1664058,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1664058,
+        "owned_session_identity": {
+          "pid": 1664058,
+          "ppid": 1663803,
+          "pgid": 1664058,
+          "sid": 1664058,
+          "start_ticks": 117409880,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019944
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:53:57.997284+00:00",
+      "elapsed_seconds": 0.027096,
+      "log_sha256": "09be8c37c462e9b03f301541799b6721d3192299477f43df5e484c296ab9b20f",
+      "log_bytes": 2062
+    },
+    {
+      "label": "native-kv2-large",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_large_kv2_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:53:57.999965+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-large.log",
+      "pid": 1664059,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1664059,
+        "owned_session_identity": {
+          "pid": 1664059,
+          "ppid": 1663803,
+          "pgid": 1664059,
+          "sid": 1664059,
+          "start_ticks": 117409883,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.020805
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:25.809402+00:00",
+      "elapsed_seconds": 27.807405,
+      "log_sha256": "ca66524d5dfad24589058327ec4651804c3b347900583da0802c0317e38cee19",
+      "log_bytes": 5079
+    },
+    {
+      "label": "native-kv2-mount-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "service::native_auth::mount_tests::native_kv2_mount_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:25.817627+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-mount-list.log",
+      "pid": 1664458,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1664458,
+        "owned_session_identity": {
+          "pid": 1664458,
+          "ppid": 1663803,
+          "pgid": 1664458,
+          "sid": 1664458,
+          "start_ticks": 117412665,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.036151
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:25.915260+00:00",
+      "elapsed_seconds": 0.094032,
+      "log_sha256": "3986b010be997f852ff251fd45ca6f10f1d33885767d4cf856e3ca33e041ccb4",
+      "log_bytes": 668
+    },
+    {
+      "label": "native-kv2-mount",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "service::native_auth::mount_tests::native_kv2_mount_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:25.920045+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-mount.log",
+      "pid": 1664459,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1664459,
+        "owned_session_identity": {
+          "pid": 1664459,
+          "ppid": 1663803,
+          "pgid": 1664459,
+          "sid": 1664459,
+          "start_ticks": 117412675,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019681
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:31.933235+00:00",
+      "elapsed_seconds": 6.008295,
+      "log_sha256": "6fdfb1f9fcd398fe001307485b6da0f5ce8532c9843939e72032b4a00094457f",
+      "log_bytes": 2227
+    },
+    {
+      "label": "forward-original-unseal-veto-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:31.942790+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "forward-original-unseal-veto-list.log",
+      "pid": 1665167,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1665167,
+        "owned_session_identity": {
+          "pid": 1665167,
+          "ppid": 1663803,
+          "pgid": 1665167,
+          "sid": 1665167,
+          "start_ticks": 117413277,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.01994
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:32.022873+00:00",
+      "elapsed_seconds": 0.077323,
+      "log_sha256": "cefaf8e51c8bade45edf2f8e12e32e787a0cb1239071b8bb8b96c2eb244a2164",
+      "log_bytes": 418
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:32.031074+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "forward-original-unseal-veto.log",
+      "pid": 1665172,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1665172,
+        "owned_session_identity": {
+          "pid": 1665172,
+          "ppid": 1663803,
+          "pgid": 1665172,
+          "sid": 1665172,
+          "start_ticks": 117413286,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.034773
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:32.484877+00:00",
+      "elapsed_seconds": 0.449417,
+      "log_sha256": "2e5e43e0528e2eee14d2abbd2202be8531f0ac5c56b27de618bbddf507530a0e",
+      "log_bytes": 833
+    },
+    {
+      "label": "forward-no-second-floor-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "completed_forward_precise_follower_audits_without_second_floor_or_use",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:32.499253+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "forward-no-second-floor-list.log",
+      "pid": 1665229,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1665229,
+        "owned_session_identity": {
+          "pid": 1665229,
+          "ppid": 1663803,
+          "pgid": 1665229,
+          "sid": 1665229,
+          "start_ticks": 117413333,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.035233
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:32.594429+00:00",
+      "elapsed_seconds": 0.09091,
+      "log_sha256": "e8ae37d3fa50bd9d96c29dd04057bde3f91a0fb8f789a0cb1a519b084c1c3ff5",
+      "log_bytes": 428
+    },
+    {
+      "label": "forward-no-second-floor",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "completed_forward_precise_follower_audits_without_second_floor_or_use",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:32.604930+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "forward-no-second-floor.log",
+      "pid": 1665236,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1665236,
+        "owned_session_identity": {
+          "pid": 1665236,
+          "ppid": 1663803,
+          "pgid": 1665236,
+          "sid": 1665236,
+          "start_ticks": 117413344,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.020252
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:33.088904+00:00",
+      "elapsed_seconds": 0.478328,
+      "log_sha256": "366685087dd0db5519dbc09e900de338b2097b4546ab7899af9e32b2d4aef178",
+      "log_bytes": 779
+    },
+    {
+      "label": "historical-service-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_historical_restore_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:33.097060+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "historical-service-list.log",
+      "pid": 1665249,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1665249,
+        "owned_session_identity": {
+          "pid": 1665249,
+          "ppid": 1663803,
+          "pgid": 1665249,
+          "sid": 1665249,
+          "start_ticks": 117413393,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.034836
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:54:33.191563+00:00",
+      "elapsed_seconds": 0.09142,
+      "log_sha256": "ce995c811b3f013cb21433bb4d4e7151b7273243e8b1a142d8e1239c3a7116ab",
+      "log_bytes": 1229
+    },
+    {
+      "label": "historical-service",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_historical_restore_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:54:33.203260+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "historical-service.log",
+      "pid": 1665250,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1665250,
+        "owned_session_identity": {
+          "pid": 1665250,
+          "ppid": 1663803,
+          "pgid": 1665250,
+          "sid": 1665250,
+          "start_ticks": 117413404,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019838
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:56:19.306701+00:00",
+      "elapsed_seconds": 106.098142,
+      "log_sha256": "d20361e07907191143fddbdc45d8a4ae77cc8670947585aabe05f5d4ff55937b",
+      "log_bytes": 166421
+    },
+    {
+      "label": "snapshot-service-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_snapshot_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:56:19.317441+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "snapshot-service-list.log",
+      "pid": 1670532,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1670532,
+        "owned_session_identity": {
+          "pid": 1670532,
+          "ppid": 1663803,
+          "pgid": 1670532,
+          "sid": 1670532,
+          "start_ticks": 117424015,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019866
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:56:19.394249+00:00",
+      "elapsed_seconds": 0.073919,
+      "log_sha256": "ec559914a3ed6af66a82da24c0dfd6c64c6eb28f64c9a7e7aab531e9fc4e7ddf",
+      "log_bytes": 1301
+    },
+    {
+      "label": "snapshot-service",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_snapshot_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:56:19.399336+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "snapshot-service.log",
+      "pid": 1670533,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1670533,
+        "owned_session_identity": {
+          "pid": 1670533,
+          "ppid": 1663803,
+          "pgid": 1670533,
+          "sid": 1670533,
+          "start_ticks": 117424023,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019699
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:04.415845+00:00",
+      "elapsed_seconds": 45.013531,
+      "log_sha256": "a83fbb4f9f42662edd9eafa97fe4be2f180d9d836b9bb9ce09e216a724f90e7c",
+      "log_bytes": 43383
+    },
+    {
+      "label": "archive-34mib-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:04.427462+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "archive-34mib-list.log",
+      "pid": 1671702,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1671702,
+        "owned_session_identity": {
+          "pid": 1671702,
+          "ppid": 1663803,
+          "pgid": 1671702,
+          "sid": 1671702,
+          "start_ticks": 117428526,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.025776
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:04.465283+00:00",
+      "elapsed_seconds": 0.033274,
+      "log_sha256": "b20daf632d82b0f7fb0d3247c6ac1124ba08a94b425d7adc72ff0cf6b12b1e3a",
+      "log_bytes": 442
+    },
+    {
+      "label": "archive-34mib",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:04.469325+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "archive-34mib.log",
+      "pid": 1671703,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1671703,
+        "owned_session_identity": {
+          "pid": 1671703,
+          "ppid": 1663803,
+          "pgid": 1671703,
+          "sid": 1671703,
+          "start_ticks": 117428530,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.025781
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:35.847372+00:00",
+      "elapsed_seconds": 31.373283,
+      "log_sha256": "f8115d88176aab434d7d35b0fa362815153e96440de92ea33c5b48a36c9f33c5",
+      "log_bytes": 729
+    },
+    {
+      "label": "http-repair-admission-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:35.859055+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "http-repair-admission-list.log",
+      "pid": 1672089,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672089,
+        "owned_session_identity": {
+          "pid": 1672089,
+          "ppid": 1663803,
+          "pgid": 1672089,
+          "sid": 1672089,
+          "start_ticks": 117431669,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019806
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:35.938602+00:00",
+      "elapsed_seconds": 0.07628,
+      "log_sha256": "e276a4524dcee10053d71ac1d6a3483ebf283601d5461366469ca14866f2e858",
+      "log_bytes": 425
+    },
+    {
+      "label": "http-repair-admission",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:35.944339+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "http-repair-admission.log",
+      "pid": 1672095,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672095,
+        "owned_session_identity": {
+          "pid": 1672095,
+          "ppid": 1663803,
+          "pgid": 1672095,
+          "sid": 1672095,
+          "start_ticks": 117431678,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.035272
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.042866+00:00",
+      "elapsed_seconds": 0.093422,
+      "log_sha256": "708a21830350ffec54f2c30918fcc68aed788ec4571a50f9865b4b61e8e338dc",
+      "log_bytes": 549
+    },
+    {
+      "label": "http-pending-admission-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.056422+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "http-pending-admission-list.log",
+      "pid": 1672097,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672097,
+        "owned_session_identity": {
+          "pid": 1672097,
+          "ppid": 1663803,
+          "pgid": 1672097,
+          "sid": 1672097,
+          "start_ticks": 117431689,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.034479
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.153224+00:00",
+      "elapsed_seconds": 0.091512,
+      "log_sha256": "5425d33b1a5b745c3bc639eccdafd22784b3767ba3ab0fe7b448b183887cb137",
+      "log_bytes": 443
+    },
+    {
+      "label": "http-pending-admission",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.160887+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "http-pending-admission.log",
+      "pid": 1672098,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672098,
+        "owned_session_identity": {
+          "pid": 1672098,
+          "ppid": 1663803,
+          "pgid": 1672098,
+          "sid": 1672098,
+          "start_ticks": 117431699,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.025933
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.249811+00:00",
+      "elapsed_seconds": 0.083775,
+      "log_sha256": "4ce953165d05ab6df2a5ad71db9d6a3b1d55c18eb155aeb21b8a4865bee7059d",
+      "log_bytes": 567
+    },
+    {
+      "label": "private-transport-diagnostic-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/peer",
+        "private_forward_stage_observation_preserves_existing_transport_errors",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-ha-service",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.259094+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "private-transport-diagnostic-list.log",
+      "pid": 1672102,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672102,
+        "owned_session_identity": {
+          "pid": 1672102,
+          "ppid": 1663803,
+          "pgid": 1672102,
+          "sid": 1672102,
+          "start_ticks": 117431709,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.031285
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.299092+00:00",
+      "elapsed_seconds": 0.036684,
+      "log_sha256": "a9f58578edd89ee2aa418f0bf72d9a8f736cb402e6f054c85b9ca2bea6f9fdc8",
+      "log_bytes": 403
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/peer",
+        "private_forward_stage_observation_preserves_existing_transport_errors",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-ha-service",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.305038+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "private-transport-diagnostic.log",
+      "pid": 1672103,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672103,
+        "owned_session_identity": {
+          "pid": 1672103,
+          "ppid": 1663803,
+          "pgid": 1672103,
+          "sid": 1672103,
+          "start_ticks": 117431714,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019682
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.336019+00:00",
+      "elapsed_seconds": 0.026024,
+      "log_sha256": "081ad8e70ff2eec0eee7efeffa09695747dd9379a45712cdd6eeda8e629b50f9",
+      "log_bytes": 997
+    },
+    {
+      "label": "private-frame-diagnostic-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/peer",
+        "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-ha-service",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.343744+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "private-frame-diagnostic-list.log",
+      "pid": 1672105,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672105,
+        "owned_session_identity": {
+          "pid": 1672105,
+          "ppid": 1663803,
+          "pgid": 1672105,
+          "sid": 1672105,
+          "start_ticks": 117431718,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019992
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.372758+00:00",
+      "elapsed_seconds": 0.025446,
+      "log_sha256": "c178d03866e949c45855c96936cac1668ad5af15634bccaf33e283ce42ee22bf",
+      "log_bytes": 395
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/peer",
+        "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-ha-service",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.376990+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "private-frame-diagnostic.log",
+      "pid": 1672106,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672106,
+        "owned_session_identity": {
+          "pid": 1672106,
+          "ppid": 1663803,
+          "pgid": 1672106,
+          "sid": 1672106,
+          "start_ticks": 117431721,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019758
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.406059+00:00",
+      "elapsed_seconds": 0.025465,
+      "log_sha256": "849a1f35a90ef903b520a9b65e26ebdd2700c4c4f59c80f08a35a8db3425de0a",
+      "log_bytes": 997
+    },
+    {
+      "label": "kv2-api-271-numbers-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "kv2_api_271_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.413717+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "kv2-api-271-numbers-list.log",
+      "pid": 1672108,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672108,
+        "owned_session_identity": {
+          "pid": 1672108,
+          "ppid": 1663803,
+          "pgid": 1672108,
+          "sid": 1672108,
+          "start_ticks": 117431725,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.024517
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.499235+00:00",
+      "elapsed_seconds": 0.081818,
+      "log_sha256": "039d80716a99f44894547aeec07a0ccf6f7003cb3ab506fccb9185889e34ff9a",
+      "log_bytes": 587
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "kv2_api_271_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.505825+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "kv2-api-271-numbers.log",
+      "pid": 1672109,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672109,
+        "owned_session_identity": {
+          "pid": 1672109,
+          "ppid": 1663803,
+          "pgid": 1672109,
+          "sid": 1672109,
+          "start_ticks": 117431734,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.024352
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.593787+00:00",
+      "elapsed_seconds": 0.081933,
+      "log_sha256": "3e7f82714f0d37adae401fb88d9c71d6e4032e3bd73caeaccab0282b825be86a",
+      "log_bytes": 723
+    },
+    {
+      "label": "native-kv2-storage-witness-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_kv2_storage_witness_",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.603796+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-storage-witness-list.log",
+      "pid": 1672113,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672113,
+        "owned_session_identity": {
+          "pid": 1672113,
+          "ppid": 1663803,
+          "pgid": 1672113,
+          "sid": 1672113,
+          "start_ticks": 117431744,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.025064
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:36.690092+00:00",
+      "elapsed_seconds": 0.082571,
+      "log_sha256": "5a453382697bb5520ce664a231a7a667c9aab56d3ac6a4f69a3bfda25035e92e",
+      "log_bytes": 967
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "native_kv2_storage_witness_",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:36.696248+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-kv2-storage-witness.log",
+      "pid": 1672114,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672114,
+        "owned_session_identity": {
+          "pid": 1672114,
+          "ppid": 1663803,
+          "pgid": 1672114,
+          "sid": 1672114,
+          "start_ticks": 117431753,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019851
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:50.764991+00:00",
+      "elapsed_seconds": 14.064715,
+      "log_sha256": "bf0b47e49174c20b04b7f9bf6ff92e46764a82ff4586b7311f10568e8537cd2b",
+      "log_bytes": 2820
+    },
+    {
+      "label": "lossless-json-private-tags-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:50.774556+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "lossless-json-private-tags-list.log",
+      "pid": 1672246,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672246,
+        "owned_session_identity": {
+          "pid": 1672246,
+          "ppid": 1663803,
+          "pgid": 1672246,
+          "sid": 1672246,
+          "start_ticks": 117433161,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.01994
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:50.807202+00:00",
+      "elapsed_seconds": 0.028489,
+      "log_sha256": "256ed2ed4fbb72ed29b30943d14b90e05019aa2294e0bb3096fcca0814ef5984",
+      "log_bytes": 466
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:50.812297+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "lossless-json-private-tags.log",
+      "pid": 1672247,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672247,
+        "owned_session_identity": {
+          "pid": 1672247,
+          "ppid": 1663803,
+          "pgid": 1672247,
+          "sid": 1672247,
+          "start_ticks": 117433165,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019718
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:50.895241+00:00",
+      "elapsed_seconds": 0.078511,
+      "log_sha256": "e00f762a3911655af415268dc154871f74ae00279dafdd99c204bc4e85bb814d",
+      "log_bytes": 590
+    },
+    {
+      "label": "lossless-kv1-conversion-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:50.906225+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "lossless-kv1-conversion-list.log",
+      "pid": 1672249,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672249,
+        "owned_session_identity": {
+          "pid": 1672249,
+          "ppid": 1663803,
+          "pgid": 1672249,
+          "sid": 1672249,
+          "start_ticks": 117433174,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.025062
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:50.994246+00:00",
+      "elapsed_seconds": 0.083728,
+      "log_sha256": "e539f9fa2a7a7cc87479c88168d33d3ca77b1b80c0c46d0fd83a7067dc5bdecb",
+      "log_bytes": 442
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:51.001071+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "lossless-kv1-conversion.log",
+      "pid": 1672250,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672250,
+        "owned_session_identity": {
+          "pid": 1672250,
+          "ppid": 1663803,
+          "pgid": 1672250,
+          "sid": 1672250,
+          "start_ticks": 117433183,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019673
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:51.083716+00:00",
+      "elapsed_seconds": 0.078127,
+      "log_sha256": "fdc70067e61369485eedfd2a1a1c3ddb7bb18a76d1e7d57ee8d4e0e00023ebb1",
+      "log_bytes": 566
+    },
+    {
+      "label": "lossless-token-equivalence-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:51.095174+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "lossless-token-equivalence-list.log",
+      "pid": 1672252,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672252,
+        "owned_session_identity": {
+          "pid": 1672252,
+          "ppid": 1663803,
+          "pgid": 1672252,
+          "sid": 1672252,
+          "start_ticks": 117433193,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019852
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:51.128367+00:00",
+      "elapsed_seconds": 0.028617,
+      "log_sha256": "4eed4e8f3dcffdcbd8ec500b8a3d52bb694cfc6c433f1dbb79e17b3e7a4f2fb4",
+      "log_bytes": 462
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:51.133480+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "lossless-token-equivalence.log",
+      "pid": 1672253,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672253,
+        "owned_session_identity": {
+          "pid": 1672253,
+          "ppid": 1663803,
+          "pgid": 1672253,
+          "sid": 1672253,
+          "start_ticks": 117433197,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019656
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:51.218305+00:00",
+      "elapsed_seconds": 0.080297,
+      "log_sha256": "43318270a1285399b44f57a6721573cf947d0363ed61d3a64b6621fd64715cb1",
+      "log_bytes": 586
+    },
+    {
+      "label": "native-raw-private-tags-list",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+        "--list",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:51.229939+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-raw-private-tags-list.log",
+      "pid": 1672255,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672255,
+        "owned_session_identity": {
+          "pid": 1672255,
+          "ppid": 1663803,
+          "pgid": 1672255,
+          "sid": 1672255,
+          "start_ticks": 117433206,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019797
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:51.262925+00:00",
+      "elapsed_seconds": 0.028484,
+      "log_sha256": "eec3a276b482ad88a5d10d0fd3cb1cf6f6abab2049ceda9c34535fd9aa86614a",
+      "log_bytes": 470
+    },
+    {
+      "label": "native-raw-private-tags",
+      "argv": [
+        "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server",
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "cwd": "/home/qian/heptabao-continuation-20261019/source-r11/crates/heptabao-server",
+      "status": "passed",
+      "started_utc": "2026-10-20T04:57:51.268126+00:00",
+      "timeout_seconds": 1800,
+      "submission_count": 1,
+      "automatic_retry": false,
+      "log": "native-raw-private-tags.log",
+      "pid": 1672256,
+      "exit_code": 0,
+      "owned_session_cleanup": {
+        "leader_pid": 1672256,
+        "owned_session_identity": {
+          "pid": 1672256,
+          "ppid": 1663803,
+          "pgid": 1672256,
+          "sid": 1672256,
+          "start_ticks": 117433210,
+          "uid": 1000
+        },
+        "leader_reaped": true,
+        "owned_live_group_empty": true,
+        "term_seconds": 5,
+        "kill_seconds": 5,
+        "signals": [
+          "SIGTERM"
+        ],
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "leader_exit_code": 0,
+        "elapsed_seconds": 0.019785
+      },
+      "owned_child_exit_code": 0,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-20T04:57:51.355365+00:00",
+      "elapsed_seconds": 0.082547,
+      "log_sha256": "5a7cc5f5091804b38301473d397c06af8a8ee7fbea81105c5377fae7ed5d6f89",
+      "log_bytes": 594
+    }
+  ],
+  "tests": [
+    {
+      "label": "native-kv2-import",
+      "status": "passed",
+      "expected_count": 8,
+      "actual_selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "be37fde045fe4d9795e0c658aa899450080d8a2dc4f30b77984a7cffd97b9312"
+    },
+    {
+      "label": "native-kv2-large",
+      "status": "passed",
+      "expected_count": 15,
+      "actual_selected_test_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "ca66524d5dfad24589058327ec4651804c3b347900583da0802c0317e38cee19"
+    },
+    {
+      "label": "native-kv2-mount",
+      "status": "passed",
+      "expected_count": 3,
+      "actual_selected_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+        "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+        "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "6fdfb1f9fcd398fe001307485b6da0f5ce8532c9843939e72032b4a00094457f"
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "2e5e43e0528e2eee14d2abbd2202be8531f0ac5c56b27de618bbddf507530a0e"
+    },
+    {
+      "label": "forward-no-second-floor",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "366685087dd0db5519dbc09e900de338b2097b4546ab7899af9e32b2d4aef178"
+    },
+    {
+      "label": "historical-service",
+      "status": "passed",
+      "expected_count": 6,
+      "actual_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "d20361e07907191143fddbdc45d8a4ae77cc8670947585aabe05f5d4ff55937b"
+    },
+    {
+      "label": "snapshot-service",
+      "status": "passed",
+      "expected_count": 7,
+      "actual_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "a83fbb4f9f42662edd9eafa97fe4be2f180d9d836b9bb9ce09e216a724f90e7c"
+    },
+    {
+      "label": "archive-34mib",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "f8115d88176aab434d7d35b0fa362815153e96440de92ea33c5b48a36c9f33c5"
+    },
+    {
+      "label": "http-repair-admission",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "708a21830350ffec54f2c30918fcc68aed788ec4571a50f9865b4b61e8e338dc"
+    },
+    {
+      "label": "http-pending-admission",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "4ce953165d05ab6df2a5ad71db9d6a3b1d55c18eb155aeb21b8a4865bee7059d"
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "081ad8e70ff2eec0eee7efeffa09695747dd9379a45712cdd6eeda8e629b50f9"
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "849a1f35a90ef903b520a9b65e26ebdd2700c4c4f59c80f08a35a8db3425de0a"
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "status": "passed",
+      "expected_count": 3,
+      "actual_selected_test_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "3e7f82714f0d37adae401fb88d9c71d6e4032e3bd73caeaccab0282b825be86a"
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "status": "passed",
+      "expected_count": 5,
+      "actual_selected_test_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "bf0b47e49174c20b04b7f9bf6ff92e46764a82ff4586b7311f10568e8537cd2b"
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "e00f762a3911655af415268dc154871f74ae00279dafdd99c204bc4e85bb814d"
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "fdc70067e61369485eedfd2a1a1c3ddb7bb18a76d1e7d57ee8d4e0e00023ebb1"
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "43318270a1285399b44f57a6721573cf947d0363ed61d3a64b6621fd64715cb1"
+    },
+    {
+      "label": "native-raw-private-tags",
+      "status": "passed",
+      "expected_count": 1,
+      "actual_selected_test_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "5a7cc5f5091804b38301473d397c06af8a8ee7fbea81105c5377fae7ed5d6f89"
+    }
+  ],
+  "actual_executor_abi": {
+    "server": {
+      "native_abi": "x86_64-unknown-linux-gnu",
+      "interpreter": "/lib64/ld-linux-x86-64.so.2",
+      "actual_loader_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "loader_identity": {
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "bytes": 236616,
+        "identity": [
+          2053,
+          655675,
+          236616,
+          1788444912000000000,
+          1789078327068437795,
+          493,
+          0,
+          1
+        ]
+      },
+      "needed": [
+        "libgssapi_krb5.so.2",
+        "libgcc_s.so.1",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "dependencies": [
+        {
+          "soname": "libgssapi_krb5.so.2",
+          "loader_path": "/lib/x86_64-linux-gnu/libgssapi_krb5.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2.2",
+          "sha256": "c7aa00cf51646f7c32f196d329a562bc873ff32906c9caf6554ca489dd657507",
+          "bytes": 338696,
+          "identity": [
+            2053,
+            657773,
+            338696,
+            1787231245000000000,
+            1789812657202541386,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libgcc_s.so.1",
+          "loader_path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+          "bytes": 183024,
+          "identity": [
+            2053,
+            658926,
+            183024,
+            1766093810000000000,
+            1775782341406769323,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libm.so.6",
+          "loader_path": "/lib/x86_64-linux-gnu/libm.so.6",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+          "bytes": 952616,
+          "identity": [
+            2053,
+            657404,
+            952616,
+            1788444912000000000,
+            1789078327068437795,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libc.so.6",
+          "loader_path": "/lib/x86_64-linux-gnu/libc.so.6",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+          "bytes": 2129424,
+          "identity": [
+            2053,
+            656503,
+            2129424,
+            1788444912000000000,
+            1789078327068437795,
+            493,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "ld-linux-x86-64.so.2",
+          "loader_path": "/lib64/ld-linux-x86-64.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+          "bytes": 236616,
+          "identity": [
+            2053,
+            655675,
+            236616,
+            1788444912000000000,
+            1789078327068437795,
+            493,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libkrb5.so.3",
+          "loader_path": "/lib/x86_64-linux-gnu/libkrb5.so.3",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5.so.3.3",
+          "sha256": "fad617a72b5839d30143e7db03281279089def6f18788cbb0b7f86385301bf04",
+          "bytes": 823488,
+          "identity": [
+            2053,
+            657778,
+            823488,
+            1787231245000000000,
+            1789812657763538686,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libk5crypto.so.3",
+          "loader_path": "/lib/x86_64-linux-gnu/libk5crypto.so.3",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libk5crypto.so.3.1",
+          "sha256": "b37407fb2930939bf78b47267019cd201a8af1f4b6a3852249c849cf3a985798",
+          "bytes": 178648,
+          "identity": [
+            2053,
+            655890,
+            178648,
+            1787231245000000000,
+            1789812657067542035,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libcom_err.so.2",
+          "loader_path": "/lib/x86_64-linux-gnu/libcom_err.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libcom_err.so.2.1",
+          "sha256": "022943b3b11c860b049bce41342f1c2594941b7b401d95dfdf235521099fee08",
+          "bytes": 18504,
+          "identity": [
+            2053,
+            659203,
+            18504,
+            1714347886000000000,
+            1775782821055676109,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libkrb5support.so.0",
+          "loader_path": "/lib/x86_64-linux-gnu/libkrb5support.so.0",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5support.so.0.1",
+          "sha256": "936bae947a838bd47676a419dfcfb036d0163249215b58ec706ec7d46b7497aa",
+          "bytes": 47904,
+          "identity": [
+            2053,
+            657185,
+            47904,
+            1787231245000000000,
+            1789812657357540640,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libkeyutils.so.1",
+          "loader_path": "/lib/x86_64-linux-gnu/libkeyutils.so.1",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libkeyutils.so.1.10",
+          "sha256": "f48214417757f18793ed6e180cc14ee1d6f04252a518fc7270e8ca1d0b4260fe",
+          "bytes": 22600,
+          "identity": [
+            2053,
+            659205,
+            22600,
+            1712592056000000000,
+            1775782821193694983,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libresolv.so.2",
+          "loader_path": "/lib/x86_64-linux-gnu/libresolv.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libresolv.so.2",
+          "sha256": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f",
+          "bytes": 64008,
+          "identity": [
+            2053,
+            658440,
+            64008,
+            1788444912000000000,
+            1789078327069437804,
+            420,
+            0,
+            1
+          ]
+        }
+      ],
+      "libc_observation": [
+        "glibc",
+        "2.39"
+      ],
+      "file_log_sha256": "5caa391e448d9be068344597f3702e552a17b56a549b7944bbfebdbcf51f2349",
+      "readelf_log_sha256": "a0cc6ed93d9f56cab1eeb19eb6c1389827904f0605ff34158510bde4f4535bad",
+      "loader_log_sha256": "6059ec02cdc02faf33027483dbe8fa870de2d821bfa9799d779fdf75bbd8b3b5",
+      "loader_resolution_exit_code": 0,
+      "application_entry_point_executed": false
+    },
+    "peer": {
+      "native_abi": "x86_64-unknown-linux-gnu",
+      "interpreter": "/lib64/ld-linux-x86-64.so.2",
+      "actual_loader_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "loader_identity": {
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "bytes": 236616,
+        "identity": [
+          2053,
+          655675,
+          236616,
+          1788444912000000000,
+          1789078327068437795,
+          493,
+          0,
+          1
+        ]
+      },
+      "needed": [
+        "libgcc_s.so.1",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "dependencies": [
+        {
+          "soname": "libgcc_s.so.1",
+          "loader_path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+          "bytes": 183024,
+          "identity": [
+            2053,
+            658926,
+            183024,
+            1766093810000000000,
+            1775782341406769323,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libm.so.6",
+          "loader_path": "/lib/x86_64-linux-gnu/libm.so.6",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+          "bytes": 952616,
+          "identity": [
+            2053,
+            657404,
+            952616,
+            1788444912000000000,
+            1789078327068437795,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libc.so.6",
+          "loader_path": "/lib/x86_64-linux-gnu/libc.so.6",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+          "bytes": 2129424,
+          "identity": [
+            2053,
+            656503,
+            2129424,
+            1788444912000000000,
+            1789078327068437795,
+            493,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "ld-linux-x86-64.so.2",
+          "loader_path": "/lib64/ld-linux-x86-64.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+          "bytes": 236616,
+          "identity": [
+            2053,
+            655675,
+            236616,
+            1788444912000000000,
+            1789078327068437795,
+            493,
+            0,
+            1
+          ]
+        }
+      ],
+      "libc_observation": [
+        "glibc",
+        "2.39"
+      ],
+      "file_log_sha256": "51d7177e7ce7dcf686c348584be4ba9fd56be68fac77817b1f7d57ed5bb91c4f",
+      "readelf_log_sha256": "5af3e52318835a8f9b45ddbe3e080bc71b471e920b986e48ae81f8adf918002d",
+      "loader_log_sha256": "17df1c46f842364ae469804eb8f0428f02834911dac468463852d4dae48acdd3",
+      "loader_resolution_exit_code": 0,
+      "application_entry_point_executed": false
+    },
+    "server-bin": {
+      "native_abi": "x86_64-unknown-linux-gnu",
+      "interpreter": "/lib64/ld-linux-x86-64.so.2",
+      "actual_loader_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "loader_identity": {
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "bytes": 236616,
+        "identity": [
+          2053,
+          655675,
+          236616,
+          1788444912000000000,
+          1789078327068437795,
+          493,
+          0,
+          1
+        ]
+      },
+      "needed": [
+        "libgssapi_krb5.so.2",
+        "libgcc_s.so.1",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "dependencies": [
+        {
+          "soname": "libgssapi_krb5.so.2",
+          "loader_path": "/lib/x86_64-linux-gnu/libgssapi_krb5.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2.2",
+          "sha256": "c7aa00cf51646f7c32f196d329a562bc873ff32906c9caf6554ca489dd657507",
+          "bytes": 338696,
+          "identity": [
+            2053,
+            657773,
+            338696,
+            1787231245000000000,
+            1789812657202541386,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libgcc_s.so.1",
+          "loader_path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+          "bytes": 183024,
+          "identity": [
+            2053,
+            658926,
+            183024,
+            1766093810000000000,
+            1775782341406769323,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libm.so.6",
+          "loader_path": "/lib/x86_64-linux-gnu/libm.so.6",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+          "bytes": 952616,
+          "identity": [
+            2053,
+            657404,
+            952616,
+            1788444912000000000,
+            1789078327068437795,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libc.so.6",
+          "loader_path": "/lib/x86_64-linux-gnu/libc.so.6",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+          "bytes": 2129424,
+          "identity": [
+            2053,
+            656503,
+            2129424,
+            1788444912000000000,
+            1789078327068437795,
+            493,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "ld-linux-x86-64.so.2",
+          "loader_path": "/lib64/ld-linux-x86-64.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+          "bytes": 236616,
+          "identity": [
+            2053,
+            655675,
+            236616,
+            1788444912000000000,
+            1789078327068437795,
+            493,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libkrb5.so.3",
+          "loader_path": "/lib/x86_64-linux-gnu/libkrb5.so.3",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5.so.3.3",
+          "sha256": "fad617a72b5839d30143e7db03281279089def6f18788cbb0b7f86385301bf04",
+          "bytes": 823488,
+          "identity": [
+            2053,
+            657778,
+            823488,
+            1787231245000000000,
+            1789812657763538686,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libk5crypto.so.3",
+          "loader_path": "/lib/x86_64-linux-gnu/libk5crypto.so.3",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libk5crypto.so.3.1",
+          "sha256": "b37407fb2930939bf78b47267019cd201a8af1f4b6a3852249c849cf3a985798",
+          "bytes": 178648,
+          "identity": [
+            2053,
+            655890,
+            178648,
+            1787231245000000000,
+            1789812657067542035,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libcom_err.so.2",
+          "loader_path": "/lib/x86_64-linux-gnu/libcom_err.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libcom_err.so.2.1",
+          "sha256": "022943b3b11c860b049bce41342f1c2594941b7b401d95dfdf235521099fee08",
+          "bytes": 18504,
+          "identity": [
+            2053,
+            659203,
+            18504,
+            1714347886000000000,
+            1775782821055676109,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libkrb5support.so.0",
+          "loader_path": "/lib/x86_64-linux-gnu/libkrb5support.so.0",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5support.so.0.1",
+          "sha256": "936bae947a838bd47676a419dfcfb036d0163249215b58ec706ec7d46b7497aa",
+          "bytes": 47904,
+          "identity": [
+            2053,
+            657185,
+            47904,
+            1787231245000000000,
+            1789812657357540640,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libkeyutils.so.1",
+          "loader_path": "/lib/x86_64-linux-gnu/libkeyutils.so.1",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libkeyutils.so.1.10",
+          "sha256": "f48214417757f18793ed6e180cc14ee1d6f04252a518fc7270e8ca1d0b4260fe",
+          "bytes": 22600,
+          "identity": [
+            2053,
+            659205,
+            22600,
+            1712592056000000000,
+            1775782821193694983,
+            420,
+            0,
+            1
+          ]
+        },
+        {
+          "soname": "libresolv.so.2",
+          "loader_path": "/lib/x86_64-linux-gnu/libresolv.so.2",
+          "actual_path": "/usr/lib/x86_64-linux-gnu/libresolv.so.2",
+          "sha256": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f",
+          "bytes": 64008,
+          "identity": [
+            2053,
+            658440,
+            64008,
+            1788444912000000000,
+            1789078327069437804,
+            420,
+            0,
+            1
+          ]
+        }
+      ],
+      "libc_observation": [
+        "glibc",
+        "2.39"
+      ],
+      "file_log_sha256": "1c8524fa7db3462f6dc282a71468de4eaf7e48c37d5a2a325d57574cd700504d",
+      "readelf_log_sha256": "b2121ddbb681243e53987fc971d1db6d701bbe3b5ee1819655a75a57d3a7c2a2",
+      "loader_log_sha256": "d2d7f72b0aeab533b0b6f8b1fb6abf6bbf661143e9e63327aadd6ea0d4bcbff1",
+      "loader_resolution_exit_code": 0,
+      "application_entry_point_executed": false
+    }
+  },
+  "production_authority": false,
+  "physical_lan_fault_validation_performed": false,
+  "real_credential_validation_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "source_before": {
+    "verified_at_utc": "2026-10-20T04:53:51.287126+00:00",
+    "commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+    "tree": "072be70722f3117118683403975a57fba9cfdbb4",
+    "verified_files": 3552
+  },
+  "actual_server_probe": {
+    "status": "passed",
+    "binary": "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server-bin",
+    "argv": [
+      "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-main-capsule-20261020-r1/server-bin",
+      "--config",
+      "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-x230-actual-20261020-r1/server-fixture/server.json"
+    ],
+    "root": "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-x230-actual-20261020-r1/server-fixture",
+    "helpers": [
+      {
+        "path": "qa/openbao-acceptance/ha_multihost_live.py",
+        "sha256": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+        "git_blob": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0"
+      },
+      {
+        "path": "qa/openbao-acceptance/tls_complete_http_probe.py",
+        "sha256": "e8a060d7d6020f7d62f1db56fb07a82eda57987ae7d181dab1a3af88ebe0329a",
+        "git_blob": "574832f34c18d4c510ce0c6dc61544ed47896197"
+      }
+    ],
+    "start_submission_count": 1,
+    "automatic_retry": false,
+    "initialization_performed": false,
+    "credential_supplied": false,
+    "listener_deadline_seconds": 45,
+    "http_deadline_seconds": 15,
+    "production_authority": false,
+    "pid": 1672268,
+    "complete_health": {
+      "origin": "x230-local-owned-fixture",
+      "destination": "127.0.0.1:49955",
+      "server_name": "node-1.heptabao.synthetic",
+      "request_count": 1,
+      "tls_verified": true,
+      "http_response_complete": true,
+      "passed": true,
+      "initialization_performed": false,
+      "credential_supplied": false,
+      "timeout_seconds": 15,
+      "tls": "TLSv1.3",
+      "leaf_sha256": "f67f2dd4f3751582351a96a751d306e3fe0476be91f96135b3c7296b3c058338",
+      "http_version": 11,
+      "status": 501,
+      "reason": "Not Implemented",
+      "content_length": 329,
+      "body_bytes": 329,
+      "body_sha256": "1dc0f33007a589e8c8894b09236c2efe01c168d1aa63b770739bec9a1f92e84a",
+      "initialized": false,
+      "sealed": true,
+      "elapsed_seconds": 0.083
+    },
+    "owned_session_cleanup": {
+      "leader_pid": 1672268,
+      "owned_session_identity": {
+        "pid": 1672268,
+        "ppid": 1663803,
+        "pgid": 1672268,
+        "sid": 1672268,
+        "start_ticks": 117433373,
+        "uid": 1000
+      },
+      "leader_reaped": true,
+      "owned_live_group_empty": true,
+      "term_seconds": 5,
+      "kill_seconds": 5,
+      "signals": [
+        "SIGTERM"
+      ],
+      "live_group_before": [
+        1672268
+      ],
+      "live_group_before_leader_reap": [],
+      "leader_exit_code": -15,
+      "elapsed_seconds": 0.047398
+    },
+    "owned_exit_code": -15,
+    "owned_process_stopped": true
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T04:57:54.683433+00:00",
+    "commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+    "tree": "072be70722f3117118683403975a57fba9cfdbb4",
+    "verified_files": 3552
+  },
+  "source_unchanged": true,
+  "capsule_unchanged": true,
+  "executor_system_dependencies_unchanged": true,
+  "finished_utc": "2026-10-20T04:58:03.626497+00:00",
+  "actual_passed_test_count": 58
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.r11-physical-evidence-index.v1",
+  "candidate_commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+  "candidate_tree": "072be70722f3117118683403975a57fba9cfdbb4",
+  "base_manifest_sha256": "2404b4be35dc281876401cec86b11486b4e9c7b4bd0fb58174b12f9e059e54de",
+  "candidate_source_files": 3552,
+  "original_denominators_and_deadlines_unchanged": true,
+  "full_openbao_271_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_openbao_deleted": false,
+  "scoped_results": {
+    "native58": {
+      "mac": 58,
+      "main": 58,
+      "x230": 58,
+      "x230_artifacts_compiled_on": "main",
+      "x230_artifacts_executed_on": "x230"
+    },
+    "formal34mib": {
+      "mac": 31,
+      "x230": 31,
+      "retained_live_versions": 17,
+      "live_payload_bytes": 35651584,
+      "http_seconds": 15,
+      "migration_seconds": 360,
+      "ha_qualified": false
+    },
+    "focused18": {
+      "mac": 18
+    },
+    "generic68": {
+      "required": 68,
+      "actual_observations_per_endpoint": 69,
+      "exact_extra_case": "totp.mount",
+      "read_only_review": "PASS_SCOPED",
+      "original_wrapper_incomplete_result_preserved": true
+    },
+    "quota81": {
+      "mac_observations_per_endpoint": 81,
+      "ha_qualified": false
+    },
+    "approle25": {
+      "mac_observations_per_endpoint": 25,
+      "natural_expiry_test": true
+    },
+    "controlgroups132": {
+      "candidate_control_checks_passed": 132,
+      "strict_differential_passed": false,
+      "mismatches": 12
+    },
+    "controlgroup_replay": {
+      "gate_state": "HOLD",
+      "official_effect_versions": [
+        1,
+        2,
+        3
+      ],
+      "candidate_effect_versions": [
+        1,
+        1,
+        1
+      ]
+    },
+    "physical_lan98": {
+      "required": 98,
+      "passed": 51,
+      "observed": 52,
+      "missing": 46,
+      "last_write_http": 503,
+      "last_write_sequence": 13,
+      "last_write_version": 15,
+      "writer_publication_and_local_install_completed": true,
+      "final_delivery_veto_reason": "ha_sync",
+      "remaining_before_sync_us": 914368,
+      "sync_elapsed_us": 914664,
+      "failed_write_replayed": false,
+      "failover_phase_reached": false,
+      "owned_process_cleanup_passed": true
+    }
+  },
+  "files": [
+    {
+      "name": "native58-mac.json",
+      "sha256": "377cd2119c5473ff561a8c9c34f38968bec0a46369ff2ca73939608afdb08ec5",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full58-r11-mac-r1/summary.json"
+    },
+    {
+      "name": "native58-main.json",
+      "sha256": "6cca7460876a620d40ee11e81310dc5730c46a2b5ab166b40f80641e941f1064",
+      "original_source": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r11-main-r1/summary.json"
+    },
+    {
+      "name": "native58-x230.json",
+      "sha256": "ffe1dd6ef1f2a06dd33a28166abd197ce59e2331f3499e65af9c41d5e9ce1efa",
+      "original_source": "/home/qian/heptabao-continuation-20261019/native-artifact58-r11-x230-actual-20261020-r1/summary.json"
+    },
+    {
+      "name": "full34-mac.json",
+      "sha256": "1bea6fe4ae3d491b997f2c2c5999409b4136a2d45e1b7cd68a9e79ef2ef715e2",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r11-mac-20261020-r1/summary.json"
+    },
+    {
+      "name": "full34-x230.json",
+      "sha256": "2f8dd52fddc5b717d886aa845e767871f64173787df822d5ea8775c407853dd8",
+      "original_source": "/home/qian/heptabao-continuation-20261019/official271-full34-r11-x230-20261020-r1/summary.json"
+    },
+    {
+      "name": "focused18-mac.json",
+      "sha256": "3d41bb5f73e13905ef14d440706a2422c034025fda5bf9acf948421b46153628",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-focused18-r11-mac-20261020-r1/summary.json"
+    },
+    {
+      "name": "lan98-controller.json",
+      "sha256": "e9979099a4ca064b2de009bab67b427633c0b7c69f8ec69fb9d6d98559e040d9",
+      "original_source": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-r11-20261020-r1-controller/controller.json"
+    },
+    {
+      "name": "lan98-summary.json",
+      "sha256": "52899649a266ccd8672d213c84a0b83ef19d13c4c62f52d0fa47787577601cac",
+      "original_source": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-r11-20261020-r1-controller/work/summary.json"
+    },
+    {
+      "name": "cg132-mac.json",
+      "sha256": "8e136f46e143aff60b6c003c705703e4bf04ed61551728fb6c33709a201c5cc7",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-cg132-mac-20261020-r2/original-result.json"
+    },
+    {
+      "name": "wrap-replay-mac.json",
+      "sha256": "43293004021e2f735d0f176ffd2dc8925cd569f57629479b463c1e9de12aa017",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-wrap-replay-mac-20261020-r2/original-result.json"
+    },
+    {
+      "name": "approle25-controller.json",
+      "sha256": "338ab78a5ef345a59165a8045fa6668ac2b91768b5c4e037ccfccbb1bb66d5fe",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-approle25-mac-20261020-r1/controller.json"
+    },
+    {
+      "name": "approle25-mac.json",
+      "sha256": "992f1e142cd10c4736d1e36eccc333f32992c4c5d4492c9a32640ccfbed5b43b",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-approle25-mac-20261020-r1/original-result.json"
+    },
+    {
+      "name": "generic68-original.json",
+      "sha256": "5922c97934ac04f2767959c8605d96f845c12ea0d813179a31bc21d873474176",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-generic68-mac-20261020-r1/fixture/comparison-bound.json"
+    },
+    {
+      "name": "quota81-mac.json",
+      "sha256": "06c4d441d0fa9784dfcc50eed10d7b1071d032c5287368f2e4ab73d892ffadff",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-quota81-mac-20261020-r1/original-result.json"
+    },
+    {
+      "name": "generic68-review-r2.json",
+      "sha256": "baf722cd155f567b11fc631eb42529bd7f31362ca7f0e7502fb13b38c6a43bcf",
+      "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/compat271-r11-generic68-mac-20261020-r1/generic68-review-r2.public.json"
+    }
+  ]
+}
