@@ -1,0 +1,181 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-20T11:07:10.482940+00:00",
+  "runner_pid": 36728,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r16",
+  "source_commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+  "source_tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+  "manifest_sha256": "f87fc98fec5cac723abbd909bc65f65fa2e721e2077251557830043acb3cc54d",
+  "runner_sha256": "05e43b774accdaa95391a00e670727580b1a83495738fd1a81a501a8c3366059",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T11:07:10.618350+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 36732,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:10.630629+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T11:07:10.631052+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 36733,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:10.655059+00:00",
+      "elapsed_seconds": 0.024,
+      "log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T11:07:10.655459+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 36734,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:10.805568+00:00",
+      "elapsed_seconds": 0.15,
+      "log_sha256": "fe5a1981e6f7e1ec137a0cfff36b62287c210c16217d36fc6694b34d8265bdcd"
+    },
+    {
+      "label": "quota-preauth-refusal-guard-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time",
+        "--",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:07:10.806119+00:00",
+      "status": "passed",
+      "log": "quota-preauth-refusal-guard-list.log",
+      "pid": 36746,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:11.070699+00:00",
+      "elapsed_seconds": 0.264,
+      "log_sha256": "ddbaceb3c12a7c5b65863a8a8af645d60c894086075b9c4299b121a9b277e5d5",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time"
+      ]
+    },
+    {
+      "label": "quota-preauth-refusal-guard",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:07:11.074810+00:00",
+      "status": "passed",
+      "log": "quota-preauth-refusal-guard.log",
+      "pid": 36748,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:22.621139+00:00",
+      "elapsed_seconds": 11.546,
+      "log_sha256": "29e2efee7f0d8c7a7a7a404fe8528d6e9790bc34b3797a6c116d87a8eb99f065",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  ],
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hostname": "MacBook-Pro.local",
+  "python": "3.14.3",
+  "selected_groups": [
+    "quota-preauth-refusal-guard"
+  ],
+  "schema": "heptabao.r16-quota-preauth-refusal-one-native-case.v1",
+  "scope": "One R16 quota preauth refusal guard; original58, originalfocused20 and original supplemental38/39 remain independent",
+  "required_test_count": 1,
+  "required_exact_selection_commands": 2,
+  "original58_qualified_by_this_receipt": false,
+  "originalfocused20_qualified_by_this_receipt": false,
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 2,
+    "logical_cpus_observed": 10,
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T11:07:10.614864+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T11:07:22.758106+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T11:07:22.758214+00:00"
+}

@@ -1,0 +1,181 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-20T11:07:13.081636+00:00",
+  "runner_pid": 588579,
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r16",
+  "source_commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+  "source_tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+  "manifest_sha256": "f87fc98fec5cac723abbd909bc65f65fa2e721e2077251557830043acb3cc54d",
+  "runner_sha256": "05e43b774accdaa95391a00e670727580b1a83495738fd1a81a501a8c3366059",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T11:07:13.799318+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 588590,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:13.835642+00:00",
+      "elapsed_seconds": 0.027,
+      "log_sha256": "8195cc2272f684fff66e8df1aa9bedb38d806b4f27da52944a8fe8088b27f199"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T11:07:13.846308+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 588614,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:13.874268+00:00",
+      "elapsed_seconds": 0.018,
+      "log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T11:07:13.884429+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 588616,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:14.319775+00:00",
+      "elapsed_seconds": 0.425,
+      "log_sha256": "4698afd28c100a69ddbb084d04c197017e26640c53519a55549005c64cadc04f"
+    },
+    {
+      "label": "quota-preauth-refusal-guard-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time",
+        "--",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:07:14.338098+00:00",
+      "status": "passed",
+      "log": "quota-preauth-refusal-guard-list.log",
+      "pid": 588637,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:14.825353+00:00",
+      "elapsed_seconds": 0.477,
+      "log_sha256": "8faf12acfe8590a4c8238a79ff64c215888581afe627036f6838d16a91c44c20",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time"
+      ]
+    },
+    {
+      "label": "quota-preauth-refusal-guard",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:07:14.848617+00:00",
+      "status": "passed",
+      "log": "quota-preauth-refusal-guard.log",
+      "pid": 588655,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:07:38.194200+00:00",
+      "elapsed_seconds": 23.335,
+      "log_sha256": "23ae2e5c636ebb11d12b2d5674a7964edc2c29089197383e75b91020ad0d4341",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  ],
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "hostname": "qian-qi",
+  "python": "3.12.3",
+  "selected_groups": [
+    "quota-preauth-refusal-guard"
+  ],
+  "schema": "heptabao.r16-quota-preauth-refusal-one-native-case.v1",
+  "scope": "One R16 quota preauth refusal guard; original58, originalfocused20 and original supplemental38/39 remain independent",
+  "required_test_count": 1,
+  "required_exact_selection_commands": 2,
+  "original58_qualified_by_this_receipt": false,
+  "originalfocused20_qualified_by_this_receipt": false,
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 8,
+    "logical_cpus_observed": 48,
+    "cargo_build_jobs": "8",
+    "cmake_build_parallel_level": "8",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T11:07:13.776826+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T11:07:38.930977+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T11:07:38.931295+00:00"
+}

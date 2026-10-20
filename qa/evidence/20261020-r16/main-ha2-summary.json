@@ -1,0 +1,252 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-20T11:08:58.199079+00:00",
+  "runner_pid": 592061,
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r16",
+  "source_commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+  "source_tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+  "manifest_sha256": "f87fc98fec5cac723abbd909bc65f65fa2e721e2077251557830043acb3cc54d",
+  "runner_sha256": "d0ab8c33ef78340617d0dab2dd2a86dabd776ebb1754c07d6293d71c521f7167",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T11:08:58.992435+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 592076,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:08:59.027816+00:00",
+      "elapsed_seconds": 0.026,
+      "log_sha256": "8195cc2272f684fff66e8df1aa9bedb38d806b4f27da52944a8fe8088b27f199"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T11:08:59.039478+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 592093,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:08:59.066580+00:00",
+      "elapsed_seconds": 0.018,
+      "log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T11:08:59.080526+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 592095,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:08:59.519017+00:00",
+      "elapsed_seconds": 0.425,
+      "log_sha256": "90636fa3b101a9cc76d0697d2fff0148f108de295d6b8882ddcd690c46a5a20b"
+    },
+    {
+      "label": "publication-actual-quorum-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair",
+        "--",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:08:59.529088+00:00",
+      "status": "passed",
+      "log": "publication-actual-quorum-list.log",
+      "pid": 592155,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:08:59.964818+00:00",
+      "elapsed_seconds": 0.426,
+      "log_sha256": "6cbe35c39b4a4d812ce1021e0d7a2566100f84e798ee28eaecf97437673662d4",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair"
+      ]
+    },
+    {
+      "label": "publication-actual-quorum",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:08:59.988835+00:00",
+      "status": "passed",
+      "log": "publication-actual-quorum.log",
+      "pid": 592182,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:09:05.638626+00:00",
+      "elapsed_seconds": 5.639,
+      "log_sha256": "f4f2cb84c85a307608325b5397676de97be35efb2769c12fc1271a7e1c728644",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "publication-readback-fences-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store",
+        "--",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:09:05.672399+00:00",
+      "status": "passed",
+      "log": "publication-readback-fences-list.log",
+      "pid": 592424,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:09:06.158457+00:00",
+      "elapsed_seconds": 0.476,
+      "log_sha256": "8b324bf2d7ef0c907a7aa9f02f12d5eca353f9c8352d581ac23be742fe6649a6",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store"
+      ]
+    },
+    {
+      "label": "publication-readback-fences",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T11:09:06.169049+00:00",
+      "status": "passed",
+      "log": "publication-readback-fences.log",
+      "pid": 592440,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T11:09:17.097211+00:00",
+      "elapsed_seconds": 10.914,
+      "log_sha256": "bf33bd6eede2cbea847037baa7b647e07147a2a0868528a34caccca9a15dddfc",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  ],
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "hostname": "qian-qi",
+  "python": "3.12.3",
+  "selected_groups": [
+    "publication-actual-quorum",
+    "publication-readback-fences"
+  ],
+  "schema": "heptabao.r16-publication-read-two-native-cases.v1",
+  "scope": "Two publication-read cases on R16; original58 and originalfocused20 remain independent",
+  "required_test_count": 2,
+  "required_exact_selection_commands": 4,
+  "original58_qualified_by_this_receipt": false,
+  "originalfocused20_qualified_by_this_receipt": false,
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 8,
+    "logical_cpus_observed": 48,
+    "cargo_build_jobs": "8",
+    "cmake_build_parallel_level": "8",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T11:08:58.970391+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T11:09:17.969826+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T11:09:17.970181+00:00"
+}

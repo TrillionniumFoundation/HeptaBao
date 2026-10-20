@@ -1,0 +1,634 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "service::native_v6_ha_pipeline_tests::ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundaries", "--", "--exact", "--nocapture", "--test-threads=1", "--color=never"]}
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+   --> crates/heptabao-server/src/ha_native_v6_publication.rs:128:19
+    |
+127 | impl NativeHaPublicationError {
+    | ----------------------------- method in this implementation
+128 |     pub(crate) fn root_attempted(&self) -> bool {
+    |                   ^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: `heptabao-server` (lib test) generated 5 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.33s
+     Running unittests src/lib.rs (/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_server-c2b13f8f8869a962)
+
+running 1 test
+test service::native_v6_ha_pipeline_tests::ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundaries ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=683 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=36847 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=0 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=107289 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=39231 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=259135 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=38252 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=6380 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=493831 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=27256 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=198650 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15169 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=18348 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14935 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=17194 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4818
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=296062 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=760 completed=true original_deadline_expired=false generation=9 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5759 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=33604 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=50285 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41093 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=126201 completed=true original_deadline_expired=false generation=1 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=35163 completed=true original_deadline_expired=false generation=1 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7176 completed=true original_deadline_expired=false generation=1 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=304487 completed=true original_deadline_expired=false generation=9 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=44442 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=146554 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=22712 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=14876 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14858 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=15660 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5056
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=263186 completed=true original_deadline_expired=false generation=9 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1060 completed=true original_deadline_expired=false generation=11 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4375 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=38225 completed=true original_deadline_expired=false generation=2 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=50071 completed=true original_deadline_expired=false generation=2 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=42087 completed=true original_deadline_expired=false generation=2 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=108160 completed=true original_deadline_expired=false generation=2 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=35075 completed=true original_deadline_expired=false generation=2 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7669 completed=true original_deadline_expired=false generation=2 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=290745 completed=true original_deadline_expired=false generation=11 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=41858 completed=true original_deadline_expired=false generation=11 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=146168 completed=true original_deadline_expired=false generation=11 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15401 completed=true original_deadline_expired=false generation=11 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=14925 completed=true original_deadline_expired=false generation=11 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=15156 completed=true original_deadline_expired=false generation=11 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=14907 completed=true original_deadline_expired=false generation=11 objects=9 bytes=5352
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=251982 completed=true original_deadline_expired=false generation=11 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=992 completed=true original_deadline_expired=false generation=13 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4311 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=36484 completed=true original_deadline_expired=false generation=3 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=50793 completed=true original_deadline_expired=false generation=3 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=43222 completed=true original_deadline_expired=false generation=3 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=101865 completed=true original_deadline_expired=false generation=3 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=37084 completed=true original_deadline_expired=false generation=3 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=8359 completed=true original_deadline_expired=false generation=3 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=287708 completed=true original_deadline_expired=false generation=13 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=45423 completed=true original_deadline_expired=false generation=13 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=147394 completed=true original_deadline_expired=false generation=13 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15397 completed=true original_deadline_expired=false generation=13 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=15563 completed=true original_deadline_expired=false generation=13 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=15209 completed=true original_deadline_expired=false generation=13 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=15320 completed=true original_deadline_expired=false generation=13 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=258712 completed=true original_deadline_expired=false generation=13 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=47274 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=235446 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=16986 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=17527 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=16075 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=19893 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5544
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1633 completed=true original_deadline_expired=false generation=15 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5238 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=50401 completed=true original_deadline_expired=false generation=4 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=55117 completed=true original_deadline_expired=false generation=4 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41282 completed=true original_deadline_expired=false generation=4 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=113429 completed=true original_deadline_expired=false generation=4 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=40756 completed=true original_deadline_expired=false generation=4 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=6673 completed=true original_deadline_expired=false generation=4 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=317670 completed=true original_deadline_expired=false generation=15 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=40468 completed=true original_deadline_expired=false generation=15 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=134841 completed=true original_deadline_expired=false generation=15 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14895 completed=true original_deadline_expired=false generation=15 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=14239 completed=true original_deadline_expired=false generation=15 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=24093 completed=true original_deadline_expired=false generation=15 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=14477 completed=true original_deadline_expired=false generation=15 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=246325 completed=true original_deadline_expired=false generation=15 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=42496 completed=true original_deadline_expired=false generation=7 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=124287 completed=true original_deadline_expired=false generation=7 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15083 completed=true original_deadline_expired=false generation=7 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=15435 completed=true original_deadline_expired=false generation=7 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=15046 completed=true original_deadline_expired=false generation=7 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=12029 completed=true original_deadline_expired=false generation=7 objects=9 bytes=5687
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=984 completed=true original_deadline_expired=false generation=17 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5550 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=37726 completed=true original_deadline_expired=false generation=5 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=48997 completed=true original_deadline_expired=false generation=5 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=39204 completed=true original_deadline_expired=false generation=5 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=101890 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=33552 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7637 completed=true original_deadline_expired=false generation=5 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=279203 completed=true original_deadline_expired=false generation=17 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=68020 completed=true original_deadline_expired=false generation=17 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=167814 completed=true original_deadline_expired=false generation=17 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13749 completed=true original_deadline_expired=false generation=17 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=15685 completed=true original_deadline_expired=false generation=17 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13728 completed=true original_deadline_expired=false generation=17 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=16363 completed=true original_deadline_expired=false generation=17 objects=9 bytes=5853
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=300260 completed=true original_deadline_expired=false generation=17 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1159 completed=true original_deadline_expired=false generation=19 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=6255 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=46814 completed=true original_deadline_expired=false generation=6 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=47895 completed=true original_deadline_expired=false generation=6 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=40634 completed=true original_deadline_expired=false generation=6 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=114003 completed=true original_deadline_expired=false generation=6 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=32467 completed=true original_deadline_expired=false generation=6 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7424 completed=true original_deadline_expired=false generation=6 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=300713 completed=true original_deadline_expired=false generation=19 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=54605 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=170463 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=16062 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=16837 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=21752 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=17362 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=301133 completed=true original_deadline_expired=false generation=19 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1223 completed=true original_deadline_expired=false generation=21 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5714 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=70749 completed=true original_deadline_expired=false generation=7 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=57859 completed=true original_deadline_expired=false generation=7 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41062 completed=true original_deadline_expired=false generation=7 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=119327 completed=true original_deadline_expired=false generation=7 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=37340 completed=true original_deadline_expired=false generation=7 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7629 completed=true original_deadline_expired=false generation=7 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=346258 completed=true original_deadline_expired=false generation=21 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=56101 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=204388 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13807 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23471 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13560 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23303 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=339243 completed=true original_deadline_expired=false generation=21 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1294 completed=true original_deadline_expired=false generation=23 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4301 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=57846 completed=true original_deadline_expired=false generation=8 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=61661 completed=true original_deadline_expired=false generation=8 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=37600 completed=true original_deadline_expired=false generation=8 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=112802 completed=true original_deadline_expired=false generation=8 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34699 completed=true original_deadline_expired=false generation=8 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=11523 completed=true original_deadline_expired=false generation=8 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=325739 completed=true original_deadline_expired=false generation=23 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=85713 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=216401 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14151 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23618 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13632 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23354 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=382642 completed=true original_deadline_expired=false generation=23 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1366 completed=true original_deadline_expired=false generation=25 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5264 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=58911 completed=true original_deadline_expired=false generation=9 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=57109 completed=true original_deadline_expired=false generation=9 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=46230 completed=true original_deadline_expired=false generation=9 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=109770 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34490 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=9563 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=327201 completed=true original_deadline_expired=false generation=25 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=90072 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=226043 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14043 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23210 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13952 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23501 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=396693 completed=true original_deadline_expired=false generation=25 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=32161 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=108292 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13393 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=11433 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=21650 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=11363 completed=true original_deadline_expired=false generation=9 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1512 completed=true original_deadline_expired=false generation=27 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5174 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=75475 completed=true original_deadline_expired=false generation=10 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=58771 completed=true original_deadline_expired=false generation=10 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=42343 completed=true original_deadline_expired=false generation=10 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=98313 completed=true original_deadline_expired=false generation=10 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=33878 completed=true original_deadline_expired=false generation=10 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=6595 completed=true original_deadline_expired=false generation=10 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=327196 completed=true original_deadline_expired=false generation=27 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=53130 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=198012 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14075 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22744 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13762 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23040 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=329424 completed=true original_deadline_expired=false generation=27 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1230 completed=true original_deadline_expired=false generation=29 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5145 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=59698 completed=true original_deadline_expired=false generation=11 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=65693 completed=true original_deadline_expired=false generation=11 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41098 completed=true original_deadline_expired=false generation=11 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=107424 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=36079 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=10743 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=331797 completed=true original_deadline_expired=false generation=29 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=62161 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=206161 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14196 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22685 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13860 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=27996 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=352084 completed=true original_deadline_expired=false generation=29 objects=6 bytes=19
+native HA Service pipeline path=sys/quotas/rate-limit/native-admin status=403 errors=["1 error occurred:\n\t* permission denied\n\n"]
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1326 completed=true original_deadline_expired=false generation=31 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5264 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=54528 completed=true original_deadline_expired=false generation=12 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=56628 completed=true original_deadline_expired=false generation=12 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=40431 completed=true original_deadline_expired=false generation=12 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=114983 completed=true original_deadline_expired=false generation=12 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=37156 completed=true original_deadline_expired=false generation=12 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=8971 completed=true original_deadline_expired=false generation=12 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=324645 completed=true original_deadline_expired=false generation=31 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=88939 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=219859 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14388 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22896 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13750 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22653 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6983
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=388455 completed=true original_deadline_expired=false generation=31 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1436 completed=true original_deadline_expired=false generation=33 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=6091 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=72521 completed=true original_deadline_expired=false generation=13 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=63531 completed=true original_deadline_expired=false generation=13 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41067 completed=true original_deadline_expired=false generation=13 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=105638 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=33877 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=9516 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=339394 completed=true original_deadline_expired=false generation=33 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=61823 completed=true original_deadline_expired=false generation=33 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=223004 completed=true original_deadline_expired=false generation=33 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14054 completed=true original_deadline_expired=false generation=33 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22063 completed=true original_deadline_expired=false generation=33 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13814 completed=true original_deadline_expired=false generation=33 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22032 completed=true original_deadline_expired=false generation=33 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=361129 completed=true original_deadline_expired=false generation=33 objects=6 bytes=19
+native HA Service pipeline path=sys/quotas/rate-limit/native-admin status=400 errors=["invalid bounded rate limit definition"]
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1239 completed=true original_deadline_expired=false generation=35 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5868 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=60563 completed=true original_deadline_expired=false generation=14 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=61923 completed=true original_deadline_expired=false generation=14 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=40176 completed=true original_deadline_expired=false generation=14 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=123123 completed=true original_deadline_expired=false generation=14 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34221 completed=true original_deadline_expired=false generation=14 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=8645 completed=true original_deadline_expired=false generation=14 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=340789 completed=true original_deadline_expired=false generation=35 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=83832 completed=true original_deadline_expired=false generation=35 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=217745 completed=true original_deadline_expired=false generation=35 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13936 completed=true original_deadline_expired=false generation=35 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23179 completed=true original_deadline_expired=false generation=35 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13809 completed=true original_deadline_expired=false generation=35 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23568 completed=true original_deadline_expired=false generation=35 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=381579 completed=true original_deadline_expired=false generation=35 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1438 completed=true original_deadline_expired=false generation=37 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5554 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=57938 completed=true original_deadline_expired=false generation=15 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=59180 completed=true original_deadline_expired=false generation=15 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=42655 completed=true original_deadline_expired=false generation=15 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=104959 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=38158 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=9566 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=324969 completed=true original_deadline_expired=false generation=37 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=69465 completed=true original_deadline_expired=false generation=37 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=226859 completed=true original_deadline_expired=false generation=37 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14330 completed=true original_deadline_expired=false generation=37 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=21745 completed=true original_deadline_expired=false generation=37 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13869 completed=true original_deadline_expired=false generation=37 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=21888 completed=true original_deadline_expired=false generation=37 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=374508 completed=true original_deadline_expired=false generation=37 objects=6 bytes=19
+native HA Service pipeline path=sys/quotas/rate-limit status=405 errors=["quota collection supports LIST only"]
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1277 completed=true original_deadline_expired=false generation=39 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5127 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=72699 completed=true original_deadline_expired=false generation=16 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=71671 completed=true original_deadline_expired=false generation=16 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=40364 completed=true original_deadline_expired=false generation=16 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=124426 completed=true original_deadline_expired=false generation=16 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=33248 completed=true original_deadline_expired=false generation=16 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=8521 completed=true original_deadline_expired=false generation=16 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=362729 completed=true original_deadline_expired=false generation=39 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=86432 completed=true original_deadline_expired=false generation=39 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=231268 completed=true original_deadline_expired=false generation=39 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13794 completed=true original_deadline_expired=false generation=39 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23767 completed=true original_deadline_expired=false generation=39 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13884 completed=true original_deadline_expired=false generation=39 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23095 completed=true original_deadline_expired=false generation=39 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=398309 completed=true original_deadline_expired=false generation=39 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1210 completed=true original_deadline_expired=false generation=41 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5082 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=71037 completed=true original_deadline_expired=false generation=17 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=65377 completed=true original_deadline_expired=false generation=17 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=39369 completed=true original_deadline_expired=false generation=17 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=105802 completed=true original_deadline_expired=false generation=17 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=31581 completed=true original_deadline_expired=false generation=17 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7815 completed=true original_deadline_expired=false generation=17 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=334189 completed=true original_deadline_expired=false generation=41 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=63666 completed=true original_deadline_expired=false generation=41 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=205212 completed=true original_deadline_expired=false generation=41 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14458 completed=true original_deadline_expired=false generation=41 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23209 completed=true original_deadline_expired=false generation=41 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13552 completed=true original_deadline_expired=false generation=41 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22884 completed=true original_deadline_expired=false generation=41 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=347558 completed=true original_deadline_expired=false generation=41 objects=6 bytes=19
+native HA Service pipeline path=sys/quotas/unsupported/native-admin status=501 errors=["native candidate supports root ordinary KV and local seal observations"]
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1278 completed=true original_deadline_expired=false generation=43 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5236 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=72452 completed=true original_deadline_expired=false generation=18 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=73421 completed=true original_deadline_expired=false generation=18 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=37175 completed=true original_deadline_expired=false generation=18 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=123962 completed=true original_deadline_expired=false generation=18 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34804 completed=true original_deadline_expired=false generation=18 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=9814 completed=true original_deadline_expired=false generation=18 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=364111 completed=true original_deadline_expired=false generation=43 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=94114 completed=true original_deadline_expired=false generation=43 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=234638 completed=true original_deadline_expired=false generation=43 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14363 completed=true original_deadline_expired=false generation=43 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22485 completed=true original_deadline_expired=false generation=43 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14059 completed=true original_deadline_expired=false generation=43 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22815 completed=true original_deadline_expired=false generation=43 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=408443 completed=true original_deadline_expired=false generation=43 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1219 completed=true original_deadline_expired=false generation=45 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4916 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=45323 completed=true original_deadline_expired=false generation=19 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=58611 completed=true original_deadline_expired=false generation=19 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41192 completed=true original_deadline_expired=false generation=19 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=106858 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34156 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7167 completed=true original_deadline_expired=false generation=19 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=303355 completed=true original_deadline_expired=false generation=45 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=48337 completed=true original_deadline_expired=false generation=45 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=170438 completed=true original_deadline_expired=false generation=45 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15410 completed=true original_deadline_expired=false generation=45 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=19915 completed=true original_deadline_expired=false generation=45 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13507 completed=true original_deadline_expired=false generation=45 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=19922 completed=true original_deadline_expired=false generation=45 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=291856 completed=true original_deadline_expired=false generation=45 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1184 completed=true original_deadline_expired=false generation=47 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=6592 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=71735 completed=true original_deadline_expired=false generation=20 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=59514 completed=true original_deadline_expired=false generation=20 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=40781 completed=true original_deadline_expired=false generation=20 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=127679 completed=true original_deadline_expired=false generation=20 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34982 completed=true original_deadline_expired=false generation=20 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=10424 completed=true original_deadline_expired=false generation=20 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=358425 completed=true original_deadline_expired=false generation=47 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=87777 completed=true original_deadline_expired=false generation=47 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=234407 completed=true original_deadline_expired=false generation=47 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14047 completed=true original_deadline_expired=false generation=47 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22608 completed=true original_deadline_expired=false generation=47 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13429 completed=true original_deadline_expired=false generation=47 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=25370 completed=true original_deadline_expired=false generation=47 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=403370 completed=true original_deadline_expired=false generation=47 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1971 completed=true original_deadline_expired=false generation=49 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=6589 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=89008 completed=true original_deadline_expired=false generation=21 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=73460 completed=true original_deadline_expired=false generation=21 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=46635 completed=true original_deadline_expired=false generation=21 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=101682 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=32802 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=10468 completed=true original_deadline_expired=false generation=21 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=369051 completed=true original_deadline_expired=false generation=49 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=57269 completed=true original_deadline_expired=false generation=49 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=208812 completed=true original_deadline_expired=false generation=49 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13988 completed=true original_deadline_expired=false generation=49 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23141 completed=true original_deadline_expired=false generation=49 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13704 completed=true original_deadline_expired=false generation=49 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22401 completed=true original_deadline_expired=false generation=49 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=343832 completed=true original_deadline_expired=false generation=49 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1264 completed=true original_deadline_expired=false generation=51 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5204 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=69755 completed=true original_deadline_expired=false generation=22 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=67783 completed=true original_deadline_expired=false generation=22 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=34903 completed=true original_deadline_expired=false generation=22 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=106875 completed=true original_deadline_expired=false generation=22 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34335 completed=true original_deadline_expired=false generation=22 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=8322 completed=true original_deadline_expired=false generation=22 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=332907 completed=true original_deadline_expired=false generation=51 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=57301 completed=true original_deadline_expired=false generation=51 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=219513 completed=true original_deadline_expired=false generation=51 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13459 completed=true original_deadline_expired=false generation=51 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22862 completed=true original_deadline_expired=false generation=51 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13628 completed=true original_deadline_expired=false generation=51 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22691 completed=true original_deadline_expired=false generation=51 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=353882 completed=true original_deadline_expired=false generation=51 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=58039 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=127820 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13439 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=11615 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13177 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=12367 completed=true original_deadline_expired=false generation=11 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1660 completed=true original_deadline_expired=false generation=53 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5819 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=64370 completed=true original_deadline_expired=false generation=23 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=76561 completed=true original_deadline_expired=false generation=23 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=40330 completed=true original_deadline_expired=false generation=23 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=116115 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=34567 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=10144 completed=true original_deadline_expired=false generation=23 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=356663 completed=true original_deadline_expired=false generation=53 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=78695 completed=true original_deadline_expired=false generation=53 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=221730 completed=true original_deadline_expired=false generation=53 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14213 completed=true original_deadline_expired=false generation=53 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23542 completed=true original_deadline_expired=false generation=53 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13843 completed=true original_deadline_expired=false generation=53 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23855 completed=true original_deadline_expired=false generation=53 objects=9 bytes=6984
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=381537 completed=true original_deadline_expired=false generation=53 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1851 completed=true original_deadline_expired=false generation=55 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5309 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=47287 completed=true original_deadline_expired=false generation=24 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=53842 completed=true original_deadline_expired=false generation=24 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=35701 completed=true original_deadline_expired=false generation=24 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=112014 completed=true original_deadline_expired=false generation=24 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=30339 completed=true original_deadline_expired=false generation=24 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=12284 completed=true original_deadline_expired=false generation=24 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=303595 completed=true original_deadline_expired=false generation=55 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=96921 completed=true original_deadline_expired=false generation=55 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=210956 completed=true original_deadline_expired=false generation=55 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14704 completed=true original_deadline_expired=false generation=55 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22661 completed=true original_deadline_expired=false generation=55 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13863 completed=true original_deadline_expired=false generation=55 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=21882 completed=true original_deadline_expired=false generation=55 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=387948 completed=true original_deadline_expired=false generation=55 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1210 completed=true original_deadline_expired=false generation=57 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5765 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=60045 completed=true original_deadline_expired=false generation=25 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=61205 completed=true original_deadline_expired=false generation=25 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=42436 completed=true original_deadline_expired=false generation=25 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=105239 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=33239 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=10244 completed=true original_deadline_expired=false generation=25 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=324294 completed=true original_deadline_expired=false generation=57 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=74439 completed=true original_deadline_expired=false generation=57 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=201393 completed=true original_deadline_expired=false generation=57 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14372 completed=true original_deadline_expired=false generation=57 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=21788 completed=true original_deadline_expired=false generation=57 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14019 completed=true original_deadline_expired=false generation=57 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=21253 completed=true original_deadline_expired=false generation=57 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=353305 completed=true original_deadline_expired=false generation=57 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1939 completed=true original_deadline_expired=false generation=59 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5875 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=65195 completed=true original_deadline_expired=false generation=26 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=63766 completed=true original_deadline_expired=false generation=26 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=43220 completed=true original_deadline_expired=false generation=26 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=107809 completed=true original_deadline_expired=false generation=26 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=32885 completed=true original_deadline_expired=false generation=26 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=9252 completed=true original_deadline_expired=false generation=26 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=334984 completed=true original_deadline_expired=false generation=59 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=76800 completed=true original_deadline_expired=false generation=59 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=221101 completed=true original_deadline_expired=false generation=59 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14228 completed=true original_deadline_expired=false generation=59 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=21806 completed=true original_deadline_expired=false generation=59 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13998 completed=true original_deadline_expired=false generation=59 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=38574 completed=true original_deadline_expired=false generation=59 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=392436 completed=true original_deadline_expired=false generation=59 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1306 completed=true original_deadline_expired=false generation=61 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=6033 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=80540 completed=true original_deadline_expired=false generation=27 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=67492 completed=true original_deadline_expired=false generation=27 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=42459 completed=true original_deadline_expired=false generation=27 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=111573 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=28021 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7613 completed=true original_deadline_expired=false generation=27 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=350290 completed=true original_deadline_expired=false generation=61 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=54375 completed=true original_deadline_expired=false generation=61 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=202640 completed=true original_deadline_expired=false generation=61 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13873 completed=true original_deadline_expired=false generation=61 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22339 completed=true original_deadline_expired=false generation=61 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13654 completed=true original_deadline_expired=false generation=61 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22911 completed=true original_deadline_expired=false generation=61 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=334326 completed=true original_deadline_expired=false generation=61 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=42314 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=118059 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=13255 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=11308 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=13346 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=13087 completed=true original_deadline_expired=false generation=13 objects=9 bytes=6841
+native HA Service pipeline path=sys/quotas/rate-limit/native-admin status=404 errors=["quota not found"]
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1957 completed=true original_deadline_expired=false generation=63 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4765 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=72594 completed=true original_deadline_expired=false generation=28 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=59505 completed=true original_deadline_expired=false generation=28 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=39539 completed=true original_deadline_expired=false generation=28 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=121845 completed=true original_deadline_expired=false generation=28 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=37791 completed=true original_deadline_expired=false generation=28 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=6397 completed=true original_deadline_expired=false generation=28 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=347828 completed=true original_deadline_expired=false generation=63 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=58002 completed=true original_deadline_expired=false generation=63 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=217314 completed=true original_deadline_expired=false generation=63 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14490 completed=true original_deadline_expired=false generation=63 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=23285 completed=true original_deadline_expired=false generation=63 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14443 completed=true original_deadline_expired=false generation=63 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=21771 completed=true original_deadline_expired=false generation=63 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=353647 completed=true original_deadline_expired=false generation=63 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1224 completed=true original_deadline_expired=false generation=65 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4513 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=60196 completed=true original_deadline_expired=false generation=29 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=73904 completed=true original_deadline_expired=false generation=29 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=41070 completed=true original_deadline_expired=false generation=29 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=93720 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=35482 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=9708 completed=true original_deadline_expired=false generation=29 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=324603 completed=true original_deadline_expired=false generation=65 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=52022 completed=true original_deadline_expired=false generation=65 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=189280 completed=true original_deadline_expired=false generation=65 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14885 completed=true original_deadline_expired=false generation=65 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=19591 completed=true original_deadline_expired=false generation=65 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14509 completed=true original_deadline_expired=false generation=65 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=19995 completed=true original_deadline_expired=false generation=65 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=314426 completed=true original_deadline_expired=false generation=65 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=51282 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=141925 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=14862 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=12393 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14716 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6840
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=21458 completed=true original_deadline_expired=false generation=15 objects=9 bytes=6840
+native HA Service pipeline path=sys/quotas/rate-limit status=404 errors=["no quotas found"]
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1371 completed=true original_deadline_expired=false generation=67 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=5573 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=59779 completed=true original_deadline_expired=false generation=30 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=60959 completed=true original_deadline_expired=false generation=30 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=43441 completed=true original_deadline_expired=false generation=30 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=106626 completed=true original_deadline_expired=false generation=30 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=36402 completed=true original_deadline_expired=false generation=30 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=6831 completed=true original_deadline_expired=false generation=30 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=326907 completed=true original_deadline_expired=false generation=67 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=62265 completed=true original_deadline_expired=false generation=67 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=204756 completed=true original_deadline_expired=false generation=67 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15033 completed=true original_deadline_expired=false generation=67 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=22920 completed=true original_deadline_expired=false generation=67 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14332 completed=true original_deadline_expired=false generation=67 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=22034 completed=true original_deadline_expired=false generation=67 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=345884 completed=true original_deadline_expired=false generation=67 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1816 completed=true original_deadline_expired=false generation=69 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=4552 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=25465 completed=true original_deadline_expired=false generation=31 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=51391 completed=true original_deadline_expired=false generation=31 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=36655 completed=true original_deadline_expired=false generation=31 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=108625 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=43329 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7136 completed=true original_deadline_expired=false generation=31 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=282105 completed=true original_deadline_expired=false generation=69 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=55705 completed=true original_deadline_expired=false generation=69 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=167229 completed=true original_deadline_expired=false generation=69 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=18010 completed=true original_deadline_expired=false generation=69 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=14761 completed=true original_deadline_expired=false generation=69 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14504 completed=true original_deadline_expired=false generation=69 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=14279 completed=true original_deadline_expired=false generation=69 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=289316 completed=true original_deadline_expired=false generation=69 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=1522 completed=true original_deadline_expired=false generation=71 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=3746 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=72653 completed=true original_deadline_expired=false generation=32 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=60674 completed=true original_deadline_expired=false generation=32 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=45951 completed=true original_deadline_expired=false generation=32 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=118393 completed=true original_deadline_expired=false generation=32 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=38312 completed=true original_deadline_expired=false generation=32 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=7694 completed=true original_deadline_expired=false generation=32 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=354259 completed=true original_deadline_expired=false generation=71 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=63344 completed=true original_deadline_expired=false generation=71 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=219853 completed=true original_deadline_expired=false generation=71 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=15244 completed=true original_deadline_expired=false generation=71 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=21934 completed=true original_deadline_expired=false generation=71 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=14996 completed=true original_deadline_expired=false generation=71 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=23783 completed=true original_deadline_expired=false generation=71 objects=9 bytes=6841
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=364303 completed=true original_deadline_expired=false generation=71 objects=6 bytes=19
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2947 filtered out; finished in 33.77s
+

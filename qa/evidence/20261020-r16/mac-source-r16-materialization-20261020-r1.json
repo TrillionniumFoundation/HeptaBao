@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.exact-r16-source-materialization.v1",
+  "status": "materialized_exact_published_r16_source",
+  "started_utc": "2026-10-20T10:55:59.825269+00:00",
+  "host_label": "mac",
+  "actual_executor": {
+    "hostname": "MacBook-Pro.local",
+    "system": "Darwin",
+    "machine": "arm64",
+    "uid": 501
+  },
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r15",
+  "source_before": {
+    "verified_at_utc": "2026-10-20T10:55:59.825006+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "base_manifest_sha256": "a1538aa148090decdcedb739b5cb21cbb2889c4344089e7668ad68fedc4c8e6b",
+  "historical_base_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "base_tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+  "packet": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r16-exact-delta-20261020-r1.json",
+  "packet_sha256": "89dfdfae4cf2768ae01861068e5f61f8b56d5c3bbe7d158fa25830ed20a6e210",
+  "source_commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+  "source_tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+  "actual_commit_parent": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "manifest_sha256": "f87fc98fec5cac723abbd909bc65f65fa2e721e2077251557830043acb3cc54d",
+  "commit_raw_sha256": "048bb4a35904efe837da743e32cffd6e9c15c2ab09b0439703e01bfd31ff8bec",
+  "commit_raw_bytes": 975,
+  "source_files": 3556,
+  "base_source_files": 3556,
+  "added_source_files": 0,
+  "delta_file_count": 2,
+  "original_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "controller_sha256": "28e4e221af09b872ec8ec152d66676812821a5c3a815adba48daf223f79c3793",
+  "output_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r16",
+  "output_manifest": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r16-manifest.json",
+  "output_commit_raw": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r16-commit.raw",
+  "submission_count": 1,
+  "automatic_retry": false,
+  "git_repository_created": false,
+  "synthetic_commit_created": false,
+  "tests_executed": false,
+  "compiler_invocations": 0,
+  "production_mutation": false,
+  "copied_base_tree": {
+    "verified_at_utc": "2026-10-20T10:56:00.632179+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "applied_delta": [
+    {
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "base_git_blob": "b890232d5737a036b77b9110db287cf3251d8d2a",
+      "git_blob": "ed1e88f78f912dfe2af73d98986579f8c0b4a3e9",
+      "sha256": "8e79886e91c6fa6df05b9a479636ee1f8f8ce9dec108dff124365d5af7a1b628",
+      "bytes": 9566
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "base_git_blob": "99ba8f523706758c42bacdf794b4df51866d5a0a",
+      "git_blob": "89060e4cc8ffbbaf7f0838fb72d03b33aeb38598",
+      "sha256": "f2022b572f358fe8dab4e988bf9f4be324209a72ee844198da103401af3e8c84",
+      "bytes": 62193
+    }
+  ],
+  "new_tree_verified": {
+    "verified_at_utc": "2026-10-20T10:56:00.755004+00:00",
+    "commit": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "tree": "ec902ac1a61cf86476518f65e1fc40032f2fcebc",
+    "verified_files": 3556
+  },
+  "actual_commit_raw_verified": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T10:56:00.883471+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "original_r15_source_unchanged": true,
+  "input_bytes_unchanged": true,
+  "finished_utc": "2026-10-20T10:56:00.883838+00:00"
+}
