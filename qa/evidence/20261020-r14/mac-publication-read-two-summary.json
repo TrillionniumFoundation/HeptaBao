@@ -1,0 +1,252 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-20T07:51:50.778013+00:00",
+  "runner_pid": 17119,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r14",
+  "source_commit": "7a552330df821b358161628120a8b5d064f37367",
+  "source_tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+  "manifest_sha256": "7bf1c8c4d34fc527142990af9364c1b3ed6d7daa257de1ade1533dccc86ccafc",
+  "runner_sha256": "ba40ecb77194304cc83917d9658fcefb9e8113b4b50f8b4d03ff1e96fd6edab5",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T07:51:50.926295+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 17123,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:51:50.938834+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T07:51:50.939195+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 17124,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:51:50.962064+00:00",
+      "elapsed_seconds": 0.023,
+      "log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T07:51:50.962395+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 17125,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:51:51.112532+00:00",
+      "elapsed_seconds": 0.15,
+      "log_sha256": "a0368422a546fe5e706890eeb2407d9433d8de3220642c3823d97748d50c4555"
+    },
+    {
+      "label": "publication-actual-quorum-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair",
+        "--",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T07:51:51.113024+00:00",
+      "status": "passed",
+      "log": "publication-actual-quorum-list.log",
+      "pid": 17136,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:51:51.562163+00:00",
+      "elapsed_seconds": 0.449,
+      "log_sha256": "c9a616ace1f9d797a3d1372c9b1820579a231d8604bfece910c8c3e237e12d65",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair"
+      ]
+    },
+    {
+      "label": "publication-actual-quorum",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T07:51:51.564709+00:00",
+      "status": "passed",
+      "log": "publication-actual-quorum.log",
+      "pid": 17139,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:51:54.793266+00:00",
+      "elapsed_seconds": 3.228,
+      "log_sha256": "7df7d53b80a2317dc4feae177a0c5149acc0f39386255dc51b105bff7090fd44",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "publication-readback-fences-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store",
+        "--",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T07:51:54.795478+00:00",
+      "status": "passed",
+      "log": "publication-readback-fences-list.log",
+      "pid": 17157,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:51:54.946436+00:00",
+      "elapsed_seconds": 0.151,
+      "log_sha256": "38df0741ee0d9b1303b64f5203825f2c9446c15b3a16fd2cc130b2c4f3e1013a",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store"
+      ]
+    },
+    {
+      "label": "publication-readback-fences",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T07:51:54.958512+00:00",
+      "status": "passed",
+      "log": "publication-readback-fences.log",
+      "pid": 17159,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T07:52:05.384281+00:00",
+      "elapsed_seconds": 10.426,
+      "log_sha256": "460708746f2e5c43931647e80bacd59e50918f06cbf1996f95e0ece9ca080f0f",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_install::tests::native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  ],
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hostname": "MacBook-Pro.local",
+  "python": "3.14.3",
+  "selected_groups": [
+    "publication-actual-quorum",
+    "publication-readback-fences"
+  ],
+  "schema": "heptabao.r14-publication-read-two-native-cases.v1",
+  "scope": "Two new R14 publication-read cases; original58 and originalfocused20 remain independent",
+  "required_test_count": 2,
+  "required_exact_selection_commands": 4,
+  "original58_qualified_by_this_receipt": false,
+  "originalfocused20_qualified_by_this_receipt": false,
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 2,
+    "logical_cpus_observed": 10,
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T07:51:50.922909+00:00",
+    "commit": "7a552330df821b358161628120a8b5d064f37367",
+    "tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+    "verified_files": 3556
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T07:52:05.557480+00:00",
+    "commit": "7a552330df821b358161628120a8b5d064f37367",
+    "tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T07:52:05.557590+00:00"
+}

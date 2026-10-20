@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.r14-continuation-evidence-index.v1",
+  "candidate_commit": "7a552330df821b358161628120a8b5d064f37367",
+  "candidate_tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+  "full_openbao_271_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_openbao_deleted": false,
+  "files": [
+    {
+      "name": "mac-native58-summary.json",
+      "size": 56905,
+      "sha256": "af79077f69272ccb2d0ceeb52f7510c7ae666a9d45df423d07ef3f6a2db5698f",
+      "source": "Mac native-full58-r14-mac-r1"
+    },
+    {
+      "name": "main-native58-summary.json",
+      "size": 56913,
+      "sha256": "4c582ed6fa4d32e3fc109a85bc5c67f83aec1d062c0d5c6e9307a0f8a87cb7d5",
+      "source": "Main native-full58-r14-main-r1"
+    },
+    {
+      "name": "mac-focused20-summary.json",
+      "size": 108626,
+      "sha256": "95c3301bf4ce1c98173521214d015da8040f54f11a1f67204c7423fb2c3daa7b",
+      "source": "Mac native-focused20-r14-mac-20261020-r1"
+    },
+    {
+      "name": "mac-official271-full34-summary.json",
+      "size": 90530,
+      "sha256": "8c52586f3086141be30a6d530ccbba2c608516c764b300477174ccecc8e373a9",
+      "source": "Mac official271-full34-r14-mac-20261020-r1"
+    },
+    {
+      "name": "mac-official271-full34-controller.json",
+      "size": 3401,
+      "sha256": "92d4a96e16dd418617756d7be5d110118d3f147fa7034329d4125ef3a1aea934",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r14-mac-20261020-r1-controller/controller.json"
+    },
+    {
+      "name": "mac-supplemental38/summary.json",
+      "size": 22808,
+      "sha256": "d5e979d04859061526fe067cf88f36da791dd4add3ce42f3e5cc97cd64c5ab8b",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r14-mac-r1/summary.json"
+    },
+    {
+      "name": "mac-supplemental38/approle135.log",
+      "size": 5842,
+      "sha256": "86a30a9825bf86d4d242a0c07be8b2ae3ff4c978b1c1b2e5568422bff5ff29a5",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r14-mac-r1/approle135.log"
+    },
+    {
+      "name": "mac-supplemental38/ha-quota-catchup.log",
+      "size": 6880,
+      "sha256": "a7191a79a9424c630c16bb7a9a219268de10a6ea27408114f1e1a1f80f43c516",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r14-mac-r1/ha-quota-catchup.log"
+    },
+    {
+      "name": "mac-supplemental38/ha-quota-lifecycle.log",
+      "size": 10403,
+      "sha256": "b1244f073fb0f8b45cf2ef11edbf7973491ad6cc80386bfa5e38305869c08fca",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r14-mac-r1/ha-quota-lifecycle.log"
+    },
+    {
+      "name": "mac-supplemental38/approle-batch-regression.log",
+      "size": 17220,
+      "sha256": "34e3f4bc33fc775d81f55b8969231d4d773e7ff5f9658dbf48875542d198608d",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r14-mac-r1/approle-batch-regression.log"
+    },
+    {
+      "name": "main-historical-service.log",
+      "size": 158259,
+      "sha256": "e3a5e52b9a52684e622d4697c60843a67c67a85112d1d7d547e8175a8cec0f3e",
+      "source": "Main native-full58-r14-main-r1/historical-service.log"
+    },
+    {
+      "name": "main-archive-34mib.log",
+      "size": 3210,
+      "sha256": "b2d946b2a1a7707f7c523abbab0bd2888010c6b2ddea9b3cbf13769a392a26ec",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r14-main-r1/archive-34mib.log"
+    },
+    {
+      "name": "mac-gateway-r3-inspect/controller.public.json",
+      "size": 13285,
+      "sha256": "0ca7bf4687c9f96bd6dcaa7b590b13b7606472825dfae8f906fa91d38c9d7efe",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-inspect-r3-20261020-01/controller.public.json"
+    },
+    {
+      "name": "mac-gateway-r3-inspect/worker.public.json",
+      "size": 13232,
+      "sha256": "2d966c04afa08694a906a9b208fa2fdf4a6435e473d34a40f2f4c891273d966d",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-inspect-r3-20261020-01/worker.public.json"
+    },
+    {
+      "name": "mac-gateway-r3-probe/controller.public.json",
+      "size": 14336,
+      "sha256": "5b2ae10aa9e589b7adfba00cf3041cb7cfcd2ec9e6327232d139996ca87ecdfc",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-probe-r3-20261020-01/controller.public.json"
+    },
+    {
+      "name": "mac-gateway-r3-probe/worker.public.json",
+      "size": 16151,
+      "sha256": "c1fe6572888b39fc55493ede83ba2ffcff457d1b9d349685d5b285e3f6ab12a1",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-probe-r3-20261020-01/worker.public.json"
+    },
+    {
+      "name": "mac-publication-read-two-summary.json",
+      "size": 8806,
+      "sha256": "7fa95e7179f3692ce862805f9a0e0c8e5f342d07432341de1a487b61689c3ed3",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-publication-read-two-r14-mac-r1/summary.json"
+    },
+    {
+      "name": "main-publication-read-two-summary.json",
+      "size": 8823,
+      "sha256": "ff28a16888fc2d7246fba0fe996404e17882501fda26a9417f1a53f32d419a64",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-publication-read-two-r14-main-r1/summary.json"
+    },
+    {
+      "name": "r13-preserved/mac-native58-summary.json",
+      "size": 12905,
+      "sha256": "22ced9dcd43d32e56e559ceb222f77fa94598b0cc43017eefc45b71904b121d3",
+      "source": "r13MacNative58SummaryText"
+    },
+    {
+      "name": "r13-preserved/main-native58-summary.json",
+      "size": 12894,
+      "sha256": "579a24d89c4042715b89691769383063cd2e1a4ea1d11545e12e697fd2f15d38",
+      "source": "r13MainNative58SummaryText"
+    },
+    {
+      "name": "r13-preserved/mac-compile-server-tests.log",
+      "size": 1394,
+      "sha256": "d1660152a74641c2fd9d2b7c86f32aaa600b5ec5f6c8a05fb7e9326be06e5f5a",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full58-r13-mac-r1/compile-server-tests.log"
+    },
+    {
+      "name": "r13-preserved/main-compile-server-tests.log",
+      "size": 1377,
+      "sha256": "0d99b8543713a0ab3eecc2c504deb8de2fa549674ffefe634c694688e62e5b8a",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r13-main-r1/compile-server-tests.log"
+    }
+  ]
+}

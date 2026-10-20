@@ -1,0 +1,325 @@
+{
+  "actualExecutionQualifiedByOuterOnly": true,
+  "adapterSource": {
+    "derivedInspectorSha256": "6145ed61d68298c66ac777407bfac5d262607cf495e93fdbea7fa90bc32b8592",
+    "derivedProbeSha256": "c7459668883519d8d3aef5a3f53883a306d42c5bfb2f75af6d112d5b97f40fac",
+    "frozenPublicSources": {
+      "gateway_darwin_listener_r1.py": {
+        "bytes": 11020,
+        "sha256": "1690c74115578cae5caa085a1f03255932e7d40c2d87ce7c12f4b2e450b16f8f"
+      },
+      "gateway_device_crypto_mac_r1.mjs": {
+        "bytes": 5899,
+        "sha256": "0b8e2e3c56960e4fe98e2763f97f20887aac3599b44feaedcd7497aa3894618a"
+      },
+      "gateway_device_crypto_r1.mjs": {
+        "bytes": 5897,
+        "sha256": "0e2e88817d10b3fc30e64292f39638f6cb3f303656e7b845d2b57f0a10da044b"
+      },
+      "gateway_device_probe_r1.py": {
+        "bytes": 13983,
+        "sha256": "931550541fa8d4294e1d775e9fd98a23f172727345494704fee8e4858839266b"
+      },
+      "gateway_device_readonly_r1.py": {
+        "bytes": 19511,
+        "sha256": "ca2a2b20ee3f817ca20347a1cd8b31e4d3b7a4e5e2ec067846f89769e3ea3a0a"
+      },
+      "gateway_token_readonly_r1.py": {
+        "bytes": 23081,
+        "sha256": "e03a81f81807507bd927209f47f4068d1c80df93182b94d989f1ae06dfb038dd"
+      }
+    },
+    "inMemoryDerivationOnly": true,
+    "originalHelperFilesModified": false,
+    "scopeEquivalenceEvidence": {
+      "actualOperatorScopeSdkSha256": "6cdd75c4ee91c9458174b88d2fb900f7cd3aaff132aa785c81aa6bf1e7c2cffc",
+      "approvalGrantModified": false,
+      "criterion": "mac-existing-grants-effective-equivalence-20261020-r3",
+      "effectiveScopeUniverse": "all-and-only-operator-prefixed-scopes",
+      "originalExactSnapshotCriterionQualified": false,
+      "permissionExpansionRequested": false,
+      "priorStrictInspectionSha256": "1f3bb5b35257e2d230e08e27259a8ce75f49fec844dfa8820ed59a7d068bae3c",
+      "priorStrictOuterReceiptSha256": "d9df72bb37a6a1480f96fa8fe3639a3e82b5358644368e2f0b26b209fc7fbf7e",
+      "scopeMetadataModified": false
+    },
+    "sourceMetadataGitBlob": "d25d41736f06f8d5717b3b22381ea0ffd71d249d",
+    "sourceMetadataSha256": "c664c1f9fc0ae00b964aadcd27fc641e40ad5fcb14a73b51e575162d79020ca9",
+    "workerSha256": "84e6c686bad39ddacc36331635e7542905ec3a7b72726809172bdb0e85b9d597"
+  },
+  "allConsumersCovered": false,
+  "allHelperChildrenWaitedByOriginalHandles": true,
+  "binding": {
+    "cryptoWorkerSha256": "0b8e2e3c56960e4fe98e2763f97f20887aac3599b44feaedcd7497aa3894618a",
+    "deviceAuthFileSha256": "3dd6115b084a09af634d7a831d4165713eb41745b51bb9d367da0f942fbbe659",
+    "deviceFamilySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "deviceIdSha256": "5e9a388a29e93a1800d8d29b1de7838f04697b3ebbdb1531f3eb682f039fbfa8",
+    "identityFileSha256": "d7f1d13e9ee14afb6a6e3ba2299e9cb38c9584b9af86c0f6052ae7446b0c6b56",
+    "pairedGrantSha256": "d616c18eee3776c907929c0ec54a15fe526d3e4f27b49fa13f43a418a60cea08",
+    "platform": "darwin",
+    "sdkProtocolSourceSha256": {
+      "dist/client-CE2rtDfj.js": "bc1a52483851c5780383bff02f72f9f747e7a7d0ab7bc603204bb5fdba1c7082",
+      "dist/client-info-CcqJJIan.js": "8fa9964eaf6f74d8dedc9201005fde402f24478cb2cbab2fe37aa06378065e97",
+      "dist/connect-error-details-BxqBqDDT.js": "5fdbafc9eb1150f4e6b89b768dc257f41de7b26b44ce9261c7ab809ecac8e2de",
+      "dist/device-identity-Chqb5Ab9.js": "e9af752bed9e3aa54ff342da0576b086d3a5ea4efe96a0e74da34b78cefd0d9e",
+      "dist/device-identity-UW4cZXf5.js": "f5a7d45c2fb067aa49f769e8bafd81bd286064dd75a91404b27755d5bcbec433",
+      "dist/device-pairing-Dw7KWdQ7.js": "d0de20b9c755f11c2047baf89ce2bd395ccdbe7fc96ec976bdfd6a23247c18a0",
+      "dist/message-handler-CzwI6JjW.js": "ce8653d5e612bb6b3ec28eb57b9762303de4ca3eeee8b41397d76e77604ef121",
+      "dist/operator-scope-compat-BVrjvlGm.js": "6cdd75c4ee91c9458174b88d2fb900f7cd3aaff132aa785c81aa6bf1e7c2cffc",
+      "dist/pairing-token-BOKSkEPP.js": "51465de8a8f40268f1ade04fa0cfbfb743d3ded80dbe0014424eb338721822f1",
+      "dist/probe-B_nE1KM8.js": "d1796da1f8b3e49c748b6ef9da7cac68bd7fd233ede10b3e2e5fa9b474b97df1",
+      "dist/resolve-ZNWkJyct.js": "da995fb09dceed37e51815ce4c762cc30df11ec6795336b84bdffc2722d36206",
+      "dist/src-DZzKBMa7.js": "262a1ddf58310b68c6eb195b48a77282c8d494e22763ce5482c7b832c6eed837"
+    },
+    "sourceConfigSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+    "sourceCredentialDigest": "7760c38ad0dbfb965cee59967bdd33119ada891678fd73588f5040dff8913bfd"
+  },
+  "callerParentPid": 12604,
+  "callerPid": 12606,
+  "callerProcessGroup": 12606,
+  "callerSession": 12606,
+  "candidateBackendUsed": false,
+  "clientIdMatchesCli": true,
+  "clientModeMatchesProbe": true,
+  "configuredSecretProviderNameSha256": "34eef96813a9bd91c0e3391ee66dd78a43754c5d0f7fae30b98c5c1a6fbdc52d",
+  "credentialStoreWritesRequested": false,
+  "credentialsTransferredOffOwnerHost": false,
+  "cryptoChildren": [
+    {
+      "communicateWaitCompleted": true,
+      "exitCode": 0,
+      "killedByOriginalHandle": false,
+      "kind": "existing_device_ed25519",
+      "mode": "inspect",
+      "parentPid": 12606,
+      "pid": 12612,
+      "retainedOriginalPopen": true,
+      "startNewSessionRequested": false
+    }
+  ],
+  "cryptoWorkerSha256": "0b8e2e3c56960e4fe98e2763f97f20887aac3599b44feaedcd7497aa3894618a",
+  "deviceIdentityCreated": false,
+  "deviceIdentityMigratedOrRepaired": false,
+  "effectiveScopeObservations": [
+    {
+      "cacheWithinServer": true,
+      "deviceAuthFileSha256": "3dd6115b084a09af634d7a831d4165713eb41745b51bb9d367da0f942fbbe659",
+      "durableApprovedScopes": [
+        "operator.admin",
+        "operator.approvals",
+        "operator.pairing",
+        "operator.read",
+        "operator.write"
+      ],
+      "exactSnapshotMatch": false,
+      "identityFileSha256": "d7f1d13e9ee14afb6a6e3ba2299e9cb38c9584b9af86c0f6052ae7446b0c6b56",
+      "localCacheAuthoritativeForGrant": false,
+      "localCacheScopes": [
+        "operator.admin",
+        "operator.read",
+        "operator.write"
+      ],
+      "pairedGrantSha256": "d616c18eee3776c907929c0ec54a15fe526d3e4f27b49fa13f43a418a60cea08",
+      "pairedTokenScopes": [
+        "operator.admin"
+      ],
+      "serverWithinCache": true,
+      "tokenBytesMatch": true
+    }
+  ],
+  "elapsedSeconds": 0.112482,
+  "existingCacheMatchesPairedToken": true,
+  "existingDeviceAuthCachePresent": true,
+  "existingDeviceBrowserRelated": false,
+  "existingIdentityFilePresent": true,
+  "existingIdentityMode": "0o600",
+  "existingIdentityNlink": 1,
+  "existingIdentityOwnerUid": 501,
+  "existingOperatorRoleApproved": true,
+  "existingOperatorTokenActive": true,
+  "existingOperatorTokenWithinApproval": true,
+  "existingPairedFilePresent": true,
+  "existingPairedIdentityQualified": true,
+  "existingReadScopeApproved": true,
+  "existingTokenReusableForNormalCli": true,
+  "frozenHelperInputsUnchanged": true,
+  "host": "mac",
+  "identityCrypto": {
+    "deviceIdMatchesPublicKey": true,
+    "deviceIdSha256": "5e9a388a29e93a1800d8d29b1de7838f04697b3ebbdb1531f3eb682f039fbfa8",
+    "identityFormat": "v1_pem",
+    "keyAlgorithm": "ed25519",
+    "keyPairMatches": true,
+    "ok": true,
+    "pairedPublicKeyMatches": true
+  },
+  "inspectedAtUnixMs": 1792481074917,
+  "j3160Contacted": false,
+  "listenerObservation": {
+    "gatewayNetworkRequests": 0,
+    "image": {
+      "bytes": 68384,
+      "identityDecimal": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "path": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    },
+    "kernelBirth": {
+      "pgid": 18437,
+      "pid": 18437,
+      "ppid": 1,
+      "ruid": 501,
+      "startSecDecimal": "1791172168",
+      "startUsecDecimal": "428276",
+      "svuid": 501,
+      "uid": 501
+    },
+    "listeners": [
+      {
+        "address": "127.0.0.1:18789",
+        "fd": 23,
+        "pid": 18437,
+        "state": "LISTEN",
+        "uid": 501
+      },
+      {
+        "address": "[::1]:18789",
+        "fd": 24,
+        "pid": 18437,
+        "state": "LISTEN",
+        "uid": 501
+      }
+    ],
+    "method": "libproc-microsecond-birth-and-two-lsof-snapshots",
+    "schema": "heptabao.gateway.darwin-listener-binding.r1",
+    "signalsSentToGateway": false,
+    "socketOwnerObservationStable": true,
+    "systemObserverIdentityDecimal": [
+      "16777233",
+      "1152921500312576097",
+      "0",
+      "0",
+      "33261",
+      "1",
+      "306768",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "systemObserverSha256": "b1b9151bbc56f4749890dbe4e533af9a4f8700240ad431a6c9ddf70fe137c165"
+  },
+  "networkCallsRequested": false,
+  "networkProbeQualified": false,
+  "nodeExecutableSha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e",
+  "observerChildren": [
+    {
+      "communicateWaitCompleted": true,
+      "exitCode": 0,
+      "killedByOriginalHandle": false,
+      "kind": "readonly_lsof",
+      "parentPid": 12606,
+      "pid": 12608,
+      "retainedOriginalPopen": true,
+      "startNewSessionRequested": false
+    },
+    {
+      "communicateWaitCompleted": true,
+      "exitCode": 0,
+      "killedByOriginalHandle": false,
+      "kind": "readonly_lsof",
+      "parentPid": 12606,
+      "pid": 12610,
+      "retainedOriginalPopen": true,
+      "startNewSessionRequested": false
+    }
+  ],
+  "ok": true,
+  "operatorTokenIssuerKind": "absent",
+  "originalBudgetIncludesCodeLoading": true,
+  "originalBudgetSeconds": 25,
+  "originalExactSnapshotCriterionQualified": false,
+  "pairedFileSha256": "790d0672e46db595c5ca2659aa984cbd02c2fb731133db3d0f9c08953d3b8612",
+  "pairingOrApprovalRequested": false,
+  "pendingFile": {
+    "exists": true,
+    "selectedDevicePendingRequests": 0,
+    "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "platform": "darwin",
+  "privateIdentityPayloadsEmitted": false,
+  "productionClientRestartQualified": false,
+  "productionConfigWrites": false,
+  "productionCutoverQualified": false,
+  "productionServiceActions": false,
+  "readInputsAndFileIdentitiesUnchanged": true,
+  "schema": "heptabao.authbus.existing-gateway-device-inspect.mac.r3",
+  "scopeAcceptanceCriterion": "mac-existing-grants-effective-equivalence-20261020-r3",
+  "scopeSnapshot": {
+    "cacheWithinServer": true,
+    "deviceAuthFileSha256": "3dd6115b084a09af634d7a831d4165713eb41745b51bb9d367da0f942fbbe659",
+    "durableApprovedScopes": [
+      "operator.admin",
+      "operator.approvals",
+      "operator.pairing",
+      "operator.read",
+      "operator.write"
+    ],
+    "exactSnapshotMatch": false,
+    "identityFileSha256": "d7f1d13e9ee14afb6a6e3ba2299e9cb38c9584b9af86c0f6052ae7446b0c6b56",
+    "localCacheAuthoritativeForGrant": false,
+    "localCacheScopes": [
+      "operator.admin",
+      "operator.read",
+      "operator.write"
+    ],
+    "pairedGrantSha256": "d616c18eee3776c907929c0ec54a15fe526d3e4f27b49fa13f43a418a60cea08",
+    "pairedTokenScopes": [
+      "operator.admin"
+    ],
+    "serverWithinCache": true,
+    "tokenBytesMatch": true
+  },
+  "sdkExecuted": false,
+  "sdkPackageSha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+  "sdkProtocolSourceReviewed": true,
+  "sdkProtocolSourceSha256": {
+    "dist/client-CE2rtDfj.js": "bc1a52483851c5780383bff02f72f9f747e7a7d0ab7bc603204bb5fdba1c7082",
+    "dist/client-info-CcqJJIan.js": "8fa9964eaf6f74d8dedc9201005fde402f24478cb2cbab2fe37aa06378065e97",
+    "dist/connect-error-details-BxqBqDDT.js": "5fdbafc9eb1150f4e6b89b768dc257f41de7b26b44ce9261c7ab809ecac8e2de",
+    "dist/device-identity-Chqb5Ab9.js": "e9af752bed9e3aa54ff342da0576b086d3a5ea4efe96a0e74da34b78cefd0d9e",
+    "dist/device-identity-UW4cZXf5.js": "f5a7d45c2fb067aa49f769e8bafd81bd286064dd75a91404b27755d5bcbec433",
+    "dist/device-pairing-Dw7KWdQ7.js": "d0de20b9c755f11c2047baf89ce2bd395ccdbe7fc96ec976bdfd6a23247c18a0",
+    "dist/message-handler-CzwI6JjW.js": "ce8653d5e612bb6b3ec28eb57b9762303de4ca3eeee8b41397d76e77604ef121",
+    "dist/operator-scope-compat-BVrjvlGm.js": "6cdd75c4ee91c9458174b88d2fb900f7cd3aaff132aa785c81aa6bf1e7c2cffc",
+    "dist/pairing-token-BOKSkEPP.js": "51465de8a8f40268f1ade04fa0cfbfb743d3ded80dbe0014424eb338721822f1",
+    "dist/probe-B_nE1KM8.js": "d1796da1f8b3e49c748b6ef9da7cac68bd7fd233ede10b3e2e5fa9b474b97df1",
+    "dist/resolve-ZNWkJyct.js": "da995fb09dceed37e51815ce4c762cc30df11ec6795336b84bdffc2722d36206",
+    "dist/src-DZzKBMa7.js": "262a1ddf58310b68c6eb195b48a77282c8d494e22763ce5482c7b832c6eed837"
+  },
+  "selectedDevicePendingRequests": 0,
+  "sourceConfigSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+  "sourceCredentialDigest": "7760c38ad0dbfb965cee59967bdd33119ada891678fd73588f5040dff8913bfd",
+  "sourceIdentityDecimal": [
+    "16777233",
+    "295029544",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "49",
+    "1781864811013371158",
+    "1781864811013387491"
+  ],
+  "sourceMetadataReceiptSha256": "c664c1f9fc0ae00b964aadcd27fc641e40ad5fcb14a73b51e575162d79020ca9",
+  "sourceMode": "0o600",
+  "sourceNlink": 1,
+  "sourceOwnerUid": 501,
+  "workerElapsedSeconds": 0.113069
+}

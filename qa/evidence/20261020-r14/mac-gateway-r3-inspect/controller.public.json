@@ -1,0 +1,435 @@
+{
+  "automaticRetryAllowed": false,
+  "candidateBackendUsed": false,
+  "cleanup": {
+    "exit_code": 0,
+    "group_before_final_wait": [
+      {
+        "lstart": "Tue Oct 20 15:24:34 2026",
+        "pgid": 12606,
+        "pid": 12606,
+        "ppid": 12604,
+        "state": "Z",
+        "uid": 501
+      }
+    ],
+    "group_before_reap": [
+      {
+        "lstart": "Tue Oct 20 15:24:34 2026",
+        "pgid": 12606,
+        "pid": 12606,
+        "ppid": 12604,
+        "state": "Z",
+        "uid": 501
+      }
+    ],
+    "leader_reaped": true,
+    "original_group_observed_without_live_members": true,
+    "signals": [],
+    "unexpected_live_descendants_after_exit": false
+  },
+  "credentialsTransferredOffOwnerHost": false,
+  "driver.stderr.private.log": {
+    "bytes": 0,
+    "identityDecimal": [
+      "16777244",
+      "66627821",
+      "501",
+      "33152",
+      "1",
+      "0",
+      "1792481074771569054",
+      "1792481074771569054"
+    ],
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-inspect-r3-20261020-01/driver.stderr.private.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uid": 501
+  },
+  "driver.stdout.private.log": {
+    "bytes": 214,
+    "identityDecimal": [
+      "16777244",
+      "66627820",
+      "501",
+      "33152",
+      "1",
+      "214",
+      "1792481074921660228",
+      "1792481074921660228"
+    ],
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-inspect-r3-20261020-01/driver.stdout.private.log",
+    "sha256": "6ff76766aae8bc838a061402949c7d56c7077666ee31202d029ca5ea31f685de",
+    "uid": 501
+  },
+  "driverExitCode": 0,
+  "driverPid": 12606,
+  "elapsedSeconds": 0.253367,
+  "frozenInputsUnchanged": true,
+  "gatewayMayLogAuthenticationAttempts": false,
+  "gatewayMayUpdateExistingDeviceActivityMetadata": false,
+  "host": "mac",
+  "initialOwnedGroup": [
+    {
+      "lstart": "Tue Oct 20 15:24:34 2026",
+      "pgid": 12606,
+      "pid": 12606,
+      "ppid": 12604,
+      "state": "Rs",
+      "uid": 501
+    }
+  ],
+  "j3160Contacted": false,
+  "mode": "inspect",
+  "mutationOutcomeUnknown": false,
+  "ok": true,
+  "originalExactSnapshotCriterionQualified": false,
+  "originalWorkerBudgetExtended": false,
+  "originalWorkerBudgetSeconds": 25,
+  "outerCustodyBudgetSeconds": 45,
+  "priorInspection": null,
+  "privateIdentityPayloadsEmitted": false,
+  "productionClientRestartQualified": false,
+  "productionConfigWrites": false,
+  "productionCutoverQualified": false,
+  "productionGatewaySignalsSent": false,
+  "productionServiceActions": false,
+  "qualification": {
+    "actualWorkerElapsedSeconds": 0.113069,
+    "allConsumersCovered": false,
+    "candidateBackendUsed": false,
+    "cryptoChildren": 1,
+    "exactMacEffectiveScopeEquivalenceQualified": true,
+    "existingAuthorizationInspected": true,
+    "mode": "inspect",
+    "originalExactSnapshotCriterionQualified": false,
+    "originalWorkerBudgetSeconds": 25,
+    "productionClientRestartQualified": false,
+    "productionCutoverQualified": false,
+    "readonlyObserverChildren": 2,
+    "realConfiguredConsumerAuthenticatedReadQualified": false,
+    "scopeAcceptanceCriterion": "mac-existing-grants-effective-equivalence-20261020-r3",
+    "unreapedExitObservedAfterLaunchSeconds": 0.18886587489396334
+  },
+  "r4OwnedLifecycleSourceSha256": "0567432c79d7ddef6c14a68f4b0e1b61359b5518e941a8609a1dcc8541ccf0fe",
+  "schema": "heptabao.authbus.existing-gateway-device.mac-owned.r3",
+  "scopeAcceptanceCriterion": "mac-existing-grants-effective-equivalence-20261020-r3",
+  "sourceInputsAfter": {
+    "actual_r4_owned_library": {
+      "bytes": 37752,
+      "identityDecimal": [
+        "16777244",
+        "66438719",
+        "501",
+        "33152",
+        "1",
+        "37752",
+        "1792409955000000000",
+        "1792409955729179722"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/authbus-owned-mac-readonly-mount-r4-once.py",
+      "sha256": "0567432c79d7ddef6c14a68f4b0e1b61359b5518e941a8609a1dcc8541ccf0fe",
+      "uid": 501
+    },
+    "gateway_darwin_listener_r1.py": {
+      "bytes": 11020,
+      "identityDecimal": [
+        "16777244",
+        "66627799",
+        "501",
+        "33152",
+        "1",
+        "11020",
+        "1792481052890569750",
+        "1792481052890569750"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_darwin_listener_r1.py",
+      "sha256": "1690c74115578cae5caa085a1f03255932e7d40c2d87ce7c12f4b2e450b16f8f",
+      "uid": 501
+    },
+    "gateway_device_crypto_mac_r1.mjs": {
+      "bytes": 5899,
+      "identityDecimal": [
+        "16777244",
+        "66627798",
+        "501",
+        "33152",
+        "1",
+        "5899",
+        "1792481052890118583",
+        "1792481052890118583"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_crypto_mac_r1.mjs",
+      "sha256": "0b8e2e3c56960e4fe98e2763f97f20887aac3599b44feaedcd7497aa3894618a",
+      "uid": 501
+    },
+    "gateway_device_crypto_r1.mjs": {
+      "bytes": 5897,
+      "identityDecimal": [
+        "16777244",
+        "66627795",
+        "501",
+        "33152",
+        "1",
+        "5897",
+        "1792481052888996124",
+        "1792481052888996124"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_crypto_r1.mjs",
+      "sha256": "0e2e88817d10b3fc30e64292f39638f6cb3f303656e7b845d2b57f0a10da044b",
+      "uid": 501
+    },
+    "gateway_device_mac_r1.py": {
+      "bytes": 26905,
+      "identityDecimal": [
+        "16777244",
+        "66627800",
+        "501",
+        "33152",
+        "1",
+        "26905",
+        "1792481052891004208",
+        "1792481052891004208"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_mac_r1.py",
+      "sha256": "84e6c686bad39ddacc36331635e7542905ec3a7b72726809172bdb0e85b9d597",
+      "uid": 501
+    },
+    "gateway_device_probe_r1.py": {
+      "bytes": 13983,
+      "identityDecimal": [
+        "16777244",
+        "66627797",
+        "501",
+        "33152",
+        "1",
+        "13983",
+        "1792481052889626083",
+        "1792481052889626083"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_probe_r1.py",
+      "sha256": "931550541fa8d4294e1d775e9fd98a23f172727345494704fee8e4858839266b",
+      "uid": 501
+    },
+    "gateway_device_readonly_r1.py": {
+      "bytes": 19511,
+      "identityDecimal": [
+        "16777244",
+        "66627796",
+        "501",
+        "33152",
+        "1",
+        "19511",
+        "1792481052889325791",
+        "1792481052889325791"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_readonly_r1.py",
+      "sha256": "ca2a2b20ee3f817ca20347a1cd8b31e4d3b7a4e5e2ec067846f89769e3ea3a0a",
+      "uid": 501
+    },
+    "gateway_token_readonly_r1.py": {
+      "bytes": 23081,
+      "identityDecimal": [
+        "16777244",
+        "66627794",
+        "501",
+        "33152",
+        "1",
+        "23081",
+        "1792481052888677582",
+        "1792481052888677582"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_token_readonly_r1.py",
+      "sha256": "e03a81f81807507bd927209f47f4068d1c80df93182b94d989f1ae06dfb038dd",
+      "uid": 501
+    }
+  },
+  "sourceInputsBefore": {
+    "actual_r4_owned_library": {
+      "bytes": 37752,
+      "identityDecimal": [
+        "16777244",
+        "66438719",
+        "501",
+        "33152",
+        "1",
+        "37752",
+        "1792409955000000000",
+        "1792409955729179722"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/authbus-owned-mac-readonly-mount-r4-once.py",
+      "sha256": "0567432c79d7ddef6c14a68f4b0e1b61359b5518e941a8609a1dcc8541ccf0fe",
+      "uid": 501
+    },
+    "gateway_darwin_listener_r1.py": {
+      "bytes": 11020,
+      "identityDecimal": [
+        "16777244",
+        "66627799",
+        "501",
+        "33152",
+        "1",
+        "11020",
+        "1792481052890569750",
+        "1792481052890569750"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_darwin_listener_r1.py",
+      "sha256": "1690c74115578cae5caa085a1f03255932e7d40c2d87ce7c12f4b2e450b16f8f",
+      "uid": 501
+    },
+    "gateway_device_crypto_mac_r1.mjs": {
+      "bytes": 5899,
+      "identityDecimal": [
+        "16777244",
+        "66627798",
+        "501",
+        "33152",
+        "1",
+        "5899",
+        "1792481052890118583",
+        "1792481052890118583"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_crypto_mac_r1.mjs",
+      "sha256": "0b8e2e3c56960e4fe98e2763f97f20887aac3599b44feaedcd7497aa3894618a",
+      "uid": 501
+    },
+    "gateway_device_crypto_r1.mjs": {
+      "bytes": 5897,
+      "identityDecimal": [
+        "16777244",
+        "66627795",
+        "501",
+        "33152",
+        "1",
+        "5897",
+        "1792481052888996124",
+        "1792481052888996124"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_crypto_r1.mjs",
+      "sha256": "0e2e88817d10b3fc30e64292f39638f6cb3f303656e7b845d2b57f0a10da044b",
+      "uid": 501
+    },
+    "gateway_device_mac_r1.py": {
+      "bytes": 26905,
+      "identityDecimal": [
+        "16777244",
+        "66627800",
+        "501",
+        "33152",
+        "1",
+        "26905",
+        "1792481052891004208",
+        "1792481052891004208"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_mac_r1.py",
+      "sha256": "84e6c686bad39ddacc36331635e7542905ec3a7b72726809172bdb0e85b9d597",
+      "uid": 501
+    },
+    "gateway_device_probe_r1.py": {
+      "bytes": 13983,
+      "identityDecimal": [
+        "16777244",
+        "66627797",
+        "501",
+        "33152",
+        "1",
+        "13983",
+        "1792481052889626083",
+        "1792481052889626083"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_probe_r1.py",
+      "sha256": "931550541fa8d4294e1d775e9fd98a23f172727345494704fee8e4858839266b",
+      "uid": 501
+    },
+    "gateway_device_readonly_r1.py": {
+      "bytes": 19511,
+      "identityDecimal": [
+        "16777244",
+        "66627796",
+        "501",
+        "33152",
+        "1",
+        "19511",
+        "1792481052889325791",
+        "1792481052889325791"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_device_readonly_r1.py",
+      "sha256": "ca2a2b20ee3f817ca20347a1cd8b31e4d3b7a4e5e2ec067846f89769e3ea3a0a",
+      "uid": 501
+    },
+    "gateway_token_readonly_r1.py": {
+      "bytes": 23081,
+      "identityDecimal": [
+        "16777244",
+        "66627794",
+        "501",
+        "33152",
+        "1",
+        "23081",
+        "1792481052888677582",
+        "1792481052888677582"
+      ],
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-stage-20261020-r3/gateway_token_readonly_r1.py",
+      "sha256": "e03a81f81807507bd927209f47f4068d1c80df93182b94d989f1ae06dfb038dd",
+      "uid": 501
+    }
+  },
+  "status": "passed",
+  "submissionCount": 1,
+  "timedOut": false,
+  "unreapedExitObservedAfterLaunchSeconds": 0.18886587489396334,
+  "workerPublicReceipt": {
+    "bytes": 13232,
+    "identityDecimal": [
+      "16777244",
+      "66627823",
+      "501",
+      "33152",
+      "1",
+      "13232",
+      "1792481074918405311",
+      "1792481074918405311"
+    ],
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/gateway-device-mac-inspect-r3-20261020-01/worker.public.json",
+    "sha256": "2d966c04afa08694a906a9b208fa2fdf4a6435e473d34a40f2f4c891273d966d",
+    "uid": 501
+  },
+  "workerSourceSha256": "84e6c686bad39ddacc36331635e7542905ec3a7b72726809172bdb0e85b9d597"
+}

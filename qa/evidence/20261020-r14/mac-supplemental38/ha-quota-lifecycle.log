@@ -1,0 +1,116 @@
+{"argv": ["/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "service::native_v6_ha_pipeline_tests::ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart", "--", "--nocapture", "--test-threads=1", "--color=never"]}
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+   --> crates/heptabao-server/src/ha_native_v6_publication.rs:128:19
+    |
+127 | impl NativeHaPublicationError {
+    | ----------------------------- method in this implementation
+128 |     pub(crate) fn root_attempted(&self) -> bool {
+    |                   ^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: `heptabao-server` (lib test) generated 5 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8)
+
+running 1 test
+test service::native_v6_ha_pipeline_tests::ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=2079 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=30967 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=2 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=90896 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=33683 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=205091 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=32620 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=4393 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=402969 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=24805 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=111510 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=11824 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=11053 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=11546 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=5687 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4812
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=182059 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=591 completed=true original_deadline_expired=false generation=9 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=1643 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=16958 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=33939 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=27309 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=87713 completed=true original_deadline_expired=false generation=1 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=28353 completed=true original_deadline_expired=false generation=1 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=4899 completed=true original_deadline_expired=false generation=1 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=203819 completed=true original_deadline_expired=false generation=9 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=22144 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=54973 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=11702 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=4295 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=9610 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=4467 completed=true original_deadline_expired=false generation=9 objects=9 bytes=5050
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=109864 completed=true original_deadline_expired=false generation=9 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=167 completed=true original_deadline_expired=false generation=11 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=1538 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=15363 completed=true original_deadline_expired=false generation=2 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=33049 completed=true original_deadline_expired=false generation=2 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=30753 completed=true original_deadline_expired=false generation=2 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=87881 completed=true original_deadline_expired=false generation=2 objects=9 bytes=5333
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=31028 completed=true original_deadline_expired=false generation=2 objects=9 bytes=5333
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=2732 completed=true original_deadline_expired=false generation=2 objects=9 bytes=5333
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=203758 completed=true original_deadline_expired=false generation=11 objects=6 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=17316 completed=false original_deadline_expired=false generation=11 objects=9 bytes=5333
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=17823 completed=false original_deadline_expired=false generation=11 objects=6 bytes=19
+native HA Service pipeline path=auth/quota-lifecycle/role/node-0 status=503 errors=["native HA root outcome requires cold reconciliation; do not blindly retry"]
+native HA Service pipeline path=quota-AppRole-role status=503 errors=["native HA root outcome requires cold reconciliation; do not blindly retry"]
+Error: "native HA Service pipeline stage=quota-AppRole-role: expected HTTP 204, observed 503"
+FAILED
+
+failures:
+
+failures:
+    service::native_v6_ha_pipeline_tests::ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2778 filtered out; finished in 2.96s
+
+error: test failed, to rerun pass `-p heptabao-server --lib`

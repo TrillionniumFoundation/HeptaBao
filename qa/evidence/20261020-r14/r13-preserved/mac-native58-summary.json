@@ -1,0 +1,403 @@
+{
+  "status": "failed_or_blocked",
+  "started_utc": "2026-10-20T06:37:35.568746+00:00",
+  "runner_pid": 7322,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r13",
+  "source_commit": "0f1a91faf096da6ca1cb65f129123f4c8709ce06",
+  "source_tree": "c5507d97bfaba32a2c2690ff26c69ef8a93cc0aa",
+  "manifest_sha256": "8851a03e4c4bc84ab73e6efd36622bf72685d3fcb602b808290c7fc915e6c5a8",
+  "runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T06:37:35.762184+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 7325,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:37:35.774647+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T06:37:35.775104+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 7326,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:37:35.828020+00:00",
+      "elapsed_seconds": 0.053,
+      "log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T06:37:35.828384+00:00",
+      "status": "failed",
+      "log": "compile-server-tests.log",
+      "pid": 7327,
+      "exit_code": 101,
+      "finished_utc": "2026-10-20T06:38:04.226232+00:00",
+      "elapsed_seconds": 28.398,
+      "log_sha256": "d1660152a74641c2fd9d2b7c86f32aaa600b5ec5f6c8a05fb7e9326be06e5f5a"
+    },
+    {
+      "label": "compile-peer-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T06:38:04.227175+00:00",
+      "status": "passed",
+      "log": "compile-peer-tests.log",
+      "pid": 7363,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:38:04.618488+00:00",
+      "elapsed_seconds": 0.391,
+      "log_sha256": "6e8fddcb47d2ee036482e3802a79686d6e6855356fdc4636ecfd42d7bc6001ed"
+    },
+    {
+      "label": "native-kv2-import",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-kv2-large",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-kv2-mount",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "forward-no-second-floor",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "historical-service",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "snapshot-service",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "archive-34mib",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "http-repair-admission",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "http-pending-admission",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "private-transport-diagnostic-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_forward_stage_observation_preserves_existing_transport_errors",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:38:04.622261+00:00",
+      "status": "passed",
+      "log": "private-transport-diagnostic-list.log",
+      "pid": 7364,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:38:04.932437+00:00",
+      "elapsed_seconds": 0.31,
+      "log_sha256": "3f260bdb9c0c63f9ba2b91a2f5608dc5b065bf64d9301ca7a9b16892dfd69e0c",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ]
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_forward_stage_observation_preserves_existing_transport_errors",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:38:04.934322+00:00",
+      "status": "passed",
+      "log": "private-transport-diagnostic.log",
+      "pid": 7368,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:38:05.089083+00:00",
+      "elapsed_seconds": 0.154,
+      "log_sha256": "1b35863f1bc0551be79e77c143bfeb41b5301002cbd6e24d141929c42c267d43",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "private-frame-diagnostic-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:38:05.090217+00:00",
+      "status": "passed",
+      "log": "private-frame-diagnostic-list.log",
+      "pid": 7371,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:38:05.173946+00:00",
+      "elapsed_seconds": 0.083,
+      "log_sha256": "03ff245e4c16a1f67473922bfdca6d19339fe2967f2214c221da04f9b6b93036",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ]
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:38:05.174546+00:00",
+      "status": "passed",
+      "log": "private-frame-diagnostic.log",
+      "pid": 7373,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:38:05.265100+00:00",
+      "elapsed_seconds": 0.09,
+      "log_sha256": "e918fea1dfb5b37ccbf526071bf1db5da74739ac048a836aae8cd5efdd1c94c2",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-raw-private-tags",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "build-server",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic"
+      ],
+      "started_utc": "2026-10-20T06:38:05.267780+00:00",
+      "status": "passed",
+      "log": "build-server.log",
+      "pid": 7377,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:41:21.182011+00:00",
+      "elapsed_seconds": 195.918,
+      "log_sha256": "e2840674899bfb5d7df42dfebaad095a23e5c8b835156e82e936189f25e468e9",
+      "binary": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full58-r13-mac-r1/heptabao-server",
+      "binary_sha256": "57e9143a91a464fbfb4984e24eb87ffaa54e7837149e9b96733303cb264fb508",
+      "binary_bytes": 75436912
+    },
+    {
+      "label": "built-binary-format",
+      "argv": [
+        "/usr/bin/file",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full58-r13-mac-r1/heptabao-server"
+      ],
+      "started_utc": "2026-10-20T06:41:21.609465+00:00",
+      "status": "passed",
+      "log": "built-binary-format.log",
+      "pid": 7815,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:41:21.617351+00:00",
+      "elapsed_seconds": 0.006,
+      "log_sha256": "26cb53e6fefa0aa9d5d63ebd7bb42fbf30b9573ab1c723efa4553d97a159c8d6"
+    }
+  ],
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hostname": "MacBook-Pro.local",
+  "python": "3.14.3",
+  "selected_groups": [
+    "native-kv2-import",
+    "native-kv2-large",
+    "native-kv2-mount",
+    "forward-original-unseal-veto",
+    "forward-no-second-floor",
+    "historical-service",
+    "snapshot-service",
+    "archive-34mib",
+    "http-repair-admission",
+    "http-pending-admission",
+    "private-transport-diagnostic",
+    "private-frame-diagnostic",
+    "kv2-api-271-numbers",
+    "native-kv2-storage-witness",
+    "lossless-json-private-tags",
+    "lossless-kv1-conversion",
+    "lossless-token-equivalence",
+    "native-raw-private-tags"
+  ],
+  "scope": "Exact-candidate native recovery and import fixtures on this physical host",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 2,
+    "logical_cpus_observed": 10,
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T06:37:35.761690+00:00",
+    "commit": "0f1a91faf096da6ca1cb65f129123f4c8709ce06",
+    "tree": "c5507d97bfaba32a2c2690ff26c69ef8a93cc0aa",
+    "verified_files": 3556
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T06:41:22.549637+00:00",
+    "commit": "0f1a91faf096da6ca1cb65f129123f4c8709ce06",
+    "tree": "c5507d97bfaba32a2c2690ff26c69ef8a93cc0aa",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T06:41:22.549761+00:00"
+}
