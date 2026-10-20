@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.r15-actual-published-commit-materialization.v1",
+  "status": "actual_git_commit_materialized",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r15",
+  "output": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r15-object-git-20261020-r1",
+  "build_source_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "actual_parent_commit": "7a552330df821b358161628120a8b5d064f37367",
+  "actual_git_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "source_tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+  "source_manifest_sha256": "a1538aa148090decdcedb739b5cb21cbb2889c4344089e7668ad68fedc4c8e6b",
+  "actual_commit_object_sha256": "6aa6db9b107a48a33e264e9378e961d79e9e140d83b2c57b79b941752bafc83f",
+  "actual_commit_object_bytes": 828,
+  "source_before": {
+    "verified_at_utc": "2026-10-20T10:37:45.531622+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "source_files": 3556,
+  "synthetic_commit_created": false,
+  "full_parent_history_retained": false,
+  "automatic_retry": false,
+  "tests_executed": false,
+  "production_mutation": false,
+  "copied_tree_verified": {
+    "verified_at_utc": "2026-10-20T10:37:46.096467+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "source_after": {
+    "verified_at_utc": "2026-10-20T10:37:48.203005+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "git_source_clean": true,
+  "shallow_boundary": "47b96f44edf51c2b68f22ed83495bc70e84ae24d"
+}

@@ -1,0 +1,178 @@
+{
+  "schema": "heptabao.r15-continuation-evidence-index.v1",
+  "candidate_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "candidate_tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+  "full_openbao_271_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_openbao_deleted": false,
+  "files": [
+    {
+      "name": "mac/source-r15-materialization-20261020-r1.json",
+      "size": 4448,
+      "sha256": "94258b2bb2b1a42855b27032a4f3bf0974566ece033a0d3ca10e4336ac4c9a09",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r15-materialization-20261020-r1.json"
+    },
+    {
+      "name": "mac/source-r15-object-git-20261020-r1-materialization.json",
+      "size": 1819,
+      "sha256": "43a9e715e7dbadbbaff1eb60147e8cbb04a959d5fa099cb4446910a558280678",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r15-object-git-20261020-r1-materialization.json"
+    },
+    {
+      "name": "main/source-r15-materialization-20261020-r1.json",
+      "size": 4335,
+      "sha256": "c3047e08e9e05f94c52d7a7d1afdb2700efd035ab0a7724166e416be905229c1",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r15-materialization-20261020-r1.json"
+    },
+    {
+      "name": "main/source-r15-object-git-20261020-r1-materialization.json",
+      "size": 1777,
+      "sha256": "65482afe619876554c10b2b3c0b888ba5a8a8c8a8bc27784541aeac8865f5e9d",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r15-object-git-20261020-r1-materialization.json"
+    },
+    {
+      "name": "main/locked-cache-refill-receipt.json",
+      "size": 605,
+      "sha256": "727ee634d65510b7caa8b679ce253a625dc39ce9dead1b708888f577c2a99d7a",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/cargo-locked-refill-r15-20261020-r1/receipt.json"
+    },
+    {
+      "name": "mac/supplemental38-summary.json",
+      "size": 22952,
+      "sha256": "ab76552dca5f48fd4d5dd788541bdd2f3abe181bf6adb8ea96d81e14b6d29bcf",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/summary.json"
+    },
+    {
+      "name": "mac/supplemental38-ha-quota-catchup.log",
+      "size": 22092,
+      "sha256": "5db89244eac311b76a596070038f09a11487bece6376094b52c12c8ea1291ee6",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/ha-quota-catchup.log"
+    },
+    {
+      "name": "mac/supplemental38-ha-quota-lifecycle.log",
+      "size": 11133,
+      "sha256": "aa854ce7c5fda00b3865251cba354d41126cd6a7c949fe3113b28e658a2bb039",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/ha-quota-lifecycle.log"
+    },
+    {
+      "name": "mac/guard1-summary.json",
+      "size": 6297,
+      "sha256": "93b6213dc2a8a466083b52cd1177357bd134effe92cd2d2be921adaa3e8c2f9c",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-quota-guard1-r15-mac-20261020-r1/summary.json"
+    },
+    {
+      "name": "mac/guard1-quota-preauth-refusal-guard.log",
+      "size": 24357,
+      "sha256": "62f6034a4100ad44a42e5678c592f2f87f4901cc7ad22642d4535c127c218d73",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-quota-guard1-r15-mac-20261020-r1/quota-preauth-refusal-guard.log"
+    },
+    {
+      "name": "main/supplemental39-cache-failed-r1-compile-server-tests.log",
+      "size": 361,
+      "sha256": "67610d4256e21de5e910701747a2893114ed09f0a24f76ac26b7549c09ed84e9",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r1/compile-server-tests.log"
+    },
+    {
+      "name": "main/supplemental39-cache-failed-r1-summary.json",
+      "size": 4929,
+      "sha256": "030e1b07d89936462e06d31ef2cc304433001327b6d8ffb07895b7737c3057e2",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r1/summary.json"
+    },
+    {
+      "name": "mac/ha2-summary.json",
+      "size": 8804,
+      "sha256": "a7e69ae92a9151fa48d406d3eadb0ccc51b6809f5d177d37c13467ad3ae04c73",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-ha2-r15-mac-20261020-r1/summary.json"
+    },
+    {
+      "name": "main/locked-cache-refill-fetch.log",
+      "size": 10234,
+      "sha256": "49bac8f56cb6e75d09455c245bfaef0fe84a625bf31f73e3ea6c9010c8710b2c",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/cargo-locked-refill-r15-20261020-r1/fetch.log"
+    },
+    {
+      "name": "mac/supplemental38-compile-server-tests.log",
+      "size": 2593,
+      "sha256": "c71150fdbe487ca81855f72d9b2cb390eb33962d8282c076736c2470e120af46",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/compile-server-tests.log"
+    },
+    {
+      "name": "mac/supplemental38-approle135.log",
+      "size": 5133,
+      "sha256": "c1ceb45fb3c37f6f284f6c6c702f30b40830a27c23377cffd2c86cd09c9fc928",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/approle135.log"
+    },
+    {
+      "name": "mac/supplemental38-approle-cidrs-regression.log",
+      "size": 7228,
+      "sha256": "16f8c1e371ae2eae220c7784f5507503448aa2f0c4b223d97f336d12d289f046",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/approle-cidrs-regression.log"
+    },
+    {
+      "name": "mac/supplemental38-approle-batch-regression.log",
+      "size": 25519,
+      "sha256": "fb6a0f0ed42587bf5ee20487fd8415bb36e6bfef053fb62f39a67f6e285f8395",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-auth-quota-supplemental-r15-mac-r1/approle-batch-regression.log"
+    },
+    {
+      "name": "mac/ha2-publication-actual-quorum.log",
+      "size": 8218,
+      "sha256": "d303c2cb35adb46808a58acb5bcaf6479ce05ad81e40b23bb6a732e709021b3d",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-ha2-r15-mac-20261020-r1/publication-actual-quorum.log"
+    },
+    {
+      "name": "mac/ha2-publication-readback-fences.log",
+      "size": 4202,
+      "sha256": "7e71902cc1508ffd46c61fefe67997e9af1268626b66447da09aa2a741179b55",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-ha2-r15-mac-20261020-r1/publication-readback-fences.log"
+    },
+    {
+      "name": "main/supplemental39-r2-summary.json",
+      "size": 25206,
+      "sha256": "a8777255c91fc227f65531145f87f3db28b961db64055b60ef622176fa9a6284",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/summary.json"
+    },
+    {
+      "name": "main/supplemental39-r2-compile-server-tests.log",
+      "size": 14019,
+      "sha256": "ebeffbc56e573ee4b6b0dd7d69d31fa39f50c272809da17cf70c6bb97adf47fa",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/compile-server-tests.log"
+    },
+    {
+      "name": "main/supplemental39-r2-ha-quota-catchup.log",
+      "size": 22093,
+      "sha256": "a7f82dabea3f0cfa668791ef976a6c22bd8a86e03bf0b60813a41515127f3ec5",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/ha-quota-catchup.log"
+    },
+    {
+      "name": "main/supplemental39-r2-ha-quota-lifecycle.log",
+      "size": 11134,
+      "sha256": "07e4a89471c54cb226b79d3891622c929225e53db8e588e38df792cbdc69dde7",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/ha-quota-lifecycle.log"
+    },
+    {
+      "name": "main/supplemental39-r2-approle135.log",
+      "size": 5133,
+      "sha256": "5bf6ad7f2bd9717a9eed410a5e6d34bccf0c0b80af55da48e4830f5b7c414c9e",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/approle135.log"
+    },
+    {
+      "name": "main/supplemental39-r2-approle-cidrs-regression.log",
+      "size": 7228,
+      "sha256": "eadea0208599e282a46a2817ac98d7ff5aef94b9d622a2488f96a93e15396acf",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/approle-cidrs-regression.log"
+    },
+    {
+      "name": "main/supplemental39-r2-approle-batch-regression.log",
+      "size": 25519,
+      "sha256": "1cc37add6139863a489095151d6ffb0a8a61f28bdd07e8492333d31cdfa38755",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/approle-batch-regression.log"
+    },
+    {
+      "name": "main/supplemental39-r2-approle-defaults-regression.log",
+      "size": 2940,
+      "sha256": "44a5930d07a2102626b1e72bf10c1bbe3ef11a7662807f9abe44ba5d59a7f5dc",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-auth-quota-supplemental-r15-main-r2/approle-defaults-regression.log"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{"argv": ["/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair", "--", "--exact", "--nocapture", "--test-threads=1", "--color=never"]}
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+   --> crates/heptabao-server/src/ha_native_v6_publication.rs:128:19
+    |
+127 | impl NativeHaPublicationError {
+    | ----------------------------- method in this implementation
+128 |     pub(crate) fn root_attempted(&self) -> bool {
+    |                   ^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: `heptabao-server` (lib test) generated 5 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8)
+
+running 1 test
+test service::native_v6_ha_pipeline_tests::native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=663 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=29030 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=0 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=97542 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=33185 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=222766 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=30709 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=4826 completed=true original_deadline_expired=false generation=0 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=422933 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=23092 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=125192 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=12002 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=7230 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=12342 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=7376 completed=true original_deadline_expired=false generation=7 objects=9 bytes=4804
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=190476 completed=true original_deadline_expired=false generation=7 objects=7 bytes=19
+HBHA-PRIVATE-PERF phase=service_staged_candidate elapsed_us=899 completed=true original_deadline_expired=false generation=9 objects=7 bytes=50207
+HBHA-PRIVATE-PERF phase=publication_source_enrollment elapsed_us=2963 completed=true original_deadline_expired=false generation=0 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_previous_closure elapsed_us=17610 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_typed_prepare elapsed_us=43721 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_intent_admission elapsed_us=28906 completed=true original_deadline_expired=false generation=1 objects=0 bytes=0
+HBHA-PRIVATE-PERF phase=publication_fsync_quorum elapsed_us=115000 completed=true original_deadline_expired=false generation=1 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=publication_root_cas elapsed_us=33431 completed=true original_deadline_expired=false generation=1 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=publication_committed_readback elapsed_us=4812 completed=true original_deadline_expired=false generation=1 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=service_ha_publication elapsed_us=249165 completed=true original_deadline_expired=false generation=9 objects=7 bytes=50207
+HBHA-PRIVATE-PERF phase=install_received_graph elapsed_us=29014 completed=true original_deadline_expired=false generation=9 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=install_local_objects elapsed_us=72878 completed=true original_deadline_expired=false generation=9 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=install_locator_batches elapsed_us=10287 completed=true original_deadline_expired=false generation=9 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=install_pre_cas_local_graph elapsed_us=6454 completed=true original_deadline_expired=false generation=9 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=install_local_root_cas elapsed_us=11336 completed=true original_deadline_expired=false generation=9 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=install_post_cas_local_graph elapsed_us=6469 completed=true original_deadline_expired=false generation=9 objects=10 bytes=55893
+HBHA-PRIVATE-PERF phase=service_local_install elapsed_us=138101 completed=true original_deadline_expired=false generation=9 objects=7 bytes=50207
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2779 filtered out; finished in 2.95s
+

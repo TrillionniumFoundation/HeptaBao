@@ -1,0 +1,5 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "--no-run"]}
+error: failed to download `adler2 v2.0.1`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified

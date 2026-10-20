@@ -1,0 +1,146 @@
+{
+  "schema": "heptabao.auth-quota-supplemental-host.v1",
+  "original_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "required_test_count": 39,
+  "original_native58_test_count_unchanged": 58,
+  "linux_only_defaults_required": true,
+  "status": "failed_or_blocked",
+  "started_utc": "2026-10-20T10:37:34.738899+00:00",
+  "runner_pid": 486206,
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r15",
+  "source_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "source_tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+  "manifest_sha256": "a1538aa148090decdcedb739b5cb21cbb2889c4344089e7668ad68fedc4c8e6b",
+  "runner_sha256": "c614eb25a774cb06bc11b56bc95eaf32f0d3ba311cc3e0b335d6e9436154b50e",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T10:37:35.517188+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 486231,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T10:37:35.556688+00:00",
+      "elapsed_seconds": 0.036,
+      "log_sha256": "8195cc2272f684fff66e8df1aa9bedb38d806b4f27da52944a8fe8088b27f199"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T10:37:35.560292+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 486248,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T10:37:35.598687+00:00",
+      "elapsed_seconds": 0.036,
+      "log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T10:37:35.602305+00:00",
+      "status": "failed",
+      "log": "compile-server-tests.log",
+      "pid": 486254,
+      "exit_code": 101,
+      "finished_utc": "2026-10-20T10:37:35.924568+00:00",
+      "elapsed_seconds": 0.319,
+      "log_sha256": "67610d4256e21de5e910701747a2893114ed09f0a24f76ac26b7549c09ed84e9"
+    },
+    {
+      "label": "approle135",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "ha-quota-catchup",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "ha-quota-lifecycle",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "approle-cidrs-regression",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "approle-batch-regression",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "approle-defaults-regression",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    }
+  ],
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "hostname": "qian-qi",
+  "python": "3.12.3",
+  "selected_groups": [
+    "approle135",
+    "ha-quota-catchup",
+    "ha-quota-lifecycle",
+    "approle-cidrs-regression",
+    "approle-batch-regression",
+    "approle-defaults-regression"
+  ],
+  "scope": "New AppRole 11, new HA quota 2, and unchanged historical AppRole modules: Darwin 25 / Linux 26",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 8,
+    "logical_cpus_observed": 48,
+    "cargo_build_jobs": "8",
+    "cmake_build_parallel_level": "8",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T10:37:35.512870+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T10:37:36.689600+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T10:37:36.689954+00:00"
+}

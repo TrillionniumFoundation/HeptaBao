@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.exact-locked-dependency-cache-refill.v1",
+  "source_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "lock_git_blob": "797b9048b6089a932c8647f977d9ad4535dc108b",
+  "argv": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "fetch",
+    "--locked",
+    "--target",
+    "x86_64-unknown-linux-gnu"
+  ],
+  "compilers_invoked": false,
+  "tests_executed": false,
+  "status": "completed",
+  "exit_code": 0,
+  "lock_unchanged": true,
+  "elapsed_seconds": 8.84,
+  "log_sha256": "49bac8f56cb6e75d09455c245bfaef0fe84a625bf31f73e3ea6c9010c8710b2c"
+}

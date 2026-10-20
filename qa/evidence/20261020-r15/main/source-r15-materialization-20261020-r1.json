@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.exact-r15-source-materialization.v1",
+  "status": "materialized_exact_published_r15_source",
+  "started_utc": "2026-10-20T10:37:12.452735+00:00",
+  "host_label": "main",
+  "actual_executor": {
+    "hostname": "qian-qi",
+    "system": "Linux",
+    "machine": "x86_64",
+    "uid": 1000
+  },
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r14",
+  "source_before": {
+    "verified_at_utc": "2026-10-20T10:37:12.452122+00:00",
+    "commit": "7a552330df821b358161628120a8b5d064f37367",
+    "tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+    "verified_files": 3556
+  },
+  "base_manifest_sha256": "7bf1c8c4d34fc527142990af9364c1b3ed6d7daa257de1ade1533dccc86ccafc",
+  "historical_base_commit": "7a552330df821b358161628120a8b5d064f37367",
+  "base_tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+  "packet": "/home/qian-qi/heptabao-next-gates-20261017/source-r15-exact-delta-20261020-r1.json",
+  "packet_sha256": "464fa781357157a6511beb6b45e1552f1663ac048fe7f04a8d3f993782504fb6",
+  "source_commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+  "source_tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+  "actual_commit_parent": "7a552330df821b358161628120a8b5d064f37367",
+  "manifest_sha256": "a1538aa148090decdcedb739b5cb21cbb2889c4344089e7668ad68fedc4c8e6b",
+  "commit_raw_sha256": "6aa6db9b107a48a33e264e9378e961d79e9e140d83b2c57b79b941752bafc83f",
+  "commit_raw_bytes": 828,
+  "source_files": 3556,
+  "base_source_files": 3556,
+  "added_source_files": 0,
+  "delta_file_count": 4,
+  "original_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "controller_sha256": "fd53324488d5d0b1556c0626b444675be10bc0eec421b0c8afc42136d1278a8a",
+  "output_source": "/home/qian-qi/heptabao-next-gates-20261017/source-r15",
+  "output_manifest": "/home/qian-qi/heptabao-next-gates-20261017/source-r15-manifest.json",
+  "output_commit_raw": "/home/qian-qi/heptabao-next-gates-20261017/source-r15-commit.raw",
+  "submission_count": 1,
+  "automatic_retry": false,
+  "git_repository_created": false,
+  "synthetic_commit_created": false,
+  "tests_executed": false,
+  "compiler_invocations": 0,
+  "production_mutation": false,
+  "copied_base_tree": {
+    "verified_at_utc": "2026-10-20T10:37:13.703239+00:00",
+    "commit": "7a552330df821b358161628120a8b5d064f37367",
+    "tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+    "verified_files": 3556
+  },
+  "applied_delta": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "base_git_blob": "17403307e9a14e453540a0eca941c115d9770903",
+      "git_blob": "6770c2b56e4670fc283c060307de3df06b3a5659",
+      "sha256": "57b8e24742026e045bc383793774e9bced94d7794c87dcf3c8862ed037f761b5",
+      "bytes": 450159
+    },
+    {
+      "path": "crates/heptabao-server/src/service_rate_limit_quotas.rs",
+      "base_git_blob": "f2fec73ae6c7dc1e1ab0077b0f560fa7f6845ce0",
+      "git_blob": "eef4449e37f300d4e37ae0758717f5af93d8fd60",
+      "sha256": "36d9b8d61c013531556e747ae77d3bdd97391cd07a2eaa31192013ea90d4dc3d",
+      "bytes": 43240
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "base_git_blob": "cf077a4bf772c259d2f31e1dae43761bf256a881",
+      "git_blob": "99ba8f523706758c42bacdf794b4df51866d5a0a",
+      "sha256": "5e7b35d4f79762b8ac5ce6fb97f1c8dd82d993e51ed8debf5bfd36b35a577247",
+      "bytes": 55992
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "base_git_blob": "7617d631caa3ae0a750c7ea4d3efbe029b2244af",
+      "git_blob": "e6ebfdee5d9abdd7283e8c156ce2ee1b0c7dc396",
+      "sha256": "738f110fe1c0ecc88483fe28401871a29cdfb92409e6b2b0a8ee488d738dc7b1",
+      "bytes": 54850
+    }
+  ],
+  "new_tree_verified": {
+    "verified_at_utc": "2026-10-20T10:37:14.391908+00:00",
+    "commit": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "tree": "e9eb1a46bd09e57c59fa3140f5129a65f24f2fd8",
+    "verified_files": 3556
+  },
+  "actual_commit_raw_verified": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T10:37:15.092864+00:00",
+    "commit": "7a552330df821b358161628120a8b5d064f37367",
+    "tree": "398e1eaaa5978627df849c63321cf0b0c8d5c7fa",
+    "verified_files": 3556
+  },
+  "original_r14_source_unchanged": true,
+  "input_bytes_unchanged": true,
+  "finished_utc": "2026-10-20T10:37:15.095793+00:00"
+}
