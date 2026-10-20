@@ -72,6 +72,7 @@ use crate::state_record_root::RecordStateRoot;
 // Ordinary writers retain the exact schema-65 durable contract. Explicit
 // AAD-bound convergent material activates schema 66 irreversibly for this store.
 const RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 = crate::auth::rate_limit_quotas::STATE_SCHEMA;
+const APPROLE_NO_DEFAULT_STATE_SCHEMA: u32 = crate::auth::approle_no_default::STATE_SCHEMA;
 #[path = "service_rate_limit_quotas.rs"]
 mod rate_limit_quotas;
 const CURRENT_STATE_SCHEMA: u32 = 65;
@@ -183,7 +184,7 @@ mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = RATE_LIMIT_QUOTA_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = APPROLE_NO_DEFAULT_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -240,6 +241,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | IDENTITY_MFA_STATE_SCHEMA
                 | WORKFLOW_INPUT_STATE_SCHEMA
                 | RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | APPROLE_NO_DEFAULT_STATE_SCHEMA
                 | USERPASS_ISSUANCE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
@@ -10953,6 +10955,9 @@ mod auth_mount_ttl_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_approle_defaults_tests.rs"]
 mod approle_defaults_tests;
+#[cfg(test)]
+#[path = "service_approle_no_default_tests.rs"]
+mod approle_no_default_tests;
 
 #[cfg(test)]
 #[path = "service_approle_form_tests.rs"]

@@ -96,6 +96,11 @@ pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, Template
 pub(crate) mod approle_lookup;
 #[path = "auth_approle_renewal.rs"]
 mod approle_renewal;
+#[path = "auth_approle_no_default.rs"]
+pub(crate) mod approle_no_default;
+#[cfg(test)]
+#[path = "auth_approle_no_default_tests.rs"]
+mod approle_no_default_tests;
 #[path = "auth_approle_tidy.rs"]
 pub(crate) mod approle_tidy;
 #[path = "auth_capabilities.rs"]
@@ -1745,6 +1750,9 @@ struct Role {
     role_id: String,
     #[serde(default = "default_bind_secret_id")]
     bind_secret_id: bool,
+    /// None preserves legacy normalized policies; Some(false) is a raw-list owner.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_no_default_policy: Option<bool>,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
@@ -8402,7 +8410,7 @@ impl AuthState {
                     });
                 };
                 return Ok(response(
-                    json!({"secret_id_bound_cidrs":role.secret_id_bound_cidrs, "token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
+                    json!({"secret_id_bound_cidrs":role.secret_id_bound_cidrs, "token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_no_default_policy": role.token_no_default_policy.unwrap_or(false), "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
                     "token_explicit_max_ttl": role.token_explicit_max_ttl,
                     "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
@@ -8426,6 +8434,7 @@ impl AuthState {
                     "bind_secret_id",
                     "policies",
                     "token_policies",
+                    "token_no_default_policy",
                     "token_ttl",
                     "token_max_ttl",
                     "token_period",
@@ -8442,7 +8451,8 @@ impl AuthState {
                 token_type: None,
                 role_id: random_id("role.")?,
                 bind_secret_id: true,
-                policies: BTreeSet::from(["default".into()]),
+                token_no_default_policy: Some(false),
+                policies: BTreeSet::new(),
                 token_ttl: 0,
                 token_max_ttl: 0,
                 token_period: 0,
@@ -8453,17 +8463,8 @@ impl AuthState {
                 secret_ids: BTreeMap::new(),
             });
             role.bind_secret_id = boolean(body, "bind_secret_id", role.bind_secret_id)?;
-            role.policies = policies(
-                body,
-                if body.get("token_policies").is_some() {
-                    "token_policies"
-                } else {
-                    "policies"
-                },
-                &role.policies,
-                true,
-            )?;
-            self.validate_assignment(actor, &role.policies)?;
+            approle_no_default::update(&mut role, body)?;
+            self.validate_assignment(actor, &approle_no_default::issued_policies(&role))?;
             role.token_ttl = approle_renewal::role_duration(body, "token_ttl", role.token_ttl)?;
             role.token_max_ttl =
                 approle_renewal::role_duration(body, "token_max_ttl", role.token_max_ttl)?;
@@ -8757,6 +8758,7 @@ impl AuthState {
             .then(|| checked_expiry(now, role.token_explicit_max_ttl))
             .transpose()?;
         let expiry = self.approle_token_expiry(scope, &role, now, explicit, 0, now)?;
+        let issued_policies = approle_no_default::issued_policies(&role);
         let mut issued = if self.approle_uses_batch(scope, &role) {
             batch_issuance::PendingBatchGrant::response(
                 batch::BatchClaims {
@@ -8766,7 +8768,7 @@ impl AuthState {
                     token_api_policy_names: false,
                     public_origin: None,
                     namespace: namespace.into(),
-                    policies: role.policies.clone(),
+                    policies: issued_policies.clone(),
                     metadata: metadata.0.clone(),
                     display_name: format!("approle-{name}"),
                     path: format!("auth/{mount}/login"),
@@ -8781,7 +8783,7 @@ impl AuthState {
         } else {
             let mut token = login_token(
                 namespace,
-                role.policies.clone(),
+                issued_policies,
                 token_ttl,
                 token_max_ttl,
                 role.token_num_uses,
@@ -8804,6 +8806,7 @@ impl AuthState {
         {
             issued.body["warnings"] = json!([warning]);
         }
+        approle_no_default::omit_empty_token_policies(&mut issued);
         issued.body["auth"]["metadata"] = json!(metadata.0);
         issued.approle_secret_consumption = credential_consumption.map(Box::new);
         issued.login_identity = Some(LoginIdentity {

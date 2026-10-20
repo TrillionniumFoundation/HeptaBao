@@ -176,7 +176,7 @@ impl AuthState {
         );
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
-        Ok(Some(AuthResponse {
+        let mut response = AuthResponse {
             unwrapped_json: None,
             approle_secret_consumption: None,
             pending_batch: None,
@@ -191,7 +191,9 @@ impl AuthState {
                 "lease_duration": expires_at - now, "renewable": true, "token_type": "service",
                 "orphan": token.parent.is_none()
             }}),
-        }))
+        };
+        approle_no_default::omit_empty_token_policies(&mut response);
+        Ok(Some(response))
     }
 
     pub(super) fn approle_token_expiry(

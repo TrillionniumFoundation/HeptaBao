@@ -37,12 +37,9 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
                     );
                 }
                 let path = format!("auth/{mount}/role/example");
-                assert_eq!(
-                    service
-                        .handle_at("POST", &path, namespace, &admin, json!({}), 100)
-                        .status,
-                    204
-                );
+                super::approle_no_default_tests::create_legacy_approle_role_fixture(
+                    &mut service, namespace, mount, "example", &admin, json!({}),
+                )?;
                 let old_sid = service.handle_at(
                     "POST",
                     &format!("{path}/secret-id"),
@@ -54,6 +51,7 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
                 assert_eq!(old_sid.status, 200);
                 let mut old = service.state.clone().ok_or("state")?;
                 assert!(!old.auth.has_approle_secret_id_cidrs());
+                old.auth.restore_legacy_approle_policy_owners_for_format_test();
                 old.schema = 45;
                 old.validate_format().map_err(|_| "old format")?;
                 let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
@@ -121,18 +119,11 @@ fn approle_secret_source_presence_requires45_but_absent44_reads_preserve_bytes()
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "auth/approle/role/source",
-            &admin,
-            json!({"token_ttl":60})
-        )
-        .status,
-        204
-    );
+    super::approle_no_default_tests::create_legacy_approle_role_fixture(
+        &mut service, "", "approle", "source", &admin, json!({"token_ttl":60}),
+    )?;
     let mut old = service.state.clone().ok_or("state")?;
+    old.auth.restore_legacy_approle_policy_owners_for_format_test();
     old.schema = 44;
     old.validate_format().map_err(|_| "old format")?;
     let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
@@ -191,18 +182,11 @@ fn approle_cidr_presence_requires43_but_absent42_role_reads_do_not_migrate() -> 
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "auth/approle/role/old",
-            &admin,
-            json!({"token_ttl":60})
-        )
-        .status,
-        204
-    );
+    super::approle_no_default_tests::create_legacy_approle_role_fixture(
+        &mut service, "", "approle", "old", &admin, json!({"token_ttl":60}),
+    )?;
     let mut old = service.state.clone().ok_or("state")?;
+    old.auth.restore_legacy_approle_policy_owners_for_format_test();
     old.schema = 42;
     old.validate_format().map_err(|_| "old format")?;
     let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;

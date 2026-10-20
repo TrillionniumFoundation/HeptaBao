@@ -284,6 +284,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_approle_no_default_policy() {
+            required.max(APPROLE_NO_DEFAULT_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -292,6 +297,18 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.validate_global_lossless_json_state(previous)?;
+        self.auth
+            .validate_approle_no_default_policy()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < APPROLE_NO_DEFAULT_STATE_SCHEMA
+            && (self.auth.has_approle_no_default_policy()
+                || previous.is_some_and(|state| state.schema >= APPROLE_NO_DEFAULT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "AppRole default-policy semantics require schema 135",
+            ));
+        }
         self.auth
             .validate_rate_limit_quota_state(previous.map(|s| &*s.auth))
             .map_err(|e| Response::error(503, &e.message))?;
@@ -2105,6 +2122,17 @@ impl State {
             .validate_approle_native_defaults()
             .map_err(|_| Response::error(503, "invalid native AppRole state"))?;
         self.auth
+            .validate_approle_no_default_policy()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < APPROLE_NO_DEFAULT_STATE_SCHEMA
+            && self.auth.has_approle_no_default_policy()
+        {
+            return Err(Response::error(
+                503,
+                "AppRole default-policy semantics require schema 135",
+            ));
+        }
+        self.auth
             .validate_jwt_batch_state()
             .map_err(|_| Response::error(503, "invalid JWT batch configuration"))?;
         if self.schema < 44
@@ -2648,6 +2676,7 @@ impl State {
             | IDENTITY_MFA_STATE_SCHEMA
             | WORKFLOW_INPUT_STATE_SCHEMA
             | RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | APPROLE_NO_DEFAULT_STATE_SCHEMA
             | USERPASS_ISSUANCE_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA

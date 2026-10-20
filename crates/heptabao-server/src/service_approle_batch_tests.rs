@@ -294,18 +294,11 @@ fn approle_batch_role_and_mount_each_require_schema42_but_old_none_admits41() ->
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "auth/approle/role/legacy",
-            &admin,
-            json!({"token_ttl":60})
-        )
-        .status,
-        204
-    );
+    super::approle_no_default_tests::create_legacy_approle_role_fixture(
+        &mut service, "", "approle", "legacy", &admin, json!({"token_ttl":60}),
+    )?;
     let mut legacy = service.state.clone().ok_or("state")?;
+    legacy.auth.restore_legacy_approle_policy_owners_for_format_test();
     legacy.schema = 41;
     assert!(legacy.validate_format().is_ok());
     let before = owner_store::serialize_owner(&legacy.auth).map_err(|_| "auth")?;
@@ -573,15 +566,21 @@ fn restricted_secret_credentials(
     Ok(credentials)
 }
 
-fn metadata_gate_rejects46(state: &State) -> Result<(), Box<dyn std::error::Error>> {
+fn metadata_gate_rejects46(
+    state: &State,
+    expected_current_schema: u32,
+) -> Result<(), Box<dyn std::error::Error>> {
+    assert_eq!(state.schema, expected_current_schema);
     let mut state = state.clone();
+    state.auth.restore_legacy_approle_policy_owners_for_format_test();
     if state.has_namespace_batch_state() {
-        assert_eq!(state.schema, NAMESPACE_BATCH_STATE_SCHEMA);
         assert!(
             state.auth.has_approle_metadata()
                 || state.engines.has_approle_login_alias_metadata_state()
                 || state.engines.has_extended_login_alias_metadata_state()
         );
+        state.schema = NAMESPACE_BATCH_STATE_SCHEMA;
+        state.validate_format().map_err(|_| "minimum bound batch format")?;
         state.schema = NAMESPACE_BATCH_STATE_SCHEMA - 1;
         let failure = state
             .validate_format()
@@ -596,7 +595,6 @@ fn metadata_gate_rejects46(state: &State) -> Result<(), Box<dyn std::error::Erro
         // metadata47 positive/46 negative; actual bound batches require both.
         return Ok(());
     }
-    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 47;
     state
         .validate_format()
@@ -621,9 +619,14 @@ fn approle_sid_metadata_presence_requires47_while_absent46_reopen_and_reads_pres
         let root = Root::new();
         let mut service = root.service()?;
         let (key, admin) = bootstrap(&mut service)?;
+        super::approle_no_default_tests::create_legacy_approle_role_fixture(
+            &mut service, "", "approle", "example", &admin,
+            json!({"token_type":"service","token_ttl":60,"secret_id_num_uses":0}),
+        )?;
         let credentials = credentials(&mut service, &admin, "service", 0)?;
         let mut old = service.state.clone().ok_or("state")?;
         assert!(!old.auth.has_approle_metadata());
+        old.auth.restore_legacy_approle_policy_owners_for_format_test();
         old.schema = 46;
         old.validate_format().map_err(|_| "old format")?;
         let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
@@ -661,7 +664,7 @@ fn approle_sid_metadata_presence_requires47_while_absent46_reopen_and_reads_pres
         let state = service.state.as_ref().ok_or("state")?;
         assert!(state.auth.has_approle_metadata());
         assert!(!state.engines.has_extended_login_alias_metadata_state());
-        metadata_gate_rejects46(state)?;
+        metadata_gate_rejects46(state, CURRENT_STATE_SCHEMA)?;
     }
     Ok(())
 }
@@ -701,7 +704,7 @@ fn approle_issued_metadata_and_retained_extended_alias_require47() -> TestResult
             state.engines.has_extended_login_alias_metadata_state(),
             kind == "batch"
         );
-        metadata_gate_rejects46(state)?;
+        metadata_gate_rejects46(state, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
         if kind == "batch" {
             assert_eq!(
                 call(
@@ -717,7 +720,7 @@ fn approle_issued_metadata_and_retained_extended_alias_require47() -> TestResult
             let retained = service.state.as_ref().ok_or("state")?;
             assert!(!retained.auth.has_approle_metadata());
             assert!(retained.engines.has_extended_login_alias_metadata_state());
-            metadata_gate_rejects46(retained)?;
+            metadata_gate_rejects46(retained, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
         }
     }
     Ok(())
@@ -739,7 +742,7 @@ fn approle_issued_metadata_without_identity_state_independently_requires47() -> 
     assert_eq!(accepted.status, 200);
     assert!(fixture.auth.has_approle_metadata());
     assert!(!fixture.engines.has_login_alias_metadata_state());
-    metadata_gate_rejects46(&fixture)?;
+    metadata_gate_rejects46(&fixture, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
     Ok(())
 }
 
@@ -768,7 +771,7 @@ fn approle_small_retained_alias_metadata_requires47_after_credential_cleanup_and
         assert!(!retained.auth.has_approle_metadata());
         assert!(!retained.engines.has_extended_login_alias_metadata_state());
         assert!(retained.engines.has_approle_login_alias_metadata_state());
-        metadata_gate_rejects46(retained)?;
+        metadata_gate_rejects46(retained, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
         let before = owner_store::serialize_owner(&retained.engines).map_err(|_| "encode")?;
         drop(service);
         let mut reopened = root.service()?;
@@ -777,7 +780,7 @@ fn approle_small_retained_alias_metadata_requires47_after_credential_cleanup_and
             200
         );
         let retained = reopened.state.as_ref().ok_or("state")?;
-        metadata_gate_rejects46(retained)?;
+        metadata_gate_rejects46(retained, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
         assert!(
             before.as_slice()
                 == owner_store::serialize_owner(&retained.engines)

@@ -5,6 +5,7 @@ use super::*;
 // unchanged owner bytes as a legacy reader would, without retaining the v5
 // runtime installed by current HTTP writes and masking the auth schema fence.
 fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    state.auth.restore_legacy_approle_policy_owners_for_format_test();
     assert!(
         !state.engines.has_record_kv1(),
         "legacy auth fixture cannot discard record-backed KV1 data"
