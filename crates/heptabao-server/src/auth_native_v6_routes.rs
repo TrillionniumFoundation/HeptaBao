@@ -196,6 +196,9 @@ impl AuthState {
             || path.starts_with("sys/policy/")
             || path == "sys/policies/acl"
             || path.starts_with("sys/policies/acl/")
+            || path == "sys/quotas/config"
+            || path == "sys/quotas/rate-limit"
+            || path.starts_with("sys/quotas/rate-limit/")
             || path.starts_with("auth/token/")
         {
             return true;

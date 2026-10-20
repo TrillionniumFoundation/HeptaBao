@@ -1510,3 +1510,158 @@ fn ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time() -> TestR
     }
     Ok(())
 }
+
+
+#[test]
+fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundaries() -> TestResult {
+    fn registry(pipeline: &Pipeline, leader: usize) -> TestResult<Value> {
+        pipeline.with_service(leader, |service| {
+            let state = service.state.as_ref().ok_or("native quota state")?;
+            let registry = state.auth.rate_limit_quota_registry()
+                .ok_or("native quota registry")?;
+            Ok(serde_json::to_value(registry)?)
+        })
+    }
+
+    let pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    let standby = (leader + 1) % 3;
+    quota_native_activation(&pipeline, leader)?;
+    quota_mount(&pipeline, leader)?;
+    let _role = quota_role(&pipeline, leader, "native-admin-client")?;
+
+    let config = json!({
+        "rate_limit_exempt_paths":["sys/health"],
+        "enable_rate_limit_audit_logging":false,
+        "enable_rate_limit_response_headers":false
+    });
+    expect(
+        pipeline.call(leader, "PUT", "sys/quotas/config", pipeline.admin(), config.clone())?,
+        204, "native-quota-config-write",
+    )?;
+    let configured = expect(
+        pipeline.call(standby, "GET", "sys/quotas/config", pipeline.admin(), json!({}))?,
+        200, "native-quota-config-forwarded-read",
+    )?;
+    assert_eq!(configured.body["data"], config);
+
+    let path = "sys/quotas/rate-limit/native-admin";
+    let rule = json!({
+        "path":"auth/quota-lifecycle/login","rate":3,
+        "interval":"1h","block_interval":0
+    });
+    expect(
+        pipeline.call(leader, "POST", path, pipeline.admin(), rule.clone())?,
+        204, "native-quota-create",
+    )?;
+    let listed = expect(
+        pipeline.call(standby, "LIST", "sys/quotas/rate-limit", pipeline.admin(), json!({}))?,
+        200, "native-quota-forwarded-list",
+    )?;
+    assert_eq!(listed.body["data"]["keys"], json!(["native-admin"]));
+    let observed = expect(
+        pipeline.call(standby, "GET", path, pipeline.admin(), json!({}))?,
+        200, "native-quota-forwarded-rule-read",
+    )?;
+    assert_eq!(observed.body["data"]["path"], "auth/quota-lifecycle/login");
+    assert_eq!(observed.body["data"]["rate"].as_f64(), Some(3.0));
+
+    expect(
+        pipeline.call(
+            leader, "PUT", "sys/policies/acl/native-quota-reader", pipeline.admin(),
+            json!({"policy":r#"path "sys/quotas/*" { capabilities = ["read", "list"] }"#}),
+        )?,
+        204, "native-quota-reader-policy",
+    )?;
+    let mut issued = expect(
+        pipeline.call(
+            leader, "POST", "auth/token/create", pipeline.admin(),
+            json!({"policies":["native-quota-reader"],"no_default_policy":true,
+                "no_parent":true,"ttl":"10m"}),
+        )?,
+        200, "native-quota-reader-token",
+    )?;
+    let reader = secret_field(&mut issued, "/auth/client_token")?;
+    expect(
+        pipeline.call(standby, "GET", path, &reader, json!({}))?,
+        200, "native-quota-authorized-reader",
+    )?;
+
+    // Observe only the quota registry: ordinary precise-clock publications
+    // remain mandatory, but no rejected request may change a rule or revision.
+    let before_denials = registry(&pipeline, leader)?;
+    expect(
+        pipeline.call(leader, "PUT", path, &reader, rule.clone())?,
+        403, "native-quota-reader-cannot-write",
+    )?;
+    expect(
+        pipeline.call(
+            leader, "POST", path, pipeline.admin(),
+            json!({"path":"auth/quota-lifecycle/login","rate":0,"interval":"1h"}),
+        )?,
+        400, "native-quota-invalid-update",
+    )?;
+    expect(
+        pipeline.call(leader, "GET", "sys/quotas/rate-limit", pipeline.admin(), json!({}))?,
+        405, "native-quota-real-collection-method-check",
+    )?;
+    expect(
+        pipeline.call(
+            leader, "POST", "sys/quotas/unsupported/native-admin", pipeline.admin(), json!({}),
+        )?,
+        501, "native-quota-other-owners-stay-closed",
+    )?;
+    assert_eq!(registry(&pipeline, leader)?, before_denials);
+
+    let updated = json!({
+        "path":"auth/quota-lifecycle/login","rate":4,
+        "interval":"1h","block_interval":0
+    });
+    expect(
+        pipeline.call(leader, "PUT", path, pipeline.admin(), updated)?,
+        204, "native-quota-update",
+    )?;
+    let after_update = registry(&pipeline, leader)?;
+    assert!(
+        after_update["definitions"]["native-admin"]["revision"].as_u64()
+            .ok_or("updated quota revision")?
+            > before_denials["definitions"]["native-admin"]["revision"].as_u64()
+                .ok_or("original quota revision")?
+    );
+    let observed = expect(
+        pipeline.call(standby, "GET", path, &reader, json!({}))?,
+        200, "native-quota-reader-observes-committed-update",
+    )?;
+    assert_eq!(observed.body["data"]["rate"].as_f64(), Some(4.0));
+
+    expect(
+        pipeline.call(leader, "DELETE", path, pipeline.admin(), json!({}))?,
+        204, "native-quota-delete",
+    )?;
+    expect(
+        pipeline.call(standby, "GET", path, &reader, json!({}))?,
+        404, "native-quota-deletion-is-visible",
+    )?;
+    expect(
+        pipeline.call(standby, "LIST", "sys/quotas/rate-limit", pipeline.admin(), json!({}))?,
+        404, "native-quota-empty-list-retains-domain-result",
+    )?;
+    let empty = registry(&pipeline, leader)?;
+    assert_eq!(empty["definitions"], json!({}));
+    assert_eq!(empty["config"], config);
+    pipeline.assert_history(leader, &[(1, "seed-v5")])?;
+
+    // Inspect the real committed native root after all Service operations.
+    // A selector, registry projection or HTTP status is not this ReadIndex.
+    let selected = pipeline.native_selection(leader)?;
+    pipeline.with_service(leader, |service| {
+        let root = service.native_root.as_ref().ok_or("native quota root")?;
+        assert_eq!(root.state_schema, APPROLE_NO_DEFAULT_STATE_SCHEMA);
+        assert_eq!(root.reader_floor.minimum_state_schema, APPROLE_NO_DEFAULT_STATE_SCHEMA);
+        assert_eq!(root.identity().map_err(|_| "native quota root identity")?.digest(), selected.1);
+        assert!(!service.recovery_required);
+        assert!(service.pending_native_auth_delivery.is_none());
+        Ok(())
+    })?;
+    Ok(())
+}
