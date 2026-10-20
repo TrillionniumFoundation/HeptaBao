@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.r12-native58-manualpack-controller.v1",
+  "status": "completed",
+  "started_utc": "2026-10-20T06:15:31.102593+00:00",
+  "controller_sha256": "f83526db446e9a3dd018f57f5b61f65b755fccb86a43990cdb57fa452293ef60",
+  "source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_tree": "72a180244162a19930d7e4be7426f168d34b653c",
+  "source_manifest_sha256": "6dc01ef55ad9ab7206d7c756c6d36856ec4d3427ed9ce4720c5b8675c8a72c84",
+  "producer_summary": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r2/summary.json",
+  "producer_summary_sha256": "6765b323864ca92ab4b7d8d6b6ab007577344d04853dd1ca2728a91de2cac784",
+  "artifact_runner_sha256": "3ca6b6dfee259436c725f8bff9e6b72d7af363aa5a6e08d50d50ebf74e9f9fe7",
+  "producer_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "original_producer_summary_modified": false,
+  "producer_admission": {
+    "producer_passed_test_count_verified_from_logs": 58,
+    "producer_group_count": 18,
+    "groups": [
+      {
+        "label": "native-kv2-import",
+        "passed": 8,
+        "log_sha256": "59c41788dbe6202cd2e8aae794a969caaf601d7dcc95b0c9bbed7b58b3ff4e4c"
+      },
+      {
+        "label": "native-kv2-large",
+        "passed": 15,
+        "log_sha256": "14e2eaf08dbb4a2f30df3e70126e5217cb6454e161f8f718d0a3f9a4ede5d432"
+      },
+      {
+        "label": "native-kv2-mount",
+        "passed": 3,
+        "log_sha256": "b0e0cac0d0cb65a19d21065252de2663756fbb589c2dc3525886336c1460d801"
+      },
+      {
+        "label": "forward-original-unseal-veto",
+        "passed": 1,
+        "log_sha256": "b03eb716726499aed72276b1d357ef6f5a33af75c923405dec0328a7ae541d1d"
+      },
+      {
+        "label": "forward-no-second-floor",
+        "passed": 1,
+        "log_sha256": "bcf86bcab9280d8e4f831a9056a9e77db7914f9633cc45434ff34a4649d2f113"
+      },
+      {
+        "label": "historical-service",
+        "passed": 6,
+        "log_sha256": "1c566f3a4d44159f61d453c0b9aef79a586a725bc0aa598128c487477ce7f898"
+      },
+      {
+        "label": "snapshot-service",
+        "passed": 7,
+        "log_sha256": "0f7949e2911f0bd9cd1a286b7c05ea17cebae06042ec1f5113008aac0909a590"
+      },
+      {
+        "label": "archive-34mib",
+        "passed": 1,
+        "log_sha256": "b29d26ae4a1925018209c0d713c41a8b15edc69ef7188500584ab52cf0466a58"
+      },
+      {
+        "label": "http-repair-admission",
+        "passed": 1,
+        "log_sha256": "4cf9bda482d9000f6cebbbd4fc4c206c44d74d0b805dd7db627e9c82b220f859"
+      },
+      {
+        "label": "http-pending-admission",
+        "passed": 1,
+        "log_sha256": "4d661600add8df322ab7b8852387c58bc08eebfb3509867d3157e694a62e14ca"
+      },
+      {
+        "label": "private-transport-diagnostic",
+        "passed": 1,
+        "log_sha256": "9dd9fb69bc6d65b0dd3ab68840f67090b96caef56beb35ba8c2a805e92df8a52"
+      },
+      {
+        "label": "private-frame-diagnostic",
+        "passed": 1,
+        "log_sha256": "5957da8f590b8779f0c57730686df0d99c990c72bc4408d6f33a1fd03dd08091"
+      },
+      {
+        "label": "kv2-api-271-numbers",
+        "passed": 3,
+        "log_sha256": "17b7c2e28ba74ea8e990f09a0bf70571dc18c8fdc1388270cc0a5ca9b96f8b84"
+      },
+      {
+        "label": "native-kv2-storage-witness",
+        "passed": 5,
+        "log_sha256": "e91a71e3aee32737d74a48087e77190fff464a92f82b919aef2b4ea107a30835"
+      },
+      {
+        "label": "lossless-json-private-tags",
+        "passed": 1,
+        "log_sha256": "b49f254a7898da14e6ae15fd4372ef83cf13ef14cd37d07ddec36942b5f5f1f0"
+      },
+      {
+        "label": "lossless-kv1-conversion",
+        "passed": 1,
+        "log_sha256": "21d0294c83ac7a661d486af8bba9b81eec523961cbcc3bf60e12f4f83d6b9111"
+      },
+      {
+        "label": "lossless-token-equivalence",
+        "passed": 1,
+        "log_sha256": "c2c11a9e22778192114ba3e5db3e5ef6247633c564fd6559935b2f922bb27a34"
+      },
+      {
+        "label": "native-raw-private-tags",
+        "passed": 1,
+        "log_sha256": "89f2833c402b980b4c921177850b2c43207e841a2c8c2ecb1ece6a3cfde3b883"
+      }
+    ],
+    "original_retained_log_count": 39,
+    "server_binary": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r2/heptabao-server",
+    "server_binary_sha256": "9d3d94ba4076c6b9f85f098d2db5fdf279538d486ea32641c8f2517f49972b90",
+    "server_binary_bytes": 802798280
+  },
+  "argv": [
+    "pack",
+    "--source",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-r12",
+    "--manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-r12-manifest.json",
+    "--output",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-artifact58-r12-main-capsule-20261020-r1",
+    "--source-commit",
+    "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "--source-tree",
+    "72a180244162a19930d7e4be7426f168d34b653c",
+    "--producer-runner-sha256",
+    "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+    "--summary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r2/summary.json",
+    "--summary-sha256",
+    "6765b323864ca92ab4b7d8d6b6ab007577344d04853dd1ca2728a91de2cac784",
+    "--target-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019"
+  ],
+  "submission_count": 1,
+  "automatic_retry": false,
+  "compiler_invocations": 0,
+  "executor_tests_performed": false,
+  "production_mutation": false,
+  "full_openbao_271_replacement_proven": false,
+  "exit_code": 0,
+  "capsule": "/home/qian-qi/heptabao-next-gates-20261017/native-artifact58-r12-main-capsule-20261020-r1/capsule.json",
+  "capsule_sha256": "a2241ed60443df18dc1f034e3cc90ce9459c8aa533e6678bf9c25536cd033da5",
+  "required_test_count": 58,
+  "verified_capsule_files": 53,
+  "server_binary_sha256": "9d3d94ba4076c6b9f85f098d2db5fdf279538d486ea32641c8f2517f49972b90",
+  "total_artifact_bytes": 2060371472,
+  "finished_utc": "2026-10-20T06:16:21.221754+00:00",
+  "stdout_sha256": "71d80a8dc977ef414ba1bb33d3007c0b7d829c93ef608a63cf8b4c8d912c84b3",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

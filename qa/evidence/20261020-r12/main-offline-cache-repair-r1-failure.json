@@ -1,0 +1,19 @@
+{
+  "archive_bytes": 0,
+  "cargo_lock_sha256": "b6c3bca88b92e690a32af02e792c523f92333ad34248ee5777436d1b5f8791a4",
+  "error_type": "RuntimeError",
+  "missing_before": 113,
+  "network_registry_fetch": false,
+  "original_build_deadline_changed": false,
+  "product_source_modified": false,
+  "required_registry_archives": 381,
+  "restored": [],
+  "schema": "heptabao.locked-offline-cache-repair.r1",
+  "source_cache": "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo/registry/cache",
+  "source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_host": "macbook-pro",
+  "ssh_returncode": 1,
+  "ssh_stderr_bytes": 140,
+  "ssh_stderr_sha256": "762a09c8aae9a3c414043ae9eb5504ecc069505ce03a89b55dcdc8ed59b1fcca",
+  "status": "failed_or_unknown"
+}

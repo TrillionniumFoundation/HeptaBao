@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.r12-lan98-diagnostic-window.v1",
+  "host": "mac",
+  "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-r12-20261020-r2/process.log",
+  "source_bytes": 52841,
+  "source_sha256": "2ffffdf9661a8b246aaa3210f5219f158e7ceab600cde6fae6a979122eda11fa",
+  "line_range": [
+    360,
+    397
+  ],
+  "read_only": true,
+  "lines": [
+    {
+      "line": 361,
+      "text": "HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=TimedOut"
+    },
+    {
+      "line": 362,
+      "text": "heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=151 stage=transport"
+    },
+    {
+      "line": 363,
+      "text": "HBHA-PRIVATE-STAGE phase=frame_write_length category=Transport io_kind=WouldBlock"
+    },
+    {
+      "line": 364,
+      "text": "HBHA-PRIVATE-STAGE phase=client_frame_write_tls_state handshaking=true"
+    },
+    {
+      "line": 365,
+      "text": "HBHA-PRIVATE-STAGE phase=tls_frame_write category=Transport"
+    },
+    {
+      "line": 366,
+      "text": "HBHA-PRIVATE-STAGE phase=frame_write_length category=Transport io_kind=WouldBlock"
+    },
+    {
+      "line": 367,
+      "text": "HBHA-PRIVATE-STAGE phase=client_frame_write_tls_state handshaking=true"
+    },
+    {
+      "line": 368,
+      "text": "HBHA-PRIVATE-STAGE phase=tls_frame_write category=Transport"
+    },
+    {
+      "line": 369,
+      "text": "heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=152 stage=transport"
+    },
+    {
+      "line": 370,
+      "text": "heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false"
+    },
+    {
+      "line": 371,
+      "text": "heptabao-lifecycle: maintenance unavailable"
+    },
+    {
+      "line": 372,
+      "text": "HBHA-PRIVATE-STAGE phase=frame_read_length category=Transport io_kind=WouldBlock"
+    },
+    {
+      "line": 373,
+      "text": "HBHA-PRIVATE-STAGE phase=client_frame_read_tls_state handshaking=false"
+    },
+    {
+      "line": 374,
+      "text": "HBHA-PRIVATE-STAGE phase=tls_frame_read category=Transport"
+    },
+    {
+      "line": 375,
+      "text": "heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport"
+    },
+    {
+      "line": 376,
+      "text": "HBHA-PRIVATE-STAGE phase=deadline_after_response category=Transport io_kind=TimedOut"
+    },
+    {
+      "line": 377,
+      "text": "heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport"
+    },
+    {
+      "line": 380,
+      "text": "HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=TimedOut"
+    },
+    {
+      "line": 381,
+      "text": "heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=151 stage=transport"
+    },
+    {
+      "line": 396,
+      "text": "heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false"
+    },
+    {
+      "line": 397,
+      "text": "HBV6-KV-DELIVERY reason_code=ha_sync status=503 veto_audit_seq_valid=true veto_audit_seq=111 request_elapsed_us=13008945 delivery_elapsed_us=35349 sync_attempted=true sync_elapsed_us=31654 original_remaining_at_delivery_us=28710 original_remaining_before_sync_us=28710 original_remaining_after_sync_us=0 original_remaining_us=0 original_expired=true"
+    }
+  ]
+}

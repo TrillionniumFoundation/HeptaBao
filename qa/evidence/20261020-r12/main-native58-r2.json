@@ -1,0 +1,1491 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-20T05:53:03.938957+00:00",
+  "runner_pid": 4102543,
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r12",
+  "source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_tree": "72a180244162a19930d7e4be7426f168d34b653c",
+  "manifest_sha256": "6dc01ef55ad9ab7206d7c756c6d36856ec4d3427ed9ce4720c5b8675c8a72c84",
+  "runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T05:53:04.678585+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 4102559,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T05:53:04.717738+00:00",
+      "elapsed_seconds": 0.036,
+      "log_sha256": "8195cc2272f684fff66e8df1aa9bedb38d806b4f27da52944a8fe8088b27f199"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T05:53:04.721102+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 4102576,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T05:53:04.743587+00:00",
+      "elapsed_seconds": 0.019,
+      "log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T05:53:04.746655+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 4102578,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:01:35.170207+00:00",
+      "elapsed_seconds": 510.421,
+      "log_sha256": "e8798d51a3f2f6c2b3db372f07a1d5f1199a4cbc2452c2f99eb47ef606883b93"
+    },
+    {
+      "label": "compile-peer-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T06:01:35.180402+00:00",
+      "status": "passed",
+      "log": "compile-peer-tests.log",
+      "pid": 4128769,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:02:09.011703+00:00",
+      "elapsed_seconds": 33.821,
+      "log_sha256": "0759316c5cdfb8f38cd6ac6938a49847561ebc3394a2b5dd8013ccaaa272b5b6"
+    },
+    {
+      "label": "native-kv2-import-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_kv2_graph_import_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:02:09.097449+00:00",
+      "status": "passed",
+      "log": "native-kv2-import-list.log",
+      "pid": 4131837,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:02:10.120080+00:00",
+      "elapsed_seconds": 0.93,
+      "log_sha256": "b01deee4ee6565d85ce5bf96badb1905ec50a37f6929be296b7680ea64db84e7",
+      "expected_count": 8,
+      "selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ]
+    },
+    {
+      "label": "native-kv2-import",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_kv2_graph_import_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:02:10.161593+00:00",
+      "status": "passed",
+      "log": "native-kv2-import.log",
+      "pid": 4131858,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:02:27.041165+00:00",
+      "elapsed_seconds": 16.846,
+      "log_sha256": "59c41788dbe6202cd2e8aae794a969caaf601d7dcc95b0c9bbed7b58b3ff4e4c",
+      "expected_count": 8,
+      "selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "terminal_test_summaries": [
+        [
+          "8",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "native-kv2-large-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_large_kv2_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:02:27.062852+00:00",
+      "status": "passed",
+      "log": "native-kv2-large-list.log",
+      "pid": 4132964,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:02:27.498013+00:00",
+      "elapsed_seconds": 0.426,
+      "log_sha256": "2309eb4a5270daa9011ef2714411bc2bb564fc63dc20f47922baa9c675226e20",
+      "expected_count": 15,
+      "selected_test_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ]
+    },
+    {
+      "label": "native-kv2-large",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_large_kv2_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:02:27.511036+00:00",
+      "status": "passed",
+      "log": "native-kv2-large.log",
+      "pid": 4133077,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:09.912363+00:00",
+      "elapsed_seconds": 42.391,
+      "log_sha256": "14e2eaf08dbb4a2f30df3e70126e5217cb6454e161f8f718d0a3f9a4ede5d432",
+      "expected_count": 15,
+      "selected_test_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "terminal_test_summaries": [
+        [
+          "15",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "native-kv2-mount-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_auth::mount_tests::native_kv2_mount_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:09.934127+00:00",
+      "status": "passed",
+      "log": "native-kv2-mount-list.log",
+      "pid": 4134324,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:10.370184+00:00",
+      "elapsed_seconds": 0.426,
+      "log_sha256": "3ba84469a6dfe6963ad471fbc02a05eca79a5c0a6411c3bcff0883e253a96339",
+      "expected_count": 3,
+      "selected_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+        "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+        "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+      ]
+    },
+    {
+      "label": "native-kv2-mount",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_auth::mount_tests::native_kv2_mount_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:10.392564+00:00",
+      "status": "passed",
+      "log": "native-kv2-mount.log",
+      "pid": 4134343,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:22.460911+00:00",
+      "elapsed_seconds": 12.059,
+      "log_sha256": "b0e0cac0d0cb65a19d21065252de2663756fbb589c2dc3525886336c1460d801",
+      "expected_count": 3,
+      "selected_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+        "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+        "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+      ],
+      "terminal_test_summaries": [
+        [
+          "3",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "forward-original-unseal-veto-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:22.481887+00:00",
+      "status": "passed",
+      "log": "forward-original-unseal-veto-list.log",
+      "pid": 4134597,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:22.919137+00:00",
+      "elapsed_seconds": 0.427,
+      "log_sha256": "591db83574287ab71ad5cc4d8f8cf1247792e41b1c98f05f0fbe0dec1a6e6ade",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ]
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:22.942632+00:00",
+      "status": "passed",
+      "log": "forward-original-unseal-veto.log",
+      "pid": 4134612,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:24.833074+00:00",
+      "elapsed_seconds": 1.88,
+      "log_sha256": "b03eb716726499aed72276b1d357ef6f5a33af75c923405dec0328a7ae541d1d",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "forward-no-second-floor-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "completed_forward_precise_follower_audits_without_second_floor_or_use",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:24.855438+00:00",
+      "status": "passed",
+      "log": "forward-no-second-floor-list.log",
+      "pid": 4134651,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:25.292779+00:00",
+      "elapsed_seconds": 0.427,
+      "log_sha256": "1af0838e395fade35e3d7d3233f809821370b349e4276a7a625bcaab8d9e7ec2",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ]
+    },
+    {
+      "label": "forward-no-second-floor",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "completed_forward_precise_follower_audits_without_second_floor_or_use",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:25.321771+00:00",
+      "status": "passed",
+      "log": "forward-no-second-floor.log",
+      "pid": 4134668,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:28.264709+00:00",
+      "elapsed_seconds": 2.933,
+      "log_sha256": "bcf86bcab9280d8e4f831a9056a9e77db7914f9633cc45434ff34a4649d2f113",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "historical-service-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_historical_restore_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:28.286648+00:00",
+      "status": "passed",
+      "log": "historical-service-list.log",
+      "pid": 4134736,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:03:28.723337+00:00",
+      "elapsed_seconds": 0.426,
+      "log_sha256": "0bfeaaab0135cc55deb6a4a6b0c07e47617798b4a3565d7e79762406f60a0065",
+      "expected_count": 6,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ]
+    },
+    {
+      "label": "historical-service",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_historical_restore_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:03:28.734944+00:00",
+      "status": "passed",
+      "log": "historical-service.log",
+      "pid": 4134747,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:05:45.708211+00:00",
+      "elapsed_seconds": 136.963,
+      "log_sha256": "1c566f3a4d44159f61d453c0b9aef79a586a725bc0aa598128c487477ce7f898",
+      "expected_count": 6,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "terminal_test_summaries": [
+        [
+          "6",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "snapshot-service-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_snapshot_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:05:45.747198+00:00",
+      "status": "passed",
+      "log": "snapshot-service-list.log",
+      "pid": 4140318,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:05:46.186511+00:00",
+      "elapsed_seconds": 0.428,
+      "log_sha256": "558274136f517bb47091040d4ca9c65061d2425377b93109608f47fa9c8d1ca2",
+      "expected_count": 7,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ]
+    },
+    {
+      "label": "snapshot-service",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_snapshot_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:05:46.211135+00:00",
+      "status": "passed",
+      "log": "snapshot-service.log",
+      "pid": 4140344,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:06:42.525756+00:00",
+      "elapsed_seconds": 56.17,
+      "log_sha256": "0f7949e2911f0bd9cd1a286b7c05ea17cebae06042ec1f5113008aac0909a590",
+      "expected_count": 7,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "terminal_test_summaries": [
+        [
+          "7",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "archive-34mib-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:06:42.558428+00:00",
+      "status": "passed",
+      "log": "archive-34mib-list.log",
+      "pid": 4142714,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:06:43.048058+00:00",
+      "elapsed_seconds": 0.478,
+      "log_sha256": "aa157dcc80918b0b76ca35ee3e2b634b05ab432d4d1cc6714c4b27d6aff5c1a0",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ]
+    },
+    {
+      "label": "archive-34mib",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:06:43.073104+00:00",
+      "status": "passed",
+      "log": "archive-34mib.log",
+      "pid": 4142724,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:32.200799+00:00",
+      "elapsed_seconds": 49.115,
+      "log_sha256": "b29d26ae4a1925018209c0d713c41a8b15edc69ef7188500584ab52cf0466a58",
+      "expected_count": 1,
+      "selected_test_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "http-repair-admission-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:34.231725+00:00",
+      "status": "passed",
+      "log": "http-repair-admission-list.log",
+      "pid": 4144379,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:34.922329+00:00",
+      "elapsed_seconds": 0.679,
+      "log_sha256": "efd22318be36f60c3f46899659438a03e39ef3446c7c8dbb90efb0f8423adcde",
+      "expected_count": 1,
+      "selected_test_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ]
+    },
+    {
+      "label": "http-repair-admission",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:34.933842+00:00",
+      "status": "passed",
+      "log": "http-repair-admission.log",
+      "pid": 4144397,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:35.382353+00:00",
+      "elapsed_seconds": 0.433,
+      "log_sha256": "4cf9bda482d9000f6cebbbd4fc4c206c44d74d0b805dd7db627e9c82b220f859",
+      "expected_count": 1,
+      "selected_test_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "http-pending-admission-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:35.404659+00:00",
+      "status": "passed",
+      "log": "http-pending-admission-list.log",
+      "pid": 4144414,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:35.893299+00:00",
+      "elapsed_seconds": 0.478,
+      "log_sha256": "1275369609d06de8d870c6e1b64c047b85ed6bd799209f88b334630cd7d658eb",
+      "expected_count": 1,
+      "selected_test_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ]
+    },
+    {
+      "label": "http-pending-admission",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:35.917255+00:00",
+      "status": "passed",
+      "log": "http-pending-admission.log",
+      "pid": 4144419,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:36.456508+00:00",
+      "elapsed_seconds": 0.527,
+      "log_sha256": "4d661600add8df322ab7b8852387c58bc08eebfb3509867d3157e694a62e14ca",
+      "expected_count": 1,
+      "selected_test_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "private-transport-diagnostic-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_forward_stage_observation_preserves_existing_transport_errors",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:36.479907+00:00",
+      "status": "passed",
+      "log": "private-transport-diagnostic-list.log",
+      "pid": 4144445,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:36.777250+00:00",
+      "elapsed_seconds": 0.278,
+      "log_sha256": "f2a673df6350a750ca773af2d24c93461e547b2565471d4a21496c1855609056",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ]
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_forward_stage_observation_preserves_existing_transport_errors",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:36.801281+00:00",
+      "status": "passed",
+      "log": "private-transport-diagnostic.log",
+      "pid": 4144456,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:37.089253+00:00",
+      "elapsed_seconds": 0.277,
+      "log_sha256": "9dd9fb69bc6d65b0dd3ab68840f67090b96caef56beb35ba8c2a805e92df8a52",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "private-frame-diagnostic-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:37.112423+00:00",
+      "status": "passed",
+      "log": "private-frame-diagnostic-list.log",
+      "pid": 4144466,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:37.400076+00:00",
+      "elapsed_seconds": 0.276,
+      "log_sha256": "e03a56d8281f4527f018e4079dd059fd4befc72b5f5de9a85f3dd21c1537e154",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ]
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:37.411004+00:00",
+      "status": "passed",
+      "log": "private-frame-diagnostic.log",
+      "pid": 4144477,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:37.701131+00:00",
+      "elapsed_seconds": 0.28,
+      "log_sha256": "5957da8f590b8779f0c57730686df0d99c990c72bc4408d6f33a1fd03dd08091",
+      "expected_count": 1,
+      "selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "kv2-api-271-numbers-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "kv2_api_271_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:37.736886+00:00",
+      "status": "passed",
+      "log": "kv2-api-271-numbers-list.log",
+      "pid": 4144499,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:38.175461+00:00",
+      "elapsed_seconds": 0.427,
+      "log_sha256": "a9e7df6e3c337f52bb3f7ff4fe892341ae9e1ed848a2301bc8de8ebf6706016a",
+      "expected_count": 3,
+      "selected_test_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ]
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "kv2_api_271_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:38.200035+00:00",
+      "status": "passed",
+      "log": "kv2-api-271-numbers.log",
+      "pid": 4144525,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:38.638938+00:00",
+      "elapsed_seconds": 0.428,
+      "log_sha256": "17b7c2e28ba74ea8e990f09a0bf70571dc18c8fdc1388270cc0a5ca9b96f8b84",
+      "expected_count": 3,
+      "selected_test_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "terminal_test_summaries": [
+        [
+          "3",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "native-kv2-storage-witness-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_kv2_storage_witness_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:38.659933+00:00",
+      "status": "passed",
+      "log": "native-kv2-storage-witness-list.log",
+      "pid": 4144540,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:07:39.095930+00:00",
+      "elapsed_seconds": 0.426,
+      "log_sha256": "eda6cd81e8bb039a12e44baceffae9353e8c914a1b1c0444a4dbdbc1f0c3858f",
+      "expected_count": 5,
+      "selected_test_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ]
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_kv2_storage_witness_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:07:39.113836+00:00",
+      "status": "passed",
+      "log": "native-kv2-storage-witness.log",
+      "pid": 4144550,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:06.328066+00:00",
+      "elapsed_seconds": 27.204,
+      "log_sha256": "e91a71e3aee32737d74a48087e77190fff464a92f82b919aef2b4ea107a30835",
+      "expected_count": 5,
+      "selected_test_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "terminal_test_summaries": [
+        [
+          "5",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "lossless-json-private-tags-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:06.350839+00:00",
+      "status": "passed",
+      "log": "lossless-json-private-tags-list.log",
+      "pid": 4145123,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:06.788602+00:00",
+      "elapsed_seconds": 0.428,
+      "log_sha256": "891260cba6db8d53e8df416f40c0aebf50f5ce274274f37de831c6e822727f5b",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ]
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:06.799542+00:00",
+      "status": "passed",
+      "log": "lossless-json-private-tags.log",
+      "pid": 4145129,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:07.237535+00:00",
+      "elapsed_seconds": 0.428,
+      "log_sha256": "b49f254a7898da14e6ae15fd4372ef83cf13ef14cd37d07ddec36942b5f5f1f0",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "lossless-kv1-conversion-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:07.271635+00:00",
+      "status": "passed",
+      "log": "lossless-kv1-conversion-list.log",
+      "pid": 4145134,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:07.709400+00:00",
+      "elapsed_seconds": 0.427,
+      "log_sha256": "91586f5b20f62736dfdc06c94c79535b6c3fcbca60e773b4eae461c9c443476b",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ]
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:07.734633+00:00",
+      "status": "passed",
+      "log": "lossless-kv1-conversion.log",
+      "pid": 4145148,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:08.224843+00:00",
+      "elapsed_seconds": 0.478,
+      "log_sha256": "21d0294c83ac7a661d486af8bba9b81eec523961cbcc3bf60e12f4f83d6b9111",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "lossless-token-equivalence-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:08.261490+00:00",
+      "status": "passed",
+      "log": "lossless-token-equivalence-list.log",
+      "pid": 4145160,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:08.651044+00:00",
+      "elapsed_seconds": 0.378,
+      "log_sha256": "f480e5b906865f9ea4e9c1d8e0ec07baad355f2be0625289abd7c148efc9eeb3",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ]
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:08.664051+00:00",
+      "status": "passed",
+      "log": "lossless-token-equivalence.log",
+      "pid": 4145171,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:09.104040+00:00",
+      "elapsed_seconds": 0.428,
+      "log_sha256": "c2c11a9e22778192114ba3e5db3e5ef6247633c564fd6559935b2f922bb27a34",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "native-raw-private-tags-list",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:09.130539+00:00",
+      "status": "passed",
+      "log": "native-raw-private-tags-list.log",
+      "pid": 4145182,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:09.571857+00:00",
+      "elapsed_seconds": 0.429,
+      "log_sha256": "6d32c49c311b531bee8d273c9595e6d9e8f28334b0dfcf88ce8988092c1acf2c",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ]
+    },
+    {
+      "label": "native-raw-private-tags",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-20T06:08:09.585227+00:00",
+      "status": "passed",
+      "log": "native-raw-private-tags.log",
+      "pid": 4145196,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:08:10.025921+00:00",
+      "elapsed_seconds": 0.429,
+      "log_sha256": "89f2833c402b980b4c921177850b2c43207e841a2c8c2ecb1ece6a3cfde3b883",
+      "expected_count": 1,
+      "selected_test_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "build-server",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic"
+      ],
+      "started_utc": "2026-10-20T06:08:10.063476+00:00",
+      "status": "passed",
+      "log": "build-server.log",
+      "pid": 4145215,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:12:58.547058+00:00",
+      "elapsed_seconds": 288.472,
+      "log_sha256": "985fa2c4706deaf48fd17b31a1ade63202e5641c5aa37f58a7e485809130b5d0",
+      "binary": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r2/heptabao-server",
+      "binary_sha256": "9d3d94ba4076c6b9f85f098d2db5fdf279538d486ea32641c8f2517f49972b90",
+      "binary_bytes": 802798280
+    },
+    {
+      "label": "built-binary-format",
+      "argv": [
+        "/usr/bin/file",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r2/heptabao-server"
+      ],
+      "started_utc": "2026-10-20T06:13:07.329128+00:00",
+      "status": "passed",
+      "log": "built-binary-format.log",
+      "pid": 4159111,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T06:13:07.371635+00:00",
+      "elapsed_seconds": 0.019,
+      "log_sha256": "ca4fa24a9f98831f9f98bfaa73bfac7a382483d13c198bde4d416b451816aaa1"
+    }
+  ],
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "hostname": "qian-qi",
+  "python": "3.12.3",
+  "selected_groups": [
+    "native-kv2-import",
+    "native-kv2-large",
+    "native-kv2-mount",
+    "forward-original-unseal-veto",
+    "forward-no-second-floor",
+    "historical-service",
+    "snapshot-service",
+    "archive-34mib",
+    "http-repair-admission",
+    "http-pending-admission",
+    "private-transport-diagnostic",
+    "private-frame-diagnostic",
+    "kv2-api-271-numbers",
+    "native-kv2-storage-witness",
+    "lossless-json-private-tags",
+    "lossless-kv1-conversion",
+    "lossless-token-equivalence",
+    "native-raw-private-tags"
+  ],
+  "scope": "Exact-candidate native recovery and import fixtures on this physical host",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 8,
+    "logical_cpus_observed": 48,
+    "cargo_build_jobs": "8",
+    "cmake_build_parallel_level": "8",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T05:53:04.674718+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T06:13:09.141891+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T06:13:09.142302+00:00"
+}

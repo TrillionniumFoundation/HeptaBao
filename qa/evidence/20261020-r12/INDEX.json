@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.r12.scoped-evidence-index.v1",
+  "candidate_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "candidate_tree": "72a180244162a19930d7e4be7426f168d34b653c",
+  "candidate_manifest_sha256": "6dc01ef55ad9ab7206d7c756c6d36856ec4d3427ed9ce4720c5b8675c8a72c84",
+  "source_files": 3552,
+  "full_openbao_271_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_production_assets_deleted": false,
+  "files": [
+    {
+      "path": "mac-native58.json",
+      "bytes": 56900,
+      "sha256": "de9da56ac9a31a93d2a29f267469010c598f00235251a7019216fde9bfe13a14",
+      "source": "mac:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full58-r12-mac-r1/summary.json"
+    },
+    {
+      "path": "mac-focused20.json",
+      "bytes": 108631,
+      "sha256": "d41b9206e87f12b7abd26d28345945bbe3ad2fcb3f8b0b2078dadcf7e79c8a17",
+      "source": "mac:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-focused20-r12-mac-20261020-r1/summary.json"
+    },
+    {
+      "path": "mac-official271-full34.json",
+      "bytes": 90526,
+      "sha256": "f64ae77044fbb947e28be36b04aeffa248e64150831686da0d004b0aba9519a2",
+      "source": "mac:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r12-mac-20261020-r1/summary.json"
+    },
+    {
+      "path": "main-native58-r2.json",
+      "bytes": 57104,
+      "sha256": "6765b323864ca92ab4b7d8d6b6ab007577344d04853dd1ca2728a91de2cac784",
+      "source": "main:/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r2/summary.json"
+    },
+    {
+      "path": "mac-official271-full34-controller.json",
+      "bytes": 3401,
+      "sha256": "8a511f1da182300b91ecb29fd38efb7c8f616944a825acf1c199a3e09331f4e6",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/official271-full34-r12-mac-20261020-r1-controller/controller.json"
+    },
+    {
+      "path": "main-native58-capsule.json",
+      "bytes": 50620,
+      "sha256": "a2241ed60443df18dc1f034e3cc90ce9459c8aa533e6678bf9c25536cd033da5",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-artifact58-r12-main-capsule-20261020-r1/capsule.json"
+    },
+    {
+      "path": "main-native-build-receipt.json",
+      "bytes": 1734,
+      "sha256": "2a0e8fd8232e65835ca2e902fec7f7465008aa6e2e8414ab4313268c4ddd0ffa",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-r12-20261020-r1/native-build-receipt.json"
+    },
+    {
+      "path": "main-native58-pack-controller.json",
+      "bytes": 6067,
+      "sha256": "348348d31b19bc3d1d955d717dd27b559bb075a46a9c78b93972728091ef5a23",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-artifact58-r12-main-manualpack-20261020-r1-controller/controller.json"
+    },
+    {
+      "path": "mac-native-build-receipt.json",
+      "bytes": 1725,
+      "sha256": "d45e069914503dee55647bdd7f021ec3d2deb775be4d978afabe9f07bed5847c",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-preflight-r12-20261020-r1/native-build-receipt.json"
+    },
+    {
+      "path": "mac-actual-git-materialization.json",
+      "bytes": 1819,
+      "sha256": "d8ce8361a21fbc4273bee2ba67f253bae624c0af089a767195c36e4f6d24bec8",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-r12-object-git-20261020-r1-materialization.json"
+    },
+    {
+      "path": "main-offline-cache-repair-r1-failure.json",
+      "bytes": 765,
+      "sha256": "33ea921e5dec7b42407fae9990fa19d83ef79c2ba8f51e23cf0bbdb016b9133c",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/r12-main-offline-cache-repair-20261020-r1/receipt.json"
+    },
+    {
+      "path": "main-native58-r1-environment-failure.json",
+      "bytes": 8026,
+      "sha256": "d4440493608a32d162b6a71d1d20b1cf1522f3247e01b13ea234fc6b7594f7df",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-full58-r12-main-r1/summary.json"
+    },
+    {
+      "path": "main-offline-cache-repair-r2.json",
+      "bytes": 17770,
+      "sha256": "e0a6de5b50016681a9ea78a0f9d94f096810bd8f4ba2178e8dc957d13dd7745e",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/r12-main-offline-cache-repair-20261020-r2/receipt.json"
+    },
+    {
+      "path": "x230-native58.json",
+      "bytes": 95518,
+      "sha256": "46005e570de65263781588b9041ad71098861c3c15f0af2b3cef41d471bb6233",
+      "source": "/home/qian/heptabao-continuation-20261019/native-artifact58-r12-x230-actual-20261020-r1/summary.json"
+    },
+    {
+      "path": "x230-official271-full34.json",
+      "bytes": 89884,
+      "sha256": "8a6f07a1f4894b4037278b9771d8cc029735953c32f9034c7fd1be17d38a0b84",
+      "source": "/home/qian/heptabao-continuation-20261019/official271-full34-r12-x230-20261020-r1/summary.json"
+    },
+    {
+      "path": "full34-x230-controller.json",
+      "bytes": 3582,
+      "sha256": "58c042ef8caddee4a0246a77fb92c27a1bd6fb777455641ab37a2ef9bc9e3e41",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/r12-x230-full34-evidence-20261020-r1/full34-x230-controller.json"
+    },
+    {
+      "path": "x230-actual-git-materialization.json",
+      "bytes": 1775,
+      "sha256": "8c97e6f8facf6864e0f0865d58914aecbd36aab31958d2a92ba6e266246d3c3a",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/r12-x230-full34-evidence-20261020-r1/x230-actual-git-materialization.json"
+    },
+    {
+      "path": "lan98-r2-controller.json",
+      "bytes": 9388,
+      "sha256": "f5237b9cc29da796eff9942c78c32815b525b97ef4a9cc3e423bbcfef926b53e",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-r12-20261020-r2-controller/controller.json"
+    },
+    {
+      "path": "lan98-r2-summary.json",
+      "bytes": 22094,
+      "sha256": "97669ed65bc3deeceeb0302391e79d88892d11e97326ff5135ed4d7720b8c233",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-r12-20261020-r2-controller/work/summary.json"
+    },
+    {
+      "path": "lan98-r1-controller-interrupted-summary.json",
+      "bytes": 7873,
+      "sha256": "9cfa467843c8ae591b0d9f5cbfd860749fb0f7f5033c07420a4053aef8c258ce",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-r12-20261020-r1-controller/work/summary.json"
+    },
+    {
+      "path": "main-x230-native58-transfer.json",
+      "bytes": 14794,
+      "sha256": "46dd11fb22cce568b09f60afe5a6907dd414660aae217bb4d6f105c9a09cdfcb",
+      "source": "/home/qian-qi/heptabao-next-gates-20261017/native-artifact58-r12-transfer-20261020-r1/controller.json"
+    },
+    {
+      "path": "lan98-r2-delivery-phases.json",
+      "bytes": 59179,
+      "sha256": "6f73bc989106a732f33025c0c842fb2d3678ec99b6b6679c0efbf17cc95339f1",
+      "source": "read-only phase excerpts with full source log digests and original line numbers"
+    },
+    {
+      "path": "lan98-r2-delivery-window.json",
+      "bytes": 3376,
+      "sha256": "6b68bc5b49e0bdb5995f0396d3e808cfc89d5cb3e03616929979f200ee4048dc",
+      "source": "read-only original Mac process.log lines 360-397 excluding already indexed phase lines"
+    },
+    {
+      "path": "lan98-r2-audit-tail.json",
+      "bytes": 980,
+      "sha256": "03207d7fae62995059d207fff2ec9f5f0874e53433320d547f2036656045e4ce",
+      "source": "read-only audit metadata excerpt; no authenticated audit-chain verification claimed"
+    },
+    {
+      "path": "execution-reconciliation.json",
+      "bytes": 3161,
+      "sha256": "2cbcfb28509e1cd6bb13f632b8a032b6c2bce0708b54c32b65ab34fd33c3cc6d",
+      "source": "actual operator job states, read-only original executor observation, and immutable final receipts"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "binary_sha256": "ec0ed9359f5a6578ff4b4a252d093dc516e8a7dd5231e543b22357b854efa490",
+  "build_exit_code": 0,
+  "native_abi": "aarch64-apple-darwin",
+  "provenance": {
+    "actual_binary_bytes": 75414240,
+    "actual_binary_format_log_sha256": "65863e9be9fd7b7a7801b0e7fc3fd0d0e62bf9d196264bfff21fa9baadc04a51",
+    "actual_build_argv": [
+      "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "build",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--bin",
+      "heptabao-server",
+      "--features",
+      "experimental-native-v6-ha,private-ha-forward-diagnostic"
+    ],
+    "actual_build_log_sha256": "52eceb3bd0aa2bf8d43ded0ab0ef406b28d6104d81ace595692f0f8375978ac7",
+    "actual_compiler_log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e",
+    "actual_host_summary_sha256": "de9da56ac9a31a93d2a29f267469010c598f00235251a7019216fde9bfe13a14",
+    "actual_manifest_sha256": "6dc01ef55ad9ab7206d7c756c6d36856ec4d3427ed9ce4720c5b8675c8a72c84",
+    "actual_runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+    "lan98_executed_by_projection": false,
+    "original_scoped_host_passed": true,
+    "original_scoped_host_status": "passed_scoped_host_recovery",
+    "production_cutover": false,
+    "schema": "heptabao.physical-host-build-receipt-projection.v1",
+    "source_files_verified_before_and_after": 3552,
+    "source_freeze_basis": "pinned_completed_host_run_full_tree_verifications"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_freeze_verified": true,
+  "source_tree": "72a180244162a19930d7e4be7426f168d34b653c"
+}

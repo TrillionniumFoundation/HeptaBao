@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.r12-actual-published-commit-materialization.v1",
+  "status": "actual_git_commit_materialized",
+  "source": "/home/qian/heptabao-continuation-20261019/source-r12",
+  "output": "/home/qian/heptabao-continuation-20261019/source-r12-object-git-20261020-r1",
+  "build_source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "actual_parent_commit": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+  "actual_git_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_tree": "72a180244162a19930d7e4be7426f168d34b653c",
+  "source_manifest_sha256": "6dc01ef55ad9ab7206d7c756c6d36856ec4d3427ed9ce4720c5b8675c8a72c84",
+  "actual_commit_object_sha256": "ed81e4078d73d111403a930b6d066edb1d3a489794b8391915076da912f1c5bc",
+  "actual_commit_object_bytes": 825,
+  "source_before": {
+    "verified_at_utc": "2026-10-20T06:35:18.724244+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "source_files": 3552,
+  "synthetic_commit_created": false,
+  "full_parent_history_retained": false,
+  "automatic_retry": false,
+  "tests_executed": false,
+  "production_mutation": false,
+  "copied_tree_verified": {
+    "verified_at_utc": "2026-10-20T06:35:20.936942+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "source_after": {
+    "verified_at_utc": "2026-10-20T06:35:25.224601+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "source_unchanged": true,
+  "git_source_clean": true,
+  "shallow_boundary": "dd82a68baac4386ede8b9ced4e89492024c19145"
+}

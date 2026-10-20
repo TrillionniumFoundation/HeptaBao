@@ -1,0 +1,259 @@
+{
+  "status": "failed_or_blocked",
+  "started_utc": "2026-10-20T05:34:43.720083+00:00",
+  "runner_pid": 4067421,
+  "source": "/home/qian-qi/heptabao-next-gates-20261017/source-r12",
+  "source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_tree": "72a180244162a19930d7e4be7426f168d34b653c",
+  "manifest_sha256": "6dc01ef55ad9ab7206d7c756c6d36856ec4d3427ed9ce4720c5b8675c8a72c84",
+  "runner_sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T05:34:44.557782+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 4067443,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T05:34:44.783979+00:00",
+      "elapsed_seconds": 0.104,
+      "log_sha256": "8195cc2272f684fff66e8df1aa9bedb38d806b4f27da52944a8fe8088b27f199"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-20T05:34:44.873219+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 4067461,
+      "exit_code": 0,
+      "finished_utc": "2026-10-20T05:34:45.115623+00:00",
+      "elapsed_seconds": 0.111,
+      "log_sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T05:34:45.230734+00:00",
+      "status": "failed",
+      "log": "compile-server-tests.log",
+      "pid": 4067465,
+      "exit_code": 101,
+      "finished_utc": "2026-10-20T05:34:45.587287+00:00",
+      "elapsed_seconds": 0.29,
+      "log_sha256": "3d30509edd3565db4b732baafde8a29c4f8710ffde66b5a49db3b05a56b89e63"
+    },
+    {
+      "label": "compile-peer-tests",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--lib",
+        "--features",
+        "experimental-v6-peer-ingress,private-forward-stage-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-20T05:34:45.672947+00:00",
+      "status": "failed",
+      "log": "compile-peer-tests.log",
+      "pid": 4067478,
+      "exit_code": 101,
+      "finished_utc": "2026-10-20T05:34:46.030986+00:00",
+      "elapsed_seconds": 0.195,
+      "log_sha256": "af1a36b73376ea965f153ddf5e3df31d51ede3bedaf473fd389d20192b3d0975"
+    },
+    {
+      "label": "native-kv2-import",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-kv2-large",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-kv2-mount",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "forward-no-second-floor",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "historical-service",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "snapshot-service",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "archive-34mib",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "http-repair-admission",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "http-pending-admission",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "status": "blocked",
+      "reason": "peer test compilation failed"
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "status": "blocked",
+      "reason": "peer test compilation failed"
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "native-raw-private-tags",
+      "status": "blocked",
+      "reason": "server test compilation failed"
+    },
+    {
+      "label": "build-server",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic"
+      ],
+      "started_utc": "2026-10-20T05:34:46.642588+00:00",
+      "status": "failed",
+      "log": "build-server.log",
+      "pid": 4067587,
+      "exit_code": 101,
+      "finished_utc": "2026-10-20T05:34:46.865493+00:00",
+      "elapsed_seconds": 0.219,
+      "log_sha256": "d4a5652f4098e4fe3ee29f8ed087d97a55c765365cc611b20180435a8fbeff65"
+    }
+  ],
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "hostname": "qian-qi",
+  "python": "3.12.3",
+  "selected_groups": [
+    "native-kv2-import",
+    "native-kv2-large",
+    "native-kv2-mount",
+    "forward-original-unseal-veto",
+    "forward-no-second-floor",
+    "historical-service",
+    "snapshot-service",
+    "archive-34mib",
+    "http-repair-admission",
+    "http-pending-admission",
+    "private-transport-diagnostic",
+    "private-frame-diagnostic",
+    "kv2-api-271-numbers",
+    "native-kv2-storage-witness",
+    "lossless-json-private-tags",
+    "lossless-kv1-conversion",
+    "lossless-token-equivalence",
+    "native-raw-private-tags"
+  ],
+  "scope": "Exact-candidate native recovery and import fixtures on this physical host",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 8,
+    "logical_cpus_observed": 48,
+    "cargo_build_jobs": "8",
+    "cmake_build_parallel_level": "8",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-20T05:34:44.486173+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-20T05:34:47.693730+00:00",
+    "commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "tree": "72a180244162a19930d7e4be7426f168d34b653c",
+    "verified_files": 3552
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-20T05:34:47.694048+00:00"
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.r12.execution-reconciliation.v1",
+  "candidate_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "candidate_tree": "72a180244162a19930d7e4be7426f168d34b653c",
+  "full_openbao_271_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_production_assets_deleted": false,
+  "x230": {
+    "first_wrapper": {
+      "job": "1a157fcb894-1b6abb-21b0",
+      "exit_code": 1,
+      "classification": "pre-exec argument-index assertion; artifact test entrypoint not invoked"
+    },
+    "second_wrapper": {
+      "job": "1a157fd5cd0-1b6abb-21b2",
+      "exit_code": 124,
+      "timeout_seconds": 30,
+      "classification": "SSH wrapper cutoff; original remote executor remained live"
+    },
+    "read_only_reconciliation": {
+      "original_pid": 1743661,
+      "original_start_ticks": "117964648",
+      "uid": 1000,
+      "sid": 1743661,
+      "pgid": 1743661,
+      "observed_still_running": true,
+      "restarted": false,
+      "final_summary_sha256": "46005e570de65263781588b9041ad71098861c3c15f0af2b3cef41d471bb6233",
+      "final_status": "passed_scoped_transferred_artifacts",
+      "actual_passed_test_count": 58,
+      "complete_commands": 36,
+      "all_started_children_reaped": true,
+      "all_owned_live_groups_empty": true,
+      "actual_server_probe_passed": true,
+      "actual_server_probe_stopped": true,
+      "source_capsule_system_dependencies_unchanged": true
+    }
+  },
+  "lan98": {
+    "r1": {
+      "job": "1a157fd0ffe-1b6abb-21b1",
+      "exit_code": 124,
+      "timeout_seconds": 30,
+      "classification": "controller interrupted during build-receipt preflight",
+      "required_checks": 98,
+      "observed_checks": 5,
+      "passed_checks": 5,
+      "initialization_performed": false,
+      "mutation_intents": 0,
+      "mutation_responses": 0,
+      "unknown_transport_outcomes": 0,
+      "owned_processes_and_mesh_stopped": true,
+      "old_driver_pid": 4189254,
+      "old_driver_confirmed_absent": true,
+      "summary_sha256": "9cfa467843c8ae591b0d9f5cbfd860749fb0f7f5033c07420a4053aef8c258ce"
+    },
+    "r2": {
+      "job": "1a15800d409-1b6abb-21ba",
+      "exit_code": 1,
+      "new_fixture_roots": true,
+      "original_inner_deadlines_unchanged": true,
+      "http_seconds": 15,
+      "native_readindex_seconds": 8,
+      "required_checks": 98,
+      "observed_checks": 54,
+      "passed_checks": 53,
+      "failure": "native_history_write_15",
+      "http_status": 503,
+      "elapsed_ms": 14132.356,
+      "requested_version": 17,
+      "mutation_intents": 27,
+      "mutation_responses": 27,
+      "unknown_transport_outcomes": 0,
+      "failed_write_replayed": false,
+      "publication_and_local_install_completed_in_original_phase_logs": true,
+      "original_remaining_before_delivery_microseconds": 28710,
+      "delivery_sync_elapsed_microseconds": 31654,
+      "final_delivery_veto_audit_sequence": 111,
+      "final_503_reclassified_as_success": false,
+      "leader_kill_election_and_restart_gates_reached": false,
+      "owned_processes_and_mesh_stopped": true,
+      "summary_sha256": "97669ed65bc3deeceeb0302391e79d88892d11e97326ff5135ed4d7720b8c233"
+    }
+  }
+}

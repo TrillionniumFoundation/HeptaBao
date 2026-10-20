@@ -1,0 +1,555 @@
+{
+  "archive_bytes": 29030400,
+  "available_from_mac": 104,
+  "cargo_lock_sha256": "b6c3bca88b92e690a32af02e792c523f92333ad34248ee5777436d1b5f8791a4",
+  "missing_before": 113,
+  "network_registry_fetch": false,
+  "original_build_deadline_changed": false,
+  "prior_failed_transfer_restored_zero": true,
+  "product_source_modified": false,
+  "remaining_missing": 9,
+  "required_registry_archives": 381,
+  "restored": [
+    {
+      "bytes": 132471,
+      "name": "antlr4rust-0.5.2.crate",
+      "sha256": "093d520274bfff7278d776f7ea12981a0a0a6f96db90964658e0f38fc6e9a6a6"
+    },
+    {
+      "bytes": 10990,
+      "name": "anyerror-0.1.13.crate",
+      "sha256": "71add24cc141a1e8326f249b74c41cfd217aeb2a67c9c6cf9134d175469afd49"
+    },
+    {
+      "bytes": 249534,
+      "name": "aws-lc-rs-1.18.1.crate",
+      "sha256": "b281d307588d634de920874890732659e2e7672f72b5e10e81badc1a8a83621e"
+    },
+    {
+      "bytes": 9517046,
+      "name": "aws-lc-sys-0.41.0.crate",
+      "sha256": "1a2f9779ce85b93ab6170dd940ad0169b5766ff848247aff13bb788b832fe3f4"
+    },
+    {
+      "bytes": 9725710,
+      "name": "aws-lc-sys-0.45.0.crate",
+      "sha256": "9bff6c3b54fad79a2e60b8102caf565819711497c1f5f092f49508e2f5c31b27"
+    },
+    {
+      "bytes": 14158,
+      "name": "backoff-series-0.1.1.crate",
+      "sha256": "0b143524c9d0b6c3e8e80542a0a17e1e472ccfd5a3d3696bd6ad2b18248d3350"
+    },
+    {
+      "bytes": 64984,
+      "name": "base2histogram-0.2.3.crate",
+      "sha256": "d74d05707c315a6c0601b1089186476cf11ee5fe8d6e035ea43c44ae1a0215cd"
+    },
+    {
+      "bytes": 28870,
+      "name": "base64ct-1.6.0.crate",
+      "sha256": "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
+    },
+    {
+      "bytes": 13761,
+      "name": "better_any-0.2.1.crate",
+      "sha256": "4372b9543397a4b86050cc5e7ee36953edf4bac9518e8a774c2da694977fb6e4"
+    },
+    {
+      "bytes": 237785,
+      "name": "bindgen-0.71.1.crate",
+      "sha256": "5f58bf3d7db68cfbac37cfc485a8d711e87e064c3d0fe0435b92f7a407f9d6b3"
+    },
+    {
+      "bytes": 18870,
+      "name": "blowfish-0.10.0.crate",
+      "sha256": "62ce3946557b35e71d1bbe07ec385073ce9eda05043f95de134eb578fcf1a298"
+    },
+    {
+      "bytes": 101464,
+      "name": "cc-1.4.5.crate",
+      "sha256": "005ec2760ca554fae18df7a11195552ec576cd665632a881bc011d5bb2fd4d80"
+    },
+    {
+      "bytes": 118414,
+      "name": "cel-0.13.0.crate",
+      "sha256": "47a40f338a8c3505921000b609279775792c07cc21f97a3011578c0c5e1738ae"
+    },
+    {
+      "bytes": 624830,
+      "name": "chrono-tz-0.8.6.crate",
+      "sha256": "d59ae0466b83e838b81a54256c39d5d7c20b9d7daa10510a242d9b75abd5936e"
+    },
+    {
+      "bytes": 10421,
+      "name": "chrono-tz-build-0.2.1.crate",
+      "sha256": "433e39f13c9a060046954e0592a8d0a4bcb1040125cbf91cb8ee58964cfb350f"
+    },
+    {
+      "bytes": 64815,
+      "name": "clap-4.6.6.crate",
+      "sha256": "473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca"
+    },
+    {
+      "bytes": 171756,
+      "name": "clap_builder-4.6.6.crate",
+      "sha256": "7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889"
+    },
+    {
+      "bytes": 33533,
+      "name": "clap_derive-4.6.4.crate",
+      "sha256": "d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061"
+    },
+    {
+      "bytes": 13470,
+      "name": "clap_lex-1.1.0.crate",
+      "sha256": "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
+    },
+    {
+      "bytes": 24338,
+      "name": "cross-krb5-0.5.0.crate",
+      "sha256": "4d426da4c3f9df62d4dac801df95d980a8ba8c4b4f95d02b9b607dab079d6768"
+    },
+    {
+      "bytes": 32739,
+      "name": "ctutils-0.4.2.crate",
+      "sha256": "7d5515a3834141de9eafb9717ad39eea8247b5674e6066c404e8c4b365d2a29e"
+    },
+    {
+      "bytes": 26885,
+      "name": "deranged-0.5.8.crate",
+      "sha256": "7cd812cc2bc1d69d4764bd80df88b4317eaef9e773c75226407d9bc0876b211c"
+    },
+    {
+      "bytes": 16675,
+      "name": "display-more-0.2.6.crate",
+      "sha256": "bf8aaad655bf39f0691f6f4025a8b58f1ff46fb12cb70f6d69e4f0dd2eb717a8"
+    },
+    {
+      "bytes": 22357,
+      "name": "either-1.18.0.crate",
+      "sha256": "252afb9ae5eaa683babdc6a068b3f5726eb19e05070c731f9b2a23a7c3e8ed34"
+    },
+    {
+      "bytes": 7419,
+      "name": "equivalent-1.0.2.crate",
+      "sha256": "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
+    },
+    {
+      "bytes": 16678,
+      "name": "filetime-0.2.27.crate",
+      "sha256": "f98844151eee8917efc50bd9e8318cb963ae8b297431495d3f758616ea5c57db"
+    },
+    {
+      "bytes": 31570,
+      "name": "find-msvc-tools-0.1.12.crate",
+      "sha256": "3e0f1c7c3a72c66fd80abe965175f7523475c0489a87d3ff9d6e8c87d87a9d2d"
+    },
+    {
+      "bytes": 80972,
+      "name": "flate2-1.1.8.crate",
+      "sha256": "b375d6465b98090a5f25b1c7703f3859783755aa9a80433b36e0379a3ec2f369"
+    },
+    {
+      "bytes": 175379,
+      "name": "h2-0.4.19.crate",
+      "sha256": "ef8e5e5a340588f4452631496976cf8636d4a7ecf600239fdc27615d2530bc16"
+    },
+    {
+      "bytes": 170053,
+      "name": "hyper-1.11.1.crate",
+      "sha256": "27b501faa50e7a26c3d3560ca625132f4078a17771f4810baf70475ae48cbe43"
+    },
+    {
+      "bytes": 112807,
+      "name": "hyper-util-0.1.20.crate",
+      "sha256": "96547c2556ec9d12fb1578c4eaf448b04993e7fb79cbaad930a656880a6bdfa0"
+    },
+    {
+      "bytes": 42937,
+      "name": "icu_locid_transform_data-1.5.1.crate",
+      "sha256": "7515e6d781098bf9f7205ab3fc7e9709d34554ae0b21ddbcb5febfa4bc7df11d"
+    },
+    {
+      "bytes": 50737,
+      "name": "icu_normalizer_data-1.5.1.crate",
+      "sha256": "c5e8338228bdc8ab83303f16b797e177953730f601a96c25d10cb3ab0daa0cb7"
+    },
+    {
+      "bytes": 229231,
+      "name": "icu_properties_data-1.5.1.crate",
+      "sha256": "85fb8799753b75aee8d2a21d7c14d9f38921b54b3dbda10f5a3c7a7b82dba5e2"
+    },
+    {
+      "bytes": 100302,
+      "name": "indexmap-2.11.4.crate",
+      "sha256": "4b0f83760fb341a774ed326568e19f5a863af4a952def8c39f9ab92fd95b88e5"
+    },
+    {
+      "bytes": 12547,
+      "name": "inout-0.2.2.crate",
+      "sha256": "4250ce6452e92010fdf7268ccc5d14faa80bb12fc741938534c58f16804e03c7"
+    },
+    {
+      "bytes": 164131,
+      "name": "itertools-0.15.0.crate",
+      "sha256": "8b4baf93f58d4425749ca49a51c50ebab072c5df6994d08fed93541c331481dc"
+    },
+    {
+      "bytes": 29013,
+      "name": "jobserver-0.1.34.crate",
+      "sha256": "9afb3de4395d6b3e67a780b6de64b51c978ecf11cb9a462c66be7d4ca9039d33"
+    },
+    {
+      "bytes": 16975,
+      "name": "keccak-0.2.2.crate",
+      "sha256": "d8f198d1db720e4940b5a493201d199d9f24f568f8f746bd13706243a2f71598"
+    },
+    {
+      "bytes": 851502,
+      "name": "libc-0.2.189.crate",
+      "sha256": "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
+    },
+    {
+      "bytes": 37168,
+      "name": "libgssapi-0.11.0.crate",
+      "sha256": "e440a6151f5ef06571612e4121709aed90cfc0c40f8161f9090c71656758086d"
+    },
+    {
+      "bytes": 9189,
+      "name": "libgssapi-sys-0.3.4.crate",
+      "sha256": "5103ac4557eacd36ff678b654b943f8966d3db9688fbd180a0b4c5464759ce17"
+    },
+    {
+      "bytes": 31345,
+      "name": "libloading-0.8.8.crate",
+      "sha256": "07033963ba89ebaf1584d767badaa2e8fcec21aedea6b8c0346d487d49c28667"
+    },
+    {
+      "bytes": 28728,
+      "name": "litemap-0.7.3.crate",
+      "sha256": "643cb0b8d4fcc284004d5fd0d67ccf61dfffadb7f75e1e71bc420f4688a3a704"
+    },
+    {
+      "bytes": 28565,
+      "name": "lock_api-0.4.13.crate",
+      "sha256": "96936507f153605bddfcda068dd804796c84324ed2510809e5b2a624c81da765"
+    },
+    {
+      "bytes": 6984,
+      "name": "md5-0.8.0.crate",
+      "sha256": "ae960838283323069879657ca3de837e9f7bbb4c7bf6ea7f1b290d5e9476d2e0"
+    },
+    {
+      "bytes": 110455,
+      "name": "mio-1.2.3.crate",
+      "sha256": "4b18443e9c262bfe8fa82f51666e2642c53393f7e5c27b3e1aeab922cff5b9d8"
+    },
+    {
+      "bytes": 54905,
+      "name": "ml-dsa-0.1.1.crate",
+      "sha256": "add6b9d92e496f16f4526d68ff29da1483aba4b119baeab8bed3b9e3544a6f3d"
+    },
+    {
+      "bytes": 21697,
+      "name": "module-lattice-0.2.3.crate",
+      "sha256": "0c61b87c9683ab7cb1c6871d261ad5479b6b10ceb52c4352aaca3b5d35a8febe"
+    },
+    {
+      "bytes": 11047,
+      "name": "murmur3-0.4.1.crate",
+      "sha256": "a198f9589efc03f544388dfc4a19fe8af4323662b62f598b8dcfdac62c14771c"
+    },
+    {
+      "bytes": 126196,
+      "name": "num-bigint-dig-0.8.6.crate",
+      "sha256": "e661dda6640fad38e827a6d4a310ff4763082116fe217f279885c97f511bb0b7"
+    },
+    {
+      "bytes": 501430,
+      "name": "openraft-0.10.0-alpha.34.crate",
+      "sha256": "06fe14d529f8fc098fbb4b9655d5db9b7ee0594e6a9d4e220aa931618de17b1f"
+    },
+    {
+      "bytes": 19245,
+      "name": "openraft-legacy-0.10.0-alpha.34.crate",
+      "sha256": "a36ee0dabf255007c0ae792dcf9b0326dc3dcd8a0cdba7828344a21aa8a04a23"
+    },
+    {
+      "bytes": 21083,
+      "name": "openraft-macros-0.10.0-alpha.34.crate",
+      "sha256": "f5c57259539e016f70d05ea7e264573cc5ddabd651a127a13374e47b165b7664"
+    },
+    {
+      "bytes": 14557,
+      "name": "openraft-memstore-0.10.0-alpha.34.crate",
+      "sha256": "3a19088b7303bd0250f59ce782482f8616c3ab9d582be76ef6a43286715824ea"
+    },
+    {
+      "bytes": 34035,
+      "name": "openraft-rt-0.10.0-alpha.34.crate",
+      "sha256": "02379ddf29c426905a6e91c5df522003ee2a9a9811b3b8be01e90ab1106ecef6"
+    },
+    {
+      "bytes": 7160,
+      "name": "openraft-rt-tokio-0.10.0-alpha.34.crate",
+      "sha256": "cfeb8c656d8b0e01319aafc70f77b3b312cac56d07adf157d80b49677cc2fcec"
+    },
+    {
+      "bytes": 8128,
+      "name": "openssl-probe-0.1.6.crate",
+      "sha256": "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
+    },
+    {
+      "bytes": 193022,
+      "name": "p384-0.13.1.crate",
+      "sha256": "fe42f1670a52a47d448f14b6a5c61dd78fce51856e68edaa38f7ae3a46b8d6b6"
+    },
+    {
+      "bytes": 138499,
+      "name": "p521-0.13.3.crate",
+      "sha256": "0fc9e2161f1f215afdfce23677034ae137bbd45016a880c2eb3ba8eb95f085b2"
+    },
+    {
+      "bytes": 46779,
+      "name": "parking_lot-0.12.4.crate",
+      "sha256": "70d58bf43669b5795d1576d0641cfb6fbb2057bf629506267a92807158584a13"
+    },
+    {
+      "bytes": 34773,
+      "name": "parking_lot_core-0.9.11.crate",
+      "sha256": "bc838d2a56b5b1a6c25f55575dfc605fabb63bb2365f6c2353ef9159aa69e4a5"
+    },
+    {
+      "bytes": 7065,
+      "name": "parse-size-1.1.0.crate",
+      "sha256": "487f2ccd1e17ce8c1bfab3a65c89525af41cfad4c8659021a1e9a2aacd73b89b"
+    },
+    {
+      "bytes": 97290,
+      "name": "parse-zoneinfo-0.3.1.crate",
+      "sha256": "1f2a05b18d44e2957b88f96ba460715e295bc1d7510468a2f3d3b44535d26c24"
+    },
+    {
+      "bytes": 5633,
+      "name": "peel-off-0.1.1.crate",
+      "sha256": "f3420ea4424090cbd75a688996f696a807c68d6744b4863591b86435dc3078e9"
+    },
+    {
+      "bytes": 56348,
+      "name": "pin-project-1.1.10.crate",
+      "sha256": "677f1add503faace112b9f1373e43e9e054bfdd22ff1a63c1bc485eaec6a6a8a"
+    },
+    {
+      "bytes": 29162,
+      "name": "pin-project-internal-1.1.10.crate",
+      "sha256": "6e918e4ff8c4549eb882f14b3a4bc8c8bc93de829416eacf579f1207a8fbf861"
+    },
+    {
+      "bytes": 35790,
+      "name": "pkcs1-0.7.5.crate",
+      "sha256": "c8ffb9f10fa047879315e6625af03c164b16962a5368d724ed16323b68ace47f"
+    },
+    {
+      "bytes": 34863,
+      "name": "pkcs8-0.11.0.crate",
+      "sha256": "451913da69c775a56034ea8d9003d27ee8948e12443eae7c038ba100a4f21cb7"
+    },
+    {
+      "bytes": 104493,
+      "name": "rand-0.10.2.crate",
+      "sha256": "c7f5fa3a058cd35567ef9bfa5e75732bee0f9e4c55fa90477bef2dfcdbc4be80"
+    },
+    {
+      "bytes": 86417,
+      "name": "rsa-0.9.10.crate",
+      "sha256": "b8573f03f5883dcaebdfcf4725caa1ecb9c15b2ef50c43a07b816e06799bb12d"
+    },
+    {
+      "bytes": 14154,
+      "name": "rustc-hash-2.1.1.crate",
+      "sha256": "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
+    },
+    {
+      "bytes": 425241,
+      "name": "rustix-1.1.4.crate",
+      "sha256": "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
+    },
+    {
+      "bytes": 377662,
+      "name": "rustls-0.23.44.crate",
+      "sha256": "6725596c3f2c3a0aef021139e145d4eafe314a6623e4680ca83852b2c67ab2ba"
+    },
+    {
+      "bytes": 31903,
+      "name": "rustls-native-certs-0.8.2.crate",
+      "sha256": "9980d917ebb0c0536119ba501e90834767bffc3d60641457fd84a1f3fd337923"
+    },
+    {
+      "bytes": 25849,
+      "name": "rustls-pemfile-2.2.0.crate",
+      "sha256": "dce314e5fee3f39953d46bb63bb8a46d40c2f8fb7cc5a3b6cab2bde9721d6e50"
+    },
+    {
+      "bytes": 156556,
+      "name": "serde_json-1.0.151.crate",
+      "sha256": "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
+    },
+    {
+      "bytes": 340673,
+      "name": "shake-0.1.0.crate",
+      "sha256": "09057cb2149ad4cbd2da1e26b351f9a4c354219421229c69c3063e6f61947c4a"
+    },
+    {
+      "bytes": 15027,
+      "name": "signature-3.0.0.crate",
+      "sha256": "28d567dcbaf0049cb8ac2608a76cd95ff9e4412e1899d389ee400918ca7537f5"
+    },
+    {
+      "bytes": 11643,
+      "name": "siphasher-1.0.3.crate",
+      "sha256": "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
+    },
+    {
+      "bytes": 32647,
+      "name": "smallvec-1.16.0.crate",
+      "sha256": "b9be42f50aa861c555654aa3a37f52f4b1074bacf4e48fe0ef7fa584e80f1f0f"
+    },
+    {
+      "bytes": 58169,
+      "name": "socket2-0.5.10.crate",
+      "sha256": "e22376abed350d73dd1cd119b57ffccad95b4e585a7cda43e286245ce23c0678"
+    },
+    {
+      "bytes": 22159,
+      "name": "spki-0.8.0.crate",
+      "sha256": "1d9efca8738c78ee9484207732f728b1ef517bbb1833d6fc0879ca898a522f6f"
+    },
+    {
+      "bytes": 11522,
+      "name": "sponge-cursor-0.1.0.crate",
+      "sha256": "3a0219bd7d979d58245a4f41f695e1ac9f8befdffadd7f61f1bae9e39abc6620"
+    },
+    {
+      "bytes": 10843,
+      "name": "ssh-cipher-0.2.0.crate",
+      "sha256": "caac132742f0d33c3af65bfcde7f6aa8f62f0e991d80db99149eb9d44708784f"
+    },
+    {
+      "bytes": 13600,
+      "name": "ssh-encoding-0.2.0.crate",
+      "sha256": "eb9242b9ef4108a78e8cd1a2c98e193ef372437f8c22be363075233321dd4a15"
+    },
+    {
+      "bytes": 112921,
+      "name": "ssh-key-0.6.7.crate",
+      "sha256": "3b86f5297f0f04d08cabaa0f6bff7cb6aec4d9c3b49d87990d63da9d9156a8c3"
+    },
+    {
+      "bytes": 313821,
+      "name": "syn-3.0.6.crate",
+      "sha256": "8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee"
+    },
+    {
+      "bytes": 28969,
+      "name": "thiserror-2.0.20.crate",
+      "sha256": "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f"
+    },
+    {
+      "bytes": 21436,
+      "name": "thiserror-impl-2.0.20.crate",
+      "sha256": "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
+    },
+    {
+      "bytes": 920101,
+      "name": "tokio-1.53.1.crate",
+      "sha256": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed"
+    },
+    {
+      "bytes": 11977,
+      "name": "tokio-openssl-0.6.5.crate",
+      "sha256": "59df6849caa43bb7567f9a36f863c447d95a11d5903c9cc334ba32576a27eadd"
+    },
+    {
+      "bytes": 113421,
+      "name": "tokio-util-0.7.11.crate",
+      "sha256": "9cf6b47b3771c49ac75ad09a6162f53ad4b8088b76ac60e8ec1455b31a189fe1"
+    },
+    {
+      "bytes": 11848,
+      "name": "typed-arena-2.0.2.crate",
+      "sha256": "6af6ae20167a9ece4bcb41af5b80f8a1f1df981f6391189ce00fd257af04126a"
+    },
+    {
+      "bytes": 49298,
+      "name": "unicode-ident-1.0.24.crate",
+      "sha256": "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
+    },
+    {
+      "bytes": 60654,
+      "name": "uuid-1.20.0.crate",
+      "sha256": "ee48d38b119b0cd71fe4141b30f5ba9c7c5d9f4e7a3a8b4a674e4b6ef789976f"
+    },
+    {
+      "bytes": 15094,
+      "name": "validit-0.2.6.crate",
+      "sha256": "4417835826b78aa6265724624d424df2b1e6e71a33329227d8b04a88950780dc"
+    },
+    {
+      "bytes": 15952,
+      "name": "xattr-1.6.1.crate",
+      "sha256": "32e45ad4206f6d2479085147f02bc2ef834ac85886624a23575ae137c8aa8156"
+    },
+    {
+      "bytes": 27781,
+      "name": "yoke-0.7.4.crate",
+      "sha256": "6c5b1314b079b0930c31e3af543d8ee1757b1951ae1e1565ec704403a7240ca5"
+    },
+    {
+      "bytes": 332546,
+      "name": "zerocopy-0.8.62.crate",
+      "sha256": "86502bf56ac7c77571a32e2647bb2a15894565e981fb2a48d7bde2d91c965a9d"
+    },
+    {
+      "bytes": 5044,
+      "name": "zerofrom-0.1.4.crate",
+      "sha256": "91ec111ce797d0e0784a1116d0ddcdbea84322cd79e5d5ad173daeba4f93ab55"
+    },
+    {
+      "bytes": 8305,
+      "name": "zerofrom-derive-0.1.6.crate",
+      "sha256": "d71e5d6e06ab090c67b5e44993ec16b72dcbaabc526db883a360057678b48502"
+    },
+    {
+      "bytes": 20029,
+      "name": "zeroize-1.8.1.crate",
+      "sha256": "ced3678a2879b30306d323f4542626697a464a97c0a07c9aebf7ebca65cd4dde"
+    },
+    {
+      "bytes": 20021,
+      "name": "zerovec-derive-0.10.4.crate",
+      "sha256": "3e3c6377872d72510393f688a555d7097b0f741995c7a00f0407f786dd486b2d"
+    }
+  ],
+  "restored_bytes": 28947046,
+  "schema": "heptabao.locked-offline-cache-repair.r2",
+  "source_cache": "/Volumes/T5/hepta-vnext-recovery-20261013/r1190-offline-cargo/registry/cache",
+  "source_commit": "dd82a68baac4386ede8b9ced4e89492024c19145",
+  "source_host": "macbook-pro",
+  "ssh_returncode": 0,
+  "ssh_stderr_bytes": 0,
+  "ssh_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status": "restored_available_locked_archives",
+  "unavailable_from_mac": [
+    "js-sys-0.3.105.crate",
+    "libredox-0.1.24.crate",
+    "redox_syscall-0.9.4.crate",
+    "schannel-0.1.27.crate",
+    "wasm-bindgen-0.2.128.crate",
+    "wasm-bindgen-macro-0.2.128.crate",
+    "wasm-bindgen-macro-support-0.2.128.crate",
+    "wasm-bindgen-shared-0.2.128.crate",
+    "zerocopy-derive-0.8.62.crate"
+  ],
+  "verified_archives_after": 372
+}
