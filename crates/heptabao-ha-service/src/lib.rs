@@ -37,8 +37,8 @@ mod v6_replica_ingress;
 pub use v6_closure_quorum::{
     NativeV6ClosureQuorum, NativeV6ClosureReceiver, NativeV6CommittedRootSource,
     RecoveredNativeV6LocalClosure, is_native_v6_closure_frame, is_native_v6_root_pull_frame,
-    reconcile_native_v6_closure_quorum, recover_native_v6_committed_closure,
-    replicate_native_v6_closure_to_quorum,
+    read_or_recover_native_v6_committed_closure, reconcile_native_v6_closure_quorum,
+    recover_native_v6_committed_closure, replicate_native_v6_closure_to_quorum,
 };
 #[cfg(feature = "experimental-v6-peer-ingress")]
 pub use v6_replica_fanout::{

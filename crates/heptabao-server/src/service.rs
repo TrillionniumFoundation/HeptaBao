@@ -9066,7 +9066,15 @@ impl Service {
                         crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| {
                             Response::error(503, "native HA read requires original deadline")
                         })?;
-                    process.native_v6_committed_read(deadline).map_err(|_| {
+                    let observed = if self.native_root.is_some() {
+                        process.native_v6_committed_read_for_local_root(
+                            deadline,
+                            self.current_state_identity()?.digest(),
+                        )
+                    } else {
+                        process.native_v6_committed_read(deadline)
+                    };
+                    observed.map_err(|_| {
                         Response::error(503, "native HA committed root is unavailable")
                     })?
                 } else {

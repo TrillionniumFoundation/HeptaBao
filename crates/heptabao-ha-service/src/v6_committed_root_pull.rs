@@ -391,6 +391,80 @@ fn pending_pull(
     })
 }
 
+/// Read an existing exact committed closure without issuing a new local
+/// durability receipt. Every manifest and ciphertext byte is reopened and
+/// checked under the held directory and fresh, unchanged consensus selection.
+/// A failed reopen retains the original immutable repair and fsync path.
+pub fn read_or_recover_native_v6_committed_closure(
+    raft: &ProcessRaftNode,
+    runtime: &Handle,
+    transport: &MutualTlsPeerTransport,
+    routes: &BTreeMap<u64, NodeId>,
+    storage: &LocalV6BlobStage,
+    selected: NativeV6CommittedRootRead,
+) -> Result<NativeV6CommittedRootRead, HaError> {
+    require_blocking_worker()?;
+    check_deadline(selected.operation_deadline())?;
+    runtime
+        .block_on(raft.verify_native_v6_committed_root_read(&selected))
+        .map_err(|_| unknown())?;
+    let pins = selected.enrollment().pins();
+    if !pins.contains_key(&raft.id())
+        || routes.keys().copied().collect::<BTreeSet<_>>() != pins.keys().copied().collect()
+        || routes.values().collect::<BTreeSet<_>>().len() != routes.len()
+    {
+        return Err(HaError::InvalidMembership);
+    }
+    if let Some(read) =
+        read_existing_committed_closure(raft, runtime, storage, &selected, || Ok(()))?
+    {
+        return Ok(read);
+    }
+    // Reopen errors are not reclassified as "missing". The original repair
+    // rejects corrupt existing files through checked no-replace publication.
+    let recovered =
+        recover_native_v6_committed_closure(raft, runtime, transport, routes, storage, selected)?;
+    Ok(recovered.into_parts().0)
+}
+
+// The additional gate permits deterministic real-Raft failure observations in
+// this module's tests. It supplies no witness, deadline or replacement root.
+pub(super) fn read_existing_committed_closure(
+    raft: &ProcessRaftNode,
+    runtime: &Handle,
+    storage: &LocalV6BlobStage,
+    selected: &NativeV6CommittedRootRead,
+    after_reopen: impl FnOnce() -> Result<(), HaError>,
+) -> Result<Option<NativeV6CommittedRootRead>, HaError> {
+    let fresh = fresh_same(raft, runtime, selected)?;
+    let complete = {
+        let mut gate = || {
+            check_deadline(selected.operation_deadline())
+                .and_then(|()| {
+                    runtime
+                        .block_on(raft.verify_native_v6_committed_root_read(&fresh))
+                        .map_err(|_| unknown())
+                })
+                .map_err(|_| LocalV6BlobError::CorruptOrChanged)
+        };
+        match storage.reopen_root_closure(fresh.root(), &mut gate) {
+            Ok(references) => {
+                wire::exact_manifest(&references, &fresh.root().intent())?;
+                gate().map_err(|_| unknown())?;
+                true
+            }
+            Err(_) => false,
+        }
+    };
+    if !complete {
+        return Ok(None);
+    }
+    after_reopen()?;
+    // A new ReadIndex must still select this exact process/generation/term/root.
+    // Its capped read budget never changes the original operation deadline.
+    Ok(Some(fresh_same(raft, runtime, selected)?))
+}
+
 /// Consume one selected actual root and repair only that root's exact external
 /// closure. Parallel donors prevent a blackholed first peer from spending the
 /// healthy peer's whole original deadline. All destination bytes go through

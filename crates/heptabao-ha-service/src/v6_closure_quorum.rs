@@ -42,7 +42,7 @@ pub use ingress::is_native_v6_closure_frame;
 mod committed_pull;
 pub use committed_pull::{
     NativeV6CommittedRootSource, RecoveredNativeV6LocalClosure, is_native_v6_root_pull_frame,
-    recover_native_v6_committed_closure,
+    read_or_recover_native_v6_committed_closure, recover_native_v6_committed_closure,
 };
 
 fn unknown() -> HaError {

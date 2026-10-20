@@ -4,7 +4,8 @@ use super::*;
 use crate::v6_native_custody::OriginalDeadline;
 use heptabao_ha_service::{
     AuthenticatedPeerFrame, HaError, NativeV6ClosureReceiver, NativeV6CommittedRootSource,
-    is_native_v6_closure_frame, is_native_v6_root_pull_frame, recover_native_v6_committed_closure,
+    is_native_v6_closure_frame, is_native_v6_root_pull_frame,
+    read_or_recover_native_v6_committed_closure, recover_native_v6_committed_closure,
 };
 use heptabao_raft_runtime::{
     LocalV6BlobStage, NativeV6CommittedRootRead, NativeV6PeerEnrollment, NativeV6PublishedRoot,
@@ -343,6 +344,25 @@ impl HaProcess {
         &self,
         deadline: OriginalDeadline,
     ) -> Result<Option<CommittedNativeV6Read>, String> {
+        self.native_v6_committed_read_inner(deadline, None)
+    }
+
+    /// The digest selects a read optimization, never a read/install authority.
+    /// Only ordinary sync of an already installed native root uses this entry.
+    /// A changed selected root keeps the original durable repair path.
+    pub(crate) fn native_v6_committed_read_for_local_root(
+        &self,
+        deadline: OriginalDeadline,
+        local_root_digest: [u8; 32],
+    ) -> Result<Option<CommittedNativeV6Read>, String> {
+        self.native_v6_committed_read_inner(deadline, Some(local_root_digest))
+    }
+
+    fn native_v6_committed_read_inner(
+        &self,
+        deadline: OriginalDeadline,
+        local_root_hint: Option<[u8; 32]>,
+    ) -> Result<Option<CommittedNativeV6Read>, String> {
         deadline.check().map_err(|error| error.to_string())?;
         let native = self
             .native_v6
@@ -366,16 +386,28 @@ impl HaProcess {
             .storage
             .get()
             .ok_or("native HA ciphertext store unavailable")?;
-        let recovered = recover_native_v6_committed_closure(
-            node,
-            self.runtime.handle(),
-            &native.transport,
-            &self.peers,
-            storage,
-            selected,
-        )
-        .map_err(|error| error.to_string())?;
-        let (selected, _) = recovered.into_parts();
+        let selected = if local_root_hint == Some(selected.root().root_digest()) {
+            read_or_recover_native_v6_committed_closure(
+                node,
+                self.runtime.handle(),
+                &native.transport,
+                &self.peers,
+                storage,
+                selected,
+            )
+            .map_err(|error| error.to_string())?
+        } else {
+            let recovered = recover_native_v6_committed_closure(
+                node,
+                self.runtime.handle(),
+                &native.transport,
+                &self.peers,
+                storage,
+                selected,
+            )
+            .map_err(|error| error.to_string())?;
+            recovered.into_parts().0
+        };
         let read = CommittedNativeV6Read {
             instance: native.identity.clone(),
             selected,
