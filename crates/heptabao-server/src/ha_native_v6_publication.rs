@@ -409,7 +409,7 @@ impl HaProcess {
         );
         let previous = if let PublicationSource::V6(previous) = &source {
             let selected = self
-                .native_v6_committed_read(deadline)
+                .native_v6_committed_read_for_local_root(deadline, previous.root_digest())
                 .map_err(before)?
                 .ok_or_else(|| before("native HA previous committed root absent"))?;
             if selected.published() != previous || selected.enrollment() != &enrollment {
@@ -637,9 +637,11 @@ impl HaProcess {
                 intent.ciphertext_bytes,
             );
             original(deadline, original_gate).map_err(|error| error.to_string())?;
-            let read = self
-                .native_v6_committed_read(deadline)?
-                .ok_or("native HA committed root absent after root invocation")?;
+            let read = self.native_v6_committed_read_for_published_proposal(
+                deadline,
+                &proposal,
+                &published,
+            )?;
             if read.published() != &published
                 || read.enrollment() != &enrollment
                 || read.published().intent() != intent

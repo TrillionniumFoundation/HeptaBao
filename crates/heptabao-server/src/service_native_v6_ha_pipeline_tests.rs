@@ -1209,3 +1209,111 @@ fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() 
     )?;
     Ok(())
 }
+
+
+#[test]
+fn native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair() -> TestResult {
+    // This case enters through the real Service writer. Both the V5 activation
+    // and the later V6 publication owe the original actual pinned-TLS fsync
+    // quorum before their typed-proposal readback can return.
+    let pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "sys/internal/native-v6/activate",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        204,
+        "publication-read-actual-activation",
+    )?;
+    let activated = pipeline.native_selection(leader)?;
+    let value = "synthetic-publication-readback-with-actual-quorum".repeat(1024);
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"options":{"cas":1},"data":{"value":value}}),
+        )?,
+        200,
+        "publication-read-actual-V6-source",
+    )?;
+    let written = pipeline.native_selection(leader)?;
+    assert_eq!(written.0, activated.0 + 1);
+    assert_ne!(written.1, activated.1);
+    assert!(written.2 > activated.2);
+    pipeline.assert_history(leader, &[(1, "seed-v5"), (2, &value)])?;
+
+    let ha = pipeline.processes[leader]
+        .as_ref()
+        .ok_or("publication process absent")?
+        .clone();
+    let (published, store, references) = {
+        let _scope = scope();
+        let process = ha.lock_for_request().map_err(|_| "publication process lock")?;
+        let selected = process
+            .native_v6_committed_read_for_local_root(
+                OriginalDeadline::capture()?,
+                written.1,
+            )?
+            .ok_or("publication committed root absent")?;
+        assert_eq!(selected.published().root_digest(), written.1);
+        let published = selected.published().clone();
+        let store = process.native_install_test_store()?;
+        let references = store.reopen_root_closure(&published, &mut || Ok(()))?;
+        process.verify_native_v6_committed_read(&selected)?;
+        (published, store, references)
+    };
+    let reference = references.first().ok_or("publication ciphertext absent")?;
+    let leaf = pipeline.configs[leader]
+        .raft_dir
+        .join("native-v6-ciphertext")
+        .join(format!("v6-{}.blob", hex(&reference.id)));
+    let original = fs::read(&leaf)?;
+
+    // Remove only a fixture-owned immutable leaf. The production read must
+    // obtain it from an actual enrolled peer and complete the original durable
+    // repair; an intact directory listing or a root digest cannot satisfy it.
+    fs::remove_file(&leaf)?;
+    {
+        let _scope = scope();
+        let process = ha.lock_for_request().map_err(|_| "repair process lock")?;
+        let repaired = process
+            .native_v6_committed_read_for_local_root(
+                OriginalDeadline::capture()?,
+                published.root_digest(),
+            )?
+            .ok_or("repaired root absent")?;
+        assert!(repaired.published() == &published);
+        process.verify_native_v6_committed_read(&repaired)?;
+    }
+    assert_eq!(fs::read(&leaf)?, original);
+    assert_eq!(
+        store.reopen_root_closure(&published, &mut || Ok(()))?,
+        references,
+    );
+
+    let damaged = b"existing immutable ciphertext must not be overwritten";
+    fs::write(&leaf, damaged)?;
+    {
+        let _scope = scope();
+        let process = ha.lock_for_request().map_err(|_| "corrupt process lock")?;
+        assert!(
+            process
+                .native_v6_committed_read_for_local_root(
+                    OriginalDeadline::capture()?,
+                    published.root_digest(),
+                )
+                .is_err(),
+            "the complete-read optimization must retain checked repair rejection",
+        );
+    }
+    assert_eq!(fs::read(&leaf)?.as_slice(), damaged);
+    // Leave the refused bytes unchanged until the fixture owner stops all
+    // processes and removes its directory. No production mutation is replayed.
+    Ok(())
+}

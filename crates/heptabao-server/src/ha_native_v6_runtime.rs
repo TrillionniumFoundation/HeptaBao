@@ -348,8 +348,8 @@ impl HaProcess {
     }
 
     /// The digest selects a read optimization, never a read/install authority.
-    /// Only ordinary sync of an already installed native root uses this entry.
-    /// A changed selected root keeps the original durable repair path.
+    /// Ordinary sync and a publication's already-bound local source use this
+    /// entry. A changed selected root keeps the original durable repair path.
     pub(crate) fn native_v6_committed_read_for_local_root(
         &self,
         deadline: OriginalDeadline,
@@ -358,10 +358,45 @@ impl HaProcess {
         self.native_v6_committed_read_inner(deadline, Some(local_root_digest))
     }
 
+    /// Read back this operation's actually prepared and published ciphertext.
+    /// The single production caller retains this exact proposal through local
+    /// preparation, actual fsync quorum and root CAS on this HaProcess. The
+    /// proposal alone is not a storage-owner capability, installed root or ACK.
+    /// Complete reads still reopen every leaf under fresh consensus witnesses;
+    /// any missing or invalid closure keeps the original checked repair path.
+    pub(crate) fn native_v6_committed_read_for_published_proposal(
+        &self,
+        deadline: OriginalDeadline,
+        proposal: &crate::service::native_v6_ha_objects::NativeV6HaProposal,
+        published: &NativeV6PublishedRoot,
+    ) -> Result<CommittedNativeV6Read, String> {
+        deadline.check().map_err(|error| error.to_string())?;
+        if proposal.original_deadline().instant() != deadline.instant()
+            || proposal.intent() != published.intent()
+            || proposal.sealed_root() != published.sealed_root()
+            || proposal
+                .root()
+                .identity()
+                .map_err(|_| "native HA proposal root identity invalid")?
+                .digest()
+                != published.root_digest()
+        {
+            return Err("native HA readback differs from the original proposal".into());
+        }
+        let read = self
+            .native_v6_committed_read_inner(deadline, Some(published.root_digest()))?
+            .ok_or("native HA committed root absent after root invocation")?;
+        if read.published() != published {
+            return Err("native HA proposal publication was superseded or differs".into());
+        }
+        deadline.check().map_err(|error| error.to_string())?;
+        Ok(read)
+    }
+
     fn native_v6_committed_read_inner(
         &self,
         deadline: OriginalDeadline,
-        local_root_hint: Option<[u8; 32]>,
+        complete_root_hint: Option<[u8; 32]>,
     ) -> Result<Option<CommittedNativeV6Read>, String> {
         deadline.check().map_err(|error| error.to_string())?;
         let native = self
@@ -386,7 +421,7 @@ impl HaProcess {
             .storage
             .get()
             .ok_or("native HA ciphertext store unavailable")?;
-        let selected = if local_root_hint == Some(selected.root().root_digest()) {
+        let selected = if complete_root_hint == Some(selected.root().root_digest()) {
             read_or_recover_native_v6_committed_closure(
                 node,
                 self.runtime.handle(),

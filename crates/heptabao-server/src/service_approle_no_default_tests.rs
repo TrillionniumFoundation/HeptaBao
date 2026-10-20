@@ -163,7 +163,7 @@ pub(super) fn create_legacy_approle_role_fixture(
     let mut candidate = current.clone();
     let actor = candidate.auth.authenticate(admin, 100)
         .map_err(|_| "historical root authentication")?;
-    assert!(actor.policies().contains("root"));
+    assert!(actor.is_root());
     let path = format!("auth/{mount}/role/{role}");
     let absent = candidate.auth.handle(
         Some(&actor), namespace, "GET", &path, &json!({}), 100,

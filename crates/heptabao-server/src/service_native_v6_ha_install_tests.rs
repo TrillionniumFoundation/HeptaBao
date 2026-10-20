@@ -930,3 +930,261 @@ fn native_ha_install_auth_lookup_retains_preaudit_proof_after_real_root_advance(
     assert!(target.pending_native_auth_delivery.is_none());
     Ok(())
 }
+
+
+#[cfg(unix)]
+#[derive(Debug, Eq, PartialEq)]
+struct PublicationReadbackDirectory {
+    identity: (u64, u64, i64, i64, i64, i64),
+    files: BTreeMap<std::ffi::OsString, (u64, [u8; 32])>,
+}
+
+#[cfg(unix)]
+fn publication_readback_directory(path: &Path) -> TestResult<PublicationReadbackDirectory> {
+    use std::os::unix::fs::MetadataExt as _;
+    let metadata = fs::metadata(path)?;
+    let mut files = BTreeMap::new();
+    for entry in fs::read_dir(path)? {
+        let entry = entry?;
+        assert!(entry.file_type()?.is_file(), "fixture ciphertext entry must be a file");
+        let bytes = fs::read(entry.path())?;
+        files.insert(entry.file_name(), (bytes.len() as u64, crypto::digest(&bytes)));
+    }
+    Ok(PublicationReadbackDirectory {
+        identity: (
+            metadata.dev(),
+            metadata.ino(),
+            metadata.mtime(),
+            metadata.mtime_nsec(),
+            metadata.ctime(),
+            metadata.ctime_nsec(),
+        ),
+        files,
+    })
+}
+
+#[cfg(unix)]
+fn publication_readback_fixture_publish(
+    source: &mut Service,
+    cluster: &Cluster,
+    enrollment: &NativeV6PeerEnrollment,
+    prior_digest: [u8; 32],
+    prior_generation: u64,
+    previous_index: u64,
+) -> TestResult<(NativeV6HaProposal, NativeV6PublishedRoot)> {
+    // This primitive fixture retains the actual typed proposal so its API
+    // binding can be tested. Explicit ciphertext copies here are not TLS votes;
+    // the separate Pipeline case exercises the complete production coordinator.
+    let plan = source
+        .prepare_native_root_migration_paged(&|| Ok(()))
+        .map_err(|_| "publication fixture native projection")?;
+    let proposal = cluster.processes[0]
+        .lock()
+        .map_err(|_| "publication fixture leader lock")?
+        .native_install_test_with_source(|codec, store| {
+            let prepared = prepare_native_v6_ha_objects(
+                &plan,
+                codec,
+                enrollment,
+                store,
+                None,
+                None,
+                &mut || Ok(()),
+            )?;
+            let local = prepared.local_closure();
+            let generation = prior_generation + 1;
+            let intent = NativeV6CommitIntent {
+                cluster_digest: enrollment.cluster_digest(),
+                epoch: enrollment.epoch(),
+                operation_digest: crypto::digest(
+                    format!("publication-readback-fixture-{generation}").as_bytes(),
+                ),
+                closure_manifest_sha256: local.manifest_sha256(),
+                object_count: local.object_count() as u64,
+                ciphertext_bytes: local.ciphertext_bytes(),
+                prior_root_digest: prior_digest,
+                proposed_root_digest: prepared.root_digest(),
+                prior_generation,
+                proposed_generation: generation,
+                expected_previous_commit_index: previous_index,
+            };
+            prepared.into_proposal(codec, enrollment, intent, &mut || Ok(()))
+        })??;
+    let sender = cluster.processes[0]
+        .lock()
+        .map_err(|_| "publication fixture sender lock")?
+        .native_install_test_store()?;
+    for process in &cluster.processes {
+        process
+            .lock()
+            .map_err(|_| "publication fixture process lock")?
+            .native_install_test_copy_ciphertext(&sender, &proposal)?;
+    }
+    let published = cluster.processes[0]
+        .lock()
+        .map_err(|_| "publication fixture publication lock")?
+        .native_install_test_publish(&proposal, enrollment)?;
+    Ok((proposal, published))
+}
+
+#[cfg(unix)]
+#[test]
+fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_only_store()
+-> TestResult {
+    let (files, mut source, _key, token) = initialized()?;
+    populate(&mut source, &token, 3);
+    let prior = source
+        .current_state_identity()
+        .map_err(|_| "publication fixture V5 identity")?
+        .digest();
+    let raft_path = files.path.join("publication-readback-raft");
+    let (cluster, enrollment, previous_index) = cluster(&source, &raft_path)?;
+    let _original_scope = scope();
+    let deadline = OriginalDeadline::capture()?;
+    let (proposal, published) = publication_readback_fixture_publish(
+        &mut source,
+        &cluster,
+        &enrollment,
+        prior,
+        0,
+        previous_index,
+    )?;
+    assert_eq!(proposal.original_deadline().instant(), deadline.instant());
+    let path = raft_path.join("1").join("native-v6-ciphertext");
+    let before = publication_readback_directory(&path)?;
+    let before_generation = cluster.processes[0]
+        .lock()
+        .map_err(|_| "publication fixture process lock")?
+        .snapshot_test_record_usage()?
+        .0;
+    {
+        let process = cluster.processes[0]
+            .lock()
+            .map_err(|_| "publication fixture readback lock")?;
+        let read = process.native_v6_committed_read_for_published_proposal(
+            deadline,
+            &proposal,
+            &published,
+        )?;
+        assert!(read.published() == &published);
+        assert_eq!(read.deadline().instant(), deadline.instant());
+        process.verify_native_v6_committed_read(&read)?;
+        assert_eq!(process.snapshot_test_record_usage()?.0, before_generation);
+    }
+    assert_eq!(
+        publication_readback_directory(&path)?,
+        before,
+        "complete proposal readback must not republish a manifest or change ciphertext entries",
+    );
+
+    // An intact closure and the right published bytes do not permit substituting
+    // another request clock for the one owned by the original typed proposal.
+    {
+        let _shorter = RequestDeadlineScope::enter(
+            deadline.instant() - Duration::from_millis(1),
+        );
+        let different = OriginalDeadline::capture()?;
+        assert_ne!(different.instant(), deadline.instant());
+        assert!(
+            cluster.processes[0]
+                .lock()
+                .map_err(|_| "publication clock lock")?
+                .native_v6_committed_read_for_published_proposal(
+                    different,
+                    &proposal,
+                    &published,
+                )
+                .is_err(),
+        );
+    }
+    assert_eq!(publication_readback_directory(&path)?, before);
+
+    assert_eq!(
+        call(
+            &mut source,
+            "POST",
+            "secret/data/install-history",
+            &token,
+            json!({"options":{"cas":4},"data":{"version":5,"value":"readback-next-root"}}),
+        )
+        .status,
+        200,
+    );
+    let (next_proposal, next_published) = publication_readback_fixture_publish(
+        &mut source,
+        &cluster,
+        &enrollment,
+        published.root_digest(),
+        published.generation(),
+        published.publication_log_id().index,
+    )?;
+    assert!(next_published != published);
+    {
+        let process = cluster.processes[0]
+            .lock()
+            .map_err(|_| "publication replacement lock")?;
+        assert!(
+            process
+                .native_v6_committed_read_for_published_proposal(
+                    deadline,
+                    &proposal,
+                    &next_published,
+                )
+                .is_err(),
+            "a different operation's committed root cannot bind the retained proposal",
+        );
+        assert!(
+            process
+                .native_v6_committed_read_for_published_proposal(
+                    deadline,
+                    &proposal,
+                    &published,
+                )
+                .is_err(),
+            "a fresh actual selection must reject a superseded published root",
+        );
+        deadline.check()?;
+        let current = process.native_v6_committed_read_for_published_proposal(
+            deadline,
+            &next_proposal,
+            &next_published,
+        )?;
+        assert!(current.published() == &next_published);
+    }
+
+    let before_expired = publication_readback_directory(&path)?;
+    {
+        let _expired = RequestDeadlineScope::enter(Instant::now());
+        let expected = deadline.check().err().ok_or("fixture deadline did not expire")?;
+        let failed = cluster.processes[0]
+            .lock()
+            .map_err(|_| "publication expired lock")?
+            .native_v6_committed_read_for_published_proposal(
+                deadline,
+                &next_proposal,
+                &next_published,
+            );
+        assert_eq!(failed.err().ok_or("expired readback returned a handle")?, expected.to_string());
+    }
+    assert_eq!(publication_readback_directory(&path)?, before_expired);
+    deadline.check()?;
+
+    let blocked_before = cluster.blocked_probes();
+    cluster.isolate_all_peers(true);
+    let unavailable = cluster.processes[0]
+        .lock()
+        .map_err(|_| "publication no-quorum lock")?
+        .native_v6_committed_read_for_published_proposal(
+            deadline,
+            &next_proposal,
+            &next_published,
+        );
+    cluster.isolate_all_peers(false);
+    assert!(
+        cluster.blocked_probes() > blocked_before,
+        "this refusal must include actual blocked Raft peer exchanges",
+    );
+    assert!(unavailable.is_err(), "prepared ciphertext cannot replace a real ReadIndex quorum");
+    assert_eq!(publication_readback_directory(&path)?, before_expired);
+    Ok(())
+}
