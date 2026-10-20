@@ -107,6 +107,11 @@ impl Service {
             application_ready && permitted,
             SystemTime::now,
         );
+        if let Some(key) = self.ha_activation.as_ref().map(|event| event.key) {
+            // Observe the actual completed application activation, including
+            // one published by health or the owned worker between requests.
+            self.record_rate_limit_quota_activation(key);
+        }
     }
 
     pub(super) fn publish_ha_activation_after_sync(&mut self, before: Option<ActivationKey>) {

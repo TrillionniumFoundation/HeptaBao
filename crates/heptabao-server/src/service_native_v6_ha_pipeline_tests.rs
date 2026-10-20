@@ -878,3 +878,334 @@ fn native_ha_pipeline_service_activation_kv_auth_mtls_and_cold_leader_rejoin() -
     }
     Ok(())
 }
+
+
+// Quota ingress uses the actual Service transport-peer field. Forwarded hops
+// cross this fixture's existing real pinned-mTLS listeners. Public HTTP socket
+// attribution and physical hosts remain separate acceptance gates.
+impl Pipeline {
+    fn quota_call_from_peer(
+        &self,
+        index: usize,
+        method: &str,
+        path: &str,
+        token: &str,
+        body: Value,
+    ) -> TestResult<Response> {
+        let began = Instant::now();
+        let _scope = RequestDeadlineScope::enter(began + REQUEST_BUDGET);
+        let service = self.services[index]
+            .as_ref()
+            .ok_or("quota pipeline Service absent")?;
+        let mut writer = lock_until(service, began + REQUEST_BUDGET)
+            .map_err(|_| "quota pipeline Service lock deadline")?;
+        let response = writer.handle_request(
+            ServiceRequest::new(method, path, "", token, body)
+                .with_origin_peer(std::net::IpAddr::V4(
+                    std::net::Ipv4Addr::new(192, 0, 2, 40),
+                )),
+        );
+        errors_only(path, &response);
+        if began.elapsed() >= REQUEST_BUDGET {
+            return Err("quota pipeline original 15-second request exceeded".into());
+        }
+        Ok(response)
+    }
+}
+
+fn quota_login(pipeline: &Pipeline, index: usize, role: &str, secret: &str) -> TestResult<Response> {
+    pipeline.quota_call_from_peer(
+        index,
+        "POST",
+        "auth/quota-lifecycle/login",
+        "",
+        json!({"role_id":role,"secret_id":secret}),
+    )
+}
+
+fn quota_role(pipeline: &Pipeline, leader: usize, name: &str) -> TestResult<Zeroizing<String>> {
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            &format!("auth/quota-lifecycle/role/{name}"),
+            pipeline.admin(),
+            json!({"token_policies":["default"],"token_ttl":"300s","secret_id_num_uses":1}),
+        )?,
+        204,
+        "quota-AppRole-role",
+    )?;
+    let mut response = expect(
+        pipeline.call(
+            leader,
+            "GET",
+            &format!("auth/quota-lifecycle/role/{name}/role-id"),
+            pipeline.admin(),
+            json!({}),
+        )?,
+        200,
+        "quota-AppRole-role-ID",
+    )?;
+    secret_field(&mut response, "/data/role_id")
+}
+
+fn quota_mount(pipeline: &Pipeline, leader: usize) -> TestResult {
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "sys/auth/quota-lifecycle",
+            pipeline.admin(),
+            json!({"type":"approle"}),
+        )?,
+        204,
+        "quota-AppRole-mount",
+    )?;
+    Ok(())
+}
+
+fn quota_native_activation(pipeline: &Pipeline, leader: usize) -> TestResult {
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "sys/internal/native-v6/activate",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        204,
+        "quota-native-activation",
+    )?;
+    Ok(())
+}
+
+#[test]
+fn ha_quota_ingress_catches_up_definitions_without_resetting_live_buckets() -> TestResult {
+    for native in [false, true] {
+        let pipeline = Pipeline::start()?;
+        let leader = pipeline.ready_leader()?;
+        let standby = (leader + 1) % 3;
+        if native {
+            quota_native_activation(&pipeline, leader)?;
+        }
+        quota_mount(&pipeline, leader)?;
+        let role = quota_role(&pipeline, leader, "client")?;
+        let mut issued = expect(
+            pipeline.call(
+                leader,
+                "POST",
+                "auth/quota-lifecycle/role/client/secret-id",
+                pipeline.admin(),
+                json!({}),
+            )?,
+            200,
+            "quota-one-use-SID",
+        )?;
+        let secret = secret_field(&mut issued, "/data/secret_id")?;
+        let definition = json!({
+            "path":"auth/quota-lifecycle/login","rate":1,"interval":"1h","block_interval":0,
+        });
+        expect(
+            pipeline.call(
+                leader,
+                "POST",
+                "sys/quotas/rate-limit/ingress",
+                pipeline.admin(),
+                definition.clone(),
+            )?,
+            204,
+            "quota-create-rule",
+        )?;
+        expect(
+            quota_login(&pipeline, standby, &role, "invalid-synthetic-SID")?,
+            400,
+            "quota-first-standby-and-active-hop",
+        )?;
+        expect(
+            quota_login(&pipeline, standby, &role, "invalid-synthetic-SID")?,
+            429,
+            "quota-standby-exhausted",
+        )?;
+        expect(
+            quota_login(&pipeline, leader, &role, "invalid-synthetic-SID")?,
+            429,
+            "quota-active-independently-exhausted",
+        )?;
+        let old_owner = pipeline.with_service(standby, |service| {
+            Ok(Arc::clone(
+                &service.state.as_ref().ok_or("quota standby state")?
+                    .auth.rate_limit_quota_registry().ok_or("quota registry")?
+                    .runtime_owner,
+            ))
+        })?;
+        // A real unrelated Auth mutation forces a new committed Auth owner.
+        // It must not refill an unchanged node-local quota revision.
+        expect(
+            pipeline.call(
+                leader,
+                "POST",
+                "auth/token/create",
+                pipeline.admin(),
+                json!({"policies":["default"],"ttl":"300s"}),
+            )?,
+            200,
+            "quota-unrelated-Auth-publication",
+        )?;
+        expect(
+            quota_login(&pipeline, standby, &role, "invalid-synthetic-SID")?,
+            429,
+            "quota-hot-catch-up-preserves-bucket",
+        )?;
+        let new_owner = pipeline.with_service(standby, |service| {
+            Ok(Arc::clone(
+                &service.state.as_ref().ok_or("quota caught-up state")?
+                    .auth.rate_limit_quota_registry().ok_or("quota caught-up registry")?
+                    .runtime_owner,
+            ))
+        })?;
+        assert!(
+            !Arc::ptr_eq(&old_owner, &new_owner),
+            "the test must actually replace the deserialized Auth owner",
+        );
+        expect(
+            pipeline.call(
+                leader,
+                "POST",
+                "sys/quotas/rate-limit/ingress",
+                pipeline.admin(),
+                definition,
+            )?,
+            204,
+            "quota-same-value-update",
+        )?;
+        expect(
+            quota_login(&pipeline, standby, &role, "invalid-synthetic-SID")?,
+            400,
+            "quota-blocked-standby-observes-new-revision",
+        )?;
+        expect(
+            quota_login(&pipeline, standby, &role, &secret)?,
+            429,
+            "quota-rejects-before-consuming-one-use-SID",
+        )?;
+        expect(
+            pipeline.call(
+                leader,
+                "DELETE",
+                "sys/quotas/rate-limit/ingress",
+                pipeline.admin(),
+                json!({}),
+            )?,
+            204,
+            "quota-delete-while-standby-blocked",
+        )?;
+        let mut login = expect(
+            quota_login(&pipeline, standby, &role, &secret)?,
+            200,
+            "quota-deletion-unblocks-and-SID-remains-unused",
+        )?;
+        let _issued_token = secret_field(&mut login, "/auth/client_token")?;
+        expect(
+            quota_login(&pipeline, standby, &role, &secret)?,
+            400,
+            "quota-one-use-SID-consumed-only-on-success",
+        )?;
+    }
+    Ok(())
+}
+
+#[test]
+fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() -> TestResult {
+    let mut pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    quota_native_activation(&pipeline, leader)?;
+    quota_mount(&pipeline, leader)?;
+    let mut roles = Vec::new();
+    for index in 0..3 {
+        let name = format!("node-{index}");
+        roles.push(quota_role(&pipeline, leader, &name)?);
+        expect(
+            pipeline.call(
+                leader,
+                "POST",
+                &format!("sys/quotas/rate-limit/{name}"),
+                pipeline.admin(),
+                json!({
+                    "path":"auth/quota-lifecycle/","role":name,
+                    "rate":1,"interval":"1h","block_interval":0,
+                }),
+            )?,
+            204,
+            "quota-node-role-rule",
+        )?;
+    }
+    // Each node charges its own role once. Forwarded attempts also charge the
+    // active node. The invalid SID has no credential side effect.
+    for index in 0..3 {
+        expect(
+            quota_login(&pipeline, index, &roles[index], "invalid-synthetic-SID")?,
+            400,
+            "quota-initial-node-hop",
+        )?;
+    }
+    for index in 0..3 {
+        expect(
+            quota_login(&pipeline, leader, &roles[index], "invalid-synthetic-SID")?,
+            429,
+            "quota-initial-active-hop",
+        )?;
+    }
+    expect(
+        pipeline.call(leader, "POST", "sys/step-down", pipeline.admin(), json!({}))?,
+        204,
+        "quota-actual-leader-handoff",
+    )?;
+    let successor = pipeline.ready_leader()?;
+    assert_ne!(successor, leader, "the role transition must actually occur");
+    let continuous = (0..3)
+        .find(|index| *index != leader && *index != successor)
+        .ok_or("continuous standby")?;
+    expect(
+        quota_login(&pipeline, successor, &roles[successor], "invalid-synthetic-SID")?,
+        400,
+        "quota-new-active-session-resets",
+    )?;
+    expect(
+        quota_login(&pipeline, leader, &roles[leader], "invalid-synthetic-SID")?,
+        400,
+        "quota-demoted-session-resets",
+    )?;
+    // The new active has never seen this role in its new session. A 429 here
+    // therefore comes from the continuous standby's still-live local bucket.
+    expect(
+        quota_login(&pipeline, continuous, &roles[continuous], "invalid-synthetic-SID")?,
+        429,
+        "quota-continuous-standby-keeps-bucket-across-other-election",
+    )?;
+    pipeline.stop_process(continuous)?;
+    pipeline.start_process(continuous)?;
+    pipeline.unseal(continuous)?;
+    assert_eq!(pipeline.ready_leader()?, successor);
+    expect(
+        quota_login(&pipeline, continuous, &roles[continuous], "invalid-synthetic-SID")?,
+        400,
+        "quota-real-cold-restart-resets-local-bucket",
+    )?;
+    expect(
+        quota_login(&pipeline, successor, &roles[successor], "invalid-synthetic-SID")?,
+        429,
+        "quota-active-still-exhausted-before-reseal",
+    )?;
+    expect(
+        pipeline.call(successor, "POST", "sys/seal", pipeline.admin(), json!({}))?,
+        204,
+        "quota-real-Service-seal",
+    )?;
+    pipeline.unseal(successor)?;
+    expect(
+        quota_login(&pipeline, successor, &roles[successor], "invalid-synthetic-SID")?,
+        400,
+        "quota-same-Service-barrier-reactivation-resets",
+    )?;
+    Ok(())
+}

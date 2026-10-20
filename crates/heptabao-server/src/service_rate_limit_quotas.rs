@@ -7,7 +7,40 @@ const MAX_CLIENTS: usize = 8192;
 pub(super) struct Runtime {
     buckets: BTreeMap<(String, u64, IpAddr), Bucket>,
     sweep: BTreeMap<(String, u64), (Instant, u64)>,
-    owner: Option<Arc<()>>,
+    owner: Option<RuntimeOwner>,
+    active: Option<ha_activation::ActivationKey>,
+}
+// Auth is reloaded during ordinary HA catch-up. Its deserialized runtime Arc
+// is not a new node-local quota session. These fields identify the actual live
+// Service activation; none is serialized into Auth, a snapshot or a peer frame.
+enum RuntimeOwner {
+    Standalone(Arc<()>),
+    Ha(HaSession),
+}
+struct HaSession {
+    process: std::sync::Weak<Mutex<HaProcess>>,
+    cluster_id: String,
+    replay_epoch: u64,
+    unseal_nonce: String,
+}
+impl RuntimeOwner {
+    fn same(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Standalone(left), Self::Standalone(right)) => Arc::ptr_eq(left, right),
+            (Self::Ha(left), Self::Ha(right)) => {
+                std::sync::Weak::ptr_eq(&left.process, &right.process)
+                    && left.cluster_id == right.cluster_id
+                    && left.replay_epoch == right.replay_epoch
+                    && left.unseal_nonce == right.unseal_nonce
+            }
+            _ => false,
+        }
+    }
+}
+#[derive(Clone, Copy)]
+enum HaRole {
+    Active(ha_activation::ActivationKey),
+    Standby,
 }
 struct Limiter {
     start: Instant,
@@ -22,6 +55,35 @@ struct Rejected {
     retry_after: u64,
 }
 impl Runtime {
+    pub(super) fn begin_barrier_activation(&mut self) {
+        // This is called only at the actual storage teardown/unseal boundary.
+        // The Shamir nonce can rotate after nested HA sync, and legacy unseal
+        // does not rotate it there, so nonce comparison alone is insufficient.
+        *self = Self::default();
+    }
+    fn synchronize_owner(&mut self, owner: RuntimeOwner) {
+        if self.owner.as_ref().is_none_or(|current| !current.same(&owner)) {
+            self.buckets.clear();
+            self.sweep.clear();
+            self.owner = Some(owner);
+            self.active = None;
+        }
+    }
+    fn observe_ha_role(&mut self, role: HaRole) {
+        let next = match role {
+            HaRole::Active(key) => Some(key),
+            HaRole::Standby => None,
+        };
+        // An actual new local application activation or transition back to a
+        // ready standby rebuilds the upstream node-local memorystore. A
+        // continuous standby ignores other nodes' election terms. A transient
+        // failed probe does not call this method or reset a live bucket.
+        if self.active != next {
+            self.buckets.clear();
+            self.sweep.clear();
+            self.active = next;
+        }
+    }
     fn purge_at(&mut self, definition: &Definition, now: Instant) {
         let sweep = self
             .sweep
@@ -101,16 +163,8 @@ impl Runtime {
         };
         Ok(Some(Rejected { retry_after }))
     }
-    fn synchronize(&mut self, registry: &Registry) {
-        if self
-            .owner
-            .as_ref()
-            .is_none_or(|owner| !Arc::ptr_eq(owner, &registry.runtime_owner))
-        {
-            self.buckets.clear();
-            self.sweep.clear();
-            self.owner = Some(registry.runtime_owner.clone());
-        }
+    fn synchronize(&mut self, registry: &Registry, owner: RuntimeOwner) {
+        self.synchronize_owner(owner);
         self.buckets.retain(|(name, revision, _), _| {
             registry
                 .definitions
@@ -126,13 +180,76 @@ impl Runtime {
     }
 }
 impl Service {
+    fn rate_limit_quota_ha_session(&self) -> Option<HaSession> {
+        if !self.ha_activation_permitted() {
+            return None;
+        }
+        let state = self.state.as_ref()?;
+        Some(HaSession {
+            process: Arc::downgrade(self.ha.as_ref()?),
+            cluster_id: state.cluster_id.clone(),
+            replay_epoch: state.replay_epoch,
+            unseal_nonce: self.unseal_nonce.clone(),
+        })
+    }
+
+    // The caller has just completed the ordinary authenticated HA catch-up.
+    // A leader additionally needs the existing application activation event;
+    // a remembered leader id alone cannot admit its node-local counter.
+    fn rate_limit_quota_ha_role(&self) -> Result<HaRole, Response> {
+        let unavailable = || Response::error(503, "HA rate limit quota session is unavailable");
+        if !self.ha_activation_permitted() {
+            return Err(unavailable());
+        }
+        let process = self.ha.as_ref().ok_or_else(unavailable)?
+            .lock_for_request().map_err(|_| unavailable())?;
+        let state = self.state.as_ref().ok_or_else(unavailable)?;
+        if !process.bootstrap_ready() || process.cluster_id() != state.cluster_id {
+            return Err(unavailable());
+        }
+        let observed = process.leader_status().map_err(|_| unavailable())?;
+        if let Some(key) = ha_activation::ActivationKey::from_observation(observed) {
+            if self.ha_activation.as_ref().is_none_or(|event| !event.matches(key)) {
+                return Err(unavailable());
+            }
+            Ok(HaRole::Active(key))
+        } else if !observed.local_is_leader
+            && observed.leader.is_some_and(|leader| leader != observed.local_id)
+        {
+            Ok(HaRole::Standby)
+        } else {
+            Err(unavailable())
+        }
+    }
+
+    pub(super) fn record_rate_limit_quota_activation(
+        &mut self,
+        key: ha_activation::ActivationKey,
+    ) {
+        let Some(session) = self.rate_limit_quota_ha_session() else {
+            return;
+        };
+        self.rate_limit_quotas.synchronize_owner(RuntimeOwner::Ha(session));
+        self.rate_limit_quotas.observe_ha_role(HaRole::Active(key));
+    }
+
     pub(super) fn rate_limit_quota_response(
         &mut self,
         request: &RequestView<'_>,
     ) -> Option<Response> {
         let state = self.state.as_ref()?;
         let registry = state.auth.rate_limit_quota_registry()?;
-        self.rate_limit_quotas.synchronize(registry);
+        let owner = if self.ha.is_some() {
+            let Some(session) = self.rate_limit_quota_ha_session() else {
+                return Some(Response::error(503, "HA rate limit quota session is unavailable"));
+            };
+            RuntimeOwner::Ha(session)
+        } else {
+            RuntimeOwner::Standalone(Arc::clone(&registry.runtime_owner))
+        };
+        // Keep deleted and revised rule pruning even for exempt/nonmatching
+        // requests. Only committed current definitions reach this boundary.
+        self.rate_limit_quotas.synchronize(registry, owner);
         if registry.definitions.is_empty() || registry.config.exempt(request.path) {
             return None;
         }
@@ -163,14 +280,12 @@ impl Service {
                     .find(|d| d.role.is_empty() && d.path == mount)
             });
         let definition = selected?;
-        // A forwarded-only active counter would claim the wrong per-node
-        // semantics. Until ingress-node quota admission is implemented, refuse
-        // this bounded profile on HA rather than silently moving the bucket.
         if self.ha.is_some() {
-            return Some(Response::error(
-                503,
-                "rate limit quota ingress admission is not supported on HA",
-            ));
+            let role = match self.rate_limit_quota_ha_role() {
+                Ok(role) => role,
+                Err(response) => return Some(response),
+            };
+            self.rate_limit_quotas.observe_ha_role(role);
         }
         let Some(peer) = request.origin_peer else {
             return Some(Response::error(

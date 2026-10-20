@@ -3553,6 +3553,20 @@ impl Service {
                         "native snapshot requires the leader; standby streaming is unsupported",
                     );
                 }
+                if namespace.is_empty() && path.starts_with("auth/") {
+                    // A stale local rule must not keep rejecting after the
+                    // leader deletes or revises it. Catch up even when this
+                    // node's old registry has no matching quota or mount.
+                    if let Err(error) = self.sync_from_ha_with_anchor(false) {
+                        return error;
+                    }
+                    // OpenBao applies its node-local HTTP bucket before
+                    // forwarding, including attempts which forwarding rejects.
+                    // The receiving active node independently charges its hop.
+                    if let Some(response) = self.rate_limit_quota_response(&request) {
+                        return response;
+                    }
+                }
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
@@ -7538,6 +7552,7 @@ impl Service {
             return Err(Response::error(503, "barrier admission deadline expired"));
         }
         let wrapper_activation = self.begin_openbao_wrapper_activation();
+        self.rate_limit_quotas.begin_barrier_activation();
         self.durable = None;
         self.namespace_runtime.clear();
         #[cfg(any(target_os = "linux", target_os = "macos"))]
