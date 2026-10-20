@@ -4216,6 +4216,7 @@ impl Service {
                             | "sys/health"
                     ))
                 && path != "sys/seal"
+                && path != "sys/step-down"
             {
                 return Response::error(
                     501,
