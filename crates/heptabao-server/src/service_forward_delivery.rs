@@ -212,7 +212,11 @@ impl Service {
     ) -> Result<(StateIdentity, ApplicationReadWitness), Response> {
         let _original_deadline =
             crate::request_deadline::RequestDeadlineScope::enter(receipt.deadline);
-        if self.ha.as_ref().is_none_or(|actual| !Arc::ptr_eq(actual, ha)) {
+        if self
+            .ha
+            .as_ref()
+            .is_none_or(|actual| !Arc::ptr_eq(actual, ha))
+        {
             return Err(diagnostic_unavailable(phase, "ha_owner"));
         }
         let original_key = self.barrier_key.as_ref().ok_or_else(unavailable)?;
@@ -236,10 +240,11 @@ impl Service {
                         error.status
                     );
                 })?;
+            let local_identity = self.current_state_identity()?;
             let (identity, witness) = ha
                 .lock_for_request()
                 .map_err(|_| unavailable())?
-                .application_identity_witness()
+                .application_identity_witness_for_local_root(local_identity)
                 .map_err(|_| diagnostic_unavailable(phase, "fresh_witness"))?;
             if self.current_state_identity()? == identity {
                 return Ok((identity, witness));
@@ -485,7 +490,10 @@ impl Service {
             .as_ref()
             .ok_or(())
             .and_then(|ha| ha.lock_for_request().map_err(|_| ()))
-            .and_then(|ha| ha.application_identity_witness().map_err(|_| ()))
+            .and_then(|ha| {
+                ha.application_identity_witness_for_local_root(identity)
+                    .map_err(|_| ())
+            })
         else {
             seal_diagnostic("fresh_witness");
             return;

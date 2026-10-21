@@ -237,8 +237,11 @@ impl HaProcess {
         expected: crate::state_record_root::StateIdentity,
     ) -> Result<(), String> {
         let deadline = OriginalDeadline::capture().map_err(|error| error.to_string())?;
+        // The actual typed local identity only selects the read-only reopen.
+        // A different selected root retains full recovery and the exact
+        // comparison below; this hint never grants application authority.
         let read = self
-            .native_v6_committed_read(deadline)?
+            .native_v6_committed_read_for_local_root(deadline, expected.digest())?
             .ok_or("native HA application root absent")?;
         if !matches!(
             expected,
@@ -249,7 +252,7 @@ impl HaProcess {
         }
         self.with_native_v6_source(&read, |codec, store| {
             let closure = codec
-                .open_native_v6_committed_closure(
+                .open_native_v6_committed_read(
                     read.enrollment(),
                     read.published(),
                     store,

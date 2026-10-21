@@ -372,11 +372,14 @@ impl Service {
         if !process.native_v6_enabled() {
             return Err(unavailable());
         }
+        // Bind the optimization to this actual Service's selected identity.
+        // The full typed materialization, original Actor and unchanged
+        // committed selection below remain mandatory, including on a miss.
+        let identity = self.current_state_identity()?;
         let committed = process
-            .native_v6_committed_read(deadline)
+            .native_v6_committed_read_for_local_root(deadline, identity.digest())
             .map_err(|_| unavailable())?
             .ok_or_else(unavailable)?;
-        let identity = self.current_state_identity()?;
         if identity != StateIdentity::RecordsV6(committed.published().root_digest()) {
             return Err(unavailable());
         }

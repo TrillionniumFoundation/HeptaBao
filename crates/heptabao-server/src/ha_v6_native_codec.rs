@@ -75,7 +75,7 @@ struct ObjectMapping {
 
 /// Local, authenticated ciphertext mapping. Its private fields have no wire
 /// constructor. Full typed graph validation belongs to the Service adapter.
-pub(crate) struct NativeV6CipherClosure {
+pub(crate) struct NativeV6CipherClosure<Custody = LocalV6ClosureReceipt> {
     root: RecordStateRootV6,
     root_bytes: Zeroizing<Vec<u8>>,
     root_digest: [u8; 32],
@@ -83,8 +83,12 @@ pub(crate) struct NativeV6CipherClosure {
     anchor: RecordObjectRef,
     objects: BTreeMap<(u16, ObjectId), ObjectMapping>,
     references: Vec<RecordObjectRef>,
-    local: LocalV6ClosureReceipt,
+    local: Custody,
 }
+
+/// Authenticated read mapping with no local durability receipt or sealing API.
+/// The caller retains its actual consensus witness and original request gate.
+pub(crate) type NativeV6CipherRead = NativeV6CipherClosure<()>;
 
 /// A builder is deliberately not a typed closure certificate. It may stage
 /// orphan ciphertext before a later graph or Actor check fails. Nothing here
@@ -457,6 +461,42 @@ impl ClusterStateCodec {
         store: &LocalV6BlobStage,
         gate: &mut impl FnMut() -> CodecResult<()>,
     ) -> CodecResult<NativeV6CipherClosure> {
+        let read = self.open_native_v6_committed_read(enrollment, published, store, gate)?;
+        // Installation and publication callers still obtain an actual local
+        // durability receipt through the original immutable fsync path.
+        let local = store
+            .persist_local_closure(&read.references, &mut store_gate(gate))
+            .map_err(|_| NativeV6CodecError::Storage)?;
+        let intent = published.intent();
+        if local.manifest_sha256() != intent.closure_manifest_sha256
+            || local.object_count() as u64 != intent.object_count
+            || local.ciphertext_bytes() != intent.ciphertext_bytes
+        {
+            return Err(NativeV6CodecError::Directory);
+        }
+        gate()?;
+        Ok(NativeV6CipherClosure {
+            root: read.root,
+            root_bytes: read.root_bytes,
+            root_digest: read.root_digest,
+            enrollment_digest: read.enrollment_digest,
+            anchor: read.anchor,
+            objects: read.objects,
+            references: read.references,
+            local,
+        })
+    }
+
+    /// Authenticate the exact selected graph without minting a durability
+    /// receipt. This has the same enrollment, manifest, ciphertext and gate
+    /// checks as installation, but exposes neither sealing nor a local receipt.
+    pub(crate) fn open_native_v6_committed_read(
+        &self,
+        enrollment: &NativeV6PeerEnrollment,
+        published: &NativeV6PublishedRoot,
+        store: &LocalV6BlobStage,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<NativeV6CipherRead> {
         gate()?;
         let intent = published.intent();
         if enrollment.digest() != published.enrollment_digest()
@@ -614,17 +654,8 @@ impl ClusterStateCodec {
         }
         gate()?;
         let references: Vec<_> = used.into_values().collect();
-        // Reusing an existing immutable manifest also reopens its exact bytes
-        // and completes the local fsync path. This remains a local receipt.
-        let local = store
-            .persist_local_closure(&references, &mut store_gate(gate))
-            .map_err(|_| NativeV6CodecError::Storage)?;
-        if local.manifest_sha256() != intent.closure_manifest_sha256
-            || local.object_count() as u64 != intent.object_count
-            || local.ciphertext_bytes() != intent.ciphertext_bytes
-        {
-            return Err(NativeV6CodecError::Directory);
-        }
+        // The selected manifest and all ciphertext were reopened above.
+        // Reading grants no new local fsync receipt and never republishes it.
         gate()?;
         Ok(NativeV6CipherClosure {
             root,
@@ -634,7 +665,7 @@ impl ClusterStateCodec {
             anchor,
             objects,
             references,
-            local,
+            local: (),
         })
     }
 }
@@ -893,6 +924,12 @@ fn read_mapping(
     }
     gate()?;
     Ok(plain)
+}
+
+impl NativeV6CipherRead {
+    pub(crate) fn root(&self) -> &RecordStateRootV6 {
+        &self.root
+    }
 }
 
 impl NativeV6CipherClosure {
