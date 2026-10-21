@@ -248,3 +248,174 @@ fn native_forward_projection_real_precise_clock_auth_and_kv2_owner_boundaries() 
     assert!(denied.body.get("auth").is_none() && denied.body.get("data").is_none());
     Ok(())
 }
+
+#[cfg(unix)]
+#[derive(Debug, Eq, PartialEq)]
+struct NativeForwardDirectory {
+    identity: (u64, u64, i64, i64, i64, i64),
+    files: std::collections::BTreeMap<std::ffi::OsString, (u64, [u8; 32])>,
+}
+
+#[cfg(unix)]
+fn native_forward_directory(path: &std::path::Path) -> TestResult<NativeForwardDirectory> {
+    use std::os::unix::fs::MetadataExt as _;
+    let metadata = std::fs::metadata(path)?;
+    let mut files = std::collections::BTreeMap::new();
+    for entry in std::fs::read_dir(path)? {
+        let entry = entry?;
+        assert!(entry.file_type()?.is_file());
+        let bytes = std::fs::read(entry.path())?;
+        files.insert(
+            entry.file_name(),
+            (bytes.len() as u64, crate::crypto::digest(&bytes)),
+        );
+    }
+    Ok(NativeForwardDirectory {
+        identity: (
+            metadata.dev(),
+            metadata.ino(),
+            metadata.mtime(),
+            metadata.mtime_nsec(),
+            metadata.ctime(),
+            metadata.ctime_nsec(),
+        ),
+        files,
+    })
+}
+
+#[cfg(unix)]
+#[test]
+fn native_forward_local_root_witness_retains_selection_clock_and_checked_repair() -> TestResult {
+    use crate::request_deadline::RequestDeadlineScope;
+    use crate::v6_native_custody::OriginalDeadline;
+    use std::time::{Duration, Instant};
+
+    let pipeline = Pipeline::start()?;
+    let leader = pipeline.ready_leader()?;
+    call(
+        &pipeline,
+        leader,
+        "POST",
+        "sys/internal/native-v6/activate",
+        pipeline.admin(),
+        json!({}),
+        204,
+    )?;
+    let stale_identity = observed(&pipeline, leader)?.identity;
+    let standby = (0..3)
+        .find(|index| *index != leader)
+        .ok_or("standby absent")?;
+    // This enters the real mTLS completed-forward path and its actual
+    // source/receiver delivery owners. There is no response or effect replay.
+    call(
+        &pipeline,
+        standby,
+        "POST",
+        "secret/data/pipeline/forward-read",
+        pipeline.admin(),
+        json!({"options":{"cas":0},"data":{"value":"actual-forward-read-root"}}),
+        200,
+    )?;
+    let current_identity = observed(&pipeline, leader)?.identity;
+    assert_ne!(current_identity, stale_identity);
+    let (ha, directory) = pipeline.with_service(leader, |service| {
+        let ha = service
+            .ha
+            .as_ref()
+            .ok_or("forward HA owner absent")?
+            .clone();
+        let directory = ha
+            .lock_for_request()
+            .map_err(|_| "forward storage binding lock")?
+            .storage_binding()?
+            .directory
+            .join("native-v6-ciphertext");
+        Ok((ha, directory))
+    })?;
+    let before = native_forward_directory(&directory)?;
+    let (published, references) = {
+        let _scope = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(15));
+        let process = ha.lock_for_request().map_err(|_| "current witness lock")?;
+        let (identity, _) =
+            process.application_identity_witness_for_local_root(current_identity)?;
+        assert_eq!(identity, current_identity);
+        process.ensure_application_identity(current_identity)?;
+        let read = process
+            .native_v6_committed_read_for_local_root(
+                OriginalDeadline::capture()?,
+                current_identity.digest(),
+            )?
+            .ok_or("current committed root absent")?;
+        let published = read.published().clone();
+        let references = process
+            .native_install_test_store()?
+            .reopen_root_closure(&published, &mut || Ok(()))?;
+        process.verify_native_v6_committed_read(&read)?;
+        (published, references)
+    };
+    assert_eq!(
+        native_forward_directory(&directory)?,
+        before,
+        "current native forwarding witnesses must not republish a complete closure",
+    );
+    {
+        let _scope = RequestDeadlineScope::enter(Instant::now());
+        let process = ha.lock().map_err(|_| "expired witness lock")?;
+        assert!(
+            process
+                .application_identity_witness_for_local_root(current_identity)
+                .is_err()
+        );
+    }
+    assert_eq!(native_forward_directory(&directory)?, before);
+
+    let reference = references
+        .first()
+        .ok_or("forward fixture ciphertext absent")?;
+    let leaf = directory.join(format!("v6-{}.blob", hex(&reference.id)));
+    let original = std::fs::read(&leaf)?;
+    // A stale hint must select the actual newer root and obtain its missing
+    // ciphertext through real pinned peers, not return the hinted identity.
+    std::fs::remove_file(&leaf)?;
+    {
+        let _scope = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(15));
+        let process = ha
+            .lock_for_request()
+            .map_err(|_| "stale witness repair lock")?;
+        let (actual, _) = process.application_identity_witness_for_local_root(stale_identity)?;
+        assert_eq!(actual, current_identity);
+        assert_ne!(actual, stale_identity);
+        assert!(process.ensure_application_identity(stale_identity).is_err());
+        assert_eq!(std::fs::read(&leaf)?, original);
+        assert_eq!(
+            process
+                .native_install_test_store()?
+                .reopen_root_closure(&published, &mut || Ok(()),)?,
+            references,
+        );
+    }
+
+    // Even an exact-current hint must reopen all real bytes. A corrupt
+    // existing leaf is a hard refusal, never an overwrite from a healthy peer.
+    let mut damaged = original;
+    *damaged
+        .last_mut()
+        .ok_or("forward fixture ciphertext empty")? ^= 1;
+    std::fs::write(&leaf, &damaged)?;
+    {
+        let _scope = RequestDeadlineScope::enter(Instant::now() + Duration::from_secs(15));
+        let process = ha.lock_for_request().map_err(|_| "corrupt witness lock")?;
+        assert!(
+            process
+                .application_identity_witness_for_local_root(current_identity)
+                .is_err()
+        );
+        assert!(
+            process
+                .application_identity_witness_for_local_root(stale_identity)
+                .is_err()
+        );
+    }
+    assert_eq!(std::fs::read(&leaf)?, damaged);
+    Ok(())
+}

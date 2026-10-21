@@ -1971,18 +1971,53 @@ impl HaProcess {
         ),
         String,
     > {
+        self.application_identity_witness_inner(None)
+    }
+
+    /// The actual Service's typed local identity selects a read optimization,
+    /// never the returned authority. A changed selection retains full recovery
+    /// and returns its actual identity for the caller's existing comparison.
+    pub(crate) fn application_identity_witness_for_local_root(
+        &self,
+        local_identity: crate::state_record_root::StateIdentity,
+    ) -> Result<
+        (
+            crate::state_record_root::StateIdentity,
+            heptabao_raft_runtime::ApplicationReadWitness,
+        ),
+        String,
+    > {
+        self.application_identity_witness_inner(Some(local_identity))
+    }
+
+    fn application_identity_witness_inner(
+        &self,
+        _local_identity: Option<crate::state_record_root::StateIdentity>,
+    ) -> Result<
+        (
+            crate::state_record_root::StateIdentity,
+            heptabao_raft_runtime::ApplicationReadWitness,
+        ),
+        String,
+    > {
         use crate::state_record_root::StateIdentity;
         #[cfg(feature = "experimental-native-v6-ha")]
         if self.native_v6_enabled() {
             let deadline = crate::v6_native_custody::OriginalDeadline::capture()
                 .map_err(|error| error.to_string())?;
-            if let Some(read) = self.native_v6_committed_read(deadline)? {
+            let read = match _local_identity {
+                Some(StateIdentity::RecordsV6(digest)) => {
+                    self.native_v6_committed_read_for_local_root(deadline, digest)?
+                }
+                _ => self.native_v6_committed_read(deadline)?,
+            };
+            if let Some(read) = read {
                 // The real selected root includes its enrollment and full
                 // publication provenance. Missing ciphertext is repaired only
                 // through the actual pinned peers before this authentication.
                 let identity = self.with_native_v6_source(&read, |codec, store| {
                     let closure = codec
-                        .open_native_v6_committed_closure(
+                        .open_native_v6_committed_read(
                             read.enrollment(),
                             read.published(),
                             store,

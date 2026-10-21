@@ -609,11 +609,37 @@ fn native_ha_install_original_actor_stale_read_and_cold_catchup_to_later_root() 
         original_generation
     );
     install_warm(&mut target, &ha, &token)?;
+    #[cfg(unix)]
+    let ciphertext_directory = ha
+        .lock()
+        .map_err(|_| "proof ciphertext directory lock")?
+        .storage_binding()?
+        .directory
+        .join("native-v6-ciphertext");
+    #[cfg(unix)]
+    let before_capture = publication_readback_directory(&ciphertext_directory)?;
+    let before_capture_root = selected_bytes(&target)?;
+    let before_capture_generation = target.durable.as_ref().ok_or("durable")?.generation();
     let original_scope = scope();
     let proof = target
         .capture_native_ha_request_proof(&mut || Ok(()))
         .map_err(|_| "actual first-root proof")?
         .ok_or("first-root proof")?;
+    #[cfg(unix)]
+    assert_eq!(
+        publication_readback_directory(&ciphertext_directory)?,
+        before_capture,
+        "a proof for the actual installed root must read, not republish its complete closure",
+    );
+    let denied = target.capture_native_ha_request_proof(&mut || {
+        Err(Response::error(403, "original fixture actor revoked"))
+    });
+    assert!(matches!(denied, Err(response) if response.status == 403));
+    assert_eq!(selected_bytes(&target)?, before_capture_root);
+    assert_eq!(
+        target.durable.as_ref().ok_or("durable")?.generation(),
+        before_capture_generation,
+    );
     {
         let read = fresh(&ha)?;
         assert!(
@@ -651,6 +677,12 @@ fn native_ha_install_original_actor_stale_read_and_cold_catchup_to_later_root() 
     let current = fresh(&ha)?;
     assert_eq!(current.published().root_digest(), second.root_digest());
     assert!(proof.check_warm(&target).is_err());
+    assert!(
+        target
+            .capture_native_ha_request_proof(&mut || Ok(()))
+            .is_err(),
+        "a stale actual local identity cannot admit the new committed graph",
+    );
     assert_eq!(
         target
             .current_state_identity()
@@ -686,6 +718,11 @@ fn native_ha_install_original_actor_stale_read_and_cold_catchup_to_later_root() 
     let read = fresh(&ha)?;
     let expired = RequestDeadlineScope::enter(Instant::now());
     let before = selected_bytes(&target)?;
+    assert!(
+        target
+            .capture_native_ha_request_proof(&mut || Ok(()))
+            .is_err()
+    );
     assert!(target.sync_native_v6_from_ha(&ha, read).is_err());
     assert_eq!(selected_bytes(&target)?, before);
     drop(expired);
@@ -931,7 +968,6 @@ fn native_ha_install_auth_lookup_retains_preaudit_proof_after_real_root_advance(
     Ok(())
 }
 
-
 #[cfg(unix)]
 #[derive(Debug, Eq, PartialEq)]
 struct PublicationReadbackDirectory {
@@ -946,9 +982,15 @@ fn publication_readback_directory(path: &Path) -> TestResult<PublicationReadback
     let mut files = BTreeMap::new();
     for entry in fs::read_dir(path)? {
         let entry = entry?;
-        assert!(entry.file_type()?.is_file(), "fixture ciphertext entry must be a file");
+        assert!(
+            entry.file_type()?.is_file(),
+            "fixture ciphertext entry must be a file"
+        );
         let bytes = fs::read(entry.path())?;
-        files.insert(entry.file_name(), (bytes.len() as u64, crypto::digest(&bytes)));
+        files.insert(
+            entry.file_name(),
+            (bytes.len() as u64, crypto::digest(&bytes)),
+        );
     }
     Ok(PublicationReadbackDirectory {
         identity: (
@@ -1061,11 +1103,8 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
         let process = cluster.processes[0]
             .lock()
             .map_err(|_| "publication fixture readback lock")?;
-        let read = process.native_v6_committed_read_for_published_proposal(
-            deadline,
-            &proposal,
-            &published,
-        )?;
+        let read = process
+            .native_v6_committed_read_for_published_proposal(deadline, &proposal, &published)?;
         assert!(read.published() == &published);
         assert_eq!(read.deadline().instant(), deadline.instant());
         process.verify_native_v6_committed_read(&read)?;
@@ -1080,20 +1119,14 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
     // An intact closure and the right published bytes do not permit substituting
     // another request clock for the one owned by the original typed proposal.
     {
-        let _shorter = RequestDeadlineScope::enter(
-            deadline.instant() - Duration::from_millis(1),
-        );
+        let _shorter = RequestDeadlineScope::enter(deadline.instant() - Duration::from_millis(1));
         let different = OriginalDeadline::capture()?;
         assert_ne!(different.instant(), deadline.instant());
         assert!(
             cluster.processes[0]
                 .lock()
                 .map_err(|_| "publication clock lock")?
-                .native_v6_committed_read_for_published_proposal(
-                    different,
-                    &proposal,
-                    &published,
-                )
+                .native_v6_committed_read_for_published_proposal(different, &proposal, &published,)
                 .is_err(),
         );
     }
@@ -1135,11 +1168,7 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
         );
         assert!(
             process
-                .native_v6_committed_read_for_published_proposal(
-                    deadline,
-                    &proposal,
-                    &published,
-                )
+                .native_v6_committed_read_for_published_proposal(deadline, &proposal, &published,)
                 .is_err(),
             "a fresh actual selection must reject a superseded published root",
         );
@@ -1155,7 +1184,10 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
     let before_expired = publication_readback_directory(&path)?;
     {
         let _expired = RequestDeadlineScope::enter(Instant::now());
-        let expected = deadline.check().err().ok_or("fixture deadline did not expire")?;
+        let expected = deadline
+            .check()
+            .err()
+            .ok_or("fixture deadline did not expire")?;
         let failed = cluster.processes[0]
             .lock()
             .map_err(|_| "publication expired lock")?
@@ -1164,7 +1196,10 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
                 &next_proposal,
                 &next_published,
             );
-        assert_eq!(failed.err().ok_or("expired readback returned a handle")?, expected.to_string());
+        assert_eq!(
+            failed.err().ok_or("expired readback returned a handle")?,
+            expected.to_string()
+        );
     }
     assert_eq!(publication_readback_directory(&path)?, before_expired);
     deadline.check()?;
@@ -1174,17 +1209,16 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
     let unavailable = cluster.processes[0]
         .lock()
         .map_err(|_| "publication no-quorum lock")?
-        .native_v6_committed_read_for_published_proposal(
-            deadline,
-            &next_proposal,
-            &next_published,
-        );
+        .native_v6_committed_read_for_published_proposal(deadline, &next_proposal, &next_published);
     cluster.isolate_all_peers(false);
     assert!(
         cluster.blocked_probes() > blocked_before,
         "this refusal must include actual blocked Raft peer exchanges",
     );
-    assert!(unavailable.is_err(), "prepared ciphertext cannot replace a real ReadIndex quorum");
+    assert!(
+        unavailable.is_err(),
+        "prepared ciphertext cannot replace a real ReadIndex quorum"
+    );
     assert_eq!(publication_readback_directory(&path)?, before_expired);
     Ok(())
 }
