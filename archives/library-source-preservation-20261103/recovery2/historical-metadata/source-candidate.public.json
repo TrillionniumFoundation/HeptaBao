@@ -1,0 +1,109 @@
+{
+  "actual78a": {
+    "crates/heptabao-ha-service/src/closure_phase_diagnostic.rs": {
+      "bytes": 15672,
+      "sha256": "d1094cf722f9be4645ec99fe1e9adc58447e2ba52fb9541ba50a2e29489f16cf"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_batch.rs": {
+      "bytes": 25793,
+      "sha256": "e97b097285196938ed9bc1f12970d495bb26fac9c26cfc76dd4df01ab0ad58a0"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum.rs": {
+      "bytes": 39434,
+      "sha256": "db7eafb8bcb6621038716791521e2e3dca29f2c3db00d51a0d4b3c4f86ceb219"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs": {
+      "bytes": 61292,
+      "sha256": "ab3e5c43fc512b635d2dd2e18594a674dd5dcbad4674a4ddc037b09cdd83f2bc"
+    }
+  },
+  "baseCommit": "8c56e2adc414f4b0f73e8959ff23632fa19fc629",
+  "baseSourceMapSha256": "5346a875552b369d39f222207535f276283307c03bd3deca0f9310a9f563a2c4",
+  "baseTree": "16653849d0728a5e838227d70bea265832a80354",
+  "before": {
+    "crates/heptabao-ha-service/src/closure_phase_diagnostic.rs": {
+      "bytes": 7967,
+      "sha256": "039344349897ea80d1f1d7ad64c3c439b27d137450c6a21edf927e3d1f62a24e"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_batch.rs": {
+      "bytes": 24647,
+      "sha256": "d37665919f976016e158413ad736876ff367d47bec536a0ca9226c1b7d349db5"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum.rs": {
+      "bytes": 37554,
+      "sha256": "c20512c250be14ce0af47a92dd8021c298f637b45c211757af3245d5d7feced7"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs": {
+      "bytes": 59222,
+      "sha256": "a1684acf0b3d8aa7fb8d4ec6014fc591851983a9bbdae724e8a3a6f0b753ecca"
+    }
+  },
+  "candidate": {
+    "crates/heptabao-ha-service/src/closure_phase_diagnostic.rs": {
+      "bytes": 17801,
+      "sha256": "2b88b48ed1db7989882440a853b67946918aa35c2c1b06cf93fb8503e58356e9"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_batch.rs": {
+      "bytes": 25793,
+      "sha256": "e97b097285196938ed9bc1f12970d495bb26fac9c26cfc76dd4df01ab0ad58a0"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum.rs": {
+      "bytes": 40074,
+      "sha256": "3e0d3196a5877cd8aef16031734e0c9b7b0463fc2fa25a8e8ce3ae85caaeb4a2"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs": {
+      "bytes": 61292,
+      "sha256": "ab3e5c43fc512b635d2dd2e18594a674dd5dcbad4674a4ddc037b09cdd83f2bc"
+    }
+  },
+  "controller": {
+    "bytes": 25851,
+    "sha256": "f000ca39226c615d3eb396bf6a3a830221b630412e1bdb3994b6eae7228c0793"
+  },
+  "delta78a": {
+    "bytes": 4450,
+    "sha256": "37ba18dde44ea000b98601858cf81834024308b6e03ee2f99f4cd38f60a969a6"
+  },
+  "generator": {
+    "bytes": 15393,
+    "sha256": "4f74485df5ef8d9e5e7dd41f944aac39b8e3d46b0a49b93653ce61b054bd6a7c"
+  },
+  "nativeExecution": false,
+  "nativeIdentity": null,
+  "preParseFailureRemainsUnassociated": true,
+  "productFix": false,
+  "qualification": false,
+  "readOnlyIngress": {
+    "crates/heptabao-ha-service/src/v6_closure_ingress.rs": {
+      "bytes": 1414,
+      "sha256": "e3234ad86fae1de1d1328d157e796cf997598b0b5ff70f4f96b5b6903a67b6ec"
+    }
+  },
+  "reconstructedLostCandidateBytesClaimed": false,
+  "recovered78aCommit": "78a1f602d8809cf2a53b8318db95d0822f39368e",
+  "recovered78aPatch": {
+    "bytes": 19467,
+    "sha256": "0fc2b1c7f7b7e87337d94789d98574cc1dcbf30769990e7d727a48977e7400c7"
+  },
+  "remoteStageMayReplay": false,
+  "remoteStageStatus": "unknown",
+  "requiredNext": [
+    "root reconciles original unknown stage without replay",
+    "independent source review",
+    "actual native format/commit/tree/map identity",
+    "constant-only strict parser bind",
+    "one original owned diagnostic execution"
+  ],
+  "schema": "heptabao.missing-only-live-peer-source.recovery2",
+  "sourceDiagnosticsCanAffectScheduling": true,
+  "total8c": {
+    "bytes": 22869,
+    "sha256": "fa2cd6070d161b0945789f2f8184766c62c0e69ec2002289d9a1156bc82f79e8"
+  },
+  "unchanged": [
+    "original authenticated serve/callback/parse count",
+    "storage/gate/fsync/witness calls and Result",
+    "test assertions and fault order",
+    "f000 controller and all retained owner/guard/target-lock budgets"
+  ]
+}

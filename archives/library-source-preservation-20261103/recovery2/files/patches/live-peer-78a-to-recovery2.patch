@@ -1,0 +1,116 @@
+diff --git a/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs b/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs
+--- a/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs
++++ b/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs
+@@ -288,6 +288,68 @@
+             slot.replace(self.0);
+         });
+     }
++}
++
++// Test-only association for the original live local receiver. A fresh serve
++// slot prevents accept/parse failures from inheriting the previous request.
++// Only the existing parsed operation is classified; no frame is parsed twice.
++#[cfg(test)]
++thread_local! {
++    static MISSING_ONLY_LIVE_SERVE: std::cell::Cell<Option<Option<MissingOnlyRequest>>> = const { std::cell::Cell::new(None) };
++    static MISSING_ONLY_LIVE_SEQUENCE: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
++}
++
++#[cfg(test)]
++pub(super) struct MissingOnlyLiveServe(Option<Option<MissingOnlyRequest>>);
++
++#[cfg(test)]
++impl MissingOnlyLiveServe {
++    pub(super) fn enter() -> Self {
++        Self(MISSING_ONLY_LIVE_SERVE.with(|slot| slot.replace(Some(None))))
++    }
++
++    pub(super) fn event(&self, event: &'static str, error: Option<crate::HaError>) {
++        if let Some(request) = MISSING_ONLY_LIVE_SERVE.with(|slot| slot.get().flatten()) {
++            request.event(event, error, None);
++        }
++    }
++}
++
++#[cfg(test)]
++impl Drop for MissingOnlyLiveServe {
++    fn drop(&mut self) {
++        MISSING_ONLY_LIVE_SERVE.with(|slot| slot.set(self.0));
++    }
++}
++
++#[cfg(test)]
++pub(super) fn missing_only_live_parsed(
++    operation: &[u8; 32],
++    target: u64,
++    kind: u8,
++) -> Option<MissingOnlyScope> {
++    if target != 1
++        || MISSING_ONLY_REQUEST.with(|slot| slot.borrow().is_some())
++        || !MISSING_ONLY_LIVE_SERVE.with(|slot| matches!(slot.get(), Some(None)))
++    {
++        return None;
++    }
++    let mut request = MissingOnlyRequest::new(0, operation, target, kind);
++    if request.case == 0 {
++        return None;
++    }
++    request.request = MISSING_ONLY_LIVE_SEQUENCE.with(|slot| {
++        let next = slot.get().checked_add(1);
++        if let Some(next) = next {
++            slot.set(next);
++        }
++        next.unwrap_or(0)
++    });
++    // Ordinal zero is only an overflow diagnostic rejected by the parser;
++    // it does not replace any original product Result or invoke a new gate.
++    MISSING_ONLY_LIVE_SERVE.with(|slot| slot.set(Some(Some(request))));
++    request.event("enter", None, None);
++    Some(MissingOnlyScope::enter(request))
+ }
+ 
+ #[cfg(test)]
+diff --git a/crates/heptabao-ha-service/src/v6_closure_quorum.rs b/crates/heptabao-ha-service/src/v6_closure_quorum.rs
+--- a/crates/heptabao-ha-service/src/v6_closure_quorum.rs
++++ b/crates/heptabao-ha-service/src/v6_closure_quorum.rs
+@@ -234,14 +234,24 @@
+         require_blocking_worker()?;
+         #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+         let _diagnostic = diagnostic::Scope::enter(self.diagnostic.clone(), None);
+-        serve_one_mtls_authenticated_peer_frame(
++        #[cfg(test)]
++        let missing_only_serve = diagnostic::MissingOnlyLiveServe::enter();
++        let result = serve_one_mtls_authenticated_peer_frame(
+             listener,
+             server,
+             &self.pinned,
+             timeout,
+             false,
+-            |frame| self.handle_authenticated(frame),
+-        )
++            |frame| {
++                let result = self.handle_authenticated(frame);
++                #[cfg(test)]
++                missing_only_serve.event("receiver_result", result.as_ref().err().copied());
++                result
++            },
++        );
++        #[cfg(test)]
++        missing_only_serve.event("serve_return", result.as_ref().err().copied());
++        result
+     }
+ 
+     // Read-only private failure classification. Preserve every original
+@@ -302,6 +312,12 @@
+         let _diagnostic = diagnostic::Scope::enter(self.diagnostic.clone(), Some(deadline));
+         check_deadline(deadline)?;
+         let request = wire::parse(bytes)?;
++        #[cfg(test)]
++        let _missing_only_request = diagnostic::missing_only_live_parsed(
++            &request.binding.intent.operation_digest,
++            request.target,
++            request.kind as u8,
++        );
+         #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+         diagnostic::frame(request.kind as u8, request.payload.len());
+         let sender = self

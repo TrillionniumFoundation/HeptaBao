@@ -1,0 +1,578 @@
+diff --git a/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs b/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs
+--- a/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs
++++ b/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs
+@@ -175,6 +175,291 @@
+     CURRENT.with(|slot| slot.borrow().clone())
+ }
+ 
++// Diagnostic-only observation AFTER an original operation returned Err.
++// The active collector context already crosses into this owned socket worker.
++// Numeric target/kind and HaError's fieldless variant bind the failure without
++// logging any nonce, intent/object digest, ciphertext, credential or path.
++// Cancellation is sampled here; it does not assert an earlier event order.
++pub(super) fn failed_peer_return(
++    phase: &'static str,
++    target: u64,
++    kind: u8,
++    error: crate::HaError,
++    deadline: Instant,
++    cancelled: bool,
++) {
++    let Some(context) = capture() else {
++        return;
++    };
++    let remaining = deadline
++        .saturating_duration_since(Instant::now())
++        .as_nanos();
++    let _ = writeln!(
++        std::io::stderr().lock(),
++        "HBHA-PRIVATE-PEER-RETURN observation={} side={} phase={} target={} kind={} error={:?} cancelled_at_observation={} original_remaining_ns={}",
++        context.stats.observation,
++        context.stats.side,
++        phase,
++        target,
++        kind,
++        error,
++        cancelled,
++        remaining,
++    );
++}
++
++// Test-owned request association for the fixed missing-only fixture. Nothing
++// here supplies admission, deadlines, a reply, a retry, or a storage witness.
++// The operation digest is classified in memory; only seven authored cases,
++// a per-receiver request ordinal and fixed scalar fields are printed.
++#[cfg(test)]
++#[derive(Clone, Copy)]
++pub(super) struct MissingOnlyRequest {
++    request: u64,
++    case: u8,
++    target: u64,
++    kind: u8,
++}
++
++#[cfg(test)]
++impl MissingOnlyRequest {
++    pub(super) fn new(request: u64, operation: &[u8; 32], target: u64, kind: u8) -> Self {
++        let case = [
++            (1, 0x71_u8),
++            (2, 0x72),
++            (3, 0x73),
++            (4, 0x77),
++            (5, 0x74),
++            (6, 0x75),
++            (7, 0x76),
++        ]
++        .into_iter()
++        .find_map(|(case, tag)| (*operation == [tag; 32]).then_some(case))
++        .unwrap_or(0);
++        Self {
++            request,
++            case,
++            target,
++            kind,
++        }
++    }
++
++    pub(super) fn event(
++        self,
++        event: &'static str,
++        error: Option<crate::HaError>,
++        fault: Option<u64>,
++    ) {
++        let error = error.map_or_else(|| "none".to_owned(), |error| format!("{error:?}"));
++        let fault = fault.map_or_else(|| "none".to_owned(), |fault| fault.to_string());
++        let _ = writeln!(
++            std::io::stderr().lock(),
++            "HBHA-MISSING-RECEIVER request={} case={} target={} kind={} event={} error={} fault={}",
++            self.request,
++            self.case,
++            self.target,
++            self.kind,
++            event,
++            error,
++            fault
++        );
++    }
++}
++
++#[cfg(test)]
++thread_local! {
++    static MISSING_ONLY_REQUEST: RefCell<Option<MissingOnlyRequest>> = const { RefCell::new(None) };
++}
++
++#[cfg(test)]
++pub(super) struct MissingOnlyScope(Option<MissingOnlyRequest>);
++
++#[cfg(test)]
++impl MissingOnlyScope {
++    pub(super) fn enter(request: MissingOnlyRequest) -> Self {
++        Self(MISSING_ONLY_REQUEST.with(|slot| slot.replace(Some(request))))
++    }
++}
++
++#[cfg(test)]
++impl Drop for MissingOnlyScope {
++    fn drop(&mut self) {
++        MISSING_ONLY_REQUEST.with(|slot| {
++            slot.replace(self.0);
++        });
++    }
++}
++
++// Test-only association for the original live local receiver. A fresh serve
++// slot prevents accept/parse failures from inheriting the previous request.
++// Only the existing parsed operation is classified; no frame is parsed twice.
++#[cfg(test)]
++thread_local! {
++    static MISSING_ONLY_LIVE_SERVE: std::cell::Cell<Option<Option<MissingOnlyRequest>>> = const { std::cell::Cell::new(None) };
++    static MISSING_ONLY_LIVE_SEQUENCE: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
++}
++
++#[cfg(test)]
++pub(super) struct MissingOnlyLiveServe(Option<Option<MissingOnlyRequest>>);
++
++#[cfg(test)]
++impl MissingOnlyLiveServe {
++    pub(super) fn enter() -> Self {
++        Self(MISSING_ONLY_LIVE_SERVE.with(|slot| slot.replace(Some(None))))
++    }
++
++    pub(super) fn event(&self, event: &'static str, error: Option<crate::HaError>) {
++        if let Some(request) = MISSING_ONLY_LIVE_SERVE.with(|slot| slot.get().flatten()) {
++            request.event(event, error, None);
++        }
++    }
++}
++
++#[cfg(test)]
++impl Drop for MissingOnlyLiveServe {
++    fn drop(&mut self) {
++        MISSING_ONLY_LIVE_SERVE.with(|slot| slot.set(self.0));
++    }
++}
++
++#[cfg(test)]
++pub(super) fn missing_only_live_parsed(
++    operation: &[u8; 32],
++    target: u64,
++    kind: u8,
++) -> Option<MissingOnlyScope> {
++    if target != 1
++        || MISSING_ONLY_REQUEST.with(|slot| slot.borrow().is_some())
++        || !MISSING_ONLY_LIVE_SERVE.with(|slot| matches!(slot.get(), Some(None)))
++    {
++        return None;
++    }
++    let mut request = MissingOnlyRequest::new(0, operation, target, kind);
++    if request.case == 0 {
++        return None;
++    }
++    request.request = MISSING_ONLY_LIVE_SEQUENCE.with(|slot| {
++        let next = slot.get().checked_add(1);
++        if let Some(next) = next {
++            slot.set(next);
++        }
++        next.unwrap_or(0)
++    });
++    // Ordinal zero is only an overflow diagnostic rejected by the parser;
++    // it does not replace any original product Result or invoke a new gate.
++    MISSING_ONLY_LIVE_SERVE.with(|slot| slot.set(Some(Some(request))));
++    request.event("enter", None, None);
++    Some(MissingOnlyScope::enter(request))
++}
++
++#[cfg(test)]
++pub(super) fn missing_only_failure_phase(phase: &'static str, deadline: Instant) {
++    let request = MISSING_ONLY_REQUEST.with(|slot| *slot.borrow());
++    if let Some(request) = request {
++        let _ = writeln!(
++            std::io::stderr().lock(),
++            "HBHA-MISSING-RECEIVER-PHASE request={} case={} target={} kind={} phase={} original_remaining_ns={}",
++            request.request,
++            request.case,
++            request.target,
++            request.kind,
++            phase,
++            deadline
++                .saturating_duration_since(Instant::now())
++                .as_nanos()
++        );
++    }
++}
++
++#[cfg(test)]
++pub(super) fn missing_only_binding_rejection(present: bool, equal: bool) {
++    let request = MISSING_ONLY_REQUEST.with(|slot| *slot.borrow());
++    if let Some(request) = request {
++        let _ = writeln!(
++            std::io::stderr().lock(),
++            "HBHA-MISSING-RECEIVER-BINDING request={} case={} target={} kind={} incoming_present={} binding_equal={}",
++            request.request,
++            request.case,
++            request.target,
++            request.kind,
++            present,
++            equal
++        );
++    }
++}
++
++// One fixed projection AFTER the existing Ensure helper returned Err. Count
++// only its original admission callbacks; never call a gate, retry I/O, rebase
++// a mutation witness, replace an error, or expose a raw error/string/path.
++#[cfg(test)]
++pub(super) fn missing_only_storage_error(
++    deadline: Instant,
++    objects: usize,
++    gate_calls: u64,
++    gate_passed: u64,
++    counter_overflow: bool,
++    error: &heptabao_raft_runtime::LocalV6BlobError,
++) {
++    use heptabao_raft_runtime::LocalV6BlobError;
++    let request = MISSING_ONLY_REQUEST.with(|slot| *slot.borrow());
++    if let Some(request) = request {
++        let error_class = match error {
++            LocalV6BlobError::InvalidCiphertext => "InvalidCiphertext",
++            LocalV6BlobError::InvalidClosure => "InvalidClosure",
++            LocalV6BlobError::InvalidRoot => "InvalidRoot",
++            LocalV6BlobError::CorruptOrChanged => "CorruptOrChanged",
++            LocalV6BlobError::Guard(_) => "Guard",
++            LocalV6BlobError::Io(_) => "Io",
++            LocalV6BlobError::Publication(_) => "Publication",
++        };
++        // This is ONLY the direct Io variant. Wrapped Guard/Publication
++        // internals are not guessed, formatted, traversed, or unwrapped.
++        let (io_kind, errno) = match error {
++            LocalV6BlobError::Io(error) => {
++                use std::io::ErrorKind;
++                let kind = match error.kind() {
++                    ErrorKind::NotFound => "not_found",
++                    ErrorKind::PermissionDenied => "permission_denied",
++                    ErrorKind::AlreadyExists => "already_exists",
++                    ErrorKind::WouldBlock => "would_block",
++                    ErrorKind::InvalidInput => "invalid_input",
++                    ErrorKind::InvalidData => "invalid_data",
++                    ErrorKind::TimedOut => "timed_out",
++                    ErrorKind::WriteZero => "write_zero",
++                    ErrorKind::Interrupted => "interrupted",
++                    ErrorKind::Unsupported => "unsupported",
++                    ErrorKind::UnexpectedEof => "unexpected_eof",
++                    ErrorKind::OutOfMemory => "out_of_memory",
++                    ErrorKind::Other => "other",
++                    _ => "other_kind",
++                };
++                (kind, error.raw_os_error())
++            }
++            _ => ("none", None),
++        };
++        let errno = errno.map_or_else(|| "none".to_owned(), |code| code.to_string());
++        let _ = writeln!(
++            std::io::stderr().lock(),
++            "HBHA-MISSING-RECEIVER-STORAGE-ERROR request={} case={} target={} kind={} stage=ensure_sync_existing_batch objects={} gate_calls={} gate_passed={} gate_failed={} counter_overflow={} error={} io_kind={} errno={} original_remaining_ns={}",
++            request.request,
++            request.case,
++            request.target,
++            request.kind,
++            objects,
++            gate_calls,
++            gate_passed,
++            gate_calls != gate_passed,
++            counter_overflow,
++            error_class,
++            io_kind,
++            errno,
++            deadline
++                .saturating_duration_since(Instant::now())
++                .as_nanos(),
++        );
++    }
++}
++
+ #[derive(Debug)]
+ pub(super) struct Scope {
+     previous: Option<Context>,
+diff --git a/crates/heptabao-ha-service/src/v6_closure_batch.rs b/crates/heptabao-ha-service/src/v6_closure_batch.rs
+--- a/crates/heptabao-ha-service/src/v6_closure_batch.rs
++++ b/crates/heptabao-ha-service/src/v6_closure_batch.rs
+@@ -336,17 +336,49 @@
+             .iter()
+             .map(|(_, reference, ciphertext)| (reference, ciphertext.as_slice()))
+             .collect();
++        #[cfg(test)]
++        let storage_gate_counts = std::cell::Cell::new((0_u64, 0_u64, false));
+         let mut gate = || {
+-            self.verify(admission, deadline)
+-                .map_err(|_| LocalV6BlobError::CorruptOrChanged)
++            #[cfg(test)]
++            {
++                let (calls, passed, overflow) = storage_gate_counts.get();
++                storage_gate_counts.set((
++                    calls.saturating_add(1),
++                    passed,
++                    overflow || calls == u64::MAX,
++                ));
++            }
++            let result = self
++                .verify(admission, deadline)
++                .map_err(|_| LocalV6BlobError::CorruptOrChanged);
++            #[cfg(test)]
++            if result.is_ok() {
++                let (calls, passed, overflow) = storage_gate_counts.get();
++                storage_gate_counts.set((
++                    calls,
++                    passed.saturating_add(1),
++                    overflow || passed == u64::MAX,
++                ));
++            }
++            result
+         };
++        let synchronized = self
++            .storage
++            .sync_existing_replicas_batch_checked(&objects, &mut gate);
++        #[cfg(test)]
++        if let Err(error) = &synchronized {
++            let (calls, passed, overflow) = storage_gate_counts.get();
++            diagnostic::missing_only_storage_error(
++                deadline,
++                objects.len(),
++                calls,
++                passed,
++                overflow,
++                error,
++            );
++        }
+         let receipts = self
+-            .observe_receive_result(
+-                "ensure_sync_existing_batch",
+-                deadline,
+-                self.storage
+-                    .sync_existing_replicas_batch_checked(&objects, &mut gate),
+-            )
++            .observe_receive_result("ensure_sync_existing_batch", deadline, synchronized)
+             .map_err(|_| unknown())?;
+         if receipts.len() != pending.len() {
+             return Err(unknown());
+diff --git a/crates/heptabao-ha-service/src/v6_closure_quorum.rs b/crates/heptabao-ha-service/src/v6_closure_quorum.rs
+--- a/crates/heptabao-ha-service/src/v6_closure_quorum.rs
++++ b/crates/heptabao-ha-service/src/v6_closure_quorum.rs
+@@ -234,14 +234,24 @@
+         require_blocking_worker()?;
+         #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+         let _diagnostic = diagnostic::Scope::enter(self.diagnostic.clone(), None);
+-        serve_one_mtls_authenticated_peer_frame(
++        #[cfg(test)]
++        let missing_only_serve = diagnostic::MissingOnlyLiveServe::enter();
++        let result = serve_one_mtls_authenticated_peer_frame(
+             listener,
+             server,
+             &self.pinned,
+             timeout,
+             false,
+-            |frame| self.handle_authenticated(frame),
+-        )
++            |frame| {
++                let result = self.handle_authenticated(frame);
++                #[cfg(test)]
++                missing_only_serve.event("receiver_result", result.as_ref().err().copied());
++                result
++            },
++        );
++        #[cfg(test)]
++        missing_only_serve.event("serve_return", result.as_ref().err().copied());
++        result
+     }
+ 
+     // Read-only private failure classification. Preserve every original
+@@ -263,6 +273,10 @@
+                     .as_nanos(),
+             );
+         }
++        #[cfg(test)]
++        if result.is_err() {
++            diagnostic::missing_only_failure_phase(phase, deadline);
++        }
+         let _ = (phase, deadline);
+         result
+     }
+@@ -298,6 +312,12 @@
+         let _diagnostic = diagnostic::Scope::enter(self.diagnostic.clone(), Some(deadline));
+         check_deadline(deadline)?;
+         let request = wire::parse(bytes)?;
++        #[cfg(test)]
++        let _missing_only_request = diagnostic::missing_only_live_parsed(
++            &request.binding.intent.operation_digest,
++            request.target,
++            request.kind as u8,
++        );
+         #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+         diagnostic::frame(request.kind as u8, request.payload.len());
+         let sender = self
+@@ -343,6 +363,14 @@
+                 self.raft.id(),
+                 request.kind as u8,
+                 deadline.saturating_duration_since(Instant::now()).as_nanos(),
++            );
++            #[cfg(test)]
++            diagnostic::missing_only_failure_phase(
++                match &error {
++                    std::sync::TryLockError::WouldBlock => "incoming_owner_busy",
++                    std::sync::TryLockError::Poisoned(_) => "incoming_owner_poisoned",
++                },
++                deadline,
+             );
+             let _ = error;
+             unknown()
+@@ -441,6 +469,18 @@
+                 )?
+             }
+             Kind::EnsureBatch => {
++                #[cfg(test)]
++                if incoming
++                    .as_ref()
++                    .is_none_or(|state| state.binding != request.binding)
++                {
++                    diagnostic::missing_only_binding_rejection(
++                        incoming.is_some(),
++                        incoming
++                            .as_ref()
++                            .is_some_and(|state| state.binding == request.binding),
++                    );
++                }
+                 let state = incoming
+                     .as_mut()
+                     .filter(|state| state.binding == request.binding)
+@@ -822,7 +862,19 @@
+                 check_deadline(deadline)?;
+                 let response = transport
+                     .exchange_before_pinned_server(&route, &request, deadline, pin)
+-                    .map_err(|_| unknown())?;
++                    .map_err(|error| {
++                        #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
++                        diagnostic::failed_peer_return(
++                            "transport_return",
++                            target,
++                            kind as u8,
++                            error,
++                            deadline,
++                            cancelled.load(Ordering::Acquire),
++                        );
++                        let _ = error;
++                        unknown()
++                    })?;
+                 check_deadline(deadline)?;
+                 if cancelled.load(Ordering::Acquire) {
+                     return Err(unknown());
+@@ -842,6 +894,17 @@
+                     Ok(Vec::new())
+                 }
+             })();
++            #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
++            if let Err(error) = &result {
++                diagnostic::failed_peer_return(
++                    "worker_return",
++                    target,
++                    kind as u8,
++                    *error,
++                    deadline,
++                    cancelled.load(Ordering::Acquire),
++                );
++            }
+             let _ = send.send(result);
+         })
+         .map_err(|_| unknown())?;
+diff --git a/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs b/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs
+--- a/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs
++++ b/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs
+@@ -1091,8 +1091,10 @@
+         let stop = Arc::new(AtomicBool::new(false));
+         let stopped = stop.clone();
+         let worker = thread::spawn(move || {
++            let sequence = AtomicU64::new(0);
+             while !stopped.load(Ordering::Acquire) {
+-                let _ = serve_one_mtls_authenticated_peer_frame(
++                let request_observed = std::cell::Cell::new(None);
++                let served = serve_one_mtls_authenticated_peer_frame(
+                     &listener,
+                     server.clone(),
+                     &receiver.pinned,
+@@ -1108,18 +1110,32 @@
+                             }
+                         };
+                         let kind = observation.kind;
++                        let request = diagnostic::MissingOnlyRequest::new(
++                            sequence.fetch_add(1, Ordering::Relaxed) + 1,
++                            &observation.operation,
++                            receiver.raft.id(),
++                            kind as u8,
++                        );
++                        request_observed.set(Some(request));
++                        let _request_context = diagnostic::MissingOnlyScope::enter(request);
++                        request.event("enter", None, None);
+                         seen.lock().map_err(|_| unknown())?.push(observation);
+                         // Model a peer that rejects the explicit extension before
+                         // admission or storage. No ciphertext may be replayed with
+                         // a legacy kind after this terminal response.
+                         if kind == Kind::PackedStageBatch && unsupported.load(Ordering::Acquire) {
++                            request.event("unsupported_packed", Some(HaError::InvalidFrame), None);
+                             return Err(HaError::InvalidFrame);
+                         }
+                         // Execute the actual receiver and all filesystem/intent
+                         // gates BEFORE a test-only lost or malformed reply.
+-                        let mut response = receiver.handle_authenticated(frame)?;
++                        let received = receiver.handle_authenticated(frame);
++                        request.event("receiver_result", received.as_ref().err().copied(), None);
++                        let mut response = received?;
+                         if kind == Kind::EnsureBatch {
+-                            match active_fault.swap(0, Ordering::AcqRel) {
++                            let consumed_fault = active_fault.swap(0, Ordering::AcqRel);
++                            request.event("fault_consumed", None, Some(consumed_fault));
++                            match consumed_fault {
+                                 0 => {}
+                                 1 => return Err(unknown()),
+                                 2 => {
+@@ -1138,6 +1154,9 @@
+                         Ok(response)
+                     },
+                 );
++                if let Some(request) = request_observed.get() {
++                    request.event("serve_return", served.as_ref().err().copied(), None);
++                }
+                 thread::sleep(Duration::from_millis(1));
+             }
+         });
+@@ -1490,10 +1509,31 @@
+                 intent: &intent,
+             },
+             original,
+-        )?;
++        )
++        .map_err(|error| {
++            eprintln!(
++                "HBHA-MISSING-ONLY-RETURN phase=final_replicate object_count={} missing_count={} error={:?} original_remaining_ns={}",
++                object_count,
++                missing_count,
++                error,
++                original.saturating_duration_since(Instant::now()).as_nanos(),
++            );
++            error
++        })?;
+         assert!(Instant::now() < original);
+         assert_eq!(quorum.voter_ids(), &[1, 2]);
+-        runtime.block_on(quorum.verify_for_publication(&nodes[0]))?;
++        runtime
++            .block_on(quorum.verify_for_publication(&nodes[0]))
++            .map_err(|error| {
++                eprintln!(
++                    "HBHA-MISSING-ONLY-RETURN phase=final_verify_for_publication object_count={} missing_count={} error={:?} original_remaining_ns={}",
++                    object_count,
++                    missing_count,
++                    error,
++                    original.saturating_duration_since(Instant::now()).as_nanos(),
++                );
++                error
++            })?;
+         let frames = observed.for_operation(intent.operation_digest)?;
+         let ensure_frames: Vec<_> = frames
+             .iter()

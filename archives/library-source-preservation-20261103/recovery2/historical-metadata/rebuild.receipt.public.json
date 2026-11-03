@@ -1,0 +1,62 @@
+{
+  "actual78aReconstructedExactly": true,
+  "batchAndTestsUnchangedFrom78a": true,
+  "bothPatchesReappliedExactly": true,
+  "candidate": {
+    "crates/heptabao-ha-service/src/closure_phase_diagnostic.rs": {
+      "bytes": 17801,
+      "sha256": "2b88b48ed1db7989882440a853b67946918aa35c2c1b06cf93fb8503e58356e9"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_batch.rs": {
+      "bytes": 25793,
+      "sha256": "e97b097285196938ed9bc1f12970d495bb26fac9c26cfc76dd4df01ab0ad58a0"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum.rs": {
+      "bytes": 40074,
+      "sha256": "3e0d3196a5877cd8aef16031734e0c9b7b0463fc2fa25a8e8ce3ae85caaeb4a2"
+    },
+    "crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs": {
+      "bytes": 61292,
+      "sha256": "ab3e5c43fc512b635d2dd2e18594a674dd5dcbad4674a4ddc037b09cdd83f2bc"
+    }
+  },
+  "controllerUnchanged": true,
+  "delta78a": {
+    "bytes": 4450,
+    "sha256": "37ba18dde44ea000b98601858cf81834024308b6e03ee2f99f4cd38f60a969a6"
+  },
+  "inputPinsVerified": true,
+  "nativeCompiled": false,
+  "ok": true,
+  "oldLostBytesClaimedIdentical": false,
+  "remoteInvoked": false,
+  "schema": "heptabao.missing-only-source-rebuild.receipt.recovery2",
+  "sourceMapPinsVerified": true,
+  "tar": {
+    "bytes": 14876,
+    "members": {
+      "live-peer-78a-to-recovery2.patch": {
+        "bytes": 4450,
+        "sha256": "37ba18dde44ea000b98601858cf81834024308b6e03ee2f99f4cd38f60a969a6"
+      },
+      "live-peer-8c-to-recovery2.patch": {
+        "bytes": 22869,
+        "sha256": "fa2cd6070d161b0945789f2f8184766c62c0e69ec2002289d9a1156bc82f79e8"
+      },
+      "run_missing_only_ensure_sync_diagnostic.py": {
+        "bytes": 25851,
+        "sha256": "f000ca39226c615d3eb396bf6a3a830221b630412e1bdb3994b6eae7228c0793"
+      },
+      "source-candidate.public.json": {
+        "bytes": 4150,
+        "sha256": "06bddc58dfa18f2395e6f6ba5c4f313a2addd11a3577f376988094e09c9b4fd1"
+      }
+    },
+    "path": "live-peer-source-controller-recovery2.tar.gz",
+    "sha256": "c8b2ea7d9eea1c276279f28cc90b4079f8896ad7fa5897b69090fccbfe95c8e7"
+  },
+  "total8c": {
+    "bytes": 22869,
+    "sha256": "fa2cd6070d161b0945789f2f8184766c62c0e69ec2002289d9a1156bc82f79e8"
+  }
+}

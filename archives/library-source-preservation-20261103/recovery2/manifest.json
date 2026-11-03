@@ -1,0 +1,237 @@
+{
+  "schema": "historical-source-preservation-v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "archive": {
+    "name": "source-recovery2-checkpoint.zip",
+    "bytes": 66784,
+    "sha256": "65db5311d2c65d01717d2555dabf6700a0048fb44e8aace96c96b6e02e432e92"
+  },
+  "publication_base_commit": "06759210bcabcae04b1fa7cb8e6008a60b3ab285",
+  "publication_base_tree": "c70bfa8087e16aa69e83e89df8991f5d105cc282",
+  "project_attribution": {
+    "path": "crates/heptabao-ha-service/src/v6_closure_ingress.rs",
+    "reachable_commit": "06759210bcabcae04b1fa7cb8e6008a60b3ab285",
+    "git_blob_sha": "8ab4a33fd725cccf4c42025539b1216c1745ba46",
+    "sha256": "e3234ad86fae1de1d1328d157e796cf997598b0b5ff70f4f96b5b6903a67b6ec",
+    "bytes": 1414,
+    "exact_reachable_byte_match_verified": true,
+    "other_project_paths_match_but_versions_differ": true
+  },
+  "selected_files": [
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/tools/rebuild_source_recovery2.py",
+      "mode": "100644",
+      "bytes": 15393,
+      "sha256": "4f74485df5ef8d9e5e7dd41f944aac39b8e3d46b0a49b93653ce61b054bd6a7c",
+      "git_blob_sha": "6edad27247f054868a7275a854ec5753d8de59e7",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/rebuild_source_recovery2.py"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/baseline/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs",
+      "mode": "100644",
+      "bytes": 7967,
+      "sha256": "039344349897ea80d1f1d7ad64c3c439b27d137450c6a21edf927e3d1f62a24e",
+      "git_blob_sha": "311acdfe84e428d46561e1e63579f601d1636ba8",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/actual-8c-source/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/baseline/crates/heptabao-ha-service/src/v6_closure_batch.rs",
+      "mode": "100644",
+      "bytes": 24647,
+      "sha256": "d37665919f976016e158413ad736876ff367d47bec536a0ca9226c1b7d349db5",
+      "git_blob_sha": "388813205dfa20e1ff694a04b769560c13452f76",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/actual-8c-source/crates/heptabao-ha-service/src/v6_closure_batch.rs"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/baseline/crates/heptabao-ha-service/src/v6_closure_ingress.rs",
+      "mode": "100644",
+      "bytes": 1414,
+      "sha256": "e3234ad86fae1de1d1328d157e796cf997598b0b5ff70f4f96b5b6903a67b6ec",
+      "git_blob_sha": "8ab4a33fd725cccf4c42025539b1216c1745ba46",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/actual-8c-source/crates/heptabao-ha-service/src/v6_closure_ingress.rs"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/baseline/crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "mode": "100644",
+      "bytes": 37554,
+      "sha256": "c20512c250be14ce0af47a92dd8021c298f637b45c211757af3245d5d7feced7",
+      "git_blob_sha": "968cf229367e57eaa90f7dbb08cfa8a08945bdc6",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/actual-8c-source/crates/heptabao-ha-service/src/v6_closure_quorum.rs"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/baseline/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs",
+      "mode": "100644",
+      "bytes": 59222,
+      "sha256": "a1684acf0b3d8aa7fb8d4ec6014fc591851983a9bbdae724e8a3a6f0b753ecca",
+      "git_blob_sha": "1c2016611901fd7d7b9287f506e05a64d86039b0",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/actual-8c-source/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/historical-metadata/source-candidate.public.json",
+      "mode": "100644",
+      "bytes": 4150,
+      "sha256": "06bddc58dfa18f2395e6f6ba5c4f313a2addd11a3577f376988094e09c9b4fd1",
+      "git_blob_sha": "b76542040a5d2f7d4c85ec73e312b35763f2eff1",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/source-recovery2/source-candidate.public.json"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "historical_source_verification_data"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/historical-metadata/rebuild.receipt.public.json",
+      "mode": "100644",
+      "bytes": 2213,
+      "sha256": "99c398e06cee26023215ee3eb56f8b74fb6dda9bb465f12e1eba5d2905e5d4bc",
+      "git_blob_sha": "90699305171e165c41f545a26c45229b5adc71d7",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/source-recovery2/rebuild.receipt.public.json"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "historical_source_verification_data"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/patches/live-peer-78a-to-recovery2.patch",
+      "mode": "100644",
+      "bytes": 4450,
+      "sha256": "37ba18dde44ea000b98601858cf81834024308b6e03ee2f99f4cd38f60a969a6",
+      "git_blob_sha": "21dcef44ca6a565d9e6b875cbabbd36f8c01c043",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/source-recovery2/live-peer-78a-to-recovery2.patch"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/patches/live-peer-8c-to-recovery2.patch",
+      "mode": "100644",
+      "bytes": 22869,
+      "sha256": "fa2cd6070d161b0945789f2f8184766c62c0e69ec2002289d9a1156bc82f79e8",
+      "git_blob_sha": "1d637020a3793e347b320fb13bfc1a526cc8e7e0",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/source-recovery2/live-peer-8c-to-recovery2.patch"
+      },
+      "original_posix_mode": "0o100600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/tools/run_missing_only_ensure_sync_diagnostic.py",
+      "mode": "100644",
+      "bytes": 25851,
+      "sha256": "f000ca39226c615d3eb396bf6a3a830221b630412e1bdb3994b6eae7228c0793",
+      "git_blob_sha": "868f77d4489236b83d94eb07eba4d67e1fe690f5",
+      "origin": {
+        "archive_member": "ha_ensure_live_peer_diagnostic_r2/source-recovery2/live-peer-source-controller-recovery2.tar.gz",
+        "nested_member": "run_missing_only_ensure_sync_diagnostic.py"
+      },
+      "original_posix_mode": "0o600",
+      "kind": "source"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/candidate/crates/heptabao-ha-service/src/closure_phase_diagnostic.rs",
+      "mode": "100644",
+      "bytes": 17801,
+      "sha256": "2b88b48ed1db7989882440a853b67946918aa35c2c1b06cf93fb8503e58356e9",
+      "git_blob_sha": "1d77940a1c8defcf1b694217f3b2647a6db90e9b",
+      "origin": {
+        "reconstruction": "Exact archive baseline plus live-peer-8c-to-recovery2.patch applied by git apply; original candidate hashes verified"
+      },
+      "original_posix_mode": null,
+      "kind": "derived_candidate_source_snapshot"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/candidate/crates/heptabao-ha-service/src/v6_closure_batch.rs",
+      "mode": "100644",
+      "bytes": 25793,
+      "sha256": "e97b097285196938ed9bc1f12970d495bb26fac9c26cfc76dd4df01ab0ad58a0",
+      "git_blob_sha": "c85faf797a401e6547b51f37574e1c09bd110576",
+      "origin": {
+        "reconstruction": "Exact archive baseline plus live-peer-8c-to-recovery2.patch applied by git apply; original candidate hashes verified"
+      },
+      "original_posix_mode": null,
+      "kind": "derived_candidate_source_snapshot"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/candidate/crates/heptabao-ha-service/src/v6_closure_ingress.rs",
+      "mode": "100644",
+      "bytes": 1414,
+      "sha256": "e3234ad86fae1de1d1328d157e796cf997598b0b5ff70f4f96b5b6903a67b6ec",
+      "git_blob_sha": "8ab4a33fd725cccf4c42025539b1216c1745ba46",
+      "origin": {
+        "reconstruction": "Exact archive baseline plus live-peer-8c-to-recovery2.patch applied by git apply; original candidate hashes verified"
+      },
+      "original_posix_mode": null,
+      "kind": "derived_candidate_source_snapshot"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/candidate/crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "mode": "100644",
+      "bytes": 40074,
+      "sha256": "3e0d3196a5877cd8aef16031734e0c9b7b0463fc2fa25a8e8ce3ae85caaeb4a2",
+      "git_blob_sha": "3e49d622b37a656246457dbb1ff9e19341fde8d5",
+      "origin": {
+        "reconstruction": "Exact archive baseline plus live-peer-8c-to-recovery2.patch applied by git apply; original candidate hashes verified"
+      },
+      "original_posix_mode": null,
+      "kind": "derived_candidate_source_snapshot"
+    },
+    {
+      "path": "archives/library-source-preservation-20261103/recovery2/files/candidate/crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs",
+      "mode": "100644",
+      "bytes": 61292,
+      "sha256": "ab3e5c43fc512b635d2dd2e18594a674dd5dcbad4674a4ddc037b09cdd83f2bc",
+      "git_blob_sha": "d47a3ca7e835e35039a4d225dc1cf17c6806d4aa",
+      "origin": {
+        "reconstruction": "Exact archive baseline plus live-peer-8c-to-recovery2.patch applied by git apply; original candidate hashes verified"
+      },
+      "original_posix_mode": null,
+      "kind": "derived_candidate_source_snapshot"
+    }
+  ],
+  "original_source_member_count": 9,
+  "derived_candidate_snapshot_count": 5,
+  "historical_metadata_path_count": 2,
+  "scope": "Five supplied baseline Rust files, five candidate Rust files reconstituted from the exact supplied patch and checked against original candidate hashes, both source helper scripts, two original patches, and two historical source-verification metadata files. Nested duplicates equal their outer members byte-for-byte.",
+  "held_original_members": [
+    "ha_ensure_live_peer_diagnostic_r2/recovery2-status-and-design.public.json",
+    "ha_ensure_live_peer_diagnostic_r2/source-recovery2-checkpoint-manifest.public.json",
+    "ha_ensure_live_peer_diagnostic_r2/source-recovery2/live-peer-source-controller-recovery2.tar.gz"
+  ],
+  "original_container_retained": true,
+  "whole_original_zip_published": false,
+  "original_commit_objects_restored": false,
+  "historical_source_identity": {
+    "declared_base_commit": "8c56e2adc414f4b0f73e8959ff23632fa19fc629",
+    "declared_base_tree": "16653849d0728a5e838227d70bea265832a80354",
+    "declared_recovered_commit": "78a1f602d8809cf2a53b8318db95d0822f39368e",
+    "claim": "These historical objects were not retrievable in the checked remote repository. This archive preserves supplied and independently reconstituted file bytes; it does not establish whole-commit or history completeness."
+  },
+  "native_or_archived_code_executed": false,
+  "runtime_qualification_claimed": false,
+  "production_activation": false,
+  "eligible_to_clear_library": false
+}
