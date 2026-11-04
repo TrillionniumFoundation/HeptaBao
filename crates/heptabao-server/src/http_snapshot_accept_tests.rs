@@ -435,13 +435,13 @@ fn seed() -> TestResult<Seed> {
             .status,
         204
     );
-    assert_eq!(fixture.call("PUT", "sys/policies/acl/snapshot-read-sudo", &root,
-        json!({"policy":"path \"sys/storage/raft/snapshot\" { capabilities=[\"read\",\"update\",\"sudo\"] }"}))?.status, 204);
+    assert_eq!(fixture.call("PUT", "sys/policies/acl/snapshot-no-access", &root,
+        json!({"policy":"path \"secret/data/history\" { capabilities=[\"read\"] }"}))?.status, 204);
     let issued = fixture.call(
         "POST",
         "auth/token/create",
         &root,
-        json!({"policies":["snapshot-read-sudo"],"no_default_policy":true,"ttl":"1h"}),
+        json!({"policies":["snapshot-no-access"],"no_default_policy":true,"ttl":"1h"}),
     )?;
     assert_eq!(issued.status, 200);
     let actor = Zeroizing::new(
@@ -710,7 +710,7 @@ fn native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refu
             ("POST", b"not-an-archive".as_slice()),
         ] {
             let rejected = fixture.snapshot(method, token, "", body)?;
-            assert_eq!(rejected.status, 403, "typed snapshot remains root-owned");
+            assert_eq!(rejected.status, 403, "the original actor has no snapshot ACL");
             assert!(rejected.json()?.get("data").is_none());
         }
     }

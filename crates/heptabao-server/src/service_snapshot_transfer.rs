@@ -611,8 +611,7 @@ impl Service {
         &mut self,
         request: &ServiceRequest<'_>,
     ) -> Result<StandbySnapshotAdmission, Response> {
-        if !self.native_ha_snapshot_transport_enabled()
-            || crate::http::consistency::requires_active(
+        if crate::http::consistency::requires_active(
                 request.method,
                 request.path,
                 request.namespace,
@@ -634,7 +633,11 @@ impl Service {
         // Actual synchronization and ReadIndex precede token inspection.
         // A routing hint cannot select stale credentials or spend a use.
         self.sync_from_ha_with_anchor(false)?;
-        if !self.native_standby_snapshot_is_read_eligible() {
+        // A cold V5 standby must observe the actual committed activation before
+        // deciding whether its installed root supports this read-only path.
+        if !self.native_ha_snapshot_transport_enabled()
+            || !self.native_standby_snapshot_is_read_eligible()
+        {
             return Ok(StandbySnapshotAdmission::Redirect);
         }
         let started = Instant::now();

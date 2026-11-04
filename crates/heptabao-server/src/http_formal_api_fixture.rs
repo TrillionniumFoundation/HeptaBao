@@ -128,6 +128,9 @@ impl FormalApiListener {
         if peer != client_address || !peer.ip().is_loopback() {
             return Err("formal TLS listener accepted a different client".into());
         }
+        // Darwin accept inherits O_NONBLOCK from the listener. The real TLS
+        // stream uses its existing absolute socket deadline and blocking I/O.
+        server_socket.set_nonblocking(false)?;
         let close_client = client_socket.try_clone()?;
         let close_server = server_socket.try_clone()?;
         let server_tls = Arc::clone(&self.server_tls);
