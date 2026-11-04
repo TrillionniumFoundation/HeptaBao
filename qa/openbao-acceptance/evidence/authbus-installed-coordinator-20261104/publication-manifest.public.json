@@ -1,0 +1,134 @@
+{
+  "fullReplacementQualified": false,
+  "memberCountIncludingManifest": 26,
+  "membersExcludingThisManifest": [
+    {
+      "bytes": 44118,
+      "path": "tools/authbus/authbus_coordinator.py",
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d"
+    },
+    {
+      "bytes": 37221,
+      "path": "tools/authbus/authbus_coordinator_installed.py",
+      "sha256": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b"
+    },
+    {
+      "bytes": 11788,
+      "path": "tools/authbus/authbus_system_unit_runtime.py",
+      "sha256": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958"
+    },
+    {
+      "bytes": 24525,
+      "path": "tools/authbus/INSTALLED_COORDINATOR.md",
+      "sha256": "32f15cf6f4a8c210aaa2b69d48ebdfa55213f256b59934e27cce4d54883334d4"
+    },
+    {
+      "bytes": 11122,
+      "path": "tools/authbus/POCKET_CUTOVER_PLAN.md",
+      "sha256": "555277bd265055d071b058774d531e9576b4db103c373bc0b95ab9361f92f999"
+    },
+    {
+      "bytes": 58017,
+      "path": "qa/openbao-acceptance/authbus_coordinator_installed_supervisor_live.py",
+      "sha256": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302"
+    },
+    {
+      "bytes": 9401,
+      "path": "qa/openbao-acceptance/authbus_owned_proc_runtime_observer.py",
+      "sha256": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff"
+    },
+    {
+      "bytes": 3799,
+      "path": "qa/openbao-acceptance/authbus_owned_proc_runtime_observer_contract_test.py",
+      "sha256": "35c89d2507036ef9c00339dc1aea58be7ef9d0b673a29b596431e95704c084c5"
+    },
+    {
+      "bytes": 9141,
+      "path": "qa/openbao-acceptance/authbus_system_unit_runtime_contract_test.py",
+      "sha256": "6d054422d52348d76989ae3abed74cc33d570e86005a030400fb36f0c98ae6d2"
+    },
+    {
+      "bytes": 38898,
+      "path": "qa/openbao-acceptance/authbus_coordinator_contract_test.py",
+      "sha256": "e37065b40fd6f3dba1db033e167e6b386de09d8c4eeb17fb9870df6e9363584f"
+    },
+    {
+      "bytes": 30310,
+      "path": "qa/openbao-acceptance/authbus_coordinator_installed_contract_test.py",
+      "sha256": "7e5dad6e62ed0a13368f69682f9bba0f92e689ddfbe7b05d932e0be95f6f8fbf"
+    },
+    {
+      "bytes": 2292,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/README.md",
+      "sha256": "eaa3c8a03a8d942b44081506ffc80f689638551bedf1d009ff529a600bdb825a"
+    },
+    {
+      "bytes": 6361,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/assessment.public.json",
+      "sha256": "759b1d0710222a2a3a05eee100e6ebcf3f4ec1a091d529f9d38aad37fd119f42"
+    },
+    {
+      "bytes": 1005,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/installed-system-contract.public.json",
+      "sha256": "38d79d0c348444012b1eeb8043d678a3f843bd566be70de5066bb9bb6d973d67"
+    },
+    {
+      "bytes": 1823,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/original-core-contract.public.json",
+      "sha256": "be7473e3cd0c4f3f3e3cb14fdcd2b3e6ef86b6da9821d8c06a01ff36a887d06c"
+    },
+    {
+      "bytes": 720,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/original-unit-identity-contract.public.json",
+      "sha256": "1ce18c21b0ca58d48f262255f97a96dda49e78c85384a4b686ad8ef8e0f307c2"
+    },
+    {
+      "bytes": 692,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/owned-proc-observer-contract.public.json",
+      "sha256": "6fc22f270599d7a8f25cd346045a25d8940ae60f65da776a83a48269d22ac4f1"
+    },
+    {
+      "bytes": 1018,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/root-unit-file-contract.public.json",
+      "sha256": "ea5aa1835903283ca627015f45d6722de791ee27b645f10800a10dd96a6651ee"
+    },
+    {
+      "bytes": 25055,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/system-r4-result.public.json",
+      "sha256": "8c47538d9b301dddaa5616c639dc322f293d122bee039a72ebae729002d7b580"
+    },
+    {
+      "bytes": 4692,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/system-r5-fixed-plan.public.json",
+      "sha256": "19cc4bc609637006b5b1d85f15db25de749bd65dcbd60b901f633e8265ead346"
+    },
+    {
+      "bytes": 125985,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/system-r5-result.public.json",
+      "sha256": "fef3c0905dc90c2a30975cb5f0b3714e60624b69d532ad2fffc4c87de8720f0b"
+    },
+    {
+      "bytes": 1126,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/user-r1-cleanup.public.json",
+      "sha256": "1db7ec183f91c227694902bd7c406a93adf5bd36c9936afc6a4f22f608321342"
+    },
+    {
+      "bytes": 14946,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/user-r1-result.public.json",
+      "sha256": "b9c7cfe0cafef987cc52518f9b651b9ff4b2217a3f11c55e78ee13f417a7f53d"
+    },
+    {
+      "bytes": 19333,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/user-r2-result.public.json",
+      "sha256": "54d309831e1b2fe03d8be148fc3fbc9f2a4b51413d609ad6629592cfe35652e4"
+    },
+    {
+      "bytes": 20709,
+      "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/user-r3-result.public.json",
+      "sha256": "e1a70454948703f3947d6431aded6a819a90de8b8938896c144e401df3ba242f"
+    }
+  ],
+  "privateMaterialIncluded": false,
+  "productionChanged": false,
+  "schema": "heptabao.installed-coordinator-publication-manifest.v1"
+}

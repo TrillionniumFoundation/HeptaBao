@@ -181,6 +181,25 @@ class TransportContract(unittest.TestCase):
         self.assertEqual(self.client.token, 'synthetic-coordinator-bearer')
         self.assertEqual(len(self.sent), 1)
 
+    def test_successful_login_malformed_auth_reply_is_unknown_without_installing_token(self):
+        for auth in ({'client_token': 'synthetic-issued-unaccepted-bearer'}, 'synthetic-nonobject-auth'):
+            with self.subTest(nonobject=isinstance(auth, str)):
+                self.client.token, self.client.deadline = None, 0
+                self.sent.clear(); self.reply = {'auth': auth}
+                with patch.object(central, 'read_private', return_value=b'synthetic-approle-material'):
+                    with self.assertRaisesRegex(central.UnknownOutcome, 'approle_reply_shape'):
+                        self.client.request('GET', 'synthetic/read')
+                self.assertEqual([item['path'] for item in self.sent], ['/v1/auth/approle/login'])
+                self.assertEqual((self.client.token, self.client.deadline), (None, 0))
+
+    def test_successful_renewal_changed_bearer_is_unknown_without_replacing_original(self):
+        self.client.deadline = 120
+        self.reply['auth']['client_token'] = 'synthetic-unexpected-new-bearer'
+        with self.assertRaisesRegex(central.UnknownOutcome, 'coordinator_renewal_token_changed'):
+            self.client.request('GET', 'synthetic/read')
+        self.assertEqual([item['path'] for item in self.sent], ['/v1/auth/token/renew-self'])
+        self.assertEqual((self.client.token, self.client.deadline), ('synthetic-coordinator-bearer', 120))
+
     def test_original_lease_can_expire_before_renewal_dispatch(self):
         self.client.deadline = 105
         self.delays['connect'] = 6
@@ -196,10 +215,53 @@ class TransportContract(unittest.TestCase):
             return self.reply
         with patch.object(central, 'read_private', return_value=b'synthetic-approle-material'), \
              patch.object(self.client, '_dispatch', delayed_reply):
-            with self.assertRaisesRegex(central.Error, 'coordinator_reply_lease_elapsed'):
+            with self.assertRaisesRegex(central.UnknownOutcome, 'coordinator_reply_lease_elapsed'):
                 self.client.ensure_token()
         self.assertIsNone(self.client.token)
         self.assertEqual(self.client.deadline, 0)
+
+    def test_many_renewals_keep_only_current_authentication_guard(self):
+        self.client.token, self.client.deadline = None, 0
+        material = lambda path, _maximum: (b'synthetic-current-role' if str(path).endswith('role')
+                                           else b'synthetic-current-secret')
+        with patch.object(central, 'read_private', side_effect=material):
+            self.client.ensure_token()
+        expected = {'synthetic-current-role', 'synthetic-current-secret', 'synthetic-coordinator-bearer'}
+        for _ in range(512):
+            self.now = self.client.deadline - 10
+            self.client.ensure_token()
+            self.assertEqual(set(self.client.secrets), expected)
+            self.assertEqual(len(self.client.secrets), 3)
+        self.assertEqual(len(self.sent), 513)
+        self.assertTrue(all(row['path'] == '/v1/auth/token/renew-self' for row in self.sent[1:]))
+
+    def test_reauthentication_replaces_former_material_in_guard(self):
+        previous = set()
+        for number in range(32):
+            role, secret, token = (f'synthetic-current-role-{number}',
+                                   f'synthetic-current-secret-{number}',
+                                   f'synthetic-current-token-{number}')
+            self.client.token, self.client.deadline = None, 0
+            self.reply['auth']['client_token'] = token
+            material = lambda path, _maximum: (role if str(path).endswith('role') else secret).encode()
+            with patch.object(central, 'read_private', side_effect=material):
+                self.client.ensure_token()
+            self.assertEqual(set(self.client.secrets), {role, secret, token})
+            self.assertFalse(previous.intersection(self.client.secrets))
+            previous = {role, secret, token}
+
+    def test_failed_renewal_retains_current_authentication_guard(self):
+        self.client.token, self.client.deadline = None, 0
+        with patch.object(central, 'read_private', return_value=b'synthetic-current-approle-material'):
+            self.client.ensure_token()
+        expected = list(self.client.secrets)
+        self.now = self.client.deadline - 5
+        self.delays['send'] = 11
+        with self.assertRaises(central.UnknownOutcome):
+            self.client.ensure_token()
+        self.assertEqual(self.client.secrets, expected)
+        self.assertIn('synthetic-current-approle-material', self.client.secrets)
+        self.assertIn('synthetic-coordinator-bearer', self.client.secrets)
 
     def test_oversized_inbox_page_refuses_without_mutating_or_deleting(self):
         self.reply = {'data': {'keys': [str(uuid.UUID(int=index)) for index in range(1, 1026)]}}
@@ -629,6 +691,40 @@ class Contract(unittest.TestCase):
             self.assertEqual(self.reopen().once()['committed'], 0)
         self.assertEqual(self.bao.read('manifest')['data']['profiles'], [])
         self.assertIsNone(self.bao.read(central.receipt_key('producer', event['eventId'])))
+
+
+    def test_many_deferred_cycles_keep_only_bounded_current_scan_guard(self):
+        values = []
+        for number in range(96):
+            event = self.event(secret=f'synthetic-deferred-secret-{number}')
+            values.append(event['credential']['key'])
+            self.inbox(event)
+        initial = self.bao.read('manifest')
+        for _ in range(128):
+            result = self.worker.once()
+            self.assertEqual(result['committed'], 0)
+            self.assertEqual(result['deferred'], result['scanned'])
+            self.assertLessEqual(len(self.worker.secrets), central.MAX_SCAN_EVENTS)
+            self.assertTrue(all(secret not in json.dumps(result) for secret in values))
+        self.assertEqual(self.bao.read('manifest'), initial)
+        self.assertEqual(len([key for key in self.bao.values if key.startswith('inbox/')]), 96)
+        self.assertFalse(any(key.startswith('coordinator-receipts/') for key in self.bao.values))
+
+    def test_failed_cycle_drops_prior_guard_and_keeps_current_event_secret(self):
+        earlier = self.event(secret='synthetic-prior-cycle-only-secret')
+        self.inbox(earlier)
+        self.assertEqual(self.worker.once()['deferred'], 1)
+        self.assertIn(earlier['credential']['key'], self.worker.secrets)
+        invalid = self.event(secret='synthetic-current-failed-cycle-secret')
+        invalid['eventId'] = str(uuid.UUID(int=0))
+        invalid['digest'] = '0' * 64
+        self.inbox(invalid)
+        before_cursor = (self.directory / 'inbox-scan.private.json').read_bytes()
+        with self.assertRaisesRegex(central.Error, 'event_credential_digest_mismatch'):
+            self.worker.once()
+        self.assertEqual(self.worker.secrets, [invalid['credential']['key']])
+        self.assertEqual((self.directory / 'inbox-scan.private.json').read_bytes(), before_cursor)
+        self.assertEqual(self.bao.read('manifest')['data']['profiles'], [])
 
 
 if __name__ == '__main__':

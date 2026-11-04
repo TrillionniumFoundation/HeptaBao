@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "productionChanged": false,
+  "realPrivateFilesAndLocks": true,
+  "realServerOrServiceManagerTested": false,
+  "schema": "heptabao.authbus-coordinator-installed-contract-validation.v1",
+  "sourcePins": {
+    "qa/openbao-acceptance/authbus_coordinator_contract_test.py": "e37065b40fd6f3dba1db033e167e6b386de09d8c4eeb17fb9870df6e9363584f",
+    "qa/openbao-acceptance/authbus_coordinator_installed_contract_test.py": "56876d7c1ed4519990be8dab8a5163f4633a9b3b02b5f6e3c2f480e56e6d5201",
+    "tools/authbus/INSTALLED_COORDINATOR.md": "265e477b73ce6297c919c731479fce34ff74d25be4ee1912c2cfed4c76fa235d",
+    "tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "tools/authbus/authbus_coordinator_installed.py": "dddcea3ef7478b7c5772bdcdc334fa8b4b0469e76443d3bf280a882c91c81fe2"
+  },
+  "suites": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "qa/openbao-acceptance/authbus_coordinator_contract_test.py"
+      ],
+      "elapsedSeconds": 1.28371054600575,
+      "exitCode": 0,
+      "name": "original-core",
+      "ok": true,
+      "stderrSha256": "e7e97ad0960e191af3558bb31d73ab43e0dc68b255670f7208e1767ad402f261",
+      "tests": 45
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "qa/openbao-acceptance/authbus_coordinator_installed_contract_test.py"
+      ],
+      "elapsedSeconds": 1.811198969007819,
+      "exitCode": 0,
+      "name": "installed-entry",
+      "ok": true,
+      "stderrSha256": "ed17e481f4cd74ff876fc9ab54227759058e89c18d25bbf91fafac4698632518",
+      "tests": 28
+    }
+  ],
+  "syntheticKvBoundary": true
+}

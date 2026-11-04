@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.coordinator-original-normal-startup-adapter.v1",
+  "base_source_ref": "054d17cd50951efa46d78db3911ad1d277a0c584",
+  "original_driver_sha256": "61c7720591995c64ab4c8f1d4a78be10b9569430f6bb52b86d95ddf13a277cad",
+  "normal_driver_sha256": "d67736322a29f5daad0eb657007f56b4922c727cdf7188e5a5f3a49fd17afa65",
+  "consumer_sha256": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+  "diff_sha256": "1ff1faa77da8ea1320afe9380c1b4d810b9fd2d4f24c1b78a480b1c11eeb582f",
+  "original_worker_ast_identical": true,
+  "all_original_run_assertions_and_steps_ast_identical_after_two_entrypoint_substitutions": true,
+  "original_http_seconds": 10,
+  "original_readiness_seconds": 12,
+  "original_worker_seconds": 75,
+  "fixture_options": false,
+  "formal_profile": "native_v6_file",
+  "actual_installed_entry_executed": false,
+  "runtime_executed": false,
+  "provider_credentials_synthetic_only": true,
+  "production_changed": false
+}

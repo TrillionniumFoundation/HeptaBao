@@ -357,7 +357,9 @@ class Bao:
             role = read_private(Path(self.config['role_id_file']), 16384).decode().strip()
             secret = read_private(Path(self.config['secret_id_file']), 16384).decode().strip()
             require(8 <= len(role) <= 4096 and 8 <= len(secret) <= 4096, 'approle_material_shape')
-            self.secrets.extend((role, secret))
+            # The guard retains only material for the current authentication.
+            # A long-running publisher must not keep every former login pair.
+            self.secrets[:] = [role, secret]
             auth_started = time.monotonic()
             result = self._dispatch('POST', 'auth/approle/login', {'role_id': role, 'secret_id': secret},
                                     started_at=auth_started)
@@ -369,12 +371,20 @@ class Bao:
             result = self._dispatch('POST', 'auth/token/renew-self', {'increment': '300s'},
                                     bearer=previous_token, bearer_deadline=self.deadline, started_at=auth_started)
         auth = result.get('auth', {}) if isinstance(result, dict) else {}
-        require(isinstance(auth.get('client_token'), str) and len(auth['client_token']) >= 8
-                and isinstance(auth.get('lease_duration'), int) and auth['lease_duration'] > 30, 'approle_reply_shape')
-        require(previous_token is None or auth['client_token'] == previous_token, 'coordinator_renewal_token_changed')
+        # A successful authentication POST has already been dispatched. A
+        # reply that cannot be accepted does not establish that no token or
+        # renewal was issued, even when the caller started with a GET.
+        if not (isinstance(auth, dict) and isinstance(auth.get('client_token'), str) and len(auth['client_token']) >= 8
+                and isinstance(auth.get('lease_duration'), int) and auth['lease_duration'] > 30):
+            raise UnknownOutcome('approle_reply_shape')
+        if previous_token is not None and auth['client_token'] != previous_token:
+            raise UnknownOutcome('coordinator_renewal_token_changed')
         accepted_deadline = auth_started + auth['lease_duration']
-        require(time.monotonic() < accepted_deadline, 'coordinator_reply_lease_elapsed')
-        self.token = auth['client_token']; self.secrets.append(self.token)
+        if time.monotonic() >= accepted_deadline:
+            raise UnknownOutcome('coordinator_reply_lease_elapsed')
+        self.token = auth['client_token']
+        if self.token not in self.secrets:
+            self.secrets.append(self.token)
         self.deadline = accepted_deadline
         self.renewable = auth.get('renewable') is True
 
@@ -417,13 +427,16 @@ class Bao:
 
 
 class Coordinator:
-    def __init__(self, client, state_dir, owner_id, source_hosts, phase_hook=None):
+    def __init__(self, client, state_dir, owner_id, source_hosts, phase_hook=None, lock_factory=None):
         require(valid_uuid(owner_id) and 1 <= len(source_hosts) <= 16
                 and all(HOST.fullmatch(host) for host in source_hosts)
                 and len(source_hosts) == len(set(source_hosts)), 'coordinator_owner_configuration')
         self.client, self.state, self.owner = client, Path(state_dir), owner_id
         self.sources = list(source_hosts)
         self.hook = phase_hook or (lambda phase: None)
+        # The installed entry supplies an existing-only, identity-bound lock.
+        # Candidate callers retain their original create-on-first-use contract.
+        self.operation_lock = lock_factory or operation_lock
         owned_directory(self.state)
         self.pending = self.state / 'pending.private.json'
         self.secrets = []
@@ -435,7 +448,7 @@ class Coordinator:
         return result
 
     def initialize(self):
-        with operation_lock(self.state):
+        with self.operation_lock(self.state):
             require(not self.pending.exists(), 'pending_operation_requires_recovery')
             require(self.client.read('manifest') is None, 'existing_manifest_requires_reviewed_migration')
             value = {'schemaVersion': 1, 'generation': 0, 'profiles': [], 'coordinator': {
@@ -480,7 +493,7 @@ class Coordinator:
 
     def authorize(self, grant):
         validate_grant(grant, self.sources)
-        with operation_lock(self.state):
+        with self.operation_lock(self.state):
             require(not self.pending.exists(), 'pending_operation_requires_recovery')
             snapshot = self.manifest(); self.finish_previous_receipt(snapshot)
             value = snapshot['data']
@@ -498,7 +511,7 @@ class Coordinator:
 
     def revoke_authorization(self, authorization_id):
         require(valid_uuid(authorization_id), 'operator_authorization_id_shape')
-        with operation_lock(self.state):
+        with self.operation_lock(self.state):
             require(not self.pending.exists(), 'pending_operation_requires_recovery')
             snapshot = self.manifest(); self.finish_previous_receipt(snapshot)
             value = snapshot['data']
@@ -651,11 +664,14 @@ class Coordinator:
         return value
 
     def once(self):
+        # Keep this cycle's event secrets through its success/error reporting,
+        # but never retain secrets from an earlier scan (including deferrals).
+        self.secrets.clear()
         report = {'schema': PROTOCOL + '.cycle', 'owner_id': self.owner, 'ok': False,
                   'committed': 0, 'observed_reports': 0, 'already_recorded': 0, 'deferred': 0,
                   'scanned': 0, 'list_requests': 0,
                   'oauth_refreshed': False, 'scheduler_implemented': False, 'provider_liveness_verified': False}
-        with operation_lock(self.state):
+        with self.operation_lock(self.state):
             report['recovered_pending'] = self.recover_locked()
             self.finish_previous_receipt(self.manifest())
             scan = self.scan_state()

@@ -1,0 +1,95 @@
+--- original/native_v6_authbus_coordinator_live.py
++++ normal/native_v6_authbus_coordinator_live.py
+@@ -14,6 +14,8 @@
+ import os
+ from pathlib import Path
+ import secrets
++import ssl
++import urllib.error
+ import stat
+ import subprocess
+ import sys
+@@ -22,7 +24,7 @@
+ 
+ import owned_process
+ from cert_auth_live import cert_sha256
+-from native_v6_authbus_client_live import CanaryFailure, NativeInstance, private, sha, value_sha
++from native_v6_authbus_client_live import CanaryFailure, smoke, private, sha, value_sha
+ from native_v6_openclaw_authbus_live import FILES, mkdir, owned_private_json
+ 
+ 
+@@ -31,6 +33,43 @@
+ PRODUCER, FOLLOWER, WRITER = 'authbus-central-producer', 'authbus-central-follower', 'authbus-central-writer'
+ PROFILE = 'openai:authbus-central-a'
+ ORIGINAL_PLUGIN_SHA = 'b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b'
++
++
++class NormalInstance(smoke.Instance):
++    """Original startup/request budgets on the configured normal file backend."""
++    def __init__(self, binary, root):
++        super().__init__(binary, root)
++        config = json.loads((root / 'server.json').read_bytes())
++        if 'storage' in config:
++            raise CanaryFailure('fresh_normal_storage_selection')
++        config['storage'] = {'native_v6_file': {'path': config['data_dir']}}
++        private(root / 'server.json', json.dumps(config), replace=True)
++
++    def start(self):
++        self.log = open(self.root / "server.log", "ab")
++        self.process = owned_process.popen(
++            [str(self.binary), "--config", str(self.root / "server.json")],
++            stdout=self.log, stderr=self.log, label="native-authbus.normal-server", action="KILL", stop_timeout=5,
++        )
++        try:
++            deadline = time.monotonic() + 12
++            while time.monotonic() < deadline:
++                if self.process.poll() is not None:
++                    raise CanaryFailure("native_server_startup_exit")
++                try:
++                    status, _ = self.call("GET", "sys/health")
++                    if status in (200, 501, 503):
++                        return
++                except urllib.error.URLError as error:
++                    if isinstance(error.reason, ssl.SSLCertVerificationError):
++                        raise CanaryFailure("server_ca_verification_failed") from None
++                except OSError:
++                    pass
++                time.sleep(0.05)
++            raise CanaryFailure("native_server_readiness_timeout")
++        except BaseException:
++            self.stop()
++            raise
+ 
+ 
+ def import_central(path, expected):
+@@ -263,7 +302,7 @@
+         check('original_plugin.expected_main_version', report['plugin_source_sha256']['index.js'] == ORIGINAL_PLUGIN_SHA)
+         private(root / 'plugin/package.json', json.dumps({'type': 'module', 'private': True}))
+         (root / 'node_modules/openclaw').symlink_to(args.openclaw_root, target_is_directory=True)
+-        instance = NativeInstance(args.binary, root / 'server')
++        instance = NormalInstance(args.binary, root / 'server')
+         report['server_cert_der_sha256'] = cert_sha256(instance.root / 'tls.crt'); instance.start()
+         init = call('server.init', 'POST', 'sys/init', {'secret_shares': 1, 'secret_threshold': 1}, token='')
+         instance.token, unseal = init['root_token'], init['keys_base64'][0]
+@@ -271,7 +310,7 @@
+         private(root / 'recovery.private.json', json.dumps({'root_token': instance.token, 'unseal_key': unseal}))
+         call('server.unseal', 'POST', 'sys/unseal', {'key': unseal}, token='')
+         call('server.mount', 'POST', 'sys/mounts/' + MOUNT, {'type': 'kv', 'options': {'version': '2'}}, expected=204)
+-        call('server.activate_native', 'POST', 'sys/internal/native-v6/activate', {}, expected=204)
++        call('server.activate_native', 'POST', 'sys/storage/native-v6/activate', {}, expected=204)
+         capacity = call('server.capacity', 'GET', 'sys/internal/capacity')['data']
+         check('server.native_format2', capacity.get('native_kv2_reader_format') == 2)
+         call('server.approle_mount', 'POST', 'sys/auth/approle', {'type': 'approle'}, expected=204)
+@@ -433,7 +472,11 @@
+               'production_cutover': False, 'production_coordinator_replacement': False,
+               'j3160_contacted': False, 'real_provider_credentials': False, 'provider_called': False,
+               'oauth_refreshed': False, 'enforced_scheduler_qualified': False,
+-              'actual_sdk_qualified': False, 'actual_service_https_qualified': False}
++              'actual_sdk_qualified': False, 'actual_service_https_qualified': False,
++              'normal_storage_profile': 'native_v6_file', 'fixture_feature_used': False,
++              'coordinator_execution_scope': 'direct_core_api', 'installed_entry_executed': False,
++              'original_worker_seconds': 75, 'original_http_seconds': 10,
++              'original_readiness_seconds': 12, 'formal_activation_route': 'sys/storage/native-v6/activate'}
+     try:
+         run(args, report)
+     except Exception as exc:

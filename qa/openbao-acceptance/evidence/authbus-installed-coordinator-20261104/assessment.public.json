@@ -1,0 +1,139 @@
+{
+  "actualRogManagerQualified": false,
+  "actualSdkProducerFollowerTested": false,
+  "actualSystemManagerQualified": true,
+  "actualUserManagerQualified": false,
+  "completePairedOwnerKvRestoreQualified": true,
+  "criticalChecks": [
+    "ungranted_cycle_completed",
+    "ungranted_manifest_empty",
+    "actual_unit_published_a",
+    "event_manifest_committed_before_ack",
+    "paired_snapshot_download",
+    "paired_owner_sources_unchanged_under_both_locks",
+    "paired_backup_exact_owner_bytes",
+    "actual_manager_cleared_event_pending",
+    "actual_manager_no_manifest_replay",
+    "post_snapshot_mutation_observed",
+    "real_snapshot_restore_once",
+    "actual_normal_sigkill_wait",
+    "restored_cold_starts_sealed",
+    "restored_cold_unseal",
+    "restored_exact_remote_manifest",
+    "restored_original_owner_anchor",
+    "paired_pending_recovered",
+    "paired_original_manifest_not_replayed",
+    "known_binding_failure.no_automatic_retry",
+    "unknown_pending_failure.no_automatic_retry",
+    "actual_readonly_reconciliation",
+    "sources_unchanged"
+  ],
+  "fullReplacementQualified": false,
+  "liveResult": {
+    "bytes": 125985,
+    "checks": 547,
+    "passed": 547,
+    "path": "qa/openbao-acceptance/evidence/authbus-installed-coordinator-20261104/system-r5-result.public.json",
+    "sha256": "fef3c0905dc90c2a30975cb5f0b3714e60624b69d532ad2fffc4c87de8720f0b"
+  },
+  "ok": true,
+  "originalBudget": {
+    "coordinatorRequestSeconds": 10,
+    "managerCommandSeconds": 15,
+    "noRestartObservationSeconds": 6,
+    "ownedWorkerSeconds": 75,
+    "serverReadinessSeconds": 12,
+    "snapshotHttpSeconds": 15
+  },
+  "ownedCleanupComplete": true,
+  "pairedCapture": {
+    "bothOriginalLocksHeld": true,
+    "fixtureInboxRpo": "quiescent_exact_capture",
+    "ownerFiles": {
+      "completed-c0537bd8-64ff-4c19-8898-8b3862c5d01e.json": "eb987a2e9fe92c3b20a4266ff3b7473a81c62830e4cfc3e833711147d9df37a0",
+      "inbox-scan.private.json": "7d64ff26318024df3a633e4ee5d074e4a81d252bf690cd91c9437e7c46005f79",
+      "operation.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "operator-completed-209a9220-aff4-487c-8896-3e2f2eb058c8.private.json": "e84902b4df1b29ee73caad2133ca7a7b6ad3709236e09fbde1587a67cd5abde9",
+      "operator-completed-411a65a1-8fbd-41c0-a9fc-152f64403dd1.private.json": "be25b6f0eb6f05e871fae235adc6c6c88c0d4535caa6a83be67ae2c73966852f",
+      "operator-completed-f03fab16-17ec-459d-99a5-369c3c2a9a66.private.json": "332108ce2a42f66127e102dcc8baf14c0ff5560d8842680a10d0b5f1da0390fb",
+      "owner.private.json": "14afba35437c893f7ef4e298ab5c82f775b91a717aacec893240edc875245ab8",
+      "pending.private.json": "b4f618509b4315523378b82e73b5e86593f379ae91d85211209c6aa4fc06826b",
+      "service.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pendingEventPhase": "manifest_dispatched",
+    "serviceStopped": true,
+    "snapshotBytes": 238621,
+    "snapshotSha256": "4c844fca98d72804f50128a7019c4df478cc9b81b98fe765a1ea39d3fe0f5164",
+    "sourceProducersQuiescent": true
+  },
+  "priorFailures": [
+    {
+      "name": "system-r4-result.public.json",
+      "sha256": "8c47538d9b301dddaa5616c639dc322f293d122bee039a72ebae729002d7b580"
+    },
+    {
+      "name": "user-r1-result.public.json",
+      "sha256": "b9c7cfe0cafef987cc52518f9b651b9ff4b2217a3f11c55e78ee13f417a7f53d"
+    },
+    {
+      "name": "user-r2-result.public.json",
+      "sha256": "54d309831e1b2fe03d8be148fc3fbc9f2a4b51413d609ad6629592cfe35652e4"
+    },
+    {
+      "name": "user-r3-result.public.json",
+      "sha256": "e1a70454948703f3947d6431aded6a819a90de8b8938896c144e401df3ba242f"
+    }
+  ],
+  "productionChanged": false,
+  "providerCalled": false,
+  "readOnlyCodeAndConfigInAllFiveActualProcesses": true,
+  "remainingQualification": [
+    "ROG actual installed SDK producer/follower has separate direct-core normal-server scope",
+    "ROG chosen actual production manager and exact installation still require host-specific qualification",
+    "Production TLS/AppRole/source-generation binding and single-writer exclusion must be real",
+    "Finite per-host configuration CAS, restart, credential/source retention and strict rollback before any client cutover",
+    "Actual current paired/offhost backup registration before conditional legacy retirement"
+  ],
+  "rootUnitReconciliationRequired": false,
+  "schema": "heptabao.authbus-installed-coordinator-qualification-recap.v1",
+  "scope": "X230 actual system manager with normal33 and synthetic OAuth inbox",
+  "serviceIdentity": {
+    "gid": 1000,
+    "uid": 1000
+  },
+  "source": {
+    "binarySha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "buildResultSha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42",
+    "commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "fixtureOptions": false,
+    "nativeReceiptSha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+    "storage": "native_v6_file",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "sourcePins": {
+    "core": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "driver": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302",
+    "entry": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+    "helpers": {
+      "qa/openbao-acceptance/kv2_271_lossless_native_live.py": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "qa/openbao-acceptance/owned_process.py": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "qa/single-node/smoke.py": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+    }
+  },
+  "systemPlan": {
+    "actor": {
+      "gid": 1000,
+      "group": "qian",
+      "uid": 1000,
+      "user": "qian"
+    },
+    "helperSha256": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958",
+    "path": "/home/qian/heptabao-authbus-installed-entry-20261104-r1/source-system-r5/system-scope-plan-r6.public.json",
+    "runtimeObserverSha256": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff",
+    "sha256": "19cc4bc609637006b5b1d85f15db25de749bd65dcbd60b901f633e8265ead346",
+    "unitNames": [
+      "heptabao-authbus-installed-qa-efed46d1e85c-1.service",
+      "heptabao-authbus-installed-qa-efed46d1e85c-2.service"
+    ]
+  }
+}
