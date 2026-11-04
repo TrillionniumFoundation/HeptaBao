@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.mac-snapshot-api-syntax-observation.v1",
+  "job_id": "1a1a82c565b-fc05-2de5",
+  "driver_sha256": "7a12c1279c7ee5404c69c3bb0dc86a719e1ca53c7a3cc21d5d28cfbc6b828704",
+  "packet_sha256": "37cd1d55e9df2ee71c17820c48252ede43d088ea48f4aeb82ccfbb981b028ac5",
+  "compiled": true,
+  "driver_executed": false,
+  "source_mutated": false,
+  "output_directory_created": false,
+  "exit_code": 0,
+  "authoritative_state": "succeeded",
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_bytes": 231,
+  "stderr_bytes": 0,
+  "full_replacement_qualified": false
+}
