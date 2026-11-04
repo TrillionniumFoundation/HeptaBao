@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.immutable-kv-clock-protocol-draft.v1",
+  "status": "uncompiled_core_draft_not_registered",
+  "base_commit": "4609acf94695508ea49097039b8355897a1b20f2",
+  "base_tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+  "core": {
+    "path": "qa/evidence/20261104/immutable-kv-clock-transport-61ff-r1/source/ha_immutable_kv_clock.rs",
+    "git_blob": "639a7be285afd0aa54dadf406165e2c2432cac23",
+    "bytes": 26815,
+    "sha256": "5cb1c0f80f5e267d1eae98c364be00e70346033083bd8c359e79342721739ae6"
+  },
+  "domain": {
+    "request_magic": "HBKC1",
+    "response_magic": "HBKR1",
+    "operation": "ImmutableKvRead only, determined by the separate typed protocol; no snapshot operation or POST/PUT.",
+    "wire_method": [
+      "GET",
+      "HEAD",
+      "LIST",
+      "SCAN"
+    ],
+    "service_method": [
+      "GET",
+      "LIST",
+      "SCAN"
+    ],
+    "cluster_digest_bytes": 32,
+    "max_frame_bytes": 32768,
+    "original_target_namespace_token_joint_decoded_bytes": 16388,
+    "original_target_max_bytes": 8192,
+    "encoding": "Three individually canonical base64 fields, jointly bounded before sending and after parsing; no query JSON duplication, business values, caller floor or caller wall clock."
+  },
+  "bindings": [
+    "actual authenticated mTLS peer identity and exact enrolled leaf pin",
+    "source/target nodes and actual leader term before and after the single exchange",
+    "nonce, original ingress, exact post-TLS frame digest",
+    "both original wire method and normalized Service method",
+    "individual original raw-target, namespace and credential SHA-256 values",
+    "source A tuple, enrollment epoch and digest, and original absolute deadline",
+    "actual local Process Arc identity consumed once by the retained operation"
+  ],
+  "authority": "Context and SharedSnapshotClockState are data only. Only the Service sealed ImmutableKvClockObservation can produce Allowed/Denied result metadata after its real writer receipt or strict full-tuple NoChange. Only a completed pinned transport exchange mints the affine remote receipt; its consume mints an affine completion. Service must still obtain actual follower sync/ReadIndex, verify A/B, physical seal, original owner/actor/expiry/deadline and consume the correct disposition before delivery.",
+  "denied": "Exactly403 with sealed observation; ordinary Rejected403 remains an error without completion. No other Denied status is accepted.",
+  "deadline": "One connection/attempt; encoding occurs after TLS under the remaining original duration. Receiver must shorten its original accepted socket budget before reading the tail. This core contains no retry on unknown commit, timeout or leader change.",
+  "unchanged": [
+    "Original ha_snapshot_clock.rs source and its three operations/wire bytes",
+    "SSH forwarding profiles",
+    "Q8/Q9 capacities and budgets",
+    "No SDK request is subjected to an HTTP joint-header bound"
+  ],
+  "pending": [
+    "independent small transport and actual receiver dispatch",
+    "handler registry and both real registration sites",
+    "wire-bound and real TLS tests",
+    "Service/HTTP custody and actual owner completion integration by HA",
+    "format, strict compile and runtime qualification"
+  ],
+  "qualified": false
+}
