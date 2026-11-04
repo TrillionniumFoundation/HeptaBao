@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.reviewed-36076-validation-checkpoint.v1",
+  "as_of_utc": "2026-11-04T06:01:19.473306+00:00",
+  "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
+  "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
+  "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
+  "publication_ancestry_differs_but_source_tree_equal": true,
+  "normal_binaries": {
+    "mac_aarch64": "b924baba30b1fdc0e6f7e7f32ee0974fae7990b97544c0fbae877f85b420450d",
+    "linux_x86_64": "3d9fdf79e26abf4c33fa57568ae7a4c88c79c5def569d92d571c639b855f3df8"
+  },
+  "normal_acceptance": [
+    {
+      "contract": "mac_namespace_retirement",
+      "passed": 31,
+      "required": 31,
+      "receipt_sha256": "740a5ecb69440850011e038551daa3f3cd1c03fd00806ad2c9c028936c6b70e1"
+    },
+    {
+      "contract": "mac_full34",
+      "passed": 31,
+      "required": 31,
+      "receipt_sha256": "25040e083eb24684e2042fde8f87ae2b76d3310d64c0be47187f01783b487398"
+    },
+    {
+      "contract": "mac_signed_kv1_cold_floor",
+      "passed": 98,
+      "required": 98,
+      "receipt_sha256": "37c0982cb9ce174ba2f9cba41252446b0210c6d8734cc4ceea0494bd9cc0058b"
+    },
+    {
+      "contract": "x230_full34",
+      "passed": 31,
+      "required": 31,
+      "receipt_sha256": "cd70e6f486e4d61f99adbc293c3c11b6bc53a9e3b85eca9f38753ab5f3152ac7"
+    },
+    {
+      "contract": "x230_official271_comparison",
+      "candidate_passed": 69,
+      "official_passed": 69,
+      "required_each": 69,
+      "modules": 13,
+      "full_product_coverage": false,
+      "receipt_sha256": "f68a9f50bb9cc72a39d4adbd903abe5fdad266b62cb9d819dc6596dbfb1f8fdf"
+    },
+    {
+      "contract": "x230_real_credential_authbus",
+      "passed": 88,
+      "required": 88,
+      "provider_called": false,
+      "receipt_sha256": "4336a6e7dd4d6e31c83fd6d6cb339e4b9887a048f8345a4e8f9f7d003de0fc5f"
+    },
+    {
+      "contract": "mac_installed_authbus_core",
+      "parent_passed": 54,
+      "parent_required": 54,
+      "consumer_each": [
+        51,
+        51
+      ],
+      "rollback_each": [
+        40,
+        40
+      ],
+      "receipt_sha256": "3ac84a78cb6f6fb145508adbb6918cf7de40478ec92854eeb4427ec5c04242a7"
+    },
+    {
+      "contract": "mac_two_trusted_sources",
+      "parent_passed": 45,
+      "parent_required": 45,
+      "consumer_each": [
+        55,
+        55
+      ],
+      "rollback_each": [
+        39,
+        39
+      ],
+      "source_quota_preserved": true,
+      "provider_called": false,
+      "receipt_sha256": "7a6ee0da71910aa58a8d95b517b4c2516a6f3fbf3ad4fac4e1fc5b55b07a7fcb"
+    },
+    {
+      "contract": "pocket4_installed_authbus_core",
+      "parent_passed": 50,
+      "parent_required": 50,
+      "consumer_each": [
+        50,
+        50
+      ],
+      "rollback_each": [
+        39,
+        39
+      ],
+      "provider_called": false,
+      "receipt_sha256": "840efef707e7744ef1f7e294f97b4d3bf900529ae0764130ea63ec8b9a41d185"
+    }
+  ],
+  "ha_normal_original128": {
+    "passed": 100,
+    "required": 128,
+    "original_import_deadline_seconds": 5,
+    "caller_elapsed_ms": 5011.837,
+    "mutation_intents": 55,
+    "known_responses": 54,
+    "unknown": 1,
+    "unknown_replayed": false,
+    "qualified": false,
+    "receipt_sha256": "6c0c51c2e155db952dfb154b5d5418e2a66beb21b3548f63d1b25f4787deab8b"
+  },
+  "ha_private_diagnostic_original128": {
+    "passed": 128,
+    "required": 128,
+    "diagnostic_only": true,
+    "formal_qualification": false,
+    "mutation_intents": 67,
+    "known_responses": 67,
+    "unknown": 0,
+    "original_fixture_exit_code": 0,
+    "auxiliary_outer_exit_code": 1,
+    "auxiliary_collection_supplemented_without_runtime_replay": true,
+    "source_logs_unchanged": true,
+    "import_http_status": 204,
+    "original_import_deadline_seconds": 5,
+    "caller_elapsed_ms": 4633.859,
+    "caller_margin_ms": 366.141,
+    "receipt_sha256": "43f467004962c5cf7ca0bb8d80d800d5f10cf60d289d5bd06859018d1ea55456",
+    "phase_analysis_sha256": "a954706ffd066c8cff101e5a0ccdfd10e06001de3fc379bdc6edf253b5a607fb"
+  },
+  "real_provider_boundaries": [
+    {
+      "contract": "mac_installed_gateway",
+      "checks_passed": 57,
+      "checks_total": 58,
+      "provider_posts": 1,
+      "http_status": 429,
+      "provider_error_type": "usage_limit_reached",
+      "sdk_error_type": "rate_limit_error",
+      "unknown": false,
+      "replayed": false,
+      "isolated_full_state_rollback": true,
+      "production_gateway_rollback": false,
+      "receipt_sha256": "f93f529a2e4b30e18e729856d141b8c0ae6d4b29988180c50504bf53f04726de"
+    },
+    {
+      "contract": "profile3_native_refresh",
+      "checks_passed": 26,
+      "checks_total": 27,
+      "provider_posts": 1,
+      "http_status": 401,
+      "provider_error_type": "invalid_request_error",
+      "provider_error_code": "invalid_refresh_token",
+      "unknown": false,
+      "replayed": false,
+      "production_stores_changed": false,
+      "receipt_sha256": "3926b7f90c408c6bc0381a2cf98dc906c250cf2d31891a9e69dd4222e1a7d81d"
+    }
+  ],
+  "j3160_contacted_by_new_trust_validation": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "legacy_cleanup_qualified": false,
+  "old_assets_deleted": false,
+  "full_openbao_compatibility_qualified": false,
+  "scope_notes": [
+    "Counts belong to different contracts and cannot be summed into full API compatibility.",
+    "Private diagnostics do not qualify a normal release.",
+    "Exact normal-source Mac/X230 KV2 evidence is separate from three-node HA qualification.",
+    "Existing account identities, quotas, original deadlines, physical fsync and authority checks are preserved.",
+    "Current installed AuthBus clients still point to the old production endpoint.",
+    "This checkpoint authorizes neither production cutover nor old-asset deletion."
+  ]
+}
