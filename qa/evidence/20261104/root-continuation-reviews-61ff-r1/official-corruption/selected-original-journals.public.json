@@ -1,0 +1,205 @@
+{
+  "schema": "heptabao.root.selected-original-journals.v1",
+  "files": [
+    {
+      "name": "roles_before.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/roles_before.public.json",
+      "sha256": "543c2f2d1f964b97f624f66fe113535945b7020da1cb44863060e562542f1fa0",
+      "bytes": 644,
+      "version": "2050:58774913:644:1793821913310119386:1793821913310119386",
+      "text": "{\n  \"actual_leader\": 1,\n  \"label\": \"roles_before\",\n  \"nodes\": {\n    \"1\": {\n      \"ha_enabled\": true,\n      \"is_self\": true,\n      \"leader_node\": 1,\n      \"performance_standby\": null,\n      \"raft_applied_index\": 31,\n      \"raft_committed_index\": 31\n    },\n    \"2\": {\n      \"ha_enabled\": true,\n      \"is_self\": false,\n      \"leader_node\": 1,\n      \"performance_standby\": null,\n      \"raft_applied_index\": 31,\n      \"raft_committed_index\": 31\n    },\n    \"3\": {\n      \"ha_enabled\": true,\n      \"is_self\": false,\n      \"leader_node\": 1,\n      \"performance_standby\": null,\n      \"raft_applied_index\": 31,\n      \"raft_committed_index\": 31\n    }\n  }\n}\n"
+    },
+    {
+      "name": "0031.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0031.outcome.public.json",
+      "sha256": "515fb2285ddaf00f88e9e0f5d0e18e4f683d33663d48ba911b5adb7ef087c4b8",
+      "bytes": 1148,
+      "version": "2050:58774961:1148:1793821914929813338:1793821914929813338",
+      "text": "{\n  \"caller_elapsed_ms\": 258.501358,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": null,\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 28.931563,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 305,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"14e58afcddde3464e65f4220c8f47327e4435e29f6243f4f1166220edb79c3bb\",\n  \"label\": \"truncate_last_byte_node1\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 0,\n  \"response_complete\": true,\n  \"response_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"sequence\": 31,\n  \"status\": 204\n}\n"
+    },
+    {
+      "name": "0032.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0032.outcome.public.json",
+      "sha256": "036e9621c59b5aeb0c8a13db8308b1f8a8b0eca8334328f108ab8e9a90d04966",
+      "bytes": 1174,
+      "version": "2050:58774983:1174:1793821920850447425:1793821920850447425",
+      "text": "{\n  \"caller_elapsed_ms\": 5883.752881,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"14\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 5646.964866,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 223,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"9d11b9067c6d5edc1df23ec7e09c1a7fabf2fbbcd50d38228a249c6a66691782\",\n  \"label\": \"truncate_last_byte_node1_marker_after_restore\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 14,\n  \"response_complete\": true,\n  \"response_sha256\": \"4d7fb62d182e64d98296af95ffed7ef7a9b9c8c815c7466ac9fc4d953c021063\",\n  \"sequence\": 32,\n  \"status\": 404\n}\n"
+    },
+    {
+      "name": "0037.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0037.outcome.public.json",
+      "sha256": "70c8d1782b1d79dd85e25cac3e7b20805f9a2d290bdc8360e26e6814792b2653",
+      "bytes": 1149,
+      "version": "2050:58775031:1149:1793821925100383108:1793821925100383108",
+      "text": "{\n  \"caller_elapsed_ms\": 410.279913,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": null,\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 103.628401,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 305,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"9ef08f1bf620d4e43400660fceed23004c5443c86bc9e4a2eb1732f648328ff5\",\n  \"label\": \"truncate_last_byte_node2\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 2,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 0,\n  \"response_complete\": true,\n  \"response_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"sequence\": 37,\n  \"status\": 204\n}\n"
+    },
+    {
+      "name": "0043.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0043.outcome.public.json",
+      "sha256": "7624fe2a9198e222f8f6c8a29d13254740c701888385338e39de4baa9a9ad672",
+      "bytes": 1146,
+      "version": "2050:58775079:1146:1793821926886263920:1793821926886263920",
+      "text": "{\n  \"caller_elapsed_ms\": 257.449678,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": null,\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 20.848516,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 305,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"b7239c291cbe4149dbeb3623b28e91f6ad726672209b66df13bfdc4d4a33e73d\",\n  \"label\": \"concatenate_self_node1\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 0,\n  \"response_complete\": true,\n  \"response_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"sequence\": 43,\n  \"status\": 204\n}\n"
+    },
+    {
+      "name": "0044.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0044.outcome.public.json",
+      "sha256": "94744efb987781cb294052edb1427a6fdc5a3e33c94aa66c42fd48686c4c1cf6",
+      "bytes": 1172,
+      "version": "2050:58775095:1172:1793821933036310337:1793821933036310337",
+      "text": "{\n  \"caller_elapsed_ms\": 6130.844727,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"14\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 5836.584326,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 223,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"abe0dfaa92bae093d2bf8f8ea04cf910693013402471cee5132306a6601d8690\",\n  \"label\": \"concatenate_self_node1_marker_after_restore\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 14,\n  \"response_complete\": true,\n  \"response_sha256\": \"4d7fb62d182e64d98296af95ffed7ef7a9b9c8c815c7466ac9fc4d953c021063\",\n  \"sequence\": 44,\n  \"status\": 404\n}\n"
+    },
+    {
+      "name": "0049.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0049.outcome.public.json",
+      "sha256": "55c01c327543fb69342211ea0f292632e9dca7be76a27f7ab448e9e452706bb7",
+      "bytes": 1148,
+      "version": "2050:58775138:1148:1793821935700031023:1793821935700031023",
+      "text": "{\n  \"caller_elapsed_ms\": 262.519225,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"31\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 13.073918,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 233,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"35e12cd19ca7d94bf777060531ee21d61e927680e12f382c9fe3f06c72f25112\",\n  \"label\": \"concatenate_self_node2\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 2,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 31,\n  \"response_complete\": true,\n  \"response_sha256\": \"cc3914a895da7d1fbe9ed3f0206d82ffbb0394d2267baddd7c3a8b2b4d04f377\",\n  \"sequence\": 49,\n  \"status\": 503\n}\n"
+    },
+    {
+      "name": "0055.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0055.outcome.public.json",
+      "sha256": "49ef89bccc3a7d3c4a13179f86ffaa1d1aa4aaad38336892869435e39d850ce1",
+      "bytes": 1152,
+      "version": "2050:58775188:1152:1793821937385574990:1793821937385574990",
+      "text": "{\n  \"caller_elapsed_ms\": 262.809206,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"147\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 27.989958,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 236,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"b28550ca30505b1a72ce322ab3810bcb7142e24b697e376c9f36d8ba0eed19fa\",\n  \"label\": \"flip_middle_bit_64_node1\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 147,\n  \"response_complete\": true,\n  \"response_sha256\": \"a8430c8c4f08ac7e017773cc4f402487b75926b3979a779bdfbc993d79faa312\",\n  \"sequence\": 55,\n  \"status\": 500\n}\n"
+    },
+    {
+      "name": "0067.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0067.outcome.public.json",
+      "sha256": "01a80bc38eaca6733eeacf5f2ec4a97795c8d6f35ec61cb15025b6b29e95ceb8",
+      "bytes": 1156,
+      "version": "2050:58775285:1156:1793821940803908138:1793821940803908138",
+      "text": "{\n  \"caller_elapsed_ms\": 263.60646,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"94\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 16.006019,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 235,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"598876897c06ae743957af85db47f0bc333c74b130557445bee926de71ec59c7\",\n  \"label\": \"non_gzip_transfer_literal_node1\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 94,\n  \"response_complete\": true,\n  \"response_sha256\": \"f2920571d32176992f85ca4a838a207a3c07c117309db1e022e4c6f44e492144\",\n  \"sequence\": 67,\n  \"status\": 500\n}\n"
+    },
+    {
+      "name": "0079.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0079.outcome.public.json",
+      "sha256": "c46f10255ec082709438af63704460121f3ed8381c8d0f012fbbea2965886a9f",
+      "bytes": 1153,
+      "version": "2050:58775408:1153:1793821944144642200:1793821944144642200",
+      "text": "{\n  \"caller_elapsed_ms\": 266.873925,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"94\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 15.012094,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 235,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"3c6c692bcf15b737b41768b293a4b7327359ab5fa57eea9c95d60506046d809f\",\n  \"label\": \"non_gzip_http_literal_node1\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 94,\n  \"response_complete\": true,\n  \"response_sha256\": \"f2920571d32176992f85ca4a838a207a3c07c117309db1e022e4c6f44e492144\",\n  \"sequence\": 79,\n  \"status\": 500\n}\n"
+    },
+    {
+      "name": "0088.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0088.outcome.public.json",
+      "sha256": "586915f24312fadc76469c875ddf2b847fbafdd953aaadc6a433e001ea5cbc7d",
+      "bytes": 1139,
+      "version": "2050:58775484:1139:1793821946687090340:1793821946687090340",
+      "text": "{\n  \"caller_elapsed_ms\": 263.032476,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"225\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 26.146952,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 217,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"27a7ff9a59cfcd5b27af383a56bb21b191e02bcc380fa86a2f38464d8cca82cd\",\n  \"label\": \"roles_after\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 225,\n  \"response_complete\": true,\n  \"response_sha256\": \"5242436abb94c152244828b8dbb2da8008222341c67d0fa9a544e36e77c24f35\",\n  \"sequence\": 88,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0089.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0089.outcome.public.json",
+      "sha256": "9b7256439668ad2b2969f8c9e9df1693f9e885ac55372730eddb3cd87a9e31c4",
+      "bytes": 1137,
+      "version": "2050:58775492:1137:1793821946969268182:1793821946969268182",
+      "text": "{\n  \"caller_elapsed_ms\": 263.085637,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"31\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 27.290224,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\"\n  ],\n  \"header_wire_bytes\": 233,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"c6160052e3648b52bfa94334e7a6ec3ae37c0ce441ad66e6653b899fe9e6f391\",\n  \"label\": \"roles_after\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 2,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 31,\n  \"response_complete\": true,\n  \"response_sha256\": \"cc3914a895da7d1fbe9ed3f0206d82ffbb0394d2267baddd7c3a8b2b4d04f377\",\n  \"sequence\": 89,\n  \"status\": 503\n}\n"
+    },
+    {
+      "name": "0028.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0028.outcome.public.json",
+      "sha256": "1833db0758fd4653d8e8416e40965f8fdabd1d709d75062c2356bf183ead30d0",
+      "bytes": 1197,
+      "version": "2050:58774937:1197:1793821914128800603:1793821914128800603",
+      "text": "{\n  \"caller_elapsed_ms\": 258.521449,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": null,\n  \"content_type\": \"application/gzip\",\n  \"elapsed_ms\": 30.983676,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-disposition\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"transfer-encoding\"\n  ],\n  \"header_wire_bytes\": 257,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"1dc7a001e19b5d8cd16de723cfbf6529141cf9041142014660425a371e5b1081\",\n  \"label\": \"truncate_last_byte_node1_actual_source\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 19993,\n  \"response_complete\": true,\n  \"response_sha256\": \"84599682ed596538137e51b8f8472bf0a694677a666db044aa49a288eb61b423\",\n  \"sequence\": 28,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0029.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0029.outcome.public.json",
+      "sha256": "6941424f53a5df5f73f6e17c8d100baf6240427c8c76e798b5706de7344f4dd6",
+      "bytes": 1198,
+      "version": "2050:58774945:1198:1793821914374220060:1793821914374220060",
+      "text": "{\n  \"caller_elapsed_ms\": 237.060386,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"279\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 35.131747,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 318,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"7b0f077d9fc4f209ba00345fd0c0033b6b2bc86726165af2e10b4f5c9f008873\",\n  \"label\": \"truncate_last_byte_node1_post_source_marker_write\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 279,\n  \"response_complete\": true,\n  \"response_sha256\": \"7c7376920319d3aa8ba0165428fdf503f70ab4485ff6655065a30133a069edb3\",\n  \"sequence\": 29,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0030.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0030.outcome.public.json",
+      "sha256": "c6db82d607f1aba18787fb91cec85d7a0f42a869ed5643530fb5bac4f16e41d7",
+      "bytes": 1195,
+      "version": "2050:58774953:1195:1793821914651445178:1793821914651445178",
+      "text": "{\n  \"caller_elapsed_ms\": 258.291285,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"337\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 27.486158,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 318,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"0ef1bfb49b8c7d8e7cfa66e5e927767fd11f3d70684c620adae6ea5269d2530f\",\n  \"label\": \"truncate_last_byte_node1_marker_before_restore\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 337,\n  \"response_complete\": true,\n  \"response_sha256\": \"d66770b22542ed7b81bda2904cbb9c9ef1010af6b6125e950acabab50fda0aec\",\n  \"sequence\": 30,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0031.intent.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0031.intent.public.json",
+      "sha256": "f6c7155d5bdfcbe397e03969161d97ff81d57a8f59ca52998a31be56a7fc05c9",
+      "bytes": 548,
+      "version": "2050:58774955:548:1793821914668109528:1793821914668109528",
+      "text": "{\n  \"archive_validity_presumed\": false,\n  \"body_bytes\": 19992,\n  \"body_sha256\": \"6e842d682b20a1a5d4fb9362218f73e1edad77b3e583cd1101fe597371fe26e2\",\n  \"credential_class\": \"root\",\n  \"deadline_monotonic_ns\": 899595660137558,\n  \"headers\": {},\n  \"http_seconds\": 15.0,\n  \"intent_unix_ns\": 1793821914667932294,\n  \"label\": \"truncate_last_byte_node1\",\n  \"method\": \"POST\",\n  \"node\": 1,\n  \"parent_deadline_monotonic_ns\": null,\n  \"path\": \"/v1/sys/storage/raft/snapshot\",\n  \"redirect_following\": false,\n  \"sequence\": 31,\n  \"unmodified_snapshot_posted\": false\n}\n"
+    },
+    {
+      "name": "0033.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0033.outcome.public.json",
+      "sha256": "5cec1c61c8d0bae4922a8910fb18271bd9e8778c6df7f1a8f8670e1f801fb6ef",
+      "bytes": 1197,
+      "version": "2050:58774992:1197:1793821922513460553:1793821922513460553",
+      "text": "{\n  \"caller_elapsed_ms\": 919.044271,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"332\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 385.625675,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 318,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"b218a0abb4667d88980598bcb2eada99c585bfeb3b808a7b5e20795f8ba739f7\",\n  \"label\": \"truncate_last_byte_node1_baseline_after_restore\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 332,\n  \"response_complete\": true,\n  \"response_sha256\": \"60bc637d81fd11b895424560ee1f8afd1a561cf7c2e06843f316e220c1a16ab0\",\n  \"sequence\": 33,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0040.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0040.outcome.public.json",
+      "sha256": "1b0e704a1f9c83bb735cef6c1ec8af4353a9026c798ef3324923c5ae8c24f59a",
+      "bytes": 1195,
+      "version": "2050:58775055:1195:1793821926065916038:1793821926065916038",
+      "text": "{\n  \"caller_elapsed_ms\": 261.225013,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": null,\n  \"content_type\": \"application/gzip\",\n  \"elapsed_ms\": 28.764101,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-disposition\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"transfer-encoding\"\n  ],\n  \"header_wire_bytes\": 257,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"8d534c88536cb4c89c68f39b7477cb8137e5fc7c12d1df1e30c43eecb8378940\",\n  \"label\": \"concatenate_self_node1_actual_source\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 20505,\n  \"response_complete\": true,\n  \"response_sha256\": \"1a54a5a8ad32f35fd79470ad1d5b5a339a88d18700e3ea857739dd49b28daa6e\",\n  \"sequence\": 40,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0041.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0041.outcome.public.json",
+      "sha256": "71ea11cf0ff07c5591d6db7832733b3203182ceb9b5820fce1c3d856ab13e5c4",
+      "bytes": 1196,
+      "version": "2050:58775063:1196:1793821926347347315:1793821926347347315",
+      "text": "{\n  \"caller_elapsed_ms\": 265.558593,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"278\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 34.818681,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 318,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"294dd5418902e35ea54f6a7231e891977a3d3bdfd2389606cd6b6f64f52b72d8\",\n  \"label\": \"concatenate_self_node1_post_source_marker_write\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 278,\n  \"response_complete\": true,\n  \"response_sha256\": \"1d699aeac2eba7a2ec0cd15975f9992ba19ed874168da18897399e842be2390a\",\n  \"sequence\": 41,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0042.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0042.outcome.public.json",
+      "sha256": "0145916df1b642c9e31864294f62f397d2ac5b9fa92c5ff674fb92d319488bde",
+      "bytes": 1193,
+      "version": "2050:58775071:1193:1793821926609475702:1793821926609475702",
+      "text": "{\n  \"caller_elapsed_ms\": 243.294382,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"334\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 28.254743,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 318,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"028082e51ce5d3dbf01b57f734a91d33746954a13aba3acad23c135fb5418b40\",\n  \"label\": \"concatenate_self_node1_marker_before_restore\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 334,\n  \"response_complete\": true,\n  \"response_sha256\": \"40541c75bc5476d190d578304c0309831c4f75cd24bd1efd269b56646dd708fc\",\n  \"sequence\": 42,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0043.intent.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0043.intent.public.json",
+      "sha256": "9fb5f7dc8333fbef3f77c5bb0ec638597868b1dff7ab0a61545cb498d5b8939d",
+      "bytes": 546,
+      "version": "2050:58775073:546:1793821926625097486:1793821926625097486",
+      "text": "{\n  \"archive_validity_presumed\": false,\n  \"body_bytes\": 41010,\n  \"body_sha256\": \"1feee224a2e0b560e00a9c652571984853c1c28f93b515c679dce5eb0347b646\",\n  \"credential_class\": \"root\",\n  \"deadline_monotonic_ns\": 899607617069155,\n  \"headers\": {},\n  \"http_seconds\": 15.0,\n  \"intent_unix_ns\": 1793821926624929724,\n  \"label\": \"concatenate_self_node1\",\n  \"method\": \"POST\",\n  \"node\": 1,\n  \"parent_deadline_monotonic_ns\": null,\n  \"path\": \"/v1/sys/storage/raft/snapshot\",\n  \"redirect_following\": false,\n  \"sequence\": 43,\n  \"unmodified_snapshot_posted\": false\n}\n"
+    },
+    {
+      "name": "0045.outcome.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0045.outcome.public.json",
+      "sha256": "4e657112ded9b869c8991d1e7034cb2fe42db3f7cebbd818d1f63f07709b68c1",
+      "bytes": 1194,
+      "version": "2050:58775103:1194:1793821933589524224:1793821933589524224",
+      "text": "{\n  \"caller_elapsed_ms\": 313.403863,\n  \"caller_timed_out\": false,\n  \"child_reaped\": true,\n  \"child_remaining\": [],\n  \"child_returncode\": 0,\n  \"content_length\": \"332\",\n  \"content_type\": \"application/json\",\n  \"elapsed_ms\": 57.070903,\n  \"header_names\": [\n    \"cache-control\",\n    \"connection\",\n    \"content-length\",\n    \"content-type\",\n    \"date\",\n    \"strict-transport-security\",\n    \"x-vault-index\"\n  ],\n  \"header_wire_bytes\": 318,\n  \"header_wire_has_terminal_crlf\": true,\n  \"header_wire_sha256\": \"b883b8431241a9848d585c71becdcbb0d7ea6bb9affde0ed2e91182ab3aca527\",\n  \"label\": \"concatenate_self_node1_baseline_after_restore\",\n  \"location_bytes\": null,\n  \"location_common_prefix_lengths\": {\n    \"1\": 0,\n    \"2\": 0,\n    \"3\": 0\n  },\n  \"location_is_prefix_of_enrolled_exact_target\": false,\n  \"location_matches_enrolled_origin_and_exact_target\": false,\n  \"location_node\": null,\n  \"location_present\": false,\n  \"location_sha256\": null,\n  \"node\": 1,\n  \"outcome_unknown\": false,\n  \"phase\": \"complete\",\n  \"request_sent\": true,\n  \"response_bytes\": 332,\n  \"response_complete\": true,\n  \"response_sha256\": \"704bc37ec4a4884a76bb099e4fa895e4f57aec816c4e283b5f092168f5a3ebfb\",\n  \"sequence\": 45,\n  \"status\": 200\n}\n"
+    },
+    {
+      "name": "0055.intent.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0055.intent.public.json",
+      "sha256": "00c1c00d5c5c0bb3a5d87b4e73421a49fe6da201ca6f279a758687c204f864fc",
+      "bytes": 548,
+      "version": "2050:58775182:548:1793821937118260220:1793821937118260220",
+      "text": "{\n  \"archive_validity_presumed\": false,\n  \"body_bytes\": 21017,\n  \"body_sha256\": \"2621430bcfbe57e6fbbf8cdb2cb2eb499ec556064f8ab9c503130f150819110c\",\n  \"credential_class\": \"root\",\n  \"deadline_monotonic_ns\": 899618110141328,\n  \"headers\": {},\n  \"http_seconds\": 15.0,\n  \"intent_unix_ns\": 1793821937117997921,\n  \"label\": \"flip_middle_bit_64_node1\",\n  \"method\": \"POST\",\n  \"node\": 1,\n  \"parent_deadline_monotonic_ns\": null,\n  \"path\": \"/v1/sys/storage/raft/snapshot\",\n  \"redirect_following\": false,\n  \"sequence\": 55,\n  \"unmodified_snapshot_posted\": false\n}\n"
+    },
+    {
+      "name": "0067.intent.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0067.intent.public.json",
+      "sha256": "dff31ebfee49bdee9999a13a2b190546e7237ab82276f63dab2b120db80f284a",
+      "bytes": 552,
+      "version": "2050:58775279:552:1793821940486776789:1793821940486776789",
+      "text": "{\n  \"archive_validity_presumed\": false,\n  \"body_bytes\": 26,\n  \"body_sha256\": \"cebbdac0ca2224025a6a457de0483e75dba1dba98bf7108f4f2051d415a151e1\",\n  \"credential_class\": \"root\",\n  \"deadline_monotonic_ns\": 899621478837241,\n  \"headers\": {},\n  \"http_seconds\": 15.0,\n  \"intent_unix_ns\": 1793821940486547699,\n  \"label\": \"non_gzip_transfer_literal_node1\",\n  \"method\": \"POST\",\n  \"node\": 1,\n  \"parent_deadline_monotonic_ns\": null,\n  \"path\": \"/v1/sys/storage/raft/snapshot\",\n  \"redirect_following\": false,\n  \"sequence\": 67,\n  \"unmodified_snapshot_posted\": false\n}\n"
+    },
+    {
+      "name": "0079.intent.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1/operations/0079.intent.public.json",
+      "sha256": "67552e0498416750335952d4000808e647d74f7ed715e5ef0cc1cb25864060dd",
+      "bytes": 548,
+      "version": "2050:58775402:548:1793821943873908093:1793821943873908093",
+      "text": "{\n  \"archive_validity_presumed\": false,\n  \"body_bytes\": 20,\n  \"body_sha256\": \"a776382618f5fceb8d0b01165f04744301fb4f3e1a95ec5f1d8b2e9afdc667de\",\n  \"credential_class\": \"root\",\n  \"deadline_monotonic_ns\": 899624866048676,\n  \"headers\": {},\n  \"http_seconds\": 15.0,\n  \"intent_unix_ns\": 1793821943873755830,\n  \"label\": \"non_gzip_http_literal_node1\",\n  \"method\": \"POST\",\n  \"node\": 1,\n  \"parent_deadline_monotonic_ns\": null,\n  \"path\": \"/v1/sys/storage/raft/snapshot\",\n  \"redirect_following\": false,\n  \"sequence\": 79,\n  \"unmodified_snapshot_posted\": false\n}\n"
+    }
+  ]
+}

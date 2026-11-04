@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.root.mac-snapshot-api-new-attempt-review.v1",
+  "reviewed_control_commit": "81dcdbf9d048a937c15d0b8eb1499a61605328df",
+  "source_commit": "a20dbd15e3b2fd7e828949b937d1d5da75588620",
+  "source_tree": "6046535302a94418d8bc67b65887f68d2d690062",
+  "driver_sha256": "7a12c1279c7ee5404c69c3bb0dc86a719e1ca53c7a3cc21d5d28cfbc6b828704",
+  "request_sha256": "7413e2a241471c470e99f6373f417ce44091a28466bcb9cf483c1c90bbbe4bc1",
+  "packet_sha256": "37cd1d55e9df2ee71c17820c48252ede43d088ea48f4aeb82ccfbb981b028ac5",
+  "controller_mechanically_reconstructed_from_expired": true,
+  "checks": {
+    "exactManifestFiles": true,
+    "exactChangedFiles": true,
+    "unique21": true,
+    "unique11": true,
+    "changedInFull": true,
+    "priorResultBound": true,
+    "fresh2400": true,
+    "outer2700": true
+  },
+  "prior_attempt_preserved": {
+    "job": "1a1a8115a2f-fc05-2d89",
+    "result_sha256": "0986617eb338637bc30dfedae69dae6dea43ec8173b133ea3c08f2ff165f2d78",
+    "strict_clippy_passed": true,
+    "tests_executed": 0,
+    "production_linked": false,
+    "owned_stopped": true
+  },
+  "reviewed_change_scope": [
+    "New declared 2400 second attempt including preparation; separate output and control directories, old terminal/result/hash verified before work.",
+    "OwnedRunner, WNOWAIT wait/cleanup, toolchain/host custody, release lock and exact Cargo artifact ownership helpers unchanged from independently reviewed 80dab controller.",
+    "Same physical prior clean tree plus exactly eleven staged paths; all twenty-one exact source pins and full tree are checked before fmt; fmt result frozen and rechecked after actual tests/build.",
+    "Fourteen exact libtest names each run once; known nonzero recorded while subsequent tests run, timeout/unknown/cleanup still stop, any failed test prevents product artifact qualification.",
+    "Root reviewed real bound API TLS fixture, original unsupported-owner fixtures and canonical migration cleanup fixes; literal invalid-gzip expectation supported by actual fixed OpenBao output.",
+    "No immutable KV transport included, no production service/config/traffic change, no physical LAN or full replacement assertion."
+  ],
+  "dispatch_eligible": true,
+  "actual_execution_claimed": false,
+  "limitations": [
+    "A first new expiry observed only after the one leader clock writer returns 503 without replay; it is not mislabeled as a proved entry-time Denied 403.",
+    "Other pre-plan errors such as a quota refusal are not covered by the new snapshot denial capsule.",
+    "Ordinary KV X-Vault-No-Request-Forwarding plus global precision still needs an independent closed authority and metadata-only leader clock path.",
+    "Listener consistency Forward restriction is implemented in revision 3; its new integration and normal-wire validation have not run.",
+    "Other non-clock maintenance states remain ineligible for this local standby snapshot path.",
+    "Original 7071 full workspace has eight retained actual failures; these fourteen component tests are not a full workspace rerun.",
+    "Fixed OpenBao 2.7.1 accepted a truncated gzip footer and concatenated archive with actual restore; current archive rejection is an unresolved compatibility difference.",
+    "Six ordinary KV and consistency cases still returned 307 instead of official 200 on the normal 7071 wire observer; the new immutable KV clock closure is not included here.",
+    "Normal-binary HTTPS 34-case observer, physical three-host HA, full34 migration/recovery and production cutover remain unqualified for this source."
+  ],
+  "syntax_read_sha256": "dbaedbcfbb0a94454e0ad088e98fff4ba7a38ea97ac5bafb1715d78151bcb51a",
+  "syntax_status_sha256": "46a39ce11817635e10b84ea00bc909444f136f04ea9d51a1f10d6ec6800e3a69",
+  "actual_dispatch_reported_by_agent": {
+    "job": "1a1a8324009-fc05-2dfa",
+    "created_utc": "2026-11-04T20:13:47.913Z",
+    "root_independent_terminal_not_yet_read": true
+  }
+}

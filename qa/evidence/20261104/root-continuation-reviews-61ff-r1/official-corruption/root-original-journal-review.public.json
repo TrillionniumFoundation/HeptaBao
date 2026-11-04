@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root.official271-corrupt-snapshot-original-journal-review.v1",
+  "source_evidence_commit": "ebbd4c2e16d215dba6984ea6f65292ce0665f714",
+  "actual_job": "1a1a81dde69-fc05-2dbb",
+  "original_files_independently_read": 25,
+  "all_text_bytes_and_sha256_recomputed": true,
+  "initial_roles": {
+    "actual_leader": 1,
+    "label": "roles_before",
+    "nodes": {
+      "1": {
+        "ha_enabled": true,
+        "is_self": true,
+        "leader_node": 1,
+        "performance_standby": null,
+        "raft_applied_index": 31,
+        "raft_committed_index": 31
+      },
+      "2": {
+        "ha_enabled": true,
+        "is_self": false,
+        "leader_node": 1,
+        "performance_standby": null,
+        "raft_applied_index": 31,
+        "raft_committed_index": 31
+      },
+      "3": {
+        "ha_enabled": true,
+        "is_self": false,
+        "leader_node": 1,
+        "performance_standby": null,
+        "raft_applied_index": 31,
+        "raft_committed_index": 31
+      }
+    }
+  },
+  "accepted_restores": [
+    {
+      "case": "truncate_last_byte_node1",
+      "source_bytes": 19993,
+      "source_sha256": "84599682ed596538137e51b8f8472bf0a694677a666db044aa49a288eb61b423",
+      "mutation_bytes": 19992,
+      "mutation_sha256": "6e842d682b20a1a5d4fb9362218f73e1edad77b3e583cd1101fe597371fe26e2",
+      "one_post_status": 204,
+      "marker_before": 200,
+      "marker_after": 404,
+      "baseline_after": 200
+    },
+    {
+      "case": "concatenate_self_node1",
+      "source_bytes": 20505,
+      "source_sha256": "1a54a5a8ad32f35fd79470ad1d5b5a339a88d18700e3ea857739dd49b28daa6e",
+      "mutation_bytes": 41010,
+      "mutation_sha256": "1feee224a2e0b560e00a9c652571984853c1c28f93b515c679dce5eb0347b646",
+      "one_post_status": 204,
+      "marker_before": 200,
+      "marker_after": 404,
+      "baseline_after": 200
+    }
+  ],
+  "invalid_variants": [
+    {
+      "label": "flip_middle_bit_64_node1",
+      "body_bytes": 21017,
+      "body_sha256": "2621430bcfbe57e6fbbf8cdb2cb2eb499ec556064f8ab9c503130f150819110c",
+      "status": 500
+    },
+    {
+      "label": "non_gzip_transfer_literal_node1",
+      "body_bytes": 26,
+      "body_sha256": "cebbdac0ca2224025a6a457de0483e75dba1dba98bf7108f4f2051d415a151e1",
+      "status": 500
+    },
+    {
+      "label": "non_gzip_http_literal_node1",
+      "body_bytes": 20,
+      "body_sha256": "a776382618f5fceb8d0b01165f04744301fb4f3e1a95ec5f1d8b2e9afdc667de",
+      "status": 500
+    }
+  ],
+  "final_role_responses": {
+    "node1": 200,
+    "node2": 503
+  },
+  "overall_original_result": "failed; roles_after_node_2_leader_response",
+  "aggregate_wire_not_written_by_original_driver": true,
+  "standby_role_after_each_restore_not_proved": true,
+  "no_requests_replayed": true,
+  "product_change_made": false,
+  "full_replacement_qualified": false,
+  "conclusion": "Original fixed official binary accepted last-footer-byte truncation and a self-concatenated archive with an observable marker rollback on node1. Current native parser strictly verifies gzip EOF and rejects trailing bytes; this is a real unresolved acceptance difference. Node2 later 503 cannot establish healthy standby behavior; four variants cannot all be relabeled as expected 500."
+}

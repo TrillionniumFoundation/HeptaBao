@@ -1,0 +1,187 @@
+{
+  "schema": "heptabao.root.authbus-r4b-actual-baseline-review.v1",
+  "source_evidence_commit": "988892fb8fbf0c7c5e0a8017d7f575c0fea3ac29",
+  "actual_job": "1a1a8265bf5-fc05-2dd3",
+  "core_sha256": "3539bd619d26f2a64b1b57bbeba94da11b1bc3d50aed0e4658f84caa30c948a7",
+  "checks": [
+    {
+      "name": "actual_core_sha",
+      "passed": true
+    },
+    {
+      "name": "baseline_counterexample_not_fixed",
+      "passed": true
+    },
+    {
+      "name": "exact_original_33_source_and_binary",
+      "passed": true
+    },
+    {
+      "name": "64_core_checks",
+      "passed": true
+    },
+    {
+      "name": "exact_six_phases",
+      "passed": true
+    },
+    {
+      "name": "active-lease.68_actual_consumer_checks",
+      "passed": true
+    },
+    {
+      "name": "active-lease.two_channels",
+      "passed": true
+    },
+    {
+      "name": "active-lease.both_initialize_and_local_rpc",
+      "passed": true
+    },
+    {
+      "name": "active-lease.observed_two_identities",
+      "passed": true
+    },
+    {
+      "name": "active-lease.events_monotonic",
+      "passed": true
+    },
+    {
+      "name": "active-lease.counterexample_before_release",
+      "passed": true
+    },
+    {
+      "name": "active-lease.actual_old_sigkill_not_normal_exit",
+      "passed": true
+    },
+    {
+      "name": "active-lease.actual_native_gone_before_cleanup",
+      "passed": true
+    },
+    {
+      "name": "active-lease.owned_cleanup_and_both_promise_layers",
+      "passed": true
+    },
+    {
+      "name": "active-lease.real_verified_tls_approle_kv",
+      "passed": true
+    },
+    {
+      "name": "active-lease.51_original_sdk_rollback",
+      "passed": true
+    },
+    {
+      "name": "active-lease.scope_not_native_identity_or_mutation_or_production",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.68_actual_consumer_checks",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.two_channels",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.both_initialize_and_local_rpc",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.observed_two_identities",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.events_monotonic",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.counterexample_before_release",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.actual_old_sigkill_not_normal_exit",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.actual_native_gone_before_cleanup",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.owned_cleanup_and_both_promise_layers",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.real_verified_tls_approle_kv",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.51_original_sdk_rollback",
+      "passed": true
+    },
+    {
+      "name": "pending-initialize.scope_not_native_identity_or_mutation_or_production",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.68_actual_consumer_checks",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.two_channels",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.both_initialize_and_local_rpc",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.observed_two_identities",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.events_monotonic",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.counterexample_before_release",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.actual_old_sigkill_not_normal_exit",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.actual_native_gone_before_cleanup",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.owned_cleanup_and_both_promise_layers",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.real_verified_tls_approle_kv",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.51_original_sdk_rollback",
+      "passed": true
+    },
+    {
+      "name": "pending-before-client.scope_not_native_identity_or_mutation_or_production",
+      "passed": true
+    },
+    {
+      "name": "source_link_same_managed2_generation",
+      "passed": true
+    },
+    {
+      "name": "closed_scope_and_stopped",
+      "passed": true
+    }
+  ],
+  "root_checks_passed": 43,
+  "dynamic_checks": 421,
+  "baseline_counterexample_verified": true,
+  "fixed_candidate_executed": false,
+  "product_single_writer_gate_passed": false,
+  "full_replacement_qualified": false,
+  "scope": "Original 33cafa4 formal V6 server and pinned original SDK/native factory; three actual concurrent local RPC counterexamples and complete owned cleanup/whole logical rollback. Prior provider proof is referenced, no fresh provider request, native account identity or mutation proof, default gateway qualification or cutover."
+}
