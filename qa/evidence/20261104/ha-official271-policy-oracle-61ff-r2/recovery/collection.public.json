@@ -1,0 +1,18 @@
+{
+  "complete_http_responses": 67,
+  "definite_preconnect_failures": 3,
+  "file_count": 140,
+  "intents": 70,
+  "operation_replay": false,
+  "outcome_unknown": 0,
+  "outcomes": 70,
+  "packet_bytes": 181993,
+  "packet_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-recovery-61ff-r1/public-journal.packet.json",
+  "packet_sha256": "5d11bf46d1dd6a4492b7788ec3941f6126a05cda474039d212be5d2206e26d9f",
+  "private_files_read": false,
+  "schema": "owned-public-http-journal-recovery-v1",
+  "service_actions": false,
+  "source_helper_sha256": "c22808157dbe649c1d5e87e37c20020c94acf76ae58dfb30b2daa311b2c4ed1e",
+  "source_result_sha256": "efc6b9f60aa0caa1c06afa5057277050473433f1361b670eb08f2cb6ebbc84ee",
+  "status": "completed"
+}

@@ -1,0 +1,182 @@
+{
+  "schema": "independent-public-journal-verification-v1",
+  "packet": {
+    "sha256": "5d11bf46d1dd6a4492b7788ec3941f6126a05cda474039d212be5d2206e26d9f",
+    "git_blob": "3be6723f53778f461e484ec56757db3fc29a9152",
+    "bytes": 181993,
+    "version": "2050:57673054:181993:1793812401170991492:1793812401170991492"
+  },
+  "files_verified": 140,
+  "intents": 70,
+  "outcomes": 70,
+  "complete_http_responses": 67,
+  "definite_preconnect_failures": 3,
+  "unknown": 0,
+  "methods": {
+    "GET": 45,
+    "POST": 22,
+    "PUT": 3
+  },
+  "setup_sequence_6": {
+    "intent": {
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "credential_class": "none",
+      "deadline_monotonic_ns": 887086652381243,
+      "headers": {},
+      "http_seconds": 15,
+      "intent_unix_ns": 1793809405660098600,
+      "label": "setup_missing_header_control",
+      "method": "GET",
+      "node": 3,
+      "parent_deadline_monotonic_ns": 887116225089946,
+      "path": "/v1/sys/health?standbyok=true",
+      "redirect_following": false,
+      "sequence": 6,
+      "valid_restore_body": false
+    },
+    "outcome": {
+      "caller_elapsed_ms": 313.232501,
+      "caller_timed_out": false,
+      "child_reaped": true,
+      "child_remaining": [],
+      "child_returncode": 0,
+      "content_length": "31",
+      "content_type": "application/json",
+      "elapsed_ms": 30.253825,
+      "header_names": [
+        "cache-control",
+        "connection",
+        "content-length",
+        "content-type",
+        "date",
+        "strict-transport-security"
+      ],
+      "header_wire_bytes": 233,
+      "header_wire_has_terminal_crlf": true,
+      "header_wire_sha256": "1eb97dacfbea90f51f65e51ce5eb766eacb8d3c0334622e14cfb6142501cc05d",
+      "label": "setup_missing_header_control",
+      "location_bytes": null,
+      "location_common_prefix_lengths": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "location_is_prefix_of_enrolled_exact_target": false,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "location_sha256": null,
+      "node": 3,
+      "outcome_unknown": false,
+      "phase": "complete",
+      "request_sent": true,
+      "response_bytes": 31,
+      "response_complete": true,
+      "response_sha256": "cc3914a895da7d1fbe9ed3f0206d82ffbb0394d2267baddd7c3a8b2b4d04f377",
+      "sequence": 6,
+      "status": 503
+    }
+  },
+  "setup_sequence_7": {
+    "intent": {
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "credential_class": "none",
+      "deadline_monotonic_ns": 887086998712065,
+      "headers": {
+        "X-Vault-Inconsistent": "fail"
+      },
+      "http_seconds": 15,
+      "intent_unix_ns": 1793809406006417400,
+      "label": "readiness",
+      "method": "GET",
+      "node": 3,
+      "parent_deadline_monotonic_ns": 887116225089946,
+      "path": "/v1/sys/health?standbyok=true",
+      "redirect_following": false,
+      "sequence": 7,
+      "valid_restore_body": false
+    },
+    "outcome": {
+      "caller_elapsed_ms": 313.141543,
+      "caller_timed_out": false,
+      "child_reaped": true,
+      "child_remaining": [],
+      "child_returncode": 0,
+      "content_length": "171",
+      "content_type": "application/json",
+      "elapsed_ms": 31.123517,
+      "header_names": [
+        "cache-control",
+        "connection",
+        "content-length",
+        "content-type",
+        "date",
+        "strict-transport-security"
+      ],
+      "header_wire_bytes": 230,
+      "header_wire_has_terminal_crlf": true,
+      "header_wire_sha256": "7f11bae7e480157206b4e81cc33300b4ac75bb0d56b1c04c019b51138ec32224",
+      "label": "readiness",
+      "location_bytes": null,
+      "location_common_prefix_lengths": {
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "location_is_prefix_of_enrolled_exact_target": false,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "location_sha256": null,
+      "node": 3,
+      "outcome_unknown": false,
+      "phase": "complete",
+      "request_sent": true,
+      "response_bytes": 171,
+      "response_complete": true,
+      "response_sha256": "5176e763c0f65996d6c38b1d871a2711c29808629ad5274e05851546718a6150",
+      "sequence": 7,
+      "status": 501
+    }
+  },
+  "collector_authoritative_status": {
+    "at_unix_ms": 1793812401227,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a78cf9e9-fc05-2bba",
+    "launch_nonce": "d497085c728508f9bde7a9da22dde4ca",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 730,
+        "stored": 730
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "claim": "Original public journals and cleanup receipts; fixed 2.7.1 oracle only, not HeptaBao qualification."
+}
