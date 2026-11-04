@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.migration-unreaped-signal-source-review.v1",
+  "status": "source_only_not_executed",
+  "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "inputs": {
+    "helper_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+    "native_cli_sha256": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d"
+  },
+  "outputs": [
+    {
+      "path": "qa/evidence/20261104/x230-formal34-61ff-r1/control/kv2_271_lossless_native_live_derived_r1.py",
+      "sha256": "d9e9f2a379f1fa326a61b8fa29585751223a669424ffe28f6b171b18526a4b68",
+      "utf8_bytes": 49517
+    },
+    {
+      "path": "qa/evidence/20261104/migration-worker-reap-guard-61ff-r1/kv2_271_lossless_native_live.proposed.py",
+      "sha256": "33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47",
+      "utf8_bytes": 49483
+    },
+    {
+      "path": "qa/evidence/20261104/migration-worker-reap-guard-61ff-r1/openbao271_kv2_native_large_migrate.proposed.py",
+      "sha256": "8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a",
+      "utf8_bytes": 16591
+    }
+  ],
+  "helper_edits": [
+    {
+      "before": "            except subprocess.TimeoutExpired as error:\n                os.killpg(process.pid, signal.SIGKILL)\n                process.communicate(timeout=5)",
+      "after": "            except subprocess.TimeoutExpired as error:\n                if process.returncode is None:\n                    os.killpg(process.pid, signal.SIGKILL)\n                process.communicate(timeout=5)"
+    },
+    {
+      "before": "            if row[\"status\"] != \"completed\":\n                try:\n                    os.killpg(process.pid, signal.SIGKILL)",
+      "after": "            if row[\"status\"] != \"completed\" and process.returncode is None:\n                try:\n                    os.killpg(process.pid, signal.SIGKILL)"
+    },
+    {
+      "before": "            if process.poll() is None:\n                process.communicate(timeout=5)\n            row[\"original_wait_completed\"] = process.poll() is not None",
+      "after": "            if process.returncode is None:\n                process.communicate(timeout=5)\n            row[\"original_wait_completed\"] = process.returncode is not None"
+    }
+  ],
+  "native_cli_edits": [
+    {
+      "before": "            lifecycle[\"planned_signal\"] = signal.SIGKILL\n            os.killpg(process.pid, signal.SIGKILL)\n            process.communicate(timeout=5)",
+      "after": "            lifecycle[\"planned_signal\"] = signal.SIGKILL\n            if process.returncode is None:\n                os.killpg(process.pid, signal.SIGKILL)\n            process.communicate(timeout=5)"
+    },
+    {
+      "before": "        if not complete:\n            try:\n                lifecycle[\"planned_signal\"] = signal.SIGKILL\n                os.killpg(process.pid, signal.SIGKILL)",
+      "after": "        if not complete and process.returncode is None:\n            try:\n                lifecycle[\"planned_signal\"] = signal.SIGKILL\n                os.killpg(process.pid, signal.SIGKILL)"
+    },
+    {
+      "before": "        if process.poll() is None:\n            process.communicate(timeout=5)\n        lifecycle[\"returncode\"] = process.returncode\n        lifecycle[\"original_wait_completed\"] = process.poll() is not None",
+      "after": "        if process.returncode is None:\n            process.communicate(timeout=5)\n        lifecycle[\"returncode\"] = process.returncode\n        lifecycle[\"original_wait_completed\"] = process.returncode is not None"
+    }
+  ],
+  "root_relocation": {
+    "before": "Path(__file__).resolve().parents[2]",
+    "after": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/source",
+    "purpose": "execute independently pinned derived controller while preserving original product checkout"
+  },
+  "limits": {
+    "checks": 31,
+    "http_seconds": 15,
+    "migration_seconds": 360,
+    "native_large_request_seconds": 5,
+    "profile": "full34",
+    "retained_live_payload_bytes": 35651584
+  },
+  "process_claim": "Only an original unreaped Popen can authorize group signals. A reaped worker does not prove descendants stopped; outer owned-child tracking must independently observe cleanup or fail.",
+  "qualification": false
+}
