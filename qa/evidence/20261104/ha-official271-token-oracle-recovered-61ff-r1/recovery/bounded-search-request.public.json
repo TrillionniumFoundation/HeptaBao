@@ -1,0 +1,19 @@
+{
+  "exclude_patterns": [
+    "**/.git/**",
+    "**/source/**",
+    "**/target/**",
+    "**/state/**",
+    "**/private/**"
+  ],
+  "host": "desktop",
+  "include_hidden": false,
+  "kind": "files",
+  "max_bytes": 1048576,
+  "max_entries": 10000,
+  "max_results": 128,
+  "query": "wire-observations.public.json",
+  "query_mode": "literal",
+  "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 15
+}

@@ -1,0 +1,174 @@
+{
+  "files": [
+    {
+      "bytes": 664,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-peer-review.public.json",
+      "sha256": "91ef753287d670781da3209bb18bc086e379480303362f10c9b1c3e8cf4d7569"
+    },
+    {
+      "bytes": 19780,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-start.original-sdk.json",
+      "sha256": "b6f83e9cd035fadfd0e2cba96d0171c457b9ac0c3eb9aa5e52309b7efef9d804"
+    },
+    {
+      "bytes": 1884,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-read.original-sdk.json",
+      "sha256": "ea2bb4474330e3351d30ed622d49d755d8ea470ee88ca1d89e692c9f4c7363ac"
+    },
+    {
+      "bytes": 246,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-status-timeout.original-sdk.json",
+      "sha256": "bd97f980e31689b52f6cbc5ec792523a827a119ab1134c35f596707565f2c803"
+    },
+    {
+      "bytes": 92713,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-remote-files.original-sdk.json",
+      "sha256": "162f90d2a500aca7c310fcbc652007370a824452f36a97e1a37b905da5decf4a"
+    },
+    {
+      "bytes": 216,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-terminal-operation-request.public.json",
+      "sha256": "06645c8b0b8112fa11617d0af14000c3a15c33096c6fcaf23fb83552cd5c1cf3"
+    },
+    {
+      "bytes": 709,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-terminal-operation-start.original-sdk.json",
+      "sha256": "026b792ac573f8358aa041478c9c5c55a7d8c5e362a678132e94edbf939a837a"
+    },
+    {
+      "bytes": 980,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-terminal-operation-status.original-sdk.json",
+      "sha256": "b1508f8ef78ae53d7e79d7ebe9618cd831785e01e5c94d44cd55ba01a389c3af"
+    },
+    {
+      "bytes": 2630,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/normal-build-start.original-sdk.json",
+      "sha256": "6cc7b2a158f98bf0a2615a929a5b4241efbd2012e6339cb0ac6900e1733dcaeb"
+    },
+    {
+      "bytes": 908,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-terminal.original-native-payload.json",
+      "sha256": "ebffc58708d3159a0ea626d6d3545b7b307669e7e0351b7e6a9f63bb6767d8b5"
+    },
+    {
+      "bytes": 22516,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/source-stage-result.public.json",
+      "sha256": "ebc435045a14d23ba4df5a3a3cc19bc8f5f33d7a35bec1862472f029cf696ff0"
+    },
+    {
+      "bytes": 457,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/normal-build-first-read.original-native-payload.json",
+      "sha256": "c2c1f5204e7f99c21b01dfa46fabb8e5061d7d55444a9e62820b6cf3d6608712"
+    },
+    {
+      "bytes": 5710,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/normal-build-progress.original-native-payload.json",
+      "sha256": "d66168d8dc3079b968558f2a8619395470d7d482bd0b3639345c408dfab614ad"
+    },
+    {
+      "bytes": 1880,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/progress/normal-launch-r3-intent.public.json",
+      "sha256": "80d2b651b67f37e1e0c1bb18076d7a8a033b9c5075a5b3ec1b0a0cea37e2e499"
+    },
+    {
+      "bytes": 2530,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/progress/cargo.stderr.log",
+      "sha256": "c88b51803eba9b5317c9a43a95afbd2093a18c26340d5345b3c7ec5b39986371"
+    },
+    {
+      "bytes": 61074,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/wire-observations.public.json",
+      "sha256": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97"
+    },
+    {
+      "bytes": 22113,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/result.public.json",
+      "sha256": "75ec1fe555793672892fa1b5fec9c4aaf790cbee2f73517d2034022cc56649b8"
+    },
+    {
+      "bytes": 107503,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/files.original-sdk.json",
+      "sha256": "0229f50d22b1bb740cd5005dec0cd66bf069854115406e2b7311647bf6e19608"
+    },
+    {
+      "bytes": 421,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/bounded-search-request.public.json",
+      "sha256": "c486a3c3b52d9e894d1352a3de54e745782278b6873c6131d5d5c2fdff7f77fa"
+    },
+    {
+      "bytes": 1577,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/bounded-search-limited.original-sdk.json",
+      "sha256": "262670784d58af09a4860d8b843257ab28b22e7ce23c7c6c2892ca1416a999d9"
+    },
+    {
+      "bytes": 774,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/root-names-source.py",
+      "sha256": "df66b1636913d234a00a6a0bec00779835eca6d8ac5b26f082065e3d1a39645e"
+    },
+    {
+      "bytes": 1016,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/root-names-request.public.json",
+      "sha256": "9a4a8ba029c4c600aa9d1a760c2a8b3d6627e38a028df62488485063b7ae7c06"
+    },
+    {
+      "bytes": 2062,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/root-names-start.original-sdk.json",
+      "sha256": "7f3b89d08f8d23438f415bf3bb9f31563c8b6216f48a0c3978f27c2ddbe0f76e"
+    },
+    {
+      "bytes": 9635,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/recovery/root-names-read.original-sdk.json",
+      "sha256": "2846e6291cda3de01611a229ecde846e9ff88ed6732c1c2a26a662a6e0255728"
+    },
+    {
+      "bytes": 2096,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/root-review.public.json",
+      "sha256": "e81e36876af394c226faa521abf4be8a2fd073adf94614080fae131a7bbc2322"
+    },
+    {
+      "bytes": 5797,
+      "path": "qa/evidence/20261104/ha-official271-policy-journal-root-review-61ff-r1/review_public_journals.mjs",
+      "sha256": "593cc7171ce9cd3ca8515603140eab8f9e6003f7afe3e8a19007624093560838"
+    },
+    {
+      "bytes": 877,
+      "path": "qa/evidence/20261104/ha-official271-policy-journal-root-review-61ff-r1/decode_base64_utf8.mjs",
+      "sha256": "c6d27221ac5034f0af946b497be62ca3c020fca3400eb33aaf3d07c25b7bef41"
+    },
+    {
+      "bytes": 1491,
+      "path": "qa/evidence/20261104/ha-official271-policy-journal-root-review-61ff-r1/root-review.public.json",
+      "sha256": "a38fdda2dff5a8dd744d3b1c3e90dbcff6118d3fd77f817a7010f9ce3f247bd5"
+    },
+    {
+      "bytes": 9031,
+      "path": "qa/evidence/20261104/ha-official271-policy-journal-root-review-61ff-r1/observer-policy30-mapping.public.json",
+      "sha256": "5bedf8018317eca1b498c18b86a4dd281c1cf1c7a4866ccc52ca233fd41029a0"
+    },
+    {
+      "bytes": 496,
+      "path": "qa/evidence/20261104/authbus-provider-recovery-root-review-61ff-r1/managed2-root-recomputed.public.json",
+      "sha256": "dbb984836f51b7ca96ee67f2cde4cff842094c98dacfa82402b517089d7e338d"
+    },
+    {
+      "bytes": 4747,
+      "path": "qa/evidence/20261104/authbus-provider-recovery-root-review-61ff-r1/managed2-report.public.json",
+      "sha256": "0262d4d2ab4072619ad1074fef3b2343273bf826ec155fe0573ce8c5bf9d5d78"
+    }
+  ],
+  "full_replacement_qualified": false,
+  "mac_normal_build": {
+    "job_id": "1a1a7ba896a-fc05-2c69",
+    "status_at_checkpoint": "started; cache clone complete; server compiling; terminal not yet collected"
+  },
+  "mac_source_stage": {
+    "exit_code": 0,
+    "files": 62,
+    "job_id": "1a1a7b59812-fc05-2c5a"
+  },
+  "official_policy_reference_pairs": 70,
+  "official_token_reference_mapping_gap": "ttl_root_default_standby_invalid_restore",
+  "schema": "heptabao.root-continuation-evidence-checkpoint.v1",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+}

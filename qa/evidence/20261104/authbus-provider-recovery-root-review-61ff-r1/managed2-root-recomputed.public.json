@@ -1,0 +1,12 @@
+{
+  "actual_sdk_dynamic_checks": 69,
+  "canonical_sorted_serialization": true,
+  "checks": 49,
+  "exact_agent_report_recomputed": true,
+  "github_readback_inputs": 19,
+  "inputs": 33,
+  "production_cutover": false,
+  "report_sha256": "0262d4d2ab4072619ad1074fef3b2343273bf826ec155fe0573ce8c5bf9d5d78",
+  "root_prior_comparator_issue": "Initial direct JSON.stringify used insertion order; recorded artifact uses sorted keys. No input or check changed.",
+  "storage_migration_by_this_run": false
+}

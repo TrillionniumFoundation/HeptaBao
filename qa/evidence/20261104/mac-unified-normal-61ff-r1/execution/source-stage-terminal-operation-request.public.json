@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "root61ff-mac-source-stage2c5a-terminal-20261104-r1",
+  "operation": {
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1a7b59812-fc05-2c5a"
+    },
+    "tool": "process_status"
+  }
+}

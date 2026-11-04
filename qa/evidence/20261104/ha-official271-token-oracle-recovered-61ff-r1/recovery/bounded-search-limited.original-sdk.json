@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"credential_metadata_resume\":true,\"metadata_resume_after_restart\":true,\"ownership_scope\":\"authenticated_private_operator_credential\",\"search\":{\"created_unix_ms\":1793815985504,\"host\":\"desktop\",\"kind\":\"files\",\"reason\":\"entry_limit\",\"root\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\"search_id\":\"cb8e2eedca839e3a71d2165898827144fef4b86a6b4b4922333b20a8761013b2\",\"state\":\"limited\"},\"session_resume_after_restart\":false,\"snapshot\":{\"action\":\"results\",\"backend\":\"native_search_worker\",\"committed_result_bytes\":0,\"committed_results\":0,\"next_cursor\":null,\"progressive\":false,\"reason\":\"entry_limit\",\"results\":[],\"search_id\":\"cb8e2eedca839e3a71d2165898827144fef4b86a6b4b4922333b20a8761013b2\",\"snapshot_ready\":true,\"state\":\"limited\",\"statistics\":{\"bytes\":0,\"coverage_complete\":false,\"coverage_reasons\":[\"entry_limit\"],\"coverage_scope\":\"selected_authorized_regular_single_link_files\",\"entries\":10000,\"extracted_documents\":0,\"files\":0,\"results\":0,\"skipped_binary_or_non_utf8\":0,\"skipped_document_invalid\":0,\"skipped_document_limited\":0,\"skipped_document_unavailable\":0,\"skipped_hardlinks\":0,\"skipped_large\":0,\"skipped_protected\":0,\"skipped_special\":0,\"skipped_symlinks\":0,\"traversal_complete\":false,\"unreadable\":0}},\"unfinished_search_after_controller_restart\":\"interrupted_without_relaunch\"}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

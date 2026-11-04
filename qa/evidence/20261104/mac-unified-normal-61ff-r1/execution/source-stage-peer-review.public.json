@@ -1,0 +1,20 @@
+{
+  "checked": [
+    "WNOWAIT before reap",
+    "child_reaped changes only after wait",
+    "spawn registration signal window",
+    "Darwin ESRCH second waitid",
+    "all TERM/KILL while original child unreaped",
+    "no signals after reap",
+    "SIGCHLD default preflight",
+    "unchanged 240s source-only boundary",
+    "exact four control pins"
+  ],
+  "compared_with_previously_reviewed_r3": true,
+  "full_source_read": true,
+  "no_new_blocker": true,
+  "reviewer": "/root/ha",
+  "runtime_qualification": false,
+  "source_blob": "ab710a1947aa51b9e5f24520c02ea60d167b807a",
+  "source_sha256": "2cfbada60cfc3383cfcfb8cacb8e546ba9ec66b3bd4523cbba3b1de6cdec9e68"
+}

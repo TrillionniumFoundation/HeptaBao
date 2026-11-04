@@ -1,0 +1,37 @@
+{
+  "builder_sha256": "f902727e82a3c7a8942006b056ecfca9258a856d456f4b1aa2131b2aa3a35d82",
+  "builder_started": false,
+  "cache_copy_mode": "APFS cp -cR, no fallback",
+  "cargo_sha256": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9",
+  "clone_inode_verification": {
+    "directories": 2099,
+    "regular_files": 23737
+  },
+  "frozen_sha256": "ad59fb02e3affc08720c13f7349d93a99df646ca7616f9a10e41e1cc6ddbeff1",
+  "full_replacement_qualified": false,
+  "original_builder_cargo_budget_seconds": 1800,
+  "preparation_budget_seconds": 300.0,
+  "preparation_elapsed_seconds": 3.284346249885857,
+  "probe_sha256": "d9be1b814a0f7834f22eef219c765a3dae8ede2b6be60ca02f1b88600cc69403",
+  "product_service_started": false,
+  "python_sha256": "7ecc1ecbf9daa9303c4bf502ff62ffdd9010ed5c08729d470ae9380c10ce1211",
+  "qualified_sha256": "510de9e176b77e771a3233d56620c32975c161970213d7f83d1b7eceb37624db",
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1",
+  "rustc_sha256": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49",
+  "schema": "heptabao.mac-normal-launch.v3",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "source_cache_scope": "release build-directory lock; not whole cache or host reservation",
+  "source_release_lock": {
+    "descriptor_mode": "O_RDONLY|O_NOFOLLOW",
+    "device": 16777244,
+    "held_since_monotonic_ns": 2701230102520125,
+    "inode": 70144723,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/.cargo-lock",
+    "primitive": "flock LOCK_EX|LOCK_NB",
+    "verified_through_monotonic_ns": 2701233270142583
+  },
+  "status": "failed",
+  "strict_clippy_inherited_excluded_package": "qrcode",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "verified_source_files": 62
+}

@@ -1,0 +1,35 @@
+{
+  "complete_http_responses": 67,
+  "definite_preconnect_failures": 3,
+  "exact_raw_files_verified": 140,
+  "formal_heptabao_qualification": false,
+  "full_replacement_qualified": false,
+  "input_sha256": {
+    "packet": "5d11bf46d1dd6a4492b7788ec3941f6126a05cda474039d212be5d2206e26d9f",
+    "result": "efc6b9f60aa0caa1c06afa5057277050473433f1361b670eb08f2cb6ebbc84ee",
+    "wire": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0"
+  },
+  "limitations": [
+    "Derived token policies, uses and archive contents cannot be reconstructed from public body digests alone.",
+    "Original Unix nanosecond fields remain in hash-bound raw files; no numeric-precision assertion uses those large JSON numbers.",
+    "This review does not execute or qualify HeptaBao, physical HA, restore or snapshot-format interoperability."
+  ],
+  "methods": {
+    "GET": 45,
+    "POST": 22,
+    "PUT": 3
+  },
+  "operation_replayed": false,
+  "original_http_budget_seconds": 15,
+  "owned_client_cleanup_records": 70,
+  "owned_server_cleanup_records": 3,
+  "paired_intents_and_outcomes": 70,
+  "production_services_touched": false,
+  "qualification_scope": "Fixed OpenBao 2.7.1 public reference journals and reported cleanup only.",
+  "reference_result_checks_all_passed": 64,
+  "schema": "heptabao.root-official271-policy-journal-review.v1",
+  "setup_503_then_explicit_fail_501_same_parent_deadline": true,
+  "unknown": 0,
+  "wire_business_intents_bound": 30,
+  "wire_outcome_records_bound": 34
+}

@@ -1,0 +1,60 @@
+{
+  "full_replacement_qualified": false,
+  "original_job_terminal_status_recovered_by_this_review": false,
+  "proven_mappings": [
+    {
+      "candidate_label": "ttl_root_default_standby_snapshot",
+      "num_uses": 0,
+      "reference_label": "ttl-default_snapshot_request_1",
+      "sequence": 75,
+      "status": 200
+    },
+    {
+      "candidate_label": "finite1_default_snapshot",
+      "num_uses": 1,
+      "reference_label": "finite1-default_snapshot_request_1",
+      "sequence": 69,
+      "status": 307
+    },
+    {
+      "candidate_label": "finite2_default_snapshot",
+      "num_uses": 2,
+      "reference_label": "finite2-default_snapshot_request_1",
+      "sequence": 61,
+      "status": 307
+    }
+  ],
+  "raw_inputs": [
+    {
+      "bytes": 61074,
+      "path": "wire-observations.public.json",
+      "remote_version": "2050:55857116:61074:1793802886287067155:1793802886287067155",
+      "sha256": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97"
+    },
+    {
+      "bytes": 22113,
+      "path": "result.public.json",
+      "remote_version": "2050:55857131:22113:1793802897252323975:1793802897252323975",
+      "sha256": "75ec1fe555793672892fa1b5fec9c4aaf790cbee2f73517d2034022cc56649b8"
+    }
+  ],
+  "schema": "heptabao.root-token-reference-recovery.v1",
+  "search_limit_is_not_absence": true,
+  "source_result": {
+    "all_checks_passed": true,
+    "all_owned_stopped": true,
+    "checks": 83,
+    "client_cleanup_records": 87,
+    "http_intents": 87,
+    "http_outcomes": 87,
+    "http_unknown": 0,
+    "server_cleanup_records": 3
+  },
+  "source_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-token-oracle-live-61ff-r2",
+  "unsupported_mapping": {
+    "label": "ttl_root_default_standby_invalid_restore",
+    "previous_expected_status": 500,
+    "reason": "No TTL invalid-restore exchange exists in this exact wire artifact. A bootstrap-root control response cannot substitute for the TTL credential.",
+    "required_action": "New independent fixed official 2.7.1 observation; keep reference completeness false until collected."
+  }
+}
