@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+    exec(compile(source,path,"exec"),{"__name__":"__main__","__file__":path,"ADMITTED_PACKET_RAW":raw})
+         ~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/control/stage_source_r1.py", line 113
+    def sync_dir(path):
+SyntaxError: expected 'except' or 'finally' block

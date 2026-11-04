@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.mac-snapshot-candidate-controls.v1",
+  "status": "source_repaired_not_executed",
+  "input_source": {
+    "review_commit": "4609acf94695508ea49097039b8355897a1b20f2",
+    "tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+    "base_physical_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+  },
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1",
+  "source_stage": {
+    "source_sha256": "870986b5515b940a690eb2aa828df487130ae95469d56530023b92a5f4555be7",
+    "packet_sha256": "84065d3d196eb5745443125a661d6b7becb1f97644678809ea4c673af9282884",
+    "request_sha256": "10b7699efccf54a47b09c1a7576be5bd925c0231778dbb57cdc6ee5fedc5cc47",
+    "budget_seconds": 240,
+    "controller_timeout_seconds": 270
+  },
+  "build": {
+    "source_sha256": "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+    "preparation_budget_seconds": 300,
+    "shared_cargo_budget_seconds": 1800,
+    "controller_timeout_seconds": 2160,
+    "source_stage_receipt_sha256": "bind only to the successful actual stage receipt before launch",
+    "bootstrap_sha256": "31f8bc8e6d5d733429444a577e96e3e3918aba1d6cb349bcc3ac24274ff87b81",
+    "cache_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/runtime.noindex/target",
+    "source_cache_lock_scope": "existing release/.cargo-lock O_RDONLY|O_NOFOLLOW flock LOCK_EX|LOCK_NB held through APFS clone and every independent inode check; no whole-host reservation",
+    "cargo_build_jobs": 2,
+    "critical_tests": [
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_finite_tokens_redirect_without_consumption",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart",
+      "ha::snapshot_clock::tests::snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403"
+    ],
+    "normal_profile": {
+      "OPT_LEVEL": "3",
+      "DEBUG_ASSERTIONS": "true",
+      "OVERFLOW_CHECKS": "true",
+      "DEBUG": "0",
+      "LTO": "false",
+      "CODEGEN_UNITS": "16",
+      "PANIC": "unwind"
+    },
+    "gate_order": [
+      "cargo fmt --all",
+      "cargo fmt --all -- --check",
+      "freeze actual formatted source and manifest",
+      "cargo clippy --release --locked --offline --workspace --all-targets --exclude qrcode -- -D warnings",
+      "cargo test --release --locked --offline -p heptabao-server --lib --no-run --message-format=json",
+      "pin and retain actual normal test executable; list exact names; execute ten exact tests sequentially",
+      "cargo build --release --locked --offline -p heptabao-server --bin heptabao-server --bin heptabao-seed --message-format=json",
+      "retain actual normal binaries and exact source/artifact receipts"
+    ],
+    "releases_original_child_before_signalling": false,
+    "cleanup": "WNOWAIT direct-child anchor through group cleanup, Darwin exited-child ESRCH confirmed by waitid; no group signal after reap; preserve nonzero/timeouts/remaining in raw per-command records"
+  },
+  "source_review_only": true,
+  "formatted": false,
+  "compiled": false,
+  "tests_run": false,
+  "normal_https_observer_run": false,
+  "ordinary_kv_global_precision_six_status_gaps_still_open": true,
+  "full_replacement_qualified": false,
+  "revision": 2,
+  "prior_control_failure": {
+    "job_id": "1a1a7f36e68-fc05-2d11",
+    "exit_code": 1,
+    "phase": "compile(stage_source) before exec",
+    "error": "SyntaxError expected except or finally block",
+    "root_created_by_stage_source": false,
+    "source_body_executed": false,
+    "product_test_failure": false,
+    "repair": "Close hash_owned file descriptor in its missing finally block in both scripts; all runtime paths and other code unchanged"
+  },
+  "pre_stage_syntax": {
+    "source_compiled_not_executed": true,
+    "actual_passed": false,
+    "packet_sha256": "22c76562e375693119ce6b3cf98cbe34f507cf180c4382def3cd7a83b5a5d71f",
+    "request_sha256": "e8b2b5d3329d33e2fa1565d45603ab958a963e2f80155b54e18c9539773bf35b"
+  }
+}

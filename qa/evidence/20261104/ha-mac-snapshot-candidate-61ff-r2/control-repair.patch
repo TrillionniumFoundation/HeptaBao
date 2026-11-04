@@ -1,0 +1,22 @@
+--- a/control/stage_source_r1.py
++++ b/control/stage_source_r1.py
+@@ -108,6 +108,8 @@
+              and identity(before) == identity(os.fstat(fd)) == identity(path.lstat()),
+              'hashed_file_changed')
+         return digest.hexdigest()
++    finally:
++        os.close(fd)
+ 
+ 
+ def sync_dir(path):
+--- a/control/run_candidate_normal_r1.py
++++ b/control/run_candidate_normal_r1.py
+@@ -108,6 +108,8 @@
+              and identity(before) == identity(os.fstat(fd)) == identity(path.lstat()),
+              'hashed_file_changed')
+         return digest.hexdigest()
++    finally:
++        os.close(fd)
+ 
+ 
+ def sync_dir(path):
