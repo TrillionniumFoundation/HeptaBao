@@ -1,0 +1,27 @@
+{
+  "blockingFindings": [],
+  "executionPerformed": false,
+  "helperSha256": "d60ee11225295434f63babf2446bd6627443565776097cec8d708477cdcbef1b",
+  "productionChanged": false,
+  "qaManifestSha256": "c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790",
+  "reviewedDiffSha256": "5de58d8d83e2d0f8de20e46fa1ff26ee64fd958c8523823d695d04cb808d76d4",
+  "reviewer": "authbus_migration",
+  "schema": "heptabao.pocket-first-cycle-registry-r3-independent-review.v1",
+  "staticReviewPassed": true,
+  "validationLimit": {
+    "actualCloudSQLiteCase": "code1544 retained as failed, not accepted by new branch",
+    "actualPocketR2Code14RefusalPreserved": true,
+    "actualPrivateCopyAndHostQualification": "pending freshPocketpreflight; no reviewer runtime",
+    "admissionAstBoundaryCases": 10,
+    "cloudNamespaceCapability": "EPERM retained"
+  },
+  "verifiedBoundaries": [
+    "only exact SQLITE_CANTOPEN14 plus lstat-absent WAL/SHM and nonempty main<=128MiB admits new branch",
+    "same original main descriptor remains open across fullcopy and clone query",
+    "source fd/name full identity, size and wholeSHA rechecked; both sidecar observations before/after copy/query and final fence",
+    "only fresh0700 owned clone may create SQLite sidecars; production kernelRO retained",
+    "original13 columns and exact registered row still required; no immutable/source chmod/checkpoint or write",
+    "all top-level AST nodes except current_registry_matches and all4 nested custody/copy/query/write helpers unchanged",
+    "originalWAL branch retained; r2 controller/consumer/cache/native/credential contract and allbudgets unchanged"
+  ]
+}

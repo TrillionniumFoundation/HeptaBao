@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.pocket-registry-cloud-validation-limit.v1",
+  "kernelNamespaceProbe": {
+    "argv": [
+      "/usr/bin/bwrap",
+      "--die-with-parent",
+      "--unshare-net",
+      "--unshare-pid",
+      "--ro-bind",
+      "/",
+      "/",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "/usr/bin/true"
+    ],
+    "returncode": 1,
+    "stderr": "bwrap: Creating new namespace failed: Operation not permitted\n"
+  },
+  "syntheticUidDropAttempt": {
+    "errorClass": "OSError",
+    "errno": 22,
+    "ownedRoot": "/tmp/heptabao-registry-sqlite-engine-r3-qgxok223",
+    "sqliteOrHelperExecuted": false
+  },
+  "dacProbe": {
+    "euid": 0,
+    "uidMap": "0 0 1",
+    "directoryMode": 320,
+    "createDenied": true,
+    "errorClass": "PermissionError",
+    "errno": 13,
+    "ownedRoot": "/tmp/heptabao-registry-dac-probe-r3-_r6byw0v"
+  },
+  "secondaryReadonlyErrorObservation": {
+    "interpreter": "python3",
+    "sqliteVersion": "3.53.1",
+    "sqliteErrorCode": 1544,
+    "sqliteErrorName": "SQLITE_READONLY_DIRECTORY",
+    "scope": "Cloud permission-only synthetic database, not Pocket kernel RO mount"
+  },
+  "actualHelperExercised": false,
+  "helperGuardsMocked": false,
+  "newPocketBranchQualified": false,
+  "productionInputsRead": false,
+  "hostRuntimeStarted": false
+}

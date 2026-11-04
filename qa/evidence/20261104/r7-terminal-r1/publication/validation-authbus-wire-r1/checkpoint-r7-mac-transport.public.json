@@ -1,0 +1,25 @@
+{
+  "archive_bytes": 658311,
+  "archive_sha256": "2435c0eca2cba81203e9f1d429542bfb5e518d92170ce89c3eb36cce95da3bc5",
+  "committed": true,
+  "expected_version": "absent",
+  "frozen_qa_commit": "15c5827dd7a8cfc06131d4901903ebf7e8090599",
+  "frozen_validation_commit": "605b73dc1d9859703827f9f16ecc37eda67d7875",
+  "helper_sha256": "521f3b9b8d7e8b81282eef2644f635e04a01a6ce66f0da14982242bf20d52792",
+  "includes_latest_r7_tests": false,
+  "manifest_sha256": "b9dae89e8d7cded1ccf69ef24fc6a70570df169bcaf9c0c4fc614e7beb5369c3",
+  "production_changed": false,
+  "same_offset_reconciliations": [
+    {
+      "bytes": 65536,
+      "offset": 32768
+    },
+    {
+      "bytes": 32768,
+      "offset": 163840
+    }
+  ],
+  "source_unchanged": true,
+  "upload_id": "c7b322ea-5783-4c9f-a2d0-ecdf8e03104a",
+  "visible_before_commit": false
+}

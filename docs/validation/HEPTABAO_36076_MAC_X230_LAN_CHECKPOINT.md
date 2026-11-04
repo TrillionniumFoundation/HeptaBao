@@ -334,3 +334,31 @@ Pocket 的新首轮方案只管理此前已验证的 1/2 号凭证代际，保�
 已开始对固定官方 OpenBao 2.7.1 CLI 的快照跳转行为做精确源码分析，并准备独立双 TLS 端点与后续真实集群矩阵。源码预测仍需真实 CLI 证明；HTTP 200/307 与无效恢复 500/400 的差别继续单列，未用客户端通常会跟随跳转作为兼容性结论。所有恢复观察仅允许固定无效输入，不能重放未知的有效恢复。
 
 本次仍未初始化或加载生产服务，未释放 Pocket holds，未切流，未删除旧服务、二进制、数据库、备份或 common-Git 依赖。`full_openbao_compatibility_qualified=false`，`all_clients_and_backups_migrated=false`。
+
+
+### R7 两平台正常测试终态、旧检查点耐久化和 Pocket r3 预检（追加）
+
+本节接续 validation `8100e8de50eabe150b3a9b567acfc4f078072449`，保留上节冻结时的 pending 记录和所有原始失败。**共同 R7 仍未通过跨平台门槛：ROG 的 31 项全部通过，Mac 为 29 通过、2 失败。** 两机测试都是同一产品树 `97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8` 的正常默认构建，不能把一台机器的结果填补另一台的失败。
+
+| 平台 | SSH 原 20 + 新 5 | 原挂载精确用例 | HTTP 原 2 + 新 3 | 总终态 |
+| --- | --- | --- | --- | --- |
+| ROG Linux | 25/25，43.942 秒 | 1/1，0.281 秒 | 5/5，0.129 秒 | 31/31，0 ignored |
+| Mac arm64 | 25/25，69.061 秒 | 1/1，1.715 秒 | 3/5，2.112 秒 | 29/31，2 failed，0 ignored |
+
+ROG source=`dc1c02dbd4803f4301097a8268d121e5d7f27464`，正常 server SHA256=`666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed`。正常 server/seed 构建 635.706 秒，正常 libtest 构建 1076.908 秒；权威 job `1a1a6baeb4f-fc05-287f` exit0、完整且耐久。所有 8 组本次拥有的 build/list/test 进程已收回，源码、保留的测试二进制和发布产物前后相同。三组 stdout 的逐项名称、计数、0 ignored 与固定 31 项清单一致。完整 result、两份构建回执、三组 stdout/stderr/阶段回执及权威状态均按原字节收入本节证据。
+
+Mac source=`9c08c538a0a9dad6a20f1672c108008592c03aa8`，正常 server SHA256=`e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350`。权威 job `1a1a6ceb1c0-fc05-28d3` 明确失败，输出完整且耐久；7 组本次拥有的进程均已停止，源码和测试二进制保持冻结。两个失败为 `native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload` 和 `native_http_redirect_tcp_tls_flush_retains_original_deadline_failure`，原 stderr 均记录 `actual native HTTP header parse`。本节封存其真实失败，不改写旧结果，也不把后继夹具修订或源码审查计为该次通过；后继候选需另有自己的源码身份和运行终态。原 R4 18/20、未知启动归属的 R5 22 项和独立 actor 2 项继续各自保留，不计入这里的 31 项。
+
+上述对照由根独立复核，原 review SHA256=`3c356588189df0f12d042f7b6934c9e6e75008bdf637d71a38df49d85709bd9f`。R7 产品分支仍为 `codex/heptabao-native-ssh-http-20261104-r7`、GitHub commit=`d76783b5fe9eb58f54c18a43075d1f4e374fd3d6`；它与 CI 的正常 33 分支 `f9139c3b37b6373df3e4b4c61ebdd4f847afac4d` 不同。本次没有重新查询或改变 CI 状态，也没有提交产品改动、合并 PR 或替换生产二进制。SSH root owner 的有限测试不能替代 child namespace、全部 provider/API 或既定全量 release 分母。
+
+原 13:00 冻结的 **86 文件检查点已在 Mac T5 成功耐久化**：archive 为 658311 字节、SHA256=`2435c0eca2cba81203e9f1d429542bfb5e518d92170ce89c3eb36cce95da3bc5`，解包总计 2046997 字节。先分块传输至新文件并校验完整 SHA，再以固定 FD/身份/权限检查读取，在新根 create-only 写入、逐文件回读校验和 fsync 全目录。两次分块工具超时按同 upload ID、offset 和相同字节对账，没有重新生成证据包。job `1a1a6e0799a-fc05-2937` 已 exit0、完整耐久；原 receipt SHA256=`891f68c06cae1e8424d64ca4d2064bab015f19b582cd42c224a7c01cc66d00d6`。
+
+这个检查点的内容明确仍是 **validation `605b73dc1d9859703827f9f16ecc37eda67d7875` 与 QA `15c5827dd7a8cfc06131d4901903ebf7e8090599`**，不含本次 R7 两平台终态，不能因保存较晚而扩大其版本范围。新落盘根为 `/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-blocker-closure-r1/root-reviewed-checkpoint-r7`；原包、manifest、传输和权威回执均保留，未加载服务或改生产配置。
+
+Pocket r3 对 r2 真实 `SQLITE_CANTOPEN(14)`／主文件存在且两 sidecar 缺失的形状，仅增加受限读取分支：exact code14、非空且不超过 128 MiB、原 FD 与完整身份/内容哈希贯穿复制和查询、两 sidecar 始终缺失，仍仅查询原精确 13 列和原注册行。原 WAL 分支、内核只读、原 10/70/35/440 秒预算、完整消费者/CAS/凭证及生产 fences 不变。冻结 QA SHA256=`c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790`，基底继续为正常 33，未冒称 R7 产品消费测试。
+
+云端验证的限制与实际主机结果分列：namespace 创建遭 EPERM；权限型 SQLite 组件实际返回 `SQLITE_READONLY_DIRECTORY(1544)` 而非 14，组件原失败保留，没有为此放宽条件。10/10 仅是实际 admission 表达式的 AST 边界检查，不是文件复制 I/O 或消费者资格。r3 的静态 review/准备说明按当时原文保留，之后的 stage、prepare 和以下预检另有独立回执。
+
+**Pocket fresh r3 预检仍为 FAIL。** job `1a1a6e52cb3-fc05-295d` 在 3.138 秒后 exit1、无 timeout、无 unknown；已完成的 18 项检查均通过，原主文件稳定复制后的 exact-row 查询因 `current_registry_schema_changed` 拒绝。完整 core SHA256=`b240a1d7baa19d28cca1111be3c9bbeac3884efa21ecf9c95121b6e40203c98e`，outer/core/intent/权威状态/输出均原样保存。尚未执行任何首周期 phase、HeptaBao 服务、installed SDK/native 消费者或 provider 请求，全部 owned 子进程停止。原两份 auth 表、配置、六类缓存、独立 native4、输入与 held 单元状态保持不变；没有释放 hold、切流或清理旧资产。r2 的 code14 失败与 r3 的 schema 拒绝不是同一次运行，也未被拼成一次通过。
+
+本次新增原件位于 `qa/evidence/20261104/r7-terminal-r1/`。`full_openbao_compatibility_qualified=false`、`combined_r7.runtime_qualified=false`、`pocket_first_cycle_preflight_r3.first_cycle_runtime_qualified=false`；全部客户端/备份迁移、正式生产切换和旧版清理仍未获运行证据。该次 publication 只准备可审阅材料，GitHub commit/ref/PR 更新由根另行执行。

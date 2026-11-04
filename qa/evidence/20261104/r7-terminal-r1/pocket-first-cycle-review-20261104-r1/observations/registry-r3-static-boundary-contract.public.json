@@ -1,0 +1,51 @@
+{
+  "actualHelperIoExecuted": false,
+  "checks": [
+    {
+      "case": "only_exact_14_absent_sidecars",
+      "passed": true
+    },
+    {
+      "case": "actual_cloud_directory_error_rejected",
+      "passed": true
+    },
+    {
+      "case": "base_readonly8_rejected_without_wal",
+      "passed": true
+    },
+    {
+      "case": "extended_cantopen_rejected_without_wal",
+      "passed": true
+    },
+    {
+      "case": "existing_wal_not_main_only",
+      "passed": true
+    },
+    {
+      "case": "existing_shm_not_main_only",
+      "passed": true
+    },
+    {
+      "case": "empty_main_rejected",
+      "passed": true
+    },
+    {
+      "case": "128mib_boundary_allowed",
+      "passed": true
+    },
+    {
+      "case": "over_128mib_rejected",
+      "passed": true
+    },
+    {
+      "case": "original_wal_admission_expression_ast_preserved",
+      "passed": true
+    }
+  ],
+  "inputHelperSha256": "d60ee11225295434f63babf2446bd6627443565776097cec8d708477cdcbef1b",
+  "kernelGuardMocked": false,
+  "newPocketBranchRuntimeQualified": false,
+  "ok": true,
+  "qualificationScope": "Actual predicate AST evaluation and original WAL expression equality only",
+  "schema": "heptabao.pocket-registry-r3-static-boundary-contract.v1"
+}

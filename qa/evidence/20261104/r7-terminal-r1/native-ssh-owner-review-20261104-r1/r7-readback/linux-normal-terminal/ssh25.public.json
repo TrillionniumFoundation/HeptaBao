@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r7-r1/retained-heptabao-server-libtest",
+    "native_ssh_",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 43.942238584990264,
+  "exit_code": 0,
+  "label": "ssh25",
+  "outer_cap_seconds": 600,
+  "owned_pgid": 2911363,
+  "remaining": [],
+  "stderr_sha256": "5738a46d6bc285ff329572906521870bab866e3bbe441d8037122378ef828b28",
+  "stdout_sha256": "1fc3e3f6b7ae0926df704820450ac25596cac49da3761303276024b12e1e9479",
+  "timed_out": false
+}

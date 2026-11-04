@@ -1,0 +1,59 @@
+{
+  "actual_list_and_execution_names_exact": true,
+  "all_openbao_replacement_admitted": false,
+  "failed": 0,
+  "groups": [
+    {
+      "failed": 0,
+      "ignored": 0,
+      "label": "ssh25",
+      "passed": 25,
+      "seconds": 43.942238584990264,
+      "stderr_sha256": "5738a46d6bc285ff329572906521870bab866e3bbe441d8037122378ef828b28",
+      "stdout_sha256": "1fc3e3f6b7ae0926df704820450ac25596cac49da3761303276024b12e1e9479"
+    },
+    {
+      "failed": 0,
+      "ignored": 0,
+      "label": "mount1",
+      "passed": 1,
+      "seconds": 0.2805298219900578,
+      "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "stdout_sha256": "0644ca6bd43749c682ebd0a8790f761fcc9d0328dfdaf5b8ac9f64a64f486155"
+    },
+    {
+      "failed": 0,
+      "ignored": 0,
+      "label": "redirect5",
+      "passed": 5,
+      "seconds": 0.1289516880060546,
+      "stderr_sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "stdout_sha256": "075e73f6f98e229f8d49d03da6c0cc836ef55d1049b2ddf454ed531f0a0bffb4"
+    }
+  ],
+  "ignored": 0,
+  "job_id": "1a1a6baeb4f-fc05-287f",
+  "libtest_unchanged": true,
+  "normal_binary_build_seconds": 635.7055649300019,
+  "normal_default_features": true,
+  "normal_libtest_build_seconds": 1076.9077098199923,
+  "owned_groups_reaped": 8,
+  "parent_authoritative_status": {
+    "durable": true,
+    "exit_code": 0,
+    "output_complete": true,
+    "reported_by": "root",
+    "state": "succeeded",
+    "terminal_at_ms": 1793800390343,
+    "timed_out": false
+  },
+  "passed": 31,
+  "production_changed": false,
+  "release_artifacts_unchanged": true,
+  "result_sha256": "1783a765f511e1cb3f1a350d972e831af9048d600d0538befef4018485b36164",
+  "schema": "heptabao.native-ssh-http-r7-linux-terminal-assessment.v1",
+  "scope": "joint root-SSH25+original mount1+complete redirect5 normal regression only; original failedR4 and unattributedR5/actor results remain separate",
+  "source_commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+  "source_tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8",
+  "source_unchanged": true
+}

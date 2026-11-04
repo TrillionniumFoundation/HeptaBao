@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.r7-terminal-base-binding.v1",
+  "base_validation_commit": "8100e8de50eabe150b3a9b567acfc4f078072449",
+  "base_validation_tree": "a9ab5fcfd8f69fc18aa74c55c51483648d0e934b",
+  "base_file_blobs_read_from_exact_github_commit": true,
+  "local_bytes_match_git_blobs_and_sha256": true,
+  "files": [
+    {
+      "local_source": "publication/validation-r7-progress-r1/CHECKPOINT.md",
+      "bytes": 63329,
+      "git_blob": "7b15a9183bd6cb7f7ecd50c4bd6c15fa529d0aa9",
+      "sha256": "a19c3873b9b48e33b109031951ebee63c00215d9df9ce69376debee250e21fc5"
+    },
+    {
+      "local_source": "publication/validation-r7-progress-r1/index.public.json",
+      "bytes": 94367,
+      "git_blob": "c055d2efb9182a3ab1d4b0b54a8b0fbb32664b34",
+      "sha256": "2c2feb39c6468ee0082286aec45e39d6944eb1e0ac00724f426b9b8c622aff21"
+    }
+  ],
+  "github_mutations_performed": false,
+  "root_continuation_state_read_or_written": false
+}

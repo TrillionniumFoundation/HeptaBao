@@ -1,0 +1,27 @@
+{
+  "actual_copy_io_qualification_pending": true,
+  "all_openbao_replacement_admitted": false,
+  "cloud_predicate_only": true,
+  "finding": "No source-review blocker for one fresh kernel-readonly Pocket preflight",
+  "new_branch": "Exactly SQLite CANTOPEN14, both sidecars lstat absent, main 1..134217728 bytes; original FD, strict custody, whole SHA and identity fenced before and after private clone query and final source verification",
+  "observed_utc": "2026-11-04T14:04:27.941777+00:00",
+  "preserved": [
+    "No source database writes or immutable mode",
+    "Original main+WAL branch admission unchanged",
+    "Exact 13 column and frozen row requirement",
+    "Private clone only may create sidecars",
+    "All original preflight/live budgets and source/service fences",
+    "r2 complete failed preflight and unqualified cloud I/O component evidence"
+  ],
+  "production_changed": false,
+  "qa_manifest_sha256": "c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790",
+  "r3_live_first_cycle_authorized": false,
+  "r3_preflight_authorized": true,
+  "review_scope": "Full changed current_registry_matches and launcher/prepare path binding diff; original helper custody, exact row query and snapshot copy code read",
+  "reviewed_source_sha256": {
+    "pocket_first_cycle_inputs_r1.py": "d60ee11225295434f63babf2446bd6627443565776097cec8d708477cdcbef1b",
+    "pocket_first_cycle_launch_r3.py": "b5f86e11bf8f848a39466f5d979799de4c191a714a9c590bc7a1e15d41cc8f69",
+    "pocket_first_cycle_prepare_r3.py": "298281e39a56d23d52d56bfdc95450e9ae422ebf2fa8f9ad81f699c995774c9d"
+  },
+  "schema": "heptabao.pocket-registry-r3-root-source-review.v1"
+}

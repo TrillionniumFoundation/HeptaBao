@@ -1,0 +1,89 @@
+{
+  "cross_platform_gate_passed": false,
+  "full_replacement_qualification": false,
+  "mac_failure_observed": "Two TCP TLS tests return Custom Other actual native HTTP header parse; precise product/fixture cause remains under audit",
+  "mac_failure_replayed": false,
+  "new_strict_wire_runtime_started": false,
+  "observed_utc": "2026-11-04T14:05:49.811469+00:00",
+  "platform_results": {
+    "mac": {
+      "failed": 2,
+      "groups": [
+        {
+          "exact_names": true,
+          "failed": 0,
+          "ignored": 0,
+          "label": "ssh25",
+          "passed": 25,
+          "seconds": 69.06119995797053,
+          "stdout_sha256": "f0404a6760fb60425413079a624d0d4b0fb653b9ba634e36e5612ca7a5b668eb"
+        },
+        {
+          "exact_names": true,
+          "failed": 0,
+          "ignored": 0,
+          "label": "mount1",
+          "passed": 1,
+          "seconds": 1.7150456248782575,
+          "stdout_sha256": "9bcf0985cf054beac9ca78d792ab80cb45745582172032daec8672ae8804220c"
+        },
+        {
+          "exact_names": true,
+          "failed": 2,
+          "ignored": 0,
+          "label": "redirect5",
+          "passed": 3,
+          "seconds": 2.1115893330425024,
+          "stdout_sha256": "8cbe8073e85c3fe99af561c688a8e34eea669cd2ddcf9bb8f55d1e4dddfbe8d3"
+        }
+      ],
+      "owned_groups_stopped": 7,
+      "passed": 29,
+      "result_sha256": "a1cfc93c3001e49e0e0b8f889c5e2736c4a72e4ddd4564151a1dd19eb4bf6695",
+      "source_and_binary_unchanged": true,
+      "source_commit": "9c08c538a0a9dad6a20f1672c108008592c03aa8",
+      "status": "failed"
+    },
+    "rog": {
+      "failed": 0,
+      "groups": [
+        {
+          "exact_names": true,
+          "failed": 0,
+          "ignored": 0,
+          "label": "ssh25",
+          "passed": 25,
+          "seconds": 43.942238584990264,
+          "stdout_sha256": "1fc3e3f6b7ae0926df704820450ac25596cac49da3761303276024b12e1e9479"
+        },
+        {
+          "exact_names": true,
+          "failed": 0,
+          "ignored": 0,
+          "label": "mount1",
+          "passed": 1,
+          "seconds": 0.2805298219900578,
+          "stdout_sha256": "0644ca6bd43749c682ebd0a8790f761fcc9d0328dfdaf5b8ac9f64a64f486155"
+        },
+        {
+          "exact_names": true,
+          "failed": 0,
+          "ignored": 0,
+          "label": "redirect5",
+          "passed": 5,
+          "seconds": 0.1289516880060546,
+          "stdout_sha256": "075e73f6f98e229f8d49d03da6c0cc836ef55d1049b2ddf454ed531f0a0bffb4"
+        }
+      ],
+      "owned_groups_stopped": 8,
+      "passed": 31,
+      "result_sha256": "1783a765f511e1cb3f1a350d972e831af9048d600d0538befef4018485b36164",
+      "source_and_binary_unchanged": true,
+      "source_commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+      "status": "passed"
+    }
+  },
+  "production_changed": false,
+  "schema": "heptabao.native-ssh-http-r7-cross-platform-root-terminal-review.v1",
+  "source_tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8"
+}

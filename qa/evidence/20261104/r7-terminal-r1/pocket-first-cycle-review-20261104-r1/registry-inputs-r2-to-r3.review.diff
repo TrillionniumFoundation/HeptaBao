@@ -1,0 +1,87 @@
+--- candidate-r2/pocket_first_cycle_inputs_r1.py
++++ candidate-r3/pocket_first_cycle_inputs_r1.py
+@@ -231,14 +231,16 @@
+             os.fsync(directory_fd)
+         finally:
+             os.close(directory_fd)
+-    # A previous successful stable main+WAL query remains valid only while both
+-    # original files still have exactly the observed identity and whole SHA.
++    # A previous stable snapshot remains valid only while every copied original
++    # retains its exact identity and whole SHA, with the same sidecar identities
++    # or lstat-confirmed absence before and after the complete verification.
+     if prior is not None and prior.get('fallbackUsed') is True:
+         need(sidecars() == prior['sidecarIdentities'], 'registry_after_snapshot_sidecar_changed')
+         for name, pin in prior['sourceFilePins'].items():
+             member = path if name == 'main' else Path(str(path) + '-wal')
+             need(exact_snapshot_file(member, pin['identity']) == pin, 'registry_after_snapshot_bytes_changed')
+-        return {**prior, 'verification': 'Exact original main/WAL identities and whole SHA rechecked',
++        need(sidecars() == prior['sidecarIdentities'], 'registry_after_snapshot_sidecar_changed')
++        return {**prior, 'verification': 'Exact copied originals and sidecar identities or absence rechecked',
+                 'sourceWritten': False}
+     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+     try:
+@@ -262,20 +264,28 @@
+             failure_path = owned_root / ('registry-' + label + '-direct-failure.public.json')
+             write_public(failure_path, failure)
+             code = failure['sqliteErrorCode']
+-            need(isinstance(code, int) and (code & 255) in (sqlite3.SQLITE_CANTOPEN, sqlite3.SQLITE_READONLY)
+-                 and before_sidecars['-shm'] is None and before_sidecars['-wal'] is not None
++            main_wal_missing_shm = (isinstance(code, int)
++                and (code & 255) in (sqlite3.SQLITE_CANTOPEN, sqlite3.SQLITE_READONLY)
++                and before_sidecars['-shm'] is None and before_sidecars['-wal'] is not None)
++            main_only_no_sidecars = (code == sqlite3.SQLITE_CANTOPEN
++                and before_sidecars['-wal'] is None and before_sidecars['-shm'] is None
++                and 0 < before.st_size <= 128 * 1024 * 1024)
++            need((main_wal_missing_shm or main_only_no_sidecars)
+                  and identity(before) == identity(os.fstat(fd)) == identity(path.lstat())
+-                 and before_sidecars == sidecars(), 'registry_read_failure_not_known_missing_shm_case')
++                 and before_sidecars == sidecars(), 'registry_read_failure_not_known_stable_snapshot_case')
+             scratch = owned_root / ('registry-' + label + '-snapshot-private')
+             scratch.mkdir(mode=0o700)
+             source_pins = {}
+             wal_path = Path(str(path) + '-wal')
+-            wal_fd = os.open(wal_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++            wal_fd = None
+             try:
+-                # Both original descriptors remain held through copying and the
+-                # WAL-aware query. No source SQLite connection can checkpoint.
+-                members = {'main': (path, identity(before), fd),
+-                           'wal': (wal_path, before_sidecars['-wal'], wal_fd)}
++                # Keep the original main descriptor, and WAL descriptor when it
++                # exists, throughout copying and the WAL-aware clone query.
++                # Only the owned clone may generate absent WAL/SHM sidecars.
++                members = {'main': (path, identity(before), fd)}
++                if main_wal_missing_shm:
++                    wal_fd = os.open(wal_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++                    members['wal'] = (wal_path, before_sidecars['-wal'], wal_fd)
+                 for name, (member, expected, member_fd) in members.items():
+                     target = scratch / ('openclaw.sqlite' + ('-wal' if name == 'wal' else ''))
+                     source_pins[name] = exact_snapshot_file(member, expected, target, member_fd)
+@@ -285,8 +295,8 @@
+                         os.fsync(directory_fd)
+                     finally:
+                         os.close(directory_fd)
+-                # Hold the complete two-file copy interval to exact original
+-                # bytes, identities, timestamps and absent SHM before the query.
++                # Hold the entire copy/query interval to the exact original
++                # bytes, identities, timestamps and both sidecar observations.
+                 for name, (member, expected, member_fd) in members.items():
+                     need(exact_snapshot_file(member, expected, pinned_fd=member_fd) == source_pins[name],
+                          'registry_snapshot_copy_changed')
+@@ -296,11 +306,14 @@
+                     need(exact_snapshot_file(member, expected, pinned_fd=member_fd) == source_pins[name],
+                          'registry_snapshot_query_source_changed')
+             finally:
+-                os.close(wal_fd)
++                if wal_fd is not None:
++                    os.close(wal_fd)
+             fallback = {'directReadFailurePath': str(failure_path), 'directReadFailureSha256': sha(encoded(failure)),
+                         'sourceFilePins': source_pins, 'snapshotPath': str(scratch),
++                         'snapshotMode': 'main-only-no-sidecars' if main_only_no_sidecars else 'main-plus-wal-missing-shm',
+                         'fallbackUsed': True, 'onlyOwnedCopyMayCreateShm': True,
+-                        'verification': 'Exact main/WAL stable copy, WAL-aware read, complete original interval rechecked'}
++                         'onlyOwnedCopyMayCreateSidecars': True,
++                         'verification': 'Exact stable copy, WAL-aware read, complete original interval and sidecars rechecked'}
+         need(identity(before) == identity(os.fstat(fd)) == identity(path.lstat())
+              and before_sidecars == sidecars(), 'current_registry_source_changed_during_read')
+     finally:

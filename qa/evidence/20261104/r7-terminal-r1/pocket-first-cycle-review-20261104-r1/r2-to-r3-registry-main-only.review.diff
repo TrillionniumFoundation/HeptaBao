@@ -1,0 +1,180 @@
+--- candidate-r2/pocket_first_cycle_inputs_r1.py
++++ candidate-r3/pocket_first_cycle_inputs_r1.py
+@@ -231,14 +231,16 @@
+             os.fsync(directory_fd)
+         finally:
+             os.close(directory_fd)
+-    # A previous successful stable main+WAL query remains valid only while both
+-    # original files still have exactly the observed identity and whole SHA.
++    # A previous stable snapshot remains valid only while every copied original
++    # retains its exact identity and whole SHA, with the same sidecar identities
++    # or lstat-confirmed absence before and after the complete verification.
+     if prior is not None and prior.get('fallbackUsed') is True:
+         need(sidecars() == prior['sidecarIdentities'], 'registry_after_snapshot_sidecar_changed')
+         for name, pin in prior['sourceFilePins'].items():
+             member = path if name == 'main' else Path(str(path) + '-wal')
+             need(exact_snapshot_file(member, pin['identity']) == pin, 'registry_after_snapshot_bytes_changed')
+-        return {**prior, 'verification': 'Exact original main/WAL identities and whole SHA rechecked',
++        need(sidecars() == prior['sidecarIdentities'], 'registry_after_snapshot_sidecar_changed')
++        return {**prior, 'verification': 'Exact copied originals and sidecar identities or absence rechecked',
+                 'sourceWritten': False}
+     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+     try:
+@@ -262,20 +264,28 @@
+             failure_path = owned_root / ('registry-' + label + '-direct-failure.public.json')
+             write_public(failure_path, failure)
+             code = failure['sqliteErrorCode']
+-            need(isinstance(code, int) and (code & 255) in (sqlite3.SQLITE_CANTOPEN, sqlite3.SQLITE_READONLY)
+-                 and before_sidecars['-shm'] is None and before_sidecars['-wal'] is not None
++            main_wal_missing_shm = (isinstance(code, int)
++                and (code & 255) in (sqlite3.SQLITE_CANTOPEN, sqlite3.SQLITE_READONLY)
++                and before_sidecars['-shm'] is None and before_sidecars['-wal'] is not None)
++            main_only_no_sidecars = (code == sqlite3.SQLITE_CANTOPEN
++                and before_sidecars['-wal'] is None and before_sidecars['-shm'] is None
++                and 0 < before.st_size <= 128 * 1024 * 1024)
++            need((main_wal_missing_shm or main_only_no_sidecars)
+                  and identity(before) == identity(os.fstat(fd)) == identity(path.lstat())
+-                 and before_sidecars == sidecars(), 'registry_read_failure_not_known_missing_shm_case')
++                 and before_sidecars == sidecars(), 'registry_read_failure_not_known_stable_snapshot_case')
+             scratch = owned_root / ('registry-' + label + '-snapshot-private')
+             scratch.mkdir(mode=0o700)
+             source_pins = {}
+             wal_path = Path(str(path) + '-wal')
+-            wal_fd = os.open(wal_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++            wal_fd = None
+             try:
+-                # Both original descriptors remain held through copying and the
+-                # WAL-aware query. No source SQLite connection can checkpoint.
+-                members = {'main': (path, identity(before), fd),
+-                           'wal': (wal_path, before_sidecars['-wal'], wal_fd)}
++                # Keep the original main descriptor, and WAL descriptor when it
++                # exists, throughout copying and the WAL-aware clone query.
++                # Only the owned clone may generate absent WAL/SHM sidecars.
++                members = {'main': (path, identity(before), fd)}
++                if main_wal_missing_shm:
++                    wal_fd = os.open(wal_path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++                    members['wal'] = (wal_path, before_sidecars['-wal'], wal_fd)
+                 for name, (member, expected, member_fd) in members.items():
+                     target = scratch / ('openclaw.sqlite' + ('-wal' if name == 'wal' else ''))
+                     source_pins[name] = exact_snapshot_file(member, expected, target, member_fd)
+@@ -285,8 +295,8 @@
+                         os.fsync(directory_fd)
+                     finally:
+                         os.close(directory_fd)
+-                # Hold the complete two-file copy interval to exact original
+-                # bytes, identities, timestamps and absent SHM before the query.
++                # Hold the entire copy/query interval to the exact original
++                # bytes, identities, timestamps and both sidecar observations.
+                 for name, (member, expected, member_fd) in members.items():
+                     need(exact_snapshot_file(member, expected, pinned_fd=member_fd) == source_pins[name],
+                          'registry_snapshot_copy_changed')
+@@ -296,11 +306,14 @@
+                     need(exact_snapshot_file(member, expected, pinned_fd=member_fd) == source_pins[name],
+                          'registry_snapshot_query_source_changed')
+             finally:
+-                os.close(wal_fd)
++                if wal_fd is not None:
++                    os.close(wal_fd)
+             fallback = {'directReadFailurePath': str(failure_path), 'directReadFailureSha256': sha(encoded(failure)),
+                         'sourceFilePins': source_pins, 'snapshotPath': str(scratch),
++                         'snapshotMode': 'main-only-no-sidecars' if main_only_no_sidecars else 'main-plus-wal-missing-shm',
+                         'fallbackUsed': True, 'onlyOwnedCopyMayCreateShm': True,
+-                        'verification': 'Exact main/WAL stable copy, WAL-aware read, complete original interval rechecked'}
++                         'onlyOwnedCopyMayCreateSidecars': True,
++                         'verification': 'Exact stable copy, WAL-aware read, complete original interval and sidecars rechecked'}
+         need(identity(before) == identity(os.fstat(fd)) == identity(path.lstat())
+              and before_sidecars == sidecars(), 'current_registry_source_changed_during_read')
+     finally:
+--- candidate-r2/pocket_first_cycle_launch_r2.py
++++ candidate-r3/pocket_first_cycle_launch_r3.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, signal, stat, subprocess, time
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r2'; I = P / 'shared-first-cycle-inputs-r1'
++Q = P / 'shared-first-cycle-qa-r3'; I = P / 'shared-first-cycle-inputs-r1'
+ A = P / 'current-native-inputs-r1/artifacts'
+ SCENARIO = 'shared-managed12-original-local-source'
+ UNIT_IDS = ['openclaw-authbus-restart-when-idle.service', 'openclaw-gateway.service']
+@@ -67,7 +67,7 @@
+     parser.add_argument('--qa-pins-sha256', required=True)
+     args = parser.parse_args()
+     need(re.fullmatch('[a-f0-9]{64}', args.qa_pins_sha256), 'qa_manifest_digest_shape')
+-    run = P / ('shared-first-cycle-' + args.phase + '-r2')
++    run = P / ('shared-first-cycle-' + args.phase + '-r3')
+     need(P.resolve(strict=True) == P, 'project_root_no_symlink')
+     run.mkdir(mode=0o700)  # An existing generation is refused, never reopened.
+     process = None; timed = False; code = None; core = None; started = time.monotonic()
+@@ -96,13 +96,13 @@
+         for name, pin in pins.items():
+             need(re.fullmatch('[a-z0-9_.-]+', name) and sha(Q / name) == pin['sha256']
+                  and (Q / name).stat().st_size == pin['bytes'], 'qa_source_pin')
+-        prepare = I / 'prepare-r2.public.json'; prep = json.loads(prepare.read_bytes())
++        prepare = I / 'prepare-r3.public.json'; prep = json.loads(prepare.read_bytes())
+         need(prep['ok'] is True and prep['qaPinsSha256'] == args.qa_pins_sha256
+              and prep['consumerSha256'] == pins['pocket_first_cycle_consumer_r1.mjs']['sha256']
+              and prep['controllerSha256'] == pins['pocket_shared_first_cycle_live_r2.py']['sha256'],
+              'prepared_qa_binding')
+         if args.phase == 'live':
+-            prior = P / 'shared-first-cycle-preflight-r2'
++            prior = P / 'shared-first-cycle-preflight-r3'
+             prior_result = json.loads((prior / 'execution.result.public.json').read_bytes())
+             prior_intent = json.loads((prior / 'intent.public.json').read_bytes())
+             prior_core = json.loads((prior / 'live/result.public.json').read_bytes())
+--- candidate-r2/pocket_first_cycle_prepare_r2.py
++++ candidate-r3/pocket_first_cycle_prepare_r3.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, stat
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r2'
++Q = P / 'shared-first-cycle-qa-r3'
+ I = P / 'shared-first-cycle-inputs-r1'
+ OLD = P / 'current-native-inputs-r1/prepare-r2.public.json'
+ OLD_SHA = '3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb'
+@@ -101,7 +101,7 @@
+         consumerSha256=source_pins[str(Q / 'pocket_first_cycle_consumer_r1.mjs')],
+         controllerSha256=source_pins[str(Q / 'pocket_shared_first_cycle_live_r2.py')],
+         sourcePins={**old['sourcePins'], **source_pins, str(Q / 'qa-pins.public.json'): args.qa_pins_sha256})
+-    target = I / 'prepare-r2.public.json'
++    target = I / 'prepare-r3.public.json'
+     raw = json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+     fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+     with os.fdopen(fd, 'wb') as f:
+--- qa-pins-r2.public.json
++++ qa-pins-r3.public.json
+@@ -13,16 +13,16 @@
+       "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e"
+     },
+     "pocket_first_cycle_inputs_r1.py": {
+-      "bytes": 18756,
+-      "sha256": "263eb82231c5534b668550b61f4944e69502fea996556187fcea3b9b3f843c39"
++      "bytes": 19650,
++      "sha256": "d60ee11225295434f63babf2446bd6627443565776097cec8d708477cdcbef1b"
+     },
+-    "pocket_first_cycle_launch_r2.py": {
++    "pocket_first_cycle_launch_r3.py": {
+       "bytes": 13045,
+-      "sha256": "a6a43c6e0653da2005092bf0b782d65a25fc4d0e1ca23d580a4227bfed1afefd"
++      "sha256": "b5f86e11bf8f848a39466f5d979799de4c191a714a9c590bc7a1e15d41cc8f69"
+     },
+-    "pocket_first_cycle_prepare_r2.py": {
++    "pocket_first_cycle_prepare_r3.py": {
+       "bytes": 6845,
+-      "sha256": "6c7153872e543529b6beeb79860417f8a0b3e9ea36b54c72657e34dcfd8e48ae"
++      "sha256": "298281e39a56d23d52d56bfdc95450e9ae422ebf2fa8f9ad81f699c995774c9d"
+     },
+     "pocket_native_auth_rows_cas_r1.mjs": {
+       "bytes": 2703,
+@@ -41,9 +41,9 @@
+       "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43"
+     }
+   },
+-  "previousQaPinsSha256": "e3d8f794869f619dc793fec457ad9027b239905fd2faf248a5623b5d6bc409c5",
++  "previousQaPinsSha256": "2d7f018de9408f02811c6f5eb24d1ad0973721c194f31bf685073bb5565deae0",
+   "productionChanged": false,
+-  "revision": 2,
++  "revision": 3,
+   "runtimeQualified": false,
+   "scenario": "shared-managed12-original-local-source",
+   "schema": "heptabao.pocket-shared-first-cycle-qa-pins.v1",

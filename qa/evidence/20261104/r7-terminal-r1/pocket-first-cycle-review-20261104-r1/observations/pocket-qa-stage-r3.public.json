@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao-pocket-qa-stage-v1",
+  "qaRoot": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-qa-r3",
+  "qaManifestSha256": "c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790",
+  "mkdirJob": "1a1a6e223f9-fc05-2949",
+  "mkdirTerminal": {
+    "at_unix_ms": 1793801202742,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a6e223f9-fc05-2949",
+    "launch_nonce": "2dc376228590434b4f70ee858afbb972",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 166,
+        "stored": 166
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "allFilesVerified": true,
+  "files": [
+    {
+      "name": "authbus_coordinator.py",
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "size": 44118,
+      "mode": 384,
+      "version": "66306:44079820:44118:1793801259986749039:1793801259986807265",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_authbus_cache_cas_r1.mjs",
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "size": 6846,
+      "mode": 384,
+      "version": "66306:44079822:6846:1793801266179533180:1793801266180055227",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_consumer_r1.mjs",
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "size": 24016,
+      "mode": 384,
+      "version": "66306:44079838:24016:1793801273548188231:1793801273548350226",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_native_auth_rows_cas_r1.mjs",
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "size": 2703,
+      "mode": 384,
+      "version": "66306:44079840:2703:1793801285759478436:1793801285760146261",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_native_observer_r3.mjs",
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "size": 11901,
+      "mode": 384,
+      "version": "66306:44079850:11901:1793801292583610819:1793801292584112315",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_shared_first_cycle_live_r2.py",
+      "sha256": "ed0149d7bcc1f33ad66fd00095147f93cf58e762b251f39368ae973d70bd905a",
+      "size": 44996,
+      "mode": 384,
+      "version": "66306:44079852:44996:1793801296476210868:1793801296476268129",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "project_trusted_profile12.py",
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "size": 9233,
+      "mode": 384,
+      "version": "66306:44079854:9233:1793801300487372020:1793801300487428704",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_inputs_r1.py",
+      "sha256": "d60ee11225295434f63babf2446bd6627443565776097cec8d708477cdcbef1b",
+      "size": 19650,
+      "mode": 384,
+      "version": "66306:44079856:19650:1793801306056651639:1793801306056651651",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_launch_r3.py",
+      "sha256": "b5f86e11bf8f848a39466f5d979799de4c191a714a9c590bc7a1e15d41cc8f69",
+      "size": 13045,
+      "mode": 384,
+      "version": "66306:44079861:13045:1793801313114683709:1793801313114934200",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_prepare_r3.py",
+      "sha256": "298281e39a56d23d52d56bfdc95450e9ae422ebf2fa8f9ad81f699c995774c9d",
+      "size": 6845,
+      "mode": 384,
+      "version": "66306:44079863:6845:1793801315442854575:1793801315443027394",
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "qa-pins.public.json",
+      "sha256": "c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790",
+      "size": 1953,
+      "mode": 384,
+      "version": "66306:44079865:1953:1793801325002675338:1793801325003410090",
+      "reconciledAfterWriteReply": false
+    }
+  ],
+  "productionChanged": false
+}

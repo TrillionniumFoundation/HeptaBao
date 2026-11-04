@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.r7-terminal-publication-pattern-scan.v1",
+  "scope": "Selected public source and receipt bytes only",
+  "private_source_files_opened": false,
+  "actual_secret_literal_comparison_claimed": false,
+  "files_scanned": 61,
+  "counts": {
+    "jwt_compact_literal": 0,
+    "private_key_pem": 0,
+    "long_openai_key_literal": 0
+  }
+}

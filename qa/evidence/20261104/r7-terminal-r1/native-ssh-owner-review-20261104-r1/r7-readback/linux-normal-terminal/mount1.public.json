@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r7-r1/retained-heptabao-server-libtest",
+    "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.2805298219900578,
+  "exit_code": 0,
+  "label": "mount1",
+  "outer_cap_seconds": 600,
+  "owned_pgid": 2913861,
+  "remaining": [],
+  "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+  "stdout_sha256": "0644ca6bd43749c682ebd0a8790f761fcc9d0328dfdaf5b8ac9f64a64f486155",
+  "timed_out": false
+}

@@ -1,0 +1,5 @@
+{
+  "jobId": "1a1a6e52cb3-fc05-295d",
+  "stdout": "{\"ok\": false, \"phase\": \"preflight\", \"path\": \"/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-preflight-r3/execution.result.public.json\", \"sha256\": \"aca1985a9985b7f1fd4f68102113f912fcf34448edc5e2dc223c8a9ab64b08e9\", \"outcomeUnknown\": false}\n",
+  "stderr": ""
+}

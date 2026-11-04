@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T13:51:28.836756+00:00",
+  "as_of_utc": "2026-11-04T14:17:17.376102+00:00",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -1847,7 +1847,7 @@
     "mac_tests31_launch": "confirmed launched after exact stable-key reconciliation",
     "mac_tests31_key": "heptabao-combined-r7-mac-normal-exact31-tests-20261104-r1",
     "mac_tests31_job": "1a1a6ceb1c0-fc05-28d3",
-    "mac_test_compile_status": "pending normal libtest then exact31 runtime",
+    "mac_test_compile_status": "normal libtest compile succeeded; exact31 terminal failed (29 passed, 2 failed)",
     "mac_normal_build": {
       "artifacts": {
         "heptabao-seed": {
@@ -1986,8 +1986,146 @@
       "terminal_publication_protocol": 1,
       "timed_out": false
     },
-    "mac_tests31_terminal_observed": false,
-    "rog_tests31_terminal_observed": false
+    "mac_tests31_terminal_observed": true,
+    "rog_tests31_terminal_observed": true,
+    "cross_platform_gate_passed": false,
+    "normal_exact31_terminal_review": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/cross-platform-root-terminal-review.public.json",
+      "bytes": 2977,
+      "sha256": "3c356588189df0f12d042f7b6934c9e6e75008bdf637d71a38df49d85709bd9f"
+    },
+    "normal_exact31_terminal_summary": {
+      "cross_platform_gate_passed": false,
+      "full_replacement_qualification": false,
+      "mac_failure_observed": "Two TCP TLS tests return Custom Other actual native HTTP header parse; precise product/fixture cause remains under audit",
+      "mac_failure_replayed": false,
+      "new_strict_wire_runtime_started": false,
+      "observed_utc": "2026-11-04T14:05:49.811469+00:00",
+      "platform_results": {
+        "mac": {
+          "failed": 2,
+          "groups": [
+            {
+              "exact_names": true,
+              "failed": 0,
+              "ignored": 0,
+              "label": "ssh25",
+              "passed": 25,
+              "seconds": 69.06119995797053,
+              "stdout_sha256": "f0404a6760fb60425413079a624d0d4b0fb653b9ba634e36e5612ca7a5b668eb"
+            },
+            {
+              "exact_names": true,
+              "failed": 0,
+              "ignored": 0,
+              "label": "mount1",
+              "passed": 1,
+              "seconds": 1.7150456248782575,
+              "stdout_sha256": "9bcf0985cf054beac9ca78d792ab80cb45745582172032daec8672ae8804220c"
+            },
+            {
+              "exact_names": true,
+              "failed": 2,
+              "ignored": 0,
+              "label": "redirect5",
+              "passed": 3,
+              "seconds": 2.1115893330425024,
+              "stdout_sha256": "8cbe8073e85c3fe99af561c688a8e34eea669cd2ddcf9bb8f55d1e4dddfbe8d3"
+            }
+          ],
+          "owned_groups_stopped": 7,
+          "passed": 29,
+          "result_sha256": "a1cfc93c3001e49e0e0b8f889c5e2736c4a72e4ddd4564151a1dd19eb4bf6695",
+          "source_and_binary_unchanged": true,
+          "source_commit": "9c08c538a0a9dad6a20f1672c108008592c03aa8",
+          "status": "failed"
+        },
+        "rog": {
+          "failed": 0,
+          "groups": [
+            {
+              "exact_names": true,
+              "failed": 0,
+              "ignored": 0,
+              "label": "ssh25",
+              "passed": 25,
+              "seconds": 43.942238584990264,
+              "stdout_sha256": "1fc3e3f6b7ae0926df704820450ac25596cac49da3761303276024b12e1e9479"
+            },
+            {
+              "exact_names": true,
+              "failed": 0,
+              "ignored": 0,
+              "label": "mount1",
+              "passed": 1,
+              "seconds": 0.2805298219900578,
+              "stdout_sha256": "0644ca6bd43749c682ebd0a8790f761fcc9d0328dfdaf5b8ac9f64a64f486155"
+            },
+            {
+              "exact_names": true,
+              "failed": 0,
+              "ignored": 0,
+              "label": "redirect5",
+              "passed": 5,
+              "seconds": 0.1289516880060546,
+              "stdout_sha256": "075e73f6f98e229f8d49d03da6c0cc836ef55d1049b2ddf454ed531f0a0bffb4"
+            }
+          ],
+          "owned_groups_stopped": 8,
+          "passed": 31,
+          "result_sha256": "1783a765f511e1cb3f1a350d972e831af9048d600d0538befef4018485b36164",
+          "source_and_binary_unchanged": true,
+          "source_commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+          "status": "passed"
+        }
+      },
+      "production_changed": false,
+      "schema": "heptabao.native-ssh-http-r7-cross-platform-root-terminal-review.v1",
+      "source_tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8"
+    },
+    "rog_normal_release": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/linux-normal-release/normal-release-result.public.json",
+      "bytes": 3164,
+      "sha256": "12d3924810188c53e046c7973edc4d60c6bd494f420c5ad20ea8aa71581a3152"
+    },
+    "rog_native_build_receipt": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/linux-normal-release/native-build.public.json",
+      "bytes": 777,
+      "sha256": "80ce6118f9eaed5b4108bc054c0ab7d2c6e3c250b4e13e8f4c6883e8f6a8f18a"
+    },
+    "rog_exact31_result": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/linux-normal-terminal/result.public.json",
+      "bytes": 17058,
+      "sha256": "1783a765f511e1cb3f1a350d972e831af9048d600d0538befef4018485b36164"
+    },
+    "rog_exact31_status": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/linux-normal-terminal/authoritative-status.public.json",
+      "bytes": 731,
+      "sha256": "5d11b83dae7cf1a2733daeafaa803d93c1cad9a72a413170f5b6ec685309dd51"
+    },
+    "rog_exact31_independent_assessment": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/linux-normal-terminal/assessment.public.json",
+      "bytes": 2103,
+      "sha256": "aab5dee3cbc87ea078d49a66e11f23e44522696b33fbfdf9f1ff7bcff5cd3cf1"
+    },
+    "mac_exact31_result": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/mac-normal-exact31-result.public.json",
+      "bytes": 14585,
+      "sha256": "a1cfc93c3001e49e0e0b8f889c5e2736c4a72e4ddd4564151a1dd19eb4bf6695"
+    },
+    "mac_exact31_status": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/mac-normal-exact31-status.public.json",
+      "bytes": 727,
+      "sha256": "b5117fd1b4c7e5544fdd47682234f9a52a36f39ce503d49d4e7fda9425b0d209"
+    },
+    "mac_redirect_stderr": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/native-ssh-owner-review-20261104-r1/r7-readback/mac-redirect5.stderr",
+      "bytes": 1448,
+      "sha256": "9eb8a8f60bf3f689dd1c1da4a3b373965ff2a1727cd08d7baf505633425dd212"
+    },
+    "failure_results_rewritten": false,
+    "new_test_runtime_started_by_publication": false,
+    "different_from_ci_head": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d"
   },
   "pocket_first_cycle_preflight_r2": {
     "qa_sha256": "2d7f018de9408f02811c6f5eb24d1ad0973721c194f31bf685073bb5565deae0",
@@ -2363,5 +2501,106 @@
     },
     "first_cycle_runtime_qualified": false,
     "production_cutover": false
+  },
+  "frozen_86_file_mac_checkpoint": {
+    "receipt": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/publication/validation-authbus-wire-r1/checkpoint-r7-mac-receipt.public.json",
+      "bytes": 6248,
+      "sha256": "891f68c06cae1e8424d64ca4d2064bab015f19b582cd42c224a7c01cc66d00d6"
+    },
+    "authoritative_status": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/publication/validation-authbus-wire-r1/checkpoint-r7-mac-job-status.public.json",
+      "bytes": 730,
+      "sha256": "fb999f3e170e34d94c7948ea22827c38f8c64c1e6e4d7edaa71e1d604a2d20b6"
+    },
+    "transport": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/publication/validation-authbus-wire-r1/checkpoint-r7-mac-transport.public.json",
+      "bytes": 826,
+      "sha256": "fde5b9c27392cb0c8213847c66808ffc45abc2b6f3ace8b2683092ab510d44d8"
+    },
+    "job": "1a1a6e0799a-fc05-2937",
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-blocker-closure-r1/root-reviewed-checkpoint-r7",
+    "validation_commit": "605b73dc1d9859703827f9f16ecc37eda67d7875",
+    "qa_commit": "15c5827dd7a8cfc06131d4901903ebf7e8090599",
+    "files": 86,
+    "archive_bytes": 658311,
+    "uncompressed_bytes": 2046997,
+    "archive_sha256": "2435c0eca2cba81203e9f1d429542bfb5e518d92170ce89c3eb36cce95da3bc5",
+    "manifest_sha256": "b9dae89e8d7cded1ccf69ef24fc6a70570df169bcaf9c0c4fc614e7beb5369c3",
+    "all_files_readback_and_directories_fsynced": true,
+    "contains_latest_r7_test_terminals": false,
+    "production_changed": false
+  },
+  "pocket_first_cycle_preflight_r3": {
+    "qa": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/qa-pins-r3.public.json",
+      "bytes": 1953,
+      "sha256": "c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790"
+    },
+    "root_review": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/registry-r3-root-source-review.public.json",
+      "bytes": 1655,
+      "sha256": "bd022430e5b0b4d940236280efb92dc39c6e3ed8a786e24d9878a58feeb34967"
+    },
+    "independent_review": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/registry-r3-independent-review.public.json",
+      "bytes": 1643,
+      "sha256": "4b587503a4d3b3e7371b5e3e1321e6e01a6175c7ee0ffcab23a3463b1ce31a93"
+    },
+    "core": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/pocket-preflight-core-r3.public.json",
+      "bytes": 6411,
+      "sha256": "b240a1d7baa19d28cca1111be3c9bbeac3884efa21ecf9c95121b6e40203c98e"
+    },
+    "outer": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/pocket-preflight-outer-r3.public.json",
+      "bytes": 2078,
+      "sha256": "aca1985a9985b7f1fd4f68102113f912fcf34448edc5e2dc223c8a9ab64b08e9"
+    },
+    "authoritative_status": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/pocket-preflight-terminal-r3.public.json",
+      "bytes": 727,
+      "sha256": "05243def176e9251a5db587792ae2e34f089a840a17cdf954204ac9b38220df9"
+    },
+    "intent": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/pocket-preflight-intent-r3.public.json",
+      "bytes": 5971,
+      "sha256": "5278166d9a4d8adb32e071bb1dd13676364cad6b9bdc4c1bc0cd7ee7b759cc59"
+    },
+    "output": {
+      "path": "qa/evidence/20261104/r7-terminal-r1/pocket-first-cycle-review-20261104-r1/observations/pocket-preflight-output-r3.public.json",
+      "bytes": 364,
+      "sha256": "80cd5d9bd978cfadb6c4d4df2d65709d397050ab63bd3e814d158d03b3a92227"
+    },
+    "job": "1a1a6e52cb3-fc05-295d",
+    "status": "failed",
+    "error": "current_registry_schema_changed",
+    "completed_checks_passed": 18,
+    "elapsed_seconds": 3.138,
+    "exact_schema_guard_preserved": true,
+    "actual_first_cycle_phases": [],
+    "outcome_unknown": false,
+    "owned_cleanup_confirmed": true,
+    "production_inputs_and_units_unchanged": true,
+    "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+    "uses_combined_r7_binary": false,
+    "actual_runtime_executed": false,
+    "provider_network_egress": false,
+    "cloud_eprem_and_1544_component_failures_preserved": true,
+    "static_ast_boundary_pass_count": 10,
+    "static_checks_are_io_or_runtime_qualification": false,
+    "first_cycle_runtime_qualified": false,
+    "production_cutover": false
+  },
+  "r7_terminal_publication_scope": {
+    "base_validation_commit": "8100e8de50eabe150b3a9b567acfc4f078072449",
+    "base_validation_tree": "a9ab5fcfd8f69fc18aa74c55c51483648d0e934b",
+    "github_mutations_performed_by_preparer": false,
+    "ci_repolled": false,
+    "historical_pending_and_failed_receipts_preserved": true,
+    "root_continuation_state_read_or_written": false,
+    "evidence_prefix": "qa/evidence/20261104/r7-terminal-r1/",
+    "frozen_old_checkpoint_not_latest_test_evidence": true
   }
 }

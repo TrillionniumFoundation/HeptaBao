@@ -1,0 +1,13 @@
+{
+  "childReaped": true,
+  "childReturncode": 1,
+  "error": "synthetic_child_failed",
+  "ok": false,
+  "ownedRoot": "/tmp/heptabao-registry-sqlite-engine-r3-yu7deutf",
+  "parentTimeoutSeconds": 10,
+  "schema": "heptabao.pocket-registry-sqlite-engine-component.v1",
+  "scriptSha256": "c9976d9da446f45607e088dae99041f5bb4e4f4d13d64aab89db5d088df1df51",
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 129, in <module>\n  File \"<string>\", line 107, in main\n  File \"<string>\", line 79, in child\nAssertionError\n",
+  "stderrSha256": "8d9e4235d266101d4be68002e09ad2d9e2acea9934dd5e3dc240110074bedf5a",
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
