@@ -1,0 +1,17 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "import gzip,hashlib,json,os,stat\nfrom pathlib import Path\nroot=Path(\"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1\")\ndef identity(s):return(s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ndef read(path):\n fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)\n try:\n  a=os.fstat(fd);assert stat.S_ISREG(a.st_mode) and a.st_uid==os.geteuid() and a.st_nlink==1 and a.st_size<=65536\n  chunks=[]\n  while True:\n   part=os.read(fd,65536)\n   if not part:break\n   chunks.append(part)\n  raw=b\"\".join(chunks);assert len(raw)==a.st_size and identity(a)==identity(os.fstat(fd))==identity(path.lstat())\n  return raw\n finally:os.close(fd)\nreport_raw=read(root/\"result.public.json\")\nassert hashlib.sha256(report_raw).hexdigest()==\"c599c4a6679a76695e7df7ca6cc195ebb068e210493f8e63b32cb7690ff2edcc\"\nreport=json.loads(report_raw)\nassert report[\"http_intents\"]==report[\"http_outcomes\"]==89 and report[\"http_unknown\"]==0 and report[\"all_owned_stopped\"] is True\nnames=[\"result.public.json\",\"prepared.public.json\",\"roles_before.public.json\"]+[f\"operations/{i:04d}.{kind}.public.json\" for i in range(1,90) for kind in (\"intent\",\"outcome\")]\nfiles={}\nfor name in names:\n raw=read(root/name);files[name]={\"bytes\":len(raw),\"sha256\":hashlib.sha256(raw).hexdigest(),\"text\":raw.decode()}\nraw=(json.dumps({\"schema\":\"heptabao.official271-corruption-original-public-journals.v1\",\"files\":files},sort_keys=True,separators=(\",\",\":\"))+\"\\n\").encode()\npacked=gzip.compress(raw,compresslevel=6,mtime=0)\npath=root/\"public-journals-r1.json.gz\"\nfd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\nwith os.fdopen(fd,\"wb\")as f:f.write(packed);f.flush();os.fsync(f.fileno())\nfd=os.open(root,os.O_RDONLY|os.O_DIRECTORY)\ntry:os.fsync(fd)\nfinally:os.close(fd)\nassert path.read_bytes()==packed\nprint(json.dumps({\"status\":\"public_journals_packed\",\"files\":len(files),\"path\":str(path),\"gzip_bytes\":len(packed),\"gzip_sha256\":hashlib.sha256(packed).hexdigest(),\"raw_bytes\":len(raw),\"raw_sha256\":hashlib.sha256(raw).hexdigest()},sort_keys=True))\n"
+  ],
+  "stdin": "",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-snapshot-corruption-oracle-live-61ff-r1",
+  "nice": 19,
+  "memory_max_bytes": 67108864,
+  "timeout_seconds": 30,
+  "idempotency_key": "bao-acceptance-official271-corruption-journals-pack-r1-0feccfb736d69c7b"
+}
