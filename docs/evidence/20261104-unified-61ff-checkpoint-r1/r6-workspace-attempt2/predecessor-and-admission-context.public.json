@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.r6-workspace-readmission.v1",
+  "attempt": 2,
+  "prior_job": "1a1a7d360c8-fc05-2ca2",
+  "prior_terminal_exit": 1,
+  "prior_rust_tests_started": false,
+  "prior_run_directory_created": false,
+  "foreign_job": "1a1a7c83142-fc05-2c88",
+  "foreign_terminal": {
+    "at_unix_ms": 1793818077594,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a7c83142-fc05-2c88",
+    "launch_nonce": "4ebc89908d0e7b2a3b18dd16248c3d4d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2082,
+        "stored": 2082
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "authbus_window_owner_report": {
+    "job_id": "1a1a7e670f5-fc05-2cd4",
+    "terminal_exit": 1,
+    "timed_out": false,
+    "namespace_exited": true,
+    "owned_native_wrapper_identity_gone": true,
+    "owned_heptabao_stopped": true,
+    "evidence_review_owner": "authbus",
+    "proof_not_authbus_success": true
+  },
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "runner_sha256": "7258a42de0c9c3e5f428542bf4f88592bb9f0a50efb8750b23ec617336aaf3fe",
+  "same_runner_args_profile_and_fixture_budgets": true,
+  "original_monotonic_expiry": 159287.304154345,
+  "original_absolute_deadline_utc": "2026-11-04T21:51:16Z",
+  "renewed_overall_budget": false,
+  "strict_guard_exceptions_added": false,
+  "run_not_started_when_this_context_written": true
+}
